@@ -1,0 +1,17 @@
+<div class="d-flex flex-column vh-100">
+  <app-header></app-header>
+  <div class="flex-grow-1 d-flex">
+    <!-- Sidebar (lo haremos luego) -->
+    <nav class="bg-primary text-white p-3" style="width: 250px;">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a class="nav-link text-white" routerLink="/home">🏠 Home</a></li>
+        <li class="nav-item mb-2"><a class="nav-link text-white" routerLink="/roles">👥 Roles</a></li>
+        <li class="nav-item mb-2"><a class="nav-link text-white" routerLink="/empresas">🏢 Empresas</a></li>
+      </ul>
+    </nav>
+    <div class="flex-grow-1 p-4">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <app-footer></app-footer>
+</div>
