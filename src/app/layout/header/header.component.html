@@ -1,3 +1,32 @@
-<header class="bg-primary text-white p-3">
-  <h4 class="mb-0">Universidad del Cauca</h4>
+<header class="d-flex align-items-center justify-content-between p-3"
+        style="background-color: white; height: 100px; border-bottom: 4px solid #00138C; border-left: 4px solid #00138C; border-right: 4px solid #00138C;">
+  
+  <!-- Logo + Nombre Universidad a la izquierda -->
+  <div class="d-flex align-items-center gap-3">
+    <img src="Logo-Universidad-del-Cauca-vertical-1.png" 
+         alt="Logo Universidad del Cauca" 
+         style="height:80px; width:auto;">
+    <h1 class="mb-0" style="color: #0d47a1; font-size: 1.8rem;">Universidad del Cauca</h1>
+  </div>
+
+  <!-- Usuario + Iconos a la derecha -->
+  <div class="d-flex align-items-center gap-2">
+
+    <!-- Iconos a la izquierda del nombre -->
+    <div class="d-flex align-items-center gap-3">
+      <button mat-icon-button style="width: 60px; height: 60px;">
+        <mat-icon style="color: #00138C; font-size: 25px;">notifications</mat-icon>
+      </button>
+      <button mat-icon-button style="width: 60px; height: 60px;">
+        <mat-icon style="color: #00138C; font-size: 25px;">account_circle</mat-icon>
+      </button>
+
+      <!-- Nombre y correo -->
+      <div style="text-align: left; margin-left: 4px;">
+        <div style="color: #0d47a1; font-weight: 600; font-size: 1rem;">Funcionario FIET</div>
+        <div style="color: #0d47a1; font-size: 0.85rem;">decafiet&#64;unicauca.edu.co</div>
+      </div>
+    </div>
+  </div>
+
 </header>

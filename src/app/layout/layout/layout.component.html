@@ -1,17 +1,57 @@
-<div class="d-flex flex-column vh-100">
+<div class="app-container" style="display: flex; flex-direction: column; height: 100vh;">
+  
+  <!-- Header arriba -->
   <app-header></app-header>
-  <div class="flex-grow-1 d-flex">
-    <!-- Sidebar (lo haremos luego) -->
-    <nav class="bg-primary text-white p-3" style="width: 250px;">
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a class="nav-link text-white" routerLink="/home">🏠 Home</a></li>
-        <li class="nav-item mb-2"><a class="nav-link text-white" routerLink="/roles">👥 Roles</a></li>
-        <li class="nav-item mb-2"><a class="nav-link text-white" routerLink="/empresas">🏢 Empresas</a></li>
+
+  <!-- Cuerpo: sidenav + contenido -->
+  <div style="display: flex; flex: 1; overflow: hidden;">
+
+    <!-- Sidenav izquierdo -->
+    <nav style="width: 400px; background-color: #00138C; color: white; padding-top: 16px; overflow-y: auto;">
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>check_circle</mat-icon>
+          <span>Gestionar Proceso Paz y Salvo</span>
+        </li>
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>assignment</mat-icon>
+          <span>Gestionar Inscripción de pruebas ECAES-SaberPro-SaberTyT</span>
+        </li>
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>school</mat-icon>
+          <span>Gestionar Cursos Intersemestrales de Verano</span>
+        </li>
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>person_add</mat-icon>
+          <span>Gestionar Reingreso de Estudiante</span>
+        </li>
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>sync_alt</mat-icon>
+          <span>Gestionar Homologación de Asignaturas</span>
+        </li>
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>bar_chart</mat-icon>
+          <span>Modulo Estadístico</span>
+        </li>
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>settings</mat-icon>
+          <span>Ajustes</span>
+        </li>
+        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </li>
       </ul>
     </nav>
-    <div class="flex-grow-1 p-4">
+
+    <!-- Contenido principal -->
+    <main style="flex: 1; padding: 24px; overflow-y: auto;">
       <router-outlet></router-outlet>
-    </div>
+    </main>
+
   </div>
+
+  <!-- Footer -->
   <app-footer></app-footer>
+
 </div>
