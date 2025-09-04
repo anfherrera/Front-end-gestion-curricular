@@ -16,13 +16,10 @@
   color: #555;
 }
 
-.welcome-container ul {
-  list-style: disc;
-  display: inline-block;
-  text-align: left;
-  padding-left: 20px;
-  margin-top: 8px;
-  color: #444;
+.welcome-container .description {
+  font-style: italic;
+  color: #222;
+  font-weight: 500;
 }
 
 /* Contenedor del dashboard */
@@ -32,7 +29,12 @@
   gap: 25px;
   padding: 20px;
   justify-content: center;
+  position: relative;
+
+  /* Agregado: separa las tarjetas de la bienvenida */
+  margin-top: 40px; /* puedes ajustar el valor */
 }
+
 
 /* Tarjetas del dashboard */
 .dashboard-card {
@@ -61,7 +63,7 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Hover avanzado: escala + parallax leve + sombra */
+/* Hover avanzado: escala + rotación leve + sombra */
 .dashboard-card:hover {
   transform: scale(1.1) rotateY(5deg) rotateX(3deg);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);

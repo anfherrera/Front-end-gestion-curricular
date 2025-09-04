@@ -3,11 +3,12 @@
   display: flex;
   height: 100vh;
   width: 100%;
-  overflow: hidden;
   font-family: "Poppins", sans-serif;
+  overflow: hidden;
+  position: relative;
 }
 
-/* Columna izquierda */
+/* Columna izquierda (formulario) */
 .login-left {
   flex: 1;
   display: flex;
@@ -15,13 +16,8 @@
   align-items: center;
   background: #fff;
   padding: 2rem;
-
-  /* curva hacia la derecha */
-  clip-path: ellipse(105% 100% at 0% 50%);
+  position: relative;
   z-index: 2;
-
-  /* sombra sutil */
-  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Caja del contenido */
@@ -29,22 +25,28 @@
   width: 85%;
   max-width: 400px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   padding: 2rem;
   border-radius: 20px;
   backdrop-filter: blur(6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  animation: fadeInScale 0.6s ease;
+}
+
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* Logo */
 .login-logo {
-  width: 100px;
+  width: 120px;
   margin-bottom: 1rem;
 }
 
 /* Título */
 .login-title {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 2rem;
   color: #002776;
@@ -62,7 +64,11 @@
   width: 100%;
 }
 
-/* Botón con efecto */
+mat-form-field mat-icon {
+  color: #002776;
+}
+
+/* Botón */
 .login-button {
   background: linear-gradient(135deg, #002776, #0051b3) !important;
   color: white !important;
@@ -92,47 +98,58 @@
   text-decoration: underline;
 }
 
-/* Columna derecha con mural y curva hacia el centro */
 .login-right {
   flex: 1;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: slideRight 0.8s ease forwards;
 }
 
-/* Imagen mural con curva visible */
-.login-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.9);
-
-  /* 👇 Aquí recortamos en forma de onda */
-  clip-path: polygon(
-    0 0,       /* esquina sup izq */
-    85% 0,     /* arriba un poco antes del borde derecho */
-    100% 25%,  /* curva empieza arriba */
-    85% 50%,   /* se mete al centro */
-    100% 75%,  /* vuelve a salir */
-    85% 100%,  /* baja al borde inferior */
-    0 100%     /* esquina inf izq */
-  );
+@keyframes slideRight {
+  0% { transform: translateX(50px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
 }
 
 
-/* Imagen mural */
-.login-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.9);
-}
-
-/* Capa oscura con degradado */
+/* Overlay centrado entre formulario e imagen */
 .overlay {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 0; /* empieza desde la izquierda de la columna derecha */
   width: 100%;
   height: 100%;
-  background: linear-gradient(to right, rgba(0, 39, 118, 0.5), rgba(0, 39, 118, 0.2));
+  background: linear-gradient(to left, rgba(0,39,118,0.4), rgba(0,39,118,0.0));
+  z-index: 1;
+  pointer-events: none; /* que no bloquee clics en la izquierda */
+}
+
+
+/* Imagen mural profesional */
+.login-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9);
+  clip-path: polygon(
+    0 0,
+    85% 0,
+    100% 25%,
+    85% 50%,
+    100% 75%,
+    85% 100%,
+    0 100%
+  );
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  transition: transform 1s ease;
+}
+
+.login-right:hover .login-image {
+  transform: scale(1.08) rotateY(-2deg);
+  transition: transform 0.8s ease;
 }

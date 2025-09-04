@@ -54,7 +54,6 @@ export class HomeComponent implements OnInit {
     return 'Usuario Ejemplo';
   }
 
-  // <<< Aquí agregas el nuevo método >>>
   getWelcomeText(role: string | null): string {
     switch(role) {
       case 'admin': return 'Tienes acceso completo a todos los procesos.';

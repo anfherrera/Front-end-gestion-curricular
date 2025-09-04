@@ -1,12 +1,13 @@
+<!-- Bienvenida según rol -->
 <div class="welcome-container">
   <h2>Bienvenido, {{ userName }}</h2>
   <p>Rol: <strong>{{ role }}</strong></p>
-  <p>Puedes acceder a los siguientes procesos:</p>
-  <ul>
-    <li *ngFor="let p of availableProcesses">{{ p.name }}</li>
-  </ul>
+  <p class="description">
+    {{ getWelcomeText(role) }}
+  </p>
 </div>
 
+<!-- Dashboard con tarjetas dinámicas -->
 <div class="dashboard-container">
   <mat-card
     class="dashboard-card"
