@@ -1,3 +1,4 @@
+// login.component.ts
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -46,8 +47,15 @@ export class LoginComponent {
       const fakeToken = 'token-falso';
       this.authService.setToken(fakeToken);
 
-      // Redirige al primer proceso (Paz y Salvo)
-      this.router.navigate(['/paz-salvo']);
+      // Aquí recibirías el rol desde tu backend
+      // Por ahora se simula
+      let role = 'admin'; 
+      // role = respuestaDeBackend.role;
+
+      this.authService.setRole(role);
+
+      // Redirige a home
+      this.router.navigate(['/home']);
     }
   }
 }

@@ -1,1 +1,18 @@
-<h1>Bienvenido al Sistema de Gestión Curricular</h1>
+<div class="welcome-container">
+  <h2>Bienvenido, {{ userName }}</h2>
+  <p>Rol: <strong>{{ role }}</strong></p>
+  <p>Puedes acceder a los siguientes procesos:</p>
+  <ul>
+    <li *ngFor="let p of availableProcesses">{{ p.name }}</li>
+  </ul>
+</div>
+
+<div class="dashboard-container">
+  <mat-card
+    class="dashboard-card"
+    *ngFor="let p of availableProcesses"
+    [routerLink]="p.route">
+    <mat-icon class="dashboard-icon" [ngClass]="p.color">{{ p.icon }}</mat-icon>
+    <span>{{ p.name }}</span>
+  </mat-card>
+</div>

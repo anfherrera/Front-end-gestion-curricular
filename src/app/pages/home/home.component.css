@@ -1,0 +1,130 @@
+/* Contenedor de bienvenida */
+.welcome-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.welcome-container h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #333;
+}
+
+.welcome-container p {
+  margin: 4px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.welcome-container ul {
+  list-style: disc;
+  display: inline-block;
+  text-align: left;
+  padding-left: 20px;
+  margin-top: 8px;
+  color: #444;
+}
+
+/* Contenedor del dashboard */
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 25px;
+  padding: 20px;
+  justify-content: center;
+}
+
+/* Tarjetas del dashboard */
+.dashboard-card {
+  width: 180px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp 0.6s forwards;
+}
+
+/* Animación de entrada */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Hover avanzado: escala + parallax leve + sombra */
+.dashboard-card:hover {
+  transform: scale(1.1) rotateY(5deg) rotateX(3deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Iconos dentro de las tarjetas */
+.dashboard-icon {
+  font-size: 48px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 12px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Sombra degradada en iconos */
+.dashboard-icon.bg-blue { background: linear-gradient(45deg, #2196f3, #64b5f6); box-shadow: 0 6px 20px rgba(33, 150, 243, 0.6); }
+.dashboard-icon.bg-green { background: linear-gradient(45deg, #4caf50, #81c784); box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6); }
+.dashboard-icon.bg-orange { background: linear-gradient(45deg, #ff9800, #ffb74d); box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6); }
+.dashboard-icon.bg-purple { background: linear-gradient(45deg, #9c27b0, #ba68c8); box-shadow: 0 6px 20px rgba(156, 39, 176, 0.6); }
+.dashboard-icon.bg-red { background: linear-gradient(45deg, #f44336, #e57373); box-shadow: 0 6px 20px rgba(244, 67, 54, 0.6); }
+.dashboard-icon.bg-teal { background: linear-gradient(45deg, #009688, #4db6ac); box-shadow: 0 6px 20px rgba(0, 150, 136, 0.6); }
+.dashboard-icon.bg-gray { background: linear-gradient(45deg, #607d8b, #90a4ae); box-shadow: 0 6px 20px rgba(96, 125, 139, 0.6); }
+
+/* Animación leve en iconos al pasar el mouse */
+.dashboard-card:hover .dashboard-icon {
+  transform: scale(1.2) translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+/* Texto debajo de los iconos */
+.dashboard-card span {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Cambia color del texto al hover */
+.dashboard-card:hover span {
+  color: #000;
+  transform: translateY(-2px);
+}
+
+/* Fondo animado para el dashboard */
+.dashboard-container::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(270deg, #ff7e5f, #feb47b, #86a8e7, #91eae4);
+  background-size: 800% 800%;
+  z-index: -1;
+  animation: gradientBG 20s ease infinite;
+  border-radius: 20px;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
