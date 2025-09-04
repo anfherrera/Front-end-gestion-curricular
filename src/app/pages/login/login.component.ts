@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +28,11 @@ export class LoginComponent {
   loginForm: FormGroup;
   hide = true; // 👁️ para mostrar/ocultar contraseña
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
@@ -36,8 +42,12 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log(this.loginForm.value);
-      // Aquí puedes redirigir al home o llamar al servicio de autenticación
+      // Simula autenticación
+      const fakeToken = 'token-falso';
+      this.authService.setToken(fakeToken);
+
+      // Redirige al primer proceso (Paz y Salvo)
+      this.router.navigate(['/paz-salvo']);
     }
   }
 }

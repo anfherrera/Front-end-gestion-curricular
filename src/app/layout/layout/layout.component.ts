@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,10 +8,12 @@ import { RouterModule } from '@angular/router';
 
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
+  styleUrls: ['./layout.component.css'],
   standalone: true,
   imports: [
     MatSidenavModule,
@@ -22,6 +24,13 @@ import { FooterComponent } from '../footer/footer.component';
     RouterModule,
     HeaderComponent,
     FooterComponent
-  ]
+  ],
+  encapsulation: ViewEncapsulation.None  // 👈 permite que el CSS se aplique correctamente
 })
-export class LayoutComponent {}
+export class LayoutComponent {
+  constructor(private authService: AuthService) {}
+
+  logout() {
+    this.authService.logout();
+  }
+}

@@ -1,57 +1,52 @@
-<div class="app-container" style="display: flex; flex-direction: column; height: 100vh;">
-  
-  <!-- Header arriba -->
+<div class="app-container">
+  <!-- Header -->
   <app-header></app-header>
 
-  <!-- Cuerpo: sidenav + contenido -->
-  <div style="display: flex; flex: 1; overflow: hidden;">
-
-    <!-- Sidenav izquierdo -->
-    <nav style="width: 400px; background-color: #00138C; color: white; padding-top: 16px; overflow-y: auto;">
-      <ul style="list-style: none; padding: 0; margin: 0;">
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+  <div class="layout-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <ul>
+        <li routerLink="/paz-salvo" routerLinkActive="active">
           <mat-icon>check_circle</mat-icon>
-          <span>Gestionar Proceso Paz y Salvo</span>
+          <span>Proceso Paz y Salvo</span>
         </li>
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+        <li routerLink="/pruebas-ecaes" routerLinkActive="active">
           <mat-icon>assignment</mat-icon>
-          <span>Gestionar Inscripción de pruebas ECAES-SaberPro-SaberTyT</span>
+          <span>Pruebas ECAES</span>
         </li>
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+        <li routerLink="/cursos-intersemestrales" routerLinkActive="active">
           <mat-icon>school</mat-icon>
-          <span>Gestionar Cursos Intersemestrales de Verano</span>
+          <span>Cursos Intersemestrales</span>
         </li>
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+        <li routerLink="/reingresos" routerLinkActive="active">
           <mat-icon>person_add</mat-icon>
           <span>Gestionar Reingreso de Estudiante</span>
         </li>
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+        <li routerLink="/homologaciones" routerLinkActive="active">
           <mat-icon>sync_alt</mat-icon>
           <span>Gestionar Homologación de Asignaturas</span>
         </li>
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+        <li routerLink="/estadisticas" routerLinkActive="active">
           <mat-icon>bar_chart</mat-icon>
-          <span>Modulo Estadístico</span>
+          <span>Módulo Estadístico</span>
         </li>
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+        <li routerLink="/ajustes" routerLinkActive="active">
           <mat-icon>settings</mat-icon>
           <span>Ajustes</span>
         </li>
-        <li style="padding: 16px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+        <li>
           <mat-icon>logout</mat-icon>
-          <span>Cerrar sesión</span>
+          <span (click)="logout()">Cerrar sesión</span>
         </li>
       </ul>
     </nav>
 
     <!-- Contenido principal -->
-    <main style="flex: 1; padding: 24px; overflow-y: auto;">
+    <main class="content">
       <router-outlet></router-outlet>
     </main>
-
   </div>
 
   <!-- Footer -->
   <app-footer></app-footer>
-
 </div>
