@@ -150,6 +150,5 @@ mat-form-field mat-icon {
 }
 
 .login-right:hover .login-image {
-  transform: scale(1.08) rotateY(-2deg);
-  transition: transform 0.8s ease;
+  transform: scale(1.05);
 }
