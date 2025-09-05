@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -19,7 +20,7 @@ interface Request {
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css'],
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, DatePipe],
+  imports: [CommonModule, MatListModule, MatIconModule, MatButtonModule],
   providers: [DatePipe]
 })
 export class PazSalvoComponent implements OnInit {
@@ -51,11 +52,18 @@ export class PazSalvoComponent implements OnInit {
     this.uploadedFiles.splice(index, 1);
   }
 
+  // Verifica si el archivo corresponde a los requeridos
+  isFileRequired(fileName: string): boolean {
+    return this.requiredDocuments.some(doc => fileName.includes(doc));
+  }
+
+  // Solo permite enviar si hay 7 archivos y cada uno es requerido
   canSubmit(): boolean {
     const uploadedNames = this.uploadedFiles.map(f => f.name);
-    return this.requiredDocuments.every(doc => 
+    const allRequired = this.requiredDocuments.every(doc =>
       uploadedNames.some(name => name.includes(doc))
     );
+    return allRequired && this.uploadedFiles.length === this.requiredDocuments.length;
   }
 
   submitRequest() {

@@ -4,14 +4,7 @@
   <div class="section required-docs">
     <h3>Documentación requerida</h3>
     <ul>
-      <li>Formato PM-FO-4-FOR-27</li>
-      <li>Autorización para publicar y permitir la consulta y uso de obras en el repositorio institucional</li>
-      <li>Resultado pruebas SaberPro (si aplica)</li>
-      <li>Formato de hoja de vida académica</li>
-      <li>Formato TI-G (si aplica)</li>
-      <li>Formato PP-H (si aplica)</li>
-      <li>Comprobante de pago de derechos de sustentación</li>
-      <li>Documento final del trabajo de grado, con anexos en medio digital (PDF)</li>
+      <li *ngFor="let doc of requiredDocuments">{{ doc }}</li>
     </ul>
   </div>
 
@@ -19,20 +12,39 @@
   <div class="section upload-container">
     <h3>Adjuntar documentación requerida</h3>
 
-    <!-- Botón subir archivo -->
     <label class="upload-btn" for="fileUpload">
       <mat-icon>upload</mat-icon>
       Subir archivo PDF
     </label>
     <input type="file" id="fileUpload" accept=".pdf" (change)="onFileSelected($event)" multiple>
 
-    <!-- Lista de archivos subidos -->
-    <ul class="uploaded-files">
-      <li *ngFor="let file of uploadedFiles; let i = index">
-        <span>{{ file.name }} - {{ file.date | date:'dd/MM/yyyy' }}</span>
-        <mat-icon (click)="removeFile(i)">delete</mat-icon>
-      </li>
-    </ul>
+    <!-- Tabla de archivos subidos con validación -->
+    <table class="uploaded-files-table" *ngIf="uploadedFiles.length > 0">
+      <thead>
+        <tr>
+          <th>Nombre del archivo</th>
+          <th>Fecha de carga</th>
+          <th>Validación</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of uploadedFiles; let i = index">
+          <td>{{ file.name }}</td>
+          <td>{{ file.date | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <mat-icon [color]="isFileRequired(file.name) ? 'primary' : 'warn'">
+              {{ isFileRequired(file.name) ? 'check_circle' : 'error' }}
+            </mat-icon>
+          </td>
+          <td>
+            <button mat-icon-button color="warn" (click)="removeFile(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <!-- Botón enviar solicitud -->
     <button class="submit-btn" [disabled]="!canSubmit()" (click)="submitRequest()">Enviar solicitud</button>
