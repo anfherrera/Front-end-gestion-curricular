@@ -32,6 +32,17 @@
 .required-docs li {
   margin-bottom: 6px;
   line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.required-docs li.uploaded {
+  color: green;
+}
+
+.required-docs li.missing {
+  color: red;
 }
 
 .upload-container {

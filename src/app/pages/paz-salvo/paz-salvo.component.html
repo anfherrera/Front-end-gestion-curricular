@@ -4,7 +4,10 @@
   <div class="section required-docs">
     <h3>Documentación requerida</h3>
     <ul>
-      <li *ngFor="let doc of requiredDocuments">{{ doc }}</li>
+      <li *ngFor="let doc of requiredDocuments" [ngClass]="{'uploaded': isDocumentUploaded(doc), 'missing': !isDocumentUploaded(doc)}">
+        {{ doc }}
+        <mat-icon>{{ isDocumentUploaded(doc) ? 'check_circle' : 'error' }}</mat-icon>
+      </li>
     </ul>
   </div>
 
@@ -18,7 +21,6 @@
     </label>
     <input type="file" id="fileUpload" accept=".pdf" (change)="onFileSelected($event)" multiple>
 
-    <!-- Tabla de archivos subidos con validación -->
     <table class="uploaded-files-table" *ngIf="uploadedFiles.length > 0">
       <thead>
         <tr>
@@ -46,7 +48,6 @@
       </tbody>
     </table>
 
-    <!-- Botón enviar solicitud -->
     <button class="submit-btn" [disabled]="!canSubmit()" (click)="submitRequest()">Enviar solicitud</button>
   </div>
 
