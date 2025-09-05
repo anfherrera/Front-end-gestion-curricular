@@ -37,14 +37,6 @@
   gap: 6px;
 }
 
-.required-docs li.uploaded {
-  color: green;
-}
-
-.required-docs li.missing {
-  color: red;
-}
-
 .upload-container {
   display: flex;
   flex-direction: column;
@@ -91,6 +83,24 @@
   vertical-align: middle;
 }
 
+/* Icono de validación */
+.validation-icon.valid {
+  color: green; /* correcto */
+}
+
+.validation-icon.invalid {
+  color: red; /* incorrecto */
+}
+
+/* Icono de eliminar */
+.delete-icon-btn mat-icon {
+  color: red;
+}
+
+.delete-icon-btn mat-icon:hover {
+  color: darkred;
+}
+
 .requests-list {
   display: flex;
   flex-direction: column;
@@ -134,47 +144,4 @@
   .section h3 {
     font-size: 1.1rem;
   }
-}
-/* Icono de validación */
-.validation-icon.valid {
-  color: green; /* correcto */
-}
-
-.validation-icon.invalid {
-  color: red; /* incorrecto */
-}
-
-/* Icono de eliminar */
-.delete-icon-btn mat-icon {
-  color: red;
-}
-
-.delete-icon-btn mat-icon:hover {
-  color: darkred;
-}
-/* Tabla de archivos subidos */
-.uploaded-files-table tbody tr.valid-file {
-  background-color: #d4edda; /* verde suave */
-}
-
-.uploaded-files-table tbody tr.invalid-file {
-  background-color: #f8d7da; /* rojo suave */
-}
-
-/* Icono de validación */
-.validation-icon.valid {
-  color: green;
-}
-
-.validation-icon.invalid {
-  color: red;
-}
-
-/* Icono de eliminar */
-.delete-icon-btn mat-icon {
-  color: red;
-}
-
-.delete-icon-btn mat-icon:hover {
-  color: darkred;
 }

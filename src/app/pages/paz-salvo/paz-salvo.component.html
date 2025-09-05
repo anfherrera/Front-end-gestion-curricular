@@ -4,9 +4,12 @@
   <div class="section required-docs">
     <h3>Documentación requerida</h3>
     <ul>
-      <li *ngFor="let doc of requiredDocuments" [ngClass]="{'uploaded': isDocumentUploaded(doc), 'missing': !isDocumentUploaded(doc)}">
+      <li *ngFor="let doc of requiredDocuments" 
+          [ngClass]="{'uploaded': isDocumentUploaded(doc), 'missing': !isDocumentUploaded(doc)}">
         {{ doc }}
-        <mat-icon>{{ isDocumentUploaded(doc) ? 'check_circle' : 'error' }}</mat-icon>
+        <mat-icon class="validation-icon" [ngClass]="isDocumentUploaded(doc) ? 'valid' : 'invalid'">
+          {{ isDocumentUploaded(doc) ? 'check_circle' : 'error' }}
+        </mat-icon>
       </li>
     </ul>
   </div>
@@ -21,35 +24,32 @@
     </label>
     <input type="file" id="fileUpload" accept=".pdf" (change)="onFileSelected($event)" multiple>
 
- <table class="uploaded-files-table" *ngIf="uploadedFiles.length > 0">
-  <thead>
-    <tr>
-      <th>Nombre del archivo</th>
-      <th>Fecha de carga</th>
-      <th>Validación</th>
-      <th>Acción</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let file of uploadedFiles; let i = index"
-        [ngClass]="isFileRequired(file.name) ? 'valid-file' : 'invalid-file'">
-      <td>{{ file.name }}</td>
-      <td>{{ file.date | date:'dd/MM/yyyy' }}</td>
-      <td>
-        <mat-icon class="validation-icon" [ngClass]="isFileRequired(file.name) ? 'valid' : 'invalid'">
-          {{ isFileRequired(file.name) ? 'check_circle' : 'error' }}
-        </mat-icon>
-      </td>
-      <td>
-        <button mat-icon-button class="delete-icon-btn" (click)="removeFile(i)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-
+    <table class="uploaded-files-table" *ngIf="uploadedFiles.length > 0">
+      <thead>
+        <tr>
+          <th>Nombre del archivo</th>
+          <th>Fecha de carga</th>
+          <th>Validación</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of uploadedFiles; let i = index">
+          <td>{{ file.name }}</td>
+          <td>{{ file.date | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <mat-icon class="validation-icon" [ngClass]="isFileRequired(file.name) ? 'valid' : 'invalid'">
+              {{ isFileRequired(file.name) ? 'check_circle' : 'error' }}
+            </mat-icon>
+          </td>
+          <td>
+            <button mat-icon-button class="delete-icon-btn" (click)="removeFile(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <button class="submit-btn" [disabled]="!canSubmit()" (click)="submitRequest()">Enviar solicitud</button>
   </div>

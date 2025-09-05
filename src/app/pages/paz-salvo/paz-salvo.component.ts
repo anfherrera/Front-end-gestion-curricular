@@ -62,9 +62,12 @@ export class PazSalvoComponent implements OnInit {
     return this.uploadedFiles.some(f => f.name.includes(doc));
   }
 
-  // Solo permite enviar si todos los documentos requeridos están subidos
+  // Habilita el envío solo si todos los documentos requeridos están presentes
+  // y no hay archivos adicionales
   canSubmit(): boolean {
-    return this.requiredDocuments.every(doc => this.isDocumentUploaded(doc));
+    const allRequiredPresent = this.requiredDocuments.every(doc => this.isDocumentUploaded(doc));
+    const noExtraFiles = this.uploadedFiles.every(f => this.isFileRequired(f.name));
+    return allRequiredPresent && noExtraFiles;
   }
 
   submitRequest() {
