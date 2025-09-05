@@ -135,3 +135,20 @@
     font-size: 1.1rem;
   }
 }
+/* Icono de validación */
+.validation-icon.valid {
+  color: green; /* correcto */
+}
+
+.validation-icon.invalid {
+  color: red; /* incorrecto */
+}
+
+/* Icono de eliminar */
+.delete-icon-btn mat-icon {
+  color: red;
+}
+
+.delete-icon-btn mat-icon:hover {
+  color: darkred;
+}
