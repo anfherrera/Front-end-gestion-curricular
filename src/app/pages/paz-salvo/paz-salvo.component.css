@@ -152,3 +152,29 @@
 .delete-icon-btn mat-icon:hover {
   color: darkred;
 }
+/* Tabla de archivos subidos */
+.uploaded-files-table tbody tr.valid-file {
+  background-color: #d4edda; /* verde suave */
+}
+
+.uploaded-files-table tbody tr.invalid-file {
+  background-color: #f8d7da; /* rojo suave */
+}
+
+/* Icono de validación */
+.validation-icon.valid {
+  color: green;
+}
+
+.validation-icon.invalid {
+  color: red;
+}
+
+/* Icono de eliminar */
+.delete-icon-btn mat-icon {
+  color: red;
+}
+
+.delete-icon-btn mat-icon:hover {
+  color: darkred;
+}
