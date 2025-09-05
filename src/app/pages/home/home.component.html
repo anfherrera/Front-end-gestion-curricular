@@ -12,7 +12,7 @@
   <mat-card
     class="dashboard-card"
     *ngFor="let p of availableProcesses"
-    [routerLink]="p.route">
+    (click)="handleProcessClick(p)">
     <mat-icon class="dashboard-icon" [ngClass]="p.color">{{ p.icon }}</mat-icon>
     <span>{{ p.name }}</span>
   </mat-card>

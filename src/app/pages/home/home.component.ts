@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { PazSalvoDialogComponent } from '../paz-salvo/paz-salvo-dialog.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, RouterModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, RouterModule, MatDialogModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -27,7 +29,7 @@ export class HomeComponent implements OnInit {
     { name: 'Ajustes', route: 'ajustes', icon: 'settings', color: 'bg-gray' }
   ];
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.role = this.authService.getRole();
@@ -62,6 +64,24 @@ export class HomeComponent implements OnInit {
       case 'estudiante': return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
       case 'secretaria': return 'Gestiona los oficios y resoluciones según lo indicado.';
       default: return 'Bienvenido al sistema.';
+    }
+  }
+
+  handleProcessClick(p: any) {
+    if (p.route === 'paz-salvo' && this.role === 'estudiante') {
+      const dialogRef = this.dialog.open(PazSalvoDialogComponent, {
+        width: '500px'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          // Redirigir a la página de paz-salvo
+          window.location.href = '/paz-salvo';
+        }
+      });
+    } else {
+      // Redirigir a otros procesos
+      window.location.href = '/' + p.route;
     }
   }
 }

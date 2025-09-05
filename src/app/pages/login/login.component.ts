@@ -49,7 +49,7 @@ export class LoginComponent {
 
       // Aquí recibirías el rol desde tu backend
       // Por ahora se simula
-      let role = 'admin'; 
+      let role = 'estudiante'; 
       // role = respuestaDeBackend.role;
 
       this.authService.setRole(role);
