@@ -1,19 +1,101 @@
-/* header.component.css */
-header img {
-  max-height: 80px;
+/* Estilos generales */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #fff;
+  border-bottom: 4px solid #00138C;
+  border-left: 4px solid #00138C;
+  border-right: 4px solid #00138C;
+  height: 100px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* Logo y título */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  max-height: 70px;
   width: auto;
 }
 
+.header-title h1 {
+  color: #00138C;
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.header-title span {
+  display: block;
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* Iconos y usuario */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn mat-icon {
+  font-size: 28px;
+  color: #00138C;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.icon-btn:hover mat-icon {
+  color: #0d47a1;
+  transform: scale(1.1);
+}
+
+.user-info {
+  text-align: right;
+}
+
+.user-name {
+  color: #00138C;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.user-email {
+  color: #555;
+  font-size: 0.85rem;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  header {
-    height: 70px;
+  .header-container {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+    text-align: center;
   }
 
-  header h1 {
-    font-size: 1.2rem;
+  .header-left {
+    flex-direction: column;
+    gap: 8px;
   }
 
-  header img {
-    max-height: 50px;
+  .header-title h1 {
+    font-size: 1.4rem;
+  }
+
+  .header-title span {
+    font-size: 0.8rem;
+  }
+
+  .header-right {
+    flex-direction: column;
+    gap: 8px;
   }
 }

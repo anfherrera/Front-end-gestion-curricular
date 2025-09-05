@@ -1,18 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    MatToolbarModule,
-    MatIconModule,   // Para <mat-icon>
-    MatButtonModule  // Para mat-icon-button
-  ]
+  imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule]
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  @Output() toggleSidebar = new EventEmitter<void>();
+}

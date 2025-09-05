@@ -1,21 +1,31 @@
+/* Contenedor principal */
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
+/* Body: Sidebar + Contenido */
 .layout-body {
   display: flex;
   flex: 1;
+  min-height: 0; /* Crucial para scroll */
   overflow: hidden;
 }
 
+/* Sidebar */
 .sidebar {
-  width: 280px;
+  flex-shrink: 0;
+  width: 260px;
   background-color: #00138C;
   color: white;
-  padding-top: 16px;
   overflow-y: auto;
+  padding-top: 20px;
+  transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+}
+
+.sidebar.closed {
+  width: 70px;
 }
 
 .sidebar ul {
@@ -25,23 +35,66 @@
 }
 
 .sidebar li {
-  padding: 16px 24px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: background 0.3s;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.3s, padding-left 0.3s;
+  border-radius: 0 20px 20px 0;
 }
 
 .sidebar li:hover,
 .sidebar li.active {
   background-color: #002776;
+  padding-left: 28px;
 }
 
+.sidebar mat-icon {
+  color: white;
+}
+
+.sidebar.closed li span {
+  display: none;
+}
+
+/* Toggle button al final */
+.sidebar li.toggle-btn {
+  margin-top: auto;
+  padding: 14px 20px;
+}
+
+.sidebar li.toggle-btn button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-start;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar.closed li.toggle-btn button span {
+  display: none; /* solo icono visible cuando sidebar cerrado */
+}
+
+/* Contenido principal */
 .content {
   flex: 1;
-  padding: 24px;
   overflow-y: auto;
-  background-color: #f5f5f5; /* fondo neutro */
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 0; /* evita overflow en flexbox */
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+  }
+  .sidebar li span {
+    display: none;
+  }
+}
