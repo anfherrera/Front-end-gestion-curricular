@@ -1,25 +1,31 @@
 <footer class="footer-container">
   <!-- Información del proyecto -->
   <div class="footer-left">
-    Sistema de Gestión Curricular - FIET | Universidad del Cauca
+    <span>Sistema de Gestión Curricular - FIET | Universidad del Cauca</span>
   </div>
 
   <!-- Derechos de autor -->
   <div class="footer-center">
-    © 2025 Todos los derechos reservados
+    © {{ currentYear }} Todos los derechos reservados
   </div>
 
   <!-- Contacto y redes sociales -->
   <div class="footer-right">
     <div class="contact">
-      <mat-icon>email</mat-icon>
-      <span>Soporte: decafiet&#64;unicauca.edu.co</span>
+      <mat-icon aria-hidden="true">email</mat-icon>
+      <a href="mailto:decafiet@unicauca.edu.co">decafiet&#64;unicauca.edu.co</a>
     </div>
     <div class="social-icons">
-      <a href="https://www.facebook.com/profile.php?id=100041630904496" target="_blank" aria-label="Facebook">
+      <a href="https://www.facebook.com/profile.php?id=100041630904496"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Facebook oficial FIET">
         <mat-icon>facebook</mat-icon>
       </a>
-      <a href="https://www.instagram.com/universidadelcauca/" target="_blank" aria-label="Instagram">
+      <a href="https://www.instagram.com/universidadelcauca/"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Instagram oficial FIET">
         <mat-icon>photo_camera</mat-icon>
       </a>
     </div>

@@ -1,42 +1,28 @@
+// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private tokenKey = 'token';
-  private roleKey = 'role';
+  private tokenKey = 'authToken';
 
-  constructor(public router: Router) {}
+  constructor(private router: Router) {}
 
-  // Obtener token
-  getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
-  }
-
-  // Validar si está autenticado
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return !!localStorage.getItem(this.tokenKey);
   }
 
-  // Guardar token
   setToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
   }
 
-  // Guardar rol
-  setRole(role: string): void {
-    localStorage.setItem(this.roleKey, role);
-  }
-
-  // Obtener rol
-  getRole(): string | null {
-    return localStorage.getItem(this.roleKey);
-  }
-
-  // Cerrar sesión
-  logout(): void {
+  clearToken(): void {
     localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.roleKey);
     this.router.navigate(['/login']);
+  }
+
+  getRole(): string | null {
+    // 🚀 Aquí podrías decodificar el token si fuera JWT
+    return localStorage.getItem('userRole');
   }
 }

@@ -1,0 +1,71 @@
+.sidebar {
+  flex-shrink: 0;
+  width: 260px;
+  background-color: #00138C;
+  color: white;
+  overflow-y: auto;
+  padding-top: 20px;
+  transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+}
+
+.sidebar.closed {
+  width: 70px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-link,
+.sidebar-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 0 20px 20px 0;
+  transition: background 0.3s, padding-left 0.3s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active,
+.sidebar-button:hover {
+  background-color: #002776;
+  padding-left: 28px;
+}
+
+.sidebar mat-icon {
+  color: white;
+}
+
+.sidebar.closed li span {
+  display: none;
+}
+
+.sidebar li.toggle-btn {
+  margin-top: auto;
+  padding: 14px 20px;
+}
+
+.sidebar li.toggle-btn button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-start;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar.closed li.toggle-btn button span {
+  display: none;
+}

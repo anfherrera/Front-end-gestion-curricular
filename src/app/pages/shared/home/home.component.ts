@@ -1,25 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { PazSalvoDialogComponent } from '../paz-salvo/estudiante/paz-salvo-dialog.component';
 
+import { AuthService } from '../../../core/services/auth.service';
+import { PazSalvoDialogComponent } from '../../estudiante/paz-salvo/paz-salvo-dialog.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, RouterModule, MatDialogModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatCardModule,
+    MatIconModule,
+    MatDialogModule
+  ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
   role: string | null = null;
-  userName: string = '';
-  availableProcesses: any[] = [];
+  userName = '';
+  availableProcesses: { name: string; route: string; icon: string; color: string }[] = [];
 
-  processMap = [
+  private readonly processMap = [
     { name: 'Proceso Paz y Salvo', route: 'paz-salvo', icon: 'check_circle', color: 'bg-blue' },
     { name: 'Pruebas ECAES', route: 'pruebas-ecaes', icon: 'assignment', color: 'bg-green' },
     { name: 'Cursos Intersemestrales', route: 'cursos-intersemestrales', icon: 'school', color: 'bg-orange' },
@@ -29,14 +35,21 @@ export class HomeComponent implements OnInit {
     { name: 'Ajustes', route: 'ajustes', icon: 'settings', color: 'bg-gray' }
   ];
 
-  constructor(private authService: AuthService, private router: Router, private dialog: MatDialog) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.role = this.authService.getRole();
     this.userName = this.getUserName();
+    this.filterProcessesByRole();
+  }
 
+  private filterProcessesByRole(): void {
     this.availableProcesses = this.processMap.filter(p => {
-      switch(this.role) {
+      switch (this.role) {
         case 'admin':
         case 'coordinador':
         case 'funcionario':
@@ -51,12 +64,12 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  getUserName(): string {
-    return 'Usuario Ejemplo';
+  private getUserName(): string {
+    return 'Usuario Ejemplo'; // 🚀 luego esto puede venir de tu API/AuthService
   }
 
-  getWelcomeText(role: string | null): string {
-    switch(role) {
+  getWelcomeText(): string {
+    switch (this.role) {
       case 'admin': return 'Tienes acceso completo a todos los procesos.';
       case 'coordinador': return 'Puedes administrar los procesos y supervisar estudiantes.';
       case 'funcionario': return 'Accede a los procesos que gestionas.';
@@ -66,38 +79,26 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  handleProcessClick(p: any) {
-    // Especial: Paz y Salvo para estudiantes con diálogo
-    if (p.route === 'paz-salvo' && this.role === 'estudiante') {
-      const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.router.navigate(['/paz-salvo/estudiante']);
-        }
-      });
-      return;
-    }
-
-    // Paz y Salvo para otros roles sin diálogo
-    if (p.route === 'paz-salvo') {
-      switch(this.role) {
-        case 'funcionario':
-          this.router.navigate(['/paz-salvo/funcionario']);
-          break;
-        case 'coordinador':
-          this.router.navigate(['/paz-salvo/coordinador']);
-          break;
-        case 'secretaria':
-          this.router.navigate(['/paz-salvo/secretaria']);
-          break;
-        default:
-          this.router.navigate(['/home']);
+  handleProcessClick(process: { route: string }): void {
+    if (process.route === 'paz-salvo') {
+      if (this.role === 'estudiante') {
+        const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) this.router.navigate(['/paz-salvo/estudiante']);
+        });
+        return;
       }
+
+      // Otros roles
+      const roleRoutes: Record<string, string> = {
+        funcionario: '/paz-salvo/funcionario',
+        coordinador: '/paz-salvo/coordinador',
+        secretaria: '/paz-salvo/secretaria'
+      };
+      this.router.navigate([roleRoutes[this.role ?? ''] ?? '/home']);
       return;
     }
 
-    // Otros procesos
-    this.router.navigate(['/' + p.route]);
+    this.router.navigate(['/' + process.route]);
   }
 }

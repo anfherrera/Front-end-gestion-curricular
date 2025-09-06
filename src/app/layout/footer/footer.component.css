@@ -28,6 +28,15 @@
   gap: 8px;
 }
 
+.contact a {
+  color: #00138C;
+  text-decoration: none;
+}
+
+.contact a:hover {
+  text-decoration: underline;
+}
+
 .footer-right mat-icon {
   font-size: 22px;
   color: #00138C;
@@ -41,7 +50,6 @@
 
 .social-icons a {
   color: #00138C;
-  text-decoration: none;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 

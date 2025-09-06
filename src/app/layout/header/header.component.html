@@ -1,7 +1,13 @@
 <header class="header-container">
   <!-- Logo y título -->
   <div class="header-left">
-    <img src="Logo-Universidad-del-Cauca-vertical-1.png" alt="Logo Universidad del Cauca" class="logo">
+    <button mat-icon-button class="menu-btn" (click)="onToggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png" 
+         alt="Logo Universidad del Cauca" class="logo" />
+
     <div class="header-title">
       <h1>Universidad del Cauca</h1>
       <span>Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
@@ -13,9 +19,11 @@
     <button mat-icon-button class="icon-btn">
       <mat-icon>notifications</mat-icon>
     </button>
+
     <button mat-icon-button class="icon-btn">
       <mat-icon>account_circle</mat-icon>
     </button>
+
     <div class="user-info">
       <div class="user-name">Funcionario FIET</div>
       <div class="user-email">decafiet&#64;unicauca.edu.co</div>

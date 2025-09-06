@@ -1,89 +1,19 @@
 <div class="app-container">
 
   <!-- Header -->
-  <app-header></app-header>
+  <app-header (toggleSidebar)="toggleSidebar()"></app-header>
 
   <div class="layout-body">
-
     <!-- Sidebar -->
-    <nav [class.closed]="!isSidebarOpen" class="sidebar">
-      <ul>
-        <!-- Botón Inicio -->
-        <li>
-          <a routerLink="/home" routerLinkActive="active" class="sidebar-link">
-            <mat-icon>home</mat-icon>
-            <span>Inicio</span>
-          </a>
-        </li>
-
-        <!-- Enlaces de navegación -->
-        <li>
-          <!-- Paz y Salvo ahora ejecuta función -->
-          <button class="sidebar-link" (click)="handlePazSalvoClick()">
-            <mat-icon>check_circle</mat-icon>
-            <span>Proceso Paz y Salvo</span>
-          </button>
-        </li>
-        <li>
-          <a routerLink="/pruebas-ecaes" routerLinkActive="active" class="sidebar-link">
-            <mat-icon>assignment</mat-icon>
-            <span>Pruebas ECAES</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/cursos-intersemestrales" routerLinkActive="active" class="sidebar-link">
-            <mat-icon>school</mat-icon>
-            <span>Cursos Intersemestrales</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/reingreso-estudiante" routerLinkActive="active" class="sidebar-link">
-            <mat-icon>person_add</mat-icon>
-            <span>Reingreso de Estudiante</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/homologacion-asignaturas" routerLinkActive="active" class="sidebar-link">
-            <mat-icon>sync_alt</mat-icon>
-            <span>Homologación de Asignaturas</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/modulo-estadistico" routerLinkActive="active" class="sidebar-link">
-            <mat-icon>bar_chart</mat-icon>
-            <span>Módulo Estadístico</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/ajustes" routerLinkActive="active" class="sidebar-link">
-            <mat-icon>settings</mat-icon>
-            <span>Ajustes</span>
-          </a>
-        </li>
-
-        <!-- Logout -->
-        <li class="logout-btn">
-          <button type="button" (click)="logout()" class="sidebar-button">
-            <mat-icon>logout</mat-icon>
-            <span>Cerrar sesión</span>
-          </button>
-        </li>
-
-        <!-- Toggle button al final -->
-        <li class="toggle-btn">
-          <button mat-icon-button (click)="toggleSidebar()">
-            <mat-icon>{{ isSidebarOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
-            <span>{{ isSidebarOpen ? 'Minimizar' : 'Expandir' }}</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
+    <app-sidebar
+      [class.closed]="!isSidebarOpen"
+      (toggle)="toggleSidebar()">
+    </app-sidebar>
 
     <!-- Contenido principal -->
-    <main class="content">
+    <main class="content" [class.expanded]="!isSidebarOpen">
       <router-outlet></router-outlet>
     </main>
-
   </div>
 
   <!-- Footer -->

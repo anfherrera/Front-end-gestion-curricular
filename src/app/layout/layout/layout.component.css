@@ -13,89 +13,6 @@
   overflow: hidden;
 }
 
-/* Sidebar */
-.sidebar {
-  flex-shrink: 0;
-  width: 260px;
-  background-color: #00138C;
-  color: white;
-  overflow-y: auto;
-  padding-top: 20px;
-  transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
-}
-
-.sidebar.closed {
-  width: 70px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Sidebar li */
-.sidebar li {
-  display: flex;
-}
-
-/* Todos los enlaces y botones */
-.sidebar-link,
-.sidebar-button {
-  display: flex;
-  align-items: center;    /* Centra verticalmente los iconos */
-  gap: 12px;              /* Espacio entre icono y texto */
-  padding: 14px 20px;     /* Igual para todos los enlaces */
-  width: 100%;
-  border: none;
-  background: transparent;
-  color: white;
-  cursor: pointer;
-  text-decoration: none;
-  border-radius: 0 20px 20px 0;
-  transition: background 0.3s, padding-left 0.3s;
-}
-
-/* Hover y activo */
-.sidebar-link:hover,
-.sidebar-link.active,
-.sidebar-button:hover {
-  background-color: #002776;
-  padding-left: 28px;
-}
-
-/* Iconos */
-.sidebar mat-icon {
-  color: white;
-}
-
-/* Sidebar cerrado: ocultar texto */
-.sidebar.closed li span {
-  display: none;
-}
-
-/* Toggle button al final */
-.sidebar li.toggle-btn {
-  margin-top: auto;
-  padding: 14px 20px;
-}
-
-.sidebar li.toggle-btn button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  justify-content: flex-start;
-  background: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-.sidebar.closed li.toggle-btn button span {
-  display: none;
-}
-
 /* Contenido principal */
 .content {
   flex: 1;
@@ -103,14 +20,17 @@
   padding: 24px;
   background-color: #f5f5f5;
   min-height: 0;
+  transition: margin-left 0.3s ease;
 }
 
-/* Responsive */
+/* Cuando el sidebar está cerrado, el contenido puede expandirse */
+.content.expanded {
+  margin-left: 0;
+}
+
+/* Responsive para pantallas pequeñas */
 @media (max-width: 768px) {
-  .sidebar {
-    width: 70px;
-  }
-  .sidebar li span {
-    display: none;
+  .layout-body {
+    flex-direction: column;
   }
 }

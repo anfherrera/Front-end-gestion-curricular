@@ -6,11 +6,16 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  standalone: true,
   imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule]
 })
 export class HeaderComponent {
+  /** Evento para abrir/cerrar sidebar */
   @Output() toggleSidebar = new EventEmitter<void>();
+
+  onToggleSidebar() {
+    this.toggleSidebar.emit();
+  }
 }
