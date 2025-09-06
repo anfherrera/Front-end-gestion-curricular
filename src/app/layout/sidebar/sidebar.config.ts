@@ -13,7 +13,6 @@ export interface SidebarItem {
 const ALL_ROLES: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria', 'estudiante'];
 const ADMIN_AND_FUNCIONARIO: UserRole[] = ['admin', 'funcionario'];
 const ADMIN_FUNC_COORD_SEC: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria'];
-
 export const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     label: 'Inicio',
@@ -62,5 +61,17 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
     icon: 'settings',
     route: '/ajustes',
     roles: ['admin']
+  },
+  {
+    label: 'Cerrar sesión',
+    icon: 'logout',
+    action: 'logout',
+    roles: ALL_ROLES
+  },
+  {
+    label: 'Minimizar',
+    icon: 'chevron_left',
+    action: 'toggle',
+    roles: ALL_ROLES
   }
 ];

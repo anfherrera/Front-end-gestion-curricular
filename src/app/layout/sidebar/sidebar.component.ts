@@ -1,15 +1,10 @@
-// src/app/layout/sidebar/sidebar.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../core/services/auth.service';
-
-interface SidebarItem {
-  label: string;
-  icon: string;
-  action?: 'logout' | 'toggle';
-}
+import { SIDEBAR_ITEMS, SidebarItem as ConfigSidebarItem, UserRole } from './sidebar.config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -22,25 +17,25 @@ export class SidebarComponent {
   @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
 
-  constructor(private authService: AuthService) {}
+  menuItems: ConfigSidebarItem[] = [];
 
-  menuItems: SidebarItem[] = [
-    { label: 'Inicio', icon: 'home' },
-    { label: 'Proceso Paz y Salvo', icon: 'check_circle' },
-    { label: 'Pruebas ECAES', icon: 'school' },
-    { label: 'Cursos Intersemestrales', icon: 'menu_book' },
-    { label: 'Reingreso de Estudiante', icon: 'assignment_ind' },
-    { label: 'Homologación de Asignaturas', icon: 'description' },
-    { label: 'Ajustes', icon: 'settings' },
-    { label: 'Cerrar sesión', icon: 'logout', action: 'logout' },
-    { label: 'Minimizar', icon: 'chevron_left', action: 'toggle' }
-  ];
+  constructor(private authService: AuthService, private router: Router) {
+    const role = this.authService.getRole();
 
-  onItemClick(item: SidebarItem) {
+    // Validamos que role sea un UserRole
+    const validRoles: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria', 'estudiante'];
+    const activeRole: UserRole = validRoles.includes(role as UserRole) ? (role as UserRole) : 'estudiante';
+
+    this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(activeRole));
+  }
+
+  onItemClick(item: ConfigSidebarItem) {
     if (item.action === 'logout') {
-      this.logout(); // ✅ llama al AuthService
+      this.logout();
     } else if (item.action === 'toggle') {
       this.toggleSidebar();
+    } else if (item.route) {
+      this.router.navigate([item.route]); // ✅ mejor que window.location.href
     } else {
       console.log('Click en:', item.label);
     }
@@ -56,7 +51,7 @@ export class SidebarComponent {
   }
 
   logout() {
-    this.authService.logout(); // limpia token y redirige al login
+    this.authService.logout();
     console.log('Usuario deslogueado');
   }
 }

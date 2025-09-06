@@ -1,3 +1,5 @@
+/* sidebar.component.css */
+
 /* Sidebar principal */
 .sidebar {
   width: 260px;
@@ -31,7 +33,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  font-size: 16px;
+  font-size: 18px; /* más grande */
   width: 100%;
   border: none;
   background: transparent;
@@ -48,10 +50,17 @@
 }
 
 .sidebar mat-icon {
-  font-size: 24px;
+  font-size: 26px; /* iconos más grandes */
 }
 
-/* Ocultar texto al minimizar solo en items normales */
+/* Ocultar texto al minimizar solo en items normales (no toggle ni logout) */
 .sidebar.closed li:not([action="logout"]):not([action="toggle"]) span {
   display: none;
+}
+
+/* Para centrar un poco mejor el contenido */
+.sidebar ul {
+  justify-content: flex-start;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
