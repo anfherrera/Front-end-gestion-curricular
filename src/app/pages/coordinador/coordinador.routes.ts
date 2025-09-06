@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-export const SecretariaRoutes: Routes = [
+export const CoordinadorRoutes: Routes = [
   {
     path: 'paz-salvo',
     loadComponent: () => import('./paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent)
@@ -12,6 +12,10 @@ export const SecretariaRoutes: Routes = [
   {
     path: 'homologacion-asignaturas',
     loadComponent: () => import('./homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent)
+  },
+  {
+    path: 'modulo-estadistico',
+    loadComponent: () => import('./modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent)
   },
   { path: '', redirectTo: 'paz-salvo', pathMatch: 'full' }
 ];
