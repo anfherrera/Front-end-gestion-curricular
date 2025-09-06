@@ -16,11 +16,6 @@
   gap: 16px;
 }
 
-.menu-btn mat-icon {
-  font-size: 28px;
-  color: #00138C;
-}
-
 .logo {
   max-height: 70px;
   width: auto;

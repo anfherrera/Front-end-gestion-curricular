@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private tokenKey = 'authToken';
+  private role: string | null = null; // Guardamos rol temporal
 
   constructor(private router: Router) {}
 
@@ -18,11 +19,28 @@ export class AuthService {
 
   clearToken(): void {
     localStorage.removeItem(this.tokenKey);
-    this.router.navigate(['/login']);
+    localStorage.removeItem('userRole');
+    this.role = null;
+  }
+
+  // Guardar rol
+  setRole(role: string): void {
+    this.role = role;
+    localStorage.setItem('userRole', role); // persistencia opcional
   }
 
   getRole(): string | null {
-    // 🚀 Aquí podrías decodificar el token si fuera JWT
-    return localStorage.getItem('userRole');
+    return this.role ?? localStorage.getItem('userRole');
+  }
+
+  // ✅ Logout: limpia todo y redirige a login
+  logout(): void {
+    this.clearToken();
+    this.router.navigate(['/login']);
+  }
+
+  // Método opcional para navegar a login sin limpiar datos
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }

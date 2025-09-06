@@ -1,37 +1,10 @@
+<!-- sidebar.component.html -->
 <nav [class.closed]="!isSidebarOpen" class="sidebar">
   <ul>
     <li *ngFor="let item of menuItems">
-      <!-- Si el item tiene ruta normal -->
-      <a *ngIf="item.route"
-         [routerLink]="item.route"
-         routerLinkActive="active"
-         class="sidebar-link">
+      <button class="sidebar-link" (click)="onItemClick(item)">
         <mat-icon>{{ item.icon }}</mat-icon>
         <span>{{ item.label }}</span>
-      </a>
-
-      <!-- Si el item tiene acción personalizada -->
-      <button *ngIf="item.action"
-              class="sidebar-link"
-              (click)="onItemClick(item)">
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.label }}</span>
-      </button>
-    </li>
-
-    <!-- Botón Logout -->
-    <li class="logout-btn">
-      <button type="button" (click)="logout()" class="sidebar-button">
-        <mat-icon>logout</mat-icon>
-        <span>Cerrar sesión</span>
-      </button>
-    </li>
-
-    <!-- Toggle Sidebar -->
-    <li class="toggle-btn">
-      <button mat-icon-button (click)="toggleSidebar()">
-        <mat-icon>{{ isSidebarOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
-        <span>{{ isSidebarOpen ? 'Minimizar' : 'Expandir' }}</span>
       </button>
     </li>
   </ul>

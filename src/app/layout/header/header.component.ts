@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,11 +11,4 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./header.component.css'],
   imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule]
 })
-export class HeaderComponent {
-  /** Evento para abrir/cerrar sidebar */
-  @Output() toggleSidebar = new EventEmitter<void>();
-
-  onToggleSidebar() {
-    this.toggleSidebar.emit();
-  }
-}
+export class HeaderComponent {}

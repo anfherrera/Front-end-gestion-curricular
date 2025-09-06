@@ -1,43 +1,48 @@
+// sidebar.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { AuthService } from '../../core/services/auth.service';
-import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-salvo-dialog.component';
-import { SIDEBAR_ITEMS, SidebarItem, UserRole } from './sidebar.config';
-
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../../core/services/auth.service'; // ajusta la ruta
+
+interface SidebarItem {
+  label: string;
+  icon: string;
+  action?: 'logout' | 'toggle';
+}
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatIconModule,
-    MatButtonModule
-  ]
+  imports: [CommonModule, MatIconModule, MatButtonModule]
 })
 export class SidebarComponent {
   @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
-  menuItems: SidebarItem[] = [];
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private dialog: MatDialog
-  ) {
-    const role = this.authService.getRole() as UserRole | null; // 👈 Cast seguro
+  constructor(private authService: AuthService) {} // inyectamos el servicio
 
-    if (role) {
-      this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(role));
+  menuItems: SidebarItem[] = [
+    { label: 'Inicio', icon: 'home' },
+    { label: 'Proceso Paz y Salvo', icon: 'check_circle' },
+    { label: 'Pruebas ECAES', icon: 'school' },
+    { label: 'Cursos Intersemestrales', icon: 'menu_book' },
+    { label: 'Reingreso de Estudiante', icon: 'assignment_ind' },
+    { label: 'Homologación de Asignaturas', icon: 'description' },
+    { label: 'Ajustes', icon: 'settings' },
+    { label: 'Cerrar sesión', icon: 'logout', action: 'logout' },
+    { label: 'Minimizar', icon: 'chevron_left', action: 'toggle' }
+  ];
+
+  onItemClick(item: SidebarItem) {
+    if (item.action === 'logout') {
+      this.logout();
+    } else if (item.action === 'toggle') {
+      this.toggleSidebar();
     } else {
-      // Si no hay rol, podrías decidir no mostrar ningún ítem
-      this.menuItems = [];
+      console.log('Click en:', item.label);
     }
   }
 
@@ -46,34 +51,8 @@ export class SidebarComponent {
     this.toggle.emit();
   }
 
-  onItemClick(item: SidebarItem) {
-    if (item.action === 'paz-salvo') {
-      this.handlePazSalvoClick();
-    }
-  }
-
   logout() {
-    this.authService.logout();
-  }
-
-  handlePazSalvoClick() {
-    const role = this.authService.getRole() as UserRole | null;
-
-    if (role === 'estudiante') {
-      const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.router.navigate(['/paz-salvo/estudiante']);
-        }
-      });
-      return;
-    }
-
-    switch (role) {
-      case 'funcionario': this.router.navigate(['/paz-salvo/funcionario']); break;
-      case 'coordinador': this.router.navigate(['/paz-salvo/coordinador']); break;
-      case 'secretaria': this.router.navigate(['/paz-salvo/secretaria']); break;
-      default: this.router.navigate(['/home']);
-    }
+    this.authService.logout(); // llama a tu método de logout real
+    console.log('Usuario deslogueado');
   }
 }

@@ -1,22 +1,13 @@
 <div class="app-container">
-
-  <!-- Header -->
-  <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+  <app-header></app-header>
 
   <div class="layout-body">
-    <!-- Sidebar -->
-    <app-sidebar
-      [class.closed]="!isSidebarOpen"
-      (toggle)="toggleSidebar()">
-    </app-sidebar>
+    <app-sidebar></app-sidebar>
 
-    <!-- Contenido principal -->
-    <main class="content" [class.expanded]="!isSidebarOpen">
+    <div class="main-content">
       <router-outlet></router-outlet>
-    </main>
+    </div>
   </div>
 
-  <!-- Footer -->
   <app-footer></app-footer>
-
 </div>

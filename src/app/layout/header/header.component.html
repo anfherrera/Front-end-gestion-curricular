@@ -1,10 +1,6 @@
 <header class="header-container">
   <!-- Logo y título -->
   <div class="header-left">
-    <button mat-icon-button class="menu-btn" (click)="onToggleSidebar()">
-      <mat-icon>menu</mat-icon>
-    </button>
-
     <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png" 
          alt="Logo Universidad del Cauca" class="logo" />
 
@@ -16,11 +12,11 @@
 
   <!-- Usuario e iconos -->
   <div class="header-right">
-    <button mat-icon-button class="icon-btn">
+    <button mat-icon-button class="icon-btn" aria-label="Notificaciones">
       <mat-icon>notifications</mat-icon>
     </button>
 
-    <button mat-icon-button class="icon-btn">
+    <button mat-icon-button class="icon-btn" aria-label="Perfil de usuario">
       <mat-icon>account_circle</mat-icon>
     </button>
 
