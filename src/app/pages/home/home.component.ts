@@ -3,9 +3,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { PazSalvoDialogComponent } from '../paz-salvo/paz-salvo-dialog.component';
+import { PazSalvoDialogComponent } from '../paz-salvo/estudiante/paz-salvo-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -29,13 +29,12 @@ export class HomeComponent implements OnInit {
     { name: 'Ajustes', route: 'ajustes', icon: 'settings', color: 'bg-gray' }
   ];
 
-  constructor(private authService: AuthService, private dialog: MatDialog) {}
+  constructor(private authService: AuthService, private router: Router, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.role = this.authService.getRole();
     this.userName = this.getUserName();
 
-    // Filtrar procesos según rol
     this.availableProcesses = this.processMap.filter(p => {
       switch(this.role) {
         case 'admin':
@@ -68,20 +67,37 @@ export class HomeComponent implements OnInit {
   }
 
   handleProcessClick(p: any) {
+    // Especial: Paz y Salvo para estudiantes con diálogo
     if (p.route === 'paz-salvo' && this.role === 'estudiante') {
-      const dialogRef = this.dialog.open(PazSalvoDialogComponent, {
-        width: '500px'
-      });
+      const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          // Redirigir a la página de paz-salvo
-          window.location.href = '/paz-salvo';
+          this.router.navigate(['/paz-salvo/estudiante']);
         }
       });
-    } else {
-      // Redirigir a otros procesos
-      window.location.href = '/' + p.route;
+      return;
     }
+
+    // Paz y Salvo para otros roles sin diálogo
+    if (p.route === 'paz-salvo') {
+      switch(this.role) {
+        case 'funcionario':
+          this.router.navigate(['/paz-salvo/funcionario']);
+          break;
+        case 'coordinador':
+          this.router.navigate(['/paz-salvo/coordinador']);
+          break;
+        case 'secretaria':
+          this.router.navigate(['/paz-salvo/secretaria']);
+          break;
+        default:
+          this.router.navigate(['/home']);
+      }
+      return;
+    }
+
+    // Otros procesos
+    this.router.navigate(['/' + p.route]);
   }
 }

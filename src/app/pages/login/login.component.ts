@@ -1,4 +1,3 @@
-// login.component.ts
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -27,7 +26,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  hide = true; // 👁️ para mostrar/ocultar contraseña
+  hide = true;
 
   constructor(
     private fb: FormBuilder,
@@ -43,18 +42,14 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      // Simula autenticación
       const fakeToken = 'token-falso';
       this.authService.setToken(fakeToken);
 
-      // Aquí recibirías el rol desde tu backend
-      // Por ahora se simula
-      let role = 'estudiante'; 
-      // role = respuestaDeBackend.role;
-
+      // Simulación de rol desde backend
+      const role = 'estudiante';
       this.authService.setRole(role);
 
-      // Redirige a home
+      // Redirige siempre a /home
       this.router.navigate(['/home']);
     }
   }

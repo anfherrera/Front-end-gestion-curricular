@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(public router: Router) {} // 👈 router es público
+  private tokenKey = 'token';
+  private roleKey = 'role';
 
-  // Obtener token de forma segura
+  constructor(public router: Router) {}
+
+  // Obtener token
   getToken(): string | null {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem('token');
-    }
-    return null;
+    return localStorage.getItem(this.tokenKey);
   }
 
   // Validar si está autenticado
@@ -18,34 +18,25 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  // Guardar token (por ejemplo al hacer login)
+  // Guardar token
   setToken(token: string): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('token', token);
-    }
+    localStorage.setItem(this.tokenKey, token);
   }
 
-  // Guardar rol del usuario
+  // Guardar rol
   setRole(role: string): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('role', role);
-    }
+    localStorage.setItem(this.roleKey, role);
   }
 
-  // Obtener rol del usuario
+  // Obtener rol
   getRole(): string | null {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem('role');
-    }
-    return null;
+    return localStorage.getItem(this.roleKey);
   }
 
   // Cerrar sesión
   logout(): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('role'); // 👈 Limpiar rol al cerrar sesión
-    }
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.roleKey);
     this.router.navigate(['/login']);
   }
 }

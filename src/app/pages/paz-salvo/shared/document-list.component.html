@@ -1,0 +1,32 @@
+<table class="files-table" *ngIf="files?.length">
+  <thead>
+    <tr>
+      <th>Nombre del archivo</th>
+      <th>Fecha de subida</th>
+      <th>Visualizar</th>
+      <th>Correcto</th>
+      <th>Incorrecto</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let file of files">
+      <td>{{ file.name }}</td>
+      <td>{{ file.date | date:'dd/MM/yyyy' }}</td>
+      <td>
+        <button mat-icon-button color="primary" (click)="viewFile(file)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </td>
+      <td>
+        <button mat-icon-button color="accent" (click)="markFile(file,'correcto')">
+          <mat-icon>check_circle</mat-icon>
+        </button>
+      </td>
+      <td>
+        <button mat-icon-button color="warn" (click)="markFile(file,'incorrecto')">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

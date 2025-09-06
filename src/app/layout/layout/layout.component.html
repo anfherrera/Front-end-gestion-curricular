@@ -8,40 +8,68 @@
     <!-- Sidebar -->
     <nav [class.closed]="!isSidebarOpen" class="sidebar">
       <ul>
-        <li routerLink="/paz-salvo" routerLinkActive="active">
-          <mat-icon>check_circle</mat-icon>
-          <span>Proceso Paz y Salvo</span>
-        </li>
-        <li routerLink="/pruebas-ecaes" routerLinkActive="active">
-          <mat-icon>assignment</mat-icon>
-          <span>Pruebas ECAES</span>
-        </li>
-        <li routerLink="/cursos-intersemestrales" routerLinkActive="active">
-          <mat-icon>school</mat-icon>
-          <span>Cursos Intersemestrales</span>
-        </li>
-        <li routerLink="/reingreso-estudiante" routerLinkActive="active">
-          <mat-icon>person_add</mat-icon>
-          <span>Reingreso de Estudiante</span>
-        </li>
-        <li routerLink="/homologacion-asignaturas" routerLinkActive="active">
-          <mat-icon>sync_alt</mat-icon>
-          <span>Homologación de Asignaturas</span>
-        </li>
-        <li routerLink="/modulo-estadistico" routerLinkActive="active">
-          <mat-icon>bar_chart</mat-icon>
-          <span>Módulo Estadístico</span>
-        </li>
-        <li routerLink="/ajustes" routerLinkActive="active">
-          <mat-icon>settings</mat-icon>
-          <span>Ajustes</span>
-        </li>
-        <li (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Cerrar sesión</span>
+        <!-- Botón Inicio -->
+        <li>
+          <a routerLink="/home" routerLinkActive="active" class="sidebar-link">
+            <mat-icon>home</mat-icon>
+            <span>Inicio</span>
+          </a>
         </li>
 
-        <!-- Botón toggle al final -->
+        <!-- Enlaces de navegación -->
+        <li>
+          <!-- Paz y Salvo ahora ejecuta función -->
+          <button class="sidebar-link" (click)="handlePazSalvoClick()">
+            <mat-icon>check_circle</mat-icon>
+            <span>Proceso Paz y Salvo</span>
+          </button>
+        </li>
+        <li>
+          <a routerLink="/pruebas-ecaes" routerLinkActive="active" class="sidebar-link">
+            <mat-icon>assignment</mat-icon>
+            <span>Pruebas ECAES</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/cursos-intersemestrales" routerLinkActive="active" class="sidebar-link">
+            <mat-icon>school</mat-icon>
+            <span>Cursos Intersemestrales</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/reingreso-estudiante" routerLinkActive="active" class="sidebar-link">
+            <mat-icon>person_add</mat-icon>
+            <span>Reingreso de Estudiante</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/homologacion-asignaturas" routerLinkActive="active" class="sidebar-link">
+            <mat-icon>sync_alt</mat-icon>
+            <span>Homologación de Asignaturas</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/modulo-estadistico" routerLinkActive="active" class="sidebar-link">
+            <mat-icon>bar_chart</mat-icon>
+            <span>Módulo Estadístico</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/ajustes" routerLinkActive="active" class="sidebar-link">
+            <mat-icon>settings</mat-icon>
+            <span>Ajustes</span>
+          </a>
+        </li>
+
+        <!-- Logout -->
+        <li class="logout-btn">
+          <button type="button" (click)="logout()" class="sidebar-button">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar sesión</span>
+          </button>
+        </li>
+
+        <!-- Toggle button al final -->
         <li class="toggle-btn">
           <button mat-icon-button (click)="toggleSidebar()">
             <mat-icon>{{ isSidebarOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
