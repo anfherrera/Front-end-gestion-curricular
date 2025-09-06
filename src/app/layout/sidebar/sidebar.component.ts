@@ -1,9 +1,9 @@
-// sidebar.component.ts
+// src/app/layout/sidebar/sidebar.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthService } from '../../core/services/auth.service'; // ajusta la ruta
+import { AuthService } from '../../core/services/auth.service';
 
 interface SidebarItem {
   label: string;
@@ -22,7 +22,7 @@ export class SidebarComponent {
   @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
 
-  constructor(private authService: AuthService) {} // inyectamos el servicio
+  constructor(private authService: AuthService) {}
 
   menuItems: SidebarItem[] = [
     { label: 'Inicio', icon: 'home' },
@@ -38,7 +38,7 @@ export class SidebarComponent {
 
   onItemClick(item: SidebarItem) {
     if (item.action === 'logout') {
-      this.logout();
+      this.logout(); // ✅ llama al AuthService
     } else if (item.action === 'toggle') {
       this.toggleSidebar();
     } else {
@@ -48,11 +48,15 @@ export class SidebarComponent {
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+    const toggleItem = this.menuItems.find(i => i.action === 'toggle');
+    if (toggleItem) {
+      toggleItem.icon = this.isSidebarOpen ? 'chevron_left' : 'chevron_right';
+    }
     this.toggle.emit();
   }
 
   logout() {
-    this.authService.logout(); // llama a tu método de logout real
+    this.authService.logout(); // limpia token y redirige al login
     console.log('Usuario deslogueado');
   }
 }

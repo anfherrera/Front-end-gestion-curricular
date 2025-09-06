@@ -1,4 +1,4 @@
-/* sidebar.component.css */
+/* Sidebar principal */
 .sidebar {
   width: 260px;
   background-color: #00138C;
@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow-y: auto;
+  overflow-y: auto; /* scroll si hay muchos items */
   transition: width 0.3s ease-in-out;
   flex-shrink: 0;
 }
@@ -51,7 +51,7 @@
   font-size: 24px;
 }
 
-/* Ocultar texto al minimizar */
-.sidebar.closed li span {
+/* Ocultar texto al minimizar solo en items normales */
+.sidebar.closed li:not([action="logout"]):not([action="toggle"]) span {
   display: none;
 }
