@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-login',
@@ -27,30 +28,48 @@ import { AuthService } from '../../core/services/auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
   hide = true;
+  errorMensaje = '';
+  cargando = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private apiService: ApiService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      correo: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       remember: [false]
     });
   }
 
-  onSubmit() {
+  onLogin(): void {
     if (this.loginForm.valid) {
-      const fakeToken = 'token-falso';
-      this.authService.setToken(fakeToken);
+      const { correo, password } = this.loginForm.value;
+      this.cargando = true;
+      this.errorMensaje = '';
 
-      // Simulación de rol desde backend
-      const role = 'estudiante';
-      this.authService.setRole(role);
+      this.apiService.login(correo, password).subscribe({
+        next: (response: any) => {
+          console.log('✅ Respuesta del backend:', response);
 
-      // Redirige siempre a /home
-      this.router.navigate(['/home']);
+          if (response.token) {
+            this.authService.setToken(response.token);
+            this.authService.setUsuario(response.usuario);
+            this.router.navigate(['/home']);
+          } else {
+            this.errorMensaje = 'Error: no se recibió token.';
+          }
+
+          this.cargando = false;
+        },
+        error: (err) => {
+          console.error('❌ Error en la autenticación', err);
+          this.errorMensaje = 'Credenciales incorrectas o error en el servidor.';
+          this.cargando = false;
+        }
+      });
     }
   }
 }

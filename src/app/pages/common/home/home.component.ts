@@ -7,6 +7,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { PazSalvoDialogComponent } from '../../estudiante/paz-salvo/paz-salvo-dialog.component';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -42,22 +43,28 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.role = this.authService.getRole();
-    this.userName = this.getUserName();
+    const usuario = this.authService.getUsuario();
+    if (usuario) {
+      this.role = usuario.rol?.nombre ?? this.authService.getRole();
+      this.userName = usuario.nombre_completo ?? this.getUserName();
+    } else {
+      this.router.navigate(['/login']);
+    }
+
     this.filterProcessesByRole();
   }
 
   private filterProcessesByRole(): void {
     this.availableProcesses = this.processMap.filter(p => {
       switch (this.role) {
-        case 'admin':
-        case 'coordinador':
-        case 'funcionario':
+        case 'Admin':
+        case 'Coordinador':
+        case 'Funcionario':
           return true;
-        case 'estudiante':
-          return ['paz-salvo','pruebas-ecaes','cursos-intersemestrales','reingreso-estudiante','homologacion-asignaturas'].includes(p.route);
-        case 'secretaria':
-          return ['reingreso-estudiante','homologacion-asignaturas'].includes(p.route);
+        case 'Estudiante':
+          return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
+        case 'Secretaria':
+          return ['reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
         default:
           return false;
       }
@@ -65,23 +72,23 @@ export class HomeComponent implements OnInit {
   }
 
   private getUserName(): string {
-    return 'Usuario Ejemplo'; // 🚀 luego esto puede venir de tu API/AuthService
+    return 'Usuario Ejemplo'; // fallback si no hay info del backend
   }
 
   getWelcomeText(): string {
     switch (this.role) {
-      case 'admin': return 'Tienes acceso completo a todos los procesos.';
-      case 'coordinador': return 'Puedes administrar los procesos y supervisar estudiantes.';
-      case 'funcionario': return 'Accede a los procesos que gestionas.';
-      case 'estudiante': return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
-      case 'secretaria': return 'Gestiona los oficios y resoluciones según lo indicado.';
+      case 'Admin': return 'Tienes acceso completo a todos los procesos.';
+      case 'Coordinador': return 'Puedes administrar los procesos y supervisar estudiantes.';
+      case 'Funcionario': return 'Accede a los procesos que gestionas.';
+      case 'Estudiante': return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
+      case 'Secretaria': return 'Gestiona los oficios y resoluciones según lo indicado.';
       default: return 'Bienvenido al sistema.';
     }
   }
 
   handleProcessClick(process: { route: string }): void {
     if (process.route === 'paz-salvo') {
-      if (this.role === 'estudiante') {
+      if (this.role === 'Estudiante') {
         const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
         dialogRef.afterClosed().subscribe(result => {
           if (result) this.router.navigate(['/paz-salvo/estudiante']);
@@ -89,7 +96,6 @@ export class HomeComponent implements OnInit {
         return;
       }
 
-      // Otros roles
       const roleRoutes: Record<string, string> = {
         funcionario: '/paz-salvo/funcionario',
         coordinador: '/paz-salvo/coordinador',
@@ -100,5 +106,9 @@ export class HomeComponent implements OnInit {
     }
 
     this.router.navigate(['/' + process.route]);
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

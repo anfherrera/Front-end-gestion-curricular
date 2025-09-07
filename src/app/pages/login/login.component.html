@@ -1,5 +1,4 @@
 <div class="login-wrapper">
-  <!-- Columna izquierda con formulario -->
   <div class="login-left">
     <div class="login-content">
       <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png" 
@@ -8,12 +7,12 @@
 
       <h2 class="login-title">Sistema de Atención a Estudiantes<br>de Pregrado</h2>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
         <mat-form-field appearance="outline" class="login-input">
           <mat-label>Correo</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="correo@unicauca.edu.co">
+          <input matInput type="email" formControlName="correo" placeholder="correo@unicauca.edu.co">
           <mat-icon matPrefix>mail</mat-icon>
-          <mat-error *ngIf="loginForm.controls['email'].invalid && loginForm.controls['email'].touched">
+          <mat-error *ngIf="loginForm.controls['correo'].invalid && loginForm.controls['correo'].touched">
             Ingresa un correo válido
           </mat-error>
         </mat-form-field>
@@ -32,16 +31,17 @@
 
         <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
 
-        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid">
-          Ingresar
+        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando">
+          {{ cargando ? 'Ingresando...' : 'Ingresar' }}
         </button>
+
+        <p class="error-message" *ngIf="errorMensaje">{{ errorMensaje }}</p>
 
         <a class="login-register" routerLink="/register">Registrarse</a>
       </form>
     </div>
   </div>
 
-  <!-- Columna derecha con mural -->
   <div class="login-right">
     <div class="overlay"></div>
     <img src="assets/images/Pintura-FIET.jpg" alt="Mural Universidad del Cauca" class="login-image">
