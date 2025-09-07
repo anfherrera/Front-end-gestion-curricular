@@ -13,6 +13,7 @@ export interface SidebarItem {
 const ALL_ROLES: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria', 'estudiante'];
 const ADMIN_AND_FUNCIONARIO: UserRole[] = ['admin', 'funcionario'];
 const ADMIN_FUNC_COORD_SEC: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria'];
+
 export const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     label: 'Inicio',
@@ -20,12 +21,33 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
     route: '/home',
     roles: ALL_ROLES
   },
+
+  // Paz y Salvo por rol
   {
     label: 'Proceso Paz y Salvo',
     icon: 'check_circle',
-    action: 'paz-salvo',
-    roles: ALL_ROLES
+    route: '/estudiante/paz-salvo',
+    roles: ['estudiante']
   },
+  {
+    label: 'Proceso Paz y Salvo',
+    icon: 'check_circle',
+    route: '/funcionario/paz-salvo',
+    roles: ['funcionario']
+  },
+  {
+    label: 'Proceso Paz y Salvo',
+    icon: 'check_circle',
+    route: '/coordinador/paz-salvo',
+    roles: ['coordinador']
+  },
+  {
+    label: 'Proceso Paz y Salvo',
+    icon: 'check_circle',
+    route: '/secretaria/paz-salvo',
+    roles: ['secretaria']
+  },
+
   {
     label: 'Pruebas ECAES',
     icon: 'assignment',
@@ -62,6 +84,8 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
     route: '/ajustes',
     roles: ['admin']
   },
+
+  // Cerrar sesión y minimizar
   {
     label: 'Cerrar sesión',
     icon: 'logout',

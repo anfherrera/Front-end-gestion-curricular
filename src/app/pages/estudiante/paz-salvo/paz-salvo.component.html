@@ -1,1 +1,69 @@
-<p>paz-salvo works!</p>
+<!-- ============================ -->
+<!-- Subida de documentos -->
+<!-- ============================ -->
+<h2>Subir Documentos</h2>
+<div class="upload-container">
+  <input
+    type="text"
+    placeholder="Nombre del documento"
+    [(ngModel)]="nuevoDocumentoNombre"
+  />
+  <input type="file" (change)="onFileSelected($event)" />
+  <button
+    (click)="subirDocumento()"
+    [disabled]="!nuevoDocumentoArchivo || !nuevoDocumentoNombre"
+  >
+    Subir
+  </button>
+</div>
+
+<!-- Lista de documentos subidos -->
+<h3>Documentos Subidos</h3>
+<table mat-table [dataSource]="documentos" class="mat-elevation-z8">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Fecha</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let doc of documentos">
+      <td>{{ doc.nombre }}</td>
+      <td>{{ doc.fecha }}</td>
+      <td>
+        <button (click)="verDocumento(doc.url)">Ver PDF</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ============================ -->
+<!-- Seguimiento de solicitudes -->
+<!-- ============================ -->
+<h2>Mis Solicitudes</h2>
+<table mat-table [dataSource]="solicitudes" class="mat-elevation-z8">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Estado</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let sol of solicitudes">
+      <td>{{ sol.fecha }}</td>
+      <td>{{ sol.estado }}</td>
+      <td>
+        <button (click)="verTodosLosDocumentos(sol.documentos)">Ver Documentos</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ============================ -->
+<!-- Enviar solicitud -->
+<!-- ============================ -->
+<button (click)="enviarSolicitud()" [disabled]="documentos.length === 0">
+  Enviar Solicitud
+</button>
