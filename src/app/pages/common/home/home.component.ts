@@ -87,24 +87,30 @@ export class HomeComponent implements OnInit {
   }
 
   handleProcessClick(process: { route: string }): void {
-    if (process.route === 'paz-salvo') {
-      if (this.role === 'Estudiante') {
-        const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) this.router.navigate(['/paz-salvo/estudiante']);
-        });
-        return;
-      }
+    const roleRoutes: Record<string, string> = {
+      funcionario: '/funcionario',
+      coordinador: '/coordinador',
+      secretaria: '/secretaria'
+    };
 
-      const roleRoutes: Record<string, string> = {
-        funcionario: '/paz-salvo/funcionario',
-        coordinador: '/paz-salvo/coordinador',
-        secretaria: '/paz-salvo/secretaria'
-      };
-      this.router.navigate([roleRoutes[this.role ?? ''] ?? '/home']);
+    const roleLower = this.role?.toLowerCase();
+
+    // Caso especial: estudiante y Paz y Salvo
+    if (process.route === 'paz-salvo' && roleLower === 'estudiante') {
+      const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) this.router.navigate(['/estudiante/paz-salvo']);
+      });
       return;
     }
 
+    // Para otros roles de Paz y Salvo
+    if (process.route === 'paz-salvo' && roleLower && roleRoutes[roleLower]) {
+      this.router.navigate([roleRoutes[roleLower] + '/paz-salvo']);
+      return;
+    }
+
+    // Navegación normal
     this.router.navigate(['/' + process.route]);
   }
 

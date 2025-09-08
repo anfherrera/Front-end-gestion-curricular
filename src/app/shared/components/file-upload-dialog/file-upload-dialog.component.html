@@ -1,0 +1,34 @@
+<h2 class="titulo">Adjuntar Documentación Requerida</h2>
+
+<!-- Botón para seleccionar archivos -->
+<div class="upload-section">
+  <label class="upload-btn">
+    <mat-icon>cloud_upload</mat-icon> Subir Archivos
+    <input type="file" (change)="onFileSelected($event)" multiple hidden />
+  </label>
+</div>
+
+<!-- Tabla para mostrar archivos subidos -->
+<table *ngIf="archivos.length > 0" class="file-table">
+  <tr>
+    <th>Nombre</th>
+    <th>Fecha</th>
+    <th>Acciones</th>
+  </tr>
+  <tr *ngFor="let archivo of archivos; let i = index">
+    <td>{{ archivo.nombre }}</td>
+    <td>{{ archivo.fecha }}</td>
+    <td>
+      <button mat-icon-button color="warn" (click)="removeFile(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </tr>
+</table>
+
+<!-- Botón para enviar solicitud -->
+<div class="send-btn">
+  <button mat-raised-button [color]="canSend() ? 'primary' : ''" (click)="enviarSolicitud()" [disabled]="!canSend()">
+    Enviar Solicitud
+  </button>
+</div>

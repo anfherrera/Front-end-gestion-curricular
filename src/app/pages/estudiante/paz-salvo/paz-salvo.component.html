@@ -1,69 +1,70 @@
-<!-- ============================ -->
-<!-- Subida de documentos -->
-<!-- ============================ -->
-<h2>Subir Documentos</h2>
-<div class="upload-container">
-  <input
-    type="text"
-    placeholder="Nombre del documento"
-    [(ngModel)]="nuevoDocumentoNombre"
-  />
-  <input type="file" (change)="onFileSelected($event)" />
-  <button
-    (click)="subirDocumento()"
-    [disabled]="!nuevoDocumentoArchivo || !nuevoDocumentoNombre"
-  >
-    Subir
-  </button>
+<div class="paz-salvo-container">
+  <!-- Documentación requerida -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Documentación requerida</mat-card-title>
+    <mat-card-content>
+      <p class="info-text">Adjunta los siguientes documentos en formato PDF:</p>
+      <ul class="required-list">
+        <li *ngFor="let file of requiredFiles">{{ file }}</li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Adjuntar archivos -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Adjuntar documentación</mat-card-title>
+    <mat-card-content>
+      <label class="file-label">
+        <mat-icon>cloud_upload</mat-icon> Seleccionar archivos
+        <input type="file" (change)="onFilesSelected($event)" multiple accept=".pdf" class="file-input"/>
+      </label>
+
+      <table mat-table [dataSource]="archivos" class="table-archivos" *ngIf="archivos.length > 0">
+        <!-- Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef> Nombre </th>
+          <td mat-cell *matCellDef="let archivo">{{ archivo.nombre }}</td>
+        </ng-container>
+
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef> Fecha </th>
+          <td mat-cell *matCellDef="let archivo">{{ archivo.fecha }}</td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef> Acciones </th>
+          <td mat-cell *matCellDef="let archivo; let i = index">
+            <button mat-icon-button color="warn" (click)="eliminarArchivo(i)" aria-label="Eliminar archivo">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div class="enviar-solicitud">
+        <button mat-raised-button
+                [disabled]="!canSend()"
+                [ngClass]="{'btn-activo': canSend(), 'btn-inactivo': !canSend()}"
+                (click)="enviarSolicitud()">
+          Enviar solicitud
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Seguimiento -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
+    <mat-card-content>
+      <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
+        No se ha enviado ninguna solicitud aún.
+      </p>
+      <app-request-status-table *ngIf="solicitudes.length > 0" [solicitudes]="solicitudes"></app-request-status-table>
+    </mat-card-content>
+  </mat-card>
 </div>
-
-<!-- Lista de documentos subidos -->
-<h3>Documentos Subidos</h3>
-<table mat-table [dataSource]="documentos" class="mat-elevation-z8">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Fecha</th>
-      <th>Acción</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let doc of documentos">
-      <td>{{ doc.nombre }}</td>
-      <td>{{ doc.fecha }}</td>
-      <td>
-        <button (click)="verDocumento(doc.url)">Ver PDF</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- ============================ -->
-<!-- Seguimiento de solicitudes -->
-<!-- ============================ -->
-<h2>Mis Solicitudes</h2>
-<table mat-table [dataSource]="solicitudes" class="mat-elevation-z8">
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Estado</th>
-      <th>Acción</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let sol of solicitudes">
-      <td>{{ sol.fecha }}</td>
-      <td>{{ sol.estado }}</td>
-      <td>
-        <button (click)="verTodosLosDocumentos(sol.documentos)">Ver Documentos</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- ============================ -->
-<!-- Enviar solicitud -->
-<!-- ============================ -->
-<button (click)="enviarSolicitud()" [disabled]="documentos.length === 0">
-  Enviar Solicitud
-</button>
