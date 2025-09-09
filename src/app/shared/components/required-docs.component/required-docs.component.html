@@ -1,0 +1,22 @@
+<mat-card class="card-section">
+  <mat-card-title class="card-title">Documentación requerida</mat-card-title>
+  <mat-card-content>
+    <p class="info-text">Adjunta los siguientes documentos en formato PDF:</p>
+
+    <ul class="required-list">
+      <li *ngFor="let file of requiredFiles"
+          [ngClass]="isUploaded(file) ? 'success' : 'pending'">
+
+        <mat-icon
+          [ngClass]="{
+            'icon-success': isUploaded(file),
+            'icon-pending': !isUploaded(file)
+          }">
+          {{ isUploaded(file) ? 'check_circle' : 'cancel' }}
+        </mat-icon>
+
+        {{ file }}
+      </li>
+    </ul>
+  </mat-card-content>
+</mat-card>

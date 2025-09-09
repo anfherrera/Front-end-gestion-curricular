@@ -1,0 +1,21 @@
+.oficio-container {
+  margin-top: 16px;
+}
+
+.oficio-container mat-card {
+  background-color: #e3f2fd;
+}
+
+.oficio-container a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  text-decoration: none;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.oficio-container a:hover {
+  text-decoration: underline;
+}

@@ -1,14 +1,10 @@
 <div class="paz-salvo-container">
+
   <!-- Documentación requerida -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Documentación requerida</mat-card-title>
-    <mat-card-content>
-      <p class="info-text">Adjunta los siguientes documentos en formato PDF:</p>
-      <ul class="required-list">
-        <li *ngFor="let file of requiredFiles">{{ file }}</li>
-      </ul>
-    </mat-card-content>
-  </mat-card>
+  <app-required-docs
+    [requiredFiles]="requiredFiles"
+    [archivos]="archivos">
+  </app-required-docs>
 
   <!-- Adjuntar archivos -->
   <mat-card class="card-section">
@@ -16,7 +12,12 @@
     <mat-card-content>
       <label class="file-label">
         <mat-icon>cloud_upload</mat-icon> Seleccionar archivos
-        <input type="file" (change)="onFilesSelected($event)" multiple accept=".pdf" class="file-input"/>
+        <input
+          type="file"
+          (change)="onFilesSelected($event)"
+          multiple
+          accept=".pdf"
+          class="file-input"/>
       </label>
 
       <table mat-table [dataSource]="archivos" class="table-archivos" *ngIf="archivos.length > 0">
@@ -67,4 +68,5 @@
       <app-request-status-table *ngIf="solicitudes.length > 0" [solicitudes]="solicitudes"></app-request-status-table>
     </mat-card-content>
   </mat-card>
+
 </div>

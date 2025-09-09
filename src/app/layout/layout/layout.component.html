@@ -2,7 +2,7 @@
   <app-header></app-header>
 
   <div class="layout-body">
-    <app-sidebar></app-sidebar>
+    <app-sidebar [class.closed]="!isSidebarOpen"></app-sidebar>
 
     <div class="main-content">
       <router-outlet></router-outlet>

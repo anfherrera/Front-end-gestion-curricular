@@ -1,0 +1,15 @@
+<div *ngIf="puedeDescargar" class="oficio-container">
+  <mat-card>
+    <mat-card-title>
+      <mat-icon color="primary">description</mat-icon>
+      Oficio / Resolución disponible
+    </mat-card-title>
+    <mat-card-content>
+      <p>Tu solicitud fue aprobada y se generó el documento oficial.</p>
+      <a [href]="solicitud.oficioUrl" target="_blank" download>
+        Descargar Oficio
+        <mat-icon>download</mat-icon>
+      </a>
+    </mat-card-content>
+  </mat-card>
+</div>

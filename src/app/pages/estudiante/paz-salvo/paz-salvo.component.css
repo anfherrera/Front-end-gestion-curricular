@@ -44,17 +44,38 @@ mat-card-content {
   margin-bottom: 12px;
 }
 
-/* Lista */
+/* Lista de documentos requeridos */
 .required-list {
   list-style: none;
   padding-left: 0;
+  margin: 0;
 }
 
 .required-list li {
-  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
   border-bottom: 1px solid #e0e0e0;
   font-size: 0.95rem;
   color: #444;
+}
+
+.required-list li:last-child {
+  border-bottom: none;
+}
+
+/* Íconos de estado */
+.required-list mat-icon {
+  font-size: 20px;
+}
+
+.icon-success {
+  color: #2e7d32; /* verde éxito */
+}
+
+.icon-pending {
+  color: #c62828; /* rojo error */
 }
 
 /* Botón seleccionar archivos */

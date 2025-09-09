@@ -1,35 +1,28 @@
 .titulo {
-  text-align: center;
-  font-size: 1.6rem;
-  margin-bottom: 16px;
-  background-color: #00138C;
-  color: white;
-  padding: 12px;
-  border-radius: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #00138c;
 }
 
 .upload-section {
-  text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .upload-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #f4f4f4;
-  color: #00138C;
-  font-weight: 600;
-  border: 2px solid #00138C;
-  border-radius: 8px;
-  padding: 10px 16px;
+  background-color: #00138c;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: 0.3s ease;
+  font-weight: 600;
 }
 
-.upload-btn:hover {
-  background-color: #00138C;
-  color: white;
+.upload-btn mat-icon {
+  font-size: 20px;
 }
 
 .file-table {
@@ -39,22 +32,57 @@
   font-size: 14px;
 }
 
-.file-table th, .file-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: center;
-}
-
 .file-table th {
-  background-color: #00138C;
-  color: white;
+  background-color: #00138c;
+  color: #fff;
+  padding: 10px;
+  text-align: left;
 }
 
 .file-table td {
+  border: 1px solid #e6e6e6;
+  padding: 8px;
+  vertical-align: middle;
+  color: #222;
+}
+
+.file-table td.original {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* checklist */
+.checklist {
+  margin-top: 16px;
+}
+
+.checklist h3 {
+  color: #00138c;
+  margin-bottom: 8px;
+}
+
+.checklist ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checklist li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
   color: #333;
 }
 
+/* send */
 .send-btn {
-  text-align: center;
-  margin-top: 20px;
+  margin-top: 18px;
+  text-align: right;
+}
+
+/* snackbar error panel (agregar en styles global si quieres más control) */
+.snack-error {
+  background: #d32f2f !important;
+  color: white !important;
 }

@@ -9,7 +9,17 @@
 .layout-body {
   display: flex;
   flex: 1; /* ocupa todo el espacio disponible entre header y footer */
-  min-height: 0; /* crucial para scroll interno */
+  align-items: stretch; /* 🔹 Sidebar y contenido se estiran igual */
+}
+
+/* Sidebar */
+app-sidebar {
+  flex-shrink: 0;
+  width: 250px;
+  background: #00138C; /* Azul institucional */
+  color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Contenido principal */
@@ -17,5 +27,6 @@
   flex: 1;
   padding: 20px;
   overflow-y: auto; /* scroll solo en contenido */
+  background-color: #f5f7fa;
+  min-height: 100%; /* 🔹 Hace que el contenido y sidebar crezcan parejos */
 }
-

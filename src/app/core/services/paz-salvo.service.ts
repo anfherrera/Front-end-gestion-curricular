@@ -2,19 +2,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { SolicitudStatus } from '../models/solicitud-status.enum'; // tu enum actualizado
 
-interface Documento {
+export interface Documento {
   id: number;
   nombre: string;
   fecha: string;
   url: string;
+  aprobado?: boolean; // opcional
 }
 
-interface Solicitud {
+export interface Solicitud {
   id: number;
   fecha: string;
-  estado: string;
+  estado: SolicitudStatus;
   documentos: Documento[];
+  comentarios?: string;
+  oficioUrl?: string;
 }
 
 @Injectable({
@@ -34,33 +38,35 @@ export class PazSalvoService {
       id: this.docIdCounter++,
       nombre,
       fecha: new Date().toLocaleDateString(),
-      url: URL.createObjectURL(file) // solo para demo, genera un link temporal
+      url: URL.createObjectURL(file)
     };
-    // Buscar solicitud pendiente del estudiante o crear temporal
-    let solicitud = this.solicitudes.find(s => s.estado === 'Pendiente');
+
+    // Buscar solicitud pendiente o crear una nueva
+    let solicitud = this.solicitudes.find(s => s.estado === SolicitudStatus.Pendiente);
     if (!solicitud) {
       solicitud = {
         id: this.solicitudIdCounter++,
         fecha: new Date().toLocaleDateString(),
-        estado: 'Pendiente',
+        estado: SolicitudStatus.Pendiente,
         documentos: []
       };
       this.solicitudes.push(solicitud);
     }
+
     solicitud.documentos.push(doc);
     return of(doc);
   }
 
-  // Obtener solicitudes del estudiante
+  // Obtener solicitudes de un estudiante
   getStudentRequests(studentId: number): Observable<Solicitud[]> {
     return of(this.solicitudes);
   }
 
   // Enviar solicitud
   sendRequest(studentId: number): Observable<Solicitud> {
-    const solicitud = this.solicitudes.find(s => s.estado === 'Pendiente');
+    const solicitud = this.solicitudes.find(s => s.estado === SolicitudStatus.Pendiente);
     if (solicitud) {
-      solicitud.estado = 'En Revisión Funcionario';
+      solicitud.estado = SolicitudStatus.EnRevisionFuncionario;
       return of(solicitud);
     }
     throw new Error('No hay documentos para enviar');
@@ -68,9 +74,9 @@ export class PazSalvoService {
 
   // Obtener solicitudes pendientes por rol
   getPendingRequests(role: 'funcionario' | 'coordinador'): Observable<Solicitud[]> {
-    let estado = '';
-    if (role === 'funcionario') estado = 'En Revisión Funcionario';
-    if (role === 'coordinador') estado = 'Validación Coordinador';
+    let estado: SolicitudStatus;
+    if (role === 'funcionario') estado = SolicitudStatus.EnRevisionFuncionario;
+    if (role === 'coordinador') estado = SolicitudStatus.ValidacionCoordinador;
     return of(this.solicitudes.filter(s => s.estado === estado));
   }
 
@@ -82,8 +88,7 @@ export class PazSalvoService {
     const doc = solicitud.documentos.find(d => d.id === documentId);
     if (!doc) throw new Error('Documento no encontrado');
 
-    // Agregamos un campo temporal de status
-    (doc as any).aprobado = aprobado;
+    doc.aprobado = aprobado;
     return of(doc);
   }
 
@@ -91,7 +96,8 @@ export class PazSalvoService {
   completeValidation(requestId: number): Observable<Solicitud> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
-    solicitud.estado = 'Validación Coordinador';
+
+    solicitud.estado = SolicitudStatus.ValidacionCoordinador;
     return of(solicitud);
   }
 
@@ -99,7 +105,8 @@ export class PazSalvoService {
   approveRequest(requestId: number): Observable<Solicitud> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
-    solicitud.estado = 'Enviado Secretaria';
+
+    solicitud.estado = SolicitudStatus.EnviadoSecretaria;
     return of(solicitud);
   }
 
@@ -107,15 +114,17 @@ export class PazSalvoService {
   rejectRequest(requestId: number, comentarios: string): Observable<Solicitud> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
-    solicitud.estado = 'Rechazada';
-    (solicitud as any).comentarios = comentarios;
+
+    solicitud.estado = SolicitudStatus.Rechazada;
+    solicitud.comentarios = comentarios;
     return of(solicitud);
   }
 
-  // Generar oficio preescrito (solo mock)
+  // Generar oficio preescrito (mock)
   generateOfficio(requestId: number): Observable<string> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
+
     const oficio = `Oficio preescrito para solicitud #${requestId} del estudiante.`;
     return of(oficio);
   }
@@ -124,7 +133,9 @@ export class PazSalvoService {
   sendOfficio(requestId: number): Observable<Solicitud> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
-    solicitud.estado = 'Finalizada';
+
+    solicitud.estado = SolicitudStatus.Finalizada;
+    solicitud.oficioUrl = `https://example.com/oficio/${solicitud.id}.pdf`; // mock
     return of(solicitud);
   }
 

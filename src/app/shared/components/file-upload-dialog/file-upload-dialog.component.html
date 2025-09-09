@@ -4,31 +4,52 @@
 <div class="upload-section">
   <label class="upload-btn">
     <mat-icon>cloud_upload</mat-icon> Subir Archivos
-    <input type="file" (change)="onFileSelected($event)" multiple hidden />
+    <input type="file" (change)="onFileSelected($event)" multiple accept=".pdf" hidden />
   </label>
 </div>
 
 <!-- Tabla para mostrar archivos subidos -->
 <table *ngIf="archivos.length > 0" class="file-table">
   <tr>
-    <th>Nombre</th>
+    <th>Documento (estandarizado)</th>
+    <th>Archivo original</th>
     <th>Fecha</th>
     <th>Acciones</th>
   </tr>
   <tr *ngFor="let archivo of archivos; let i = index">
-    <td>{{ archivo.nombre }}</td>
+    <td><strong>{{ archivo.nombre }}</strong></td>
+    <td class="original">{{ archivo.originalName }}</td>
     <td>{{ archivo.fecha }}</td>
     <td>
-      <button mat-icon-button color="warn" (click)="removeFile(i)">
+      <button mat-icon-button color="warn" (click)="removeFile(i)" aria-label="Eliminar">
         <mat-icon>delete</mat-icon>
       </button>
     </td>
   </tr>
 </table>
 
+<!-- Checklist interactiva -->
+<div class="checklist">
+  <h3>Documentos requeridos</h3>
+  <ul>
+    <li *ngFor="let doc of documentosRequeridos">
+      <mat-icon [color]="tieneDocumento(doc) ? 'primary' : ''">
+        {{ tieneDocumento(doc) ? 'check_circle' : 'radio_button_unchecked' }}
+      </mat-icon>
+      {{ doc }}
+    </li>
+    <li>
+      <mat-icon [color]="tieneExclusivo() ? 'primary' : ''">
+        {{ tieneExclusivo() ? 'check_circle' : 'radio_button_unchecked' }}
+      </mat-icon>
+      Formato TI-G <strong>o</strong> Formato PP-H (solo uno)
+    </li>
+  </ul>
+</div>
+
 <!-- Botón para enviar solicitud -->
 <div class="send-btn">
-  <button mat-raised-button [color]="canSend() ? 'primary' : ''" (click)="enviarSolicitud()" [disabled]="!canSend()">
+  <button mat-raised-button color="primary" (click)="enviarSolicitud()" [disabled]="!canSend()">
     Enviar Solicitud
   </button>
 </div>

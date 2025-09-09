@@ -1,0 +1,78 @@
+/* Card principal */
+.card-section {
+  border-radius: 12px;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Título azul igual que paz-salvo */
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #00138C;
+  color: #fff;
+  padding: 14px 16px;
+  display: block;
+  border-bottom: 3px solid #001060;
+}
+
+/* Texto descriptivo */
+.info-text {
+  margin: 12px 0;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Lista de documentos requeridos */
+.required-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.required-list li {
+  display: flex;               /* Ícono + texto alineados */
+  align-items: center;
+  gap: 8px;                    /* Espacio entre ícono y texto */
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+  color: #444;
+}
+
+.required-list li:last-child {
+  border-bottom: none;
+}
+
+/* Iconos */
+.required-list mat-icon {
+  font-size: 20px;
+}
+
+/* Verde si está subido */
+.icon-success {
+  color: #2e7d32;
+}
+
+/* Rojo si falta */
+.icon-pending {
+  color: #c62828;
+}
+
+/* Texto cambia junto con el ícono */
+.required-list li.success {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.required-list li.pending {
+  color: #c62828;
+}
