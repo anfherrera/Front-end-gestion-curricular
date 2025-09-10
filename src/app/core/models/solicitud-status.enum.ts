@@ -1,9 +1,9 @@
-export enum SolicitudStatus {
-  Pendiente = 'Pendiente',
-  EnRevisionFuncionario = 'En Revisión Funcionario',
-  ValidacionCoordinador = 'Validación Coordinador',
-  EnviadoSecretaria = 'Enviado Secretaria',
-  Rechazada = 'Rechazada',
-  Finalizada = 'Finalizada',
-  Revision = 'Revisión'  // agregar este si lo necesitas en el componente
+// core/models/solicitud-status.enum.ts
+export enum SolicitudStatusEnum {
+  ENVIADA = 'Enviada',
+  EN_REVISION_SECRETARIA = 'En revisión por Secretaría',
+  EN_REVISION_FUNCIONARIO = 'En revisión por Funcionario',
+  EN_REVISION_COORDINADOR = 'En revisión por Coordinador',
+  APROBADA = 'Aprobada',
+  RECHAZADA = 'Rechazada' // siempre es bueno incluirlo
 }

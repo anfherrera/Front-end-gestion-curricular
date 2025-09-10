@@ -6,7 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RequestStatusTableComponent, SolicitudStatus } from '../../../shared/components/request-status/request-status.component';
-import { RequiredDocsComponent } from '../../../shared/components/required-docs.component/required-docs.component';
+import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
+import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
 
 interface Archivo {
   nombre: string;
@@ -51,7 +52,9 @@ export class PazSalvoComponent {
   // Verifica si un archivo requerido ya fue subido
   isUploaded(file: string): boolean {
     if (file === 'Formato TI-G o Formato PP-H') {
-      return this.archivos.some(a => a.nombre.includes('Formato TI-G') || a.nombre.includes('Formato PP-H'));
+      return this.archivos.some(a =>
+        a.nombre.includes('Formato TI-G') || a.nombre.includes('Formato PP-H')
+      );
     }
     return this.archivos.some(a => a.nombre.includes(file));
   }
@@ -84,8 +87,10 @@ export class PazSalvoComponent {
       }
 
       // No permitir TI-G y PP-H al mismo tiempo
-      if ((file.name.includes('Formato TI-G') && this.isUploaded('Formato PP-H')) ||
-          (file.name.includes('Formato PP-H') && this.isUploaded('Formato TI-G'))) {
+      if (
+        (file.name.includes('Formato TI-G') && this.isUploaded('Formato PP-H')) ||
+        (file.name.includes('Formato PP-H') && this.isUploaded('Formato TI-G'))
+      ) {
         this.snackBar.open('Solo puedes subir Formato TI-G o Formato PP-H, no ambos.', 'Cerrar', { duration: 4000 });
         continue;
       }
@@ -132,7 +137,7 @@ export class PazSalvoComponent {
     this.solicitudes.push({
       nombre: 'Solicitud paz y salvo',
       fecha: new Date().toLocaleDateString(),
-      estado: 'Revisión'
+      estado: SolicitudStatusEnum.ENVIADA   // 👈 usamos el enum aquí
     });
 
     this.snackBar.open('Solicitud enviada correctamente 🚀', 'Cerrar', { duration: 3000 });
