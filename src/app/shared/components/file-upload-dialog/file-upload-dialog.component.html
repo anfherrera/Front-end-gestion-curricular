@@ -1,24 +1,18 @@
-<h2 class="titulo">Adjuntar Documentación Requerida</h2>
-
-<!-- Botón para seleccionar archivos -->
 <div class="upload-section">
-  <label class="upload-btn">
+  <label class="file-label">
     <mat-icon>cloud_upload</mat-icon> Subir Archivos
-    <input type="file" (change)="onFileSelected($event)" multiple accept=".pdf" hidden />
+    <input type="file" (change)="onFileSelected($event)" multiple hidden />
   </label>
 </div>
 
-<!-- Tabla para mostrar archivos subidos -->
-<table *ngIf="archivos.length > 0" class="file-table">
+<table *ngIf="archivos.length > 0" class="table-archivos">
   <tr>
-    <th>Documento (estandarizado)</th>
-    <th>Archivo original</th>
+    <th>Nombre</th>
     <th>Fecha</th>
     <th>Acciones</th>
   </tr>
   <tr *ngFor="let archivo of archivos; let i = index">
-    <td><strong>{{ archivo.nombre }}</strong></td>
-    <td class="original">{{ archivo.originalName }}</td>
+    <td>{{ archivo.nombre }}</td>
     <td>{{ archivo.fecha }}</td>
     <td>
       <button mat-icon-button color="warn" (click)="removeFile(i)" aria-label="Eliminar">
@@ -28,28 +22,8 @@
   </tr>
 </table>
 
-<!-- Checklist interactiva -->
-<div class="checklist">
-  <h3>Documentos requeridos</h3>
-  <ul>
-    <li *ngFor="let doc of documentosRequeridos">
-      <mat-icon [color]="tieneDocumento(doc) ? 'primary' : ''">
-        {{ tieneDocumento(doc) ? 'check_circle' : 'radio_button_unchecked' }}
-      </mat-icon>
-      {{ doc }}
-    </li>
-    <li>
-      <mat-icon [color]="tieneExclusivo() ? 'primary' : ''">
-        {{ tieneExclusivo() ? 'check_circle' : 'radio_button_unchecked' }}
-      </mat-icon>
-      Formato TI-G <strong>o</strong> Formato PP-H (solo uno)
-    </li>
-  </ul>
-</div>
-
-<!-- Botón para enviar solicitud -->
-<div class="send-btn">
-  <button mat-raised-button color="primary" (click)="enviarSolicitud()" [disabled]="!canSend()">
+<div class="enviar-solicitud">
+  <button mat-raised-button color="primary" (click)="enviar()" [disabled]="!canSend()">
     Enviar Solicitud
   </button>
 </div>

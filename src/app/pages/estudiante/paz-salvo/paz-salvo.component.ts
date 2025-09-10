@@ -1,19 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { Solicitud } from '../../../core/models/procesos.model';   // 👈 usamos Solicitud real
-import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
+import { FileUploadComponent, Documento } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
+import { Solicitud, Archivo } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
-
-interface Archivo {
-  nombre: string;
-  fecha: string;
-}
 
 @Component({
   selector: 'app-paz-salvo',
@@ -21,129 +15,73 @@ interface Archivo {
   imports: [
     CommonModule,
     MatCardModule,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
     RequestStatusTableComponent,
-    RequiredDocsComponent
+    FileUploadComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
 })
 export class PazSalvoComponent {
-  archivos: Archivo[] = [];
   solicitudes: Solicitud[] = [];
 
-  // Lista de documentos requeridos
-  requiredFiles = [
-    'Formato PM-FO-4-FOR-27',
-    'Autorización para publicar',
-    'Resultado pruebas SaberPro',
-    'Formato de hoja de vida académica',
-    'Formato TI-G o Formato PP-H',
-    'Comprobante de pago de derechos de sustentación',
-    'Documento final del trabajo de grado'
+  documentosRequeridos: Documento[] = [
+    { label: 'Formato PM-FO-4-FOR-27', obligatorio: true },
+    { label: 'Autorización para publicar', obligatorio: true },
+    { label: 'Resultado pruebas SaberPro', obligatorio: false },
+    { label: 'Formato de hoja de vida académica', obligatorio: true },
+    { label: 'Comprobante de pago de derechos de sustentación', obligatorio: true },
+    { label: 'Documento final del trabajo de grado', obligatorio: true }
   ];
 
-  displayedColumns: string[] = ['nombre', 'fecha', 'acciones'];
+  documentosExclusivos: Documento[] = [
+    { label: 'Formato TI-G', obligatorio: true },
+    { label: 'Formato PP-H', obligatorio: true }
+  ];
 
   constructor(private snackBar: MatSnackBar) {}
 
-  // Verifica si un archivo requerido ya fue subido
-  isUploaded(file: string): boolean {
-    if (file === 'Formato TI-G o Formato PP-H') {
-      return this.archivos.some(a =>
-        a.nombre.includes('Formato TI-G') || a.nombre.includes('Formato PP-H')
-      );
-    }
-    return this.archivos.some(a => a.nombre.includes(file));
-  }
-
-  // Manejar archivos seleccionados
-  onFilesSelected(event: any) {
-    const selectedFiles: FileList = event.target.files;
-    let nuevosArchivos = false;
-
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles.item(i);
-      if (!file) continue;
-
-      // Solo PDFs
-      if (!file.name.toLowerCase().endsWith('.pdf')) {
-        this.snackBar.open(`El archivo ${file.name} no es un PDF válido`, 'Cerrar', { duration: 3000 });
-        continue;
-      }
-
-      // Validar que el nombre corresponda a un requerido
-      const valido = this.requiredFiles.some(req =>
-        req === 'Formato TI-G o Formato PP-H'
-          ? file.name.includes('Formato TI-G') || file.name.includes('Formato PP-H')
-          : file.name.includes(req)
-      );
-
-      if (!valido) {
-        this.snackBar.open(`El archivo ${file.name} no corresponde a ningún documento requerido`, 'Cerrar', { duration: 3000 });
-        continue;
-      }
-
-      // No permitir TI-G y PP-H al mismo tiempo
-      if (
-        (file.name.includes('Formato TI-G') && this.isUploaded('Formato PP-H')) ||
-        (file.name.includes('Formato PP-H') && this.isUploaded('Formato TI-G'))
-      ) {
-        this.snackBar.open('Solo puedes subir Formato TI-G o Formato PP-H, no ambos.', 'Cerrar', { duration: 4000 });
-        continue;
-      }
-
-      // Evitar duplicados exactos
-      if (this.archivos.some(a => a.nombre === file.name)) {
-        this.snackBar.open(`El archivo ${file.name} ya fue cargado`, 'Cerrar', { duration: 3000 });
-        continue;
-      }
-
-      // Agregar archivo válido
-      this.archivos.push({ nombre: file.name, fecha: new Date().toLocaleDateString() });
-      nuevosArchivos = true;
-    }
-
-    if (nuevosArchivos) {
-      this.archivos = [...this.archivos]; // refrescar tabla
-      this.snackBar.open('Archivos agregados correctamente', 'Cerrar', { duration: 2000 });
-    }
-  }
-
-  // Eliminar archivo
-  eliminarArchivo(index: number) {
-    this.archivos.splice(index, 1);
-    this.archivos = [...this.archivos]; // refrescar tabla
-    this.snackBar.open('Archivo eliminado', 'Cerrar', { duration: 2000 });
-  }
-
-  // Verifica si se pueden enviar todos los archivos
-  canSend(): boolean {
-    const obligatorios = this.requiredFiles.filter(f => f !== 'Formato TI-G o Formato PP-H');
-    const todosObligatorios = obligatorios.every(f => this.isUploaded(f));
-    const unoDeDos = this.isUploaded('Formato TI-G o Formato PP-H');
-    return todosObligatorios && unoDeDos;
-  }
-
-  // Enviar solicitud
-  enviarSolicitud() {
-    if (!this.canSend()) {
-      this.snackBar.open('Debes subir todos los archivos requeridos antes de enviar', 'Cerrar', { duration: 4000 });
-      return;
-    }
-
+  /** Maneja archivos enviados desde FileUploadComponent */
+  onSolicitudEnviada(archivos: Archivo[]) {
     this.solicitudes.push({
-      id: Date.now(), // 👈 ID generado localmente
+      id: Date.now(),
       nombre: 'Solicitud paz y salvo',
       fecha: new Date().toLocaleDateString(),
       estado: SolicitudStatusEnum.ENVIADA,
-      oficioUrl: '' // opcional por ahora
+      oficioUrl: '',
+      archivos
     });
 
     this.snackBar.open('Solicitud enviada correctamente 🚀', 'Cerrar', { duration: 3000 });
-    this.archivos = []; // Limpiar después de enviar
+  }
+
+  // --- Métodos para mostrar iconos de estado ---
+  isUploaded(doc: Documento, archivos: Archivo[]): boolean {
+    return archivos.some(a => a.nombre.replace(/\.[^/.]+$/, '') === doc.label);
+  }
+
+  getDocClass(doc: Documento): string {
+    const archivosSubidos = this.solicitudes.flatMap(s => s.archivos || []);
+    return this.isUploaded(doc, archivosSubidos) ? 'success' : doc.obligatorio ? 'pending' : 'optional';
+  }
+
+  getIconClass(doc: Documento): string {
+    return this.getDocClass(doc) === 'success' ? 'icon-success' : 'icon-pending';
+  }
+
+  getIcon(doc: Documento): string {
+    return this.getDocClass(doc) === 'success' ? 'check_circle' : 'cancel';
+  }
+
+  getExclusivoClass(): string {
+    const archivosSubidos = this.solicitudes.flatMap(s => s.archivos || []);
+    const subido = this.documentosExclusivos.some(d => this.isUploaded(d, archivosSubidos));
+    return subido ? 'success' : 'pending';
+  }
+
+  get documentosExclusivosText(): string {
+    return this.documentosExclusivos.map(d => d.label).join(' o ') + ' (solo uno)';
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
-import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component'; // 👈 importa el hijo
+import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component';
 
 @Component({
   selector: 'app-request-status-table',
@@ -18,15 +18,22 @@ import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.comp
     MatIconModule,
     MatTooltipModule,
     MatButtonModule,
-    OficioDescargaComponent // 👈 registra el hijo aquí
+    OficioDescargaComponent
   ],
   templateUrl: './request-status.component.html',
   styleUrls: ['./request-status.component.css']
 })
-export class RequestStatusTableComponent {
+export class RequestStatusTableComponent implements OnInit {
   @Input() solicitudes: Solicitud[] = [];
+  @Input() showOficio: boolean = true; // 👈 controla si se muestra la columna
 
-  displayedColumns: string[] = ['nombre', 'fecha', 'estado', 'acciones'];
+  displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
+
+  ngOnInit() {
+    if (this.showOficio) {
+      this.displayedColumns.push('acciones');
+    }
+  }
 
   getEstadoIcon(estado: SolicitudStatusEnum): string {
     switch (estado) {

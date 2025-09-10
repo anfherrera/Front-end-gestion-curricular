@@ -1,71 +1,50 @@
 <div class="paz-salvo-container">
 
-  <!-- Documentación requerida -->
-  <app-required-docs
-    [requiredFiles]="requiredFiles"
-    [archivos]="archivos">
-  </app-required-docs>
-
-  <!-- Adjuntar archivos -->
+  <!-- 1. Documentación requerida -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Adjuntar documentación</mat-card-title>
+    <mat-card-title class="card-title">Adjuntar Documentación Requerida</mat-card-title>
     <mat-card-content>
-      <label class="file-label">
-        <mat-icon>cloud_upload</mat-icon> Seleccionar archivos
-        <input
-          type="file"
-          (change)="onFilesSelected($event)"
-          multiple
-          accept=".pdf"
-          class="file-input"/>
-      </label>
+      <ul class="required-list">
+        <li *ngFor="let doc of documentosRequeridos" [ngClass]="getDocClass(doc)">
+          <mat-icon [ngClass]="getIconClass(doc)">
+            {{ getIcon(doc) }}
+          </mat-icon>
+          {{ doc.label }}
+        </li>
 
-      <table mat-table [dataSource]="archivos" class="table-archivos" *ngIf="archivos.length > 0">
-        <!-- Nombre -->
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef> Nombre </th>
-          <td mat-cell *matCellDef="let archivo">{{ archivo.nombre }}</td>
-        </ng-container>
-
-        <!-- Fecha -->
-        <ng-container matColumnDef="fecha">
-          <th mat-header-cell *matHeaderCellDef> Fecha </th>
-          <td mat-cell *matCellDef="let archivo">{{ archivo.fecha }}</td>
-        </ng-container>
-
-        <!-- Acciones -->
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef> Acciones </th>
-          <td mat-cell *matCellDef="let archivo; let i = index">
-            <button mat-icon-button color="warn" (click)="eliminarArchivo(i)" aria-label="Eliminar archivo">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-
-      <div class="enviar-solicitud">
-        <button mat-raised-button
-                [disabled]="!canSend()"
-                [ngClass]="{'btn-activo': canSend(), 'btn-inactivo': !canSend()}"
-                (click)="enviarSolicitud()">
-          Enviar solicitud
-        </button>
-      </div>
+        <li *ngIf="documentosExclusivos.length" [ngClass]="getExclusivoClass()">
+          <mat-icon [ngClass]="getExclusivoClass() === 'success' ? 'icon-success' : 'icon-pending'">
+            {{ getExclusivoClass() === 'success' ? 'check_circle' : 'cancel' }}
+          </mat-icon>
+          {{ documentosExclusivosText }}
+        </li>
+      </ul>
     </mat-card-content>
   </mat-card>
 
-  <!-- Seguimiento -->
+  <!-- 2. Subir Archivos -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Subir Archivos</mat-card-title>
+    <mat-card-content>
+      <app-file-upload
+        [documentosRequeridos]="documentosRequeridos"
+        [documentosExclusivos]="documentosExclusivos"
+        (enviarSolicitud)="onSolicitudEnviada($event)">
+      </app-file-upload>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- 3. Seguimiento de solicitud -->
   <mat-card class="card-section">
     <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
     <mat-card-content>
       <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
         No se ha enviado ninguna solicitud aún.
       </p>
-      <app-request-status-table *ngIf="solicitudes.length > 0" [solicitudes]="solicitudes"></app-request-status-table>
+      <app-request-status-table
+        *ngIf="solicitudes.length > 0"
+        [solicitudes]="solicitudes">
+      </app-request-status-table>
     </mat-card-content>
   </mat-card>
 

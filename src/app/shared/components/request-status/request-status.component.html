@@ -23,8 +23,8 @@
     </td>
   </ng-container>
 
-  <!-- Acciones -->
-  <ng-container matColumnDef="acciones">
+  <!-- Acciones (solo si showOficio=true) -->
+  <ng-container *ngIf="showOficio" matColumnDef="acciones">
     <th mat-header-cell *matHeaderCellDef> Oficio/Resolución </th>
     <td mat-cell *matCellDef="let element">
       <app-oficio-descarga [solicitud]="element"></app-oficio-descarga>
