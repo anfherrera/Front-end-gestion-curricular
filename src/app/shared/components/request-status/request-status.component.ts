@@ -4,14 +4,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
-import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
 
-export interface SolicitudStatus {
-  nombre: string;
-  fecha: string;
-  estado: SolicitudStatusEnum;   // usamos el enum aquí
-  oficioUrl?: string;            // URL del oficio o resolución si existe
-}
+import { Solicitud } from '../../../core/models/procesos.model';
+import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
+import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component'; // 👈 importa el hijo
 
 @Component({
   selector: 'app-request-status-table',
@@ -21,13 +17,14 @@ export interface SolicitudStatus {
     MatTableModule,
     MatIconModule,
     MatTooltipModule,
-    MatButtonModule
+    MatButtonModule,
+    OficioDescargaComponent // 👈 registra el hijo aquí
   ],
   templateUrl: './request-status.component.html',
   styleUrls: ['./request-status.component.css']
 })
 export class RequestStatusTableComponent {
-  @Input() solicitudes: SolicitudStatus[] = [];
+  @Input() solicitudes: Solicitud[] = [];
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado', 'acciones'];
 

@@ -10,18 +10,16 @@
   <mat-card class="card-section">
     <mat-card-title class="card-title">Adjuntar documentación</mat-card-title>
     <mat-card-content>
-      <label class="file-label" for="file-input">
+      <label class="file-label">
         <mat-icon>cloud_upload</mat-icon> Seleccionar archivos
+        <input
+          type="file"
+          (change)="onFilesSelected($event)"
+          multiple
+          accept=".pdf"
+          class="file-input"/>
       </label>
-      <input
-        id="file-input"
-        type="file"
-        (change)="onFilesSelected($event)"
-        multiple
-        accept=".pdf"
-        class="file-input"/>
 
-      <!-- Tabla de archivos cargados -->
       <table mat-table [dataSource]="archivos" class="table-archivos" *ngIf="archivos.length > 0">
         <!-- Nombre -->
         <ng-container matColumnDef="nombre">
@@ -49,7 +47,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      <!-- Botón enviar -->
       <div class="enviar-solicitud">
         <button mat-raised-button
                 [disabled]="!canSend()"
@@ -65,12 +62,10 @@
   <mat-card class="card-section">
     <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
     <mat-card-content>
-      <ng-container *ngIf="solicitudes.length > 0; else noSolicitudes">
-        <app-request-status-table [solicitudes]="solicitudes"></app-request-status-table>
-      </ng-container>
-      <ng-template #noSolicitudes>
-        <p class="sin-solicitudes">No se ha enviado ninguna solicitud aún.</p>
-      </ng-template>
+      <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
+        No se ha enviado ninguna solicitud aún.
+      </p>
+      <app-request-status-table *ngIf="solicitudes.length > 0" [solicitudes]="solicitudes"></app-request-status-table>
     </mat-card-content>
   </mat-card>
 

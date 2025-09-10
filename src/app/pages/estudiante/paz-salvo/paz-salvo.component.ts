@@ -5,7 +5,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { RequestStatusTableComponent, SolicitudStatus } from '../../../shared/components/request-status/request-status.component';
+import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
+import { Solicitud } from '../../../core/models/procesos.model';   // 👈 usamos Solicitud real
 import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
 import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
 
@@ -32,7 +33,7 @@ interface Archivo {
 })
 export class PazSalvoComponent {
   archivos: Archivo[] = [];
-  solicitudes: SolicitudStatus[] = [];
+  solicitudes: Solicitud[] = [];
 
   // Lista de documentos requeridos
   requiredFiles = [
@@ -135,9 +136,11 @@ export class PazSalvoComponent {
     }
 
     this.solicitudes.push({
+      id: Date.now(), // 👈 ID generado localmente
       nombre: 'Solicitud paz y salvo',
       fecha: new Date().toLocaleDateString(),
-      estado: SolicitudStatusEnum.ENVIADA   // 👈 usamos el enum aquí
+      estado: SolicitudStatusEnum.ENVIADA,
+      oficioUrl: '' // opcional por ahora
     });
 
     this.snackBar.open('Solicitud enviada correctamente 🚀', 'Cerrar', { duration: 3000 });

@@ -1,6 +1,6 @@
 <table mat-table [dataSource]="solicitudes" class="mat-elevation-z8">
 
-  <!-- Nombre de la solicitud -->
+  <!-- Nombre -->
   <ng-container matColumnDef="nombre">
     <th mat-header-cell *matHeaderCellDef> Solicitud </th>
     <td mat-cell *matCellDef="let element"> {{ element.nombre }} </td>
@@ -27,14 +27,7 @@
   <ng-container matColumnDef="acciones">
     <th mat-header-cell *matHeaderCellDef> Oficio/Resolución </th>
     <td mat-cell *matCellDef="let element">
-      <a *ngIf="element.oficioUrl"
-         [href]="element.oficioUrl"
-         download
-         mat-raised-button
-         color="primary">
-        <mat-icon>download</mat-icon> Descargar
-      </a>
-      <span *ngIf="!element.oficioUrl">No disponible</span>
+      <app-oficio-descarga [solicitud]="element"></app-oficio-descarga>
     </td>
   </ng-container>
 
