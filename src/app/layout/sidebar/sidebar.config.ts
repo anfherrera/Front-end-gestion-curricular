@@ -1,6 +1,5 @@
 // src/app/layout/sidebar/sidebar.config.ts
-
-export type UserRole = 'admin' | 'funcionario' | 'coordinador' | 'secretaria' | 'estudiante';
+import { UserRole } from "../../core/models/roles.ennum";
 
 export interface SidebarItem {
   label: string;
@@ -10,10 +9,28 @@ export interface SidebarItem {
   roles: UserRole[];
 }
 
-const ALL_ROLES: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria', 'estudiante'];
-const ADMIN_AND_FUNCIONARIO: UserRole[] = ['admin', 'funcionario'];
-const ADMIN_FUNC_COORD_SEC: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria'];
+// Arrays de roles para filtrado rápido
+const ALL_ROLES: UserRole[] = [
+  UserRole.ADMIN, 
+  UserRole.FUNCIONARIO, 
+  UserRole.COORDINADOR, 
+  UserRole.SECRETARIA, 
+  UserRole.ESTUDIANTE
+];
 
+const ADMIN_AND_FUNCIONARIO: UserRole[] = [
+  UserRole.ADMIN, 
+  UserRole.FUNCIONARIO
+];
+
+const ADMIN_FUNC_COORD_SEC: UserRole[] = [
+  UserRole.ADMIN, 
+  UserRole.FUNCIONARIO, 
+  UserRole.COORDINADOR, 
+  UserRole.SECRETARIA
+];
+
+// Items del sidebar
 export const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     label: 'Inicio',
@@ -22,67 +39,67 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
     roles: ALL_ROLES
   },
 
-  // Paz y Salvo por rol (sin admin)
+  // Paz y Salvo por rol
   {
     label: 'Proceso Paz y Salvo',
     icon: 'check_circle',
     route: '/estudiante/paz-salvo',
-    roles: ['estudiante']
+    roles: [UserRole.ESTUDIANTE]
   },
   {
     label: 'Proceso Paz y Salvo',
     icon: 'check_circle',
     route: '/funcionario/paz-salvo',
-    roles: ['funcionario']
+    roles: [UserRole.FUNCIONARIO]
   },
   {
     label: 'Proceso Paz y Salvo',
     icon: 'check_circle',
     route: '/coordinador/paz-salvo',
-    roles: ['coordinador']
+    roles: [UserRole.COORDINADOR]
   },
   {
     label: 'Proceso Paz y Salvo',
     icon: 'check_circle',
     route: '/secretaria/paz-salvo',
-    roles: ['secretaria']
+    roles: [UserRole.SECRETARIA]
   },
 
   {
     label: 'Pruebas ECAES',
     icon: 'assignment',
     route: '/pruebas-ecaes',
-    roles: [...ADMIN_AND_FUNCIONARIO, 'estudiante']
+    roles: [...ADMIN_AND_FUNCIONARIO, UserRole.ESTUDIANTE]
   },
   {
     label: 'Cursos Intersemestrales',
     icon: 'school',
     route: '/cursos-intersemestrales',
-    roles: [...ADMIN_AND_FUNCIONARIO, 'estudiante']
+    roles: [...ADMIN_AND_FUNCIONARIO, UserRole.ESTUDIANTE]
   },
   {
     label: 'Reingreso Estudiante',
     icon: 'person_add',
     route: '/reingreso-estudiante',
-    roles: [...ADMIN_FUNC_COORD_SEC, 'estudiante']
+    roles: [...ADMIN_FUNC_COORD_SEC, UserRole.ESTUDIANTE]
   },
   {
     label: 'Homologación de Asignaturas',
     icon: 'sync_alt',
     route: '/homologacion-asignaturas',
-    roles: [...ADMIN_FUNC_COORD_SEC, 'estudiante']
+    roles: [...ADMIN_FUNC_COORD_SEC, UserRole.ESTUDIANTE]
   },
   {
     label: 'Módulo Estadístico',
     icon: 'bar_chart',
     route: '/modulo-estadistico',
-    roles: ['admin', 'funcionario', 'coordinador']
+    roles: [UserRole.ADMIN, UserRole.FUNCIONARIO, UserRole.COORDINADOR]
   },
   {
     label: 'Ajustes',
     icon: 'settings',
     route: '/ajustes',
-    roles: ['admin']
+    roles: [UserRole.ADMIN]
   },
 
   // Cerrar sesión y minimizar

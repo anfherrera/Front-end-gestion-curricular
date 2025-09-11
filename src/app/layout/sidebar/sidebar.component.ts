@@ -21,32 +21,18 @@ export class SidebarComponent {
   @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
   menuItems: ConfigSidebarItem[] = [];
-  private roleLower: UserRole;
+  private role: UserRole;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog
   ) {
-    // Obtener rol del backend
-    const backendRole = this.authService.getRole(); // puede ser "Secretario", "Estudiante", etc.
-    this.roleLower = this.mapBackendRoleToUserRole(backendRole);
+    // Obtener rol directamente como enum
+    this.role = this.authService.getRole();
 
     // Filtrar items visibles según rol
-    this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(this.roleLower));
-  }
-
-  // Normaliza los roles que vienen del backend al UserRole usado en frontend
-  private mapBackendRoleToUserRole(backendRole: string | null | undefined): UserRole {
-    switch (backendRole?.toLowerCase()) {
-      case 'admin': return UserRole.ADMIN;
-      case 'funcionario': return UserRole.FUNCIONARIO;
-      case 'coordinador': return UserRole.COORDINADOR;
-      case 'secretario':
-      case 'secretaria': return UserRole.SECRETARIA;
-      case 'estudiante': return UserRole.ESTUDIANTE;
-      default: return UserRole.ESTUDIANTE; // fallback por seguridad
-    }
+    this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(this.role));
   }
 
   onItemClick(item: ConfigSidebarItem) {
@@ -63,7 +49,7 @@ export class SidebarComponent {
     if (!item.route) return;
 
     // Solo estudiantes abren el diálogo de Paz y Salvo
-    if (item.route === '/estudiante/paz-salvo' && this.roleLower === UserRole.ESTUDIANTE) {
+    if (item.route === '/estudiante/paz-salvo' && this.role === UserRole.ESTUDIANTE) {
       const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
       dialogRef.afterClosed().subscribe(result => {
         if (result) this.router.navigate(['/estudiante/paz-salvo']);
