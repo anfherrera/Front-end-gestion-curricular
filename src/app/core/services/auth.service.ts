@@ -1,5 +1,7 @@
+// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserRole } from '../models/roles.ennum';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -7,7 +9,7 @@ export class AuthService {
   private readonly USER_KEY = 'usuario';
   private readonly ROLE_KEY = 'userRole';
   private readonly EXP_KEY = 'tokenExp';
-  private role: string | null = null;
+  private role: UserRole | null = null;
   private logoutTimer: any;
 
   constructor(private router: Router) {}
@@ -16,12 +18,11 @@ export class AuthService {
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
 
-    // Extraer fecha de expiración del token
+    // Extraer fecha de expiración del token (JWT)
     const payload = JSON.parse(atob(token.split('.')[1]));
     const exp = payload.exp * 1000; // milisegundos
     localStorage.setItem(this.EXP_KEY, exp.toString());
 
-    // Programar logout automático
     this.startLogoutTimer(exp);
   }
 
@@ -48,22 +49,33 @@ export class AuthService {
 
   // ===== ROL NORMALIZADO =====
   setRole(role: string): void {
-    let normalizedRole: string;
     switch (role.toLowerCase()) {
-      case 'admin': normalizedRole = 'admin'; break;
-      case 'funcionario': normalizedRole = 'funcionario'; break;
-      case 'coordinador': normalizedRole = 'coordinador'; break;
+      case 'admin':
+        this.role = UserRole.ADMIN;
+        break;
+      case 'funcionario':
+        this.role = UserRole.FUNCIONARIO;
+        break;
+      case 'coordinador':
+        this.role = UserRole.COORDINADOR;
+        break;
       case 'secretario':
-      case 'secretaria': normalizedRole = 'secretaria'; break;
+      case 'secretaria':
+        this.role = UserRole.SECRETARIA;
+        break;
       case 'estudiante':
-      default: normalizedRole = 'estudiante';
+      default:
+        this.role = UserRole.ESTUDIANTE;
     }
-    this.role = normalizedRole;
-    localStorage.setItem(this.ROLE_KEY, normalizedRole);
+    localStorage.setItem(this.ROLE_KEY, this.role);
   }
 
-  getRole(): string | null {
-    return this.role ?? localStorage.getItem(this.ROLE_KEY);
+  getRole(): UserRole {
+    if (!this.role) {
+      const stored = localStorage.getItem(this.ROLE_KEY) as UserRole | null;
+      this.role = stored ?? UserRole.ESTUDIANTE;
+    }
+    return this.role;
   }
 
   // ===== AUTENTICACIÓN =====
@@ -98,6 +110,7 @@ export class AuthService {
     }
   }
 
+  // Restaurar timer tras recargar la página
   restoreSession(): void {
     const exp = localStorage.getItem(this.EXP_KEY);
     if (exp) this.startLogoutTimer(Number(exp));
