@@ -1,29 +1,48 @@
+<!-- src/app/pages/funcionario/paz-salvo/paz-salvo.component.html -->
 <div class="funcionario-container">
 
-  <!-- Selector de solicitudes -->
+  <!-- Contenedor de solicitudes -->
   <mat-card class="card-section">
     <mat-card-title class="card-title">Solicitudes a Realizar</mat-card-title>
     <mat-card-content>
-      <mat-form-field appearance="fill" style="width: 100%;">
-        <mat-label>Selecciona una solicitud</mat-label>
-        <mat-select [(value)]="selectedSolicitud">
-          <mat-option *ngFor="let solicitud of solicitudes" [value]="solicitud">
-            {{ solicitud.id }} - {{ solicitud.documentos.length }} documento(s) - {{ solicitud.fecha }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <table mat-table [dataSource]="solicitudes" class="tabla-solicitudes" *ngIf="solicitudes.length > 0">
+        <!-- Nombre del solicitante -->
+        <ng-container matColumnDef="solicitante">
+          <th mat-header-cell *matHeaderCellDef>Solicitante</th>
+          <td mat-cell *matCellDef="let solicitud">{{ solicitud.solicitante }}</td>
+        </ng-container>
 
-      <div *ngIf="selectedSolicitud" style="margin-top: 8px;">
-        <p><strong>Solicitante:</strong> {{ selectedSolicitud.id }} - <strong>Fecha:</strong> {{ selectedSolicitud.fecha }}</p>
-      </div>
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let solicitud">{{ solicitud.fecha }}</td>
+        </ng-container>
+
+        <!-- Acción -->
+        <ng-container matColumnDef="accion">
+          <th mat-header-cell *matHeaderCellDef>Seleccionar</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <button mat-icon-button color="primary" (click)="seleccionarSolicitud(solicitud)">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['solicitante','fecha','accion']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['solicitante','fecha','accion'];"></tr>
+      </table>
+
+      <p *ngIf="solicitudes.length === 0" style="text-align:center; color: gray;">
+        No hay solicitudes pendientes
+      </p>
     </mat-card-content>
   </mat-card>
 
-  <!-- Documentación adjunta -->
+  <!-- Documentos -->
   <mat-card class="card-section" *ngIf="selectedSolicitud">
     <mat-card-title class="card-title">Documentación Adjunta</mat-card-title>
     <mat-card-content>
-      <div *ngFor="let archivo of archivosDelEstudiante" class="archivo-item" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <div *ngFor="let archivo of archivosDelEstudiante" class="archivo-item">
         <span>{{ archivo.nombre }} - {{ archivo.fecha }}</span>
         <button mat-icon-button color="primary" (click)="verArchivo(archivo)">
           <mat-icon>visibility</mat-icon>
@@ -39,7 +58,7 @@
   </mat-card>
 
   <!-- Botones de acción -->
-  <div class="botones-acciones" style="margin-top: 16px; display: flex; gap: 16px;" *ngIf="selectedSolicitud">
+  <div class="botones-acciones" *ngIf="selectedSolicitud">
     <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">Rechazar Solicitud</button>
     <button mat-raised-button color="primary" (click)="terminarValidacionSeleccionada()">Terminar Validación</button>
   </div>

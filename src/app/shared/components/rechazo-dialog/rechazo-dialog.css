@@ -1,0 +1,14 @@
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+}
+
+textarea {
+  resize: none;
+}
+
+mat-dialog-actions {
+  margin-top: 12px;
+}

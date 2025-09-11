@@ -54,3 +54,24 @@
   justify-content: flex-end;
   margin-top: 16px;
 }
+.tabla-solicitudes {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.tabla-solicitudes th {
+  font-weight: bold;
+  background: #f0f0f0;
+}
+
+.tabla-solicitudes td, .tabla-solicitudes th {
+  padding: 8px;
+}
+
+.archivo-item.aprobado span {
+  color: green;
+}
+
+.archivo-item.rechazado span {
+  color: red;
+}

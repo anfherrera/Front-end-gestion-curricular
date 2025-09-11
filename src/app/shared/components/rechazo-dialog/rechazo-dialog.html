@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{ data.titulo || 'Rechazar solicitud' }}</h2>
+
+<mat-dialog-content>
+  <p>{{ data.descripcion || 'Por favor escribe el motivo del rechazo:' }}</p>
+
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <mat-label>{{ data.placeholder || 'Motivo de rechazo' }}</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="motivo"
+      cdkFocusInitial
+      rows="4">
+    </textarea>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()">Cancelar</button>
+  <button mat-raised-button color="warn" (click)="confirmar()" [disabled]="!motivo.trim()">
+    Rechazar
+  </button>
+</mat-dialog-actions>
