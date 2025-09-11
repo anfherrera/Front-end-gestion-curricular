@@ -16,17 +16,17 @@
     <mat-card-title class="card-title">Subir Archivos</mat-card-title>
     <mat-card-content>
       <app-file-upload
-        (archivosChange)="onArchivosChange($event)">
+        (archivosChange)="onArchivosChange($event)"
+        [reset]="resetFileUpload">
       </app-file-upload>
 
       <!-- Botón habilitado solo si cumple la validación -->
       <div class="enviar-solicitud" style="margin-top: 16px;">
         <button mat-raised-button class="btn-enviar"
-        (click)="onSolicitudEnviada()"
-        [disabled]="!puedeEnviar()">
-      Enviar Solicitud
-    </button>
-
+                [disabled]="!puedeEnviar()"
+                (click)="onSolicitudEnviada()">
+          Enviar Solicitud
+        </button>
       </div>
     </mat-card-content>
   </mat-card>

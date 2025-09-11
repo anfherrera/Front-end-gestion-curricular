@@ -32,6 +32,7 @@ export interface Documento {
 export class PazSalvoComponent {
   solicitudes: Solicitud[] = [];
   archivosActuales: Archivo[] = [];
+  resetFileUpload = false; // Para resetear hijo
 
   documentosRequeridos: Documento[] = [
     { label: 'Formato PM-FO-4-FOR-27.pdf', obligatorio: true },
@@ -46,8 +47,20 @@ export class PazSalvoComponent {
 
   constructor(private snackBar: MatSnackBar) {}
 
-  // Cuando cambian los archivos desde el componente hijo
+  // Manejo de archivos subidos
   onArchivosChange(archivos: Archivo[]) {
+    const exclusivosSubidos = archivos.filter(a =>
+      this.archivosExclusivos.includes(a.nombre.trim())
+    );
+
+    if (exclusivosSubidos.length > 1) {
+      alert(`Solo puedes subir uno de los archivos exclusivos: ${this.archivosExclusivos.join(' o ')}`);
+      // Mantener solo los archivos que no sean los nuevos exclusivos
+      archivos = this.archivosActuales.concat(
+        exclusivosSubidos.slice(-1) // conservar solo el último
+      );
+    }
+
     this.archivosActuales = archivos;
   }
 
@@ -64,23 +77,36 @@ export class PazSalvoComponent {
       archivos: [...this.archivosActuales]
     });
 
-    // Limpiar archivos seleccionados
+    // Limpiar archivos en padre y avisar al hijo
     this.archivosActuales = [];
-    this.snackBar.open('Solicitud enviada correctamente 🚀', 'Cerrar', { duration: 3000 });
+    this.resetFileUpload = true;
+    setTimeout(() => this.resetFileUpload = false);
+
+    this.snackBar.open('Solicitud enviada correctamente', 'Cerrar', { duration: 3000 });
   }
 
-  // Validación de archivos para habilitar botón
+  // Validación de envío
   puedeEnviar(): boolean {
-    // 1. Todos los obligatorios subidos
+    // Todos los obligatorios
     const todosObligatorios = this.documentosRequeridos
       .filter(d => d.obligatorio)
       .every(d => this.archivosActuales.some(a => a.nombre.trim() === d.label));
 
-    // 2. Exactamente uno de los archivos exclusivos subido
+    // Exactamente un archivo exclusivo
     const exclusivosSubidos = this.archivosActuales.filter(a =>
       this.archivosExclusivos.includes(a.nombre.trim())
     );
+    const tieneUnSoloExclusivo = exclusivosSubidos.length === 1;
 
-    return todosObligatorios && exclusivosSubidos.length === 1;
+    // Solo archivos permitidos
+    const nombresPermitidos = [
+      ...this.documentosRequeridos.map(d => d.label),
+      ...this.archivosExclusivos
+    ];
+    const soloArchivosPermitidos = this.archivosActuales.every(a =>
+      nombresPermitidos.includes(a.nombre.trim())
+    );
+
+    return todosObligatorios && tieneUnSoloExclusivo && soloArchivosPermitidos;
   }
 }
