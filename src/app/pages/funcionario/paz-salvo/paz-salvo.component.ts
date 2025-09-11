@@ -11,7 +11,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo } from '../../../core/models/procesos.model';
-import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog';
+import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 
 @Component({
   selector: 'app-paz-salvo-revision',

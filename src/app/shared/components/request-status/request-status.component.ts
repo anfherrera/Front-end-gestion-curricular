@@ -6,7 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 
 import { Solicitud } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
+import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component';
 
 @Component({

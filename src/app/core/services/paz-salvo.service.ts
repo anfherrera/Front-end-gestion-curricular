@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { Solicitud, Archivo } from '../models/procesos.model';
-import { SolicitudStatusEnum } from '../models/solicitud-status.enum';
+import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
 

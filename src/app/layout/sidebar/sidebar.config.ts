@@ -1,5 +1,5 @@
 // src/app/layout/sidebar/sidebar.config.ts
-import { UserRole } from "../../core/models/roles.ennum";
+import { UserRole } from "../../core/enums/roles.ennum";
 
 export interface SidebarItem {
   label: string;

@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Solicitud } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
+import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 @Component({
   selector: 'app-oficio-descarga',
   standalone: true,

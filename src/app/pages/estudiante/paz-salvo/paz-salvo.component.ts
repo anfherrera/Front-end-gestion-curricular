@@ -10,7 +10,7 @@ import { FileUploadComponent } from '../../../shared/components/file-upload-dial
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/models/solicitud-status.enum';
+import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 
 @Component({
   selector: 'app-paz-salvo',

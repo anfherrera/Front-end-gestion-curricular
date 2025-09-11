@@ -24,8 +24,8 @@ export interface RechazoDialogData {
     MatInputModule,
     MatButtonModule
   ],
-  templateUrl: './rechazo-dialog.html',
-  styleUrls: ['./rechazo-dialog.css']
+  templateUrl: './rechazo-dialog.component.html',
+  styleUrls: ['./rechazo-dialog.component.css']
 })
 export class RechazoDialogComponent {
   motivo: string = '';

@@ -1,5 +1,5 @@
 // src/app/core/models/procesos.model.ts
-import { SolicitudStatusEnum } from './solicitud-status.enum';
+import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
 
