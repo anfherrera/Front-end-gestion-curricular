@@ -48,24 +48,24 @@ export class AuthService {
 
   // ===== ROL =====
   setRole(role: string): void {
-    // Mapear automáticamente el rol del backend al enum
-    switch (role?.toLowerCase()) {
-      case 'admin': this.role = UserRole.ADMIN; break;
-      case 'funcionario': this.role = UserRole.FUNCIONARIO; break;
-      case 'coordinador': this.role = UserRole.COORDINADOR; break;
+    let normalizedRole: UserRole;
+
+    switch (role.toLowerCase()) {
+      case 'admin': normalizedRole = UserRole.ADMIN; break;
+      case 'funcionario': normalizedRole = UserRole.FUNCIONARIO; break;
+      case 'coordinador': normalizedRole = UserRole.COORDINADOR; break;
       case 'secretario':
-      case 'secretaria': this.role = UserRole.SECRETARIA; break;
+      case 'secretaria': normalizedRole = UserRole.SECRETARIA; break;
       case 'estudiante':
-      default: this.role = UserRole.ESTUDIANTE; break;
+      default: normalizedRole = UserRole.ESTUDIANTE;
     }
-    localStorage.setItem(this.ROLE_KEY, this.role);
+
+    this.role = normalizedRole;
+    localStorage.setItem(this.ROLE_KEY, normalizedRole);
   }
 
-  getRole(): UserRole {
-    if (this.role) return this.role;
-    const storedRole = localStorage.getItem(this.ROLE_KEY) as UserRole | null;
-    this.role = storedRole ?? UserRole.ESTUDIANTE; // fallback seguro
-    return this.role;
+  getRole(): UserRole | null {
+    return this.role ?? (localStorage.getItem(this.ROLE_KEY) as UserRole | null);
   }
 
   // ===== AUTENTICACIÓN =====
@@ -78,7 +78,9 @@ export class AuthService {
 
   // ===== LOGOUT =====
   logout(showMessage: boolean = false): void {
-    if (showMessage) alert('⚠️ Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+    if (showMessage) {
+      alert('⚠️ Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+    }
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     localStorage.removeItem(this.ROLE_KEY);

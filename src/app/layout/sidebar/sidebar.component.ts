@@ -21,35 +21,36 @@ export class SidebarComponent {
   @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
   menuItems: ConfigSidebarItem[] = [];
-  private role: UserRole;
+  private roleLower: UserRole;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog
   ) {
-    // Obtener rol directamente como enum
-    this.role = this.authService.getRole();
+    const backendRole = this.authService.getRole();
+    this.roleLower = this.mapBackendRoleToUserRole(backendRole);
+    this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(this.roleLower));
+  }
 
-    // Filtrar items visibles según rol
-    this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(this.role));
+  private mapBackendRoleToUserRole(backendRole: string | null | undefined): UserRole {
+    switch (backendRole?.toLowerCase()) {
+      case 'admin': return UserRole.ADMIN;
+      case 'funcionario': return UserRole.FUNCIONARIO;
+      case 'coordinador': return UserRole.COORDINADOR;
+      case 'secretario':
+      case 'secretaria': return UserRole.SECRETARIA;
+      case 'estudiante': return UserRole.ESTUDIANTE;
+      default: return UserRole.ESTUDIANTE;
+    }
   }
 
   onItemClick(item: ConfigSidebarItem) {
-    if (item.action === 'logout') {
-      this.logout();
-      return;
-    }
-
-    if (item.action === 'toggle') {
-      this.toggleSidebar();
-      return;
-    }
-
+    if (item.action === 'logout') { this.logout(); return; }
+    if (item.action === 'toggle') { this.toggleSidebar(); return; }
     if (!item.route) return;
 
-    // Solo estudiantes abren el diálogo de Paz y Salvo
-    if (item.route === '/estudiante/paz-salvo' && this.role === UserRole.ESTUDIANTE) {
+    if (item.route === '/estudiante/paz-salvo' && this.roleLower === UserRole.ESTUDIANTE) {
       const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
       dialogRef.afterClosed().subscribe(result => {
         if (result) this.router.navigate(['/estudiante/paz-salvo']);
@@ -57,7 +58,6 @@ export class SidebarComponent {
       return;
     }
 
-    // Todos los demás roles navegan directo
     this.router.navigate([item.route]);
   }
 
