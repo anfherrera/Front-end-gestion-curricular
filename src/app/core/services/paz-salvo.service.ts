@@ -2,20 +2,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { SolicitudStatus } from '../models/solicitud-status.enum'; // tu enum actualizado
+import { SolicitudStatusEnum } from '../models/solicitud-status.enum';
 
 export interface Documento {
   id: number;
   nombre: string;
   fecha: string;
   url: string;
-  aprobado?: boolean; // opcional
+  aprobado?: boolean;
 }
 
 export interface Solicitud {
   id: number;
   fecha: string;
-  estado: SolicitudStatus;
+  estado: SolicitudStatusEnum;
   documentos: Documento[];
   comentarios?: string;
   oficioUrl?: string;
@@ -41,13 +41,13 @@ export class PazSalvoService {
       url: URL.createObjectURL(file)
     };
 
-    // Buscar solicitud pendiente o crear una nueva
-    let solicitud = this.solicitudes.find(s => s.estado === SolicitudStatus.Pendiente);
+    // Buscar solicitud en revisión por funcionario o crear una nueva
+    let solicitud = this.solicitudes.find(s => s.estado === SolicitudStatusEnum.EN_REVISION_FUNCIONARIO);
     if (!solicitud) {
       solicitud = {
         id: this.solicitudIdCounter++,
         fecha: new Date().toLocaleDateString(),
-        estado: SolicitudStatus.Pendiente,
+        estado: SolicitudStatusEnum.EN_REVISION_FUNCIONARIO,
         documentos: []
       };
       this.solicitudes.push(solicitud);
@@ -64,9 +64,9 @@ export class PazSalvoService {
 
   // Enviar solicitud
   sendRequest(studentId: number): Observable<Solicitud> {
-    const solicitud = this.solicitudes.find(s => s.estado === SolicitudStatus.Pendiente);
+    const solicitud = this.solicitudes.find(s => s.estado === SolicitudStatusEnum.EN_REVISION_FUNCIONARIO);
     if (solicitud) {
-      solicitud.estado = SolicitudStatus.EnRevisionFuncionario;
+      solicitud.estado = SolicitudStatusEnum.EN_REVISION_FUNCIONARIO; // ya está en revisión por funcionario
       return of(solicitud);
     }
     throw new Error('No hay documentos para enviar');
@@ -74,9 +74,9 @@ export class PazSalvoService {
 
   // Obtener solicitudes pendientes por rol
   getPendingRequests(role: 'funcionario' | 'coordinador'): Observable<Solicitud[]> {
-    let estado: SolicitudStatus;
-    if (role === 'funcionario') estado = SolicitudStatus.EnRevisionFuncionario;
-    if (role === 'coordinador') estado = SolicitudStatus.ValidacionCoordinador;
+    let estado: SolicitudStatusEnum;
+    if (role === 'funcionario') estado = SolicitudStatusEnum.EN_REVISION_FUNCIONARIO;
+    if (role === 'coordinador') estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR;
     return of(this.solicitudes.filter(s => s.estado === estado));
   }
 
@@ -97,7 +97,7 @@ export class PazSalvoService {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
 
-    solicitud.estado = SolicitudStatus.ValidacionCoordinador;
+    solicitud.estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR;
     return of(solicitud);
   }
 
@@ -106,7 +106,7 @@ export class PazSalvoService {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
 
-    solicitud.estado = SolicitudStatus.EnviadoSecretaria;
+    solicitud.estado = SolicitudStatusEnum.ENVIADA;
     return of(solicitud);
   }
 
@@ -115,7 +115,7 @@ export class PazSalvoService {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
 
-    solicitud.estado = SolicitudStatus.Rechazada;
+    solicitud.estado = SolicitudStatusEnum.RECHAZADA;
     solicitud.comentarios = comentarios;
     return of(solicitud);
   }
@@ -134,8 +134,8 @@ export class PazSalvoService {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
 
-    solicitud.estado = SolicitudStatus.Finalizada;
     solicitud.oficioUrl = `https://example.com/oficio/${solicitud.id}.pdf`; // mock
+    solicitud.estado = SolicitudStatusEnum.ENVIADA;
     return of(solicitud);
   }
 

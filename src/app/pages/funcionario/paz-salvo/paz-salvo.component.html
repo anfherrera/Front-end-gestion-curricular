@@ -1,1 +1,47 @@
-<p>paz-salvo works!</p>
+<div class="funcionario-container">
+
+  <!-- Selector de solicitudes -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Solicitudes a Realizar</mat-card-title>
+    <mat-card-content>
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label>Selecciona una solicitud</mat-label>
+        <mat-select [(value)]="selectedSolicitud">
+          <mat-option *ngFor="let solicitud of solicitudes" [value]="solicitud">
+            {{ solicitud.id }} - {{ solicitud.documentos.length }} documento(s) - {{ solicitud.fecha }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div *ngIf="selectedSolicitud" style="margin-top: 8px;">
+        <p><strong>Solicitante:</strong> {{ selectedSolicitud.id }} - <strong>Fecha:</strong> {{ selectedSolicitud.fecha }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Documentación adjunta -->
+  <mat-card class="card-section" *ngIf="selectedSolicitud">
+    <mat-card-title class="card-title">Documentación Adjunta</mat-card-title>
+    <mat-card-content>
+      <div *ngFor="let archivo of archivosDelEstudiante" class="archivo-item" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span>{{ archivo.nombre }} - {{ archivo.fecha }}</span>
+        <button mat-icon-button color="primary" (click)="verArchivo(archivo)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button color="accent" (click)="aprobarArchivo(archivo)">
+          <mat-icon>thumb_up</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="rechazarArchivo(archivo)">
+          <mat-icon>thumb_down</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Botones de acción -->
+  <div class="botones-acciones" style="margin-top: 16px; display: flex; gap: 16px;" *ngIf="selectedSolicitud">
+    <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">Rechazar Solicitud</button>
+    <button mat-raised-button color="primary" (click)="terminarValidacionSeleccionada()">Terminar Validación</button>
+  </div>
+
+</div>

@@ -1,0 +1,31 @@
+<mat-card class="solicitud-card">
+  <mat-card-title>Solicitud a realizar</mat-card-title>
+  <mat-card-content>
+    <div class="info-solicitud">
+      <div><strong>Solicitante:</strong> {{ solicitud.solicitante }}</div>
+      <div><strong>Fecha:</strong> {{ solicitud.fecha }}</div>
+      <div *ngIf="modo === 'funcionario'">
+        <strong>Seleccionar estudiante:</strong>
+        <select>
+          <option>{{ solicitud.solicitante }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="archivos-container">
+      <h4>Documentación adjunta</h4>
+      <app-archivo-list
+        [archivos]="solicitud.archivos"
+        [modo]="modo"
+        (aprobar)="onAprobarArchivo($event)"
+        (rechazar)="onRechazarArchivo($event)"
+        (ver)="onVerArchivo($event)">
+      </app-archivo-list>
+    </div>
+
+    <div class="acciones" *ngIf="modo === 'funcionario'">
+      <button mat-raised-button color="warn" (click)="onRechazarSolicitud()">Rechazar solicitud</button>
+      <button mat-raised-button color="primary" (click)="onTerminarValidacion()">Terminar validación</button>
+    </div>
+  </mat-card-content>
+</mat-card>

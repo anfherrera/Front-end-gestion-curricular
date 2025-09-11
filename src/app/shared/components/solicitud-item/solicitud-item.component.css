@@ -1,0 +1,23 @@
+.solicitud-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.info-solicitud {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.archivos-container h4 {
+  margin: 12px 0;
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
