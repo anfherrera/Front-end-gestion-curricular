@@ -1,1 +1,62 @@
-<p>paz-salvo works!</p>
+<div class="coordinador-container">
+
+  <!-- Solicitudes pendientes -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Solicitudes Pendientes</mat-card-title>
+    <mat-card-content>
+      <table mat-table [dataSource]="solicitudes" class="tabla-solicitudes" *ngIf="solicitudes.length > 0">
+
+        <ng-container matColumnDef="solicitante">
+          <th mat-header-cell *matHeaderCellDef>Solicitante</th>
+          <td mat-cell *matCellDef="let solicitud">{{ solicitud.nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let solicitud">{{ solicitud.fecha | date:'shortDate' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="accion">
+          <th mat-header-cell *matHeaderCellDef>Seleccionar</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <button mat-icon-button color="primary" (click)="seleccionarSolicitud(solicitud)" [disabled]="selectedSolicitud?.id === solicitud.id">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <p *ngIf="solicitudes.length === 0" class="mensaje-vacio">
+        No hay solicitudes pendientes
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Documentación de la solicitud seleccionada -->
+  <mat-card class="card-section" *ngIf="selectedSolicitud">
+    <mat-card-title class="card-title">Documentación Adjunta</mat-card-title>
+    <mat-card-content>
+      <app-archivo-list
+        [archivos]="archivosDelEstudiante"
+        [modo]="'funcionario'"
+        (ver)="verArchivo($event)"
+        (aprobar)="aprobarArchivo($event)"
+        (rechazar)="rechazarArchivo($event)">
+      </app-archivo-list>
+
+      <p *ngIf="archivosDelEstudiante.length === 0" class="mensaje-vacio">
+        No hay archivos cargados en esta solicitud.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Botones de acción para aprobar/rechazar toda la solicitud -->
+  <div class="botones-acciones" *ngIf="selectedSolicitud">
+    <button mat-raised-button color="primary" (click)="aprobarSolicitud()">Aprobar Solicitud</button>
+    <button mat-raised-button color="warn" (click)="rechazarSolicitud()">Rechazar Solicitud</button>
+  </div>
+
+</div>

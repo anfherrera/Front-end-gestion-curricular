@@ -20,7 +20,6 @@ export class PazSalvoService {
       nombre,
       originalName: file.name,
       fecha: new Date().toLocaleDateString()
-      // ❌ NO lo guardamos en this.solicitudes aquí, solo devolvemos el objeto
     };
     return of(archivo);
   }
@@ -66,7 +65,7 @@ export class PazSalvoService {
     return of(solicitud);
   }
 
-  // 📌 Aprobar solicitud
+  // 📌 Aprobar solicitud completa
   approveRequest(requestId: number): Observable<Solicitud> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) return throwError(() => 'Solicitud no encontrada');
@@ -75,7 +74,7 @@ export class PazSalvoService {
     return of(solicitud);
   }
 
-  // 📌 Rechazar solicitud
+  // 📌 Rechazar solicitud completa
   rejectRequest(requestId: number, comentarios: string): Observable<Solicitud> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) return throwError(() => 'Solicitud no encontrada');
@@ -84,6 +83,31 @@ export class PazSalvoService {
     solicitud.comentarios = comentarios;
     return of(solicitud);
   }
+
+// 📌 Aprobar un archivo individual dentro de la solicitud
+  approveDocument(requestId: number, nombreArchivo: string): Observable<Archivo> {
+    const solicitud = this.solicitudes.find(s => s.id === requestId);
+    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
+
+    const archivo = solicitud.archivos?.find(a => a.nombre === nombreArchivo);
+    if (!archivo) return throwError(() => 'Archivo no encontrado');
+
+    archivo.estado = 'aprobado'; // <-- ahora usamos tipado fuerte
+    return of(archivo);
+  }
+
+  // 📌 Rechazar un archivo individual dentro de la solicitud
+  rejectDocument(requestId: number, nombreArchivo: string): Observable<Archivo> {
+    const solicitud = this.solicitudes.find(s => s.id === requestId);
+    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
+
+    const archivo = solicitud.archivos?.find(a => a.nombre === nombreArchivo);
+    if (!archivo) return throwError(() => 'Archivo no encontrado');
+
+    archivo.estado = 'rechazado'; // <-- ahora usamos tipado fuerte
+    return of(archivo);
+  }
+
 
   // 📌 Generar oficio (simulación)
   generateOfficio(requestId: number): Observable<string> {

@@ -1,4 +1,3 @@
-// src/app/pages/paz-salvo/paz-salvo.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -34,6 +33,8 @@ export class PazSalvoComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   selectedSolicitud?: Solicitud;
 
+  displayedColumns: string[] = ['solicitante', 'fecha', 'accion'];
+
   constructor(
     private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
@@ -50,7 +51,7 @@ export class PazSalvoComponent implements OnInit {
         this.solicitudes = sols;
         if (sols.length) this.selectedSolicitud = sols[0];
       },
-      error: (err) => console.error('Error al cargar solicitudes', err)
+      error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
     });
   }
 
@@ -63,32 +64,22 @@ export class PazSalvoComponent implements OnInit {
   }
 
   verArchivo(archivo: Archivo): void {
-    this.snackBar.open(`Abrirías: ${archivo.originalName}`, 'Cerrar', { duration: 2000 });
-    // aquí puedes hacer window.open(archivo.url) si tuvieras un link real
+    if (archivo.url) {
+      window.open(archivo.url, '_blank');
+    } else {
+      this.snackBar.open(`No hay URL disponible para: ${archivo.originalName}`, 'Cerrar', { duration: 3000 });
+    }
   }
 
-  rechazarSolicitudSeleccionada(): void {
+  aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    const dialogRef = this.dialog.open(RechazoDialogComponent, {
-      width: '450px',
-      data: <RechazoDialogData>{
-        titulo: 'Rechazar solicitud',
-        descripcion: 'Por favor indique el motivo de rechazo de toda la solicitud.',
-        placeholder: 'Motivo de rechazo'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((motivo: string) => {
-      if (motivo) {
-        this.pazSalvoService.rejectRequest(this.selectedSolicitud!.id, motivo).subscribe({
-          next: () => {
-            this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
-            this.cargarSolicitudes();
-          },
-          error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
-        });
-      }
+    this.pazSalvoService.approveRequest(this.selectedSolicitud.id).subscribe({
+      next: () => {
+        this.snackBar.open('Solicitud aprobada ✅', 'Cerrar', { duration: 3000 });
+        this.cargarSolicitudes();
+      },
+      error: (err) => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
     });
   }
 
@@ -100,19 +91,32 @@ export class PazSalvoComponent implements OnInit {
         this.snackBar.open('Validación completada', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
       },
-      error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
+      error: (err) => this.snackBar.open('Error al terminar validación', 'Cerrar', { duration: 3000 })
     });
   }
 
-  aprobarSolicitudSeleccionada(): void {
+  rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    this.pazSalvoService.approveRequest(this.selectedSolicitud.id).subscribe({
-      next: () => {
-        this.snackBar.open('Solicitud aprobada ✅', 'Cerrar', { duration: 3000 });
-        this.cargarSolicitudes();
-      },
-      error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
+    const dialogRef = this.dialog.open(RechazoDialogComponent, {
+      width: '450px',
+      data: <RechazoDialogData>{
+        titulo: 'Rechazar solicitud',
+        descripcion: 'Indique el motivo de rechazo de toda la solicitud:',
+        placeholder: 'Motivo de rechazo'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((motivo: string) => {
+      if (motivo) {
+        this.pazSalvoService.rejectRequest(this.selectedSolicitud!.id, motivo).subscribe({
+          next: () => {
+            this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
+            this.cargarSolicitudes();
+          },
+          error: (err) => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
+        });
+      }
     });
   }
 }
