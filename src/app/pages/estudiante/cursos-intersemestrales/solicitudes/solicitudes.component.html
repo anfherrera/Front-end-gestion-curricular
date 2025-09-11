@@ -1,0 +1,17 @@
+<div class="solicitudes-container">
+  <h2>Mis solicitudes</h2>
+
+  <button mat-raised-button color="primary" (click)="nuevaSolicitud()">
+    Nueva Solicitud
+  </button>
+
+  <div class="solicitudes-list">
+    <mat-card class="solicitud-card" *ngFor="let solicitud of solicitudes">
+      <mat-card-title>Solicitud #{{ solicitud.id }}</mat-card-title>
+      <mat-card-content>
+        <p><strong>Fecha:</strong> {{ solicitud.fecha }}</p>
+        <p><strong>Estado:</strong> {{ solicitud.estado | titlecase }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

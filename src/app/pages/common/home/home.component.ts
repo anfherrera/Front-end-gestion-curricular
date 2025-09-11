@@ -43,25 +43,24 @@ export class HomeComponent implements OnInit {
     private dialog: MatDialog
   ) {}
 
- ngOnInit(): void {
-  const usuario = this.authService.getUsuario();
-  if (usuario) {
-    this.role = usuario.rol?.nombre ?? this.authService.getRole();
+  ngOnInit(): void {
+    const usuario = this.authService.getUsuario();
+    if (usuario) {
+      this.role = usuario.rol?.nombre ?? this.authService.getRole();
 
-    // Normalizamos y convertimos undefined → null
-    this.roleLower = this.role ? this.role.toLowerCase() : null;
+      // Normalizamos y convertimos undefined → null
+      this.roleLower = this.role ? this.role.toLowerCase() : null;
 
-    // Mapear "secretario" a "secretaria"
-    if (this.roleLower === 'secretario') this.roleLower = 'secretaria';
+      // Mapear "secretario" a "secretaria"
+      if (this.roleLower === 'secretario') this.roleLower = 'secretaria';
 
-    this.userName = usuario.nombre_completo ?? this.getUserName();
-  } else {
-    this.router.navigate(['/login']);
+      this.userName = usuario.nombre_completo ?? this.getUserName();
+    } else {
+      this.router.navigate(['/login']);
+    }
+
+    this.filterProcessesByRole();
   }
-
-  this.filterProcessesByRole();
-}
-
 
   private filterProcessesByRole(): void {
     if (!this.roleLower) return;
@@ -119,7 +118,7 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    // Navegación normal para otros procesos
+    // Navegación normal para todos los demás procesos (incluye cursos intersemestrales)
     this.router.navigate(['/' + process.route]);
   }
 

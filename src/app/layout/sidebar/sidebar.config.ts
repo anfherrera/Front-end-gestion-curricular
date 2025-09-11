@@ -34,11 +34,30 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Proceso Paz y Salvo', icon: 'check_circle', route: '/coordinador/paz-salvo', roles: [UserRole.COORDINADOR] },
   { label: 'Proceso Paz y Salvo', icon: 'check_circle', route: '/secretaria/paz-salvo', roles: [UserRole.SECRETARIA] },
 
-  { label: 'Pruebas ECAES', icon: 'assignment', route: '/pruebas-ecaes', roles: [...ADMIN_AND_FUNCIONARIO, UserRole.ESTUDIANTE] },
-  { label: 'Cursos Intersemestrales', icon: 'school', route: '/cursos-intersemestrales', roles: [...ADMIN_AND_FUNCIONARIO, UserRole.ESTUDIANTE] },
-  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/reingreso-estudiante', roles: [...ADMIN_FUNC_COORD_SEC, UserRole.ESTUDIANTE] },
-  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/homologacion-asignaturas', roles: [...ADMIN_FUNC_COORD_SEC, UserRole.ESTUDIANTE] },
-  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/modulo-estadistico', roles: [UserRole.ADMIN, UserRole.FUNCIONARIO, UserRole.COORDINADOR] },
+  // Pruebas ECAES
+  { label: 'Pruebas ECAES', icon: 'assignment', route: '/estudiante/pruebas-ecaes', roles: [UserRole.ESTUDIANTE] },
+  { label: 'Pruebas ECAES', icon: 'assignment', route: '/funcionario/pruebas-ecaes', roles: [UserRole.FUNCIONARIO, UserRole.ADMIN] },
+
+  // Cursos Intersemestrales
+  { label: 'Cursos Intersemestrales', icon: 'school', route: '/estudiante/cursos-intersemestrales', roles: [UserRole.ESTUDIANTE] },
+  { label: 'Cursos Intersemestrales', icon: 'school', route: '/funcionario/cursos-intersemestrales', roles: [UserRole.FUNCIONARIO, UserRole.ADMIN] },
+
+  // Reingreso Estudiante
+  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/estudiante/reingreso-estudiante', roles: [UserRole.ESTUDIANTE] },
+  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/funcionario/reingreso-estudiante', roles: [UserRole.FUNCIONARIO] },
+  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/coordinador/reingreso-estudiante', roles: [UserRole.COORDINADOR] },
+  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/secretaria/reingreso-estudiante', roles: [UserRole.SECRETARIA] },
+
+  // Homologación de Asignaturas
+  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/estudiante/homologacion-asignaturas', roles: [UserRole.ESTUDIANTE] },
+  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/funcionario/homologacion-asignaturas', roles: [UserRole.FUNCIONARIO] },
+  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/coordinador/homologacion-asignaturas', roles: [UserRole.COORDINADOR] },
+  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/secretaria/homologacion-asignaturas', roles: [UserRole.SECRETARIA] },
+
+  // Módulo Estadístico
+  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/funcionario/modulo-estadistico', roles: [UserRole.FUNCIONARIO, UserRole.COORDINADOR, UserRole.ADMIN] },
+  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/coordinador/modulo-estadistico', roles: [UserRole.COORDINADOR, UserRole.ADMIN] },
+
   { label: 'Ajustes', icon: 'settings', route: '/ajustes', roles: [UserRole.ADMIN] },
 
   // Cerrar sesión y minimizar

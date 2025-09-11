@@ -1,0 +1,40 @@
+.solicitud-container {
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.loading {
+  color: #666;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+.solicitud-card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 400px;
+}
+
+.solicitud-card p {
+  margin: 6px 0;
+}
+
+.solicitud-card span.pendiente {
+  color: orange;
+  font-weight: bold;
+}
+
+.solicitud-card span.aprobada {
+  color: green;
+  font-weight: bold;
+}
+
+.solicitud-card span.rechazada {
+  color: red;
+  font-weight: bold;
+}

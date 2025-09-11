@@ -42,10 +42,12 @@ export const routes: Routes = [
           import('./pages/estudiante/pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesComponent),
       },
       {
-        path: 'estudiante/cursos-intersemestrales',
-        loadComponent: () =>
-          import('./pages/estudiante/cursos-intersemestrales/cursos-intersemestrales.component').then(m => m.CursosIntersemestralesComponent),
-      },
+  path: 'estudiante/cursos-intersemestrales',
+  loadChildren: () =>
+    import('./pages/estudiante/cursos-intersemestrales/cursos-intersemestrales.routes')
+      .then(m => m.cursosIntersemestralesRoutes)
+}
+,
       {
         path: 'estudiante/homologacion-asignaturas',
         loadComponent: () =>

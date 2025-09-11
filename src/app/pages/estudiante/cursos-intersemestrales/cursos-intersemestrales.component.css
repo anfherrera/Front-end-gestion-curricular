@@ -1,0 +1,28 @@
+.cursos-intersemestrales-container {
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.menu {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.menu a {
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  color: #333;
+  transition: background 0.3s;
+}
+
+.menu a:hover {
+  background: #ddd;
+}
+
+.menu a.active {
+  background: #007bff;
+  color: #fff;
+}

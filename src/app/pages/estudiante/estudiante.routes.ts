@@ -10,9 +10,10 @@ export const EstudianteRoutes: Routes = [
     loadComponent: () => import('./pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesComponent)
   },
   {
-    path: 'cursos-intersemestrales',
-    loadComponent: () => import('./cursos-intersemestrales/cursos-intersemestrales.component').then(m => m.CursosIntersemestralesComponent)
-  },
+  path: 'cursos-intersemestrales',
+  loadChildren: () => import('./cursos-intersemestrales/cursos-intersemestrales.routes').then(m => m.cursosIntersemestralesRoutes)
+}
+,
   {
     path: 'homologacion-asignaturas',
     loadComponent: () => import('./homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent)

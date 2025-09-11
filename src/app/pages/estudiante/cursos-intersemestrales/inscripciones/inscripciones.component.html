@@ -1,0 +1,20 @@
+<div class="inscripciones-container">
+  <h2>Mis Inscripciones</h2>
+
+  <div *ngIf="cargando">Cargando inscripciones...</div>
+
+  <div *ngIf="!cargando && inscripciones.length === 0">
+    <p>No tienes inscripciones registradas.</p>
+  </div>
+
+  <ul *ngIf="!cargando && inscripciones.length > 0" class="inscripciones-list">
+    <li *ngFor="let inscripcion of inscripciones" class="inscripcion-item">
+      <div>
+        <strong>Curso ID:</strong> {{ inscripcion.cursoId }} <br>
+        <strong>Fecha:</strong> {{ inscripcion.fecha }} <br>
+        <strong>Estado:</strong> {{ inscripcion.estado }}
+      </div>
+      <button (click)="cancelarInscripcion(inscripcion.id)">Cancelar</button>
+    </li>
+  </ul>
+</div>

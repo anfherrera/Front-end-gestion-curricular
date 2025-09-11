@@ -1,0 +1,21 @@
+.solicitudes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.solicitudes-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.solicitud-card {
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+
+.solicitud-card:hover {
+  transform: scale(1.02);
+}

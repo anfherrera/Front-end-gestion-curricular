@@ -1,0 +1,23 @@
+<div class="solicitud-container">
+  <h2>Mi Solicitud</h2>
+
+  <div *ngIf="cargando" class="loading">
+    Cargando solicitud...
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!cargando && solicitud" class="solicitud-card">
+    <p><strong>ID:</strong> {{ solicitud.id }}</p>
+    <p><strong>Fecha:</strong> {{ solicitud.fecha | date }}</p>
+    <p><strong>Estado:</strong> 
+      <span [ngClass]="solicitud.estado">{{ solicitud.estado | titlecase }}</span>
+    </p>
+  </div>
+
+  <div *ngIf="!cargando && !solicitud && !error">
+    <p>No has realizado ninguna solicitud aún.</p>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="preinscripcion-container">
+  <h2>Preinscripción de Cursos</h2>
+
+  <div *ngIf="cargando">Cargando cursos disponibles...</div>
+
+  <div *ngIf="!cargando && cursos.length === 0">
+    <p>No hay cursos disponibles para preinscripción en este momento.</p>
+  </div>
+
+  <div *ngIf="!cargando && cursos.length > 0" class="cursos-grid">
+    <div *ngFor="let curso of cursos" class="curso-card" 
+         [class.seleccionado]="seleccionados.includes(curso)"
+         (click)="toggleSeleccion(curso)">
+      <h3>{{ curso.nombre }}</h3>
+      <p><strong>Docente:</strong> {{ curso.docente }}</p>
+      <p><strong>Horario:</strong> {{ curso.horario }}</p>
+      <p><strong>Cupos:</strong> {{ curso.cupos }}</p>
+    </div>
+  </div>
+
+  <button *ngIf="seleccionados.length > 0" (click)="confirmarPreinscripcion()">
+    Confirmar Preinscripción ({{ seleccionados.length }})
+  </button>
+</div>
