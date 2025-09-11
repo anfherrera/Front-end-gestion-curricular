@@ -97,7 +97,7 @@ export const routes: Routes = [
       {
         path: 'coordinador/paz-salvo',
         loadComponent: () =>
-          import('./pages/coordinador/paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent),
+          import('./pages/coordinador/paz-salvo/paz-salvo.component').then(m => m.PazSalvoCoordinadorComponent),
       },
       {
         path: 'coordinador/reingreso-estudiante',

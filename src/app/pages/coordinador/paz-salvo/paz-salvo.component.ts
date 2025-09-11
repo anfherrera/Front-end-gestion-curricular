@@ -1,3 +1,4 @@
+// src/app/pages/coordinador/paz-salvo/paz-salvo.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -8,7 +9,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo } from '../../../core/models/procesos.model';
-import { ArchivoListComponent, ArchivoEstado } from '../../../shared/components/archivo-list/archivo-list.component';
+import { ArchivoListComponent } from '../../../shared/components/archivo-list/archivo-list.component';
 
 @Component({
   selector: 'app-paz-salvo-coordinador',
@@ -28,6 +29,7 @@ import { ArchivoListComponent, ArchivoEstado } from '../../../shared/components/
 export class PazSalvoCoordinadorComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   selectedSolicitud?: Solicitud;
+
   displayedColumns: string[] = ['solicitante', 'fecha', 'accion'];
 
   constructor(
@@ -45,12 +47,12 @@ export class PazSalvoCoordinadorComponent implements OnInit {
         this.solicitudes = sols;
         if (sols.length) this.selectedSolicitud = sols[0];
       },
-      error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+      error: () => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
     });
   }
 
-  get archivosDelEstudiante(): (Archivo & { estado?: ArchivoEstado })[] {
-    return this.selectedSolicitud?.archivos?.map(a => ({ ...a })) ?? [];
+  get archivosDelEstudiante(): (Archivo & { estado?: 'pendiente' | 'aprobado' | 'rechazado' })[] {
+    return this.selectedSolicitud?.archivos ?? [];
   }
 
   seleccionarSolicitud(solicitud: Solicitud): void {
@@ -61,37 +63,37 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     if (archivo.url) {
       window.open(archivo.url, '_blank');
     } else {
-      this.snackBar.open(`No hay path disponible para: ${archivo.originalName}`, 'Cerrar', { duration: 3000 });
+      this.snackBar.open(`No hay URL disponible para: ${archivo.originalName}`, 'Cerrar', { duration: 3000 });
     }
   }
 
-  aprobarArchivo(index: number) {
+  aprobarArchivo(index: number): void {
     if (!this.selectedSolicitud) return;
     const archivo = this.archivosDelEstudiante[index];
 
     this.pazSalvoService.approveDocument(this.selectedSolicitud.id, archivo.nombre).subscribe({
-      next: () => {
-        archivo.estado = 'aprobado';
+      next: (updated) => {
+        archivo.estado = updated.estado;
         this.snackBar.open(`Archivo ${archivo.nombre} aprobado`, 'Cerrar', { duration: 2000 });
       },
       error: () => this.snackBar.open('Error al aprobar archivo', 'Cerrar', { duration: 3000 })
     });
   }
 
-  rechazarArchivo(index: number) {
+  rechazarArchivo(index: number): void {
     if (!this.selectedSolicitud) return;
     const archivo = this.archivosDelEstudiante[index];
 
     this.pazSalvoService.rejectDocument(this.selectedSolicitud.id, archivo.nombre).subscribe({
-      next: () => {
-        archivo.estado = 'rechazado';
+      next: (updated) => {
+        archivo.estado = updated.estado;
         this.snackBar.open(`Archivo ${archivo.nombre} rechazado`, 'Cerrar', { duration: 2000 });
       },
       error: () => this.snackBar.open('Error al rechazar archivo', 'Cerrar', { duration: 3000 })
     });
   }
 
-  aprobarSolicitud() {
+  aprobarSolicitud(): void {
     if (!this.selectedSolicitud) return;
 
     this.pazSalvoService.approveRequest(this.selectedSolicitud.id).subscribe({
@@ -103,10 +105,13 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
-  rechazarSolicitud() {
+  rechazarSolicitud(): void {
     if (!this.selectedSolicitud) return;
 
-    this.pazSalvoService.rejectRequest(this.selectedSolicitud.id, 'Rechazo por revisión del coordinador').subscribe({
+    const motivo = prompt('Ingrese el motivo de rechazo de la solicitud:');
+    if (!motivo) return;
+
+    this.pazSalvoService.rejectRequest(this.selectedSolicitud.id, motivo).subscribe({
       next: () => {
         this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();

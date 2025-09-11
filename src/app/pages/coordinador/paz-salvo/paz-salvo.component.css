@@ -1,66 +1,153 @@
+/* Contenedor principal */
 .coordinador-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: #f5f7fa; /* fondo azul suave como estudiante */
   font-family: 'Roboto', sans-serif;
 }
 
-.card-section {
+/* Tarjetas (mat-card) */
+.coordinador-container mat-card {
   border-radius: 12px;
-  background-color: #ffffff;
+  background-color: #fff;
   overflow: hidden;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-  padding: 16px;
-  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card-section:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+.coordinador-container mat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
 }
 
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  background-color: #00138c;
-  color: #ffffff;
-  padding: 12px 16px;
+/* Título de las tarjetas */
+.coordinador-container mat-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #00138C; /* azul oscuro */
+  color: #fff;
+  padding: 14px 16px;
   display: block;
   border-bottom: 3px solid #001060;
-  margin-bottom: 16px;
-  border-radius: 8px 8px 0 0;
 }
 
-.tabla-solicitudes {
-  width: 100%;
-  margin-top: 8px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #e0e0e0;
+/* Contenido de la tarjeta */
+.coordinador-container mat-card-content {
+  padding: 16px;
 }
 
-.tabla-solicitudes th {
-  font-weight: 600;
-  background: #f0f0f0;
+/* Mensaje cuando no hay solicitudes o archivos */
+.sin-solicitudes,
+.mensaje-vacio {
+  color: #555;
+  font-style: italic;
+  margin-top: 10px;
 }
 
-.tabla-solicitudes td,
-.tabla-solicitudes th {
+/* Lista de archivos */
+.archivo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.archivo-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background-color: #f5f5f5;
+  transition: background 0.2s;
 }
 
+.archivo-list li:hover {
+  background-color: rgba(0, 19, 140, 0.05); /* hover azul suave como estudiante */
+}
+
+.archivo-nombre {
+  flex: 2;
+  font-weight: 500;
+}
+
+.archivo-fecha {
+  flex: 1;
+  font-size: 12px;
+  color: #555;
+}
+
+/* Iconos de acción */
+.archivo-list mat-icon.accion {
+  cursor: pointer;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.archivo-list mat-icon.accion:hover {
+  transform: scale(1.2);
+  transition: 0.2s;
+}
+
+/* Botones de acción de la solicitud completa */
 .botones-acciones {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: flex-end;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
-.mensaje-vacio {
-  text-align: center;
-  color: #888888;
-  font-style: italic;
-  margin-top: 12px;
+.botones-acciones button {
+  border-radius: 6px;
+  text-transform: none;
+  font-weight: 500;
+}
+
+.botones-acciones button[color="primary"] {
+  background-color: #00138C !important;
+  color: #fff !important;
+}
+
+.botones-acciones button[color="warn"] {
+  background-color: #d32f2f !important;
+  color: #fff !important;
+}
+
+/* Lista de documentos requeridos (opcional, para futuro uso) */
+.required-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.required-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #444;
+  transition: background 0.2s ease;
+}
+
+.required-list li:last-child {
+  margin-bottom: 0;
+}
+
+.required-list li:hover {
+  background-color: rgba(0, 19, 140, 0.05);
+}
+
+/* Iconos de checklist (aprobado / pendiente) */
+.icon-success {
+  color: #2e7d32; /* verde */
+}
+
+.icon-pending {
+  color: #c62828; /* rojo */
+  font-weight: 500;
 }

@@ -1,10 +1,10 @@
 <div class="coordinador-container">
 
-  <!-- Solicitudes pendientes -->
+  <!-- Contenedor de solicitudes pendientes -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Solicitudes Pendientes</mat-card-title>
+    <mat-card-title>Solicitudes Pendientes</mat-card-title>
     <mat-card-content>
-      <table mat-table [dataSource]="solicitudes" class="tabla-solicitudes" *ngIf="solicitudes.length > 0">
+      <table mat-table [dataSource]="solicitudes" *ngIf="solicitudes.length > 0">
 
         <ng-container matColumnDef="solicitante">
           <th mat-header-cell *matHeaderCellDef>Solicitante</th>
@@ -29,15 +29,13 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      <p *ngIf="solicitudes.length === 0" class="mensaje-vacio">
-        No hay solicitudes pendientes
-      </p>
+      <p *ngIf="solicitudes.length === 0">No hay solicitudes pendientes</p>
     </mat-card-content>
   </mat-card>
 
   <!-- Documentación de la solicitud seleccionada -->
   <mat-card class="card-section" *ngIf="selectedSolicitud">
-    <mat-card-title class="card-title">Documentación Adjunta</mat-card-title>
+    <mat-card-title>Documentación Adjunta</mat-card-title>
     <mat-card-content>
       <app-archivo-list
         [archivos]="archivosDelEstudiante"
@@ -47,16 +45,13 @@
         (rechazar)="rechazarArchivo($event)">
       </app-archivo-list>
 
-      <p *ngIf="archivosDelEstudiante.length === 0" class="mensaje-vacio">
-        No hay archivos cargados en esta solicitud.
-      </p>
+      <p *ngIf="archivosDelEstudiante.length === 0">No hay archivos cargados en esta solicitud.</p>
     </mat-card-content>
   </mat-card>
 
-  <!-- Botones de acción para aprobar/rechazar toda la solicitud -->
+  <!-- Botones de acción -->
   <div class="botones-acciones" *ngIf="selectedSolicitud">
     <button mat-raised-button color="primary" (click)="aprobarSolicitud()">Aprobar Solicitud</button>
     <button mat-raised-button color="warn" (click)="rechazarSolicitud()">Rechazar Solicitud</button>
   </div>
-
 </div>
