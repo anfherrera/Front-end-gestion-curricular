@@ -121,7 +121,7 @@ export const routes: Routes = [
       {
         path: 'secretaria/paz-salvo',
         loadComponent: () =>
-          import('./pages/secretaria/paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent),
+          import('./pages/secretaria/paz-salvo/paz-salvo.component').then(m => m.SecretariaPazSalvoComponent),
       },
       {
         path: 'secretaria/reingreso-estudiante',

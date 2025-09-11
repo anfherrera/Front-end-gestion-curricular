@@ -1,0 +1,62 @@
+/* Contenedor principal */
+.secretaria-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: #f5f7fa; /* fondo azul suave */
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Tarjetas (mat-card con clase card-section) */
+.secretaria-container mat-card.card-section {
+  border-radius: 12px;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.secretaria-container mat-card.card-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+/* Título de las tarjetas */
+.secretaria-container mat-card.card-section mat-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #00138C; /* azul oscuro */
+  color: #fff;
+  padding: 14px 16px;
+  display: block;
+  border-bottom: 3px solid #001060;
+}
+
+/* Contenido de la tarjeta */
+.secretaria-container mat-card.card-section mat-card-content {
+  padding: 16px;
+}
+
+/* Botones de acción dentro del contenedor */
+.secretaria-container .acciones button {
+  border-radius: 6px;
+  text-transform: none;
+  font-weight: 500;
+}
+
+.secretaria-container .acciones button[color="primary"] {
+  background-color: #00138C;
+  color: #fff;
+}
+
+.secretaria-container .acciones button[color="warn"] {
+  background-color: #d32f2f;
+  color: #fff;
+}
+
+/* Aplicar estilo a app-oficio-resolucion dentro de este contenedor */
+.secretaria-container app-oficio-resolucion {
+  display: block;
+  margin-top: 16px;
+}

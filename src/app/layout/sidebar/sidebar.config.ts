@@ -22,7 +22,7 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
     roles: ALL_ROLES
   },
 
-  // Paz y Salvo por rol
+  // Paz y Salvo por rol (sin admin)
   {
     label: 'Proceso Paz y Salvo',
     icon: 'check_circle',

@@ -1,1 +1,57 @@
-<p>paz-salvo works!</p>
+<div class="secretaria-container">
+
+  <!-- Tabla de solicitudes pendientes -->
+  <mat-card class="card-section">
+    <mat-card-title>Solicitudes Pendientes</mat-card-title>
+    <mat-card-content>
+      <table mat-table [dataSource]="solicitudes" *ngIf="solicitudes.length > 0">
+
+        <ng-container matColumnDef="estudiante">
+          <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+          <td mat-cell *matCellDef="let s">{{ s.nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="solicitud">
+          <th mat-header-cell *matHeaderCellDef>Solicitud</th>
+          <td mat-cell *matCellDef="let s">{{ s.nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let s">{{ s.estado }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="seleccionar">
+          <th mat-header-cell *matHeaderCellDef>Seleccionar</th>
+          <td mat-cell *matCellDef="let s">
+            <button mat-icon-button color="primary" (click)="seleccionarSolicitud(s)">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <p *ngIf="solicitudes.length === 0">No hay solicitudes pendientes</p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Contenedor para generar oficio/resolución -->
+  <mat-card class="card-section" *ngIf="selectedSolicitud">
+    <mat-card-title>Generar Oficio / Resolución</mat-card-title>
+    <mat-card-content>
+      <p><strong>Estudiante:</strong> {{ selectedSolicitud.nombre }}</p>
+      <p><strong>Solicitud:</strong> {{ selectedSolicitud.nombre }}</p>
+      <p><strong>Estado por Coordinador:</strong> {{ selectedSolicitud.estado }}</p>
+
+      <app-oficio-resolucion [solicitud]="selectedSolicitud"></app-oficio-resolucion>
+
+      <div class="acciones">
+        <button mat-raised-button color="primary" (click)="generarOficio()">Generar Oficio</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+</div>

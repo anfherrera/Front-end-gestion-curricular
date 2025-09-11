@@ -19,16 +19,20 @@ export class SidebarComponent {
   @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
   menuItems: ConfigSidebarItem[] = [];
+  private roleLower: UserRole;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog
   ) {
-    const role = this.authService.getRole();
+    // Obtener rol en minúsculas y válido
+    const role = this.authService.getRole()?.toLowerCase() as UserRole;
     const validRoles: UserRole[] = ['admin', 'funcionario', 'coordinador', 'secretaria', 'estudiante'];
-    const activeRole: UserRole = validRoles.includes(role as UserRole) ? (role as UserRole) : 'estudiante';
-    this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(activeRole));
+    this.roleLower = validRoles.includes(role) ? role : 'estudiante';
+
+    // Filtrar items visibles según rol
+    this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(this.roleLower));
   }
 
   onItemClick(item: ConfigSidebarItem) {
@@ -42,8 +46,10 @@ export class SidebarComponent {
       return;
     }
 
-    // 🔹 Caso especial: estudiante y Paz y Salvo
-    if (item.route?.endsWith('paz-salvo') && this.authService.getRole()?.toLowerCase() === 'estudiante') {
+    if (!item.route) return;
+
+    // Solo **estudiantes** abren el diálogo de Paz y Salvo
+    if (item.route === '/estudiante/paz-salvo' && this.roleLower === 'estudiante') {
       const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
       dialogRef.afterClosed().subscribe(result => {
         if (result) this.router.navigate(['/estudiante/paz-salvo']);
@@ -51,20 +57,14 @@ export class SidebarComponent {
       return;
     }
 
-    // Navegación normal para otros roles
-    if (item.route) {
-      this.router.navigate([item.route]);
-    } else {
-      console.log('Click en:', item.label);
-    }
+    // Todos los demás roles navegan directo
+    this.router.navigate([item.route]);
   }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
     const toggleItem = this.menuItems.find(i => i.action === 'toggle');
-    if (toggleItem) {
-      toggleItem.icon = this.isSidebarOpen ? 'chevron_left' : 'chevron_right';
-    }
+    if (toggleItem) toggleItem.icon = this.isSidebarOpen ? 'chevron_left' : 'chevron_right';
     this.toggle.emit();
   }
 

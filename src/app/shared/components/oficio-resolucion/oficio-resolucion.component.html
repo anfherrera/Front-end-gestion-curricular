@@ -1,0 +1,20 @@
+<mat-card class="oficio-card">
+  <mat-card-title>
+    {{ modo === 'secretaria' ? 'Generar Oficio' : 'Generar Resolución' }}
+  </mat-card-title>
+
+  <mat-card-content>
+    <p><strong>Estudiante:</strong> {{ solicitud.nombre }}</p>
+    <p><strong>Fecha solicitud:</strong> {{ solicitud.fecha | date:'shortDate' }}</p>
+
+    <mat-form-field appearance="outline" class="oficio-textarea">
+      <textarea matInput rows="10" [(ngModel)]="contenidoOficio"></textarea>
+    </mat-form-field>
+  </mat-card-content>
+
+  <mat-card-actions class="oficio-actions">
+    <button mat-raised-button color="primary" (click)="enviarOficio()">
+      <mat-icon>send</mat-icon> Enviar
+    </button>
+  </mat-card-actions>
+</mat-card>

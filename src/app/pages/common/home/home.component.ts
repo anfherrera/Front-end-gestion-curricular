@@ -23,6 +23,7 @@ import { PazSalvoDialogComponent } from '../../estudiante/paz-salvo/paz-salvo-di
 })
 export class HomeComponent implements OnInit {
   role: string | null = null;
+  roleLower: string | null = null;
   userName = '';
   availableProcesses: { name: string; route: string; icon: string; color: string }[] = [];
 
@@ -42,29 +43,39 @@ export class HomeComponent implements OnInit {
     private dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {
-    const usuario = this.authService.getUsuario();
-    if (usuario) {
-      this.role = usuario.rol?.nombre ?? this.authService.getRole();
-      this.userName = usuario.nombre_completo ?? this.getUserName();
-    } else {
-      this.router.navigate(['/login']);
-    }
+ ngOnInit(): void {
+  const usuario = this.authService.getUsuario();
+  if (usuario) {
+    this.role = usuario.rol?.nombre ?? this.authService.getRole();
 
-    this.filterProcessesByRole();
+    // Normalizamos y convertimos undefined → null
+    this.roleLower = this.role ? this.role.toLowerCase() : null;
+
+    // Mapear "secretario" a "secretaria"
+    if (this.roleLower === 'secretario') this.roleLower = 'secretaria';
+
+    this.userName = usuario.nombre_completo ?? this.getUserName();
+  } else {
+    this.router.navigate(['/login']);
   }
 
+  this.filterProcessesByRole();
+}
+
+
   private filterProcessesByRole(): void {
+    if (!this.roleLower) return;
+
     this.availableProcesses = this.processMap.filter(p => {
-      switch (this.role) {
-        case 'Admin':
-        case 'Coordinador':
-        case 'Funcionario':
+      switch (this.roleLower) {
+        case 'admin':
+        case 'coordinador':
+        case 'funcionario':
           return true;
-        case 'Estudiante':
+        case 'estudiante':
           return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
-        case 'Secretaria':
-          return ['reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
+        case 'secretaria':
+          return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
         default:
           return false;
       }
@@ -72,16 +83,16 @@ export class HomeComponent implements OnInit {
   }
 
   private getUserName(): string {
-    return 'Usuario Ejemplo'; // fallback si no hay info del backend
+    return 'Usuario Ejemplo';
   }
 
   getWelcomeText(): string {
-    switch (this.role) {
-      case 'Admin': return 'Tienes acceso completo a todos los procesos.';
-      case 'Coordinador': return 'Puedes administrar los procesos y supervisar estudiantes.';
-      case 'Funcionario': return 'Accede a los procesos que gestionas.';
-      case 'Estudiante': return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
-      case 'Secretaria': return 'Gestiona los oficios y resoluciones según lo indicado.';
+    switch (this.roleLower) {
+      case 'admin': return 'Tienes acceso completo a todos los procesos.';
+      case 'coordinador': return 'Puedes administrar los procesos y supervisar estudiantes.';
+      case 'funcionario': return 'Accede a los procesos que gestionas.';
+      case 'estudiante': return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
+      case 'secretaria': return 'Gestiona los oficios y resoluciones según lo indicado.';
       default: return 'Bienvenido al sistema.';
     }
   }
@@ -93,10 +104,8 @@ export class HomeComponent implements OnInit {
       secretaria: '/secretaria'
     };
 
-    const roleLower = this.role?.toLowerCase();
-
     // Caso especial: estudiante y Paz y Salvo
-    if (process.route === 'paz-salvo' && roleLower === 'estudiante') {
+    if (process.route === 'paz-salvo' && this.roleLower === 'estudiante') {
       const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
       dialogRef.afterClosed().subscribe(result => {
         if (result) this.router.navigate(['/estudiante/paz-salvo']);
@@ -104,13 +113,13 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    // Para otros roles de Paz y Salvo
-    if (process.route === 'paz-salvo' && roleLower && roleRoutes[roleLower]) {
-      this.router.navigate([roleRoutes[roleLower] + '/paz-salvo']);
+    // Otros roles y Paz y Salvo
+    if (process.route === 'paz-salvo' && this.roleLower && roleRoutes[this.roleLower]) {
+      this.router.navigate([roleRoutes[this.roleLower] + '/paz-salvo']);
       return;
     }
 
-    // Navegación normal
+    // Navegación normal para otros procesos
     this.router.navigate(['/' + process.route]);
   }
 
