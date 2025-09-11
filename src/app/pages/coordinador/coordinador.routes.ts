@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const CoordinadorRoutes: Routes = [
   {
     path: 'paz-salvo',
-    loadComponent: () => import('./paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent)
+    loadComponent: () => import('./paz-salvo/paz-salvo.component').then(m => m.PazSalvoCoordinadorComponent)
   },
   {
     path: 'reingreso-estudiante',
