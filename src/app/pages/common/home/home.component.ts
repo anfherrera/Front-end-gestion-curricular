@@ -97,30 +97,30 @@ export class HomeComponent implements OnInit {
   }
 
   handleProcessClick(process: { route: string }): void {
-    const roleRoutes: Record<string, string> = {
-      funcionario: '/funcionario',
-      coordinador: '/coordinador',
-      secretaria: '/secretaria'
-    };
+  // Rutas base por rol
+  const roleRoutes: Record<string, string> = {
+    estudiante: '/estudiante',
+    funcionario: '/funcionario',
+    coordinador: '/coordinador',
+    secretaria: '/secretaria',
+    admin: '/admin'
+  };
 
-    // Caso especial: estudiante y Paz y Salvo
-    if (process.route === 'paz-salvo' && this.roleLower === 'estudiante') {
-      const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) this.router.navigate(['/estudiante/paz-salvo']);
-      });
-      return;
-    }
+  const currentRole = this.roleLower ?? 'estudiante'; // fallback por si es null
 
-    // Otros roles y Paz y Salvo
-    if (process.route === 'paz-salvo' && this.roleLower && roleRoutes[this.roleLower]) {
-      this.router.navigate([roleRoutes[this.roleLower] + '/paz-salvo']);
-      return;
-    }
-
-    // Navegación normal para todos los demás procesos (incluye cursos intersemestrales)
-    this.router.navigate(['/' + process.route]);
+  // Caso especial: estudiante y Paz y Salvo
+  if (process.route === 'paz-salvo' && currentRole === 'estudiante') {
+    const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.router.navigate([roleRoutes[currentRole] + '/paz-salvo']);
+    });
+    return;
   }
+
+  // Navegación normal para todos los procesos
+  this.router.navigate([roleRoutes[currentRole] + '/' + process.route]);
+}
+
 
   logout(): void {
     this.authService.logout();
