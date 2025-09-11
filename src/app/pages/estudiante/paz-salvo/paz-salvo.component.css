@@ -53,7 +53,7 @@ mat-card-content {
 }
 
 .required-list li {
-  display: flex;               /* ícono + texto alineados */
+  display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
@@ -72,18 +72,29 @@ mat-card-content {
   background-color: rgba(0, 19, 140, 0.05);
 }
 
-/* Iconos dentro de la lista */
-.required-list mat-icon {
-  font-size: 20px;
+/* Botón Enviar Solicitud */
+/* Habilitado: fondo azul y letras blancas */
+.btn-enviar {
+  background-color: #00138C !important;
+  color: #fff !important;
+  border: 1px solid #00138C !important;
+  transition: background 0.2s, color 0.2s;
 }
 
-/* Verde si está subido */
+/* Deshabilitado: fondo gris claro y letras gris oscuro */
+.btn-enviar:disabled {
+  background-color: #d3d3d3 !important; /* gris claro */
+  color: #888888 !important; /* gris oscuro */
+  border: 1px solid #d3d3d3 !important;
+  cursor: not-allowed;
+}
+
+/* Iconos de checklist (opcional, para futuros estados) */
 .icon-success {
-  color: #2e7d32;
+  color: #2e7d32; /* verde */
 }
 
-/* Rojo si falta */
 .icon-pending {
-  color: #c62828;
+  color: #c62828; /* rojo */
   font-weight: 500;
 }

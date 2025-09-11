@@ -1,7 +1,7 @@
 <div class="upload-section">
   <label class="file-label">
     <mat-icon>cloud_upload</mat-icon> Subir Archivos
-    <input type="file" (change)="onFileSelected($event)" multiple hidden />
+    <input type="file" (change)="onFileSelected($event)" multiple accept=".pdf" hidden />
   </label>
 </div>
 
@@ -21,9 +21,3 @@
     </td>
   </tr>
 </table>
-
-<div class="enviar-solicitud">
-  <button mat-raised-button color="primary" (click)="enviar()" [disabled]="!canSend()">
-    Enviar Solicitud
-  </button>
-</div>

@@ -1,46 +1,44 @@
 <div class="paz-salvo-container">
 
-  <!-- 1. Documentación requerida -->
+  <!-- Documentación requerida -->
   <mat-card class="card-section">
     <mat-card-title class="card-title">Adjuntar Documentación Requerida</mat-card-title>
     <mat-card-content>
       <ul class="required-list">
-        <li *ngFor="let doc of documentosRequeridos" [ngClass]="getDocClass(doc)">
-          <mat-icon [ngClass]="getIconClass(doc)">
-            {{ getIcon(doc) }}
-          </mat-icon>
-          {{ doc.label }}
-        </li>
-
-        <li *ngIf="documentosExclusivos.length" [ngClass]="getExclusivoClass()">
-          <mat-icon [ngClass]="getExclusivoClass() === 'success' ? 'icon-success' : 'icon-pending'">
-            {{ getExclusivoClass() === 'success' ? 'check_circle' : 'cancel' }}
-          </mat-icon>
-          {{ documentosExclusivosText }}
-        </li>
+        <li *ngFor="let doc of documentosRequeridos">{{ doc.label }}</li>
+        <li *ngIf="archivosExclusivos.length">{{ archivosExclusivos.join(' o ') }} (solo uno)</li>
       </ul>
     </mat-card-content>
   </mat-card>
 
-  <!-- 2. Subir Archivos -->
+  <!-- Subir Archivos -->
   <mat-card class="card-section">
     <mat-card-title class="card-title">Subir Archivos</mat-card-title>
     <mat-card-content>
       <app-file-upload
-        [documentosRequeridos]="documentosRequeridos"
-        [documentosExclusivos]="documentosExclusivos"
-        (enviarSolicitud)="onSolicitudEnviada($event)">
+        (archivosChange)="onArchivosChange($event)">
       </app-file-upload>
+
+      <!-- Botón habilitado solo si cumple la validación -->
+      <div class="enviar-solicitud" style="margin-top: 16px;">
+        <button mat-raised-button class="btn-enviar"
+        (click)="onSolicitudEnviada()"
+        [disabled]="!puedeEnviar()">
+      Enviar Solicitud
+    </button>
+
+      </div>
     </mat-card-content>
   </mat-card>
 
-  <!-- 3. Seguimiento de solicitud -->
+  <!-- Seguimiento de solicitud -->
   <mat-card class="card-section">
     <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
     <mat-card-content>
       <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
         No se ha enviado ninguna solicitud aún.
       </p>
+
       <app-request-status-table
         *ngIf="solicitudes.length > 0"
         [solicitudes]="solicitudes">
