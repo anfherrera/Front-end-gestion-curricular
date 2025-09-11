@@ -7,6 +7,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* Tarjetas */
 .card-section {
   border-radius: 12px;
   background-color: #ffffff;
@@ -33,45 +34,60 @@
   border-radius: 8px 8px 0 0;
 }
 
+/* Tabla de solicitudes */
+.tabla-solicitudes {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.tabla-solicitudes th {
+  font-weight: 600;
+  background: #f0f0f0;
+}
+
+.tabla-solicitudes td,
+.tabla-solicitudes th {
+  padding: 8px 12px;
+}
+
+/* Archivos */
 .archivo-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-bottom: 10px;
-  padding: 6px 0;
+  margin-bottom: 8px;
+  padding: 8px 4px;
   border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.15s ease-in-out;
 }
 
-.archivo-item span {
+.archivo-item:hover {
+  background-color: #f9f9f9;
+}
+
+.archivo-nombre {
   flex: 1;
   font-size: 0.95rem;
   color: #333333;
+  font-weight: 500;
 }
 
+/* Botones de acción */
 .botones-acciones {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
   margin-top: 16px;
 }
-.tabla-solicitudes {
-  width: 100%;
-  margin-top: 8px;
-}
 
-.tabla-solicitudes th {
-  font-weight: bold;
-  background: #f0f0f0;
-}
-
-.tabla-solicitudes td, .tabla-solicitudes th {
-  padding: 8px;
-}
-
-.archivo-item.aprobado span {
-  color: green;
-}
-
-.archivo-item.rechazado span {
-  color: red;
+/* Mensaje de vacío */
+.mensaje-vacio {
+  text-align: center;
+  color: #888888;
+  font-style: italic;
+  margin-top: 12px;
 }

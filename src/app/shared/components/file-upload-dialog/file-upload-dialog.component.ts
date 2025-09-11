@@ -12,10 +12,9 @@ import { Archivo } from '../../../core/models/procesos.model';
   styleUrls: ['./file-upload-dialog.component.css']
 })
 export class FileUploadComponent implements OnChanges {
+  @Input() reset = false;                     // Permite reiniciar el componente
+  @Input() archivos: Archivo[] = [];          // Archivos actuales desde el padre
   @Output() archivosChange = new EventEmitter<Archivo[]>();
-  @Input() reset = false; // Input para limpiar archivos
-
-  archivos: Archivo[] = [];
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['reset'] && this.reset) {
@@ -29,17 +28,11 @@ export class FileUploadComponent implements OnChanges {
     if (!input.files) return;
 
     Array.from(input.files).forEach(file => {
-      if (file.type !== 'application/pdf') {
-        alert(`Solo se permiten archivos PDF: ${file.name}`);
-        return;
-      }
-
-      if (this.archivos.some(a => a.nombre === file.name)) {
-        alert(`Ya subiste el archivo: ${file.name}`);
-        return;
-      }
+      if (file.type !== 'application/pdf') return; // solo PDFs
+      if (this.archivos.some(a => a.nombre === file.name)) return; // evitar duplicados
 
       this.archivos.push({
+        file,
         nombre: file.name,
         originalName: file.name,
         fecha: new Date().toLocaleDateString()

@@ -1,7 +1,8 @@
-// procesos.model.ts
+// src/app/core/models/procesos.model.ts
 import { SolicitudStatusEnum } from './solicitud-status.enum';
 
 export interface Archivo {
+  file?: File; // <-- ahora es opcional
   nombre: string;
   originalName: string;
   fecha: string;
@@ -13,5 +14,6 @@ export interface Solicitud {
   fecha: string;
   estado: SolicitudStatusEnum;
   oficioUrl?: string;
-  archivos?: Archivo[];  // <-- Aquí agregamos la propiedad
+  comentarios?: string;
+  archivos?: Archivo[];
 }

@@ -1,21 +1,21 @@
+// src/app/pages/paz-salvo/paz-salvo.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog'; // 👈 IMPORTAR
-import { PazSalvoService, Solicitud, Documento } from '../../../core/services/paz-salvo.service';
-import { Observable } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 
-// 👇 Importar tu dialogo standalone
+import { PazSalvoService } from '../../../core/services/paz-salvo.service';
+import { Solicitud, Archivo } from '../../../core/models/procesos.model';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog';
 
 @Component({
-  selector: 'app-paz-salvo',
+  selector: 'app-paz-salvo-revision',
   standalone: true,
   imports: [
     CommonModule,
@@ -31,14 +31,13 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
   styleUrls: ['./paz-salvo.component.css']
 })
 export class PazSalvoComponent implements OnInit {
-
   solicitudes: Solicitud[] = [];
   selectedSolicitud?: Solicitud;
 
   constructor(
     private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog // 👈 INYECTAR DIALOG
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -49,54 +48,26 @@ export class PazSalvoComponent implements OnInit {
     this.pazSalvoService.getPendingRequests('funcionario').subscribe({
       next: (sols) => {
         this.solicitudes = sols;
-        if (this.solicitudes.length) this.selectedSolicitud = this.solicitudes[0];
+        if (sols.length) this.selectedSolicitud = sols[0];
       },
       error: (err) => console.error('Error al cargar solicitudes', err)
     });
   }
 
-  get archivosDelEstudiante(): Documento[] {
-    return this.selectedSolicitud?.documentos || [];
+  get archivosDelEstudiante(): Archivo[] {
+    return this.selectedSolicitud?.archivos ?? [];
   }
 
   seleccionarSolicitud(solicitud: Solicitud): void {
     this.selectedSolicitud = solicitud;
   }
 
-  verArchivo(archivo: Documento) {
-    alert(`Visualizando: ${archivo.nombre}`);
+  verArchivo(archivo: Archivo): void {
+    this.snackBar.open(`Abrirías: ${archivo.originalName}`, 'Cerrar', { duration: 2000 });
+    // aquí puedes hacer window.open(archivo.url) si tuvieras un link real
   }
 
-  aprobarArchivo(archivo: Documento) {
-    if (!this.selectedSolicitud) return;
-    this.pazSalvoService.reviewDocument(this.selectedSolicitud.id, archivo.id, true).subscribe({
-      next: () => this.snackBar.open(`Archivo aprobado: ${archivo.nombre}`, 'Cerrar', { duration: 2000 })
-    });
-  }
-
-  rechazarArchivo(archivo: Documento) {
-    if (!this.selectedSolicitud) return;
-
-    // 👇 Abrir diálogo antes de rechazar
-    const dialogRef = this.dialog.open(RechazoDialogComponent, {
-      width: '400px',
-      data: <RechazoDialogData>{
-        titulo: 'Rechazar archivo',
-        descripcion: `Indique el motivo para rechazar el archivo "${archivo.nombre}"`,
-        placeholder: 'Motivo de rechazo'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((motivo: string) => {
-      if (motivo) {
-        this.pazSalvoService.reviewDocument(this.selectedSolicitud!.id, archivo.id, false).subscribe({
-          next: () => this.snackBar.open(`Archivo rechazado: ${archivo.nombre}`, 'Cerrar', { duration: 2000 })
-        });
-      }
-    });
-  }
-
-  rechazarSolicitudSeleccionada() {
+  rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
     const dialogRef = this.dialog.open(RechazoDialogComponent, {
@@ -114,19 +85,34 @@ export class PazSalvoComponent implements OnInit {
           next: () => {
             this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
-          }
+          },
+          error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
         });
       }
     });
   }
 
-  terminarValidacionSeleccionada() {
+  terminarValidacionSeleccionada(): void {
     if (!this.selectedSolicitud) return;
+
     this.pazSalvoService.completeValidation(this.selectedSolicitud.id).subscribe({
       next: () => {
         this.snackBar.open('Validación completada', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
-      }
+      },
+      error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
+    });
+  }
+
+  aprobarSolicitudSeleccionada(): void {
+    if (!this.selectedSolicitud) return;
+
+    this.pazSalvoService.approveRequest(this.selectedSolicitud.id).subscribe({
+      next: () => {
+        this.snackBar.open('Solicitud aprobada ✅', 'Cerrar', { duration: 3000 });
+        this.cargarSolicitudes();
+      },
+      error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
     });
   }
 }
