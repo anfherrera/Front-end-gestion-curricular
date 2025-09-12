@@ -1,6 +1,7 @@
 // src/app/core/services/auth.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { UserRole } from '../enums/roles.ennum';
 
 @Injectable({ providedIn: 'root' })
@@ -12,37 +13,62 @@ export class AuthService {
   private role: UserRole | null = null;
   private logoutTimer: any;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  // ===== HELPER METHODS =====
+  private isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
+  private safeLocalStorage(): Storage | null {
+    return this.isBrowser() ? localStorage : null;
+  }
 
   // ===== TOKEN =====
   setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    const storage = this.safeLocalStorage();
+    if (!storage) return;
+    
+    storage.setItem(this.TOKEN_KEY, token);
 
     const payload = JSON.parse(atob(token.split('.')[1]));
     const exp = payload.exp * 1000; // milisegundos
-    localStorage.setItem(this.EXP_KEY, exp.toString());
+    storage.setItem(this.EXP_KEY, exp.toString());
 
     this.startLogoutTimer(exp);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    const storage = this.safeLocalStorage();
+    return storage ? storage.getItem(this.TOKEN_KEY) : null;
   }
 
   clearToken(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.EXP_KEY);
+    const storage = this.safeLocalStorage();
+    if (storage) {
+      storage.removeItem(this.TOKEN_KEY);
+      storage.removeItem(this.EXP_KEY);
+    }
     this.role = null;
     clearTimeout(this.logoutTimer);
   }
 
   // ===== USUARIO =====
   setUsuario(usuario: any): void {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(usuario));
+    const storage = this.safeLocalStorage();
+    if (storage) {
+      storage.setItem(this.USER_KEY, JSON.stringify(usuario));
+    }
   }
 
   getUsuario(): any | null {
-    const userData = localStorage.getItem(this.USER_KEY);
+    const storage = this.safeLocalStorage();
+    if (!storage) return null;
+    
+    const userData = storage.getItem(this.USER_KEY);
     return userData ? JSON.parse(userData) : null;
   }
 
@@ -61,17 +87,26 @@ export class AuthService {
     }
 
     this.role = normalizedRole;
-    localStorage.setItem(this.ROLE_KEY, normalizedRole);
+    const storage = this.safeLocalStorage();
+    if (storage) {
+      storage.setItem(this.ROLE_KEY, normalizedRole);
+    }
   }
 
   getRole(): UserRole | null {
-    return this.role ?? (localStorage.getItem(this.ROLE_KEY) as UserRole | null);
+    if (this.role) return this.role;
+    
+    const storage = this.safeLocalStorage();
+    return storage ? (storage.getItem(this.ROLE_KEY) as UserRole | null) : null;
   }
 
   // ===== AUTENTICACIÓN =====
   isAuthenticated(): boolean {
     const token = this.getToken();
-    const exp = localStorage.getItem(this.EXP_KEY);
+    const storage = this.safeLocalStorage();
+    if (!storage) return false;
+    
+    const exp = storage.getItem(this.EXP_KEY);
     if (!token || !exp) return false;
     return Date.now() < Number(exp);
   }
@@ -81,10 +116,13 @@ export class AuthService {
     if (showMessage) {
       alert('⚠️ Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
     }
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    localStorage.removeItem(this.ROLE_KEY);
-    localStorage.removeItem(this.EXP_KEY);
+    const storage = this.safeLocalStorage();
+    if (storage) {
+      storage.removeItem(this.TOKEN_KEY);
+      storage.removeItem(this.USER_KEY);
+      storage.removeItem(this.ROLE_KEY);
+      storage.removeItem(this.EXP_KEY);
+    }
     this.role = null;
     clearTimeout(this.logoutTimer);
     this.router.navigate(['/login']);
@@ -103,7 +141,10 @@ export class AuthService {
   }
 
   restoreSession(): void {
-    const exp = localStorage.getItem(this.EXP_KEY);
+    const storage = this.safeLocalStorage();
+    if (!storage) return;
+    
+    const exp = storage.getItem(this.EXP_KEY);
     if (exp) this.startLogoutTimer(Number(exp));
   }
 }
