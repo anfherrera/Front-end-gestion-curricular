@@ -9,7 +9,40 @@ export class ApiService {
 
   // ===== AUTENTICACIÓN =====
   login(correo: string, password: string): Observable<any> {
-    return this.http.post(ApiEndpoints.AUTH.LOGIN, { correo, password });
+    // TEMPORAL: Simular login hasta que implementes el backend
+    return new Observable(observer => {
+      // Crear un JWT mock válido
+      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+      const payload = btoa(JSON.stringify({ 
+        sub: correo, 
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 horas
+        iat: Math.floor(Date.now() / 1000)
+      }));
+      const signature = btoa('mock-signature');
+      const mockJWT = `${header}.${payload}.${signature}`;
+      
+      // Simular respuesta exitosa
+      const mockResponse = {
+        token: mockJWT,
+        usuario: {
+          id: 1,
+          nombre: 'Usuario de Prueba',
+          email: correo,
+          codigo: '2021001234',
+          rol: { nombre: 'estudiante' }
+        }
+      };
+      
+      setTimeout(() => {
+        observer.next(mockResponse);
+        observer.complete();
+      }, 1000);
+    });
+  }
+
+  // Método alternativo si el backend requiere el JSON completo
+  loginConDatosCompletos(datosUsuario: any): Observable<any> {
+    return this.http.post(ApiEndpoints.AUTH.LOGIN, datosUsuario);
   }
 
   refreshToken(): Observable<any> {
