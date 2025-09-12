@@ -5,7 +5,7 @@ export class ApiEndpoints {
 
   // ===== AUTENTICACIÓN =====
   static readonly AUTH = {
-    LOGIN: `${this.BASE_URL}/auth/login`, // Según tu código Java
+    LOGIN: `${this.BASE_URL}/usuarios/login`, // Endpoint real del backend
     REFRESH: `${this.BASE_URL}/auth/refresh`,
     LOGOUT: `${this.BASE_URL}/auth/logout`,
     PROFILE: `${this.BASE_URL}/auth/profile`

@@ -130,6 +130,8 @@ export class LoginComponent {
       this.apiService.login(correo, password).subscribe({
         next: (response: any) => {
           console.log('✅ Respuesta del backend:', response);
+          console.log('✅ Tipo de respuesta:', typeof response);
+          console.log('✅ Keys de la respuesta:', Object.keys(response));
 
           if (response.token && response.usuario) {
             // Guardar token y usuario en AuthService
@@ -143,6 +145,7 @@ export class LoginComponent {
             // Redirigir al home
             this.router.navigate(['/home']);
           } else {
+            console.log('❌ Respuesta no tiene token o usuario:', response);
             this.errorMensaje = 'Error: no se recibió token o usuario.';
           }
 
@@ -150,6 +153,8 @@ export class LoginComponent {
         },
         error: (err) => {
           console.error('❌ Error en la autenticación', err);
+          console.error('❌ Status:', err.status);
+          console.error('❌ Error body:', err.error);
           this.errorMensaje = 'Credenciales incorrectas o error en el servidor.';
           this.cargando = false;
         }

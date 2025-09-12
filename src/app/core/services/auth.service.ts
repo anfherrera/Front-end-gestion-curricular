@@ -2,7 +2,9 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { Observable } from 'rxjs';
 import { UserRole } from '../enums/roles.ennum';
+import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -15,6 +17,7 @@ export class AuthService {
 
   constructor(
     private router: Router,
+    private apiService: ApiService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -101,6 +104,10 @@ export class AuthService {
   }
 
   // ===== AUTENTICACIÓN =====
+  login(correo: string, password: string): Observable<any> {
+    return this.apiService.login(correo, password);
+  }
+
   isAuthenticated(): boolean {
     const token = this.getToken();
     const storage = this.safeLocalStorage();
