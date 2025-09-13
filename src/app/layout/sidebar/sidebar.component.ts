@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../core/services/auth.service';
 import { SIDEBAR_ITEMS, SidebarItem as ConfigSidebarItem } from './sidebar.config';
-import { UserRole } from '../../core/enums/roles.ennum';
+import { UserRole } from '../../core/enums/roles.enum';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-salvo-dialog.component';

@@ -3,7 +3,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
-import { UserRole } from '../enums/roles.ennum';
+import { UserRole } from '../enums/roles.enum';
 import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
