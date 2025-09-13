@@ -117,6 +117,12 @@ export class HomeComponent implements OnInit {
     return;
   }
 
+  if (process.route === 'homologacion-asignaturas' && currentRole === 'estudiante') {
+      this.router.navigate(['/estudiante/homologacion-asignaturas']);
+      return;
+  }
+
+
   // Navegación normal para todos los procesos
   this.router.navigate([roleRoutes[currentRole] + '/' + process.route]);
 }

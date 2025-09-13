@@ -1,1 +1,32 @@
-<p>homologacion-asignaturas works!</p>
+<div class="container">
+  <h2>Homologación de Asignaturas</h2>
+
+  <button (click)="crearSolicitud()" class="btn btn-primary">
+    Crear nueva solicitud
+  </button>
+
+  <table mat-table [dataSource]="solicitudes" class="mat-elevation-z8 full-width">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID Solicitud </th>
+      <td mat-cell *matCellDef="let s"> {{s.id_solicitud}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef> Nombre </th>
+      <td mat-cell *matCellDef="let s"> {{s.nombre_solicitud}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="fecha">
+      <th mat-header-cell *matHeaderCellDef> Fecha </th>
+      <td mat-cell *matCellDef="let s"> {{s.fecha_registro_solicitud | date:'short'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef> Estado </th>
+      <td mat-cell *matCellDef="let s"> {{s.estadosSolicitud?.[0]?.estado_actual}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['id','nombre','fecha','estado']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['id','nombre','fecha','estado'];"></tr>
+  </table>
+</div>
