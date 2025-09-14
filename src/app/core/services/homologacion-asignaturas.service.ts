@@ -50,7 +50,6 @@ export class HomologacionAsignaturasService {
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
-      'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : ''
     });
   }
