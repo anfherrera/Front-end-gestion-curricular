@@ -1,12 +1,12 @@
 <app-card-container title="Publicar Cursos">
   <app-curso-list
     [cursos]="cursos"
-    [displayedColumns]="displayedColumns"
     [acciones]="acciones"
-    (accionClick)="ejecutarAccion($event)">
+    (accionClick)="onAccion($event)">
   </app-curso-list>
 
-  <div class="actions">
-    <app-action-button text="Publicar" (click)="publicarCursos()"></app-action-button>
-  </div>
+  <app-action-button
+    label="Publicar"
+    (click)="publicarCursos()">
+  </app-action-button>
 </app-card-container>

@@ -12,7 +12,7 @@ export const cursosIntersemestralesRoutes: Routes = [
     path: '',
     component: CursosIntersemestralesComponent,
     children: [
-      { path: '', redirectTo: 'solicitudes', pathMatch: 'full' }, // redirect por defecto
+      { path: '', redirectTo: 'solicitudes', pathMatch: 'full' },
       { path: 'solicitudes', component: SolicitudesComponent },
       { path: 'inscripciones', component: InscripcionesComponent },
       { path: 'cursos-ofertados', component: CursosOfertadosComponent },

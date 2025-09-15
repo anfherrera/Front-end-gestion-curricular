@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cursos-intersemestrales',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './cursos-intersemestrales.component.html',
-  styleUrl: './cursos-intersemestrales.component.css'
+  styleUrls: ['./cursos-intersemestrales.component.css']
 })
-export class CursosIntersemestralesComponent {
-
-}
+export class CursosIntersemestralesComponent {}

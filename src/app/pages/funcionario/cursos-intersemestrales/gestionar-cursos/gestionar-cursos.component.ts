@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
 import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -14,21 +14,21 @@ import { Router } from '@angular/router';
 })
 export class GestionarCursosComponent {
   cursos: Curso[] = [
-    { codigo: 'CS101', nombre: 'Angular Básico', docente: 'Juan Pérez', cupos: 20, estado: 'Disponible' },
-    { codigo: 'CS102', nombre: 'TypeScript Avanzado', docente: 'Ana Gómez', cupos: 15, estado: 'Cerrado' }
+    { codigo: 'C001', nombre: 'Redes Avanzadas', docente: 'Juan Pérez', cupos: 20, estado: 'Disponible' },
+    { codigo: 'C002', nombre: 'Seguridad Informática', docente: 'María Gómez', cupos: 15, estado: 'Cerrado' }
   ];
-
-  displayedColumns: string[] = ['codigo', 'nombre', 'docente', 'cupos', 'estado', 'acciones'];
-  acciones = ['ofertar', 'publicar'];
+  acciones = ['Ofertar', 'Publicar'];
 
   constructor(private router: Router) {}
 
-  ejecutarAccion(event: { accion: string; curso: Curso }) {
-    console.log('Acción ejecutada:', event);
-    if (event.accion === 'ofertar') {
-      this.router.navigate(['funcionario/cursos-intersemestrales/ofertar']);
-    } else if (event.accion === 'publicar') {
-      this.router.navigate(['funcionario/cursos-intersemestrales/publicar']);
+  onAccion(event: { accion: string; curso: Curso }) {
+    switch (event.accion.toLowerCase()) {
+      case 'ofertar':
+        this.router.navigate(['funcionario/cursos-intersemestrales/ofertar']);
+        break;
+      case 'publicar':
+        this.router.navigate(['funcionario/cursos-intersemestrales/publicar']);
+        break;
     }
   }
 }

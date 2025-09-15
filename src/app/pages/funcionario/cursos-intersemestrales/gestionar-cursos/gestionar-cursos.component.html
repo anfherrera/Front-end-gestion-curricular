@@ -1,8 +1,7 @@
-<app-card-container title="Gestionar Cursos">
+<app-card-container title="Gestión de Cursos">
   <app-curso-list
     [cursos]="cursos"
-    [displayedColumns]="displayedColumns"
     [acciones]="acciones"
-    (accionClick)="ejecutarAccion($event)">
+    (accionClick)="onAccion($event)">
   </app-curso-list>
 </app-card-container>

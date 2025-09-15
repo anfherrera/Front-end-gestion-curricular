@@ -57,19 +57,14 @@ export const routes: Routes = [
       // ==========================
       // Funcionario
       // ==========================
-      { path: 'funcionario/paz-salvo', loadComponent: () => import('./pages/funcionario/paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent) },
+       { path: 'funcionario/paz-salvo', loadComponent: () => import('./pages/funcionario/paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent) },
       { path: 'funcionario/pruebas-ecaes', loadComponent: () => import('./pages/funcionario/pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesComponent) },
       {
         path: 'funcionario/cursos-intersemestrales',
-        loadComponent: () => import('./pages/funcionario/cursos-intersemestrales/cursos-intersemestrales.component').then(m => m.CursosIntersemestralesComponent),
-        children: [
-          { path: '', redirectTo: 'solicitudes', pathMatch: 'full' },
-          { path: 'solicitudes', component: SolicitudesComponent },
-          { path: 'inscripciones', component: InscripcionesComponent },
-          { path: 'cursos-ofertados', component: CursosOfertadosComponent },
-          { path: 'cursos-preinscripcion', component: CursosPreinscripcionComponent },
-          { path: 'ver-solicitud', component: VerSolicitudComponent },
-        ]
+        loadChildren: () =>
+          import('./pages/funcionario/cursos-intersemestrales/cursos-intersemestrales.routes')
+            .then(m => m.CursosIntersemestralesFuncionarioRoutes),
+        canActivate: [authGuard]
       },
       { path: 'funcionario/reingreso-estudiante', loadComponent: () => import('./pages/funcionario/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
       { path: 'funcionario/homologacion-asignaturas', loadComponent: () => import('./pages/funcionario/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
