@@ -2,7 +2,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { UserRole } from '../enums/roles.enum';
 import { ApiService } from './api.service';
 
@@ -12,14 +12,18 @@ export class AuthService {
   private readonly USER_KEY = 'usuario';
   private readonly ROLE_KEY = 'userRole';
   private readonly EXP_KEY = 'tokenExp';
-  private role: UserRole | null = null;
+
+  private roleSubject = new BehaviorSubject<UserRole | null>(null);
+  role$ = this.roleSubject.asObservable(); // 👈 los componentes se suscriben a esto
   private logoutTimer: any;
 
   constructor(
     private router: Router,
     private apiService: ApiService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) {
+    this.restoreRoleFromStorage(); // restaura rol al recargar la página
+  }
 
   // ===== HELPER METHODS =====
   private isBrowser(): boolean {
@@ -34,7 +38,7 @@ export class AuthService {
   setToken(token: string): void {
     const storage = this.safeLocalStorage();
     if (!storage) return;
-    
+
     storage.setItem(this.TOKEN_KEY, token);
 
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -55,7 +59,6 @@ export class AuthService {
       storage.removeItem(this.TOKEN_KEY);
       storage.removeItem(this.EXP_KEY);
     }
-    this.role = null;
     clearTimeout(this.logoutTimer);
   }
 
@@ -70,7 +73,7 @@ export class AuthService {
   getUsuario(): any | null {
     const storage = this.safeLocalStorage();
     if (!storage) return null;
-    
+
     const userData = storage.getItem(this.USER_KEY);
     return userData ? JSON.parse(userData) : null;
   }
@@ -89,18 +92,26 @@ export class AuthService {
       default: normalizedRole = UserRole.ESTUDIANTE;
     }
 
-    this.role = normalizedRole;
     const storage = this.safeLocalStorage();
     if (storage) {
       storage.setItem(this.ROLE_KEY, normalizedRole);
     }
+
+    this.roleSubject.next(normalizedRole); // 👈 actualiza en tiempo real
   }
 
   getRole(): UserRole | null {
-    if (this.role) return this.role;
-    
+    return this.roleSubject.value;
+  }
+
+  private restoreRoleFromStorage(): void {
     const storage = this.safeLocalStorage();
-    return storage ? (storage.getItem(this.ROLE_KEY) as UserRole | null) : null;
+    if (!storage) return;
+
+    const storedRole = storage.getItem(this.ROLE_KEY) as UserRole | null;
+    if (storedRole) {
+      this.roleSubject.next(storedRole);
+    }
   }
 
   // ===== AUTENTICACIÓN =====
@@ -112,7 +123,7 @@ export class AuthService {
     const token = this.getToken();
     const storage = this.safeLocalStorage();
     if (!storage) return false;
-    
+
     const exp = storage.getItem(this.EXP_KEY);
     if (!token || !exp) return false;
     return Date.now() < Number(exp);
@@ -130,8 +141,8 @@ export class AuthService {
       storage.removeItem(this.ROLE_KEY);
       storage.removeItem(this.EXP_KEY);
     }
-    this.role = null;
     clearTimeout(this.logoutTimer);
+    this.roleSubject.next(null); // 👈 limpia el rol
     this.router.navigate(['/login']);
   }
 
@@ -150,7 +161,7 @@ export class AuthService {
   restoreSession(): void {
     const storage = this.safeLocalStorage();
     if (!storage) return;
-    
+
     const exp = storage.getItem(this.EXP_KEY);
     if (exp) this.startLogoutTimer(Number(exp));
   }

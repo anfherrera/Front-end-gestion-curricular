@@ -1,0 +1,59 @@
+<div class="tabla-container">
+  <mat-form-field appearance="outline" class="filtro">
+    <mat-label>Filtrar cursos</mat-label>
+    <input matInput (keyup)="aplicarFiltro($event)" placeholder="Buscar por nombre o código" />
+  </mat-form-field>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+    <!-- Código -->
+    <ng-container matColumnDef="codigo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+      <td mat-cell *matCellDef="let curso">{{ curso.codigo }}</td>
+    </ng-container>
+
+    <!-- Nombre -->
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+      <td mat-cell *matCellDef="let curso">{{ curso.nombre }}</td>
+    </ng-container>
+
+    <!-- Docente -->
+    <ng-container matColumnDef="docente">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Docente</th>
+      <td mat-cell *matCellDef="let curso">{{ curso.docente }}</td>
+    </ng-container>
+
+    <!-- Cupos -->
+    <ng-container matColumnDef="cupos">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Cupos</th>
+      <td mat-cell *matCellDef="let curso">{{ curso.cupos }}</td>
+    </ng-container>
+
+    <!-- Estado -->
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+      <td mat-cell *matCellDef="let curso">
+        <span [ngClass]="curso.estado.toLowerCase()">{{ curso.estado }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Acciones -->
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let curso">
+        <ng-container *ngFor="let accion of acciones">
+          <button mat-raised-button color="primary" (click)="ejecutarAccion(accion, curso)">
+            {{ accion | titlecase }}
+          </button>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <!-- Render rows -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</div>

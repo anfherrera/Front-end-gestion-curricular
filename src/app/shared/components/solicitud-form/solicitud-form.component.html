@@ -1,0 +1,46 @@
+<div class="solicitud-form">
+  <form [formGroup]="form" class="form-container">
+    <ng-container *ngFor="let field of fields">
+      <!-- Campo de texto -->
+      <mat-form-field *ngIf="field.type === 'text'" appearance="outline" class="full-width">
+        <mat-label>{{ field.label }}</mat-label>
+        <input matInput [formControlName]="field.name" [readonly]="field.readonly || !editable" />
+      </mat-form-field>
+
+      <!-- Campo numérico -->
+      <mat-form-field *ngIf="field.type === 'number'" appearance="outline" class="full-width">
+        <mat-label>{{ field.label }}</mat-label>
+        <input matInput type="number" [formControlName]="field.name" [readonly]="field.readonly || !editable" />
+      </mat-form-field>
+
+      <!-- Selector -->
+      <mat-form-field *ngIf="field.type === 'select'" appearance="outline" class="full-width">
+        <mat-label>{{ field.label }}</mat-label>
+        <mat-select [formControlName]="field.name" [disabled]="field.readonly || !editable">
+          <mat-option *ngFor="let opt of field.options ?? []" [value]="opt">{{ opt }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Fecha -->
+      <mat-form-field *ngIf="field.type === 'date'" appearance="outline" class="full-width">
+        <mat-label>{{ field.label }}</mat-label>
+        <input matInput [matDatepicker]="picker" [formControlName]="field.name" [readonly]="field.readonly || !editable" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Archivo -->
+      <div *ngIf="field.type === 'file'" class="file-field">
+        <label>{{ field.label }}</label>
+        <input type="file" (change)="onFileSelected($event, field.name)" [disabled]="field.readonly || !editable" />
+      </div>
+    </ng-container>
+
+    <!-- Botón de guardar -->
+    <div class="actions" *ngIf="editable">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">
+        Guardar
+      </button>
+    </div>
+  </form>
+</div>

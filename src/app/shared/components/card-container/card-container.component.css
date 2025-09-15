@@ -1,0 +1,15 @@
+.card-container {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+mat-card-header {
+  align-items: center;
+  gap: 8px;
+}
+
+mat-card-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
