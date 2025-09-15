@@ -1,33 +1,16 @@
-.inscripciones-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+.cargando, .sin-datos {
+  text-align: center;
+  font-style: italic;
+  margin: 16px 0;
 }
 
-.inscripciones-list {
-  list-style: none;
-  padding: 0;
+table {
+  width: 100%;
 }
 
-.inscripcion-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 10px;
+th.mat-header-cell {
+  text-align: left;
 }
-
-button {
-  background-color: #d9534f;
-  border: none;
-  padding: 6px 12px;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #c9302c;
+td.mat-cell {
+  vertical-align: middle;
 }

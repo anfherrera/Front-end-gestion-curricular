@@ -1,24 +1,15 @@
-<div class="cursos-container">
-  <h2>Cursos Ofertados</h2>
+<app-card-container title="Cursos Ofertados">
+  <div *ngIf="cargando" class="cargando">Cargando cursos...</div>
 
-  <div *ngIf="cargando">Cargando cursos...</div>
+  <app-curso-list
+    *ngIf="!cargando"
+    [cursos]="cursos"
+    [displayedColumns]="['codigo','nombre','docente','cupos','estado','acciones']"
+    [acciones]="['inscribir']"
+    (accionClick)="onAccionCurso($event)"
+  ></app-curso-list>
 
-  <div *ngIf="!cargando && cursos.length === 0">
-    <p>No hay cursos ofertados disponibles en este momento.</p>
+  <div *ngIf="!cargando && cursos.length === 0" class="sin-datos">
+    No hay cursos ofertados disponibles.
   </div>
-
-  <div *ngIf="!cargando && cursos.length > 0" class="cursos-grid">
-    <div *ngFor="let curso of cursos" class="curso-card">
-      <h3>{{ curso.nombre }}</h3>
-      <p><strong>Docente:</strong> {{ curso.docente }}</p>
-      <p><strong>Cupos:</strong> {{ curso.cupos }}</p>
-      <p><strong>Horario:</strong> {{ curso.horario }}</p>
-
-      <button 
-        (click)="inscribirme(curso)" 
-        [disabled]="inscribiendo === curso.id">
-        {{ inscribiendo === curso.id ? 'Inscribiendo...' : 'Inscribirme' }}
-      </button>
-    </div>
-  </div>
-</div>
+</app-card-container>

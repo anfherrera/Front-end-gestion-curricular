@@ -1,37 +1,11 @@
-.cursos-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+.cargando,
+.sin-datos {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  padding: 16px 0;
 }
 
-.cursos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.curso-card {
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  transition: transform 0.2s ease;
-}
-
-.curso-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-button {
-  margin-top: 10px;
-  background-color: #0275d8;
-  border: none;
-  padding: 8px 14px;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #025aa5;
+app-curso-list {
+  margin-top: 16px;
 }

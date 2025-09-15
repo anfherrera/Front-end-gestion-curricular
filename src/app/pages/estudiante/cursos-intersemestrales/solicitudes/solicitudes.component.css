@@ -1,21 +1,30 @@
-.solicitudes-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+.cargando {
+  margin-top: 16px;
+  font-style: italic;
 }
 
-.solicitudes-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+.sin-datos {
+  margin-top: 16px;
+  color: gray;
+  font-style: italic;
 }
 
-.solicitud-card {
-  border-radius: 12px;
-  transition: transform 0.2s;
+table {
+  width: 100%;
+  margin-top: 16px;
 }
 
-.solicitud-card:hover {
-  transform: scale(1.02);
+span.pendiente {
+  color: orange;
+  font-weight: bold;
+}
+
+span.aprobada {
+  color: green;
+  font-weight: bold;
+}
+
+span.rechazada {
+  color: red;
+  font-weight: bold;
 }

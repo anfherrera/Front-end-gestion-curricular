@@ -1,34 +1,58 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { CursosIntersemestralesService, Solicitud } from '../../../../core/services/cursos-intersemestrales.service';
+import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
+import { SolicitudFormComponent } from '../../../../shared/components/solicitud-form/solicitud-form.component';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
+import { CursosIntersemestralesService, Solicitud, CreateSolicitudDTO } from '../../../../core/services/cursos-intersemestrales.service';
+import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 
 @Component({
   selector: 'app-solicitudes',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule],
+  imports: [CommonModule, CardContainerComponent, SolicitudFormComponent, ActionButtonComponent, ...MATERIAL_IMPORTS],
   templateUrl: './solicitudes.component.html',
   styleUrls: ['./solicitudes.component.css']
 })
-export class SolicitudesComponent implements OnInit {
+export class SolicitudesComponent {
   solicitudes: Solicitud[] = [];
+  loading = false;
 
-  constructor(private cursosService: CursosIntersemestralesService) {}
+  constructor(private cursosService: CursosIntersemestralesService) {
+    this.loadSolicitudes();
+  }
 
-  ngOnInit(): void {
+  loadSolicitudes() {
+    this.loading = true;
     this.cursosService.getSolicitudes().subscribe({
-      next: (data) => (this.solicitudes = data),
-      error: (err) => console.error('Error cargando solicitudes:', err)
+      next: (data) => {
+        this.solicitudes = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando solicitudes', err);
+        this.loading = false;
+      }
     });
   }
 
-  nuevaSolicitud() {
-    const payload = { fecha: new Date().toISOString(), estado: 'pendiente' as const };
+  // 🔹 Evento al enviar el formulario de solicitud
+  onSubmitSolicitud(formValue: any) {
+    const payload: CreateSolicitudDTO = {
+      fecha: formValue.fecha,
+      estado: 'pendiente'
+    };
 
     this.cursosService.crearSolicitud(payload).subscribe({
-      next: (nueva) => this.solicitudes.push(nueva),
-      error: (err) => console.error('Error creando solicitud:', err)
+      next: (res) => {
+        alert('Solicitud enviada correctamente');
+        this.loadSolicitudes();
+      },
+      error: (err) => console.error('Error enviando solicitud', err)
     });
+  }
+
+  // 🔹 Opcional: limpiar formulario
+  onClearSolicitud() {
+    // Aquí puedes resetear algún estado o formulario si lo necesitas
   }
 }

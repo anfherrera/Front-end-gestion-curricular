@@ -1,45 +1,48 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursosIntersemestralesService, Inscripcion } from '../../../../core/services/cursos-intersemestrales.service';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
+import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 
 @Component({
   selector: 'app-inscripciones',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CardContainerComponent, ActionButtonComponent, ...MATERIAL_IMPORTS],
   templateUrl: './inscripciones.component.html',
   styleUrls: ['./inscripciones.component.css']
 })
-export class InscripcionesComponent implements OnInit {
+export class InscripcionesComponent {
   inscripciones: Inscripcion[] = [];
   cargando = true;
 
-  constructor(private cursosService: CursosIntersemestralesService) {}
-
-  ngOnInit(): void {
-    this.obtenerInscripciones();
+  constructor(private cursosService: CursosIntersemestralesService) {
+    this.loadInscripciones();
   }
 
-  obtenerInscripciones(): void {
+  loadInscripciones() {
+    this.cargando = true;
     this.cursosService.getInscripciones().subscribe({
-      next: (data) => {
+      next: data => {
         this.inscripciones = data;
         this.cargando = false;
       },
-      error: (err) => {
-        console.error('Error al obtener inscripciones', err);
+      error: err => {
+        console.error('Error cargando inscripciones', err);
         this.cargando = false;
       }
     });
   }
 
-  cancelarInscripcion(id: number): void {
-    if (!confirm('¿Seguro que deseas cancelar esta inscripción?')) return;
+  onCancelarInscripcion(inscripcion: Inscripcion) {
+    if (!confirm(`¿Deseas cancelar la inscripción al curso ID ${inscripcion.cursoId}?`)) return;
 
-    this.cursosService.cancelarInscripcion(id).subscribe({
+    this.cursosService.cancelarInscripcion(inscripcion.id).subscribe({
       next: () => {
-        this.inscripciones = this.inscripciones.filter(i => i.id !== id);
+        alert('Inscripción cancelada correctamente');
+        this.loadInscripciones();
       },
-      error: (err) => console.error('Error al cancelar inscripción', err)
+      error: err => console.error('Error cancelando inscripción', err)
     });
   }
 }

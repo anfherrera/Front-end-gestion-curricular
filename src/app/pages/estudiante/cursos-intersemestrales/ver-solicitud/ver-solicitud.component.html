@@ -1,23 +1,21 @@
-<div class="solicitud-container">
-  <h2>Mi Solicitud</h2>
+<app-card-container title="Mi Solicitud">
+  <div *ngIf="cargando" class="cargando">Cargando solicitud...</div>
 
-  <div *ngIf="cargando" class="loading">
-    Cargando solicitud...
+  <div *ngIf="!cargando && solicitud">
+    <p><strong>Fecha:</strong> {{ solicitud.fecha }}</p>
+    <p><strong>Estado:</strong> {{ solicitud.estado }}</p>
+
+    <h3>Documentos</h3>
+    <ul *ngIf="documentos.length > 0">
+      <li *ngFor="let doc of documentos">
+        {{ doc.nombre }}
+        <button mat-button color="primary" (click)="descargarDocumento(doc)">Descargar</button>
+      </li>
+    </ul>
+    <p *ngIf="documentos.length === 0">No hay documentos cargados.</p>
   </div>
 
-  <div *ngIf="error" class="error">
-    {{ error }}
+  <div *ngIf="!cargando && !solicitud">
+    No tienes solicitudes registradas.
   </div>
-
-  <div *ngIf="!cargando && solicitud" class="solicitud-card">
-    <p><strong>ID:</strong> {{ solicitud.id }}</p>
-    <p><strong>Fecha:</strong> {{ solicitud.fecha | date }}</p>
-    <p><strong>Estado:</strong> 
-      <span [ngClass]="solicitud.estado">{{ solicitud.estado | titlecase }}</span>
-    </p>
-  </div>
-
-  <div *ngIf="!cargando && !solicitud && !error">
-    <p>No has realizado ninguna solicitud aún.</p>
-  </div>
-</div>
+</app-card-container>

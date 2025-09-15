@@ -1,0 +1,19 @@
+.seguimiento-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.pendiente {
+  color: orange;
+  font-weight: bold;
+}
+
+.aprobada {
+  color: green;
+  font-weight: bold;
+}
+
+.rechazada {
+  color: red;
+  font-weight: bold;
+}

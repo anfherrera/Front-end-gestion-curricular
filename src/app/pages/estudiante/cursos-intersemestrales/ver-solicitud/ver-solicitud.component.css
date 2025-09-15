@@ -1,40 +1,21 @@
-.solicitud-container {
-  padding: 20px;
-  font-family: 'Roboto', sans-serif;
+.cargando {
+  text-align: center;
+  font-style: italic;
+  margin: 16px 0;
 }
 
-.loading {
-  color: #666;
+ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-.error {
-  color: red;
-  font-weight: bold;
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
 }
 
-.solicitud-card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  max-width: 400px;
-}
-
-.solicitud-card p {
-  margin: 6px 0;
-}
-
-.solicitud-card span.pendiente {
-  color: orange;
-  font-weight: bold;
-}
-
-.solicitud-card span.aprobada {
-  color: green;
-  font-weight: bold;
-}
-
-.solicitud-card span.rechazada {
-  color: red;
-  font-weight: bold;
+button {
+  margin-left: 16px;
 }
