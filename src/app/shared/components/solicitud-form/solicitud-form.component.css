@@ -1,29 +1,19 @@
 .solicitud-form {
   display: flex;
-  justify-content: center;
-  padding: 24px;
-}
-
-.form-container {
-  width: 100%;
-  max-width: 600px;
-  display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.form-field {
+  width: 100%;
 }
 
 .full-width {
   width: 100%;
 }
 
-.file-field {
+.file-input {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
 }

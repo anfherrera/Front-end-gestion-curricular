@@ -1,0 +1,8 @@
+<app-card-container title="Gestionar Cursos">
+  <app-curso-list
+    [cursos]="cursos"
+    [displayedColumns]="displayedColumns"
+    [acciones]="acciones"
+    (accionClick)="ejecutarAccion($event)">
+  </app-curso-list>
+</app-card-container>

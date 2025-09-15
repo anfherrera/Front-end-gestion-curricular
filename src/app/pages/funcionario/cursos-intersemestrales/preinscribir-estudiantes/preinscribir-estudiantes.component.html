@@ -1,0 +1,21 @@
+<app-card-container title="Preinscribir Estudiantes">
+  <app-curso-list
+    [cursos]="cursos"
+    [displayedColumns]="displayedColumns"
+    [acciones]="acciones"
+    (accionClick)="seleccionarCurso($event)">
+  </app-curso-list>
+
+  <div *ngIf="selectedCurso" class="form-section">
+    <h3>Curso seleccionado: {{ selectedCurso.nombre }}</h3>
+
+    <app-solicitud-form
+      [config]="formConfig"
+      [editable]="true">
+    </app-solicitud-form>
+
+    <div class="actions">
+      <app-action-button text="Preinscribir" (click)="preinscribir()"></app-action-button>
+    </div>
+  </div>
+</app-card-container>

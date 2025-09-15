@@ -4,7 +4,7 @@ import { MATERIAL_IMPORTS } from '../material.imports';
 import { CommonModule } from '@angular/common';
 import { UserRole } from '../../../core/enums/roles.enum';
 
-interface FieldConfig {
+export interface FieldConfig {
   name: string;
   label: string;
   type: 'text' | 'number' | 'select' | 'date' | 'file';
@@ -20,18 +20,19 @@ interface FieldConfig {
   styleUrls: ['./solicitud-form.component.css']
 })
 export class SolicitudFormComponent implements OnInit {
+  @Input() config: FieldConfig[] = [];
   @Input() role: UserRole = UserRole.ESTUDIANTE;
-  @Input() editable: boolean = true; // <-- ahora sí existe en TS
+  @Input() editable: boolean = true;
 
   form!: FormGroup;
-  fields: FieldConfig[] = []; // <-- ahora sí existe en TS
+  fields: FieldConfig[] = [];
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.fields = this.getFieldsForRole(this.role);
+    // Si llega config se usa, si no se usa el fallback del rol
+    this.fields = this.config.length > 0 ? this.config : this.getFieldsForRole(this.role);
 
-    // Inicializa los form controls dinámicamente
     const controls: any = {};
     this.fields.forEach(field => {
       controls[field.name] = [{ value: '', disabled: field.readonly || !this.editable }];
@@ -74,7 +75,7 @@ export class SolicitudFormComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input?.files?.length) {
       console.log(`Archivo seleccionado para ${fieldName}:`, input.files[0]);
-      // podrías guardar el archivo en el form si lo necesitas
+      this.form.patchValue({ [fieldName]: input.files[0] });
     }
   }
 
