@@ -1,8 +1,6 @@
-// src/app/core/services/paz-salvo.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { Solicitud, Archivo } from '../models/procesos.model';
+import { Solicitud, Archivo, Usuario } from '../models/procesos.model';
 import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
@@ -14,26 +12,34 @@ export class PazSalvoService {
   private solicitudes: Solicitud[] = [];
   private solicitudIdCounter = 1;
 
-  constructor(private http: HttpClient) {}
+  private usuarioActual: Usuario = {
+    id: 1,
+    nombre_completo: 'Juan Pérez',
+    rol: { id_rol: 2, nombre_rol: 'Estudiante' },
+    codigo: '104612345678',
+    correo: 'juan.perez@unicauca.edu.co'
+  };
 
-  // 📌 Subir archivo (solo lo devolvemos, no creamos solicitud todavía)
+  constructor() {}
+
+  // 📌 Subir archivo temporal
   uploadDocument(studentId: number, file: File, nombre: string): Observable<Archivo> {
-    const archivo: Archivo & { estado?: ArchivoEstado } = {
+    const archivo: Archivo = {
       nombre,
       originalName: file.name,
-      fecha: new Date().toLocaleDateString(),
+      fecha: new Date().toISOString().split('T')[0],
       estado: 'pendiente'
     };
     return of(archivo);
   }
 
-  // 📌 Obtener solicitudes del estudiante
+  // 📌 Obtener solicitudes de un estudiante
   getStudentRequests(studentId: number): Observable<Solicitud[]> {
-    return of(this.solicitudes);
+    return of(this.solicitudes.filter(s => s.usuario?.id === studentId));
   }
 
-  // 📌 Crear y enviar la solicitud con los archivos cargados
-  sendRequest(studentId: number, archivos: (Archivo & { estado?: ArchivoEstado })[]): Observable<Solicitud> {
+  // 📌 Crear y enviar solicitud
+  sendRequest(studentId: number, archivos: Archivo[]): Observable<Solicitud> {
     if (!archivos || archivos.length === 0) {
       return throwError(() => 'No hay documentos para enviar');
     }
@@ -41,8 +47,9 @@ export class PazSalvoService {
     const solicitud: Solicitud = {
       id: this.solicitudIdCounter++,
       nombre: 'Solicitud paz y salvo',
-      fecha: new Date().toLocaleDateString(),
+      fecha: new Date().toISOString().split('T')[0],
       estado: SolicitudStatusEnum.EN_REVISION_FUNCIONARIO,
+      usuario: this.usuarioActual,
       archivos
     };
 
@@ -53,9 +60,13 @@ export class PazSalvoService {
   // 📌 Obtener solicitudes pendientes según el rol
   getPendingRequests(role: 'secretaria' | 'funcionario' | 'coordinador'): Observable<Solicitud[]> {
     let estado: SolicitudStatusEnum;
-    if (role === 'secretaria') estado = SolicitudStatusEnum.EN_REVISION_SECRETARIA;
-    if (role === 'funcionario') estado = SolicitudStatusEnum.EN_REVISION_FUNCIONARIO;
-    if (role === 'coordinador') estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR;
+
+    switch (role) {
+      case 'secretaria': estado = SolicitudStatusEnum.EN_REVISION_SECRETARIA; break;
+      case 'funcionario': estado = SolicitudStatusEnum.EN_REVISION_FUNCIONARIO; break;
+      case 'coordinador': estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR; break;
+      default: return throwError(() => 'Rol no permitido para solicitudes pendientes');
+    }
 
     return of(this.solicitudes.filter(s => s.estado === estado));
   }
@@ -88,8 +99,8 @@ export class PazSalvoService {
     return of(solicitud);
   }
 
-  // 📌 Aprobar un archivo individual dentro de la solicitud
-  approveDocument(requestId: number, nombreArchivo: string): Observable<Archivo & { estado: ArchivoEstado }> {
+  // 📌 Aprobar un archivo individual
+  approveDocument(requestId: number, nombreArchivo: string): Observable<Archivo> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) return throwError(() => 'Solicitud no encontrada');
 
@@ -97,11 +108,11 @@ export class PazSalvoService {
     if (!archivo) return throwError(() => 'Archivo no encontrado');
 
     archivo.estado = 'aprobado';
-    return of(archivo as Archivo & { estado: ArchivoEstado });
+    return of(archivo);
   }
 
-  // 📌 Rechazar un archivo individual dentro de la solicitud
-  rejectDocument(requestId: number, nombreArchivo: string): Observable<Archivo & { estado: ArchivoEstado }> {
+  // 📌 Rechazar un archivo individual
+  rejectDocument(requestId: number, nombreArchivo: string): Observable<Archivo> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) return throwError(() => 'Solicitud no encontrada');
 
@@ -109,10 +120,10 @@ export class PazSalvoService {
     if (!archivo) return throwError(() => 'Archivo no encontrado');
 
     archivo.estado = 'rechazado';
-    return of(archivo as Archivo & { estado: ArchivoEstado });
+    return of(archivo);
   }
 
-  // 📌 Generar oficio (simulación)
+  // 📌 Generar oficio
   generateOfficio(requestId: number): Observable<string> {
     const solicitud = this.solicitudes.find(s => s.id === requestId);
     if (!solicitud) return throwError(() => 'Solicitud no encontrada');
