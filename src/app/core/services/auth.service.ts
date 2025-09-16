@@ -14,7 +14,7 @@ export class AuthService {
   private readonly EXP_KEY = 'tokenExp';
 
   private roleSubject = new BehaviorSubject<UserRole | null>(null);
-  role$ = this.roleSubject.asObservable(); // 👈 los componentes se suscriben a esto
+  role$ = this.roleSubject.asObservable(); // Suscripción en tiempo real
   private logoutTimer: any;
 
   constructor(
@@ -22,7 +22,7 @@ export class AuthService {
     private apiService: ApiService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.restoreRoleFromStorage(); // restaura rol al recargar la página
+    this.restoreRoleFromStorage(); // Restaura el rol al recargar la página
   }
 
   // ===== HELPER METHODS =====
@@ -65,15 +65,12 @@ export class AuthService {
   // ===== USUARIO =====
   setUsuario(usuario: any): void {
     const storage = this.safeLocalStorage();
-    if (storage) {
-      storage.setItem(this.USER_KEY, JSON.stringify(usuario));
-    }
+    if (storage) storage.setItem(this.USER_KEY, JSON.stringify(usuario));
   }
 
   getUsuario(): any | null {
     const storage = this.safeLocalStorage();
     if (!storage) return null;
-
     const userData = storage.getItem(this.USER_KEY);
     return userData ? JSON.parse(userData) : null;
   }
@@ -93,11 +90,9 @@ export class AuthService {
     }
 
     const storage = this.safeLocalStorage();
-    if (storage) {
-      storage.setItem(this.ROLE_KEY, normalizedRole);
-    }
+    if (storage) storage.setItem(this.ROLE_KEY, normalizedRole);
 
-    this.roleSubject.next(normalizedRole); // 👈 actualiza en tiempo real
+    this.roleSubject.next(normalizedRole); // Actualiza rol en tiempo real
   }
 
   getRole(): UserRole | null {
@@ -109,9 +104,7 @@ export class AuthService {
     if (!storage) return;
 
     const storedRole = storage.getItem(this.ROLE_KEY) as UserRole | null;
-    if (storedRole) {
-      this.roleSubject.next(storedRole);
-    }
+    if (storedRole) this.roleSubject.next(storedRole);
   }
 
   // ===== AUTENTICACIÓN =====
@@ -142,7 +135,7 @@ export class AuthService {
       storage.removeItem(this.EXP_KEY);
     }
     clearTimeout(this.logoutTimer);
-    this.roleSubject.next(null); // 👈 limpia el rol
+    this.roleSubject.next(null);
     this.router.navigate(['/login']);
   }
 
