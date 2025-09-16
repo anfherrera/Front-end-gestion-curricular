@@ -1,4 +1,5 @@
 import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
+import { UserRole } from '../enums/roles.enum';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
 
@@ -8,23 +9,17 @@ export interface Archivo {
   originalName: string;   // Nombre original del archivo
   fecha: string;          // Fecha de subida
   url?: string;           // Path o URL para acceder al archivo desde el backend
-  estado?: ArchivoEstado;
-  comentario?: string;
-  tipoDocumentoSolicitudPazYSalvo?: string;
+  estado?: ArchivoEstado; // Estado del archivo
 }
 
 export interface Usuario {
-  id: number;
+  id_usuario: number;
   nombre_completo: string;
-  rol: {
-    id_rol: number;
-    nombre_rol: string;
-  };
+  rol: UserRole;
   codigo: string;
   correo: string;
-  password?: string;
-  estado_usuario?: boolean;
-  objPrograma?: {
+  estado_usuario: boolean;
+  objPrograma: {
     id_programa: number;
     nombre_programa: string;
   };
@@ -35,8 +30,8 @@ export interface Solicitud {
   nombre: string;
   fecha: string;
   estado: SolicitudStatusEnum;
-  usuario?: Usuario;     // 🔹 agregado para filtrar por studentId
+  usuario?: Usuario;       // 👈 ahora sí está
+  archivos?: Archivo[];
   oficioUrl?: string;
   comentarios?: string;
-  archivos?: Archivo[];
 }

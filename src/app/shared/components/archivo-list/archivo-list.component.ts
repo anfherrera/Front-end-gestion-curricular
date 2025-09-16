@@ -1,3 +1,4 @@
+// archivo-list.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +15,7 @@ export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
 })
 export class ArchivoListComponent {
   @Input() archivos: (Archivo & { estado?: ArchivoEstado })[] = [];
-  @Input() modo: 'estudiante' | 'funcionario' = 'estudiante';
+  @Input() modo: 'estudiante' | 'funcionario' | 'coordinador' = 'estudiante';
 
   @Output() aprobar = new EventEmitter<number>();
   @Output() rechazar = new EventEmitter<number>();

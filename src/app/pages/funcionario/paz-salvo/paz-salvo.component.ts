@@ -14,7 +14,7 @@ import { Solicitud, Archivo } from '../../../core/models/procesos.model';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 
 @Component({
-  selector: 'app-paz-salvo-revision',
+  selector: 'app-paz-salvo',
   standalone: true,
   imports: [
     CommonModule,
@@ -46,7 +46,7 @@ export class PazSalvoComponent implements OnInit {
   }
 
   cargarSolicitudes(): void {
-    this.pazSalvoService.getPendingRequests('funcionario').subscribe({
+    this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
         this.solicitudes = sols;
         if (sols.length) this.selectedSolicitud = sols[0];

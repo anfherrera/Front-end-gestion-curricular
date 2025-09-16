@@ -1,7 +1,10 @@
+// src/app/core/services/paz-salvo.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { Solicitud, Archivo, Usuario } from '../models/procesos.model';
 import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
+import { AuthService } from './auth.service';
+import { UserRole } from '../enums/roles.enum';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
 
@@ -12,15 +15,7 @@ export class PazSalvoService {
   private solicitudes: Solicitud[] = [];
   private solicitudIdCounter = 1;
 
-  private usuarioActual: Usuario = {
-    id: 1,
-    nombre_completo: 'Juan Pérez',
-    rol: { id_rol: 2, nombre_rol: 'Estudiante' },
-    codigo: '104612345678',
-    correo: 'juan.perez@unicauca.edu.co'
-  };
-
-  constructor() {}
+  constructor(private authService: AuthService) {} // 👈 inyectamos AuthService
 
   // 📌 Subir archivo temporal
   uploadDocument(studentId: number, file: File, nombre: string): Observable<Archivo> {
@@ -35,7 +30,7 @@ export class PazSalvoService {
 
   // 📌 Obtener solicitudes de un estudiante
   getStudentRequests(studentId: number): Observable<Solicitud[]> {
-    return of(this.solicitudes.filter(s => s.usuario?.id === studentId));
+    return of(this.solicitudes.filter(s => s.usuario?.id_usuario === studentId));
   }
 
   // 📌 Crear y enviar solicitud
@@ -44,12 +39,15 @@ export class PazSalvoService {
       return throwError(() => 'No hay documentos para enviar');
     }
 
+    const usuarioActual: Usuario | null = this.authService.getUsuario();
+    if (!usuarioActual) return throwError(() => 'Usuario no autenticado');
+
     const solicitud: Solicitud = {
       id: this.solicitudIdCounter++,
       nombre: 'Solicitud paz y salvo',
       fecha: new Date().toISOString().split('T')[0],
       estado: SolicitudStatusEnum.EN_REVISION_FUNCIONARIO,
-      usuario: this.usuarioActual,
+      usuario: usuarioActual, // 👈 ahora dinámico
       archivos
     };
 
@@ -58,18 +56,29 @@ export class PazSalvoService {
   }
 
   // 📌 Obtener solicitudes pendientes según el rol
-  getPendingRequests(role: 'secretaria' | 'funcionario' | 'coordinador'): Observable<Solicitud[]> {
-    let estado: SolicitudStatusEnum;
+getPendingRequests(): Observable<Solicitud[]> {
+  const usuarioActual: Usuario | null = this.authService.getUsuario();
+  if (!usuarioActual) return throwError(() => 'Usuario no autenticado');
 
-    switch (role) {
-      case 'secretaria': estado = SolicitudStatusEnum.EN_REVISION_SECRETARIA; break;
-      case 'funcionario': estado = SolicitudStatusEnum.EN_REVISION_FUNCIONARIO; break;
-      case 'coordinador': estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR; break;
-      default: return throwError(() => 'Rol no permitido para solicitudes pendientes');
-    }
+  let estado: SolicitudStatusEnum;
 
-    return of(this.solicitudes.filter(s => s.estado === estado));
+  switch (usuarioActual.rol) {  // 👈 aquí usamos directamente el enum
+    case UserRole.SECRETARIA:
+      estado = SolicitudStatusEnum.EN_REVISION_SECRETARIA;
+      break;
+    case UserRole.FUNCIONARIO:
+      estado = SolicitudStatusEnum.EN_REVISION_FUNCIONARIO;
+      break;
+    case UserRole.COORDINADOR:
+      estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR;
+      break;
+    default:
+      return throwError(() => 'Rol no permitido para solicitudes pendientes');
   }
+
+  return of(this.solicitudes.filter(s => s.estado === estado));
+}
+
 
   // 📌 Completar revisión de funcionario → pasa a coordinador
   completeValidation(requestId: number): Observable<Solicitud> {
