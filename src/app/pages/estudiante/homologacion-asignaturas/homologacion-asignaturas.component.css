@@ -1,0 +1,101 @@
+/* Contenedor principal */
+.homologacion-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: #f5f7fa;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Tarjetas */
+.card-section {
+  border-radius: 12px;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Títulos de tarjetas */
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #00138C;
+  color: #fff;
+  padding: 14px 16px;
+  display: block;
+  border-bottom: 3px solid #001060;
+}
+
+/* Contenido de la tarjeta */
+mat-card-content {
+  padding: 16px;
+}
+
+/* Mensaje cuando no hay solicitudes */
+.sin-solicitudes {
+  color: #555;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+/* Lista de documentos requeridos */
+.required-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.required-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #444;
+  transition: background 0.2s ease;
+}
+
+.required-list li:last-child {
+  margin-bottom: 0;
+}
+
+.required-list li:hover {
+  background-color: rgba(0, 19, 140, 0.05);
+}
+
+/* Botón Enviar Solicitud */
+.btn-enviar {
+  background-color: #00138C !important;
+  color: #fff !important;
+  border: 1px solid #00138C !important;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-enviar:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
+  border: 1px solid #d3d3d3 !important;
+  cursor: not-allowed;
+}
+
+/* Mensaje de rechazo */
+.rechazo-box {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff3f3;
+  border: 1px solid #ffcccc;
+  border-radius: 8px;
+  color: #c62828;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
