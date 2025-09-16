@@ -47,9 +47,16 @@ export class HomologacionAsignaturasService {
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
+  // private getAuthHeaders(): HttpHeaders {
+  //   const token = localStorage.getItem('token');
+  //   return new HttpHeaders({
+  //     Authorization: token ? `Bearer ${token}` : ''
+  //   });
+  // }
+  private getAuthHeaders(isFile: boolean = false): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
+      ...(isFile ? {} : { 'Content-Type': 'application/json' }),
       Authorization: token ? `Bearer ${token}` : ''
     });
   }
@@ -68,4 +75,41 @@ export class HomologacionAsignaturasService {
       { headers: this.getAuthHeaders() }
     );
   }
+
+//============
+/**
+  //  * Obtener una solicitud por ID
+  //  */
+  // obtenerSolicitudPorId(idSolicitud: number): Observable<any> {
+  //   return this.http.get(
+  //     `${this.apiUrl}/obtenerSolicitud/${idSolicitud}`,
+  //     { headers: this.getAuthHeaders() }
+  //   );
+  // }
+
+  // /**
+  //  * Subir un archivo asociado a una solicitud
+  //  */
+  // subirArchivo(idSolicitud: number, archivo: File): Observable<any> {
+  //   const formData = new FormData();
+  //   formData.append('file', archivo);
+
+  //   return this.http.post(
+  //     `${this.apiUrl}/subirArchivo/${idSolicitud}`,
+  //     formData,
+  //     { headers: this.getAuthHeaders(true) }
+  //   );
+  // }
+
+  // /**
+  //  * Descargar archivo asociado a una solicitud
+  //  */
+  // descargarArchivo(idSolicitud: number): Observable<Blob> {
+  //   return this.http.get(
+  //     `${this.apiUrl}/descargarArchivo/${idSolicitud}`,
+  //     { headers: this.getAuthHeaders(), responseType: 'blob' }
+  //   );
+  // }
+//============
+
 }
