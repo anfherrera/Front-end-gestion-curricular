@@ -1,4 +1,4 @@
-<div class="upload-section">
+<!-- <div class="upload-section">
   <label class="file-label">
     <mat-icon>cloud_upload</mat-icon> Subir Archivos
     <input type="file" (change)="onFileSelected($event)" multiple accept=".pdf" hidden />
@@ -18,4 +18,16 @@
       </button>
     </td>
   </tr>
-</table>
+</table> -->
+<div class="file-upload">
+  <button type="button" (click)="fileInput.click()" [disabled]="cargando">
+    {{ cargando ? 'Subiendo...' : 'Seleccionar archivo' }}
+  </button>
+  <input type="file" (change)="onFileSelected($event)" accept=".pdf" #fileInput hidden />
+
+  <ul *ngIf="archivos.length > 0">
+    <li *ngFor="let archivo of archivos">
+      📄 {{ archivo.nombre }} - Estado: {{ archivo.estado }}
+    </li>
+  </ul>
+</div>

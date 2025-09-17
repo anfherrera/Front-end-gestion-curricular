@@ -3,27 +3,28 @@ import { UserRole } from '../enums/roles.enum';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
 
+// export interface Archivo {
+//   file?: File;            // Solo usado temporalmente cuando se sube
+//   nombre: string;         // Nombre que se muestra
+//   originalName: string;   // Nombre original del archivo
+//   fecha: string;          // Fecha de subida
+//   url?: string;           // Path o URL para acceder al archivo desde el backend
+//   estado?: ArchivoEstado; // <-- agregamos esto
+// }
 export interface Archivo {
-  file?: File;            // Solo usado temporalmente cuando se sube
-  nombre: string;         // Nombre que se muestra
-  originalName: string;   // Nombre original del archivo
-  fecha: string;          // Fecha de subida
-  url?: string;           // Path o URL para acceder al archivo desde el backend
-  estado?: ArchivoEstado; // Estado del archivo
+  id_documento?: number;
+  file?: File; // opcional: solo se usa en frontend
+  nombre: string;
+  originalName?: string;
+  ruta_documento?: string;
+  fecha: string;
+  esValido?: boolean;
+  comentario?: string | null;
+
+  estado?: 'pendiente' | 'aprobado' | 'rechazado';
+  url?: string;
 }
 
-export interface Usuario {
-  id_usuario: number;
-  nombre_completo: string;
-  rol: UserRole;
-  codigo: string;
-  correo: string;
-  estado_usuario: boolean;
-  objPrograma: {
-    id_programa: number;
-    nombre_programa: string;
-  };
-}
 
 export interface Solicitud {
   id: number;
