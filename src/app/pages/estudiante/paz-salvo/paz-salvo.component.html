@@ -1,20 +1,14 @@
 <div class="paz-salvo-container">
 
-  <!-- Documentación requerida -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Adjuntar Documentación Requerida</mat-card-title>
-    <mat-card-content>
+  <!-- Documentación Requerida -->
       <app-required-docs
         [requiredFiles]="documentosRequeridos"
-        [exclusiveFiles]="archivosExclusivos"
         [archivos]="archivosActuales">
-      </app-required-docs>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Subir Archivos -->
+      </app-required-docs>  
+  
+   <!-- Subir Archivos -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Subir Archivos</mat-card-title>
+    <mat-card-title class="card-title">Adjuntar documentacion requerida</mat-card-title>
     <mat-card-content>
       <app-file-upload
         [archivos]="archivosActuales"
@@ -29,20 +23,12 @@
           Enviar Solicitud
         </button>
       </div>
-
-      <div *ngIf="ultimaSolicitud?.estado === 'Rechazada'" class="rechazo-box">
-        <mat-icon color="warn">error</mat-icon>
-        <span>
-          <strong>Solicitud rechazada:</strong>
-          {{ ultimaSolicitud?.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
-        </span>
-      </div>
     </mat-card-content>
   </mat-card>
 
-  <!-- Seguimiento de solicitud -->
+  <!-- Seguimiento de solicitudes -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
+    <mat-card-title class="card-title">Seguimiento de Solicitudes</mat-card-title>
     <mat-card-content>
       <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
         No se ha enviado ninguna solicitud aún.

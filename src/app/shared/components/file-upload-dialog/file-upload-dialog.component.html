@@ -1,33 +1,25 @@
-<!-- <div class="upload-section">
-  <label class="file-label">
-    <mat-icon>cloud_upload</mat-icon> Subir Archivos
-    <input type="file" (change)="onFileSelected($event)" multiple accept=".pdf" hidden />
-  </label>
-</div>
+<div class="file-upload-container">
+  <button type="button"
+          (click)="fileInput.click()"
+          [disabled]="cargando"
+          class="upload-btn">
+    <mat-icon>cloud_upload</mat-icon>
+    {{ cargando ? 'Subiendo...' : 'Seleccionar archivo(s)' }}
+  </button>
 
-<table *ngIf="archivos.length > 0" class="table-archivos">
-  <tr>
-    <th>Nombre</th>
-    <th>Acciones</th>
-  </tr>
-  <tr *ngFor="let archivo of archivos; let i = index">
-    <td>{{ archivo.nombre }}</td>
-    <td>
-      <button mat-icon-button color="warn" (click)="removeFile(i)" aria-label="Eliminar">
+  <input type="file"
+         #fileInput
+         (change)="onFileSelected($event)"
+         accept=".pdf"
+         multiple
+         hidden />
+
+  <ul *ngIf="archivos.length > 0" class="uploaded-list">
+    <li *ngFor="let archivo of archivos; let i = index">
+      <mat-icon>description</mat-icon> {{ archivo.nombre }} - Estado: {{ archivo.estado }}
+      <button type="button" mat-icon-button color="warn" (click)="removeFile(i)" aria-label="Eliminar">
         <mat-icon>delete</mat-icon>
       </button>
-    </td>
-  </tr>
-</table> -->
-<div class="file-upload">
-  <button type="button" (click)="fileInput.click()" [disabled]="cargando">
-    {{ cargando ? 'Subiendo...' : 'Seleccionar archivo' }}
-  </button>
-  <input type="file" (change)="onFileSelected($event)" accept=".pdf" #fileInput hidden />
-
-  <ul *ngIf="archivos.length > 0">
-    <li *ngFor="let archivo of archivos">
-      📄 {{ archivo.nombre }} - Estado: {{ archivo.estado }}
     </li>
   </ul>
 </div>

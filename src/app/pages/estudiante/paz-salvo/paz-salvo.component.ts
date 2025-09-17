@@ -7,10 +7,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
-import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component'; // 👈 aquí
+import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo } from '../../../core/models/procesos.model';
+import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 
 @Component({
   selector: 'app-paz-salvo',
@@ -23,7 +24,7 @@ import { Solicitud, Archivo } from '../../../core/models/procesos.model';
     MatSnackBarModule,
     RequestStatusTableComponent,
     FileUploadComponent,
-    RequiredDocsComponent // 👈 lo registras aquí
+    RequiredDocsComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
@@ -33,6 +34,8 @@ export class PazSalvoComponent implements OnInit {
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
   readonly studentId = 1;
+
+  SolicitudStatusEnum = SolicitudStatusEnum; // ✅ exponemos el enum al template
 
   readonly documentosRequeridos: { label: string; obligatorio: boolean }[] = [
     { label: 'Formato PM-FO-4-FOR-27.pdf', obligatorio: true },
@@ -59,6 +62,21 @@ export class PazSalvoComponent implements OnInit {
 
   get ultimaSolicitud(): Solicitud | undefined {
     return this.solicitudes[this.solicitudes.length - 1];
+  }
+
+  // 👇 getter para el texto del botón
+  get textoBoton(): string {
+    if (!this.ultimaSolicitud) return 'Enviar Solicitud';
+
+    switch (this.ultimaSolicitud.estado) {
+      case SolicitudStatusEnum.ENVIADA:
+      case SolicitudStatusEnum.EN_REVISION_SECRETARIA:
+      case SolicitudStatusEnum.EN_REVISION_FUNCIONARIO:
+      case SolicitudStatusEnum.EN_REVISION_COORDINADOR:
+        return 'Actualizar Solicitud';
+      default:
+        return 'Enviar Solicitud';
+    }
   }
 
   cargarSolicitudes(): void {
@@ -119,7 +137,6 @@ export class PazSalvoComponent implements OnInit {
     );
   }
 
-  // 👇 Método para usar en trackBy
   trackByLabel(index: number, item: { label: string }): string {
     return item.label;
   }

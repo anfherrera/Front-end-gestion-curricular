@@ -1,94 +1,54 @@
-/* Contenedor del botón subir archivos */
-.upload-section {
-  margin-bottom: 16px;
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start; /* ⚡ hace que los hijos no se estiren */
 }
 
-/* Botón subir archivos */
-.file-label {
+.upload-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   background-color: #00138c;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
+  color: white;
+  padding: 4px 10px;
+  font-size: 13px;
   font-weight: 600;
+  border-radius: 20px;
+  cursor: pointer;
+  width: auto; /* ⚡ asegura ancho automático */
+  min-width: 0;
+  height: 32px;
+  line-height: 1;
+  text-transform: none;
   transition: background-color 0.3s ease;
 }
 
-.file-label:hover {
+.upload-btn:hover:enabled {
   background-color: #001060;
 }
 
-.file-label mat-icon {
-  font-size: 20px;
+
+/* Lista de archivos subidos */
+.uploaded-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-/* Tabla de archivos subidos */
-.table-archivos {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-top: 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
+.uploaded-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f1f3f5;
+  padding: 6px 10px;
+  border-radius: 4px;
 }
 
-.table-archivos th {
-  background-color: #00138c;
-  color: #fff;
-  padding: 10px;
-  text-align: left;
-}
-
-.table-archivos td {
-  padding: 10px;
-  vertical-align: middle;
-  color: #222;
-  font-weight: normal;
-}
-
-.table-archivos tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table-archivos tr:hover {
-  background-color: #eaf1fb;
-}
-
-/* Ícono eliminar en rojo */
-.table-archivos button[color="warn"] mat-icon {
-  color: #d32f2f;
-}
-
-/* Botón enviar solicitud */
-.enviar-solicitud {
-  margin-top: 18px;
-  text-align: right;
-}
-
-.enviar-solicitud button {
-  font-weight: bold;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  color: white;
-  background-color: #cfd8dc; /* color inicial deshabilitado */
-  cursor: not-allowed;
-}
-
-/* Botón activo */
-.enviar-solicitud button:enabled {
-  background-color: #00138C; /* azul */
-  color: #fff;
-  cursor: pointer;
-}
-
-/* Hover del botón activo */
-.enviar-solicitud button:enabled:hover {
-  background-color: #001060;
+.uploaded-list li mat-icon {
+  margin-right: 6px;
+  font-size: 18px; /* más pequeño si quieres */
 }
