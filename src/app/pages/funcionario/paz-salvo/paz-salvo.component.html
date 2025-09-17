@@ -1,4 +1,3 @@
-<!-- src/app/pages/funcionario/paz-salvo/paz-salvo.component.html -->
 <div class="funcionario-container">
 
   <!-- 📌 Contenedor de solicitudes -->
@@ -10,7 +9,7 @@
         <!-- Solicitante -->
         <ng-container matColumnDef="solicitante">
           <th mat-header-cell *matHeaderCellDef>Solicitante</th>
-          <td mat-cell *matCellDef="let solicitud">{{ solicitud.solicitante?.nombre }}</td>
+          <td mat-cell *matCellDef="let solicitud">{{ solicitud.usuario?.nombre_completo }}</td>
         </ng-container>
 
         <!-- Fecha de creación -->

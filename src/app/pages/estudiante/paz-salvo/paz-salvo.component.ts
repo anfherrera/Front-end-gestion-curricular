@@ -63,9 +63,7 @@ export class PazSalvoComponent implements OnInit {
     });
   }
 
-  // Recibe todos los archivos directamente desde FileUploadComponent
   onArchivosChange(archivos: Archivo[]) {
-    // Solo guardamos archivos con file definido
     this.archivosActuales = archivos.filter(a => a.file);
   }
 

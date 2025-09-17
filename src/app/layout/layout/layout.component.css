@@ -2,31 +2,30 @@
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* ocupa toda la altura de la ventana */
+  min-height: 100vh;
 }
 
 /* Cuerpo: sidebar + contenido */
 .layout-body {
   display: flex;
-  flex: 1; /* ocupa todo el espacio disponible entre header y footer */
-  align-items: stretch; /* 🔹 Sidebar y contenido se estiran igual */
+  flex: 1;
+  align-items: stretch;
 }
 
-/* Sidebar */
+/* 🔹 Sidebar host: no fijamos ancho ni fondo aquí */
 app-sidebar {
-  flex-shrink: 0;
-  width: 250px;
-  background: #00138C; /* Azul institucional */
-  color: white;
-  display: flex;
-  flex-direction: column;
+  flex: 0 0 auto; /* ancho lo define el nav interno */
+  display: block;
+  background: transparent; /* dejar que el nav.sidebar pinte */
+  padding: 0;
 }
 
 /* Contenido principal */
 .main-content {
   flex: 1;
   padding: 20px;
-  overflow-y: auto; /* scroll solo en contenido */
+  overflow-y: auto;
   background-color: #f5f7fa;
-  min-height: 100%; /* 🔹 Hace que el contenido y sidebar crezcan parejos */
+  transition: all 0.3s ease;
+  min-height: 100%;
 }

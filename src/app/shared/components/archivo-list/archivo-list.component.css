@@ -1,9 +1,11 @@
+/* Contenedor de la lista de archivos */
 .archivo-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+/* Elementos de la lista */
 .archivo-list li {
   display: flex;
   align-items: center;
@@ -15,20 +17,46 @@
   transition: background 0.2s;
 }
 
+/* Hover de los elementos */
 .archivo-list li:hover {
   background-color: #e0e0e0;
 }
 
+/* Nombre del archivo */
 .archivo-nombre {
   flex: 2;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* Fecha del archivo */
 .archivo-fecha {
   flex: 1;
   font-size: 12px;
   color: #555;
 }
 
+/* Iconos de acción */
 .accion {
   cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.accion:hover {
+  transform: scale(1.2);
+}
+
+/* Colores para estado del archivo (solo estudiante) */
+.archivo-list mat-icon[color="primary"] {
+  color: #2e7d32; /* aprobado verde */
+}
+
+.archivo-list mat-icon[color="warn"] {
+  color: #c62828; /* rechazado rojo */
+}
+
+.archivo-list mat-icon[color="grey"] {
+  color: #9e9e9e; /* pendiente gris */
 }

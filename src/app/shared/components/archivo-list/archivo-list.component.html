@@ -1,14 +1,17 @@
+<!-- archivo-list.component.html -->
 <ul class="archivo-list">
   <li *ngFor="let archivo of archivos; let i = index">
     <span class="archivo-nombre">{{ archivo.nombre }}</span>
     <span class="archivo-fecha">{{ archivo.fecha }}</span>
 
-    <ng-container *ngIf="modo === 'funcionario'">
+    <!-- Acciones para funcionario y coordinador -->
+    <ng-container *ngIf="modo === 'funcionario' || modo === 'coordinador'">
       <mat-icon class="accion" (click)="verArchivo(archivo)">visibility</mat-icon>
       <mat-icon class="accion" color="primary" (click)="aprobarArchivo(i)">thumb_up</mat-icon>
       <mat-icon class="accion" color="warn" (click)="rechazarArchivo(i)">thumb_down</mat-icon>
     </ng-container>
 
+    <!-- Visualización para estudiante -->
     <ng-container *ngIf="modo === 'estudiante'">
       <mat-icon *ngIf="archivo.estado === 'aprobado'" color="primary">thumb_up</mat-icon>
       <mat-icon *ngIf="archivo.estado === 'rechazado'" color="warn">thumb_down</mat-icon>
