@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
@@ -14,8 +14,8 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
     HeaderComponent,
     FooterComponent,
     SidebarComponent
-  ],
-  encapsulation: ViewEncapsulation.None
+  ]
+  // 🔹 Quitar ViewEncapsulation.None para que no meta CSS global
 })
 export class LayoutComponent {
   /** Estado del sidebar */

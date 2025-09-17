@@ -2,7 +2,11 @@
   <app-header></app-header>
 
   <div class="layout-body">
-    <app-sidebar [class.closed]="!isSidebarOpen"></app-sidebar>
+    <!-- Escucha el evento toggle y pasa el estado -->
+    <app-sidebar
+      [class.closed]="!isSidebarOpen"
+      (toggle)="toggleSidebar()">
+    </app-sidebar>
 
     <div class="main-content">
       <router-outlet></router-outlet>
