@@ -49,16 +49,22 @@ export class PazSalvoService {
     );
   }
 
-  uploadFile(requestId: number, archivo: File): Observable<Archivo> {
-    const formData = new FormData();
-    formData.append('file', archivo);
+ uploadFile(requestId: number, archivo: File): Observable<Archivo> {
+  const formData = new FormData();
+  // 🔹 Usa 'archivo' si el backend espera este nombre
+  formData.append('archivo', archivo);
 
-    return this.http.post<Archivo>(
-      `${this.apiUrl}/${requestId}/subir-archivo`,
-      formData,
-      { headers: this.getAuthHeaders(true) }
-    );
-  }
+  // 🔹 Solo Authorization, Angular detecta FormData y pone multipart automáticamente
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+  });
+
+  return this.http.post<Archivo>(
+    `${this.apiUrl}/${requestId}/subir-archivo`,
+    formData,
+    { headers }
+  );
+}
 
   downloadFile(requestId: number, archivoNombre: string): Observable<Blob> {
     return this.http.get(

@@ -99,24 +99,42 @@ export class PazSalvoComponent implements OnInit {
   // ================================
   // 🔹 Cambio de archivos
   // ================================
-  async onArchivosChange(archivos: Archivo[]): Promise<void> {
-    const uploadedFiles: Archivo[] = [];
+async onArchivosChange(archivos: Archivo[]): Promise<void> {
+  const uploadedFiles: Archivo[] = [];
 
-    for (const archivo of archivos) {
-      if (archivo.file) {
-        try {
-          const uploaded = await this.pazSalvoService.uploadFile(this.studentId, archivo.file).toPromise();
-          if (uploaded) uploadedFiles.push({ ...uploaded, nombre: uploaded.nombre.trim() });
-        } catch (err) {
-          this.snackBar.open(`Error subiendo archivo ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
+  for (const archivo of archivos) {
+    if (archivo.file) {
+      try {
+        const uploaded = await this.pazSalvoService.uploadFile(this.studentId, archivo.file).toPromise();
+        if (uploaded) {
+          uploadedFiles.push({
+            ...uploaded,
+            nombre: uploaded.nombre?.trim() || archivo.nombre,
+            fecha: uploaded.fecha ?? new Date().toISOString(), // 🔹 asegura string
+            file: undefined, // ya no necesitamos el File temporal
+          });
         }
-      } else {
-        uploadedFiles.push({ ...archivo, nombre: archivo.nombre.trim() });
+      } catch (err) {
+        this.snackBar.open(`Error subiendo archivo ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
+        // Mantener el archivo local aunque falle
+        uploadedFiles.push({
+          ...archivo,
+          nombre: archivo.nombre.trim(),
+          fecha: archivo.fecha ?? new Date().toISOString(),
+        });
       }
+    } else {
+      uploadedFiles.push({
+        ...archivo,
+        nombre: archivo.nombre.trim(),
+        fecha: archivo.fecha ?? new Date().toISOString(),
+      });
     }
-
-    this.archivosActuales = uploadedFiles;
   }
+
+  this.archivosActuales = uploadedFiles;
+}
+
 
   // ================================
   // 🔹 Enviar solicitud
