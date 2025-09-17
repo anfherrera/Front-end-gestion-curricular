@@ -35,3 +35,13 @@ export interface Solicitud {
   comentarios?: string;
   archivos?: Archivo[];
 }
+
+export interface SolicitudList {
+  id: number;
+  nombre: string;
+  fecha: string;
+  estado: string;
+  rutaArchivo: string;
+  comentarios?: string;
+}
+

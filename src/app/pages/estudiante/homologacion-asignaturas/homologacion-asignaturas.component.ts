@@ -287,6 +287,8 @@ import { FileUploadComponent } from "../../../shared/components/file-upload-dial
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 
+import { Solicitud } from '../../../core/models/procesos.model';
+
 @Component({
   selector: 'app-solicitud-homologacion',
   standalone: true,
@@ -312,7 +314,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
-  solicitudes: any[] = [];
+  solicitudes: Solicitud[] = [];
 
   usuario: any = null;
 
@@ -378,8 +380,8 @@ export class HomologacionAsignaturasComponent implements OnInit {
   }
 
   const solicitud = {
-    nombre_solicitud: 'Solicitud de homologación',
-    fecha_registro_solicitud: new Date().toISOString(), // formato correcto
+    nombre_solicitud: `Solicitud_homologacion_${this.usuario.nombre_completo}`,
+    fecha_registro_solicitud: new Date().toISOString(),
     objUsuario: {
       id_usuario: this.usuario.id_usuario,
       nombre_completo: this.usuario.nombre_completo,
@@ -412,15 +414,44 @@ export class HomologacionAsignaturasComponent implements OnInit {
 }
 
 
+  // listarSolicitudes() {
+  //   this.homologacionService.listarSolicitudes().subscribe({
+  //     next: (data) => {
+  //       this.solicitudes = data;
+  //       console.log('📋 Solicitudes cargadas:', this.solicitudes);
+  //     },
+  //     error: (err) => {
+  //       console.error('❌ Error al listar solicitudes', err);
+  //     }
+  //   });
+  // }
+
   listarSolicitudes() {
-    this.homologacionService.listarSolicitudes().subscribe({
-      next: (data) => {
-        this.solicitudes = data;
-        console.log('📋 Solicitudes cargadas:', this.solicitudes);
-      },
-      error: (err) => {
-        console.error('❌ Error al listar solicitudes', err);
-      }
-    });
-  }
+  this.homologacionService.listarSolicitudes().subscribe({
+    next: (data) => {
+      this.solicitudes = data.map((sol: any) => {
+        const estados = sol.estado_actual || sol.estadosSolicitud || [];
+        const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
+
+        // Tomamos el primer documento como "rutaArchivo"
+        const rutaArchivo = sol.documentos?.length > 0 ? sol.documentos[0].ruta : '';
+
+        return {
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: ultimoEstado?.estado_actual || 'Pendiente',
+          rutaArchivo,
+          comentarios: ultimoEstado?.comentarios || ''
+        };
+      });
+
+      console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
+    },
+    error: (err) => {
+      console.error('❌ Error al listar solicitudes', err);
+    }
+  });
+}
+
 }
