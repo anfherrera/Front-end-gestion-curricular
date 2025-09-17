@@ -4,14 +4,11 @@
   <mat-card class="card-section">
     <mat-card-title class="card-title">Adjuntar Documentación Requerida</mat-card-title>
     <mat-card-content>
-      <ul class="required-list">
-        <li *ngFor="let doc of documentosRequeridos">
-          {{ doc.label }} <span *ngIf="doc.obligatorio" class="obligatorio">*</span>
-        </li>
-        <li *ngIf="archivosExclusivos.length">
-          {{ archivosExclusivos.join(' o ') }} <span class="nota">(solo uno)</span>
-        </li>
-      </ul>
+      <app-required-docs
+        [requiredFiles]="documentosRequeridos"
+        [exclusiveFiles]="archivosExclusivos"
+        [archivos]="archivosActuales">
+      </app-required-docs>
     </mat-card-content>
   </mat-card>
 
@@ -33,11 +30,11 @@
         </button>
       </div>
 
-      <div *ngIf="solicitudes.at(-1)?.estado === 'Rechazada'" class="rechazo-box">
+      <div *ngIf="ultimaSolicitud?.estado === 'Rechazada'" class="rechazo-box">
         <mat-icon color="warn">error</mat-icon>
         <span>
-          <strong>Solicitud rechazada:</strong> 
-          {{ solicitudes.at(-1)?.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
+          <strong>Solicitud rechazada:</strong>
+          {{ ultimaSolicitud?.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
         </span>
       </div>
     </mat-card-content>

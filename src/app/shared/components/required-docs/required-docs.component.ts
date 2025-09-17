@@ -8,6 +8,11 @@ export interface Archivo {
   fecha: string;
 }
 
+export interface Documento {
+  label: string;
+  obligatorio: boolean;
+}
+
 @Component({
   selector: 'app-required-docs',
   standalone: true,
@@ -16,11 +21,25 @@ export interface Archivo {
   styleUrls: ['./required-docs.component.css']
 })
 export class RequiredDocsComponent {
-  @Input() requiredFiles: string[] = [];
+  /** Documentos obligatorios y opcionales */
+  @Input() requiredFiles: Documento[] = [];
+
+  /** Archivos exclusivos (solo se puede subir uno) */
+  @Input() exclusiveFiles: string[] = [];
+
+  /** Archivos ya subidos */
   @Input() archivos: Archivo[] = [];
 
-  /** Verifica si un archivo está subido */
+  /** Verifica si un archivo obligatorio está subido */
   isUploaded(file: string): boolean {
     return this.archivos.some(a => a.nombre.includes(file));
+  }
+
+  /** Verifica si algún archivo exclusivo está subido */
+  exclusiveUploaded(): string | null {
+    const encontrados = this.archivos.filter(a =>
+      this.exclusiveFiles.includes(a.nombre)
+    );
+    return encontrados.length ? encontrados[0].nombre : null;
   }
 }
