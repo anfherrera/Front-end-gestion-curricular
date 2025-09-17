@@ -14,7 +14,7 @@ Este documento describe la configuración y estructura para la integración entr
 ### Backend (Java)
 - **Tecnología**: Java (Spring Boot)
 - **Puerto**: 8080 (desarrollo)
-- **URL Base**: `http://localhost:8080/api`
+- **URL Base**: `http://localhost:5000/api`
 
 ## 🔧 Configuración
 
@@ -24,7 +24,7 @@ Este documento describe la configuración y estructura para la integración entr
 ```typescript
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api'
+  apiUrl: 'http://localhost:5000/api'
 };
 ```
 
