@@ -1,14 +1,14 @@
 <div class="paz-salvo-container">
 
   <!-- Documentación Requerida -->
-      <app-required-docs
-        [requiredFiles]="documentosRequeridos"
-        [archivos]="archivosActuales">
-      </app-required-docs>  
-  
-   <!-- Subir Archivos -->
+  <app-required-docs
+    [requiredFiles]="documentosRequeridos"
+    [archivos]="archivosActuales">
+  </app-required-docs>  
+
+  <!-- Subir Archivos -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Adjuntar documentacion requerida</mat-card-title>
+    <mat-card-title class="card-title">Adjuntar documentación requerida</mat-card-title>
     <mat-card-content>
       <app-file-upload
         [archivos]="archivosActuales"
@@ -20,7 +20,7 @@
         <button mat-raised-button color="primary"
                 [disabled]="!puedeEnviar()"
                 (click)="onSolicitudEnviada()">
-          Enviar Solicitud
+          {{ textoBoton }}
         </button>
       </div>
     </mat-card-content>

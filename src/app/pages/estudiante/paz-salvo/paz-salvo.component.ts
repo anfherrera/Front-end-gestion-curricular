@@ -33,11 +33,10 @@ export class PazSalvoComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
-  readonly studentId = 1;
 
-  SolicitudStatusEnum = SolicitudStatusEnum; // ✅ exponemos el enum al template
+  SolicitudStatusEnum = SolicitudStatusEnum;
 
-  readonly documentosRequeridos: { label: string; obligatorio: boolean }[] = [
+  readonly documentosRequeridos = [
     { label: 'Formato PM-FO-4-FOR-27.pdf', obligatorio: true },
     { label: 'Autorización para publicar.pdf', obligatorio: true },
     { label: 'Resultado pruebas SaberPro.pdf', obligatorio: false },
@@ -46,25 +45,23 @@ export class PazSalvoComponent implements OnInit {
     { label: 'Documento final del trabajo de grado.pdf', obligatorio: true }
   ];
 
-  readonly archivosExclusivos: string[] = [
-    'Formato TI-G.pdf',
-    'Formato PP-H.pdf'
-  ];
+  readonly archivosExclusivos = ['Formato TI-G.pdf', 'Formato PP-H.pdf'];
+
+  private readonly studentId = 1; // Opcional: puedes obtener dinámicamente del AuthService
 
   constructor(
     private snackBar: MatSnackBar,
     private pazSalvoService: PazSalvoService
   ) {}
 
-  ngOnInit() {
-    this.cargarSolicitudes();
+  ngOnInit(): void {
+    this.cargarSolicitudesAsync();
   }
 
   get ultimaSolicitud(): Solicitud | undefined {
     return this.solicitudes[this.solicitudes.length - 1];
   }
 
-  // 👇 getter para el texto del botón
   get textoBoton(): string {
     if (!this.ultimaSolicitud) return 'Enviar Solicitud';
 
@@ -79,50 +76,81 @@ export class PazSalvoComponent implements OnInit {
     }
   }
 
-  cargarSolicitudes(): void {
-    this.pazSalvoService.getStudentRequests(this.studentId).subscribe(solicitudes => {
-      this.solicitudes = solicitudes;
-      if (this.ultimaSolicitud?.archivos) {
-        this.archivosActuales = this.ultimaSolicitud.archivos;
+  // ================================
+  // 🔹 Carga de solicitudes
+  // ================================
+ private async cargarSolicitudesAsync(): Promise<void> {
+  try {
+    const solicitudes = await this.pazSalvoService.getStudentRequests(this.studentId).toPromise();
+    this.solicitudes = solicitudes ?? []; // ✅ Si viene undefined, asigna un array vacío
+
+    if (this.ultimaSolicitud?.archivos) {
+      this.archivosActuales = this.ultimaSolicitud.archivos.map(a => ({
+        ...a,
+        nombre: a.nombre.trim()
+      }));
+    }
+  } catch (err: any) {
+    this.snackBar.open(`Error al cargar solicitudes: ${err?.message || err}`, 'Cerrar', { duration: 3000 });
+  }
+}
+
+
+  // ================================
+  // 🔹 Cambio de archivos
+  // ================================
+  async onArchivosChange(archivos: Archivo[]): Promise<void> {
+    const uploadedFiles: Archivo[] = [];
+
+    for (const archivo of archivos) {
+      if (archivo.file) {
+        try {
+          const uploaded = await this.pazSalvoService.uploadFile(this.studentId, archivo.file).toPromise();
+          if (uploaded) uploadedFiles.push({ ...uploaded, nombre: uploaded.nombre.trim() });
+        } catch (err) {
+          this.snackBar.open(`Error subiendo archivo ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
+        }
+      } else {
+        uploadedFiles.push({ ...archivo, nombre: archivo.nombre.trim() });
       }
-    });
+    }
+
+    this.archivosActuales = uploadedFiles;
   }
 
-  onArchivosChange(archivos: Archivo[]): void {
-    this.archivosActuales = archivos.filter(a => !!a.file);
-  }
-
-  onSolicitudEnviada(): void {
+  // ================================
+  // 🔹 Enviar solicitud
+  // ================================
+  async onSolicitudEnviada(): Promise<void> {
     if (!this.puedeEnviar()) return;
 
-    this.pazSalvoService.sendRequest(this.studentId, this.archivosActuales).subscribe({
-      next: () => {
-        this.snackBar.open('Solicitud enviada correctamente', 'Cerrar', { duration: 3000 });
-        this.cargarSolicitudes();
-        this.resetFileUpload = true;
-        setTimeout(() => (this.resetFileUpload = false), 100);
-      },
-      error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
-    });
+    try {
+      await this.pazSalvoService.sendRequest(this.studentId, this.archivosActuales).toPromise();
+      this.snackBar.open('Solicitud enviada correctamente', 'Cerrar', { duration: 3000 });
+      this.resetFileUpload = true;
+      setTimeout(() => (this.resetFileUpload = false), 100);
+      await this.cargarSolicitudesAsync();
+    } catch (err: any) {
+      this.snackBar.open(`Error al enviar solicitud: ${err?.message || err}`, 'Cerrar', { duration: 3000 });
+    }
   }
 
+  // ================================
+  // 🔹 Validaciones
+  // ================================
   puedeEnviar(): boolean {
-    return (
-      this.validarObligatorios() &&
-      this.validarExclusivos() &&
-      this.validarPermitidos()
-    );
+    return this.validarObligatorios() && this.validarExclusivos() && this.validarPermitidos();
   }
 
   private validarObligatorios(): boolean {
     return this.documentosRequeridos
       .filter(d => d.obligatorio)
-      .every(d => this.archivosActuales.some(a => a.nombre.trim() === d.label));
+      .every(d => this.archivosActuales.some(a => a.nombre === d.label));
   }
 
   private validarExclusivos(): boolean {
     const exclusivosSubidos = this.archivosActuales.filter(a =>
-      this.archivosExclusivos.includes(a.nombre.trim())
+      this.archivosExclusivos.includes(a.nombre)
     );
     return exclusivosSubidos.length <= 1;
   }
@@ -132,9 +160,7 @@ export class PazSalvoComponent implements OnInit {
       ...this.documentosRequeridos.map(d => d.label),
       ...this.archivosExclusivos
     ];
-    return this.archivosActuales.every(a =>
-      nombresPermitidos.includes(a.nombre.trim())
-    );
+    return this.archivosActuales.every(a => nombresPermitidos.includes(a.nombre));
   }
 
   trackByLabel(index: number, item: { label: string }): string {
