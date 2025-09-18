@@ -1,94 +1,122 @@
-/* Contenedor del botón subir archivos */
-.upload-section {
-  margin-bottom: 16px;
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
 }
 
-/* Botón subir archivos */
-.file-label {
+/* Botón principal */
+.upload-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background-color: #00138c;
   color: #fff;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-}
-
-.file-label:hover {
-  background-color: #001060;
-}
-
-.file-label mat-icon {
-  font-size: 20px;
-}
-
-/* Tabla de archivos subidos */
-.table-archivos {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-top: 12px;
+  padding: 6px 14px;
   font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.table-archivos th {
-  background-color: #00138c;
-  color: #fff;
-  padding: 10px;
-  text-align: left;
-}
-
-.table-archivos td {
-  padding: 10px;
-  vertical-align: middle;
-  color: #222;
-  font-weight: normal;
-}
-
-.table-archivos tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table-archivos tr:hover {
-  background-color: #eaf1fb;
-}
-
-/* Ícono eliminar en rojo */
-.table-archivos button[color="warn"] mat-icon {
-  color: #d32f2f;
-}
-
-/* Botón enviar solicitud */
-.enviar-solicitud {
-  margin-top: 18px;
-  text-align: right;
-}
-
-.enviar-solicitud button {
-  font-weight: bold;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  color: white;
-  background-color: #cfd8dc; /* color inicial deshabilitado */
-  cursor: not-allowed;
-}
-
-/* Botón activo */
-.enviar-solicitud button:enabled {
-  background-color: #00138C; /* azul */
-  color: #fff;
+  font-weight: 600;
+  border-radius: 24px;
   cursor: pointer;
+  width: auto;
+  height: 36px;
+  line-height: 1;
+  text-transform: none;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-/* Hover del botón activo */
-.enviar-solicitud button:enabled:hover {
+.upload-btn:hover:enabled {
   background-color: #001060;
+  transform: translateY(-1px);
+}
+
+.upload-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Encabezado estilo tabla */
+.list-header {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  width: 100%;
+  font-weight: 600;
+  font-size: 13px;
+  color: #495057;
+  padding: 8px 12px;
+  background: #f1f3f5;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+/* Lista */
+.uploaded-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.uploaded-list li {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.uploaded-list li:hover {
+  background-color: #f8faff;
+  transform: translateY(-1px);
+}
+
+.col-nombre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #212529;
+  font-weight: 500;
+}
+
+.col-nombre mat-icon {
+  font-size: 20px;
+  color: #1e88e5; /* Azul elegante para el ícono del archivo */
+}
+
+.col-accion {
+  display: flex;
+  justify-content: center;
+}
+
+/* Botón eliminar */
+.delete-icon {
+  color: #e53935; /* Rojo fuerte */
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.col-accion button:hover .delete-icon {
+  color: #c62828; /* Rojo más oscuro */
+  transform: scale(1.2);
+}
+
+/* Estado activo/foco del botón eliminar */
+.col-accion button:active,
+.col-accion button:focus {
+  background-color: #00138c !important; /* Azul de fondo */
+  border-radius: 50%;
+}
+
+.col-accion button:active .delete-icon,
+.col-accion button:focus .delete-icon {
+  color: #fff !important; /* Ícono blanco */
 }
