@@ -41,7 +41,7 @@ export class PazSalvoService {
       archivos
     };
 
-    return this.http.post<Solicitud>(`${this.apiUrl}/crearPazYSalvo`, body, { headers: this.getAuthHeaders() });
+    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() });
   }
 
   approveRequest(requestId: number): Observable<Solicitud> {
