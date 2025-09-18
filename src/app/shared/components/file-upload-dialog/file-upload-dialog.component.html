@@ -2,8 +2,8 @@
   <button type="button"
           (click)="fileInput.click()"
           [disabled]="cargando"
-          class="upload-btn">
-    <mat-icon>cloud_upload</mat-icon>
+          class="upload-btn mat-elevation-z2">
+    <mat-icon>{{ cargando ? 'hourglass_top' : 'cloud_upload' }}</mat-icon>
     {{ cargando ? 'Subiendo...' : 'Seleccionar archivo(s)' }}
   </button>
 
@@ -14,12 +14,24 @@
          multiple
          hidden />
 
+  <!-- Encabezado -->
+  <div class="list-header" *ngIf="archivos.length > 0">
+    <span class="col-nombre">Nombre</span>
+    <span class="col-accion">Acción</span>
+  </div>
+
+  <!-- Lista de archivos -->
   <ul *ngIf="archivos.length > 0" class="uploaded-list">
-    <li *ngFor="let archivo of archivos; let i = index">
-      <mat-icon>description</mat-icon> {{ archivo.nombre }} - Estado: {{ archivo.estado }}
-      <button type="button" mat-icon-button color="warn" (click)="removeFile(i)" aria-label="Eliminar">
-        <mat-icon>delete</mat-icon>
-      </button>
+    <li *ngFor="let archivo of archivos; let i = index" class="file-row">
+      <span class="col-nombre">
+        <mat-icon>description</mat-icon>
+        {{ archivo.nombre }}
+      </span>
+      <span class="col-accion">
+        <button type="button" mat-icon-button (click)="removeFile(i)" aria-label="Eliminar">
+          <mat-icon class="delete-icon">delete</mat-icon>
+        </button>
+      </span>
     </li>
   </ul>
 </div>

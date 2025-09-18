@@ -1,35 +1,57 @@
 .file-upload-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: flex-start; /* ⚡ hace que los hijos no se estiren */
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
 }
 
+/* Botón principal */
 .upload-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background-color: #00138c;
-  color: white;
-  padding: 4px 10px;
-  font-size: 13px;
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 14px;
   font-weight: 600;
-  border-radius: 20px;
+  border-radius: 24px;
   cursor: pointer;
-  width: auto; /* ⚡ asegura ancho automático */
-  min-width: 0;
-  height: 32px;
+  width: auto;
+  height: 36px;
   line-height: 1;
   text-transform: none;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .upload-btn:hover:enabled {
   background-color: #001060;
+  transform: translateY(-1px);
 }
 
+.upload-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
-/* Lista de archivos subidos */
+/* Encabezado estilo tabla */
+.list-header {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  width: 100%;
+  font-weight: 600;
+  font-size: 13px;
+  color: #495057;
+  padding: 8px 12px;
+  background: #f1f3f5;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+/* Lista */
 .uploaded-list {
   list-style: none;
   padding: 0;
@@ -37,18 +59,64 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
 }
 
 .uploaded-list li {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 90px;
   align-items: center;
-  justify-content: space-between;
-  background-color: #f1f3f5;
-  padding: 6px 10px;
-  border-radius: 4px;
+  background-color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.uploaded-list li mat-icon {
-  margin-right: 6px;
-  font-size: 18px; /* más pequeño si quieres */
+.uploaded-list li:hover {
+  background-color: #f8faff;
+  transform: translateY(-1px);
+}
+
+.col-nombre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #212529;
+  font-weight: 500;
+}
+
+.col-nombre mat-icon {
+  font-size: 20px;
+  color: #1e88e5; /* Azul elegante para el ícono del archivo */
+}
+
+.col-accion {
+  display: flex;
+  justify-content: center;
+}
+
+/* Botón eliminar */
+.delete-icon {
+  color: #e53935; /* Rojo fuerte */
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.col-accion button:hover .delete-icon {
+  color: #c62828; /* Rojo más oscuro */
+  transform: scale(1.2);
+}
+
+/* Estado activo/foco del botón eliminar */
+.col-accion button:active,
+.col-accion button:focus {
+  background-color: #00138c !important; /* Azul de fondo */
+  border-radius: 50%;
+}
+
+.col-accion button:active .delete-icon,
+.col-accion button:focus .delete-icon {
+  color: #fff !important; /* Ícono blanco */
 }
