@@ -7,6 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
+import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo } from '../../../core/models/procesos.model';
@@ -22,7 +23,8 @@ import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
     MatIconModule,
     MatSnackBarModule,
     RequestStatusTableComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    RequiredDocsComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
@@ -31,9 +33,10 @@ export class PazSalvoComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
-  studentId = 1;
 
-  documentosRequeridos = [
+  SolicitudStatusEnum = SolicitudStatusEnum;
+
+  readonly documentosRequeridos = [
     { label: 'Formato PM-FO-4-FOR-27.pdf', obligatorio: true },
     { label: 'Autorización para publicar.pdf', obligatorio: true },
     { label: 'Resultado pruebas SaberPro.pdf', obligatorio: false },
@@ -42,65 +45,143 @@ export class PazSalvoComponent implements OnInit {
     { label: 'Documento final del trabajo de grado.pdf', obligatorio: true }
   ];
 
-  archivosExclusivos = ['Formato TI-G.pdf', 'Formato PP-H.pdf'];
+  readonly archivosExclusivos = ['Formato TI-G.pdf', 'Formato PP-H.pdf'];
+
+  private readonly studentId = 1; // Opcional: puedes obtener dinámicamente del AuthService
 
   constructor(
     private snackBar: MatSnackBar,
     private pazSalvoService: PazSalvoService
   ) {}
 
-  ngOnInit() {
-    this.cargarSolicitudes();
+  ngOnInit(): void {
+    this.cargarSolicitudesAsync();
   }
 
-  cargarSolicitudes() {
-    this.pazSalvoService.getStudentRequests(this.studentId).subscribe(solicitudes => {
-      this.solicitudes = solicitudes;
-      const ultima = solicitudes.at(-1);
-      if (ultima?.archivos) {
-        this.archivosActuales = ultima.archivos;
+  get ultimaSolicitud(): Solicitud | undefined {
+    return this.solicitudes[this.solicitudes.length - 1];
+  }
+
+  get textoBoton(): string {
+    if (!this.ultimaSolicitud) return 'Enviar Solicitud';
+
+    switch (this.ultimaSolicitud.estado) {
+      case SolicitudStatusEnum.ENVIADA:
+      case SolicitudStatusEnum.EN_REVISION_SECRETARIA:
+      case SolicitudStatusEnum.EN_REVISION_FUNCIONARIO:
+      case SolicitudStatusEnum.EN_REVISION_COORDINADOR:
+        return 'Actualizar Solicitud';
+      default:
+        return 'Enviar Solicitud';
+    }
+  }
+
+  // ================================
+  // 🔹 Carga de solicitudes
+  // ================================
+ private async cargarSolicitudesAsync(): Promise<void> {
+  try {
+    const solicitudes = await this.pazSalvoService.getStudentRequests(this.studentId).toPromise();
+    this.solicitudes = solicitudes ?? []; // ✅ Si viene undefined, asigna un array vacío
+
+    if (this.ultimaSolicitud?.archivos) {
+      this.archivosActuales = this.ultimaSolicitud.archivos.map(a => ({
+        ...a,
+        nombre: a.nombre.trim()
+      }));
+    }
+  } catch (err: any) {
+    this.snackBar.open(`Error al cargar solicitudes: ${err?.message || err}`, 'Cerrar', { duration: 3000 });
+  }
+}
+
+
+  // ================================
+  // 🔹 Cambio de archivos
+  // ================================
+async onArchivosChange(archivos: Archivo[]): Promise<void> {
+  const uploadedFiles: Archivo[] = [];
+
+  for (const archivo of archivos) {
+    if (archivo.file) {
+      try {
+        const uploaded = await this.pazSalvoService.uploadFile(this.studentId, archivo.file).toPromise();
+        if (uploaded) {
+          uploadedFiles.push({
+            ...uploaded,
+            nombre: uploaded.nombre?.trim() || archivo.nombre,
+            fecha: uploaded.fecha ?? new Date().toISOString(), // 🔹 asegura string
+            file: undefined, // ya no necesitamos el File temporal
+          });
+        }
+      } catch (err) {
+        this.snackBar.open(`Error subiendo archivo ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
+        // Mantener el archivo local aunque falle
+        uploadedFiles.push({
+          ...archivo,
+          nombre: archivo.nombre.trim(),
+          fecha: archivo.fecha ?? new Date().toISOString(),
+        });
       }
-    });
+    } else {
+      uploadedFiles.push({
+        ...archivo,
+        nombre: archivo.nombre.trim(),
+        fecha: archivo.fecha ?? new Date().toISOString(),
+      });
+    }
   }
 
-  // Recibe todos los archivos directamente desde FileUploadComponent
-  onArchivosChange(archivos: Archivo[]) {
-    // Solo guardamos archivos con file definido
-    this.archivosActuales = archivos.filter(a => a.file);
-  }
+  this.archivosActuales = uploadedFiles;
+}
 
-  onSolicitudEnviada() {
+
+  // ================================
+  // 🔹 Enviar solicitud
+  // ================================
+  async onSolicitudEnviada(): Promise<void> {
     if (!this.puedeEnviar()) return;
 
-    this.pazSalvoService.sendRequest(this.studentId, this.archivosActuales).subscribe({
-      next: () => {
-        this.snackBar.open('Solicitud enviada correctamente', 'Cerrar', { duration: 3000 });
-        this.cargarSolicitudes();
-        this.resetFileUpload = true;
-        setTimeout(() => this.resetFileUpload = false, 100);
-      },
-      error: (err) => this.snackBar.open(err, 'Cerrar', { duration: 3000 })
-    });
+    try {
+      await this.pazSalvoService.sendRequest(this.studentId, this.archivosActuales).toPromise();
+      this.snackBar.open('Solicitud enviada correctamente', 'Cerrar', { duration: 3000 });
+      this.resetFileUpload = true;
+      setTimeout(() => (this.resetFileUpload = false), 100);
+      await this.cargarSolicitudesAsync();
+    } catch (err: any) {
+      this.snackBar.open(`Error al enviar solicitud: ${err?.message || err}`, 'Cerrar', { duration: 3000 });
+    }
   }
 
+  // ================================
+  // 🔹 Validaciones
+  // ================================
   puedeEnviar(): boolean {
-    const todosObligatorios = this.documentosRequeridos
+    return this.validarObligatorios() && this.validarExclusivos() && this.validarPermitidos();
+  }
+
+  private validarObligatorios(): boolean {
+    return this.documentosRequeridos
       .filter(d => d.obligatorio)
-      .every(d => this.archivosActuales.some(a => a.nombre.trim() === d.label));
+      .every(d => this.archivosActuales.some(a => a.nombre === d.label));
+  }
 
+  private validarExclusivos(): boolean {
     const exclusivosSubidos = this.archivosActuales.filter(a =>
-      this.archivosExclusivos.includes(a.nombre.trim())
+      this.archivosExclusivos.includes(a.nombre)
     );
-    const tieneUnSoloExclusivo = exclusivosSubidos.length <= 1;
+    return exclusivosSubidos.length <= 1;
+  }
 
+  private validarPermitidos(): boolean {
     const nombresPermitidos = [
       ...this.documentosRequeridos.map(d => d.label),
       ...this.archivosExclusivos
     ];
-    const soloArchivosPermitidos = this.archivosActuales.every(a =>
-      nombresPermitidos.includes(a.nombre.trim())
-    );
+    return this.archivosActuales.every(a => nombresPermitidos.includes(a.nombre));
+  }
 
-    return todosObligatorios && tieneUnSoloExclusivo && soloArchivosPermitidos;
+  trackByLabel(index: number, item: { label: string }): string {
+    return item.label;
   }
 }

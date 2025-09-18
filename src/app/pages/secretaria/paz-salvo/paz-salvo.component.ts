@@ -24,7 +24,7 @@ import { OficioResolucionComponent } from '../../../shared/components/oficio-res
     OficioResolucionComponent
   ],
   templateUrl: './paz-salvo.component.html',
-  styleUrl: './paz-salvo.component.css'
+  styleUrls: ['./paz-salvo.component.css'] // ✅ corregido
 })
 export class SecretariaPazSalvoComponent implements OnInit {
   solicitudes: Solicitud[] = [];
@@ -41,20 +41,23 @@ export class SecretariaPazSalvoComponent implements OnInit {
     this.cargarSolicitudes();
   }
 
+  // 📌 Cargar solicitudes pendientes (solo las que pasaron por coordinador)
   cargarSolicitudes(): void {
-    // Solo se muestran las solicitudes que ya pasaron por el coordinador
-    this.pazSalvoService.getPendingRequests('secretaria').subscribe({
+    this.pazSalvoService.getPendingRequests().subscribe({ // ✅ sin argumento
       next: (sols) => this.solicitudes = sols,
       error: () => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
     });
   }
 
+  // 📌 Seleccionar solicitud de la tabla
   seleccionarSolicitud(solicitud: Solicitud): void {
     this.selectedSolicitud = solicitud;
   }
 
+  // 📌 Generar oficio/resolución
   generarOficio(): void {
     if (!this.selectedSolicitud) return;
+
     this.pazSalvoService.generateOfficio(this.selectedSolicitud.id).subscribe({
       next: (url) => this.snackBar.open(`Oficio generado: ${url}`, 'Cerrar', { duration: 4000 }),
       error: () => this.snackBar.open('Error al generar oficio', 'Cerrar', { duration: 3000 })

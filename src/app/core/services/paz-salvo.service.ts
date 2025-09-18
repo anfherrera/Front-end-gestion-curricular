@@ -1,132 +1,88 @@
-// src/app/core/services/paz-salvo.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { Solicitud, Archivo } from '../models/procesos.model';
-import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
-
-export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Solicitud, Archivo, Usuario } from '../models/procesos.model';
+import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root'
 })
 export class PazSalvoService {
-  private solicitudes: Solicitud[] = [];
-  private solicitudIdCounter = 1;
+  private apiUrl = 'http://localhost:5000/api/solicitudes-pazysalvo';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
-  // 📌 Subir archivo (solo lo devolvemos, no creamos solicitud todavía)
-  uploadDocument(studentId: number, file: File, nombre: string): Observable<Archivo> {
-    const archivo: Archivo & { estado?: ArchivoEstado } = {
-      nombre,
-      originalName: file.name,
-      fecha: new Date().toLocaleDateString(),
-      estado: 'pendiente'
-    };
-    return of(archivo);
+  private getAuthHeaders(isFile: boolean = false): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      ...(isFile ? {} : { 'Content-Type': 'application/json' }),
+      Authorization: token ? `Bearer ${token}` : ''
+    });
   }
 
-  // 📌 Obtener solicitudes del estudiante
+  // ================================
+  // Solicitudes
+  // ================================
   getStudentRequests(studentId: number): Observable<Solicitud[]> {
-    return of(this.solicitudes);
+    return this.http.get<Solicitud[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/${studentId}`, { headers: this.getAuthHeaders() });
   }
 
-  // 📌 Crear y enviar la solicitud con los archivos cargados
-  sendRequest(studentId: number, archivos: (Archivo & { estado?: ArchivoEstado })[]): Observable<Solicitud> {
-    if (!archivos || archivos.length === 0) {
-      return throwError(() => 'No hay documentos para enviar');
-    }
+  getPendingRequests(): Observable<Solicitud[]> {
+    return this.http.get<Solicitud[]>(`${this.apiUrl}/pendientes`, { headers: this.getAuthHeaders() });
+  }
 
-    const solicitud: Solicitud = {
-      id: this.solicitudIdCounter++,
-      nombre: 'Solicitud paz y salvo',
-      fecha: new Date().toLocaleDateString(),
-      estado: SolicitudStatusEnum.EN_REVISION_FUNCIONARIO,
+  sendRequest(studentId: number, archivos: Archivo[]): Observable<Solicitud> {
+    const usuario = this.authService.getUsuario();
+    if (!usuario) throw new Error('Usuario no autenticado');
+
+    const body = {
+      nombre_solicitud: 'Solicitud Paz y Salvo',
+      esSeleccionado: false,
+      objUsuario: { id_usuario: usuario.id_usuario },
       archivos
     };
 
-    this.solicitudes.push(solicitud);
-    return of(solicitud);
+    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() });
   }
 
-  // 📌 Obtener solicitudes pendientes según el rol
-  getPendingRequests(role: 'secretaria' | 'funcionario' | 'coordinador'): Observable<Solicitud[]> {
-    let estado: SolicitudStatusEnum;
-    if (role === 'secretaria') estado = SolicitudStatusEnum.EN_REVISION_SECRETARIA;
-    if (role === 'funcionario') estado = SolicitudStatusEnum.EN_REVISION_FUNCIONARIO;
-    if (role === 'coordinador') estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR;
-
-    return of(this.solicitudes.filter(s => s.estado === estado));
-  }
-
-  // 📌 Completar revisión de funcionario → pasa a coordinador
-  completeValidation(requestId: number): Observable<Solicitud> {
-    const solicitud = this.solicitudes.find(s => s.id === requestId);
-    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
-
-    solicitud.estado = SolicitudStatusEnum.EN_REVISION_COORDINADOR;
-    return of(solicitud);
-  }
-
-  // 📌 Aprobar solicitud completa
   approveRequest(requestId: number): Observable<Solicitud> {
-    const solicitud = this.solicitudes.find(s => s.id === requestId);
-    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
-
-    solicitud.estado = SolicitudStatusEnum.APROBADA;
-    return of(solicitud);
+    return this.http.post<Solicitud>(`${this.apiUrl}/${requestId}/aprobar`, {}, { headers: this.getAuthHeaders() });
   }
 
-  // 📌 Rechazar solicitud completa
-  rejectRequest(requestId: number, comentarios: string): Observable<Solicitud> {
-    const solicitud = this.solicitudes.find(s => s.id === requestId);
-    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
-
-    solicitud.estado = SolicitudStatusEnum.RECHAZADA;
-    solicitud.comentarios = comentarios;
-    return of(solicitud);
+  rejectRequest(requestId: number, reason: string): Observable<Solicitud> {
+    return this.http.post<Solicitud>(`${this.apiUrl}/${requestId}/rechazar`, { motivo: reason }, { headers: this.getAuthHeaders() });
   }
 
-  // 📌 Aprobar un archivo individual dentro de la solicitud
-  approveDocument(requestId: number, nombreArchivo: string): Observable<Archivo & { estado: ArchivoEstado }> {
-    const solicitud = this.solicitudes.find(s => s.id === requestId);
-    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
-
-    const archivo = solicitud.archivos?.find(a => a.nombre === nombreArchivo);
-    if (!archivo) return throwError(() => 'Archivo no encontrado');
-
-    archivo.estado = 'aprobado';
-    return of(archivo as Archivo & { estado: ArchivoEstado });
+  completeValidation(requestId: number): Observable<Solicitud> {
+    return this.http.post<Solicitud>(`${this.apiUrl}/${requestId}/completar-validacion`, {}, { headers: this.getAuthHeaders() });
   }
 
-  // 📌 Rechazar un archivo individual dentro de la solicitud
-  rejectDocument(requestId: number, nombreArchivo: string): Observable<Archivo & { estado: ArchivoEstado }> {
-    const solicitud = this.solicitudes.find(s => s.id === requestId);
-    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
-
-    const archivo = solicitud.archivos?.find(a => a.nombre === nombreArchivo);
-    if (!archivo) return throwError(() => 'Archivo no encontrado');
-
-    archivo.estado = 'rechazado';
-    return of(archivo as Archivo & { estado: ArchivoEstado });
-  }
-
-  // 📌 Generar oficio (simulación)
   generateOfficio(requestId: number): Observable<string> {
-    const solicitud = this.solicitudes.find(s => s.id === requestId);
-    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
-
-    return of(`Oficio generado para solicitud #${requestId}`);
+    return this.http.get(`${this.apiUrl}/${requestId}/generar-oficio`, { headers: this.getAuthHeaders(), responseType: 'text' });
   }
 
-  // 📌 Enviar oficio
-  sendOfficio(requestId: number): Observable<Solicitud> {
-    const solicitud = this.solicitudes.find(s => s.id === requestId);
-    if (!solicitud) return throwError(() => 'Solicitud no encontrada');
+  // ================================
+  // Archivos
+  // ================================
+  uploadFile(requestId: number, archivo: File): Observable<Archivo> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
 
-    solicitud.oficioUrl = `https://example.com/oficio/${solicitud.id}.pdf`;
-    solicitud.estado = SolicitudStatusEnum.ENVIADA;
-    return of(solicitud);
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+    });
+
+    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/subir-archivo`, formData, { headers });
+  }
+
+  downloadFile(requestId: number, archivoNombre: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${requestId}/descargar-archivo/${archivoNombre}`, { headers: this.getAuthHeaders(), responseType: 'blob' });
+  }
+
+  approveDocument(requestId: number, archivoNombre: string): Observable<Archivo> {
+    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/aprobar-archivo`, { nombreArchivo: archivoNombre }, { headers: this.getAuthHeaders() });
+  }
+
+  rejectDocument(requestId: number, archivoNombre: string): Observable<Archivo> {
+    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/rechazar-archivo`, { nombreArchivo: archivoNombre }, { headers: this.getAuthHeaders() });
   }
 }

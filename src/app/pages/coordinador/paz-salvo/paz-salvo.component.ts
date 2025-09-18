@@ -41,8 +41,9 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     this.cargarSolicitudes();
   }
 
+  // 📌 Cargar solicitudes pendientes según el rol del usuario actual
   cargarSolicitudes(): void {
-    this.pazSalvoService.getPendingRequests('coordinador').subscribe({
+    this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
         this.solicitudes = sols;
         if (sols.length) this.selectedSolicitud = sols[0];
@@ -51,14 +52,17 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
+  // 📌 Obtener archivos de la solicitud seleccionada
   get archivosDelEstudiante(): (Archivo & { estado?: 'pendiente' | 'aprobado' | 'rechazado' })[] {
     return this.selectedSolicitud?.archivos ?? [];
   }
 
+  // 📌 Seleccionar solicitud de la tabla
   seleccionarSolicitud(solicitud: Solicitud): void {
     this.selectedSolicitud = solicitud;
   }
 
+  // 📌 Ver archivo en nueva pestaña
   verArchivo(archivo: Archivo): void {
     if (archivo.url) {
       window.open(archivo.url, '_blank');
@@ -67,6 +71,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     }
   }
 
+  // 📌 Aprobar archivo individual
   aprobarArchivo(index: number): void {
     if (!this.selectedSolicitud) return;
     const archivo = this.archivosDelEstudiante[index];
@@ -80,6 +85,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
+  // 📌 Rechazar archivo individual
   rechazarArchivo(index: number): void {
     if (!this.selectedSolicitud) return;
     const archivo = this.archivosDelEstudiante[index];
@@ -93,6 +99,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
+  // 📌 Aprobar toda la solicitud
   aprobarSolicitud(): void {
     if (!this.selectedSolicitud) return;
 
@@ -105,6 +112,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
+  // 📌 Rechazar toda la solicitud
   rechazarSolicitud(): void {
     if (!this.selectedSolicitud) return;
 
