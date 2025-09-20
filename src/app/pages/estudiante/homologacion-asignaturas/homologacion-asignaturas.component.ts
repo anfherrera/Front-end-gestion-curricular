@@ -275,7 +275,7 @@
 //   }
 // }
 //===========================================================
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -304,6 +304,8 @@ import { Solicitud } from '../../../core/models/procesos.model';
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit {
+  @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
+
   documentosRequeridos = [
     { label: 'Formulario de homologación', obligatorio: true },
     { label: 'Certificado de notas', obligatorio: true },
@@ -343,44 +345,67 @@ export class HomologacionAsignaturasComponent implements OnInit {
   }
 
   onSolicitudEnviada() {
-  if (!this.usuario) {
-    console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
-    return;
-  }
-
-  const solicitud = {
-    nombre_solicitud: `Solicitud_homologacion_${this.usuario.nombre_completo}`,
-    fecha_registro_solicitud: new Date().toISOString(),
-    objUsuario: {
-      id_usuario: this.usuario.id_usuario,
-      nombre_completo: this.usuario.nombre_completo,
-      codigo: this.usuario.codigo,
-      correo: this.usuario.correo,
-      objPrograma: this.usuario.objPrograma
-    },
-    archivos: this.archivosActuales
-  };
-
-  this.homologacionService.crearSolicitud(solicitud).subscribe({
-    next: (resp) => {
-      console.log('✅ Solicitud creada en backend:', resp);
-      this.listarSolicitudes();
-
-      // Resetear el file upload
-      this.resetFileUpload = true;
-      setTimeout(() => this.resetFileUpload = false, 0);
-    },
-    error: (err) => {
-      console.error('❌ Error al enviar solicitud', err);
-      if (err.status === 400) {
-        alert('⚠️ Error de validación: revisa los datos de la solicitud');
-      }
-      if (err.status === 401) {
-        alert('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.');
-      }
+    if (!this.usuario) {
+      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+      return;
     }
-  });
-}
+
+    if (!this.fileUploadComponent) {
+      console.error('❌ No se puede acceder al componente de archivos.');
+      return;
+    }
+
+    console.log('📤 Iniciando proceso de envío de solicitud...');
+
+    // Paso 1: Subir archivos al backend
+    this.fileUploadComponent.subirArchivosPendientes().subscribe({
+      next: (archivosSubidos) => {
+        console.log('✅ Archivos subidos correctamente:', archivosSubidos);
+
+        // Paso 2: Crear la solicitud con los archivos ya subidos
+        const solicitud = {
+          nombre_solicitud: `Solicitud_homologacion_${this.usuario.nombre_completo}`,
+          fecha_registro_solicitud: new Date().toISOString(),
+          objUsuario: {
+            id_usuario: this.usuario.id_usuario,
+            nombre_completo: this.usuario.nombre_completo,
+            codigo: this.usuario.codigo,
+            correo: this.usuario.correo,
+            objPrograma: this.usuario.objPrograma
+          },
+          archivos: archivosSubidos
+        };
+
+        console.log('📋 Creando solicitud con archivos:', solicitud);
+
+        this.homologacionService.crearSolicitud(solicitud).subscribe({
+          next: (resp) => {
+            console.log('✅ Solicitud creada en backend:', resp);
+            this.listarSolicitudes();
+
+            // Resetear el file upload
+            this.resetFileUpload = true;
+            setTimeout(() => this.resetFileUpload = false, 0);
+
+            alert('✅ Solicitud enviada correctamente');
+          },
+          error: (err) => {
+            console.error('❌ Error al crear solicitud:', err);
+            if (err.status === 400) {
+              alert('⚠️ Error de validación: revisa los datos de la solicitud');
+            }
+            if (err.status === 401) {
+              alert('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.');
+            }
+          }
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error al subir archivos:', err);
+        alert('❌ Error al subir archivos. Por favor, inténtalo de nuevo.');
+      }
+    });
+  }
 
 
 

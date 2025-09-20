@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Archivo } from '../../../core/models/procesos.model';
 import { ArchivosService } from '../../../core/services/archivos.service';
+import { Observable, of, forkJoin } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-file-upload',
@@ -38,32 +40,66 @@ export class FileUploadComponent implements OnChanges {
         return;
       }
 
-      this.cargando = true;
+      // Solo agregar el archivo localmente, sin subirlo al backend
+      const archivoLocal: Archivo = {
+        file: file,                    // mantener referencia del archivo
+        nombre: file.name,             // nombre del archivo
+        fecha: new Date().toISOString(), // fecha de selección
+        estado: 'pendiente',           // estado inicial
+        esValido: true                 // asumir válido hasta que se suba
+      };
 
-      this.archivosService.subirPDF(file).subscribe({
-        next: (archivoSubido: Archivo) => {
-          this.archivos.push({
-            ...archivoSubido,
-            file,                       // mantener referencia en frontend
-            estado: 'pendiente',        // estado inicial
-            url: archivoSubido.ruta_documento
-          });
-          this.notificarCambio();
-          this.cargando = false;
-        },
-        error: (err) => {
-          console.error('❌ Error al subir archivo', err);
-          this.cargando = false;
-        }
-      });
+      this.archivos.push(archivoLocal);
     });
 
+    this.notificarCambio();
     input.value = ''; // limpiar input
   }
 
   removeFile(index: number) {
     this.archivos.splice(index, 1);
     this.notificarCambio();
+  }
+
+  /**
+   * Sube todos los archivos pendientes al backend
+   * @returns Observable que emite cuando todos los archivos han sido subidos
+   */
+  subirArchivosPendientes(): Observable<Archivo[]> {
+    const archivosPendientes = this.archivos.filter(archivo => archivo.file && !archivo.id_documento);
+
+    if (archivosPendientes.length === 0) {
+      return of(this.archivos); // Si no hay archivos pendientes, retornar los existentes
+    }
+
+    this.cargando = true;
+
+    // Subir archivos uno por uno
+    const subidas$ = archivosPendientes.map(archivo =>
+      this.archivosService.subirPDF(archivo.file!).pipe(
+        map(archivoSubido => {
+          // Actualizar el archivo local con la información del backend
+          const index = this.archivos.findIndex(a => a.file === archivo.file);
+          if (index !== -1) {
+            this.archivos[index] = {
+              ...archivoSubido,
+              file: archivo.file, // mantener referencia local
+              estado: 'aprobado',
+              url: archivoSubido.ruta_documento
+            };
+          }
+          return this.archivos[index];
+        })
+      )
+    );
+
+    return forkJoin(subidas$).pipe(
+      tap(() => {
+        this.cargando = false;
+        this.notificarCambio();
+      }),
+      map(() => this.archivos)
+    );
   }
 
   private notificarCambio() {
