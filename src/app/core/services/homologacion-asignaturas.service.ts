@@ -38,6 +38,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Solicitud } from '../models/procesos.model';
 
 @Injectable({
   providedIn: 'root'
@@ -55,10 +56,16 @@ export class HomologacionAsignaturasService {
   // }
   private getAuthHeaders(isFile: boolean = false): HttpHeaders {
     const token = localStorage.getItem('token');
-    return new HttpHeaders({
+    console.log('🔑 Token encontrado:', token ? 'Sí' : 'No');
+    console.log('🔑 Token completo:', token);
+
+    const headers = new HttpHeaders({
       ...(isFile ? {} : { 'Content-Type': 'application/json' }),
       Authorization: token ? `Bearer ${token}` : ''
     });
+
+    console.log('🔑 Headers creados:', headers);
+    return headers;
   }
 
   crearSolicitud(solicitud: any): Observable<any> {
@@ -69,12 +76,32 @@ export class HomologacionAsignaturasService {
     );
   }
 
-  listarSolicitudes(): Observable<any> {
+  listarSolicitudes(idUsuario: number): Observable<any> {
     return this.http.get(
+      //`${this.apiUrl}/listarPorRol/${idUsuario}`,
       `${this.apiUrl}/listarSolicitud-Homologacion`,
       { headers: this.getAuthHeaders() }
     );
   }
+
+  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<Solicitud[]> {
+    let params: any = { rol: rol };
+    if (idUsuario) {
+      params.idUsuario = idUsuario;
+    }
+
+    const url = `${this.apiUrl}/listarSolicitud-Homologacion/porRol`;
+    console.log('🌐 URL del endpoint:', url);
+    console.log('📤 Parámetros enviados:', params);
+    console.log('🔑 Headers:', this.getAuthHeaders());
+
+    return this.http.get<Solicitud[]>(url, {
+      params: params,
+      headers: this.getAuthHeaders()
+    });
+  }
+
+
 
 //============
 /**

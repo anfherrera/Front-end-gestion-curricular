@@ -342,37 +342,6 @@ export class HomologacionAsignaturasComponent implements OnInit {
     return this.archivosActuales.length > 0 && !!this.usuario;
   }
 
-  // onSolicitudEnviada() {
-  //   if (!this.usuario) {
-  //     console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
-  //     return;
-  //   }
-
-  //   const solicitud = {
-  //     usuarioId: this.usuario.id,
-  //     nombreUsuario: this.usuario.nombre,
-  //     correo: this.usuario.correo,
-  //     fecha: new Date(),
-  //     archivos: this.archivosActuales
-  //   };
-
-  //   this.homologacionService.crearSolicitud(solicitud).subscribe({
-  //     next: (resp) => {
-  //       console.log('✅ Solicitud creada en backend:', resp);
-  //       this.listarSolicitudes();
-
-  //       // Resetear el file upload
-  //       this.resetFileUpload = true;
-  //       setTimeout(() => this.resetFileUpload = false, 0);
-  //     },
-  //     error: (err) => {
-  //       console.error('❌ Error al enviar solicitud', err);
-  //       if (err.status === 401) {
-  //         alert('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.');
-  //       }
-  //     }
-  //   });
-  // }
   onSolicitudEnviada() {
   if (!this.usuario) {
     console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
@@ -414,29 +383,40 @@ export class HomologacionAsignaturasComponent implements OnInit {
 }
 
 
-  // listarSolicitudes() {
-  //   this.homologacionService.listarSolicitudes().subscribe({
-  //     next: (data) => {
-  //       this.solicitudes = data;
-  //       console.log('📋 Solicitudes cargadas:', this.solicitudes);
-  //     },
-  //     error: (err) => {
-  //       console.error('❌ Error al listar solicitudes', err);
-  //     }
-  //   });
-  // }
 
-  listarSolicitudes() {
-  this.homologacionService.listarSolicitudes().subscribe({
+
+listarSolicitudes() {
+  if (!this.usuario) {
+    console.error("❌ Usuario no encontrado en localStorage.");
+    return;
+  }
+
+  console.log('🔍 Usuario encontrado:', this.usuario);
+  console.log('🔍 Rol:', this.usuario.rol.nombre);
+  console.log('🔍 ID Usuario:', this.usuario.id_usuario);
+
+  this.homologacionService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).subscribe({
     next: (data) => {
+      console.log('📡 Respuesta del backend (raw):', data);
+      console.log('📡 Tipo de respuesta:', typeof data);
+      console.log('📡 Es array:', Array.isArray(data));
+      console.log('📡 Longitud:', data?.length);
+
+      if (!data || !Array.isArray(data)) {
+        console.warn('⚠️ La respuesta no es un array válido');
+        this.solicitudes = [];
+        return;
+      }
+
       this.solicitudes = data.map((sol: any) => {
+        console.log('🔍 Procesando solicitud:', sol);
+
         const estados = sol.estado_actual || sol.estadosSolicitud || [];
         const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
-        // Tomamos el primer documento como "rutaArchivo"
         const rutaArchivo = sol.documentos?.length > 0 ? sol.documentos[0].ruta : '';
 
-        return {
+        const solicitudTransformada = {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
@@ -444,14 +424,57 @@ export class HomologacionAsignaturasComponent implements OnInit {
           rutaArchivo,
           comentarios: ultimoEstado?.comentarios || ''
         };
+
+        console.log('✅ Solicitud transformada:', solicitudTransformada);
+        return solicitudTransformada;
       });
 
       console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
     },
     error: (err) => {
       console.error('❌ Error al listar solicitudes', err);
+      console.error('❌ Status:', err.status);
+      console.error('❌ Message:', err.message);
+      console.error('❌ Error completo:', err);
     }
   });
 }
+
+
+// listarSolicitudes() {
+//   if (!this.usuario) {
+//     console.error("❌ Usuario no encontrado en localStorage.");
+//     return;
+//   }
+
+//   const rol = this.usuario.rol?.nombre;
+//   const idUsuario = rol === 'ESTUDIANTE' ? this.usuario.id_usuario : undefined;
+
+//   this.homologacionService.listarSolicitudesPorRol(rol, idUsuario).subscribe({
+//     next: (data) => {
+//       this.solicitudes = data.map((sol: any) => {
+//         const estados = sol.estadosSolicitud || [];
+//         const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
+
+//         return {
+//           id: sol.id_solicitud,
+//           nombre: sol.nombre_solicitud,
+//           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+//           estado: ultimoEstado?.estado_actual || 'Pendiente',
+//           rutaArchivo: sol.documentos?.[0]?.ruta_documento || '',
+//           comentarios: ultimoEstado?.comentarios || ''
+//         };
+//       });
+
+//       console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
+//       //this.cdr.detectChanges(); // 👈 evita el error NG0100
+//     },
+//     error: (err) => {
+//       console.error('❌ Error al listar solicitudes', err);
+//     }
+//   });
+// }
+
+
 
 }

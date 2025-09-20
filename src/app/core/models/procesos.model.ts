@@ -49,3 +49,52 @@ export interface SolicitudList {
   comentarios?: string;
 }
 
+// Modelo para la respuesta del endpoint de homologación por rol
+export interface EstadoSolicitud {
+  id_estado: number;
+  estado_actual: string;
+  fecha_registro_estado: string;
+  objSolicitud?: any;
+}
+
+export interface Rol {
+  id_rol: number;
+  nombre: string;
+}
+
+export interface Programa {
+  id_programa: number;
+  codigo: string;
+  nombre_programa: string;
+}
+
+export interface UsuarioHomologacion {
+  id_usuario: number;
+  nombre_completo: string;
+  rol: Rol;
+  codigo: string;
+  correo: string;
+  estado_usuario: boolean;
+  objPrograma: Programa;
+}
+
+export interface DocumentoHomologacion {
+  id_documento: number;
+  nombre: string;
+  ruta_documento: string;
+  fecha_documento: string;
+  esValido: boolean;
+  comentario?: string | null;
+  tipoDocumentoSolicitudPazYSalvo?: any;
+}
+
+export interface SolicitudHomologacionDTORespuesta {
+  id_solicitud: number;
+  nombre_solicitud: string;
+  fecha_registro_solicitud: string;
+  esSeleccionado?: boolean | null;
+  estadosSolicitud: EstadoSolicitud[];
+  objUsuario: UsuarioHomologacion;
+  documentos: DocumentoHomologacion[];
+}
+
