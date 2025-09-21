@@ -2,3 +2,44 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* ===== ESTILOS PARA SNACKBARS ===== */
+.snackbar-success {
+  background-color: #4caf50 !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.snackbar-error {
+  background-color: #f44336 !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.snackbar-warning {
+  background-color: #ff9800 !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.snackbar-info {
+  background-color: #2196f3 !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+/* Animación para los snackbars */
+.mat-mdc-snack-bar-container {
+  animation: slideInFromTop 0.3s ease-out !important;
+}
+
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

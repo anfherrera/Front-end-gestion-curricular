@@ -280,6 +280,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { Archivo } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -297,6 +298,7 @@ import { Solicitud } from '../../../core/models/procesos.model';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatSnackBarModule,
     FileUploadComponent,
     RequestStatusTableComponent
   ],
@@ -320,7 +322,10 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
   usuario: any = null;
 
-  constructor(private homologacionService: HomologacionAsignaturasService) {}
+  constructor(
+    private homologacionService: HomologacionAsignaturasService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     // Recuperamos usuario del localStorage
@@ -344,11 +349,25 @@ export class HomologacionAsignaturasComponent implements OnInit {
     return this.archivosActuales.length > 0 && !!this.usuario;
   }
 
+  /**
+   * Muestra un mensaje bonito usando SnackBar
+   */
+  private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
+    const config = {
+      duration: tipo === 'success' ? 4000 : 6000,
+      horizontalPosition: 'center' as const,
+      verticalPosition: 'top' as const,
+      panelClass: [`snackbar-${tipo}`]
+    };
+
+    this.snackBar.open(mensaje, 'Cerrar', config);
+  }
+
   onSolicitudEnviada() {
-    if (!this.usuario) {
-      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
-      return;
-    }
+  if (!this.usuario) {
+    console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+    return;
+  }
 
     if (!this.fileUploadComponent) {
       console.error('❌ No se puede acceder al componente de archivos.');
@@ -363,49 +382,49 @@ export class HomologacionAsignaturasComponent implements OnInit {
         console.log('✅ Archivos subidos correctamente:', archivosSubidos);
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
-        const solicitud = {
-          nombre_solicitud: `Solicitud_homologacion_${this.usuario.nombre_completo}`,
-          fecha_registro_solicitud: new Date().toISOString(),
-          objUsuario: {
-            id_usuario: this.usuario.id_usuario,
-            nombre_completo: this.usuario.nombre_completo,
-            codigo: this.usuario.codigo,
-            correo: this.usuario.correo,
-            objPrograma: this.usuario.objPrograma
-          },
+  const solicitud = {
+    nombre_solicitud: `Solicitud_homologacion_${this.usuario.nombre_completo}`,
+    fecha_registro_solicitud: new Date().toISOString(),
+    objUsuario: {
+      id_usuario: this.usuario.id_usuario,
+      nombre_completo: this.usuario.nombre_completo,
+      codigo: this.usuario.codigo,
+      correo: this.usuario.correo,
+      objPrograma: this.usuario.objPrograma
+    },
           archivos: archivosSubidos
-        };
+  };
 
         console.log('📋 Creando solicitud con archivos:', solicitud);
 
-        this.homologacionService.crearSolicitud(solicitud).subscribe({
-          next: (resp) => {
-            console.log('✅ Solicitud creada en backend:', resp);
-            this.listarSolicitudes();
+  this.homologacionService.crearSolicitud(solicitud).subscribe({
+    next: (resp) => {
+      console.log('✅ Solicitud creada en backend:', resp);
+      this.listarSolicitudes();
 
-            // Resetear el file upload
-            this.resetFileUpload = true;
-            setTimeout(() => this.resetFileUpload = false, 0);
+      // Resetear el file upload
+      this.resetFileUpload = true;
+      setTimeout(() => this.resetFileUpload = false, 0);
 
-            alert('✅ Solicitud enviada correctamente');
-          },
-          error: (err) => {
+            this.mostrarMensaje('🎉 ¡Solicitud de homologación enviada correctamente!', 'success');
+    },
+    error: (err) => {
             console.error('❌ Error al crear solicitud:', err);
-            if (err.status === 400) {
-              alert('⚠️ Error de validación: revisa los datos de la solicitud');
-            }
-            if (err.status === 401) {
-              alert('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.');
+      if (err.status === 400) {
+              this.mostrarMensaje('⚠️ Error de validación: revisa los datos de la solicitud', 'warning');
+      }
+      if (err.status === 401) {
+              this.mostrarMensaje('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
             }
           }
         });
       },
       error: (err) => {
         console.error('❌ Error al subir archivos:', err);
-        alert('❌ Error al subir archivos. Por favor, inténtalo de nuevo.');
-      }
-    });
-  }
+        this.mostrarMensaje('❌ Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+    }
+  });
+}
 
 
 
