@@ -38,7 +38,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Solicitud } from '../models/procesos.model';
+import { Solicitud, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 
 @Injectable({
   providedIn: 'root'
@@ -99,6 +99,49 @@ export class HomologacionAsignaturasService {
       params: params,
       headers: this.getAuthHeaders()
     });
+  }
+
+  // ================================
+  // Métodos para Funcionario
+  // ================================
+  
+  /**
+   * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
+   */
+  getPendingRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/Funcionario`, { 
+      headers: this.getAuthHeaders() 
+    });
+  }
+
+  /**
+   * Aprobar solicitud de homologación
+   */
+  approveRequest(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'Aprobado'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Rechazar solicitud de homologación
+   */
+  rejectRequest(requestId: number, reason: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'Rechazado'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Completar validación de solicitud
+   */
+  completeValidation(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'En Revisión'
+    }, { headers: this.getAuthHeaders() });
   }
 
 
