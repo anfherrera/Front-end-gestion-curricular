@@ -66,13 +66,52 @@ export class HomologacionAsignaturasComponent implements OnInit {
   }
 
   verDocumento(documento: DocumentoHomologacion): void {
-    if (documento.ruta_documento) {
-      // Aquí puedes implementar la lógica para abrir el documento
-      // Por ejemplo, abrir en una nueva ventana o descargar
-      window.open(documento.ruta_documento, '_blank');
-    } else {
-      this.snackBar.open(`No hay ruta disponible para: ${documento.nombre}`, 'Cerrar', { duration: 3000 });
+    if (!documento.nombre) {
+      this.snackBar.open(`No hay nombre de archivo disponible para el documento`, 'Cerrar', { duration: 3000 });
+      return;
     }
+
+    // Mostrar mensaje de carga
+    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
+
+    this.homologacionService.descargarArchivo(documento.nombre).subscribe({
+      next: (blob: Blob) => {
+        // Crear URL del blob y abrir en nueva ventana
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = documento.nombre;
+        link.target = '_blank';
+        
+        // Abrir el documento en una nueva ventana
+        window.open(url, '_blank');
+        
+        // Limpiar la URL después de un tiempo
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1000);
+
+        this.snackBar.open('Documento descargado correctamente', 'Cerrar', { duration: 3000 });
+      },
+      error: (error) => {
+        console.error('Error al descargar el documento:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('URL:', error.url);
+        
+        let mensajeError = `Error al descargar el documento: ${documento.nombre}`;
+        
+        if (error.status === 404) {
+          mensajeError = `Archivo no encontrado: ${documento.nombre}`;
+        } else if (error.status === 401) {
+          mensajeError = 'No autorizado para descargar el archivo';
+        } else if (error.status === 500) {
+          mensajeError = 'Error interno del servidor al descargar el archivo';
+        }
+        
+        this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
+      }
+    });
   }
 
   aprobarSolicitudSeleccionada(): void {

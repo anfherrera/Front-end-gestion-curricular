@@ -144,6 +144,21 @@ export class HomologacionAsignaturasService {
     }, { headers: this.getAuthHeaders() });
   }
 
+  /**
+   * Descargar archivo PDF por nombre
+   */
+  descargarArchivo(nombreArchivo: string): Observable<Blob> {
+    // URL directa al backend (CORS configurado)
+    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    console.log('🔗 URL de descarga:', url);
+    console.log('📁 Nombre del archivo:', nombreArchivo);
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
+
 
 
 //============
