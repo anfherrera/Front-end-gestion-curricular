@@ -6,6 +6,7 @@
     icon="assignment">
     
     <app-request-status-table
+      #requestStatusTable
       [solicitudes]="solicitudes"
       [showOficio]="false"
       [showComentarios]="false"
@@ -47,7 +48,7 @@
                       matTooltip="Visualizar documento">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button mat-icon-button color="accent" (click)="agregarComentario(documento)" 
+              <button mat-icon-button color="primary" (click)="agregarComentario(documento)" 
                       matTooltip="Añadir comentario">
                 <mat-icon>comment</mat-icon>
               </button>

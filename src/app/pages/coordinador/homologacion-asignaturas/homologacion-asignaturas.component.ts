@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,6 +32,8 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit {
+  @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
+  
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
 
@@ -76,7 +78,11 @@ export class HomologacionAsignaturasComponent implements OnInit {
     return 'Pendiente';
   }
 
-  onSolicitudSeleccionada(solicitudId: number): void {
+  onSolicitudSeleccionada(solicitudId: number | null): void {
+    if (solicitudId === null) {
+      this.selectedSolicitud = undefined;
+      return;
+    }
     // Buscar la solicitud original por ID
     this.homologacionService.getCoordinadorRequests().subscribe({
       next: (sols) => {
@@ -208,6 +214,8 @@ export class HomologacionAsignaturasComponent implements OnInit {
       next: () => {
         this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
+        this.selectedSolicitud = undefined;
+        this.requestStatusTable?.resetSelection();
       },
       error: (err) => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
     });
@@ -231,6 +239,8 @@ export class HomologacionAsignaturasComponent implements OnInit {
           next: () => {
             this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
+            this.selectedSolicitud = undefined;
+            this.requestStatusTable?.resetSelection();
           },
           error: (err) => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
         });
