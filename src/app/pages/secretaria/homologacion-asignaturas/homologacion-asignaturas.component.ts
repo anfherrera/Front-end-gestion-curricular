@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
+import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
 import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { OficioResolucionComponent } from '../../../shared/components/oficio-resolucion/oficio-resolucion.component';
+import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -16,7 +17,7 @@ import { OficioResolucionComponent } from '../../../shared/components/oficio-res
     MatSnackBarModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    OficioResolucionComponent
+    DocumentGeneratorComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['./homologacion-asignaturas.component.css']
@@ -24,21 +25,23 @@ import { OficioResolucionComponent } from '../../../shared/components/oficio-res
 export class HomologacionAsignaturasComponent implements OnInit {
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
-
-  get solicitudParaOficio() {
-    if (!this.selectedSolicitud) return null;
-    return {
-      id: this.selectedSolicitud.id_solicitud,
-      nombre: this.selectedSolicitud.objUsuario.nombre_completo || '',
-      fecha: this.selectedSolicitud.fecha_registro_solicitud,
-      estado: 'APROBADA_COORDINADOR' as any
-    };
-  }
+  template!: DocumentTemplate;
+  loading: boolean = false;
 
   constructor(
     private homologacionService: HomologacionAsignaturasService,
+    private documentGeneratorService: DocumentGeneratorService,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    // Inicializar plantilla para homologación
+    this.template = {
+      id: 'OFICIO_HOMOLOGACION',
+      nombre: 'Oficio de Homologación',
+      descripcion: 'Documento oficial que aprueba la homologación de asignaturas',
+      camposRequeridos: ['numeroDocumento', 'fechaDocumento'],
+      camposOpcionales: ['observaciones']
+    };
+  }
 
   ngOnInit(): void {
     this.cargarSolicitudes();
@@ -93,24 +96,40 @@ export class HomologacionAsignaturasComponent implements OnInit {
   }
 
   /**
-   * Generar oficio/resolución
+   * Generar documento usando el componente genérico
    */
-  generarOficio(contenido: string): void {
+  onGenerarDocumento(request: DocumentRequest): void {
     if (!this.selectedSolicitud) return;
 
-    console.log('📄 Generando oficio para solicitud:', this.selectedSolicitud.id_solicitud);
-    console.log('📄 Contenido del oficio:', contenido);
+    this.loading = true;
+    console.log('📄 Generando documento:', request);
 
-    this.homologacionService.generarOficio(this.selectedSolicitud.id_solicitud, contenido).subscribe({
-      next: (response) => {
-        console.log('✅ Oficio generado:', response);
-        this.snackBar.open('Oficio generado correctamente ✅', 'Cerrar', { duration: 3000 });
+    this.documentGeneratorService.generarDocumento(request).subscribe({
+      next: (blob) => {
+        console.log('✅ Documento generado exitosamente');
+        
+        // Generar nombre de archivo
+        const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
+        
+        // Descargar archivo
+        this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
+        
+        this.snackBar.open('Documento generado y descargado exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.loading = false;
         this.cargarSolicitudes(); // Recargar para actualizar estados
       },
       error: (err) => {
-        console.error('❌ Error al generar oficio:', err);
-        this.snackBar.open('Error al generar oficio', 'Cerrar', { duration: 3000 });
+        console.error('❌ Error al generar documento:', err);
+        this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
+        this.loading = false;
       }
     });
+  }
+
+  /**
+   * Cancelar generación de documento
+   */
+  onCancelarGeneracion(): void {
+    this.selectedSolicitud = undefined;
   }
 }

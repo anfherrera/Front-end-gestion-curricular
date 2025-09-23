@@ -277,6 +277,29 @@ export class HomologacionAsignaturasService {
     }, { headers: this.getAuthHeaders() });
   }
 
+  /**
+   * Obtener oficios/resoluciones de una solicitud
+   */
+  obtenerOficios(idSolicitud: number): Observable<any[]> {
+    const url = `${this.apiUrl}/obtenerOficios/${idSolicitud}`;
+    
+    return this.http.get<any[]>(url, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Descargar oficio/resolución
+   */
+  descargarOficio(idOficio: number): Observable<Blob> {
+    const url = `${this.apiUrl}/descargarOficio/${idOficio}`;
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
+
 
 
 //============

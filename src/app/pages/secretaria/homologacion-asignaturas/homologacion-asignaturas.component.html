@@ -15,29 +15,21 @@
 
   </app-card-container>
 
-  <!-- Contenedor para generar oficio/resolución usando componente genérico -->
-  <app-card-container 
-    *ngIf="selectedSolicitud"
-    title="Generar Oficio / Resolución" 
-    icon="description">
-    
-    <div class="solicitud-info">
-      <p><strong>Estudiante:</strong> {{ selectedSolicitud.objUsuario.nombre_completo }}</p>
-      <p><strong>Solicitud:</strong> {{ selectedSolicitud.nombre_solicitud }}</p>
-      <p><strong>Fecha:</strong> {{ selectedSolicitud.fecha_registro_solicitud | date:'shortDate' }}</p>
-      <p><strong>Estado:</strong> {{ getEstadoActual(selectedSolicitud) }}</p>
-      <p><strong>Programa:</strong> {{ selectedSolicitud.objUsuario.objPrograma.nombre_programa }}</p>
-    </div>
+      <!-- Contenedor para generar documento usando componente genérico -->
+      <app-card-container
+        *ngIf="selectedSolicitud"
+        title="Generar Documento Oficial"
+        icon="description">
 
-    <div class="oficio-container">
-      <app-oficio-resolucion 
-        *ngIf="solicitudParaOficio"
-        [solicitud]="solicitudParaOficio"
-        modo="secretaria"
-        (enviar)="generarOficio($event)">
-      </app-oficio-resolucion>
-    </div>
+        <app-document-generator
+          [solicitud]="selectedSolicitud"
+          [template]="template"
+          [proceso]="'homologacion'"
+          [loading]="loading"
+          (generarDocumento)="onGenerarDocumento($event)"
+          (cancelar)="onCancelarGeneracion()">
+        </app-document-generator>
 
-  </app-card-container>
+      </app-card-container>
 
 </div>

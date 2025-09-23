@@ -30,6 +30,7 @@ export class RequestStatusTableComponent implements OnInit {
   @Input() showSeleccionar: boolean = false; // 👈 controla si se muestra la columna de seleccionar
   @Output() verComentarios = new EventEmitter<number>(); // 👈 emite el ID de la solicitud
   @Output() solicitudSeleccionada = new EventEmitter<number>(); // 👈 emite el ID de la solicitud seleccionada
+  @Output() descargarOficio = new EventEmitter<{id: number, nombreArchivo: string}>(); // 👈 emite datos para descargar oficio
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
 
@@ -51,6 +52,17 @@ export class RequestStatusTableComponent implements OnInit {
 
   onSeleccionarSolicitud(solicitudId: number): void {
     this.solicitudSeleccionada.emit(solicitudId);
+  }
+
+  onDescargarOficio(solicitudId: number): void {
+    // Por ahora, usamos un nombre genérico. En el futuro se puede obtener del backend
+    const nombreArchivo = `oficio_homologacion_${solicitudId}.docx`;
+    this.descargarOficio.emit({ id: solicitudId, nombreArchivo });
+  }
+
+  puedeDescargarOficio(estado: string): boolean {
+    const estadoUpper = estado.toUpperCase();
+    return estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_COORDINADOR';
   }
 
   esSolicitudRechazada(estado: string): boolean {

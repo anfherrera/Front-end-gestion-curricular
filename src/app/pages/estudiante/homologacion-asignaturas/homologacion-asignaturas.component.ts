@@ -634,6 +634,87 @@ verificarFuncionalidadComentarios(): void {
   });
 }
 
+/**
+ * Obtener oficios de una solicitud
+ */
+obtenerOficios(solicitudId: number): void {
+  console.log('📄 Obteniendo oficios para solicitud:', solicitudId);
+  
+  this.homologacionService.obtenerOficios(solicitudId).subscribe({
+    next: (oficios) => {
+      console.log('📄 Oficios obtenidos:', oficios);
+      // Aquí puedes mostrar los oficios en la UI
+      this.mostrarOficiosEnUI(oficios);
+    },
+    error: (err) => {
+      console.error('❌ Error al obtener oficios:', err);
+      this.mostrarMensaje('Error al cargar oficios', 'error');
+    }
+  });
+}
+
+/**
+ * Descargar oficio
+ */
+descargarOficio(idOficio: number, nombreArchivo: string): void {
+  console.log('📥 Descargando oficio:', idOficio);
+  
+  this.homologacionService.descargarOficio(idOficio).subscribe({
+    next: (blob) => {
+      console.log('✅ Oficio descargado exitosamente');
+      
+      // Crear URL temporal y descargar
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = nombreArchivo || `oficio_${idOficio}.docx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+    },
+    error: (err) => {
+      console.error('❌ Error al descargar oficio:', err);
+      this.mostrarMensaje('Error al descargar oficio', 'error');
+    }
+  });
+}
+
+/**
+ * Verificar si una solicitud tiene oficios disponibles
+ */
+tieneOficios(solicitudId: number): boolean {
+  // Esta lógica dependerá de cómo implementes la verificación
+  // Por ahora, asumimos que las solicitudes aprobadas tienen oficios
+  const solicitud = this.obtenerSolicitudCompleta(solicitudId);
+  if (!solicitud) return false;
+  
+  const estado = this.obtenerEstadoActual(solicitud);
+  return estado === 'APROBADA' || estado === 'APROBADA_COORDINADOR';
+}
+
+/**
+ * Obtener el estado actual de una solicitud
+ */
+obtenerEstadoActual(solicitud: any): string {
+  if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+    const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+    return ultimoEstado.estado_actual;
+  }
+  return 'Pendiente';
+}
+
+/**
+ * Mostrar oficios en la UI (placeholder)
+ */
+private mostrarOficiosEnUI(oficios: any[]): void {
+  // Aquí puedes implementar la lógica para mostrar los oficios
+  // Por ejemplo, abrir un modal o actualizar una lista
+  console.log('📄 Mostrando oficios en UI:', oficios);
+}
+
 
 // listarSolicitudes() {
 //   if (!this.usuario) {

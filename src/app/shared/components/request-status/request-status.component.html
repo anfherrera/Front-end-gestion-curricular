@@ -27,7 +27,19 @@
   <ng-container *ngIf="showOficio" matColumnDef="acciones">
     <th mat-header-cell *matHeaderCellDef> Oficio/Resolución </th>
     <td mat-cell *matCellDef="let element">
-      <app-oficio-descarga [solicitud]="element"></app-oficio-descarga>
+      <div class="acciones-container">
+        <!-- Botón para descargar oficio (solo si está aprobada) -->
+        <button *ngIf="puedeDescargarOficio(element.estado)" 
+                mat-icon-button 
+                color="primary" 
+                (click)="onDescargarOficio(element.id)"
+                matTooltip="Descargar documento oficial">
+          <mat-icon>download</mat-icon>
+        </button>
+        
+        <!-- Componente original para otros casos -->
+        <app-oficio-descarga *ngIf="!puedeDescargarOficio(element.estado)" [solicitud]="element"></app-oficio-descarga>
+      </div>
     </td>
   </ng-container>
 

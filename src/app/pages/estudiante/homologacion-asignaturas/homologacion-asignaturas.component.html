@@ -54,10 +54,37 @@
       <app-request-status-table
         *ngIf="solicitudes.length > 0"
         [solicitudes]="solicitudes"
-        [showOficio]="false"
+        [showOficio]="true"
         [showComentarios]="true"
-        (verComentarios)="verComentarios($event)">
+        (verComentarios)="verComentarios($event)"
+        (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
       </app-request-status-table>
+
+      <!-- Botón adicional para ver oficios disponibles -->
+      <div *ngIf="solicitudes.length > 0" class="oficios-section mt-3">
+        <h4>📄 Documentos Oficiales</h4>
+        <div *ngFor="let solicitud of solicitudes" class="solicitud-oficios">
+          <div class="solicitud-info">
+            <span class="solicitud-nombre">{{ solicitud.nombre }}</span>
+            <span class="solicitud-estado" [ngClass]="'estado-' + solicitud.estado.toLowerCase()">
+              {{ solicitud.estado }}
+            </span>
+          </div>
+          
+          <button *ngIf="tieneOficios(solicitud.id)" 
+                  mat-raised-button 
+                  color="primary" 
+                  (click)="obtenerOficios(solicitud.id)"
+                  class="btn-oficios">
+            <mat-icon>description</mat-icon>
+            Ver Documentos Oficiales
+          </button>
+          
+          <p *ngIf="!tieneOficios(solicitud.id)" class="sin-oficios">
+            Los documentos oficiales estarán disponibles una vez que la solicitud sea aprobada.
+          </p>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 

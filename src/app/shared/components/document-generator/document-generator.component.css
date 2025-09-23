@@ -1,0 +1,214 @@
+.document-generator-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Información de la solicitud */
+.solicitud-info-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-left: 4px solid #007bff;
+}
+
+.solicitud-info-card mat-card-header {
+  background-color: #007bff;
+  color: white;
+  margin: -16px -16px 16px -16px;
+  padding: 16px;
+  border-radius: 4px 4px 0 0;
+}
+
+.solicitud-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-row .label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-row .value {
+  color: #212529;
+  font-size: 1rem;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.estado-aprobada, .estado-aprobada_coordinador {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado-pendiente, .estado-enviada {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.estado-rechazada {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Formulario de documento */
+.document-form-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.document-form-card mat-card-header {
+  background-color: #28a745;
+  color: white;
+  margin: -16px -16px 24px -16px;
+  padding: 20px;
+  border-radius: 4px 4px 0 0;
+}
+
+.document-form-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.document-form-card mat-card-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
+.document-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Campos opcionales */
+.optional-fields {
+  margin-top: 24px;
+}
+
+.optional-fields h4 {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.optional-fields h4::before {
+  content: "📋";
+  font-size: 1.2rem;
+}
+
+.optional-field {
+  margin-bottom: 16px;
+}
+
+/* Acciones del formulario */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 0 0 0;
+  margin-top: 24px;
+  border-top: 1px solid #e9ecef;
+}
+
+.form-actions button {
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Estados de error */
+.error {
+  border-color: #dc3545 !important;
+}
+
+/* Animación de carga */
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .document-generator-container {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .solicitud-details {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+/* Estilos para Material Design */
+mat-form-field {
+  margin-bottom: 8px;
+}
+
+mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #dee2e6;
+}
+
+mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #007bff;
+}
+
+mat-form-field.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline-thick {
+  color: #dc3545;
+}
+
+/* Iconos específicos */
+mat-icon {
+  color: inherit;
+}
+
+mat-card-title mat-icon {
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
