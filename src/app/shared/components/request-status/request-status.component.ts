@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,6 +26,8 @@ import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.comp
 export class RequestStatusTableComponent implements OnInit {
   @Input() solicitudes: Solicitud[] = [];
   @Input() showOficio: boolean = true; // 👈 controla si se muestra la columna
+  @Input() showComentarios: boolean = false; // 👈 controla si se muestra la columna de comentarios
+  @Output() verComentarios = new EventEmitter<number>(); // 👈 emite el ID de la solicitud
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
 
@@ -33,29 +35,54 @@ export class RequestStatusTableComponent implements OnInit {
     if (this.showOficio) {
       this.displayedColumns.push('acciones');
     }
+    if (this.showComentarios) {
+      this.displayedColumns.push('comentarios');
+    }
   }
 
-  getEstadoIcon(estado: SolicitudStatusEnum): string {
-    switch (estado) {
-      case SolicitudStatusEnum.APROBADA: return 'check_circle';
-      case SolicitudStatusEnum.RECHAZADA: return 'cancel';
-      case SolicitudStatusEnum.ENVIADA: return 'send';
-      case SolicitudStatusEnum.EN_REVISION_SECRETARIA:
-      case SolicitudStatusEnum.EN_REVISION_FUNCIONARIO:
-      case SolicitudStatusEnum.EN_REVISION_COORDINADOR:
+  onVerComentarios(solicitudId: number): void {
+    this.verComentarios.emit(solicitudId);
+  }
+
+  esSolicitudRechazada(estado: string): boolean {
+    return estado === 'RECHAZADA' || estado === 'Rechazada';
+  }
+
+  getEstadoIcon(estado: string): string {
+    const estadoUpper = estado.toUpperCase();
+    switch (estadoUpper) {
+      case 'APROBADA':
+      case 'APROBADA_FUNCIONARIO':
+      case 'APROBADA_COORDINADOR':
+        return 'check_circle';
+      case 'RECHAZADA':
+        return 'cancel';
+      case 'ENVIADA':
+        return 'send';
+      case 'EN_REVISION_SECRETARIA':
+      case 'EN_REVISION_FUNCIONARIO':
+      case 'EN_REVISION_COORDINADOR':
+      case 'EN REVISIÓN':
         return 'hourglass_top';
       default: return 'info';
     }
   }
 
-  getEstadoColor(estado: SolicitudStatusEnum): string {
-    switch (estado) {
-      case SolicitudStatusEnum.APROBADA: return 'green';
-      case SolicitudStatusEnum.RECHAZADA: return 'red';
-      case SolicitudStatusEnum.ENVIADA: return 'blue';
-      case SolicitudStatusEnum.EN_REVISION_SECRETARIA:
-      case SolicitudStatusEnum.EN_REVISION_FUNCIONARIO:
-      case SolicitudStatusEnum.EN_REVISION_COORDINADOR:
+  getEstadoColor(estado: string): string {
+    const estadoUpper = estado.toUpperCase();
+    switch (estadoUpper) {
+      case 'APROBADA':
+      case 'APROBADA_FUNCIONARIO':
+      case 'APROBADA_COORDINADOR':
+        return 'green';
+      case 'RECHAZADA':
+        return 'red';
+      case 'ENVIADA':
+        return 'blue';
+      case 'EN_REVISION_SECRETARIA':
+      case 'EN_REVISION_FUNCIONARIO':
+      case 'EN_REVISION_COORDINADOR':
+      case 'EN REVISIÓN':
         return 'orange';
       default: return 'gray';
     }

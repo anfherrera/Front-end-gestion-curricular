@@ -84,7 +84,7 @@ export class HomologacionAsignaturasService {
     );
   }
 
-  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<Solicitud[]> {
+  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<SolicitudHomologacionDTORespuesta[]> {
     let params: any = { rol: rol };
     if (idUsuario) {
       params.idUsuario = idUsuario;
@@ -95,7 +95,7 @@ export class HomologacionAsignaturasService {
     console.log('📤 Parámetros enviados:', params);
     console.log('🔑 Headers:', this.getAuthHeaders());
 
-    return this.http.get<Solicitud[]>(url, {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(url, {
       params: params,
       headers: this.getAuthHeaders()
     });
@@ -115,12 +115,21 @@ export class HomologacionAsignaturasService {
   }
 
   /**
-   * Aprobar solicitud de homologación
+   * Obtener solicitudes para coordinador
+   */
+  getCoordinadorRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/Coordinador`, { 
+      headers: this.getAuthHeaders() 
+    });
+  }
+
+  /**
+   * Aprobar solicitud de homologación como funcionario
    */
   approveRequest(requestId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: requestId,
-      nuevoEstado: 'Aprobado'
+      nuevoEstado: 'APROBADA_FUNCIONARIO'
     }, { headers: this.getAuthHeaders() });
   }
 
@@ -130,7 +139,8 @@ export class HomologacionAsignaturasService {
   rejectRequest(requestId: number, reason: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: requestId,
-      nuevoEstado: 'Rechazado'
+      nuevoEstado: 'RECHAZADA',
+      comentario: reason
     }, { headers: this.getAuthHeaders() });
   }
 
@@ -141,6 +151,41 @@ export class HomologacionAsignaturasService {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: requestId,
       nuevoEstado: 'En Revisión'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  // ================================
+  // Métodos para Coordinador
+  // ================================
+
+  /**
+   * Aprobar solicitud como coordinador
+   */
+  approveAsCoordinador(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'APROBADA_COORDINADOR'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Aprobar definitivamente la solicitud
+   */
+  approveDefinitively(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'APROBADA'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Rechazar solicitud como coordinador
+   */
+  rejectAsCoordinador(requestId: number, reason: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'RECHAZADA',
+      comentario: reason
     }, { headers: this.getAuthHeaders() });
   }
 
@@ -157,6 +202,57 @@ export class HomologacionAsignaturasService {
       headers: this.getAuthHeaders(),
       responseType: 'blob'
     });
+  }
+
+  /**
+   * Añadir comentario a un documento
+   */
+  agregarComentario(idDocumento: number, comentario: string): Observable<any> {
+    const url = `http://localhost:5000/api/documentos/añadirComentario`;
+    const body = {
+      idDocumento: idDocumento,
+      comentario: comentario
+    };
+    
+    console.log('💬 Añadiendo comentario:', body);
+    
+    return this.http.put(url, body, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Obtener comentarios de un documento
+   */
+  obtenerComentariosDocumento(idDocumento: number): Observable<any> {
+    const url = `http://localhost:5000/api/documentos/${idDocumento}/comentarios`;
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Obtener solicitud completa con documentos y comentarios
+   */
+  obtenerSolicitudCompleta(idSolicitud: number): Observable<SolicitudHomologacionDTORespuesta> {
+    const url = `${this.apiUrl}/obtenerSolicitud/${idSolicitud}`;
+    
+    return this.http.get<SolicitudHomologacionDTORespuesta>(url, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Actualizar estado de documentos de una solicitud
+   */
+  actualizarEstadoDocumentos(idSolicitud: number, documentos: any[]): Observable<any> {
+    const url = `${this.apiUrl}/actualizarEstadoDocumentos`;
+    
+    return this.http.put(url, {
+      idSolicitud: idSolicitud,
+      documentos: documentos
+    }, { headers: this.getAuthHeaders() });
   }
 
 

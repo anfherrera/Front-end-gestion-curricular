@@ -78,6 +78,17 @@
   background-color: #f8f9fa;
 }
 
+/* Contenedor de acciones */
+.acciones-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.acciones-container button {
+  margin: 0;
+}
+
 /* Archivos */
 .archivo-item {
   display: flex;

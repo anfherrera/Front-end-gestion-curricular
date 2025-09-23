@@ -53,7 +53,10 @@
 
       <app-request-status-table
         *ngIf="solicitudes.length > 0"
-        [solicitudes]="solicitudes">
+        [solicitudes]="solicitudes"
+        [showOficio]="false"
+        [showComentarios]="true"
+        (verComentarios)="verComentarios($event)">
       </app-request-status-table>
     </mat-card-content>
   </mat-card>

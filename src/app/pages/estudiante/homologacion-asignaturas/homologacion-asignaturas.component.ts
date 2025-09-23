@@ -281,12 +281,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 
-import { Archivo } from '../../../core/models/procesos.model';
+import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
 import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
+import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
+import { MatDialog } from '@angular/material/dialog';
 
 import { Solicitud } from '../../../core/models/procesos.model';
 
@@ -299,6 +302,7 @@ import { Solicitud } from '../../../core/models/procesos.model';
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
+    MatDialogModule,
     FileUploadComponent,
     RequestStatusTableComponent
   ],
@@ -319,12 +323,14 @@ export class HomologacionAsignaturasComponent implements OnInit {
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
   solicitudes: Solicitud[] = [];
+  solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
 
   usuario: any = null;
 
   constructor(
     private homologacionService: HomologacionAsignaturasService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -339,6 +345,11 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
     // Listar solicitudes existentes al cargar el componente
     this.listarSolicitudes();
+    
+    // Verificar funcionalidad de comentarios (para debugging)
+    setTimeout(() => {
+      this.verificarFuncionalidadComentarios();
+    }, 2000);
   }
 
   onArchivosChange(archivos: Archivo[]) {
@@ -449,7 +460,23 @@ listarSolicitudes() {
       if (!data || !Array.isArray(data)) {
         console.warn('⚠️ La respuesta no es un array válido');
         this.solicitudes = [];
+        this.solicitudesCompletas = [];
         return;
+      }
+
+      // Guardar las solicitudes completas para usar esSeleccionado y comentarios
+      this.solicitudesCompletas = data;
+
+      // Log para debugging - verificar estructura de datos
+      console.log('🔍 Estructura de datos del backend:');
+      if (data.length > 0) {
+        console.log('📋 Primera solicitud completa:', data[0]);
+        if (data[0].estadosSolicitud) {
+          console.log('📋 Estados de la primera solicitud:', data[0].estadosSolicitud);
+          data[0].estadosSolicitud.forEach((estado: any, index: number) => {
+            console.log(`📋 Estado ${index}:`, estado);
+          });
+        }
       }
 
       this.solicitudes = data.map((sol: any) => {
@@ -466,7 +493,8 @@ listarSolicitudes() {
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
           estado: ultimoEstado?.estado_actual || 'Pendiente',
           rutaArchivo,
-          comentarios: ultimoEstado?.comentarios || ''
+          comentarios: ultimoEstado?.comentarios || '',
+          esSeleccionado: sol.esSeleccionado || false // Usar el campo esSeleccionado
         };
 
         console.log('✅ Solicitud transformada:', solicitudTransformada);
@@ -474,6 +502,7 @@ listarSolicitudes() {
       });
 
       console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
+      console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
     },
     error: (err) => {
       console.error('❌ Error al listar solicitudes', err);
@@ -481,6 +510,127 @@ listarSolicitudes() {
       console.error('❌ Message:', err.message);
       console.error('❌ Error completo:', err);
     }
+  });
+}
+
+/**
+ * Verificar si una solicitud está rechazada
+ */
+esSolicitudRechazada(estado: string): boolean {
+  return estado === 'RECHAZADA' || estado === 'Rechazada';
+}
+
+/**
+ * Obtener la solicitud completa por ID
+ */
+obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta | undefined {
+  return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
+}
+
+/**
+ * Obtener el comentario de rechazo del último estado
+ */
+obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
+  console.log('🔍 Obteniendo comentario de rechazo para solicitud:', solicitud.id_solicitud);
+  console.log('📋 Estados de la solicitud:', solicitud.estadosSolicitud);
+  
+  if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
+    console.log('❌ No hay estados en la solicitud');
+    return null;
+  }
+
+  // Buscar el último estado que sea RECHAZADA
+  const estadosRechazados = solicitud.estadosSolicitud.filter(estado => 
+    estado.estado_actual === 'RECHAZADA' || estado.estado_actual === 'Rechazada'
+  );
+
+  console.log('🔍 Estados rechazados encontrados:', estadosRechazados);
+
+  if (estadosRechazados.length === 0) {
+    console.log('❌ No se encontraron estados de rechazo');
+    return null;
+  }
+
+  // Obtener el último estado de rechazo
+  const ultimoEstadoRechazo = estadosRechazados[estadosRechazados.length - 1];
+  
+  console.log('📝 Último estado de rechazo:', ultimoEstadoRechazo);
+  console.log('💬 Comentario encontrado:', ultimoEstadoRechazo.comentario);
+  
+  return ultimoEstadoRechazo.comentario || null;
+}
+
+/**
+ * Ver comentarios de una solicitud rechazada
+ */
+verComentarios(solicitudId: number): void {
+  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
+  
+  if (!solicitudCompleta) {
+    this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
+    return;
+  }
+
+  if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
+    this.mostrarMensaje('No hay documentos asociados a esta solicitud', 'warning');
+    return;
+  }
+
+  // Obtener el comentario de rechazo del último estado
+  const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
+
+  console.log('📋 Datos que se envían al diálogo:');
+  console.log('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
+  console.log('  - Documentos:', solicitudCompleta.documentos);
+  console.log('  - Comentario de rechazo:', comentarioRechazo);
+
+  const dialogRef = this.dialog.open(ComentariosDialogComponent, {
+    width: '700px',
+    data: <ComentariosDialogData>{
+      titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
+      documentos: solicitudCompleta.documentos,
+      comentarioRechazo: comentarioRechazo
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(() => {
+    console.log('Diálogo de comentarios cerrado');
+  });
+}
+
+/**
+ * Verificar si una solicitud tiene comentarios
+ */
+tieneComentarios(solicitudId: number): boolean {
+  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
+  
+  if (!solicitudCompleta || !solicitudCompleta.documentos) {
+    return false;
+  }
+
+  return solicitudCompleta.documentos.some(doc => 
+    doc.comentario && doc.comentario.trim().length > 0
+  );
+}
+
+/**
+ * Método de prueba para verificar el funcionamiento
+ */
+verificarFuncionalidadComentarios(): void {
+  console.log('🔍 Verificando funcionalidad de comentarios...');
+  console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
+  console.log('📋 Solicitudes transformadas:', this.solicitudes);
+  
+  // Buscar solicitudes rechazadas
+  const solicitudesRechazadas = this.solicitudes.filter(sol => 
+    this.esSolicitudRechazada(sol.estado)
+  );
+  
+  console.log('❌ Solicitudes rechazadas encontradas:', solicitudesRechazadas);
+  
+  solicitudesRechazadas.forEach(sol => {
+    const tieneComentarios = this.tieneComentarios(sol.id);
+    console.log(`📝 Solicitud ${sol.id} (${sol.nombre}): ${tieneComentarios ? 'Tiene comentarios' : 'Sin comentarios'}`);
   });
 }
 

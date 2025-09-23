@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
+import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -76,22 +77,45 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
     this.homologacionService.descargarArchivo(documento.nombre).subscribe({
       next: (blob: Blob) => {
-        // Crear URL del blob y abrir en nueva ventana
+        // Crear URL única del blob para evitar cache
         const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = documento.nombre;
-        link.target = '_blank';
         
-        // Abrir el documento en una nueva ventana
-        window.open(url, '_blank');
+        // Crear un iframe temporal para mostrar el PDF
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.style.width = '100%';
+        iframe.style.height = '600px';
+        iframe.style.border = 'none';
+        
+        // Crear ventana emergente
+        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>${documento.nombre}</title>
+                <style>
+                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                  .header { margin-bottom: 20px; }
+                  .filename { font-size: 18px; font-weight: bold; color: #333; }
+                </style>
+              </head>
+              <body>
+                <div class="header">
+                  <div class="filename">${documento.nombre}</div>
+                </div>
+              </body>
+            </html>
+          `);
+          newWindow.document.body.appendChild(iframe);
+        }
         
         // Limpiar la URL después de un tiempo
         setTimeout(() => {
           window.URL.revokeObjectURL(url);
-        }, 1000);
+        }, 5000);
 
-        this.snackBar.open('Documento descargado correctamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
       },
       error: (error) => {
         console.error('Error al descargar el documento:', error);
@@ -114,13 +138,54 @@ export class HomologacionAsignaturasComponent implements OnInit {
     });
   }
 
+  agregarComentario(documento: DocumentoHomologacion): void {
+    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
+      width: '500px',
+      data: <ComentarioDialogData>{
+        titulo: 'Añadir Comentario',
+        descripcion: 'Ingrese un comentario para este documento:',
+        placeholder: 'Escriba su comentario aquí...',
+        nombreDocumento: documento.nombre
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((comentario: string) => {
+      if (comentario && documento.id_documento) {
+        this.homologacionService.agregarComentario(documento.id_documento, comentario).subscribe({
+          next: () => {
+            this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          },
+          error: (error) => {
+            console.error('Error al añadir comentario:', error);
+            this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
+    // Actualizar estado de la solicitud
     this.homologacionService.approveRequest(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada ✅', 'Cerrar', { duration: 3000 });
-        this.cargarSolicitudes();
+        // Actualizar estado de los documentos
+        const documentosActualizados = this.documentosDelEstudiante.map(doc => ({
+          id_documento: doc.id_documento,
+          esValido: true // Marcar como válido al aprobar
+        }));
+        
+        this.homologacionService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).subscribe({
+          next: () => {
+            this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
+            this.cargarSolicitudes();
+          },
+          error: (err) => {
+            this.snackBar.open('Solicitud aprobada, pero error al actualizar documentos', 'Cerrar', { duration: 3000 });
+            this.cargarSolicitudes();
+          }
+        });
       },
       error: (err) => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
     });
@@ -152,10 +217,25 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((motivo: string) => {
       if (motivo) {
+        // Actualizar estado de la solicitud
         this.homologacionService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
           next: () => {
-            this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
-            this.cargarSolicitudes();
+            // Actualizar estado de los documentos
+            const documentosActualizados = this.documentosDelEstudiante.map(doc => ({
+              id_documento: doc.id_documento,
+              esValido: false // Marcar como inválido al rechazar
+            }));
+            
+            this.homologacionService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).subscribe({
+              next: () => {
+                this.snackBar.open('Solicitud rechazada y documentos actualizados', 'Cerrar', { duration: 3000 });
+                this.cargarSolicitudes();
+              },
+              error: (err) => {
+                this.snackBar.open('Solicitud rechazada, pero error al actualizar documentos', 'Cerrar', { duration: 3000 });
+                this.cargarSolicitudes();
+              }
+            });
           },
           error: (err) => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
         });

@@ -54,6 +54,7 @@ export interface EstadoSolicitud {
   id_estado: number;
   estado_actual: string;
   fecha_registro_estado: string;
+  comentario?: string | null;
   objSolicitud?: any;
 }
 
