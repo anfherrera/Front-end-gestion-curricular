@@ -29,10 +29,11 @@ export class RequestStatusTableComponent implements OnInit {
   @Input() showComentarios: boolean = false; // 👈 controla si se muestra la columna de comentarios
   @Input() showSeleccionar: boolean = false; // 👈 controla si se muestra la columna de seleccionar
   @Output() verComentarios = new EventEmitter<number>(); // 👈 emite el ID de la solicitud
-  @Output() solicitudSeleccionada = new EventEmitter<number>(); // 👈 emite el ID de la solicitud seleccionada
+  @Output() solicitudSeleccionada = new EventEmitter<number | null>(); // 👈 emite el ID de la solicitud seleccionada
   @Output() descargarOficio = new EventEmitter<{id: number, nombreArchivo: string}>(); // 👈 emite datos para descargar oficio
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
+  selectedSolicitudId: number | null = null; // 👈 rastrear solicitud seleccionada
 
   ngOnInit() {
     if (this.showOficio) {
@@ -51,7 +52,26 @@ export class RequestStatusTableComponent implements OnInit {
   }
 
   onSeleccionarSolicitud(solicitudId: number): void {
-    this.solicitudSeleccionada.emit(solicitudId);
+    // Si ya está seleccionada, deseleccionar
+    if (this.selectedSolicitudId === solicitudId) {
+      this.selectedSolicitudId = null;
+    } else {
+      // Seleccionar nueva solicitud
+      this.selectedSolicitudId = solicitudId;
+    }
+    
+    // Emitir el ID de la solicitud seleccionada (o null si se deseleccionó)
+    this.solicitudSeleccionada.emit(this.selectedSolicitudId);
+  }
+
+  // Método para verificar si una solicitud está seleccionada
+  isSelected(solicitudId: number): boolean {
+    return this.selectedSolicitudId === solicitudId;
+  }
+
+  // Método para resetear la selección (llamado desde el componente padre)
+  resetSelection(): void {
+    this.selectedSolicitudId = null;
   }
 
   onDescargarOficio(solicitudId: number): void {

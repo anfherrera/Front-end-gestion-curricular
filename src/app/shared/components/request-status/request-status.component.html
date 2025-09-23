@@ -66,9 +66,10 @@
     <td mat-cell *matCellDef="let element">
       <button mat-icon-button 
               color="primary" 
+              [class.selected]="isSelected(element.id)"
               (click)="onSeleccionarSolicitud(element.id)"
-              matTooltip="Seleccionar solicitud">
-        <mat-icon>check_circle</mat-icon>
+              [matTooltip]="isSelected(element.id) ? 'Deseleccionar solicitud' : 'Seleccionar solicitud'">
+        <mat-icon>{{ isSelected(element.id) ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
       </button>
     </td>
   </ng-container>

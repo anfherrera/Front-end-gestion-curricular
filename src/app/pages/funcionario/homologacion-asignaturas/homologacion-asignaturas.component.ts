@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,8 +31,10 @@ import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit {
+  @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
+  
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
-  selectedSolicitud?: SolicitudHomologacionDTORespuesta;
+  selectedSolicitud: SolicitudHomologacionDTORespuesta | null = null;
 
   constructor(
     private homologacionService: HomologacionAsignaturasService,
@@ -70,11 +72,17 @@ export class HomologacionAsignaturasComponent implements OnInit {
     return 'Pendiente';
   }
 
-  onSolicitudSeleccionada(solicitudId: number): void {
+  onSolicitudSeleccionada(solicitudId: number | null): void {
+    // Si se deseleccionó (null), limpiar la selección
+    if (solicitudId === null) {
+      this.selectedSolicitud = null;
+      return;
+    }
+    
     // Buscar la solicitud original por ID
     this.homologacionService.getPendingRequests().subscribe({
       next: (sols) => {
-        this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
+        this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId) || null;
       }
     });
   }
@@ -201,10 +209,16 @@ export class HomologacionAsignaturasComponent implements OnInit {
           next: () => {
             this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
+            // Limpiar la selección para actualizar el card de documentación
+            this.selectedSolicitud = null;
+            this.requestStatusTable?.resetSelection();
           },
           error: (err) => {
             this.snackBar.open('Solicitud aprobada, pero error al actualizar documentos', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
+            // Limpiar la selección para actualizar el card de documentación
+            this.selectedSolicitud = null;
+            this.requestStatusTable?.resetSelection();
           }
         });
       },
@@ -219,6 +233,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
       next: () => {
         this.snackBar.open('Validación completada', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
+        // Limpiar la selección para actualizar el card de documentación
+        this.selectedSolicitud = null;
+        this.requestStatusTable?.resetSelection();
       },
       error: (err) => this.snackBar.open('Error al terminar validación', 'Cerrar', { duration: 3000 })
     });
@@ -251,10 +268,16 @@ export class HomologacionAsignaturasComponent implements OnInit {
               next: () => {
                 this.snackBar.open('Solicitud rechazada y documentos actualizados', 'Cerrar', { duration: 3000 });
                 this.cargarSolicitudes();
+                // Limpiar la selección para actualizar el card de documentación
+                this.selectedSolicitud = null;
+                this.requestStatusTable?.resetSelection();
               },
               error: (err) => {
                 this.snackBar.open('Solicitud rechazada, pero error al actualizar documentos', 'Cerrar', { duration: 3000 });
                 this.cargarSolicitudes();
+                // Limpiar la selección para actualizar el card de documentación
+                this.selectedSolicitud = null;
+                this.requestStatusTable?.resetSelection();
               }
             });
           },

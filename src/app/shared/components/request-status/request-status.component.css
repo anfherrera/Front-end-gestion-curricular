@@ -44,3 +44,33 @@ button[mat-icon-button] {
 button[mat-icon-button]:hover {
   transform: scale(1.1);
 }
+
+/* Mejorar botón de seleccionar */
+button[mat-icon-button][color="primary"] {
+  background-color: #00138C;
+  color: white;
+  border-radius: 4px;
+  border: 2px solid #00138C;
+  transition: all 0.2s ease-in-out;
+}
+
+button[mat-icon-button][color="primary"]:hover {
+  background-color: #001a99;
+  border-color: #001a99;
+  transform: scale(1.05);
+}
+
+button[mat-icon-button][color="primary"] mat-icon {
+  color: white;
+}
+
+/* Estilo para botón seleccionado (checkbox style) */
+button[mat-icon-button][color="primary"].selected {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+button[mat-icon-button][color="primary"].selected:hover {
+  background-color: #45a049;
+  border-color: #45a049;
+}
