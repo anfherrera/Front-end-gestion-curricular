@@ -49,7 +49,7 @@
     <td mat-cell *matCellDef="let element">
       <button *ngIf="esSolicitudRechazada(element.estado)" 
               mat-icon-button 
-              color="accent" 
+              color="primary" 
               (click)="onVerComentarios(element.id)"
               matTooltip="Ver comentarios de rechazo">
         <mat-icon>comment</mat-icon>
