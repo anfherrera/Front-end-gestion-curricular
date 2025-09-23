@@ -90,6 +90,84 @@
   margin-top: 20px;
 }
 
+/* Estilos para la sección de subida de PDF */
+.pdf-upload-section {
+  padding: 20px;
+}
+
+.instruction {
+  background-color: #e3f2fd;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+  margin-bottom: 24px;
+  color: #1565c0;
+  line-height: 1.6;
+}
+
+.file-selection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.file-input {
+  display: none;
+}
+
+.select-file-btn {
+  min-width: 160px;
+}
+
+.selected-file {
+  color: #28a745;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.upload-btn, .send-btn {
+  min-width: 180px;
+}
+
+.progress-bar {
+  margin-top: 16px;
+}
+
+/* Estados de los botones */
+.upload-btn:disabled, .send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive para la sección de PDF */
+@media (max-width: 768px) {
+  .file-selection {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .upload-btn, .send-btn {
+    width: 100%;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .secretaria-container {

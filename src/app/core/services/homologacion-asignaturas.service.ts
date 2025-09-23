@@ -336,6 +336,35 @@ export class HomologacionAsignaturasService {
   //     { headers: this.getAuthHeaders(), responseType: 'blob' }
   //   );
   // }
+
+  /**
+   * Subir archivo PDF
+   */
+  subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
+    const url = `http://localhost:5000/api/archivos/subir/pdf`;
+    
+    const formData = new FormData();
+    formData.append('file', archivo);
+    
+    // Agregar idSolicitud si se proporciona
+    if (idSolicitud) {
+      formData.append('idSolicitud', idSolicitud.toString());
+      console.log('📎 Asociando archivo a solicitud ID:', idSolicitud);
+    }
+    
+    console.log('🔗 URL para subir archivo PDF:', url);
+    console.log('📁 Archivo a subir:', archivo.name);
+    
+    // Para archivos, no necesitamos Content-Type en los headers
+    const headers = new HttpHeaders({
+      'Authorization': this.getAuthHeaders().get('Authorization') || ''
+    });
+    
+    return this.http.post(url, formData, {
+      headers: headers
+    });
+  }
+
 //============
 
 }

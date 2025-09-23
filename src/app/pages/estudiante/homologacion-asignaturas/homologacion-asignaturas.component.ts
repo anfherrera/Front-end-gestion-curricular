@@ -282,6 +282,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -330,7 +331,8 @@ export class HomologacionAsignaturasComponent implements OnInit {
   constructor(
     private homologacionService: HomologacionAsignaturasService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -659,15 +661,104 @@ obtenerOficios(solicitudId: number): void {
 descargarOficio(idOficio: number, nombreArchivo: string): void {
   console.log('📥 Descargando oficio:', idOficio);
   
-  this.homologacionService.descargarOficio(idOficio).subscribe({
-    next: (blob) => {
-      console.log('✅ Oficio descargado exitosamente');
+  // Primero intentar obtener los oficios disponibles para esta solicitud
+  this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
+}
+
+/**
+ * Obtener oficios y descargar
+ */
+private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
+  this.homologacionService.obtenerOficios(idSolicitud).subscribe({
+    next: (oficios) => {
+      console.log('📄 Oficios obtenidos:', oficios);
+      
+      if (!oficios || oficios.length === 0) {
+        this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
+        return;
+      }
+      
+      // Tomar el primer oficio disponible
+      const oficio = oficios[0];
+      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`;
+      
+      // Intentar descargar usando el endpoint de archivos
+      this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
+    },
+    error: (err) => {
+      console.error('❌ Error al obtener oficios:', err);
+      
+      // Si no se pueden obtener oficios, intentar con nombres comunes
+      this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
+    }
+  });
+}
+
+/**
+ * Descargar archivo por nombre usando el endpoint de archivos
+ */
+private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
+  console.log('📁 Descargando archivo por nombre:', nombreArchivo);
+  
+  // Usar el endpoint de solicitudes de homologación que acabamos de crear
+  const url = `http://localhost:5000/api/solicitudes-homologacion/descargarOficio/${idSolicitud || 1}`;
+  
+  // Crear headers con autorización
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+  
+  this.http.get(url, {
+    headers: headers,
+    responseType: 'blob',
+    observe: 'response'
+  }).subscribe({
+    next: (response) => {
+      console.log('✅ Archivo descargado exitosamente');
+      
+      // Obtener el nombre del archivo desde los headers de la respuesta
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let nombreArchivoDescarga = nombreDescarga || nombreArchivo;
+      
+      console.log('🔍 Content-Disposition header:', contentDisposition);
+      
+      if (contentDisposition) {
+        // Intentar diferentes patrones para extraer el nombre del archivo
+        let matches = contentDisposition.match(/filename="(.+)"/);
+        if (!matches) {
+          matches = contentDisposition.match(/filename=([^;]+)/);
+        }
+        if (!matches) {
+          matches = contentDisposition.match(/filename\*=UTF-8''(.+)/);
+        }
+        
+        if (matches && matches[1]) {
+          nombreArchivoDescarga = decodeURIComponent(matches[1]);
+          console.log('📁 Nombre del archivo desde headers:', nombreArchivoDescarga);
+        } else {
+          console.log('⚠️ No se pudo extraer el nombre del archivo del header Content-Disposition');
+        }
+      } else {
+        console.log('⚠️ No se encontró el header Content-Disposition');
+        // Usar el nombre del archivo que viene del método obtenerOficios
+        nombreArchivoDescarga = nombreArchivo;
+        console.log('📁 Usando nombre del archivo del método obtenerOficios:', nombreArchivoDescarga);
+      }
       
       // Crear URL temporal y descargar
+      const blob = response.body!;
+      
+      // Logging para diagnosticar el problema
+      console.log('📊 Tipo de contenido:', response.headers.get('Content-Type'));
+      console.log('📊 Tamaño del blob:', blob.size);
+      console.log('📊 Tipo del blob:', blob.type);
+      console.log('📊 Nombre de descarga:', nombreArchivoDescarga);
+      
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = nombreArchivo || `oficio_${idOficio}.docx`;
+      link.download = nombreArchivoDescarga;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -676,10 +767,49 @@ descargarOficio(idOficio: number, nombreArchivo: string): void {
       this.mostrarMensaje('Oficio descargado exitosamente', 'success');
     },
     error: (err) => {
-      console.error('❌ Error al descargar oficio:', err);
-      this.mostrarMensaje('Error al descargar oficio', 'error');
+      console.error('❌ Error al descargar archivo:', err);
+      this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
     }
   });
+}
+
+/**
+ * Intentar descarga con nombres comunes
+ */
+private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: string): void {
+  console.log('🔄 Intentando descarga con nombres comunes...');
+  
+  // Obtener información del usuario para generar nombres
+  const usuario = this.usuario;
+  const codigoUsuario = usuario?.codigo || usuario?.codigo_estudiante || 'SIN_CODIGO';
+  const año = new Date().getFullYear();
+  
+  // Nombres comunes a probar
+  const nombresComunes = [
+    `OFICIO_HOMOLOGACION_${codigoUsuario}_${año} (1).pdf`,
+    `OFICIO_HOMOLOGACION_${codigoUsuario}_${año}.pdf`,
+    `oficio_homologacion_${codigoUsuario}_${año}.pdf`,
+    `homologacion_${codigoUsuario}_${año}.pdf`,
+    `oficio_${idSolicitud}.pdf`,
+    `homologacion_${idSolicitud}.pdf`
+  ];
+  
+  this.probarNombresSecuencial(nombresComunes, 0, nombreArchivo, idSolicitud);
+}
+
+/**
+ * Probar nombres de archivo secuencialmente
+ */
+private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga: string, idSolicitud: number): void {
+  if (index >= nombres.length) {
+    this.mostrarMensaje('No se encontró el archivo con los nombres probados', 'warning');
+    return;
+  }
+  
+  const nombre = nombres[index];
+  console.log(`🧪 Probando nombre ${index + 1}/${nombres.length}: "${nombre}"`);
+  
+  this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
 }
 
 /**
@@ -707,49 +837,17 @@ obtenerEstadoActual(solicitud: any): string {
 }
 
 /**
- * Mostrar oficios en la UI (placeholder)
+ * Mostrar oficios en la UI
  */
 private mostrarOficiosEnUI(oficios: any[]): void {
-  // Aquí puedes implementar la lógica para mostrar los oficios
-  // Por ejemplo, abrir un modal o actualizar una lista
   console.log('📄 Mostrando oficios en UI:', oficios);
+  
+  if (!oficios || oficios.length === 0) {
+    this.mostrarMensaje('No hay oficios disponibles', 'info');
+    return;
+  }
+  
+  this.mostrarMensaje(`Se encontraron ${oficios.length} oficio(s) disponible(s)`, 'success');
 }
-
-
-// listarSolicitudes() {
-//   if (!this.usuario) {
-//     console.error("❌ Usuario no encontrado en localStorage.");
-//     return;
-//   }
-
-//   const rol = this.usuario.rol?.nombre;
-//   const idUsuario = rol === 'ESTUDIANTE' ? this.usuario.id_usuario : undefined;
-
-//   this.homologacionService.listarSolicitudesPorRol(rol, idUsuario).subscribe({
-//     next: (data) => {
-//       this.solicitudes = data.map((sol: any) => {
-//         const estados = sol.estadosSolicitud || [];
-//         const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
-
-//         return {
-//           id: sol.id_solicitud,
-//           nombre: sol.nombre_solicitud,
-//           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-//           estado: ultimoEstado?.estado_actual || 'Pendiente',
-//           rutaArchivo: sol.documentos?.[0]?.ruta_documento || '',
-//           comentarios: ultimoEstado?.comentarios || ''
-//         };
-//       });
-
-//       console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
-//       //this.cdr.detectChanges(); // 👈 evita el error NG0100
-//     },
-//     error: (err) => {
-//       console.error('❌ Error al listar solicitudes', err);
-//     }
-//   });
-// }
-
-
 
 }
