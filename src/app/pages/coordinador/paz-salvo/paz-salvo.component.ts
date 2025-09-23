@@ -53,7 +53,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   }
 
   // 📌 Obtener archivos de la solicitud seleccionada
-  get archivosDelEstudiante(): (Archivo & { estado?: 'pendiente' | 'aprobado' | 'rechazado' })[] {
+  get archivosDelEstudiante(): (Archivo & { estado?: 'pendiente' | 'aprobado' | 'rechazado' | 'error' })[] {
     return this.selectedSolicitud?.archivos ?? [];
   }
 

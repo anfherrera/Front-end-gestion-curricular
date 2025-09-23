@@ -343,6 +343,26 @@ export class HomologacionAsignaturasService {
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
     const url = `http://localhost:5000/api/archivos/subir/pdf`;
     
+    // Validaciones del frontend
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    if (archivo.size > maxFileSize) {
+      return new Observable(observer => {
+        observer.error({
+          status: 413,
+          error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(archivo.size / (1024 * 1024)).toFixed(2)}MB` }
+        });
+      });
+    }
+    
+    if (!archivo.name.toLowerCase().endsWith('.pdf')) {
+      return new Observable(observer => {
+        observer.error({
+          status: 415,
+          error: { message: 'Solo se permiten archivos PDF' }
+        });
+      });
+    }
+    
     const formData = new FormData();
     formData.append('file', archivo);
     
@@ -354,6 +374,7 @@ export class HomologacionAsignaturasService {
     
     console.log('🔗 URL para subir archivo PDF:', url);
     console.log('📁 Archivo a subir:', archivo.name);
+    console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
     // Para archivos, no necesitamos Content-Type en los headers
     const headers = new HttpHeaders({
@@ -362,6 +383,19 @@ export class HomologacionAsignaturasService {
     
     return this.http.post(url, formData, {
       headers: headers
+    });
+  }
+
+  /**
+   * Validar documentos requeridos para homologación
+   */
+  validarDocumentosRequeridos(idSolicitud: number): Observable<any> {
+    const url = `http://localhost:5000/api/solicitudes-homologacion/validarDocumentosRequeridos/${idSolicitud}`;
+    
+    console.log('🔗 URL para validar documentos requeridos:', url);
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders()
     });
   }
 

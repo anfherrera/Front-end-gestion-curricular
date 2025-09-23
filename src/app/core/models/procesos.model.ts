@@ -1,7 +1,7 @@
 import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
 import { UserRole } from '../enums/roles.enum';
 
-export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
+export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado' | 'error';
 
 export interface Archivo {
   id_documento?: number;     // ID en backend

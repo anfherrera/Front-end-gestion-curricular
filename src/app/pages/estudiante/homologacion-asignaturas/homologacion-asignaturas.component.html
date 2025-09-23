@@ -1,19 +1,11 @@
 <div class="homologacion-container">
 
   <!-- Documentación requerida -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Adjuntar Documentación Requerida</mat-card-title>
-    <mat-card-content>
-      <ul class="required-list">
-        <li *ngFor="let doc of documentosRequeridos">
-          {{ doc.label }} <span *ngIf="doc.obligatorio" class="obligatorio">*</span>
-        </li>
-        <li *ngIf="archivosExclusivos.length">
-          {{ archivosExclusivos.join(' o ') }} <span class="nota">(solo uno)</span>
-        </li>
-      </ul>
-    </mat-card-content>
-  </mat-card>
+  <app-required-docs
+    [requiredFiles]="documentosRequeridos"
+    [exclusiveFiles]="archivosExclusivos"
+    [archivos]="archivosActuales">
+  </app-required-docs>
 
   <!-- Subir Archivos -->
   <mat-card class="card-section">
@@ -60,31 +52,6 @@
         (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
       </app-request-status-table>
 
-      <!-- Botón adicional para ver oficios disponibles -->
-      <div *ngIf="solicitudes.length > 0" class="oficios-section mt-3">
-        <h4>📄 Documentos Oficiales</h4>
-        <div *ngFor="let solicitud of solicitudes" class="solicitud-oficios">
-          <div class="solicitud-info">
-            <span class="solicitud-nombre">{{ solicitud.nombre }}</span>
-            <span class="solicitud-estado" [ngClass]="'estado-' + solicitud.estado.toLowerCase()">
-              {{ solicitud.estado }}
-            </span>
-          </div>
-          
-          <button *ngIf="tieneOficios(solicitud.id)" 
-                  mat-raised-button 
-                  color="primary" 
-                  (click)="obtenerOficios(solicitud.id)"
-                  class="btn-oficios">
-            <mat-icon>description</mat-icon>
-            Ver Documentos Oficiales
-          </button>
-          
-          <p *ngIf="!tieneOficios(solicitud.id)" class="sin-oficios">
-            Los documentos oficiales estarán disponibles una vez que la solicitud sea aprobada.
-          </p>
-        </div>
-      </div>
     </mat-card-content>
   </mat-card>
 

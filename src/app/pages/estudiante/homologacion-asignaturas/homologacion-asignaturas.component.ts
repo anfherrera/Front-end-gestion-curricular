@@ -287,6 +287,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
 import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
+import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
 import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
@@ -305,6 +306,7 @@ import { Solicitud } from '../../../core/models/procesos.model';
     MatSnackBarModule,
     MatDialogModule,
     FileUploadComponent,
+    RequiredDocsComponent,
     RequestStatusTableComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
@@ -435,6 +437,11 @@ export class HomologacionAsignaturasComponent implements OnInit {
       error: (err) => {
         console.error('❌ Error al subir archivos:', err);
         this.mostrarMensaje('❌ Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        
+        // Resetear el estado de carga del componente de subida
+        if (this.fileUploadComponent) {
+          this.fileUploadComponent.resetearEstadoCarga();
+        }
     }
   });
 }
@@ -636,24 +643,6 @@ verificarFuncionalidadComentarios(): void {
   });
 }
 
-/**
- * Obtener oficios de una solicitud
- */
-obtenerOficios(solicitudId: number): void {
-  console.log('📄 Obteniendo oficios para solicitud:', solicitudId);
-  
-  this.homologacionService.obtenerOficios(solicitudId).subscribe({
-    next: (oficios) => {
-      console.log('📄 Oficios obtenidos:', oficios);
-      // Aquí puedes mostrar los oficios en la UI
-      this.mostrarOficiosEnUI(oficios);
-    },
-    error: (err) => {
-      console.error('❌ Error al obtener oficios:', err);
-      this.mostrarMensaje('Error al cargar oficios', 'error');
-    }
-  });
-}
 
 /**
  * Descargar oficio
@@ -812,18 +801,6 @@ private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga
   this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
 }
 
-/**
- * Verificar si una solicitud tiene oficios disponibles
- */
-tieneOficios(solicitudId: number): boolean {
-  // Esta lógica dependerá de cómo implementes la verificación
-  // Por ahora, asumimos que las solicitudes aprobadas tienen oficios
-  const solicitud = this.obtenerSolicitudCompleta(solicitudId);
-  if (!solicitud) return false;
-  
-  const estado = this.obtenerEstadoActual(solicitud);
-  return estado === 'APROBADA' || estado === 'APROBADA_COORDINADOR';
-}
 
 /**
  * Obtener el estado actual de una solicitud

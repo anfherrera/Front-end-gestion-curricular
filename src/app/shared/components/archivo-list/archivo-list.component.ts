@@ -2,9 +2,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { Archivo } from '../../../core/models/procesos.model';
-
-export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado';
+import { Archivo, ArchivoEstado } from '../../../core/models/procesos.model';
 
 @Component({
   selector: 'app-archivo-list',
