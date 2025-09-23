@@ -124,6 +124,15 @@ export class HomologacionAsignaturasService {
   }
 
   /**
+   * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
+   */
+  getSecretariaRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/Secretaria`, { 
+      headers: this.getAuthHeaders() 
+    });
+  }
+
+  /**
    * Aprobar solicitud de homologación como funcionario
    */
   approveRequest(requestId: number): Observable<any> {
@@ -150,7 +159,7 @@ export class HomologacionAsignaturasService {
   completeValidation(requestId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: requestId,
-      nuevoEstado: 'En Revisión'
+      nuevoEstado: 'EN_REVISION_COORDINADOR'
     }, { headers: this.getAuthHeaders() });
   }
 
@@ -252,6 +261,19 @@ export class HomologacionAsignaturasService {
     return this.http.put(url, {
       idSolicitud: idSolicitud,
       documentos: documentos
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Generar oficio/resolución para una solicitud
+   */
+  generarOficio(idSolicitud: number, contenido: string): Observable<any> {
+    const url = `${this.apiUrl}/generarOficio`;
+    
+    return this.http.post(url, {
+      idSolicitud: idSolicitud,
+      contenido: contenido,
+      tipo: 'OFICIO_HOMOLOGACION'
     }, { headers: this.getAuthHeaders() });
   }
 

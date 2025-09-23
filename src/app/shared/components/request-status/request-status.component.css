@@ -1,6 +1,30 @@
 table {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+mat-table {
+  background: transparent;
+}
+
+mat-header-row {
+  background-color: #f0f0f0;
+}
+
+mat-row:hover {
+  background-color: #f8f9fa;
+}
+
+mat-header-cell {
+  font-weight: 600;
+  color: #495057;
+}
+
+mat-cell, mat-header-cell {
+  padding: 8px 12px;
 }
 
 mat-icon {

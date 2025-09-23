@@ -1,1 +1,43 @@
-<p>homologacion-asignaturas works!</p>
+<div class="secretaria-container">
+
+  <!-- Tabla de solicitudes pendientes usando componente genérico -->
+  <app-card-container 
+    title="Solicitudes de Homologación - Secretaría" 
+    icon="assignment">
+    
+    <app-request-status-table
+      [solicitudes]="solicitudes"
+      [showOficio]="false"
+      [showComentarios]="false"
+      [showSeleccionar]="true"
+      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+    </app-request-status-table>
+
+  </app-card-container>
+
+  <!-- Contenedor para generar oficio/resolución usando componente genérico -->
+  <app-card-container 
+    *ngIf="selectedSolicitud"
+    title="Generar Oficio / Resolución" 
+    icon="description">
+    
+    <div class="solicitud-info">
+      <p><strong>Estudiante:</strong> {{ selectedSolicitud.objUsuario.nombre_completo }}</p>
+      <p><strong>Solicitud:</strong> {{ selectedSolicitud.nombre_solicitud }}</p>
+      <p><strong>Fecha:</strong> {{ selectedSolicitud.fecha_registro_solicitud | date:'shortDate' }}</p>
+      <p><strong>Estado:</strong> {{ getEstadoActual(selectedSolicitud) }}</p>
+      <p><strong>Programa:</strong> {{ selectedSolicitud.objUsuario.objPrograma.nombre_programa }}</p>
+    </div>
+
+    <div class="oficio-container">
+      <app-oficio-resolucion 
+        *ngIf="solicitudParaOficio"
+        [solicitud]="solicitudParaOficio"
+        modo="secretaria"
+        (enviar)="generarOficio($event)">
+      </app-oficio-resolucion>
+    </div>
+
+  </app-card-container>
+
+</div>

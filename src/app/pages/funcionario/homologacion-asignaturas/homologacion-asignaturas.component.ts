@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
+import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 
@@ -20,23 +19,20 @@ import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
+    MatSnackBarModule,
+    MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatTableModule,
-    MatTooltipModule
+    MatTooltipModule,
+    CardContainerComponent,
+    RequestStatusTableComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit {
-  solicitudes: SolicitudHomologacionDTORespuesta[] = [];
+  solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
-
-  displayedColumns: string[] = ['nombre_solicitud', 'solicitante', 'fecha', 'accion'];
 
   constructor(
     private homologacionService: HomologacionAsignaturasService,
@@ -51,10 +47,35 @@ export class HomologacionAsignaturasComponent implements OnInit {
   cargarSolicitudes(): void {
     this.homologacionService.getPendingRequests().subscribe({
       next: (sols) => {
-        this.solicitudes = sols;
+        // Transformar datos para RequestStatusTableComponent
+        this.solicitudes = sols.map(sol => ({
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: this.getEstadoActual(sol),
+          rutaArchivo: '',
+          comentarios: ''
+        }));
         if (sols.length) this.selectedSolicitud = sols[0];
       },
       error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+    });
+  }
+
+  getEstadoActual(solicitud: SolicitudHomologacionDTORespuesta): string {
+    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+      return ultimoEstado.estado_actual;
+    }
+    return 'Pendiente';
+  }
+
+  onSolicitudSeleccionada(solicitudId: number): void {
+    // Buscar la solicitud original por ID
+    this.homologacionService.getPendingRequests().subscribe({
+      next: (sols) => {
+        this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
+      }
     });
   }
 

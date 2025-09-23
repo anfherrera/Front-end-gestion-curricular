@@ -27,7 +27,9 @@ export class RequestStatusTableComponent implements OnInit {
   @Input() solicitudes: Solicitud[] = [];
   @Input() showOficio: boolean = true; // 👈 controla si se muestra la columna
   @Input() showComentarios: boolean = false; // 👈 controla si se muestra la columna de comentarios
+  @Input() showSeleccionar: boolean = false; // 👈 controla si se muestra la columna de seleccionar
   @Output() verComentarios = new EventEmitter<number>(); // 👈 emite el ID de la solicitud
+  @Output() solicitudSeleccionada = new EventEmitter<number>(); // 👈 emite el ID de la solicitud seleccionada
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
 
@@ -38,10 +40,17 @@ export class RequestStatusTableComponent implements OnInit {
     if (this.showComentarios) {
       this.displayedColumns.push('comentarios');
     }
+    if (this.showSeleccionar) {
+      this.displayedColumns.push('seleccionar');
+    }
   }
 
   onVerComentarios(solicitudId: number): void {
     this.verComentarios.emit(solicitudId);
+  }
+
+  onSeleccionarSolicitud(solicitudId: number): void {
+    this.solicitudSeleccionada.emit(solicitudId);
   }
 
   esSolicitudRechazada(estado: string): boolean {
