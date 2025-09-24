@@ -7,7 +7,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { ActivityIndicatorComponent } from '../../shared/components/activity-indicator/activity-indicator.component';
 
 @Component({
   selector: 'app-header',
@@ -20,8 +19,7 @@ import { ActivityIndicatorComponent } from '../../shared/components/activity-ind
     MatIconModule, 
     MatButtonModule, 
     MatMenuModule,
-    MatDividerModule,
-    ActivityIndicatorComponent
+    MatDividerModule
   ]
 })
 export class HeaderComponent implements OnInit {
@@ -60,5 +58,28 @@ export class HeaderComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  getUserInitials(): string {
+    if (!this.userName) return 'U';
+    
+    const names = this.userName.split(' ');
+    if (names.length >= 2) {
+      return (names[0][0] + names[1][0]).toUpperCase();
+    }
+    return this.userName.substring(0, 2).toUpperCase();
+  }
+
+  getUserRole(): string {
+    const role = this.authService.getRole();
+    switch (role?.toLowerCase()) {
+      case 'admin': return 'Administrador';
+      case 'funcionario': return 'Funcionario';
+      case 'coordinador': return 'Coordinador';
+      case 'secretario':
+      case 'secretaria': return 'Secretaria';
+      case 'estudiante': return 'Estudiante';
+      default: return 'Usuario';
+    }
   }
 }

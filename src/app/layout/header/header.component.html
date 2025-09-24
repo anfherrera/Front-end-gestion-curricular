@@ -16,16 +16,17 @@
 
   <!-- Usuario e iconos -->
   <div class="header-right">
-    <!-- Indicador de actividad -->
-    <app-activity-indicator></app-activity-indicator>
-
     <button mat-icon-button class="icon-btn" aria-label="Notificaciones">
       <mat-icon>notifications</mat-icon>
     </button>
 
     <div class="user-menu">
-      <button mat-icon-button class="user-btn" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
-        <mat-icon>account_circle</mat-icon>
+      <button mat-button class="user-profile-btn" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
+        <div class="user-avatar">
+          <span class="user-initials">{{ getUserInitials() }}</span>
+        </div>
+        <span class="user-name-simple">{{ userName }}</span>
+        <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
       </button>
       <mat-menu #userMenu="matMenu">
         <div class="user-menu-header">
