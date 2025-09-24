@@ -7,10 +7,13 @@
   color: white;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
   overflow-y: auto; /* scroll si hay muchos items */
   transition: width 0.3s ease-in-out;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
 }
 
 .sidebar.closed {

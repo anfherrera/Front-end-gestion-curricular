@@ -5,6 +5,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { UserRole } from '../enums/roles.enum';
 import { ApiService } from './api.service';
+import { ActivityMonitorService } from './activity-monitor.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -20,9 +21,11 @@ export class AuthService {
   constructor(
     private router: Router,
     private apiService: ApiService,
+    private activityMonitor: ActivityMonitorService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.restoreRoleFromStorage(); // restaura rol al recargar la página
+    this.setupActivityMonitoring(); // configura el monitoreo de actividad
   }
 
   // ===== HELPER METHODS =====
@@ -46,6 +49,7 @@ export class AuthService {
     storage.setItem(this.EXP_KEY, exp.toString());
 
     this.startLogoutTimer(exp);
+    this.startActivityMonitoring(); // inicia el monitoreo de actividad
   }
 
   getToken(): string | null {
@@ -60,6 +64,7 @@ export class AuthService {
       storage.removeItem(this.EXP_KEY);
     }
     clearTimeout(this.logoutTimer);
+    this.stopActivityMonitoring(); // detiene el monitoreo de actividad
   }
 
   // ===== USUARIO =====
@@ -142,6 +147,7 @@ export class AuthService {
       storage.removeItem(this.EXP_KEY);
     }
     clearTimeout(this.logoutTimer);
+    this.stopActivityMonitoring(); // detiene el monitoreo de actividad
     this.roleSubject.next(null); // 👈 limpia el rol
     this.router.navigate(['/login']);
   }
@@ -163,6 +169,37 @@ export class AuthService {
     if (!storage) return;
 
     const exp = storage.getItem(this.EXP_KEY);
-    if (exp) this.startLogoutTimer(Number(exp));
+    if (exp) {
+      this.startLogoutTimer(Number(exp));
+      this.startActivityMonitoring(); // reinicia el monitoreo de actividad
+    }
+  }
+
+  // ===== MONITOREO DE ACTIVIDAD =====
+  private setupActivityMonitoring(): void {
+    this.activityMonitor.setLogoutCallback(() => {
+      this.logout(true); // logout con mensaje de inactividad
+    });
+  }
+
+  private startActivityMonitoring(): void {
+    this.activityMonitor.startMonitoring();
+  }
+
+  private stopActivityMonitoring(): void {
+    this.activityMonitor.stopMonitoring();
+  }
+
+  // ===== MÉTODOS PÚBLICOS PARA ACTIVIDAD =====
+  getActivityStatus(): Observable<boolean> {
+    return this.activityMonitor.activity$;
+  }
+
+  getWarningStatus(): Observable<boolean> {
+    return this.activityMonitor.warning$;
+  }
+
+  isUserActive(): boolean {
+    return this.activityMonitor.isActive();
   }
 }

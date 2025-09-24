@@ -4,13 +4,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../core/services/auth.service';
+import { ActivityIndicatorComponent } from '../../shared/components/activity-indicator/activity-indicator.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule]
+  imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule, ActivityIndicatorComponent]
 })
 export class HeaderComponent implements OnInit {
   @Output() toggleSidebar = new EventEmitter<void>();
