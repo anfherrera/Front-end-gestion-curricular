@@ -27,6 +27,9 @@ export class RequiredDocsComponent {
   /** Archivos exclusivos (solo se puede subir uno) */
   @Input() exclusiveFiles: string[] = [];
 
+  /** Archivos opcionales (se pueden subir independientemente) */
+  @Input() optionalFiles: string[] = [];
+
   /** Archivos ya subidos */
   @Input() archivos: Archivo[] = [];
 
@@ -41,5 +44,10 @@ export class RequiredDocsComponent {
       this.exclusiveFiles.includes(a.nombre)
     );
     return encontrados.length ? encontrados[0].nombre : null;
+  }
+
+  /** Verifica si un archivo opcional está subido */
+  optionalUploaded(file: string): boolean {
+    return this.archivos.some(a => a.nombre.includes(file));
   }
 }

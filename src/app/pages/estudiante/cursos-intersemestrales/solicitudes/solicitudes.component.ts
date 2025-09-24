@@ -2,14 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { SolicitudFormComponent } from '../../../../shared/components/solicitud-form/solicitud-form.component';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { CursosIntersemestralesService, Solicitud, CreateSolicitudDTO } from '../../../../core/services/cursos-intersemestrales.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 
 @Component({
   selector: 'app-solicitudes',
   standalone: true,
-  imports: [CommonModule, CardContainerComponent, SolicitudFormComponent, ActionButtonComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, CardContainerComponent, SolicitudFormComponent, ...MATERIAL_IMPORTS],
   templateUrl: './solicitudes.component.html',
   styleUrls: ['./solicitudes.component.css']
 })

@@ -2,13 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursosIntersemestralesService, Inscripcion } from '../../../../core/services/cursos-intersemestrales.service';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 
 @Component({
   selector: 'app-inscripciones',
   standalone: true,
-  imports: [CommonModule, CardContainerComponent, ActionButtonComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, CardContainerComponent, ...MATERIAL_IMPORTS],
   templateUrl: './inscripciones.component.html',
   styleUrls: ['./inscripciones.component.css']
 })

@@ -9,8 +9,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { Solicitud, Archivo } from '../../../core/models/procesos.model';
-import { ArchivoListComponent } from '../../../shared/components/archivo-list/archivo-list.component';
+import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
@@ -25,7 +25,6 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
     MatIconModule,
     MatSnackBarModule,
     MatTableModule,
-    ArchivoListComponent,
     RequestStatusTableComponent
   ],
   templateUrl: './paz-salvo.component.html',
@@ -50,10 +49,32 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   // 📌 Cargar solicitudes pendientes según el rol del usuario actual
   cargarSolicitudes(): void {
     this.pazSalvoService.getCoordinatorRequests().subscribe({
-      next: (sols) => {
-        this.solicitudes = sols;
+      next: (data) => {
+        console.log('📡 Solicitudes recibidas del backend (coordinador):', data);
+        
+        // Mapear a formato de solicitudes para la tabla
+        this.solicitudes = data.map(solicitud => ({
+          id: solicitud.id_solicitud,
+          nombre: solicitud.nombre_solicitud,
+          fecha: solicitud.fecha_registro_solicitud,
+          estado: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.estado_actual as SolicitudStatusEnum || SolicitudStatusEnum.ENVIADA,
+          comentarios: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.comentario || '',
+          archivos: solicitud.documentos?.map((doc: DocumentoHomologacion) => ({
+            id_documento: doc.id_documento,
+            nombre: doc.nombre,
+            ruta_documento: doc.ruta_documento,
+            fecha: doc.fecha_documento,
+            esValido: doc.esValido,
+            comentario: doc.comentario
+          })) || []
+        }));
+        
+        console.log('✅ Solicitudes mapeadas (coordinador):', this.solicitudes);
       },
-      error: () => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes (coordinador):', err);
+        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -62,11 +83,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
       this.selectedSolicitud = undefined;
       return;
     }
-    this.pazSalvoService.getCoordinatorRequests().subscribe({
-      next: (sols) => {
-        this.selectedSolicitud = sols.find(sol => sol.id === solicitudId);
-      }
-    });
+    this.selectedSolicitud = this.solicitudes.find(s => s.id === solicitudId);
+    console.log('📋 Solicitud seleccionada (coordinador):', this.selectedSolicitud);
   }
 
   // 📌 Obtener archivos de la solicitud seleccionada
@@ -154,7 +172,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
-  añadirComentario(archivo: Archivo): void {
+  agregarComentario(archivo: Archivo): void {
     const dialogRef = this.dialog.open(ComentarioDialogComponent, {
       width: '500px',
       data: <ComentarioDialogData>{

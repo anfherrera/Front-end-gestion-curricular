@@ -28,6 +28,19 @@
         </mat-icon>
         {{ exclusiveFiles.join(' o ') }} <span class="nota">(solo uno)</span>
       </li>
+
+      <!-- Archivos opcionales -->
+      <li *ngFor="let file of optionalFiles"
+          [ngClass]="optionalUploaded(file) ? 'success optional' : 'optional'">
+        <mat-icon
+          [ngClass]="{
+            'icon-success': optionalUploaded(file),
+            'icon-pending': !optionalUploaded(file)
+          }">
+          {{ optionalUploaded(file) ? 'check_circle' : 'cancel' }}
+        </mat-icon>
+        {{ file }} <span class="nota">(opcional)</span>
+      </li>
     </ul>
   </mat-card-content>
 </mat-card>

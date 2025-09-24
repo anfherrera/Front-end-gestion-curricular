@@ -2,13 +2,12 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-gestionar-cursos',
   standalone: true,
-  imports: [CommonModule, CardContainerComponent, CursoListComponent, ActionButtonComponent],
+  imports: [CommonModule, CardContainerComponent, CursoListComponent],
   templateUrl: './gestionar-cursos.component.html',
   styleUrls: ['./gestionar-cursos.component.css']
 })

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Solicitud, Archivo, Usuario } from '../models/procesos.model';
+import { Observable, catchError } from 'rxjs';
+import { Solicitud, Archivo, Usuario, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root'
@@ -22,16 +22,16 @@ export class PazSalvoService {
   // ================================
   // Solicitudes
   // ================================
-  getStudentRequests(studentId: number): Observable<Solicitud[]> {
-    return this.http.get<Solicitud[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/${studentId}`, { headers: this.getAuthHeaders() });
+  getStudentRequests(studentId: number): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo`, { headers: this.getAuthHeaders() });
   }
 
-  getPendingRequests(): Observable<Solicitud[]> {
-    return this.http.get<Solicitud[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/funcionario`, { headers: this.getAuthHeaders() });
+  getPendingRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/funcionario`, { headers: this.getAuthHeaders() });
   }
 
-  getCoordinatorRequests(): Observable<Solicitud[]> {
-    return this.http.get<Solicitud[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/coordinador`, { headers: this.getAuthHeaders() });
+  getCoordinatorRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/coordinador`, { headers: this.getAuthHeaders() });
   }
 
   getRequestById(requestId: number): Observable<Solicitud> {
@@ -43,13 +43,35 @@ export class PazSalvoService {
     if (!usuario) throw new Error('Usuario no autenticado');
 
     const body = {
-      nombre_solicitud: 'Solicitud Paz y Salvo',
-      esSeleccionado: false,
-      objUsuario: { id_usuario: usuario.id_usuario },
-      archivos
+      nombre_solicitud: `Solicitud_paz_salvo_${usuario.nombre_completo || "Usuario"}`,
+      fecha_registro_solicitud: new Date().toISOString(),
+      objUsuario: { 
+        id_usuario: usuario.id_usuario,
+        nombre_completo: usuario.nombre_completo || "Usuario",
+        codigo: usuario.codigo || "104612345678",
+        correo: usuario.email_usuario || "usuario@unicauca.edu.co",
+        objPrograma: usuario.objPrograma || {
+          id_programa: 1,
+          nombre_programa: "Ingeniería de Sistemas"
+        }
+      },
+      archivos: archivos
     };
 
-    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() });
+    console.log('📤 Enviando solicitud de paz y salvo:', body);
+    console.log('📤 Headers:', this.getAuthHeaders());
+    console.log('📤 URL:', `${this.apiUrl}/crearSolicitud-PazYSalvo`);
+    
+    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
+      .pipe(
+        catchError(error => {
+          console.error('❌ Error al crear solicitud de paz y salvo:', error);
+          console.error('❌ Error status:', error.status);
+          console.error('❌ Error message:', error.message);
+          console.error('❌ Error body:', error.error);
+          throw error;
+        })
+      );
   }
 
   approveRequest(requestId: number): Observable<Solicitud> {
@@ -83,7 +105,10 @@ export class PazSalvoService {
   }
 
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    const url = `http://localhost:5000/api/archivos/subir/pdf`;
+    // Usar el endpoint específico de paz y salvo si se proporciona idSolicitud
+    const url = idSolicitud 
+      ? `${this.apiUrl}/${idSolicitud}/subir-archivo`
+      : `http://localhost:5000/api/archivos/subir/pdf`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB

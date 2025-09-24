@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
 
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
 import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { Solicitud, Archivo } from '../../../core/models/procesos.model';
+import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 
 @Component({
@@ -22,6 +24,7 @@ import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
+    MatDialogModule,
     RequestStatusTableComponent,
     FileUploadComponent,
     RequiredDocsComponent
@@ -30,32 +33,46 @@ import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
   styleUrls: ['./paz-salvo.component.css']
 })
 export class PazSalvoComponent implements OnInit {
+  @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent
+
   solicitudes: Solicitud[] = [];
+  solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
+  usuario: any = null;
 
   SolicitudStatusEnum = SolicitudStatusEnum;
 
   readonly documentosRequeridos = [
     { label: 'Formato PM-FO-4-FOR-27.pdf', obligatorio: true },
     { label: 'Autorización para publicar.pdf', obligatorio: true },
-    { label: 'Resultado pruebas SaberPro.pdf', obligatorio: false },
     { label: 'Formato de hoja de vida académica.pdf', obligatorio: true },
     { label: 'Comprobante de pago de derechos de sustentación.pdf', obligatorio: true },
     { label: 'Documento final del trabajo de grado.pdf', obligatorio: true }
   ];
 
   readonly archivosExclusivos = ['Formato TI-G.pdf', 'Formato PP-H.pdf'];
+  readonly archivosOpcionales = ['Resultado pruebas SaberPro.pdf'];
 
   private readonly studentId = 1; // Opcional: puedes obtener dinámicamente del AuthService
 
   constructor(
+    private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
-    private pazSalvoService: PazSalvoService
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
-    this.cargarSolicitudesAsync();
+    // Recuperamos usuario del localStorage
+    const usuarioLS = localStorage.getItem('usuario');
+    if (usuarioLS) {
+      this.usuario = JSON.parse(usuarioLS);
+      console.log('👤 Usuario cargado desde localStorage:', this.usuario);
+    } else {
+      console.warn('⚠️ No se encontró usuario en localStorage');
+    }
+    
+    this.listarSolicitudes();
   }
 
   get ultimaSolicitud(): Solicitud | undefined {
@@ -76,24 +93,78 @@ export class PazSalvoComponent implements OnInit {
     }
   }
 
+  private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
+    const config = {
+      duration: 3000,
+      panelClass: [`snackbar-${tipo}`]
+    };
+
+    this.snackBar.open(mensaje, 'Cerrar', config);
+  }
+
   // ================================
   // 🔹 Carga de solicitudes
   // ================================
- private async cargarSolicitudesAsync(): Promise<void> {
-  try {
-    const solicitudes = await this.pazSalvoService.getStudentRequests(this.studentId).toPromise();
-    this.solicitudes = solicitudes ?? []; // ✅ Si viene undefined, asigna un array vacío
-
-    if (this.ultimaSolicitud?.archivos) {
-      this.archivosActuales = this.ultimaSolicitud.archivos.map(a => ({
-        ...a,
-        nombre: a.nombre.trim()
-      }));
+  listarSolicitudes() {
+    if (!this.usuario) {
+      console.error("❌ Usuario no encontrado en localStorage.");
+      return;
     }
-  } catch (err: any) {
-    this.snackBar.open(`Error al cargar solicitudes: ${err?.message || err}`, 'Cerrar', { duration: 3000 });
+
+    console.log('🔍 Usuario encontrado:', this.usuario);
+    console.log('🔍 Rol:', this.usuario.rol.nombre);
+    console.log('🔍 ID Usuario:', this.usuario.id_usuario);
+
+    this.pazSalvoService.getStudentRequests(this.usuario.id_usuario).subscribe({
+      next: (data) => {
+        console.log('📡 Respuesta del backend (raw):', data);
+        console.log('📡 Tipo de respuesta:', typeof data);
+        console.log('📡 Es array:', Array.isArray(data));
+        console.log('📡 Longitud:', data?.length);
+
+        if (!data || !Array.isArray(data)) {
+          console.warn('⚠️ La respuesta no es un array válido');
+          this.solicitudes = [];
+          this.solicitudesCompletas = [];
+          return;
+        }
+
+        // Guardar las solicitudes completas
+        this.solicitudesCompletas = data;
+
+        // Mapear a formato de solicitudes para la tabla
+        this.solicitudes = data.map(solicitud => ({
+          id: solicitud.id_solicitud,
+          nombre: solicitud.nombre_solicitud,
+          fecha: solicitud.fecha_registro_solicitud,
+          estado: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.estado_actual as SolicitudStatusEnum || SolicitudStatusEnum.ENVIADA,
+          comentarios: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.comentario || '',
+          archivos: solicitud.documentos?.map((doc: DocumentoHomologacion) => ({
+            id_documento: doc.id_documento,
+            nombre: doc.nombre,
+            ruta_documento: doc.ruta_documento,
+            fecha: doc.fecha_documento,
+            esValido: doc.esValido,
+            comentario: doc.comentario
+          })) || []
+        }));
+
+        // Cargar archivos de la última solicitud si existe
+        if (this.ultimaSolicitud?.archivos) {
+          this.archivosActuales = this.ultimaSolicitud.archivos.map(a => ({
+            ...a,
+            nombre: a.nombre.trim()
+          }));
+        }
+
+        console.log('✅ Solicitudes cargadas:', this.solicitudes);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes:', err);
+        this.mostrarMensaje(`Error al cargar solicitudes: ${err?.message || err}`, 'error');
+      }
+    });
   }
-}
 
 
   // ================================
@@ -139,18 +210,66 @@ async onArchivosChange(archivos: Archivo[]): Promise<void> {
   // ================================
   // 🔹 Enviar solicitud
   // ================================
-  async onSolicitudEnviada(): Promise<void> {
-    if (!this.puedeEnviar()) return;
-
-    try {
-      await this.pazSalvoService.sendRequest(this.studentId, this.archivosActuales).toPromise();
-      this.snackBar.open('Solicitud enviada correctamente', 'Cerrar', { duration: 3000 });
-      this.resetFileUpload = true;
-      setTimeout(() => (this.resetFileUpload = false), 100);
-      await this.cargarSolicitudesAsync();
-    } catch (err: any) {
-      this.snackBar.open(`Error al enviar solicitud: ${err?.message || err}`, 'Cerrar', { duration: 3000 });
+  onSolicitudEnviada() {
+    if (!this.usuario) {
+      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+      return;
     }
+
+    if (!this.fileUploadComponent) {
+      console.error('❌ No se puede acceder al componente de archivos.');
+      return;
+    }
+
+    console.log('📤 Iniciando proceso de envío de solicitud...');
+
+    // Paso 1: Subir archivos al backend
+    this.fileUploadComponent.subirArchivosPendientes().subscribe({
+      next: (archivosSubidos) => {
+        console.log('✅ Archivos subidos correctamente:', archivosSubidos);
+
+        // Paso 2: Crear la solicitud con los archivos ya subidos
+        const solicitud = {
+          nombre_solicitud: `Solicitud_paz_salvo_${this.usuario.nombre_completo}`,
+          fecha_registro_solicitud: new Date().toISOString(),
+          objUsuario: {
+            id_usuario: this.usuario.id_usuario,
+            nombre_completo: this.usuario.nombre_completo,
+            codigo: this.usuario.codigo,
+            correo: this.usuario.correo,
+            objPrograma: this.usuario.objPrograma
+          },
+          archivos: archivosSubidos
+        };
+
+        console.log('📋 Creando solicitud con archivos:', solicitud);
+
+        this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos).subscribe({
+          next: (resp) => {
+            console.log('✅ Solicitud creada en backend:', resp);
+            this.listarSolicitudes();
+
+            // Resetear el file upload
+            this.resetFileUpload = true;
+            setTimeout(() => this.resetFileUpload = false, 0);
+
+            this.mostrarMensaje('🎉 ¡Solicitud de paz y salvo enviada correctamente!', 'success');
+          },
+          error: (err) => {
+            console.error('❌ Error al crear solicitud:', err);
+            if (err.status === 400) {
+              this.mostrarMensaje('⚠️ Error de validación: revisa los datos de la solicitud', 'warning');
+            } else {
+              this.mostrarMensaje('❌ Error al enviar solicitud: ' + (err?.message || 'Error desconocido'), 'error');
+            }
+          }
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error al subir archivos:', err);
+        this.mostrarMensaje('❌ Error al subir archivos: ' + (err?.message || 'Error desconocido'), 'error');
+      }
+    });
   }
 
   // ================================
@@ -176,7 +295,8 @@ async onArchivosChange(archivos: Archivo[]): Promise<void> {
   private validarPermitidos(): boolean {
     const nombresPermitidos = [
       ...this.documentosRequeridos.map(d => d.label),
-      ...this.archivosExclusivos
+      ...this.archivosExclusivos,
+      ...this.archivosOpcionales
     ];
     return this.archivosActuales.every(a => nombresPermitidos.includes(a.nombre));
   }

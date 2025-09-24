@@ -11,8 +11,8 @@ import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { Solicitud } from '../../../core/models/procesos.model';
-import { OficioResolucionComponent } from '../../../shared/components/oficio-resolucion/oficio-resolucion.component';
+import { Solicitud, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentGeneratorComponent } from '../../../shared/components/document-generator/document-generator.component';
 
@@ -29,7 +29,6 @@ import { DocumentGeneratorComponent } from '../../../shared/components/document-
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    OficioResolucionComponent,
     RequestStatusTableComponent,
     DocumentGeneratorComponent
   ],
@@ -58,8 +57,32 @@ export class SecretariaPazSalvoComponent implements OnInit {
   // 📌 Cargar solicitudes pendientes (solo las que pasaron por coordinador)
   cargarSolicitudes(): void {
     this.pazSalvoService.getPendingRequests().subscribe({
-      next: (sols) => this.solicitudes = sols,
-      error: () => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+      next: (data) => {
+        console.log('📡 Solicitudes recibidas del backend (secretaria):', data);
+        
+        // Mapear a formato de solicitudes para la tabla
+        this.solicitudes = data.map(solicitud => ({
+          id: solicitud.id_solicitud,
+          nombre: solicitud.nombre_solicitud,
+          fecha: solicitud.fecha_registro_solicitud,
+          estado: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.estado_actual as SolicitudStatusEnum || SolicitudStatusEnum.ENVIADA,
+          comentarios: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.comentario || '',
+          archivos: solicitud.documentos?.map((doc: DocumentoHomologacion) => ({
+            id_documento: doc.id_documento,
+            nombre: doc.nombre,
+            ruta_documento: doc.ruta_documento,
+            fecha: doc.fecha_documento,
+            esValido: doc.esValido,
+            comentario: doc.comentario
+          })) || []
+        }));
+        
+        console.log('✅ Solicitudes mapeadas (secretaria):', this.solicitudes);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes (secretaria):', err);
+        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -68,11 +91,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
       this.selectedSolicitud = null;
       return;
     }
-    this.pazSalvoService.getPendingRequests().subscribe({
-      next: (sols) => {
-        this.selectedSolicitud = sols.find(sol => sol.id === solicitudId) || null;
-      }
-    });
+    this.selectedSolicitud = this.solicitudes.find(s => s.id === solicitudId) || null;
+    console.log('📋 Solicitud seleccionada (secretaria):', this.selectedSolicitud);
   }
 
   // 📌 Generar oficio/resolución

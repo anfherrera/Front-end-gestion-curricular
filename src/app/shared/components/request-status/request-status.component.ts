@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component';
+import { FechaPipe } from '../../pipes/fecha.pipe';
 
 @Component({
   selector: 'app-request-status-table',
@@ -18,7 +19,8 @@ import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.comp
     MatIconModule,
     MatTooltipModule,
     MatButtonModule,
-    OficioDescargaComponent
+    OficioDescargaComponent,
+    FechaPipe
   ],
   templateUrl: './request-status.component.html',
   styleUrls: ['./request-status.component.css']
