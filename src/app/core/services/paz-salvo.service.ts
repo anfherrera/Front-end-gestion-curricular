@@ -34,6 +34,16 @@ export class PazSalvoService {
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/coordinador`, { headers: this.getAuthHeaders() });
   }
 
+  /**
+   * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
+   * Nota: El backend no tiene endpoint específico para secretaria, usamos el general y filtramos
+   */
+  getSecretariaRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo`, { 
+      headers: this.getAuthHeaders() 
+    });
+  }
+
   getRequestById(requestId: number): Observable<Solicitud> {
     return this.http.get<Solicitud>(`${this.apiUrl}/listarSolicitud-PazYSalvo/${requestId}`, { headers: this.getAuthHeaders() });
   }

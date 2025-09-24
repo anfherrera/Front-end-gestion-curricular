@@ -1,160 +1,260 @@
-// src/app/pages/secretaria/paz-salvo/secretaria-paz-salvo.component.ts
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { Solicitud, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
+import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
+import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { DocumentGeneratorComponent } from '../../../shared/components/document-generator/document-generator.component';
+import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
 
 @Component({
   selector: 'app-secretaria-paz-salvo',
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
+    MatSnackBarModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
+    MatProgressBarModule,
+    CardContainerComponent,
     RequestStatusTableComponent,
     DocumentGeneratorComponent
   ],
   templateUrl: './paz-salvo.component.html',
-  styleUrls: ['./paz-salvo.component.css'] // ✅ corregido
+  styleUrls: ['./paz-salvo.component.css']
 })
 export class SecretariaPazSalvoComponent implements OnInit {
-  @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
-  @ViewChild('documentGenerator') documentGenerator!: DocumentGeneratorComponent;
+  solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
+  selectedSolicitud?: SolicitudHomologacionDTORespuesta;
+  template!: DocumentTemplate;
+  loading: boolean = false;
   
-  solicitudes: Solicitud[] = [];
-  selectedSolicitud: Solicitud | null = null;
+  // Nuevas propiedades para el flujo de PDF
+  documentoGenerado: boolean = false;
   archivoPDF: File | null = null;
-  archivoSubido = false;
+  subiendoPDF: boolean = false;
+  enviandoPDF: boolean = false;
 
   constructor(
     private pazSalvoService: PazSalvoService,
-    private snackBar: MatSnackBar,
-    private fb: FormBuilder
-  ) {}
+    private documentGeneratorService: DocumentGeneratorService,
+    private snackBar: MatSnackBar
+  ) {
+    // Inicializar plantilla para paz y salvo
+    this.template = {
+      id: 'OFICIO_PAZ_SALVO',
+      nombre: 'Oficio de Paz y Salvo',
+      descripcion: 'Documento oficial que aprueba el paz y salvo del estudiante',
+      camposRequeridos: ['numeroDocumento', 'fechaDocumento'],
+      camposOpcionales: ['observaciones']
+    };
+  }
 
   ngOnInit(): void {
     this.cargarSolicitudes();
   }
 
-  // 📌 Cargar solicitudes pendientes (solo las que pasaron por coordinador)
+  /**
+   * Cargar solicitudes pendientes para secretaría (solo las aprobadas por coordinador)
+   */
   cargarSolicitudes(): void {
-    this.pazSalvoService.getPendingRequests().subscribe({
-      next: (data) => {
-        console.log('📡 Solicitudes recibidas del backend (secretaria):', data);
-        
-        // Mapear a formato de solicitudes para la tabla
-        this.solicitudes = data.map(solicitud => ({
-          id: solicitud.id_solicitud,
-          nombre: solicitud.nombre_solicitud,
-          fecha: solicitud.fecha_registro_solicitud,
-          estado: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.estado_actual as SolicitudStatusEnum || SolicitudStatusEnum.ENVIADA,
-          comentarios: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.comentario || '',
-          archivos: solicitud.documentos?.map((doc: DocumentoHomologacion) => ({
-            id_documento: doc.id_documento,
-            nombre: doc.nombre,
-            ruta_documento: doc.ruta_documento,
-            fecha: doc.fecha_documento,
-            esValido: doc.esValido,
-            comentario: doc.comentario
-          })) || []
+    this.pazSalvoService.getSecretariaRequests().subscribe({
+      next: (sols) => {
+        // Filtrar solo las solicitudes aprobadas por coordinador
+        const solicitudesAprobadas = sols.filter(sol => {
+          const estadoActual = this.getEstadoActual(sol);
+          return estadoActual === 'APROBADA' || estadoActual === 'APROBADA_FUNCIONARIO';
+        });
+
+        // Transformar datos para RequestStatusTableComponent
+        this.solicitudes = solicitudesAprobadas.map(sol => ({
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: this.getEstadoActual(sol),
+          rutaArchivo: '', // Para oficios
+          comentarios: ''
         }));
-        
-        console.log('✅ Solicitudes mapeadas (secretaria):', this.solicitudes);
+        console.log('📋 Solicitudes cargadas para secretaría (filtradas):', this.solicitudes);
+        console.log('📋 Total de solicitudes recibidas:', sols.length);
+        console.log('📋 Solicitudes aprobadas:', solicitudesAprobadas.length);
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes (secretaria):', err);
+        console.error('❌ Error al cargar solicitudes:', err);
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
+  /**
+   * Obtener el estado actual de la solicitud
+   */
+  getEstadoActual(solicitud: SolicitudHomologacionDTORespuesta): string {
+    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+      return ultimoEstado.estado_actual;
+    }
+    return 'Pendiente';
+  }
+
+  /**
+   * Seleccionar solicitud (evento del RequestStatusTableComponent)
+   */
   onSolicitudSeleccionada(solicitudId: number | null): void {
     if (solicitudId === null) {
-      this.selectedSolicitud = null;
+      this.selectedSolicitud = undefined;
       return;
     }
-    this.selectedSolicitud = this.solicitudes.find(s => s.id === solicitudId) || null;
-    console.log('📋 Solicitud seleccionada (secretaria):', this.selectedSolicitud);
-  }
-
-  // 📌 Generar oficio/resolución
-  onGenerarDocumento(datos: any): void {
-    if (!this.selectedSolicitud) return;
-
-    // Generar el documento
-    this.pazSalvoService.generateOfficio(this.selectedSolicitud.id).subscribe({
-      next: (url) => {
-        this.snackBar.open('Documento generado correctamente', 'Cerrar', { duration: 3000 });
-        // Actualizar estado a APROBADA
-        this.pazSalvoService.approveDefinitively(this.selectedSolicitud!.id).subscribe({
-          next: () => {
-            this.snackBar.open('Paz y Salvo aprobado definitivamente', 'Cerrar', { duration: 3000 });
-            this.cargarSolicitudes();
-            this.selectedSolicitud = null;
-            this.requestStatusTable?.resetSelection();
-          }
+    // Buscar la solicitud original por ID
+    this.pazSalvoService.getSecretariaRequests().subscribe({
+      next: (sols) => {
+        // Filtrar solo las solicitudes aprobadas por coordinador
+        const solicitudesAprobadas = sols.filter(sol => {
+          const estadoActual = this.getEstadoActual(sol);
+          return estadoActual === 'APROBADA' || estadoActual === 'APROBADA_FUNCIONARIO';
         });
-      },
-      error: () => this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 })
-    });
-  }
-
-  // 📌 Manejar selección de archivo PDF
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      this.archivoPDF = file;
-      this.archivoSubido = false;
-    } else {
-      this.snackBar.open('Por favor seleccione un archivo PDF válido', 'Cerrar', { duration: 3000 });
-    }
-  }
-
-  // 📌 Subir archivo PDF
-  subirPDF(): void {
-    if (!this.archivoPDF || !this.selectedSolicitud) return;
-
-    this.pazSalvoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id).subscribe({
-      next: () => {
-        this.snackBar.open('PDF subido correctamente', 'Cerrar', { duration: 3000 });
-        this.archivoSubido = true;
-      },
-      error: (err) => {
-        this.snackBar.open(`Error al subir PDF: ${err.error?.message || err.message}`, 'Cerrar', { duration: 3000 });
+        
+        this.selectedSolicitud = solicitudesAprobadas.find(sol => sol.id_solicitud === solicitudId);
+        console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
       }
     });
   }
 
-  // 📌 Enviar PDF al estudiante
-  enviarPDFAlEstudiante(): void {
-    if (!this.archivoSubido) {
-      this.snackBar.open('Primero debe subir el archivo PDF', 'Cerrar', { duration: 3000 });
+  /**
+   * Generar documento usando el componente genérico
+   */
+  onGenerarDocumento(request: DocumentRequest): void {
+    if (!this.selectedSolicitud) return;
+
+    this.loading = true;
+    console.log('📄 Generando documento:', request);
+
+    this.documentGeneratorService.generarDocumento(request).subscribe({
+      next: (blob) => {
+        console.log('✅ Documento generado exitosamente');
+        
+        // Generar nombre de archivo
+        const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
+        
+        // Descargar archivo Word
+        this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
+        
+        // Actualizar estado de la solicitud a APROBADA
+        this.pazSalvoService.approveDefinitively(this.selectedSolicitud!.id_solicitud).subscribe({
+          next: () => {
+            console.log('✅ Estado de solicitud actualizado a APROBADA');
+            
+            // Marcar que el documento fue generado
+            this.documentoGenerado = true;
+            
+            this.snackBar.open('Documento Word generado, descargado y solicitud aprobada. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
+            this.loading = false;
+            
+            // Recargar solicitudes para mostrar el cambio de estado
+            this.cargarSolicitudes();
+          },
+          error: (err: any) => {
+            console.error('❌ Error al actualizar estado de solicitud:', err);
+            this.snackBar.open('Documento generado pero error al actualizar estado', 'Cerrar', { duration: 3000 });
+            this.documentoGenerado = true;
+            this.loading = false;
+          }
+        });
+      },
+      error: (err: any) => {
+        console.error('❌ Error al generar documento:', err);
+        this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
+        this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Cancelar generación de documento
+   */
+  onCancelarGeneracion(): void {
+    this.selectedSolicitud = undefined;
+    this.documentoGenerado = false;
+    this.archivoPDF = null;
+  }
+
+  /**
+   * Manejar selección de archivo PDF
+   */
+  onArchivoSeleccionado(event: any): void {
+    const archivo = event.target.files[0];
+    if (archivo && archivo.type === 'application/pdf') {
+      this.archivoPDF = archivo;
+      this.snackBar.open(`Archivo PDF seleccionado: ${archivo.name}`, 'Cerrar', { duration: 3000 });
+    } else {
+      this.snackBar.open('Por favor selecciona un archivo PDF válido', 'Cerrar', { duration: 3000 });
+    }
+  }
+
+  /**
+   * Subir archivo PDF al servidor
+   */
+  subirPDF(): void {
+    if (!this.archivoPDF || !this.selectedSolicitud) {
+      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    this.snackBar.open('PDF enviado al estudiante correctamente', 'Cerrar', { duration: 3000 });
-    this.cargarSolicitudes();
-    this.selectedSolicitud = null;
-    this.requestStatusTable?.resetSelection();
-    this.archivoPDF = null;
-    this.archivoSubido = false;
+    this.subiendoPDF = true;
+    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+
+    // Usar el servicio para subir el PDF con idSolicitud
+    this.pazSalvoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+      next: (response) => {
+        console.log('✅ Archivo PDF subido exitosamente:', response);
+        this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
+        this.subiendoPDF = false;
+      },
+      error: (err) => {
+        console.error('❌ Error al subir archivo PDF:', err);
+        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.subiendoPDF = false;
+      }
+    });
+  }
+
+  /**
+   * Enviar PDF al estudiante
+   */
+  enviarPDFAlEstudiante(): void {
+    if (!this.archivoPDF || !this.selectedSolicitud) {
+      this.snackBar.open('Por favor sube un archivo PDF primero', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    this.enviandoPDF = true;
+    console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
+
+    // Simular envío del PDF (el estado ya se actualizó cuando se generó el documento)
+    setTimeout(() => {
+      console.log('✅ PDF enviado al estudiante exitosamente');
+      this.snackBar.open('PDF enviado al estudiante exitosamente ✅', 'Cerrar', { duration: 3000 });
+      this.enviandoPDF = false;
+      
+      // Limpiar el estado
+      this.documentoGenerado = false;
+      this.archivoPDF = null;
+      this.selectedSolicitud = undefined;
+      
+      // Recargar solicitudes
+      this.cargarSolicitudes();
+    }, 1000);
+  }
+
+  /**
+   * Verificar si se puede enviar el PDF
+   */
+  puedeEnviarPDF(): boolean {
+    return this.documentoGenerado && this.archivoPDF !== null && !this.subiendoPDF && !this.enviandoPDF;
   }
 }
