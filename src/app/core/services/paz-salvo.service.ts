@@ -209,7 +209,8 @@ export class PazSalvoService {
   }
 
   approveDefinitively(idSolicitud: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+    // Usar el endpoint correcto de paz y salvo
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: idSolicitud,
       nuevoEstado: 'APROBADA'
     }, { headers: this.getAuthHeaders() });
@@ -240,6 +241,8 @@ export class PazSalvoService {
       comentario: comentario
     };
     
-    return this.http.post(url, body, { headers: this.getAuthHeaders() });
+    console.log('💬 Añadiendo comentario:', body);
+    
+    return this.http.put(url, body, { headers: this.getAuthHeaders() });
   }
 }
