@@ -214,4 +214,32 @@ export class PazSalvoService {
       nuevoEstado: 'APROBADA'
     }, { headers: this.getAuthHeaders() });
   }
+
+  /**
+   * Descargar archivo PDF por nombre (igual que homologación)
+   */
+  descargarArchivo(nombreArchivo: string): Observable<Blob> {
+    // URL directa al backend (CORS configurado)
+    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    console.log('🔗 URL de descarga:', url);
+    console.log('📁 Nombre del archivo:', nombreArchivo);
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * Añadir comentario a un documento (igual que homologación)
+   */
+  agregarComentario(idDocumento: number, comentario: string): Observable<any> {
+    const url = `http://localhost:5000/api/documentos/añadirComentario`;
+    const body = {
+      idDocumento: idDocumento,
+      comentario: comentario
+    };
+    
+    return this.http.post(url, body, { headers: this.getAuthHeaders() });
+  }
 }

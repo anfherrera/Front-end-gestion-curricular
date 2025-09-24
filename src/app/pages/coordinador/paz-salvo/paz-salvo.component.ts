@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
@@ -25,6 +26,7 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
     MatIconModule,
     MatSnackBarModule,
     MatTableModule,
+    MatTooltipModule,
     RequestStatusTableComponent
   ],
   templateUrl: './paz-salvo.component.html',
@@ -34,7 +36,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
   
   solicitudes: Solicitud[] = [];
-  selectedSolicitud: Solicitud | undefined;
+  selectedSolicitud: SolicitudHomologacionDTORespuesta | undefined;
 
   constructor(
     private pazSalvoService: PazSalvoService,
@@ -83,57 +85,99 @@ export class PazSalvoCoordinadorComponent implements OnInit {
       this.selectedSolicitud = undefined;
       return;
     }
-    this.selectedSolicitud = this.solicitudes.find(s => s.id === solicitudId);
-    console.log('📋 Solicitud seleccionada (coordinador):', this.selectedSolicitud);
+    // Buscar la solicitud original por ID
+    this.pazSalvoService.getCoordinatorRequests().subscribe({
+      next: (sols) => {
+        this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
+        console.log('📋 Solicitud seleccionada (coordinador):', this.selectedSolicitud);
+      }
+    });
   }
 
-  // 📌 Obtener archivos de la solicitud seleccionada
-  get archivosDelEstudiante(): (Archivo & { estado?: 'pendiente' | 'aprobado' | 'rechazado' | 'error' })[] {
-    return this.selectedSolicitud?.archivos ?? [];
+  // 📌 Obtener documentos de la solicitud seleccionada (igual que homologación)
+  get documentosDelEstudiante(): DocumentoHomologacion[] {
+    return this.selectedSolicitud?.documentos ?? [];
   }
 
-  // 📌 Ver archivo en nueva pestaña
-  verArchivo(archivo: Archivo): void {
-    if (archivo.url) {
-      window.open(archivo.url, '_blank');
-    } else {
-      this.snackBar.open(`No hay URL disponible para: ${archivo.originalName}`, 'Cerrar', { duration: 3000 });
+  // 📌 Ver documento en nueva pestaña (igual que homologación)
+  verDocumento(documento: DocumentoHomologacion): void {
+    if (!documento.nombre) {
+      this.snackBar.open(`No hay nombre de archivo disponible para el documento`, 'Cerrar', { duration: 3000 });
+      return;
     }
-  }
 
-  // 📌 Aprobar archivo individual
-  aprobarArchivo(index: number): void {
-    if (!this.selectedSolicitud) return;
-    const archivo = this.archivosDelEstudiante[index];
+    // Mostrar mensaje de carga
+    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
 
-    this.pazSalvoService.approveDocument(this.selectedSolicitud.id, archivo.nombre).subscribe({
-      next: (updated) => {
-        archivo.estado = updated.estado;
-        this.snackBar.open(`Archivo ${archivo.nombre} aprobado`, 'Cerrar', { duration: 2000 });
+    this.pazSalvoService.descargarArchivo(documento.nombre).subscribe({
+      next: (blob: Blob) => {
+        // Crear URL única del blob para evitar cache
+        const url = window.URL.createObjectURL(blob);
+        
+        // Crear un iframe temporal para mostrar el PDF
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.style.width = '100%';
+        iframe.style.height = '600px';
+        iframe.style.border = 'none';
+        
+        // Crear ventana emergente
+        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>${documento.nombre}</title>
+                <style>
+                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                  .header { margin-bottom: 20px; }
+                  .filename { font-size: 18px; font-weight: bold; color: #333; }
+                </style>
+              </head>
+              <body>
+                <div class="header">
+                  <div class="filename">${documento.nombre}</div>
+                </div>
+              </body>
+            </html>
+          `);
+          newWindow.document.body.appendChild(iframe);
+        }
+        
+        // Limpiar la URL después de un tiempo
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 5000);
+
+        this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
       },
-      error: () => this.snackBar.open('Error al aprobar archivo', 'Cerrar', { duration: 3000 })
+      error: (error) => {
+        console.error('Error al descargar el documento:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('URL:', error.url);
+        
+        let mensajeError = `Error al descargar el documento: ${documento.nombre}`;
+        
+        if (error.status === 404) {
+          mensajeError = `Archivo no encontrado: ${documento.nombre}`;
+        } else if (error.status === 401) {
+          mensajeError = 'No autorizado para descargar el archivo';
+        } else if (error.status === 500) {
+          mensajeError = 'Error interno del servidor al descargar el archivo';
+        }
+        
+        this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
+      }
     });
   }
 
-  // 📌 Rechazar archivo individual
-  rechazarArchivo(index: number): void {
-    if (!this.selectedSolicitud) return;
-    const archivo = this.archivosDelEstudiante[index];
-
-    this.pazSalvoService.rejectDocument(this.selectedSolicitud.id, archivo.nombre).subscribe({
-      next: (updated) => {
-        archivo.estado = updated.estado;
-        this.snackBar.open(`Archivo ${archivo.nombre} rechazado`, 'Cerrar', { duration: 2000 });
-      },
-      error: () => this.snackBar.open('Error al rechazar archivo', 'Cerrar', { duration: 3000 })
-    });
-  }
 
   // 📌 Aprobar toda la solicitud
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id).subscribe({
+    this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
         this.snackBar.open('Paz y Salvo aprobado definitivamente ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
@@ -159,7 +203,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((motivo: string) => {
       if (motivo) {
-        this.pazSalvoService.rejectRequest(this.selectedSolicitud!.id, motivo).subscribe({
+        this.pazSalvoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
           next: () => {
             this.snackBar.open('Paz y Salvo rechazado', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
@@ -172,21 +216,28 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
-  agregarComentario(archivo: Archivo): void {
+  agregarComentario(documento: DocumentoHomologacion): void {
     const dialogRef = this.dialog.open(ComentarioDialogComponent, {
       width: '500px',
       data: <ComentarioDialogData>{
         titulo: 'Añadir Comentario',
-        descripcion: 'Agregue un comentario para este documento:',
-        nombreDocumento: archivo.nombre,
-        placeholder: 'Escriba su comentario aquí...'
+        descripcion: 'Ingrese un comentario para este documento:',
+        placeholder: 'Escriba su comentario aquí...',
+        nombreDocumento: documento.nombre
       }
     });
 
     dialogRef.afterClosed().subscribe((comentario: string) => {
-      if (comentario) {
-        // Aquí implementarías la lógica para guardar el comentario
-        this.snackBar.open(`Comentario añadido a ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
+      if (comentario && documento.id_documento) {
+        this.pazSalvoService.agregarComentario(documento.id_documento, comentario).subscribe({
+          next: () => {
+            this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          },
+          error: (error) => {
+            console.error('Error al añadir comentario:', error);
+            this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          }
+        });
       }
     });
   }
