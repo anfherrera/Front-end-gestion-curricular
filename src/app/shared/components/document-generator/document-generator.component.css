@@ -10,15 +10,17 @@
 /* Información de la solicitud */
 .solicitud-info-card {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-left: 4px solid #007bff;
+  border-left: 4px solid #00138C;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
 }
 
 .solicitud-info-card mat-card-header {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 4px 4px 0 0;
+  border-radius: 8px 8px 0 0;
 }
 
 .solicitud-details {
@@ -73,15 +75,16 @@
 
 /* Formulario de documento */
 .document-form-card {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.1);
+  border-radius: 8px;
 }
 
 .document-form-card mat-card-header {
-  background-color: #28a745;
+  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
   color: white;
   margin: -16px -16px 24px -16px;
   padding: 20px;
-  border-radius: 4px 4px 0 0;
+  border-radius: 8px 8px 0 0;
 }
 
 .document-form-card mat-card-title {
@@ -148,6 +151,61 @@
   gap: 8px;
 }
 
+/* Estilo para botón principal */
+.form-actions button[mat-raised-button][color="primary"] {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-actions button[mat-raised-button][color="primary"]:hover:not(:disabled) {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.form-actions button[mat-raised-button][color="primary"]:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-actions button[mat-raised-button][color="primary"]:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Estilo para botón de cancelar */
+.form-actions button[mat-button] {
+  background-color: #6c757d !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-actions button[mat-button]:hover {
+  background-color: #5a6268 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.form-actions button[mat-button]:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 /* Estados de error */
 .error {
   border-color: #dc3545 !important;
@@ -194,7 +252,7 @@ mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
-  color: #007bff;
+  color: #00138C;
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline-thick {
@@ -210,5 +268,14 @@ mat-card-title mat-icon {
   font-size: 1.5rem;
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* Iconos de los campos de formulario */
+mat-form-field mat-icon[matSuffix] {
+  color: #00138C !important;
+}
+
+mat-form-field.mat-focused mat-icon[matSuffix] {
+  color: #001a99 !important;
 }
 

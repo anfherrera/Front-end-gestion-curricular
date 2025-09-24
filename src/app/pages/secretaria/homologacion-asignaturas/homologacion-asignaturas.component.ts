@@ -97,7 +97,11 @@ export class HomologacionAsignaturasComponent implements OnInit {
   /**
    * Seleccionar solicitud (evento del RequestStatusTableComponent)
    */
-  onSolicitudSeleccionada(solicitudId: number): void {
+  onSolicitudSeleccionada(solicitudId: number | null): void {
+    if (solicitudId === null) {
+      this.selectedSolicitud = undefined;
+      return;
+    }
     // Buscar la solicitud original por ID
     this.homologacionService.getSecretariaRequests().subscribe({
       next: (sols) => {

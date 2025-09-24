@@ -96,13 +96,14 @@
 }
 
 .instruction {
-  background-color: #e3f2fd;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 16px;
   border-radius: 8px;
-  border-left: 4px solid #2196f3;
+  border-left: 4px solid #00138C;
   margin-bottom: 24px;
-  color: #1565c0;
+  color: #00138C;
   line-height: 1.6;
+  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
 }
 
 .file-selection {
@@ -120,8 +121,28 @@
   display: none;
 }
 
+/* Estilo para botón de seleccionar archivo */
 .select-file-btn {
   min-width: 160px;
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.select-file-btn:hover {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.select-file-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .selected-file {
@@ -136,8 +157,52 @@
   margin-bottom: 16px;
 }
 
-.upload-btn, .send-btn {
+/* Estilo para botón de subir PDF */
+.upload-btn {
   min-width: 180px;
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.upload-btn:hover:not(:disabled) {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.upload-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilo para botón de enviar al estudiante */
+.send-btn {
+  min-width: 180px;
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.send-btn:hover:not(:disabled) {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.send-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .progress-bar {
@@ -146,8 +211,12 @@
 
 /* Estados de los botones */
 .upload-btn:disabled, .send-btn:disabled {
-  opacity: 0.6;
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
   cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Responsive para la sección de PDF */

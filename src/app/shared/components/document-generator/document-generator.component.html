@@ -77,33 +77,13 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Campos opcionales específicos del proceso -->
-        <div *ngIf="template.camposOpcionales && template.camposOpcionales.length > 0" class="optional-fields">
-          <mat-divider></mat-divider>
-          <h4>Información Adicional</h4>
-          
-          <div *ngFor="let campo of template.camposOpcionales" class="optional-field">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ getFieldLabel(campo) }}</mat-label>
-              <input matInput 
-                     [formControlName]="campo" 
-                     [placeholder]="getFieldPlaceholder(campo)"
-                     [class.error]="hasError(campo)">
-              <mat-icon matSuffix>{{ getFieldIcon(campo) }}</mat-icon>
-              <mat-error *ngIf="hasError(campo)">
-                {{ getFieldError(campo) }}
-              </mat-error>
-            </mat-form-field>
-          </div>
-        </div>
-
         <!-- Observaciones -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Observaciones (Opcional)</mat-label>
+          <mat-label>Observaciones</mat-label>
           <textarea matInput 
                     formControlName="observaciones" 
                     rows="3"
-                    placeholder="Observaciones adicionales sobre el documento..."></textarea>
+                    placeholder="Observaciones adicionales..."></textarea>
           <mat-icon matSuffix>note</mat-icon>
         </mat-form-field>
 
