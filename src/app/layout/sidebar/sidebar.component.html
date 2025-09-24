@@ -2,7 +2,16 @@
 <nav [class.closed]="!isSidebarOpen" class="sidebar">
   <ul>
     <li *ngFor="let item of menuItems">
-      <button class="sidebar-link" (click)="onItemClick(item)">
+      <!-- Separador visual -->
+      <div *ngIf="item.action === 'separator'" class="sidebar-separator">
+        <hr>
+      </div>
+      
+      <!-- Items normales -->
+      <button *ngIf="item.action !== 'separator'" 
+              class="sidebar-link" 
+              (click)="onItemClick(item)"
+              [class.logout-item]="item.action === 'logout'">
         <mat-icon>{{ item.icon }}</mat-icon>
         <span>{{ item.label }}</span>
       </button>

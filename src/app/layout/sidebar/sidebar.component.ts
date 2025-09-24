@@ -1,5 +1,5 @@
 // src/app/layout/sidebar/sidebar.component.ts
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,8 @@ import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-sa
   standalone: true,
   imports: [CommonModule, MatIconModule, MatButtonModule]
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnChanges {
+  @Input() isOpen = true;
   @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
   menuItems: ConfigSidebarItem[] = [];
@@ -31,6 +32,10 @@ export class SidebarComponent {
     const backendRole = this.authService.getRole();
     this.roleLower = this.mapBackendRoleToUserRole(backendRole);
     this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(this.roleLower));
+  }
+
+  ngOnChanges() {
+    this.isSidebarOpen = this.isOpen;
   }
 
   private mapBackendRoleToUserRole(backendRole: string | null | undefined): UserRole {
@@ -48,6 +53,7 @@ export class SidebarComponent {
   onItemClick(item: ConfigSidebarItem) {
     if (item.action === 'logout') { this.logout(); return; }
     if (item.action === 'toggle') { this.toggleSidebar(); return; }
+    if (item.action === 'separator') { return; } // No hacer nada en separadores
     if (!item.route) return;
 
     if (item.route === '/estudiante/paz-salvo' && this.roleLower === UserRole.ESTUDIANTE) {

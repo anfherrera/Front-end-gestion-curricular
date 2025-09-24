@@ -1,6 +1,10 @@
 <header class="header-container">
-  <!-- Logo y título -->
+  <!-- Toggle sidebar y logo -->
   <div class="header-left">
+    <button mat-icon-button class="toggle-btn" (click)="toggleSidebarClick()" aria-label="Toggle sidebar">
+      <mat-icon>{{ isSidebarOpen ? 'menu' : 'menu_open' }}</mat-icon>
+    </button>
+
     <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png" 
          alt="Logo Universidad del Cauca" class="logo" />
 
@@ -19,13 +23,30 @@
       <mat-icon>notifications</mat-icon>
     </button>
 
-    <button mat-icon-button class="icon-btn" aria-label="Perfil de usuario">
-      <mat-icon>account_circle</mat-icon>
-    </button>
-
-    <div class="user-info">
-      <div class="user-name">{{ userName }}</div>
-      <div class="user-email">{{ userEmail }}</div>
+    <div class="user-menu">
+      <button mat-icon-button class="user-btn" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <div class="user-menu-header">
+          <div class="user-name">{{ userName }}</div>
+          <div class="user-email">{{ userEmail }}</div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="goToProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Mi Perfil</span>
+        </button>
+        <button mat-menu-item (click)="goToSettings()">
+          <mat-icon>settings</mat-icon>
+          <span>Configuración</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()" class="logout-item">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
     </div>
   </div>
 </header>

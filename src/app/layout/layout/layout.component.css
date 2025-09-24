@@ -28,4 +28,24 @@ app-sidebar {
   background-color: #f5f7fa;
   transition: all 0.3s ease;
   min-height: 100%;
+  margin-left: 0;
+}
+
+.main-content.sidebar-closed {
+  margin-left: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .layout-body {
+    flex-direction: column;
+  }
+  
+  .main-content {
+    padding: 15px;
+  }
+  
+  app-sidebar {
+    order: -1;
+  }
 }

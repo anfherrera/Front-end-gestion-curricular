@@ -60,7 +60,9 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
 
   { label: 'Ajustes', icon: 'settings', route: '/ajustes', roles: [UserRole.ADMIN] },
 
-  // Cerrar sesión y minimizar
-  { label: 'Cerrar sesión', icon: 'logout', action: 'logout', roles: ALL_ROLES },
-  { label: 'Minimizar', icon: 'chevron_left', action: 'toggle', roles: ALL_ROLES }
+  // Separador visual
+  { label: '---', icon: 'horizontal_rule', action: 'separator', roles: ALL_ROLES },
+  
+  // Cerrar sesión (opcional en sidebar para usuarios que prefieren)
+  { label: 'Cerrar sesión', icon: 'logout', action: 'logout', roles: ALL_ROLES }
 ];
