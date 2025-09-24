@@ -148,10 +148,8 @@ export class PazSalvoService {
   }
 
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    // Usar el endpoint específico de paz y salvo si se proporciona idSolicitud
-    const url = idSolicitud 
-      ? `${this.apiUrl}/${idSolicitud}/subir-archivo`
-      : `http://localhost:5000/api/archivos/subir/pdf`;
+    // Usar el endpoint genérico de archivos (igual que homologación)
+    const url = `http://localhost:5000/api/archivos/subir/pdf`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB

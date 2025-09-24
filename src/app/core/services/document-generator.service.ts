@@ -82,9 +82,20 @@ export class DocumentGeneratorService {
    */
   private guardarDocumentoEnBD(request: DocumentRequest, blob: Blob): Observable<any> {
     console.log('🔍 Debug - Request completo:', request);
-    console.log('🔍 Debug - datosDocumento:', request.datosDocumento);
-    console.log('🔍 Debug - fechaDocumento:', request.datosDocumento?.fechaDocumento);
-    console.log('🔍 Debug - numeroDocumento:', request.datosDocumento?.numeroDocumento);
+    console.log('🔍 Debug - tipoDocumento:', request.tipoDocumento);
+    
+    // Para paz-salvo, NO guardamos en el backend (igual que homologación)
+    if (request.tipoDocumento === 'OFICIO_PAZ_SALVO') {
+      console.log('📄 Paz-salvo: No guardando en backend, solo descargando archivo');
+      // Retornar un observable que simula éxito
+      return new Observable(observer => {
+        observer.next({ success: true, message: 'Documento generado para descarga' });
+        observer.complete();
+      });
+    }
+    
+    // Solo para homologación (aunque tampoco tiene endpoint, pero por si acaso)
+    console.log('📄 Homologación: Intentando guardar en backend...');
     
     const formData = new FormData();
     
@@ -127,8 +138,11 @@ export class DocumentGeneratorService {
 
     console.log('📤 Enviando FormData al backend...');
     
-    // Usar el endpoint de homologación para guardar el oficio
-    return this.http.post('http://localhost:5000/api/solicitudes-homologacion/guardarOficio', formData, {
+    // Solo para homologación (aunque no tiene endpoint)
+    const endpoint = 'http://localhost:5000/api/solicitudes-homologacion/guardarOficio';
+    console.log('🔗 Usando endpoint:', endpoint);
+    
+    return this.http.post(endpoint, formData, {
       headers: this.getAuthHeaders()
     });
   }

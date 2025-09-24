@@ -60,19 +60,13 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
-   * Cargar solicitudes pendientes para secretaría (solo las aprobadas por coordinador)
+   * Cargar solicitudes pendientes para secretaría
    */
   cargarSolicitudes(): void {
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        // Filtrar solo las solicitudes aprobadas por coordinador
-        const solicitudesAprobadas = sols.filter(sol => {
-          const estadoActual = this.getEstadoActual(sol);
-          return estadoActual === 'APROBADA' || estadoActual === 'APROBADA_FUNCIONARIO';
-        });
-
         // Transformar datos para RequestStatusTableComponent
-        this.solicitudes = solicitudesAprobadas.map(sol => ({
+        this.solicitudes = sols.map(sol => ({
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
@@ -80,9 +74,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
           rutaArchivo: '', // Para oficios
           comentarios: ''
         }));
-        console.log('📋 Solicitudes cargadas para secretaría (filtradas):', this.solicitudes);
-        console.log('📋 Total de solicitudes recibidas:', sols.length);
-        console.log('📋 Solicitudes aprobadas:', solicitudesAprobadas.length);
+        console.log('📋 Solicitudes cargadas para secretaría:', this.solicitudes);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes:', err);
@@ -113,13 +105,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Buscar la solicitud original por ID
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        // Filtrar solo las solicitudes aprobadas por coordinador
-        const solicitudesAprobadas = sols.filter(sol => {
-          const estadoActual = this.getEstadoActual(sol);
-          return estadoActual === 'APROBADA' || estadoActual === 'APROBADA_FUNCIONARIO';
-        });
-        
-        this.selectedSolicitud = solicitudesAprobadas.find(sol => sol.id_solicitud === solicitudId);
+        this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
         console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
       }
     });

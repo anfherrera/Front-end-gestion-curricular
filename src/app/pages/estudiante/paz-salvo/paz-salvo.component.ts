@@ -375,8 +375,8 @@ verificarFuncionalidadComentarios(): void {
 descargarOficio(idOficio: number, nombreArchivo: string): void {
   console.log('📥 Descargando oficio:', idOficio);
   
-  // Primero intentar obtener los oficios disponibles para esta solicitud
-  this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
+  // Usar el endpoint genérico de descarga de archivos
+  this.descargarArchivoPorNombre(nombreArchivo, nombreArchivo, idOficio);
 }
 
 /**
@@ -421,8 +421,8 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
 private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
   console.log('📁 Descargando archivo por nombre:', nombreArchivo);
   
-  // Usar el endpoint de solicitudes de paz y salvo
-  const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargarOficio/${idSolicitud || 1}`;
+  // Usar el endpoint genérico de descarga de archivos
+  const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
   
   // Crear headers con autorización
   const token = localStorage.getItem('token');
