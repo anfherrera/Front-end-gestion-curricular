@@ -4,15 +4,17 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialogModule } from '@angular/material/dialog';
-import { HttpClient } from '@angular/common/http';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
-import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
+import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
+import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
+import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
+import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 
 @Component({
@@ -43,7 +45,7 @@ export class PazSalvoComponent implements OnInit {
 
   SolicitudStatusEnum = SolicitudStatusEnum;
 
-  readonly documentosRequeridos = [
+  documentosRequeridos = [
     { label: 'Formato PM-FO-4-FOR-27.pdf', obligatorio: true },
     { label: 'Autorización para publicar.pdf', obligatorio: true },
     { label: 'Formato de hoja de vida académica.pdf', obligatorio: true },
@@ -51,14 +53,12 @@ export class PazSalvoComponent implements OnInit {
     { label: 'Documento final del trabajo de grado.pdf', obligatorio: true }
   ];
 
-  readonly archivosExclusivos = ['Formato TI-G.pdf', 'Formato PP-H.pdf'];
-  readonly archivosOpcionales = ['Resultado pruebas SaberPro.pdf'];
-
-  private readonly studentId = 1; // Opcional: puedes obtener dinámicamente del AuthService
+  archivosExclusivos: string[] = ['Formato TI-G.pdf', 'Formato PP-H.pdf'];
 
   constructor(
     private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
+    private dialog: MatDialog,
     private http: HttpClient
   ) {}
 
@@ -71,150 +71,119 @@ export class PazSalvoComponent implements OnInit {
     } else {
       console.warn('⚠️ No se encontró usuario en localStorage');
     }
-    
+
+    // Listar solicitudes existentes al cargar el componente
     this.listarSolicitudes();
+    
+    // Verificar funcionalidad de comentarios (para debugging)
+    setTimeout(() => {
+      this.verificarFuncionalidadComentarios();
+    }, 2000);
   }
 
-  get ultimaSolicitud(): Solicitud | undefined {
-    return this.solicitudes[this.solicitudes.length - 1];
+  onArchivosChange(archivos: Archivo[]) {
+    this.archivosActuales = archivos;
   }
 
-  get textoBoton(): string {
-    if (!this.ultimaSolicitud) return 'Enviar Solicitud';
-
-    switch (this.ultimaSolicitud.estado) {
-      case SolicitudStatusEnum.ENVIADA:
-      case SolicitudStatusEnum.EN_REVISION_SECRETARIA:
-      case SolicitudStatusEnum.EN_REVISION_FUNCIONARIO:
-      case SolicitudStatusEnum.EN_REVISION_COORDINADOR:
-        return 'Actualizar Solicitud';
-      default:
-        return 'Enviar Solicitud';
-    }
+  puedeEnviar(): boolean {
+    return this.archivosActuales.length > 0 && !!this.usuario;
   }
 
+  /**
+   * Muestra un mensaje bonito usando SnackBar
+   */
   private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
     const config = {
-      duration: 3000,
+      duration: tipo === 'success' ? 4000 : 6000,
+      horizontalPosition: 'center' as const,
+      verticalPosition: 'top' as const,
       panelClass: [`snackbar-${tipo}`]
     };
 
     this.snackBar.open(mensaje, 'Cerrar', config);
   }
 
-  // ================================
-  // 🔹 Carga de solicitudes
-  // ================================
-  listarSolicitudes() {
-    if (!this.usuario) {
-      console.error("❌ Usuario no encontrado en localStorage.");
-      return;
-    }
-
-    console.log('🔍 Usuario encontrado:', this.usuario);
-    console.log('🔍 Rol:', this.usuario.rol.nombre);
-    console.log('🔍 ID Usuario:', this.usuario.id_usuario);
-
-    this.pazSalvoService.getStudentRequests(this.usuario.id_usuario).subscribe({
-      next: (data) => {
-        console.log('📡 Respuesta del backend (raw):', data);
-        console.log('📡 Tipo de respuesta:', typeof data);
-        console.log('📡 Es array:', Array.isArray(data));
-        console.log('📡 Longitud:', data?.length);
-
-        if (!data || !Array.isArray(data)) {
-          console.warn('⚠️ La respuesta no es un array válido');
-          this.solicitudes = [];
-          this.solicitudesCompletas = [];
-          return;
-        }
-
-        // Guardar las solicitudes completas
-        this.solicitudesCompletas = data;
-
-        // Mapear a formato de solicitudes para la tabla
-        this.solicitudes = data.map(solicitud => ({
-          id: solicitud.id_solicitud,
-          nombre: solicitud.nombre_solicitud,
-          fecha: solicitud.fecha_registro_solicitud,
-          estado: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.estado_actual as SolicitudStatusEnum || SolicitudStatusEnum.ENVIADA,
-          comentarios: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.comentario || '',
-          archivos: solicitud.documentos?.map((doc: DocumentoHomologacion) => ({
-            id_documento: doc.id_documento,
-            nombre: doc.nombre,
-            ruta_documento: doc.ruta_documento,
-            fecha: doc.fecha_documento,
-            esValido: doc.esValido,
-            comentario: doc.comentario
-          })) || []
-        }));
-
-        // Cargar archivos de la última solicitud si existe
-        if (this.ultimaSolicitud?.archivos) {
-          this.archivosActuales = this.ultimaSolicitud.archivos.map(a => ({
-            ...a,
-            nombre: a.nombre.trim()
-          }));
-        }
-
-        console.log('✅ Solicitudes cargadas:', this.solicitudes);
-      },
-      error: (err) => {
-        console.error('❌ Error al cargar solicitudes:', err);
-        this.mostrarMensaje(`Error al cargar solicitudes: ${err?.message || err}`, 'error');
-      }
-    });
+listarSolicitudes() {
+  if (!this.usuario) {
+    console.error("❌ Usuario no encontrado en localStorage.");
+    return;
   }
 
+  console.log('🔍 Usuario encontrado:', this.usuario);
+  console.log('🔍 Rol:', this.usuario.rol.nombre);
+  console.log('🔍 ID Usuario:', this.usuario.id_usuario);
 
-  // ================================
-  // 🔹 Cambio de archivos
-  // ================================
-async onArchivosChange(archivos: Archivo[]): Promise<void> {
-  const uploadedFiles: Archivo[] = [];
+  this.pazSalvoService.getStudentRequests(this.usuario.id_usuario).subscribe({
+    next: (data) => {
+      console.log('📡 Respuesta del backend (raw):', data);
+      console.log('📡 Tipo de respuesta:', typeof data);
+      console.log('📡 Es array:', Array.isArray(data));
+      console.log('📡 Longitud:', data?.length);
 
-  for (const archivo of archivos) {
-    if (archivo.file) {
-      try {
-        const uploaded = await this.pazSalvoService.uploadFile(this.studentId, archivo.file).toPromise();
-        if (uploaded) {
-          uploadedFiles.push({
-            ...uploaded,
-            nombre: uploaded.nombre?.trim() || archivo.nombre,
-            fecha: uploaded.fecha ?? new Date().toISOString(), // 🔹 asegura string
-            file: undefined, // ya no necesitamos el File temporal
+      if (!data || !Array.isArray(data)) {
+        console.warn('⚠️ La respuesta no es un array válido');
+        this.solicitudes = [];
+        this.solicitudesCompletas = [];
+        return;
+      }
+
+      // Guardar las solicitudes completas para usar esSeleccionado y comentarios
+      this.solicitudesCompletas = data;
+
+      // Log para debugging - verificar estructura de datos
+      console.log('🔍 Estructura de datos del backend:');
+      if (data.length > 0) {
+        console.log('📋 Primera solicitud completa:', data[0]);
+        if (data[0].estadosSolicitud) {
+          console.log('📋 Estados de la primera solicitud:', data[0].estadosSolicitud);
+          data[0].estadosSolicitud.forEach((estado: any, index: number) => {
+            console.log(`📋 Estado ${index}:`, estado);
           });
         }
-      } catch (err) {
-        this.snackBar.open(`Error subiendo archivo ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
-        // Mantener el archivo local aunque falle
-        uploadedFiles.push({
-          ...archivo,
-          nombre: archivo.nombre.trim(),
-          fecha: archivo.fecha ?? new Date().toISOString(),
-        });
       }
-    } else {
-      uploadedFiles.push({
-        ...archivo,
-        nombre: archivo.nombre.trim(),
-        fecha: archivo.fecha ?? new Date().toISOString(),
-      });
-    }
-  }
 
-  this.archivosActuales = uploadedFiles;
+      this.solicitudes = data.map((sol: any) => {
+        console.log('🔍 Procesando solicitud:', sol);
+
+        const estados = sol.estado_actual || sol.estadosSolicitud || [];
+        const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
+
+        const rutaArchivo = sol.documentos?.length > 0 ? sol.documentos[0].ruta : '';
+
+        const solicitudTransformada = {
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: ultimoEstado?.estado_actual || 'Pendiente',
+          rutaArchivo,
+          comentarios: ultimoEstado?.comentarios || '',
+          esSeleccionado: sol.esSeleccionado || false // Usar el campo esSeleccionado
+        };
+
+        console.log('✅ Solicitud transformada:', solicitudTransformada);
+        return solicitudTransformada;
+      });
+
+      console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
+      console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
+    },
+    error: (err) => {
+      console.error('❌ Error al listar solicitudes', err);
+      console.error('❌ Status:', err.status);
+      console.error('❌ Message:', err.message);
+      console.error('❌ Error completo:', err);
+    }
+  });
 }
 
 
-  // ================================
-  // 🔹 Enviar solicitud
-  // ================================
+
+
   onSolicitudEnviada() {
-    if (!this.usuario) {
-      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
-      return;
-    }
+  if (!this.usuario) {
+    console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+    return;
+  }
 
     if (!this.fileUploadComponent) {
       console.error('❌ No se puede acceder al componente de archivos.');
@@ -229,79 +198,365 @@ async onArchivosChange(archivos: Archivo[]): Promise<void> {
         console.log('✅ Archivos subidos correctamente:', archivosSubidos);
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
-        const solicitud = {
-          nombre_solicitud: `Solicitud_paz_salvo_${this.usuario.nombre_completo}`,
-          fecha_registro_solicitud: new Date().toISOString(),
-          objUsuario: {
-            id_usuario: this.usuario.id_usuario,
-            nombre_completo: this.usuario.nombre_completo,
-            codigo: this.usuario.codigo,
-            correo: this.usuario.correo,
-            objPrograma: this.usuario.objPrograma
-          },
+  const solicitud = {
+    nombre_solicitud: `Solicitud_paz_salvo_${this.usuario.nombre_completo}`,
+    fecha_registro_solicitud: new Date().toISOString(),
+    objUsuario: {
+      id_usuario: this.usuario.id_usuario,
+      nombre_completo: this.usuario.nombre_completo,
+      codigo: this.usuario.codigo,
+      correo: this.usuario.correo,
+      objPrograma: this.usuario.objPrograma
+    },
           archivos: archivosSubidos
-        };
+  };
 
         console.log('📋 Creando solicitud con archivos:', solicitud);
 
-        this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos).subscribe({
-          next: (resp) => {
-            console.log('✅ Solicitud creada en backend:', resp);
-            this.listarSolicitudes();
+  this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos).subscribe({
+    next: (resp) => {
+      console.log('✅ Solicitud creada en backend:', resp);
+      this.listarSolicitudes();
 
-            // Resetear el file upload
-            this.resetFileUpload = true;
-            setTimeout(() => this.resetFileUpload = false, 0);
+      // Resetear el file upload
+      this.resetFileUpload = true;
+      setTimeout(() => this.resetFileUpload = false, 0);
 
             this.mostrarMensaje('🎉 ¡Solicitud de paz y salvo enviada correctamente!', 'success');
-          },
-          error: (err) => {
+    },
+    error: (err) => {
             console.error('❌ Error al crear solicitud:', err);
-            if (err.status === 400) {
+      if (err.status === 400) {
               this.mostrarMensaje('⚠️ Error de validación: revisa los datos de la solicitud', 'warning');
-            } else {
-              this.mostrarMensaje('❌ Error al enviar solicitud: ' + (err?.message || 'Error desconocido'), 'error');
+      }
+      if (err.status === 401) {
+              this.mostrarMensaje('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
             }
           }
         });
       },
       error: (err) => {
         console.error('❌ Error al subir archivos:', err);
-        this.mostrarMensaje('❌ Error al subir archivos: ' + (err?.message || 'Error desconocido'), 'error');
+        this.mostrarMensaje('❌ Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        
+        // Resetear el estado de carga del componente de subida
+        if (this.fileUploadComponent) {
+          this.fileUploadComponent.resetearEstadoCarga();
+        }
+    }
+  });
+}
+
+/**
+ * Verificar si una solicitud está rechazada
+ */
+esSolicitudRechazada(estado: string): boolean {
+  return estado === 'RECHAZADA' || estado === 'Rechazada';
+}
+
+/**
+ * Obtener la solicitud completa por ID
+ */
+obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta | undefined {
+  return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
+}
+
+/**
+ * Obtener el comentario de rechazo del último estado
+ */
+obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
+  console.log('🔍 Obteniendo comentario de rechazo para solicitud:', solicitud.id_solicitud);
+  console.log('📋 Estados de la solicitud:', solicitud.estadosSolicitud);
+  
+  if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
+    console.log('❌ No hay estados en la solicitud');
+    return null;
+  }
+
+  // Buscar el último estado que sea RECHAZADA
+  const estadosRechazados = solicitud.estadosSolicitud.filter(estado => 
+    estado.estado_actual === 'RECHAZADA' || estado.estado_actual === 'Rechazada'
+  );
+
+  console.log('🔍 Estados rechazados encontrados:', estadosRechazados);
+
+  if (estadosRechazados.length === 0) {
+    console.log('❌ No se encontraron estados de rechazo');
+    return null;
+  }
+
+  // Obtener el último estado de rechazo
+  const ultimoEstadoRechazo = estadosRechazados[estadosRechazados.length - 1];
+  
+  console.log('📝 Último estado de rechazo:', ultimoEstadoRechazo);
+  console.log('💬 Comentario encontrado:', ultimoEstadoRechazo.comentario);
+  
+  return ultimoEstadoRechazo.comentario || null;
+}
+
+/**
+ * Ver comentarios de una solicitud rechazada
+ */
+verComentarios(solicitudId: number): void {
+  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
+  
+  if (!solicitudCompleta) {
+    this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
+    return;
+  }
+
+  if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
+    this.mostrarMensaje('No hay documentos asociados a esta solicitud', 'warning');
+    return;
+  }
+
+  // Obtener el comentario de rechazo del último estado
+  const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
+
+  console.log('📋 Datos que se envían al diálogo:');
+  console.log('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
+  console.log('  - Documentos:', solicitudCompleta.documentos);
+  console.log('  - Comentario de rechazo:', comentarioRechazo);
+
+  const dialogRef = this.dialog.open(ComentariosDialogComponent, {
+    width: '700px',
+    data: <ComentariosDialogData>{
+      titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
+      documentos: solicitudCompleta.documentos,
+      comentarioRechazo: comentarioRechazo
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(() => {
+    console.log('Diálogo de comentarios cerrado');
+  });
+}
+
+/**
+ * Verificar si una solicitud tiene comentarios
+ */
+tieneComentarios(solicitudId: number): boolean {
+  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
+  
+  if (!solicitudCompleta || !solicitudCompleta.documentos) {
+    return false;
+  }
+
+  return solicitudCompleta.documentos.some(doc => 
+    doc.comentario && doc.comentario.trim().length > 0
+  );
+}
+
+/**
+ * Método de prueba para verificar el funcionamiento
+ */
+verificarFuncionalidadComentarios(): void {
+  console.log('🔍 Verificando funcionalidad de comentarios...');
+  console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
+  console.log('📋 Solicitudes transformadas:', this.solicitudes);
+  
+  // Buscar solicitudes rechazadas
+  const solicitudesRechazadas = this.solicitudes.filter(sol => 
+    this.esSolicitudRechazada(sol.estado)
+  );
+  
+  console.log('❌ Solicitudes rechazadas encontradas:', solicitudesRechazadas);
+  
+  solicitudesRechazadas.forEach(sol => {
+    const tieneComentarios = this.tieneComentarios(sol.id);
+    console.log(`📝 Solicitud ${sol.id} (${sol.nombre}): ${tieneComentarios ? 'Tiene comentarios' : 'Sin comentarios'}`);
+  });
+}
+
+
+/**
+ * Descargar oficio
+ */
+descargarOficio(idOficio: number, nombreArchivo: string): void {
+  console.log('📥 Descargando oficio:', idOficio);
+  
+  // Primero intentar obtener los oficios disponibles para esta solicitud
+  this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
+}
+
+/**
+ * Obtener oficios y descargar
+ */
+private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
+  // Para paz y salvo, usar el endpoint específico
+  const url = `http://localhost:5000/api/solicitudes-pazysalvo/obtenerOficios/${idSolicitud}`;
+  
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  });
+  
+  this.http.get(url, { headers }).subscribe({
+    next: (oficios: any) => {
+      console.log('📄 Oficios obtenidos:', oficios);
+      
+      if (!oficios || oficios.length === 0) {
+        this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
+        return;
       }
-    });
-  }
+      
+      // Tomar el primer oficio disponible
+      const oficio = oficios[0];
+      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_paz_salvo_${idSolicitud}.pdf`;
+      
+      // Intentar descargar usando el endpoint de archivos
+      this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
+    },
+    error: (err) => {
+      console.error('❌ Error al obtener oficios:', err);
+      
+      // Si no se pueden obtener oficios, intentar con nombres comunes
+      this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
+    }
+  });
+}
 
-  // ================================
-  // 🔹 Validaciones
-  // ================================
-  puedeEnviar(): boolean {
-    return this.validarObligatorios() && this.validarExclusivos() && this.validarPermitidos();
-  }
+/**
+ * Descargar archivo por nombre usando el endpoint de archivos
+ */
+private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
+  console.log('📁 Descargando archivo por nombre:', nombreArchivo);
+  
+  // Usar el endpoint de solicitudes de paz y salvo
+  const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargarOficio/${idSolicitud || 1}`;
+  
+  // Crear headers con autorización
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+  
+  this.http.get(url, {
+    headers: headers,
+    responseType: 'blob',
+    observe: 'response'
+  }).subscribe({
+    next: (response) => {
+      console.log('✅ Archivo descargado exitosamente');
+      
+      // Obtener el nombre del archivo desde los headers de la respuesta
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let nombreArchivoDescarga = nombreDescarga || nombreArchivo;
+      
+      console.log('🔍 Content-Disposition header:', contentDisposition);
+      
+      if (contentDisposition) {
+        // Intentar diferentes patrones para extraer el nombre del archivo
+        let matches = contentDisposition.match(/filename="(.+)"/);
+        if (!matches) {
+          matches = contentDisposition.match(/filename=([^;]+)/);
+        }
+        if (!matches) {
+          matches = contentDisposition.match(/filename\*=UTF-8''(.+)/);
+        }
+        
+        if (matches && matches[1]) {
+          nombreArchivoDescarga = decodeURIComponent(matches[1]);
+          console.log('📁 Nombre del archivo desde headers:', nombreArchivoDescarga);
+        } else {
+          console.log('⚠️ No se pudo extraer el nombre del archivo del header Content-Disposition');
+        }
+      } else {
+        console.log('⚠️ No se encontró el header Content-Disposition');
+        // Usar el nombre del archivo que viene del método obtenerOficios
+        nombreArchivoDescarga = nombreArchivo;
+        console.log('📁 Usando nombre del archivo del método obtenerOficios:', nombreArchivoDescarga);
+      }
+      
+      // Crear URL temporal y descargar
+      const blob = response.body!;
+      
+      // Logging para diagnosticar el problema
+      console.log('📊 Tipo de contenido:', response.headers.get('Content-Type'));
+      console.log('📊 Tamaño del blob:', blob.size);
+      console.log('📊 Tipo del blob:', blob.type);
+      console.log('📊 Nombre de descarga:', nombreArchivoDescarga);
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = nombreArchivoDescarga;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+    },
+    error: (err) => {
+      console.error('❌ Error al descargar archivo:', err);
+      this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
+    }
+  });
+}
 
-  private validarObligatorios(): boolean {
-    return this.documentosRequeridos
-      .filter(d => d.obligatorio)
-      .every(d => this.archivosActuales.some(a => a.nombre === d.label));
-  }
+/**
+ * Intentar descarga con nombres comunes
+ */
+private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: string): void {
+  console.log('🔄 Intentando descarga con nombres comunes...');
+  
+  // Obtener información del usuario para generar nombres
+  const usuario = this.usuario;
+  const codigoUsuario = usuario?.codigo || usuario?.codigo_estudiante || 'SIN_CODIGO';
+  const año = new Date().getFullYear();
+  
+  // Nombres comunes a probar
+  const nombresComunes = [
+    `OFICIO_PAZ_SALVO_${codigoUsuario}_${año} (1).pdf`,
+    `OFICIO_PAZ_SALVO_${codigoUsuario}_${año}.pdf`,
+    `oficio_paz_salvo_${codigoUsuario}_${año}.pdf`,
+    `paz_salvo_${codigoUsuario}_${año}.pdf`,
+    `oficio_${idSolicitud}.pdf`,
+    `paz_salvo_${idSolicitud}.pdf`
+  ];
+  
+  this.probarNombresSecuencial(nombresComunes, 0, nombreArchivo, idSolicitud);
+}
 
-  private validarExclusivos(): boolean {
-    const exclusivosSubidos = this.archivosActuales.filter(a =>
-      this.archivosExclusivos.includes(a.nombre)
-    );
-    return exclusivosSubidos.length <= 1;
+/**
+ * Probar nombres de archivo secuencialmente
+ */
+private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga: string, idSolicitud: number): void {
+  if (index >= nombres.length) {
+    this.mostrarMensaje('No se encontró el archivo con los nombres probados', 'warning');
+    return;
   }
+  
+  const nombre = nombres[index];
+  console.log(`🧪 Probando nombre ${index + 1}/${nombres.length}: "${nombre}"`);
+  
+  this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
+}
 
-  private validarPermitidos(): boolean {
-    const nombresPermitidos = [
-      ...this.documentosRequeridos.map(d => d.label),
-      ...this.archivosExclusivos,
-      ...this.archivosOpcionales
-    ];
-    return this.archivosActuales.every(a => nombresPermitidos.includes(a.nombre));
-  }
 
-  trackByLabel(index: number, item: { label: string }): string {
-    return item.label;
+/**
+ * Obtener el estado actual de una solicitud
+ */
+obtenerEstadoActual(solicitud: any): string {
+  if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+    const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+    return ultimoEstado.estado_actual;
   }
+  return 'Pendiente';
+}
+
+/**
+ * Mostrar oficios en la UI
+ */
+private mostrarOficiosEnUI(oficios: any[]): void {
+  console.log('📄 Mostrando oficios en UI:', oficios);
+  
+  if (!oficios || oficios.length === 0) {
+    this.mostrarMensaje('No hay oficios disponibles', 'info');
+    return;
+  }
+  
+  this.mostrarMensaje(`Se encontraron ${oficios.length} oficio(s) disponible(s)`, 'success');
+}
+
 }

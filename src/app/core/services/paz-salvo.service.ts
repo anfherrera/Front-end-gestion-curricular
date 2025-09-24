@@ -74,16 +74,26 @@ export class PazSalvoService {
       );
   }
 
-  approveRequest(requestId: number): Observable<Solicitud> {
-    return this.http.post<Solicitud>(`${this.apiUrl}/${requestId}/aprobar`, {}, { headers: this.getAuthHeaders() });
+  approveRequest(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'APROBADA_FUNCIONARIO'
+    }, { headers: this.getAuthHeaders() });
   }
 
-  rejectRequest(requestId: number, reason: string): Observable<Solicitud> {
-    return this.http.post<Solicitud>(`${this.apiUrl}/${requestId}/rechazar`, { motivo: reason }, { headers: this.getAuthHeaders() });
+  rejectRequest(requestId: number, reason: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'RECHAZADA',
+      comentario: reason
+    }, { headers: this.getAuthHeaders() });
   }
 
-  completeValidation(requestId: number): Observable<Solicitud> {
-    return this.http.post<Solicitud>(`${this.apiUrl}/${requestId}/completar-validacion`, {}, { headers: this.getAuthHeaders() });
+  completeValidation(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'EN_REVISION_COORDINADOR'
+    }, { headers: this.getAuthHeaders() });
   }
 
   generateOfficio(requestId: number): Observable<string> {
@@ -102,6 +112,29 @@ export class PazSalvoService {
     });
 
     return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/subir-archivo`, formData, { headers });
+  }
+
+  /**
+   * Obtener oficios/resoluciones de una solicitud
+   */
+  obtenerOficios(idSolicitud: number): Observable<any[]> {
+    const url = `${this.apiUrl}/obtenerOficios/${idSolicitud}`;
+    
+    return this.http.get<any[]>(url, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Descargar oficio/resolución
+   */
+  descargarOficio(idOficio: number): Observable<Blob> {
+    const url = `${this.apiUrl}/descargarOficio/${idOficio}`;
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
   }
 
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {

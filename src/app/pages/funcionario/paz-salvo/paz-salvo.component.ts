@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
@@ -42,7 +43,8 @@ export class PazSalvoComponent implements OnInit {
   constructor(
     private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -94,35 +96,98 @@ export class PazSalvoComponent implements OnInit {
   }
 
   verArchivo(archivo: Archivo): void {
-    if (archivo.url) {
-      window.open(archivo.url, '_blank');
-    } else {
-      this.snackBar.open(`No hay URL disponible para: ${archivo.originalName}`, 'Cerrar', { duration: 3000 });
+    if (!archivo.nombre) {
+      this.snackBar.open(`No hay nombre de archivo disponible para el documento`, 'Cerrar', { duration: 3000 });
+      return;
     }
+
+    // Mostrar mensaje de carga
+    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
+
+    // Usar el endpoint genérico de archivos que funciona (igual que en homologación)
+    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(archivo.nombre)}`;
+    console.log('🔗 URL de descarga:', url);
+    console.log('📁 Nombre del archivo:', archivo.nombre);
+    
+    // Crear headers con autorización
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    this.http.get(url, {
+      headers: headers,
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob: Blob) => {
+        // Crear URL única del blob para evitar cache
+        const url = window.URL.createObjectURL(blob);
+        
+        // Crear un iframe temporal para mostrar el PDF
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.style.width = '100%';
+        iframe.style.height = '600px';
+        iframe.style.border = 'none';
+        
+        // Crear ventana emergente
+        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>${archivo.nombre}</title>
+                <style>
+                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                  .header { margin-bottom: 20px; }
+                  .filename { font-size: 18px; font-weight: bold; color: #333; }
+                </style>
+              </head>
+              <body>
+                <div class="header">
+                  <div class="filename">${archivo.nombre}</div>
+                </div>
+              </body>
+            </html>
+          `);
+          newWindow.document.body.appendChild(iframe);
+          
+          // Limpiar la URL cuando se cierre la ventana
+          newWindow.addEventListener('beforeunload', () => {
+            window.URL.revokeObjectURL(url);
+          });
+        } else {
+          // Si no se puede abrir ventana emergente, descargar directamente
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = archivo.nombre;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
+      },
+      error: (error) => {
+        console.error('Error al descargar archivo:', error);
+        this.snackBar.open(`Error al descargar el archivo: ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    // Actualizar estado de todos los documentos a aprobado
-    const documentosActualizados = this.archivosDelEstudiante.map(archivo => ({
-      id_documento: archivo.id_documento,
-      estado: 'aprobado' as const,
-      comentario: null
-    }));
-
-    this.pazSalvoService.actualizarEstadoDocumentos(this.selectedSolicitud.id, documentosActualizados).subscribe({
+    // Solo aprobar la solicitud (sin actualizar documentos para evitar error 500)
+    this.pazSalvoService.approveRequest(this.selectedSolicitud.id).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = null;
         this.requestStatusTable?.resetSelection();
       },
       error: (err) => {
-        this.snackBar.open('Solicitud aprobada, pero error al actualizar documentos', 'Cerrar', { duration: 3000 });
-        this.cargarSolicitudes();
-        this.selectedSolicitud = null;
-        this.requestStatusTable?.resetSelection();
+        console.error('Error al aprobar solicitud:', err);
+        this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -132,12 +197,15 @@ export class PazSalvoComponent implements OnInit {
 
     this.pazSalvoService.completeValidation(this.selectedSolicitud.id).subscribe({
       next: () => {
-        this.snackBar.open('Validación completada', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud enviada a revisión del coordinador ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = null;
         this.requestStatusTable?.resetSelection();
       },
-      error: (err) => this.snackBar.open('Error al terminar validación', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        console.error('Error al enviar a revisión:', err);
+        this.snackBar.open('Error al enviar solicitud a revisión', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 

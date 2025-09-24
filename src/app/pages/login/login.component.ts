@@ -35,8 +35,6 @@ export class LoginComponent implements OnInit {
   hide = true;
   errorMensaje = '';
   cargando = false;
-  passwordStrength = 0;
-  showPasswordStrength = false;
 
   constructor(
     private fb: FormBuilder,
@@ -55,13 +53,9 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     // Verificar si ya está autenticado
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/welcome']);
+      this.router.navigate(['/home']);
     }
 
-    // Suscribirse a cambios en la contraseña para mostrar fortaleza
-    this.loginForm.get('password')?.valueChanges.subscribe(password => {
-      this.calculatePasswordStrength(password);
-    });
   }
 
   // Validador personalizado para correos de Unicauca
@@ -73,39 +67,6 @@ export class LoginComponent implements OnInit {
     return unicaucaPattern.test(email) ? null : { 'unicaucaEmail': true };
   }
 
-  // Calcular fortaleza de contraseña
-  private calculatePasswordStrength(password: string): void {
-    if (!password) {
-      this.passwordStrength = 0;
-      this.showPasswordStrength = false;
-      return;
-    }
-
-    this.showPasswordStrength = true;
-    let strength = 0;
-
-    // Longitud mínima
-    if (password.length >= 8) strength += 25;
-    if (password.length >= 12) strength += 25;
-
-    // Caracteres especiales
-    if (/[A-Z]/.test(password)) strength += 25;
-    if (/[0-9]/.test(password)) strength += 25;
-
-    this.passwordStrength = strength;
-  }
-
-  getPasswordStrengthColor(): string {
-    if (this.passwordStrength < 50) return '#f44336'; // Rojo
-    if (this.passwordStrength < 75) return '#ff9800'; // Naranja
-    return '#4caf50'; // Verde
-  }
-
-  getPasswordStrengthText(): string {
-    if (this.passwordStrength < 50) return 'Débil';
-    if (this.passwordStrength < 75) return 'Media';
-    return 'Fuerte';
-  }
 
   onLogin(): void {
     if (this.loginForm.valid) {
@@ -130,8 +91,8 @@ export class LoginComponent implements OnInit {
               panelClass: ['success-snackbar']
             });
 
-            // Redirigir a la página de bienvenida
-            this.router.navigate(['/welcome']);
+            // Redirigir a la página de home
+            this.router.navigate(['/home']);
           } else {
             console.error('❌ Respuesta inválida:', response);
             this.errorMensaje = 'Error: respuesta del servidor inválida.';

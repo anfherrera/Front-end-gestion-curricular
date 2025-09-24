@@ -1,16 +1,15 @@
-<div class="paz-salvo-container">
+<div class="homologacion-container">
 
-  <!-- Documentación Requerida -->
+  <!-- Documentación requerida -->
   <app-required-docs
     [requiredFiles]="documentosRequeridos"
     [exclusiveFiles]="archivosExclusivos"
-    [optionalFiles]="archivosOpcionales"
     [archivos]="archivosActuales">
-  </app-required-docs>  
+  </app-required-docs>
 
   <!-- Subir Archivos -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Adjuntar documentación requerida</mat-card-title>
+    <mat-card-title class="card-title">Subir Archivos</mat-card-title>
     <mat-card-content>
       <app-file-upload
         [archivos]="archivosActuales"
@@ -23,15 +22,23 @@
                 class="btn-enviar"
                 [disabled]="!puedeEnviar()"
                 (click)="onSolicitudEnviada()">
-          {{ textoBoton }}
+          Enviar Solicitud
         </button>
+      </div>
+
+      <div *ngIf="solicitudes.at(-1)?.estado === 'Rechazada'" class="rechazo-box">
+        <mat-icon color="warn">error</mat-icon>
+        <span>
+          <strong>Solicitud rechazada:</strong>
+          {{ solicitudes.at(-1)?.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
+        </span>
       </div>
     </mat-card-content>
   </mat-card>
 
-  <!-- Seguimiento de solicitudes -->
+  <!-- Seguimiento de solicitud -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Seguimiento de Solicitudes</mat-card-title>
+    <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
     <mat-card-content>
       <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
         No se ha enviado ninguna solicitud aún.
@@ -42,8 +49,10 @@
         [solicitudes]="solicitudes"
         [showOficio]="true"
         [showComentarios]="true"
-        [showSeleccionar]="false">
+        (verComentarios)="verComentarios($event)"
+        (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
       </app-request-status-table>
+
     </mat-card-content>
   </mat-card>
 

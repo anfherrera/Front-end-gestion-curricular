@@ -39,18 +39,6 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Indicador de fortaleza de contraseña -->
-        <div *ngIf="showPasswordStrength" class="password-strength">
-          <div class="strength-bar">
-            <div class="strength-fill" 
-                 [style.width.%]="passwordStrength" 
-                 [style.background-color]="getPasswordStrengthColor()">
-            </div>
-          </div>
-          <span class="strength-text" [style.color]="getPasswordStrengthColor()">
-            Fortaleza: {{ getPasswordStrengthText() }}
-          </span>
-        </div>
 
         <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
 
