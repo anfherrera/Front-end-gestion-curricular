@@ -78,7 +78,7 @@
 .user-profile-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 6px 12px;
   background-color: transparent;
   border: none;
@@ -89,12 +89,11 @@
 
 .user-profile-btn:hover {
   background-color: #f5f5f5;
-  transform: translateY(-1px);
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
   display: flex;
@@ -106,14 +105,14 @@
 .user-initials {
   color: white;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.5px;
 }
 
-.user-name-simple {
+.user-name-horizontal {
   color: #00138C;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -185,19 +184,24 @@
 
   .user-profile-btn {
     padding: 4px 8px;
+    gap: 6px;
   }
 
-  .user-name-simple {
+  .user-name-horizontal {
     max-width: 80px;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .user-avatar {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
   }
 
   .user-initials {
-    font-size: 11px;
+    font-size: 10px;
+  }
+
+  .dropdown-icon {
+    font-size: 16px;
   }
 }

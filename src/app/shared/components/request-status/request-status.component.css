@@ -1,9 +1,10 @@
 table {
   width: 100%;
   margin-top: 8px;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 mat-table {
@@ -11,20 +12,22 @@ mat-table {
 }
 
 mat-header-row {
-  background-color: #f0f0f0;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
 }
 
 mat-row:hover {
-  background-color: #f8f9fa;
+  background-color: #f1f3f4;
 }
 
 mat-header-cell {
   font-weight: 600;
-  color: #495057;
+  color: #00138C;
+  font-size: 13px;
 }
 
 mat-cell, mat-header-cell {
-  padding: 8px 12px;
+  padding: 10px 12px;
 }
 
 mat-icon {

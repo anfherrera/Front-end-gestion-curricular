@@ -4,10 +4,11 @@
   align-items: center;
   background-color: white;
   color: #00138C;
-  border-top: 4px solid #00138C;
-  padding: 12px 24px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  border-top: 2px solid #e9ecef;
+  padding: 16px 24px;
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-top: auto;
 }
 
 .footer-left,

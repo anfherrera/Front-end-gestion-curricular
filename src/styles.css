@@ -1,7 +1,61 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* ===== ESTILOS MINIMALISTAS GLOBALES ===== */
+
+/* Botones principales simplificados */
+.mat-mdc-raised-button.mat-primary {
+  background-color: #00138C !important;
+  color: white !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+  background-color: #001a99 !important;
+  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Botones de texto simplificados */
+.mat-mdc-button {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Formularios más limpios */
+.mat-mdc-form-field {
+  font-size: 14px !important;
+}
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  border-radius: 6px !important;
+}
+
+/* Tablas más limpias */
+.mat-mdc-table {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.mat-mdc-header-row {
+  background-color: #f8f9fa !important;
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600 !important;
+  color: #00138C !important;
+  font-size: 14px !important;
+}
 
 /* ===== ESTILOS PARA SNACKBARS ===== */
 .snackbar-success {
