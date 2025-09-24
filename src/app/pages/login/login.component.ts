@@ -155,8 +155,8 @@ export class LoginComponent {
             localStorage.setItem('token', response.token);
             localStorage.setItem('usuario', JSON.stringify(response.usuario));
 
-            // Redirigir al home
-            this.router.navigate(['/home']);
+            // Redirigir a la página de bienvenida
+            this.router.navigate(['/welcome']);
           } else {
             console.error('❌ Respuesta inválida:', response);
             this.errorMensaje = 'Error: no se recibió token o usuario.';

@@ -1,9 +1,9 @@
-<div class="file-upload-container">
+<div class="file-upload-container animate-fade-in-up">
   <button type="button"
           (click)="fileInput.click()"
           [disabled]="cargando"
-          class="upload-btn mat-elevation-z2">
-    <mat-icon>{{ cargando ? 'hourglass_top' : 'cloud_upload' }}</mat-icon>
+          class="upload-btn mat-elevation-z2 btn-animated hover-glow">
+    <mat-icon class="icon-bounce">{{ cargando ? 'hourglass_top loading-spin' : 'cloud_upload' }}</mat-icon>
     {{ cargando ? 'Subiendo...' : 'Seleccionar archivo(s)' }}
   </button>
 
@@ -22,7 +22,7 @@
 
   <!-- Lista de archivos -->
   <ul *ngIf="archivos.length > 0" class="uploaded-list">
-    <li *ngFor="let archivo of archivos; let i = index" class="file-row">
+    <li *ngFor="let archivo of archivos; let i = index" class="file-row animate-fade-in-up">
       <span class="col-nombre">
         <mat-icon>description</mat-icon>
         {{ archivo.nombre }}

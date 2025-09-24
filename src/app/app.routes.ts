@@ -20,6 +20,14 @@ export const routes: Routes = [
       import('./pages/login/login.component').then(m => m.LoginComponent),
   },
 
+  // Welcome page (después del login)
+  {
+    path: 'welcome',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/welcome/welcome.component').then(m => m.WelcomeComponent),
+  },
+
   // Layout protegido por authGuard
   {
     path: '',

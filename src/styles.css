@@ -7,6 +7,228 @@ body {
   background-color: #f8f9fa;
 }
 
+/* ===== SISTEMA DE ANIMACIONES GLOBALES ===== */
+
+/* Transiciones suaves para todos los elementos interactivos */
+* {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones de entrada para componentes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Clases de animación reutilizables */
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.6s ease-out;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 0.5s ease-out;
+}
+
+/* Animaciones de hover mejoradas */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hover-scale {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 19, 140, 0.3);
+}
+
+/* Animaciones para botones */
+.btn-animated {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-animated::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-animated:hover::before {
+  left: 100%;
+}
+
+/* Animaciones para cards */
+.card-animated {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.card-animated:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Animaciones para iconos */
+.icon-bounce {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-bounce:hover {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* Animaciones para formularios */
+.form-field-animated {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-field-animated:focus-within {
+  transform: scale(1.02);
+}
+
+/* Animaciones para tablas */
+.table-row-animated {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.table-row-animated:hover {
+  transform: translateX(4px);
+  background-color: rgba(0, 19, 140, 0.05);
+}
+
+/* Animaciones para modales y diálogos */
+.modal-animated {
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones para notificaciones */
+.notification-animated {
+  animation: slideInDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones para loading */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Animaciones para progress bars */
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width);
+  }
+}
+
+.progress-animated {
+  animation: progressFill 1s ease-out;
+}
+
 /* ===== ESTILOS MINIMALISTAS GLOBALES ===== */
 
 /* Botones principales simplificados */
@@ -16,7 +238,7 @@ body {
   border-radius: 6px !important;
   font-weight: 500 !important;
   box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .mat-mdc-raised-button.mat-primary:hover {
@@ -29,7 +251,7 @@ body {
 .mat-mdc-button {
   border-radius: 6px !important;
   font-weight: 500 !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* Formularios más limpios */
@@ -55,6 +277,103 @@ body {
   font-weight: 600 !important;
   color: #00138C !important;
   font-size: 14px !important;
+}
+
+/* ===== ANIMACIONES ESPECÍFICAS PARA COMPONENTES ===== */
+
+/* Animación para el header */
+.header-container {
+  animation: slideInDown 0.6s ease-out;
+}
+
+/* Animación para el sidebar */
+.sidebar {
+  animation: fadeInLeft 0.6s ease-out;
+}
+
+/* Animación para el contenido principal */
+.main-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* Animación para las cards */
+.card-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Animación para los botones */
+button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* Animación para los iconos */
+mat-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animación para los inputs */
+.mat-mdc-form-field {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mat-mdc-form-field:focus-within {
+  transform: scale(1.02);
+}
+
+/* Animación para las tablas */
+.mat-mdc-table {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Animación para los diálogos */
+.mat-mdc-dialog-container {
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animación para los snackbars */
+.mat-mdc-snack-bar-container {
+  animation: slideInDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== RESPONSIVE ANIMATIONS ===== */
+
+@media (max-width: 768px) {
+  /* Reducir animaciones en móvil para mejor performance */
+  * {
+    transition: all 0.2s ease;
+  }
+  
+  .animate-fade-in-up,
+  .animate-fade-in-left,
+  .animate-fade-in-right,
+  .animate-scale-in,
+  .animate-slide-in-down {
+    animation-duration: 0.3s;
+  }
+}
+
+/* ===== UTILIDADES DE ANIMACIÓN ===== */
+
+/* Clase para deshabilitar animaciones si el usuario prefiere */
+.no-animations * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Clase para animaciones más rápidas */
+.fast-animations * {
+  animation-duration: 0.2s !important;
+  transition-duration: 0.2s !important;
+}
+
+/* Clase para animaciones más lentas */
+.slow-animations * {
+  animation-duration: 1s !important;
+  transition-duration: 1s !important;
 }
 
 /* ===== ESTILOS PARA SNACKBARS ===== */

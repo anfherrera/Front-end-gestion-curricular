@@ -27,23 +27,23 @@ export interface ComentarioDialogData {
     FormsModule
   ],
   template: `
-    <div class="dialog-header">
+    <div class="dialog-header animate-slide-in-down">
       <h2 mat-dialog-title class="dialog-title">
-        <mat-icon class="title-icon">comment</mat-icon>
+        <mat-icon class="title-icon icon-bounce">comment</mat-icon>
         {{ data.titulo }}
       </h2>
     </div>
     
-    <mat-dialog-content class="dialog-content">
+    <mat-dialog-content class="dialog-content animate-fade-in-up">
       <div class="info-section">
         <p class="description">{{ data.descripcion }}</p>
-        <div class="document-info">
-          <mat-icon class="document-icon">description</mat-icon>
+        <div class="document-info hover-lift">
+          <mat-icon class="document-icon icon-bounce">description</mat-icon>
           <span class="document-name">{{ data.nombreDocumento }}</span>
         </div>
       </div>
       
-      <mat-form-field appearance="outline" class="full-width comment-field">
+      <mat-form-field appearance="outline" class="full-width comment-field form-field-animated">
         <mat-label>Comentario</mat-label>
         <textarea 
           matInput 
@@ -60,9 +60,9 @@ export interface ComentarioDialogData {
       </mat-form-field>
     </mat-dialog-content>
     
-    <mat-dialog-actions align="end" class="dialog-actions">
-      <button mat-button (click)="onCancel()" class="cancel-btn">
-        <mat-icon>close</mat-icon>
+    <mat-dialog-actions align="end" class="dialog-actions animate-fade-in-up">
+      <button mat-button (click)="onCancel()" class="cancel-btn btn-animated">
+        <mat-icon class="icon-bounce">close</mat-icon>
         Cancelar
       </button>
       <button 
@@ -70,8 +70,8 @@ export interface ComentarioDialogData {
         color="primary" 
         (click)="onConfirm()"
         [disabled]="!comentario.trim()"
-        class="confirm-btn">
-        <mat-icon>add_comment</mat-icon>
+        class="confirm-btn btn-animated hover-glow">
+        <mat-icon class="icon-bounce">add_comment</mat-icon>
         Añadir Comentario
       </button>
     </mat-dialog-actions>
