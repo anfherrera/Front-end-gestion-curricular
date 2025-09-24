@@ -421,20 +421,21 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
 private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
   console.log('📁 Descargando archivo por nombre:', nombreArchivo);
   
-  // Usar el endpoint genérico de descarga de archivos
-  const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-  
-  // Crear headers con autorización
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`
-  });
-  
-  this.http.get(url, {
-    headers: headers,
-    responseType: 'blob',
-    observe: 'response'
-  }).subscribe({
+  // Usar el endpoint específico de paz-salvo
+  if (idSolicitud) {
+    const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargarOficio/${idSolicitud}`;
+    
+    // Crear headers con autorización
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    
+    this.http.get(url, {
+      headers: headers,
+      responseType: 'blob',
+      observe: 'response'
+    }).subscribe({
     next: (response) => {
       console.log('✅ Archivo descargado exitosamente');
       
@@ -492,6 +493,42 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
       this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
     }
   });
+  } else {
+    // Fallback: usar endpoint genérico si no hay idSolicitud
+    console.log('⚠️ No hay idSolicitud, usando endpoint genérico');
+    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    
+    this.http.get(url, {
+      headers: headers,
+      responseType: 'blob',
+      observe: 'response'
+    }).subscribe({
+      next: (response) => {
+        console.log('✅ Archivo descargado exitosamente (endpoint genérico)');
+        
+        const blob = response.body!;
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = nombreDescarga || nombreArchivo;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        this.mostrarMensaje('Archivo descargado exitosamente', 'success');
+      },
+      error: (err) => {
+        console.error('❌ Error al descargar archivo (endpoint genérico):', err);
+        this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
+      }
+    });
+  }
 }
 
 /**

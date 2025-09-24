@@ -148,8 +148,14 @@ export class PazSalvoService {
   }
 
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    // Usar el endpoint genérico de archivos (igual que homologación)
-    const url = `http://localhost:5000/api/archivos/subir/pdf`;
+    // Determinar la URL correcta
+    let url: string;
+    if (idSolicitud) {
+      url = `http://localhost:5000/api/solicitudes-pazysalvo/${idSolicitud}/subir-archivo`;
+    } else {
+      // Fallback al endpoint genérico si no hay idSolicitud
+      url = `http://localhost:5000/api/archivos/subir/pdf`;
+    }
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -174,8 +180,8 @@ export class PazSalvoService {
     const formData = new FormData();
     formData.append('file', archivo);
     
-    // Agregar idSolicitud si se proporciona
-    if (idSolicitud) {
+    // Agregar idSolicitud si se proporciona (solo para endpoint genérico)
+    if (idSolicitud && !url.includes('/subir-archivo')) {
       formData.append('idSolicitud', idSolicitud.toString());
       console.log('📎 Asociando archivo a solicitud ID:', idSolicitud);
     }
@@ -221,6 +227,14 @@ export class PazSalvoService {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: idSolicitud,
       nuevoEstado: 'APROBADA'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  actualizarEstadoSolicitud(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: idSolicitud,
+      nuevoEstado: nuevoEstado,
+      comentario: comentario
     }, { headers: this.getAuthHeaders() });
   }
 

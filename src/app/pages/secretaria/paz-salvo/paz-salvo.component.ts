@@ -65,8 +65,14 @@ export class SecretariaPazSalvoComponent implements OnInit {
   cargarSolicitudes(): void {
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
+        // Filtrar solo las solicitudes que están en estado APROBADA o APROBADA_FUNCIONARIO
+        const solicitudesFiltradas = sols.filter(sol => {
+          const estado = this.getEstadoActual(sol);
+          return estado === 'APROBADA' || estado === 'APROBADA_FUNCIONARIO';
+        });
+        
         // Transformar datos para RequestStatusTableComponent
-        this.solicitudes = sols.map(sol => ({
+        this.solicitudes = solicitudesFiltradas.map(sol => ({
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
@@ -75,6 +81,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
           comentarios: ''
         }));
         console.log('📋 Solicitudes cargadas para secretaría:', this.solicitudes);
+        console.log('📋 Total solicitudes recibidas:', sols.length);
+        console.log('📋 Solicitudes filtradas para secretaría:', solicitudesFiltradas.length);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes:', err);
@@ -105,7 +113,13 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Buscar la solicitud original por ID
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
+        // Filtrar solo las solicitudes que están en estado APROBADA o APROBADA_FUNCIONARIO
+        const solicitudesFiltradas = sols.filter(sol => {
+          const estado = this.getEstadoActual(sol);
+          return estado === 'APROBADA' || estado === 'APROBADA_FUNCIONARIO';
+        });
+        
+        this.selectedSolicitud = solicitudesFiltradas.find(sol => sol.id_solicitud === solicitudId);
         console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
       }
     });
@@ -221,20 +235,35 @@ export class SecretariaPazSalvoComponent implements OnInit {
     this.enviandoPDF = true;
     console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
 
-    // Simular envío del PDF (el estado ya se actualizó cuando se generó el documento)
-    setTimeout(() => {
-      console.log('✅ PDF enviado al estudiante exitosamente');
-      this.snackBar.open('PDF enviado al estudiante exitosamente ✅', 'Cerrar', { duration: 3000 });
-      this.enviandoPDF = false;
-      
-      // Limpiar el estado
-      this.documentoGenerado = false;
-      this.archivoPDF = null;
-      this.selectedSolicitud = undefined;
-      
-      // Recargar solicitudes
-      this.cargarSolicitudes();
-    }, 1000);
+    // Actualizar estado de la solicitud a FINALIZADA
+    this.pazSalvoService.actualizarEstadoSolicitud(this.selectedSolicitud.id_solicitud, 'FINALIZADA', 'Documento enviado al estudiante').subscribe({
+      next: () => {
+        console.log('✅ Estado de solicitud actualizado a FINALIZADA');
+        this.snackBar.open('PDF enviado al estudiante exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.enviandoPDF = false;
+        
+        // Limpiar el estado
+        this.documentoGenerado = false;
+        this.archivoPDF = null;
+        this.selectedSolicitud = undefined;
+        
+        // Recargar solicitudes
+        this.cargarSolicitudes();
+      },
+      error: (err) => {
+        console.error('❌ Error al actualizar estado de solicitud:', err);
+        this.snackBar.open('PDF enviado pero error al actualizar estado', 'Cerrar', { duration: 3000 });
+        this.enviandoPDF = false;
+        
+        // Limpiar el estado
+        this.documentoGenerado = false;
+        this.archivoPDF = null;
+        this.selectedSolicitud = undefined;
+        
+        // Recargar solicitudes
+        this.cargarSolicitudes();
+      }
+    });
   }
 
   /**
