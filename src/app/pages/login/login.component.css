@@ -152,3 +152,132 @@ mat-form-field mat-icon {
 .login-right:hover .login-image {
   transform: scale(1.05);
 }
+
+/* Indicador de fortaleza de contraseña */
+.password-strength {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.strength-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.strength-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: block;
+  text-align: center;
+}
+
+/* Spinner en el botón */
+.login-spinner {
+  margin-right: 0.5rem;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Mejoras de accesibilidad */
+.login-button:focus {
+  outline: 2px solid #002776;
+  outline-offset: 2px;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+  }
+  
+  .login-left {
+    flex: none;
+    min-height: 60vh;
+  }
+  
+  .login-right {
+    flex: none;
+    min-height: 40vh;
+  }
+  
+  .login-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+  
+  .login-title {
+    font-size: 1.2rem;
+  }
+  
+  .login-logo {
+    width: 100px;
+  }
+}
+
+/* Animaciones mejoradas */
+.login-content {
+  animation: fadeInScale 0.8s ease;
+}
+
+@keyframes fadeInScale {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(20px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+/* Estados de error mejorados */
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border-left: 4px solid #f44336;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+  0% { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Mejoras en los campos de formulario */
+.login-input mat-form-field {
+  transition: all 0.3s ease;
+}
+
+.login-input mat-form-field:hover {
+  transform: translateY(-1px);
+}
+
+.login-input mat-form-field.mat-focused {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 39, 118, 0.15);
+}

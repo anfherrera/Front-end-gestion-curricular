@@ -1,101 +1,14 @@
 
-// import { Component } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-// import { CommonModule } from '@angular/common';
-// import { MatInputModule } from '@angular/material/input';
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatIconModule } from '@angular/material/icon';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatCheckboxModule } from '@angular/material/checkbox';
-// import { Router } from '@angular/router';
-// import { AuthService } from '../../core/services/auth.service';
-// import { ApiService } from '../../core/services/api.service';
-
-// @Component({
-//   selector: 'app-login',
-//   standalone: true,
-//   imports: [
-//     CommonModule,
-//     ReactiveFormsModule,
-//     MatInputModule,
-//     MatButtonModule,
-//     MatIconModule,
-//     MatFormFieldModule,
-//     MatCheckboxModule
-//   ],
-//   templateUrl: './login.component.html',
-//   styleUrls: ['./login.component.css']
-// })
-// export class LoginComponent {
-//   loginForm: FormGroup;
-//   hide = true;
-//   errorMensaje = '';
-//   cargando = false;
-
-//   constructor(
-//     private fb: FormBuilder,
-//     private authService: AuthService,
-//     private apiService: ApiService,
-//     private router: Router
-//   ) {
-//     this.loginForm = this.fb.group({
-//       correo: ['', [Validators.required, Validators.email]],
-//       password: ['', [Validators.required, Validators.minLength(8)]],
-//       remember: [false]
-//     });
-//   }
-
-//   onLogin(): void {
-//     if (this.loginForm.valid) {
-//       const { correo, password } = this.loginForm.value;
-//       this.cargando = true;
-//       this.errorMensaje = '';
-
-//       this.apiService.login(correo, password).subscribe({
-//         next: (response: any) => {
-//           console.log('✅ Respuesta del backend:', response);
-//           console.log('✅ Tipo de respuesta:', typeof response);
-//           console.log('✅ Keys de la respuesta:', Object.keys(response));
-
-//           if (response.token && response.usuario) {
-//             // Guardar token y usuario en AuthService
-//             this.authService.setToken(response.token);
-//             this.authService.setUsuario(response.usuario);
-//             this.authService.setRole(response.usuario.rol?.nombre || 'Usuario');
-
-//             // ✅ Restaurar sesión (esto asegura que el temporizador empiece)
-//             this.authService.restoreSession();
-
-//             // Redirigir al home
-//             this.router.navigate(['/home']);
-//           } else {
-//             console.log('❌ Respuesta no tiene token o usuario:', response);
-//             this.errorMensaje = 'Error: no se recibió token o usuario.';
-//           }
-
-//           this.cargando = false;
-//         },
-//         error: (err) => {
-//           console.error('❌ Error en la autenticación', err);
-//           console.error('❌ Status:', err.status);
-//           console.error('❌ Error body:', err.error);
-//           this.errorMensaje = 'Credenciales incorrectas o error en el servidor.';
-//           this.cargando = false;
-//         }
-//       });
-//     }
-//   }
-// }
-
-//====================================
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
@@ -110,33 +23,93 @@ import { ApiService } from '../../core/services/api.service';
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   hide = true;
   errorMensaje = '';
   cargando = false;
+  passwordStrength = 0;
+  showPasswordStrength = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {
     this.loginForm = this.fb.group({
-      correo: ['', [Validators.required, Validators.email]],
+      correo: ['', [Validators.required, Validators.email, this.unicaucaEmailValidator]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       remember: [false]
     });
   }
 
+  ngOnInit(): void {
+    // Verificar si ya está autenticado
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/welcome']);
+    }
+
+    // Suscribirse a cambios en la contraseña para mostrar fortaleza
+    this.loginForm.get('password')?.valueChanges.subscribe(password => {
+      this.calculatePasswordStrength(password);
+    });
+  }
+
+  // Validador personalizado para correos de Unicauca
+  private unicaucaEmailValidator(control: AbstractControl): {[key: string]: any} | null {
+    const email = control.value;
+    if (!email) return null;
+    
+    const unicaucaPattern = /^[a-zA-Z0-9._%+-]+@unicauca\.edu\.co$/;
+    return unicaucaPattern.test(email) ? null : { 'unicaucaEmail': true };
+  }
+
+  // Calcular fortaleza de contraseña
+  private calculatePasswordStrength(password: string): void {
+    if (!password) {
+      this.passwordStrength = 0;
+      this.showPasswordStrength = false;
+      return;
+    }
+
+    this.showPasswordStrength = true;
+    let strength = 0;
+
+    // Longitud mínima
+    if (password.length >= 8) strength += 25;
+    if (password.length >= 12) strength += 25;
+
+    // Caracteres especiales
+    if (/[A-Z]/.test(password)) strength += 25;
+    if (/[0-9]/.test(password)) strength += 25;
+
+    this.passwordStrength = strength;
+  }
+
+  getPasswordStrengthColor(): string {
+    if (this.passwordStrength < 50) return '#f44336'; // Rojo
+    if (this.passwordStrength < 75) return '#ff9800'; // Naranja
+    return '#4caf50'; // Verde
+  }
+
+  getPasswordStrengthText(): string {
+    if (this.passwordStrength < 50) return 'Débil';
+    if (this.passwordStrength < 75) return 'Media';
+    return 'Fuerte';
+  }
+
   onLogin(): void {
     if (this.loginForm.valid) {
-      const { correo, password } = this.loginForm.value;
+      const { correo, password, remember } = this.loginForm.value;
       this.cargando = true;
       this.errorMensaje = '';
 
@@ -145,31 +118,98 @@ export class LoginComponent {
           console.log('✅ Respuesta del backend:', response);
 
           if (response.token && response.usuario) {
-            // Guardar en AuthService
+            // Guardar en AuthService (esto ya maneja localStorage internamente)
             this.authService.setToken(response.token);
             this.authService.setUsuario(response.usuario);
             this.authService.setRole(response.usuario.rol?.nombre || 'Usuario');
             this.authService.restoreSession();
 
-            // ✅ Guardar también en localStorage
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('usuario', JSON.stringify(response.usuario));
+            // Mostrar mensaje de éxito
+            this.snackBar.open(`¡Bienvenido, ${response.usuario.nombre_completo}!`, 'Cerrar', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
 
             // Redirigir a la página de bienvenida
             this.router.navigate(['/welcome']);
           } else {
             console.error('❌ Respuesta inválida:', response);
-            this.errorMensaje = 'Error: no se recibió token o usuario.';
+            this.errorMensaje = 'Error: respuesta del servidor inválida.';
+            this.snackBar.open('Error en la respuesta del servidor', 'Cerrar', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
           }
 
           this.cargando = false;
         },
         error: (err) => {
           console.error('❌ Error en la autenticación', err);
-          this.errorMensaje = 'Credenciales incorrectas o error en el servidor.';
+          
+          // Manejo específico de errores
+          let errorMessage = 'Error al iniciar sesión';
+          
+          if (err.status === 401) {
+            errorMessage = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+          } else if (err.status === 403) {
+            errorMessage = 'Tu cuenta está deshabilitada. Contacta al administrador.';
+          } else if (err.status === 0) {
+            errorMessage = 'No se puede conectar al servidor. Verifica tu conexión.';
+          } else if (err.status >= 500) {
+            errorMessage = 'Error interno del servidor. Intenta más tarde.';
+          }
+
+          this.errorMensaje = errorMessage;
+          this.snackBar.open(errorMessage, 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+          
           this.cargando = false;
         }
       });
+    } else {
+      // Marcar todos los campos como tocados para mostrar errores
+      Object.keys(this.loginForm.controls).forEach(key => {
+        this.loginForm.get(key)?.markAsTouched();
+      });
+      
+      this.snackBar.open('Por favor, completa todos los campos correctamente', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['warning-snackbar']
+      });
     }
+  }
+
+  // Método para limpiar errores
+  clearError(): void {
+    this.errorMensaje = '';
+  }
+
+  // Método para obtener mensaje de error del correo
+  getEmailErrorMessage(): string {
+    const emailControl = this.loginForm.get('correo');
+    if (emailControl?.hasError('required')) {
+      return 'El correo es requerido';
+    }
+    if (emailControl?.hasError('email')) {
+      return 'Ingresa un correo válido';
+    }
+    if (emailControl?.hasError('unicaucaEmail')) {
+      return 'Debe ser un correo de @unicauca.edu.co';
+    }
+    return '';
+  }
+
+  // Método para obtener mensaje de error de la contraseña
+  getPasswordErrorMessage(): string {
+    const passwordControl = this.loginForm.get('password');
+    if (passwordControl?.hasError('required')) {
+      return 'La contraseña es requerida';
+    }
+    if (passwordControl?.hasError('minlength')) {
+      return 'La contraseña debe tener al menos 8 caracteres';
+    }
+    return '';
   }
 }
