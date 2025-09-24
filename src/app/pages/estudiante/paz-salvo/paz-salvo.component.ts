@@ -148,7 +148,24 @@ listarSolicitudes() {
         const estados = sol.estado_actual || sol.estadosSolicitud || [];
         const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
-        const rutaArchivo = sol.documentos?.length > 0 ? sol.documentos[0].ruta : '';
+        // Buscar específicamente oficios PDF (subidos por secretaria)
+        const oficiosPDF = sol.documentos?.filter((doc: any) => {
+          if (!doc.nombre) return false;
+          const nombre = doc.nombre.toLowerCase();
+          const esPDF = nombre.endsWith('.pdf');
+          const esOficio = nombre.includes('oficio') || 
+                          nombre.includes('resolucion') || 
+                          nombre.includes('paz') ||
+                          nombre.includes('salvo') ||
+                          nombre.includes('aprobacion');
+          return esPDF && esOficio;
+        }) || [];
+        
+        const rutaArchivo = oficiosPDF.length > 0 ? oficiosPDF[0].nombre : '';
+        
+        console.log('📄 Documentos de la solicitud:', sol.documentos);
+        console.log('📄 Oficios PDF encontrados:', oficiosPDF);
+        console.log('📄 Ruta archivo seleccionada:', rutaArchivo);
 
         const solicitudTransformada = {
           id: sol.id_solicitud,
@@ -374,24 +391,18 @@ verificarFuncionalidadComentarios(): void {
  */
 descargarOficio(idOficio: number, nombreArchivo: string): void {
   console.log('📥 Descargando oficio:', idOficio);
+  console.log('📥 Nombre archivo recibido:', nombreArchivo);
   
-  // Usar el endpoint genérico de descarga de archivos
-  this.descargarArchivoPorNombre(nombreArchivo, nombreArchivo, idOficio);
+  // Usar el mismo flujo que homologación: obtener oficios primero
+  this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
 }
 
 /**
- * Obtener oficios y descargar
+ * Obtener oficios y descargar (igual que homologación)
  */
 private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
-  // Para paz y salvo, usar el endpoint específico
-  const url = `http://localhost:5000/api/solicitudes-pazysalvo/obtenerOficios/${idSolicitud}`;
-  
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${localStorage.getItem('token')}`
-  });
-  
-  this.http.get(url, { headers }).subscribe({
-    next: (oficios: any) => {
+  this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
+    next: (oficios) => {
       console.log('📄 Oficios obtenidos:', oficios);
       
       if (!oficios || oficios.length === 0) {
