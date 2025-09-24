@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +12,8 @@ import { MatTableModule } from '@angular/material/table';
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo } from '../../../core/models/procesos.model';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
+import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
+import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 
 @Component({
   selector: 'app-paz-salvo',
@@ -24,16 +26,17 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
     MatSnackBarModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatTableModule
+    MatTableModule,
+    RequestStatusTableComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
 })
 export class PazSalvoComponent implements OnInit {
+  @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
+  
   solicitudes: Solicitud[] = [];
-  selectedSolicitud?: Solicitud;
-
-  displayedColumns: string[] = ['solicitante', 'fecha', 'accion'];
+  selectedSolicitud: Solicitud | null = null;
 
   constructor(
     private pazSalvoService: PazSalvoService,
@@ -49,18 +52,25 @@ export class PazSalvoComponent implements OnInit {
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
         this.solicitudes = sols;
-        if (sols.length) this.selectedSolicitud = sols[0];
       },
       error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
     });
   }
 
-  get archivosDelEstudiante(): Archivo[] {
-    return this.selectedSolicitud?.archivos ?? [];
+  onSolicitudSeleccionada(solicitudId: number | null): void {
+    if (solicitudId === null) {
+      this.selectedSolicitud = null;
+      return;
+    }
+    this.pazSalvoService.getPendingRequests().subscribe({
+      next: (sols) => {
+        this.selectedSolicitud = sols.find(sol => sol.id === solicitudId) || null;
+      }
+    });
   }
 
-  seleccionarSolicitud(solicitud: Solicitud): void {
-    this.selectedSolicitud = solicitud;
+  get archivosDelEstudiante(): (Archivo & { estado?: 'pendiente' | 'aprobado' | 'rechazado' | 'error' })[] {
+    return this.selectedSolicitud?.archivos ?? [];
   }
 
   verArchivo(archivo: Archivo): void {
@@ -74,12 +84,26 @@ export class PazSalvoComponent implements OnInit {
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    this.pazSalvoService.approveRequest(this.selectedSolicitud.id).subscribe({
+    // Actualizar estado de todos los documentos a aprobado
+    const documentosActualizados = this.archivosDelEstudiante.map(archivo => ({
+      id_documento: archivo.id_documento,
+      estado: 'aprobado' as const,
+      comentario: null
+    }));
+
+    this.pazSalvoService.actualizarEstadoDocumentos(this.selectedSolicitud.id, documentosActualizados).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
+        this.selectedSolicitud = null;
+        this.requestStatusTable?.resetSelection();
       },
-      error: (err) => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.snackBar.open('Solicitud aprobada, pero error al actualizar documentos', 'Cerrar', { duration: 3000 });
+        this.cargarSolicitudes();
+        this.selectedSolicitud = null;
+        this.requestStatusTable?.resetSelection();
+      }
     });
   }
 
@@ -90,6 +114,8 @@ export class PazSalvoComponent implements OnInit {
       next: () => {
         this.snackBar.open('Validación completada', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
+        this.selectedSolicitud = null;
+        this.requestStatusTable?.resetSelection();
       },
       error: (err) => this.snackBar.open('Error al terminar validación', 'Cerrar', { duration: 3000 })
     });
@@ -113,9 +139,30 @@ export class PazSalvoComponent implements OnInit {
           next: () => {
             this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
+            this.selectedSolicitud = null;
+            this.requestStatusTable?.resetSelection();
           },
           error: (err) => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
         });
+      }
+    });
+  }
+
+  añadirComentario(archivo: Archivo): void {
+    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
+      width: '500px',
+      data: <ComentarioDialogData>{
+        titulo: 'Añadir Comentario',
+        descripcion: 'Agregue un comentario para este documento:',
+        nombreDocumento: archivo.nombre,
+        placeholder: 'Escriba su comentario aquí...'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((comentario: string) => {
+      if (comentario) {
+        // Aquí implementarías la lógica para guardar el comentario
+        this.snackBar.open(`Comentario añadido a ${archivo.nombre}`, 'Cerrar', { duration: 3000 });
       }
     });
   }

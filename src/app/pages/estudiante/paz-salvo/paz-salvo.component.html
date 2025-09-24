@@ -3,6 +3,7 @@
   <!-- Documentación Requerida -->
   <app-required-docs
     [requiredFiles]="documentosRequeridos"
+    [exclusiveFiles]="archivosExclusivos"
     [archivos]="archivosActuales">
   </app-required-docs>  
 
@@ -18,6 +19,7 @@
 
       <div class="enviar-solicitud mt-4">
         <button mat-raised-button color="primary"
+                class="btn-enviar"
                 [disabled]="!puedeEnviar()"
                 (click)="onSolicitudEnviada()">
           {{ textoBoton }}
@@ -36,7 +38,10 @@
 
       <app-request-status-table
         *ngIf="solicitudes.length > 0"
-        [solicitudes]="solicitudes">
+        [solicitudes]="solicitudes"
+        [showOficio]="true"
+        [showComentarios]="true"
+        [showSeleccionar]="false">
       </app-request-status-table>
     </mat-card-content>
   </mat-card>

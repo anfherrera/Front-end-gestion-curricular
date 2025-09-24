@@ -2,43 +2,16 @@
 
   <!-- 📌 Contenedor de solicitudes -->
   <mat-card class="card-section">
-    <mat-card-title class="card-title">Solicitudes Pendientes</mat-card-title>
+    <mat-card-title class="card-title">Solicitudes de Paz y Salvo Pendientes</mat-card-title>
     <mat-card-content>
-      <table mat-table [dataSource]="solicitudes" class="tabla-solicitudes" *ngIf="solicitudes.length > 0">
-
-        <!-- Solicitante -->
-        <ng-container matColumnDef="solicitante">
-          <th mat-header-cell *matHeaderCellDef>Solicitante</th>
-          <td mat-cell *matCellDef="let solicitud">{{ solicitud.usuario?.nombre_completo }}</td>
-        </ng-container>
-
-        <!-- Fecha de creación -->
-        <ng-container matColumnDef="fecha">
-          <th mat-header-cell *matHeaderCellDef>Fecha</th>
-          <td mat-cell *matCellDef="let solicitud">
-            {{ solicitud.fecha | date:'shortDate' }}
-          </td>
-        </ng-container>
-
-        <!-- Acción -->
-        <ng-container matColumnDef="accion">
-          <th mat-header-cell *matHeaderCellDef>Seleccionar</th>
-          <td mat-cell *matCellDef="let solicitud">
-            <button mat-icon-button color="primary"
-                    (click)="seleccionarSolicitud(solicitud)"
-                    [disabled]="selectedSolicitud?.id === solicitud.id">
-              <mat-icon>check_circle</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="['solicitante','fecha','accion']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['solicitante','fecha','accion'];"></tr>
-      </table>
-
-      <p *ngIf="solicitudes.length === 0" class="mensaje-vacio">
-        No hay solicitudes pendientes
-      </p>
+      <app-request-status-table
+        #requestStatusTable
+        [solicitudes]="solicitudes"
+        [showOficio]="false"
+        [showComentarios]="false"
+        [showSeleccionar]="true"
+        (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+      </app-request-status-table>
     </mat-card-content>
   </mat-card>
 
@@ -49,12 +22,41 @@
     </mat-card-title>
     <mat-card-content>
       <div *ngIf="archivosDelEstudiante.length > 0; else sinArchivos">
-        <div *ngFor="let archivo of archivosDelEstudiante" class="archivo-item">
-          <span class="archivo-nombre">{{ archivo.originalName }}</span>
-          <button mat-icon-button color="primary" (click)="verArchivo(archivo)">
-            <mat-icon>visibility</mat-icon>
-          </button>
-        </div>
+        <table mat-table [dataSource]="archivosDelEstudiante" class="tabla-archivos">
+          <!-- Nombre del archivo -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre del Archivo</th>
+            <td mat-cell *matCellDef="let archivo">{{ archivo.nombre }}</td>
+          </ng-container>
+
+          <!-- Estado -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let archivo">
+              <span [class]="'estado-' + (archivo.estado || 'pendiente')">
+                {{ archivo.estado || 'Pendiente' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let archivo">
+              <div class="acciones-container">
+                <button mat-icon-button color="primary" (click)="verArchivo(archivo)" matTooltip="Visualizar">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="añadirComentario(archivo)" matTooltip="Comentario">
+                  <mat-icon>comment</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['nombre', 'estado', 'acciones']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['nombre', 'estado', 'acciones'];"></tr>
+        </table>
       </div>
 
       <ng-template #sinArchivos>
@@ -66,13 +68,13 @@
   <!-- 📌 Botones de acción para la solicitud -->
   <div class="botones-acciones" *ngIf="selectedSolicitud">
     <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
-      Aprobar Solicitud
+      Aprobar Paz y Salvo
     </button>
     <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
-      Rechazar Solicitud
+      Rechazar Paz y Salvo
     </button>
-    <button mat-stroked-button color="accent" (click)="terminarValidacionSeleccionada()">
-      Terminar Validación
+    <button mat-raised-button color="accent" (click)="terminarValidacionSeleccionada()">
+      Enviar a Revisión
     </button>
   </div>
 

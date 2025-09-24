@@ -38,25 +38,116 @@
   padding: 16px;
 }
 
-/* Botones de acción dentro del contenedor */
-.secretaria-container .acciones button {
+/* Información de la solicitud */
+.info-solicitud {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #00138C;
+}
+
+.info-solicitud h3 {
+  color: #00138C;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.info-solicitud p {
+  margin: 8px 0;
+  color: #333;
+}
+
+/* Instrucciones */
+.instrucciones {
+  background-color: #e3f2fd;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #2196f3;
+}
+
+.instrucciones h3 {
+  color: #1976d2;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.instrucciones p {
+  margin: 8px 0;
+  color: #333;
+}
+
+/* Sección de subida de archivos */
+.file-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.file-info {
+  background-color: #f0f8ff;
+  padding: 12px;
   border-radius: 6px;
-  text-transform: none;
+  border: 1px solid #b3d9ff;
+}
+
+.file-info p {
+  margin: 4px 0;
+  color: #333;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+/* Botones personalizados */
+.select-file-btn,
+.upload-btn,
+.send-btn {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
   font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.secretaria-container .acciones button[color="primary"] {
-  background-color: #00138C;
-  color: #fff;
+.select-file-btn:hover,
+.upload-btn:hover,
+.send-btn:hover {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.secretaria-container .acciones button[color="warn"] {
-  background-color: #d32f2f;
-  color: #fff;
+.select-file-btn:disabled,
+.upload-btn:disabled,
+.send-btn:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Aplicar estilo a app-oficio-resolucion dentro de este contenedor */
-.secretaria-container app-oficio-resolucion {
-  display: block;
-  margin-top: 16px;
+.send-btn {
+  background-color: #00138C !important;
+}
+
+.send-btn:hover:not(:disabled) {
+  background-color: #001a99 !important;
+}
+
+/* Iconos en botones */
+.select-file-btn mat-icon,
+.upload-btn mat-icon,
+.send-btn mat-icon {
+  margin-right: 8px;
+  vertical-align: middle;
 }
