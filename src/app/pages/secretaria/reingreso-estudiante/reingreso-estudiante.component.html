@@ -1,1 +1,105 @@
-<p>reingreso-estudiante works!</p>
+<div class="secretaria-container">
+
+  <!-- Tabla de solicitudes pendientes usando componente genérico -->
+  <app-card-container
+    title="Solicitudes de Reingreso - Secretaría"
+    icon="assignment">
+
+    <app-request-status-table
+      [solicitudes]="solicitudes"
+      [showOficio]="false"
+      [showComentarios]="false"
+      [showSeleccionar]="true"
+      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+    </app-request-status-table>
+
+  </app-card-container>
+
+      <!-- Contenedor para generar documento usando componente genérico -->
+      <app-card-container
+        *ngIf="selectedSolicitud"
+        title="Generar Documento Oficio/Resolución"
+        icon="description">
+
+        <app-document-generator
+          [solicitud]="selectedSolicitud"
+          [template]="template"
+          [proceso]="'reingreso'"
+          [loading]="loading"
+          (generarDocumento)="onGenerarDocumento($event)"
+          (cancelar)="onCancelarGeneracion()">
+        </app-document-generator>
+
+      </app-card-container>
+
+      <!-- Contenedor para subir PDF y enviar al estudiante -->
+      <app-card-container
+        *ngIf="selectedSolicitud && documentoGenerado"
+        title="Subir PDF y Enviar al Estudiante"
+        icon="upload">
+
+        <div class="pdf-upload-section">
+          <p class="instruction">
+            📄 <strong>Paso 1:</strong> El documento Word ha sido generado y descargado.<br>
+            📤 <strong>Paso 2:</strong> Ahora sube el archivo PDF para enviar al estudiante.
+          </p>
+
+          <!-- Selección de archivo PDF -->
+          <div class="file-selection">
+            <input
+              type="file"
+              accept=".pdf"
+              (change)="onArchivoSeleccionado($event)"
+              #fileInput
+              class="file-input">
+
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="fileInput.click()"
+              class="select-file-btn">
+              <mat-icon>attach_file</mat-icon>
+              Seleccionar PDF
+            </button>
+
+            <span *ngIf="archivoPDF" class="selected-file">
+              ✅ {{ archivoPDF.name }}
+            </span>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="action-buttons">
+            <button
+              mat-raised-button
+              color="accent"
+              [disabled]="!archivoPDF || subiendoPDF"
+              (click)="subirPDF()"
+              class="upload-btn">
+              <mat-icon>cloud_upload</mat-icon>
+              <span *ngIf="subiendoPDF">Subiendo...</span>
+              <span *ngIf="!subiendoPDF">Subir PDF</span>
+            </button>
+
+            <button
+              mat-raised-button
+              color="primary"
+              [disabled]="!puedeEnviarPDF()"
+              (click)="enviarPDFAlEstudiante()"
+              class="send-btn">
+              <mat-icon>send</mat-icon>
+              <span *ngIf="enviandoPDF">Enviando...</span>
+              <span *ngIf="!enviandoPDF">Enviar al Estudiante</span>
+            </button>
+          </div>
+
+          <!-- Barra de progreso -->
+          <mat-progress-bar
+            *ngIf="subiendoPDF || enviandoPDF"
+            mode="indeterminate"
+            class="progress-bar">
+          </mat-progress-bar>
+        </div>
+
+      </app-card-container>
+
+</div>

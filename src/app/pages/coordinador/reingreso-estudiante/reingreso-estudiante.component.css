@@ -1,0 +1,164 @@
+.coordinador-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: #f5f7fa;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Tabla de solicitudes */
+.tabla-solicitudes {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.tabla-solicitudes th {
+  font-weight: 600;
+  background: #f0f0f0;
+}
+
+.tabla-solicitudes td,
+.tabla-solicitudes th {
+  padding: 8px 12px;
+}
+
+/* Tabla de documentos */
+.tabla-documentos {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.tabla-documentos th {
+  font-weight: 600;
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.tabla-documentos td,
+.tabla-documentos th {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.tabla-documentos tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Estilos para mat-table */
+.tabla-documentos mat-table {
+  background: transparent;
+}
+
+.tabla-documentos mat-header-row {
+  background-color: #f8f9fa;
+}
+
+.tabla-documentos mat-row:hover {
+  background-color: #f8f9fa;
+}
+
+/* Contenedor de acciones */
+.acciones-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.acciones-container button {
+  margin: 0;
+}
+
+/* Mejorar botones de acciones en tabla de documentos */
+.acciones-container button[mat-icon-button] {
+  background-color: #00138C;
+  color: white;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.acciones-container button[mat-icon-button]:hover {
+  background-color: #001a99;
+  transform: scale(1.05);
+}
+
+.acciones-container button[mat-icon-button] mat-icon {
+  color: white;
+}
+
+/* Archivos */
+.archivo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding: 8px 4px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.archivo-item:hover {
+  background-color: #f9f9f9;
+}
+
+.archivo-nombre {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #333333;
+  font-weight: 500;
+}
+
+/* Botones de acción */
+.botones-acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Mejorar botones de acción principales */
+.botones-acciones button {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.botones-acciones button:hover {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.botones-acciones button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Botón de rechazar con color diferente */
+.botones-acciones button[color="warn"] {
+  background-color: #d32f2f !important;
+}
+
+.botones-acciones button[color="warn"]:hover {
+  background-color: #c62828 !important;
+}
+
+/* Mensaje de vacío */
+.mensaje-vacio {
+  text-align: center;
+  color: #888888;
+  font-style: italic;
+  margin-top: 12px;
+}

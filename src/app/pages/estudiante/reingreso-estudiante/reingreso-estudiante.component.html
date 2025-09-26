@@ -1,1 +1,86 @@
-<p>reingreso-estudiante works!</p>
+<div class="container">
+  <div class="header-section">
+    <h1 class="page-title">
+      <mat-icon class="title-icon">school</mat-icon>
+      Solicitud de Reingreso
+    </h1>
+    <p class="page-description">
+      Aquí puedes crear y gestionar tus solicitudes de reingreso a la universidad.
+    </p>
+  </div>
+
+  <!-- Sección de documentos requeridos -->
+  <mat-card class="docs-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>description</mat-icon>
+        Documentos Requeridos
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-required-docs
+        [requiredFiles]="documentosRequeridos">
+      </app-required-docs>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Sección de carga de archivos -->
+  <mat-card class="upload-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>cloud_upload</mat-icon>
+        Cargar Documentos
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-file-upload
+        #fileUploadComponent
+        [archivos]="archivosActuales"
+        [reset]="resetFileUpload"
+        (archivosChange)="onArchivosChange($event)">
+      </app-file-upload>
+
+      <div class="upload-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!puedeEnviar()"
+          (click)="onSolicitudEnviada()"
+          class="send-button">
+          <mat-icon>send</mat-icon>
+          Enviar Solicitud
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Sección de solicitudes existentes -->
+  <mat-card class="requests-card" *ngIf="solicitudes.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>history</mat-icon>
+        Mis Solicitudes de Reingreso
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-request-status-table
+        [solicitudes]="solicitudes"
+        [showComentarios]="true"
+        [showOficio]="true"
+        (verComentarios)="verComentarios($event)"
+        (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
+      </app-request-status-table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Mensaje cuando no hay solicitudes -->
+  <mat-card class="empty-card" *ngIf="solicitudes.length === 0">
+    <mat-card-content>
+      <div class="empty-state">
+        <mat-icon class="empty-icon">inbox</mat-icon>
+        <h3>No tienes solicitudes de reingreso</h3>
+        <p>Crea tu primera solicitud cargando los documentos requeridos arriba.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,1 +1,89 @@
-<p>reingreso-estudiante works!</p>
+<div class="funcionario-container">
+
+  <!-- 📌 Contenedor de solicitudes usando componente genérico -->
+  <app-card-container
+    title="Solicitudes de Reingreso Pendientes"
+    icon="assignment">
+
+    <app-request-status-table
+      #requestStatusTable
+      [solicitudes]="solicitudes"
+      [showOficio]="false"
+      [showComentarios]="false"
+      [showSeleccionar]="true"
+      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+    </app-request-status-table>
+
+  </app-card-container>
+
+  <!-- 📌 Documentación de la solicitud seleccionada -->
+  <app-card-container
+    *ngIf="selectedSolicitud"
+    title="Documentación Adjunta"
+    icon="description">
+
+    <div *ngIf="documentosDelEstudiante.length > 0; else sinDocumentos">
+      <table mat-table [dataSource]="documentosDelEstudiante" class="tabla-documentos">
+
+        <!-- Nombre del documento -->
+        <ng-container matColumnDef="nombre_documento">
+          <th mat-header-cell *matHeaderCellDef>Nombre de documento</th>
+          <td mat-cell *matCellDef="let documento">{{ documento.nombre }}</td>
+        </ng-container>
+
+        <!-- Fecha de subida -->
+        <ng-container matColumnDef="fecha_subida">
+          <th mat-header-cell *matHeaderCellDef>Fecha en que se subió</th>
+          <td mat-cell *matCellDef="let documento">
+            {{ documento.fecha_documento | date:'shortDate' }}
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let documento">
+            <div class="acciones-container">
+              <button mat-icon-button color="primary" (click)="verDocumento(documento)"
+                      matTooltip="Visualizar documento">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" (click)="agregarComentario(documento)"
+                      matTooltip="Añadir comentario">
+                <mat-icon>comment</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['nombre_documento','fecha_subida','acciones']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['nombre_documento','fecha_subida','acciones'];"></tr>
+      </table>
+    </div>
+
+    <ng-template #sinDocumentos>
+      <p class="mensaje-vacio">No hay documentos cargados en esta solicitud de reingreso.</p>
+    </ng-template>
+
+  </app-card-container>
+
+  <!-- 📌 Botones de acción para la solicitud -->
+  <div class="botones-acciones" *ngIf="selectedSolicitud">
+    <button mat-raised-button color="primary"
+            [disabled]="!puedeAprobar()"
+            (click)="aprobarSolicitudSeleccionada()">
+      Aprobar Reingreso
+    </button>
+    <button mat-raised-button color="warn"
+            [disabled]="!puedeRechazar()"
+            (click)="rechazarSolicitudSeleccionada()">
+      Rechazar Reingreso
+    </button>
+    <button mat-stroked-button color="accent"
+            [disabled]="!puedeCompletarValidacion()"
+            (click)="completarValidacion()">
+      Enviar a Revisión
+    </button>
+  </div>
+
+</div>

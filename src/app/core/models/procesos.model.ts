@@ -99,3 +99,88 @@ export interface SolicitudHomologacionDTORespuesta {
   documentos: DocumentoHomologacion[];
 }
 
+// ================================
+// Modelos para Reingreso de Estudiante
+// ================================
+
+export interface SolicitudReingresoDTOPeticion {
+  id_solicitud?: number;
+  nombre_solicitud: string;
+  fecha_registro_solicitud: Date;
+  esSeleccionado?: boolean | null;
+  estado_actual?: EstadoSolicitudDTOPeticion;
+  objUsuario: UsuarioDTOPeticion;
+  documentos?: DocumentosDTOPeticion[];
+}
+
+export interface SolicitudReingresoDTORespuesta {
+  id_solicitud: number;
+  nombre_solicitud: string;
+  fecha_registro_solicitud: Date;
+  esSeleccionado?: boolean | null;
+  estadosSolicitud: EstadoSolicitudDTORespuesta[];
+  objUsuario: UsuarioDTORespuesta;
+  documentos: DocumentosDTORespuesta[];
+}
+
+export interface CambioEstadoSolicitudDTOPeticion {
+  idSolicitud: number;
+  nuevoEstado: string;
+}
+
+// ================================
+// DTOs base que heredan los de reingreso
+// ================================
+
+export interface EstadoSolicitudDTOPeticion {
+  id_estado?: number;
+  estado_actual: string;
+  fecha_registro_estado: Date;
+  comentario?: string;
+}
+
+export interface EstadoSolicitudDTORespuesta {
+  id_estado: number;
+  estado_actual: string;
+  fecha_registro_estado: Date;
+  comentario?: string;
+}
+
+export interface UsuarioDTOPeticion {
+  id_usuario: number;
+  nombre_completo: string;
+  rol: Rol;
+  codigo: string;
+  correo: string;
+  estado_usuario: boolean;
+  objPrograma: Programa;
+}
+
+export interface UsuarioDTORespuesta {
+  id_usuario: number;
+  nombre_completo: string;
+  rol: Rol;
+  codigo: string;
+  correo: string;
+  estado_usuario: boolean;
+  objPrograma: Programa;
+}
+
+export interface DocumentosDTOPeticion {
+  id_documento?: number;
+  nombre: string;
+  ruta_documento?: string;
+  fecha_documento: Date;
+  esValido: boolean;
+  comentario?: string;
+}
+
+export interface DocumentosDTORespuesta {
+  id_documento: number;
+  nombre: string;
+  ruta_documento: string;
+  fecha_documento: Date;
+  esValido: boolean;
+  comentario?: string;
+}
+
