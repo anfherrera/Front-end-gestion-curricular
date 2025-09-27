@@ -1,7 +1,6 @@
 // src/app/pages/estudiante/cursos-intersemestrales/cursos-intersemestrales.routes.ts
 import { Routes } from '@angular/router';
 import { CursosIntersemestralesComponent } from './cursos-intersemestrales.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { SolicitudesComponent } from './solicitudes/solicitudes.component';
 import { InscripcionesComponent } from './inscripciones/inscripciones.component';
 import { CursosOfertadosComponent } from './cursos-ofertados/cursos-ofertados.component';
@@ -13,8 +12,7 @@ export const cursosIntersemestralesRoutes: Routes = [
     path: '',
     component: CursosIntersemestralesComponent,
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent },
+      { path: '', redirectTo: 'cursos-ofertados', pathMatch: 'full' },
       { path: 'solicitudes', component: SolicitudesComponent },
       { path: 'inscripciones', component: InscripcionesComponent },
       { path: 'cursos-ofertados', component: CursosOfertadosComponent },
