@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, filter } from 'rxjs';
 import { NotificacionesService, Notificacion } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -39,10 +39,34 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
 
   constructor(
     private notificacionesService: NotificacionesService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    console.log('🚀 CURSOS INTERSEMESTRALES COMPONENT INICIADO');
+    console.log('📍 URL actual:', this.router.url);
+    
+    // Forzar navegación a cursos-ofertados si estamos en la ruta base o en solicitudes
+    const currentUrl = this.router.url;
+    if (currentUrl.endsWith('/cursos-intersemestrales') || 
+        currentUrl.endsWith('/cursos-intersemestrales/') ||
+        currentUrl.includes('/cursos-intersemestrales/solicitudes')) {
+      console.log('🔄 Redirigiendo a cursos-ofertados desde:', currentUrl);
+      this.router.navigate(['cursos-ofertados'], { relativeTo: this.route });
+    }
+    
+    // Escuchar cambios de navegación
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event: NavigationEnd) => {
+        console.log('🔗 Navegación a:', event.url);
+      });
+    
     this.cargarNotificaciones();
     this.iniciarPollingNotificaciones();
   }

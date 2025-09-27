@@ -29,6 +29,7 @@ export class CursosOfertadosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('🎯 CURSOS OFERTADOS COMPONENT CARGADO');
     this.usuario = this.authService.getUsuario();
     this.loadCursos();
   }

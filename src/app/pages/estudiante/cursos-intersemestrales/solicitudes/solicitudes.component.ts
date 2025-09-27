@@ -17,6 +17,7 @@ export class SolicitudesComponent {
   loading = false;
 
   constructor(private cursosService: CursosIntersemestralesService) {
+    console.log('❌ SOLICITUDES COMPONENT CARGADO (NO DEBERÍA)');
     this.loadSolicitudes();
   }
 

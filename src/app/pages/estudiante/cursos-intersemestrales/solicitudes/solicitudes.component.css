@@ -9,6 +9,25 @@
   font-style: italic;
 }
 
+.sin-solicitudes {
+  margin-top: 20px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 1px dashed #ccc;
+}
+
+.sin-solicitudes p {
+  margin: 8px 0;
+  color: #666;
+}
+
+.sin-solicitudes p:first-child {
+  font-weight: 500;
+  color: #333;
+}
+
 table {
   width: 100%;
   margin-top: 16px;

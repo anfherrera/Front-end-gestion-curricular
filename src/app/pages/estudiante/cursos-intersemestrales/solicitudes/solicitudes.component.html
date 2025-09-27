@@ -1,12 +1,15 @@
 <app-card-container title="Mis Solicitudes">
   <div *ngIf="loading">Cargando solicitudes...</div>
 
+  <!-- Solo mostrar el formulario si no hay solicitudes existentes -->
   <app-solicitud-form 
+    *ngIf="!loading && solicitudes.length === 0"
     (submitForm)="onSubmitSolicitud($event)" 
     (clearForm)="onClearSolicitud()">
   </app-solicitud-form>
 
-  <table *ngIf="solicitudes.length > 0" mat-table [dataSource]="solicitudes" class="mat-elevation-z8">
+  <!-- Mostrar tabla solo si hay solicitudes -->
+  <table *ngIf="!loading && solicitudes.length > 0" mat-table [dataSource]="solicitudes" class="mat-elevation-z8">
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> ID </th>
       <td mat-cell *matCellDef="let s"> {{ s.id }} </td>
@@ -25,4 +28,10 @@
     <tr mat-header-row *matHeaderRowDef="['id', 'fecha', 'estado']"></tr>
     <tr mat-row *matRowDef="let row; columns: ['id', 'fecha', 'estado'];"></tr>
   </table>
+
+  <!-- Mensaje cuando no hay solicitudes -->
+  <div *ngIf="!loading && solicitudes.length === 0" class="sin-solicitudes">
+    <p>No tienes solicitudes registradas.</p>
+    <p>Puedes crear una nueva solicitud usando el formulario de arriba.</p>
+  </div>
 </app-card-container>

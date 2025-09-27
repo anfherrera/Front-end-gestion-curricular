@@ -69,12 +69,15 @@ export class NotificacionesService {
     return this.http.get<Notificacion[]>(`${this.BASE_URL}/dashboard/${idUsuario}`)
       .pipe(
         map(notificaciones => {
-          const noLeidas = notificaciones.filter(n => !n.leida).length;
-          const urgentes = notificaciones.filter(n => n.esUrgente && !n.leida).length;
-          const recientes = notificaciones.slice(0, 5); // Últimas 5
+          // Asegurar que notificaciones sea un array
+          const notificacionesArray = Array.isArray(notificaciones) ? notificaciones : [];
+          
+          const noLeidas = notificacionesArray.filter(n => !n.leida).length;
+          const urgentes = notificacionesArray.filter(n => n.esUrgente && !n.leida).length;
+          const recientes = notificacionesArray.slice(0, 5); // Últimas 5
 
           // Actualizar subjects
-          this.notificacionesSubject.next(notificaciones);
+          this.notificacionesSubject.next(notificacionesArray);
           this.noLeidasSubject.next(noLeidas);
 
           return {
