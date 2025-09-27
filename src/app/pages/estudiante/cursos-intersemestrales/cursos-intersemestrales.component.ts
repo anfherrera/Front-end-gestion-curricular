@@ -120,4 +120,13 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
   getNotificacionesUrgentes(): number {
     return this.notificacionesUrgentes;
   }
+
+  hasActiveRoute(): boolean {
+    const currentUrl = this.router.url;
+    return currentUrl.includes('/solicitudes') || 
+           currentUrl.includes('/cursos-ofertados') || 
+           currentUrl.includes('/cursos-preinscripcion') || 
+           currentUrl.includes('/inscripciones') || 
+           currentUrl.includes('/ver-solicitud');
+  }
 }

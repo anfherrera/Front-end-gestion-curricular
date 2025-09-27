@@ -45,6 +45,59 @@
   </nav>
 
   <main class="content">
+    <!-- Texto informativo cuando no hay ruta activa -->
+    <div *ngIf="!hasActiveRoute()" class="info-container">
+      <div class="info-content">
+        <mat-icon class="info-icon">info</mat-icon>
+        <h2>Bienvenido a Cursos Intersemestrales de Verano</h2>
+        <p>En esta sección puedes realizar diferentes acciones relacionadas con los cursos intersemestrales:</p>
+        
+        <div class="info-options">
+          <div class="info-option">
+            <mat-icon class="option-icon">add_circle</mat-icon>
+            <div class="option-text">
+              <h3>Realizar Solicitud</h3>
+              <p>Solicita la apertura de un curso nuevo que no esté en la lista de cursos ofertados</p>
+            </div>
+          </div>
+          
+          <div class="info-option">
+            <mat-icon class="option-icon">school</mat-icon>
+            <div class="option-text">
+              <h3>Cursos Disponibles</h3>
+              <p>Consulta todos los cursos intersemestrales disponibles para el período de verano</p>
+            </div>
+          </div>
+          
+          <div class="info-option">
+            <mat-icon class="option-icon">playlist_add</mat-icon>
+            <div class="option-text">
+              <h3>Ver Lista de Cursos para Preinscripción</h3>
+              <p>Revisa los cursos disponibles para preinscribirte y selecciona el que desees</p>
+            </div>
+          </div>
+          
+          <div class="info-option">
+            <mat-icon class="option-icon">payment</mat-icon>
+            <div class="option-text">
+              <h3>Mis Inscripciones</h3>
+              <p>Gestiona tus inscripciones y sube los archivos de pago correspondientes</p>
+            </div>
+          </div>
+          
+          <div class="info-option">
+            <mat-icon class="option-icon">list_alt</mat-icon>
+            <div class="option-text">
+              <h3>Seguimiento</h3>
+              <p>Consulta el estado y seguimiento de todas tus solicitudes e inscripciones</p>
+            </div>
+          </div>
+        </div>
+        
+        <p class="info-footer">Selecciona una opción del menú superior para comenzar</p>
+      </div>
+    </div>
+    
     <router-outlet></router-outlet>
   </main>
 </div>
