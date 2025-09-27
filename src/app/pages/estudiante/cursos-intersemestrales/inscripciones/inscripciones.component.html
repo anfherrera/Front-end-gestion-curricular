@@ -3,7 +3,7 @@
 
   <!-- Sección de Preinscripciones -->
   <div *ngIf="!cargando && solicitudes.length > 0" class="section">
-    <h3>📋 Mis Preinscripciones</h3>
+    <h3>Mis Preinscripciones</h3>
     <table mat-table [dataSource]="solicitudes" class="mat-elevation-z8">
       
       <!-- Curso -->
@@ -39,7 +39,7 @@
 
   <!-- Sección de Inscripciones -->
   <div *ngIf="!cargando && inscripciones.length > 0" class="section">
-    <h3>✅ Mis Inscripciones</h3>
+    <h3>Mis Inscripciones</h3>
     <table mat-table [dataSource]="inscripciones" class="mat-elevation-z8">
 
       <!-- ID del curso -->
@@ -66,7 +66,15 @@
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let inscripcion">
-          <button mat-raised-button color="warn" (click)="onCancelarInscripcion(inscripcion)">Cancelar</button>
+          <button *ngIf="inscripcion.estado !== 'cancelada'" 
+                  mat-raised-button 
+                  color="warn" 
+                  (click)="onCancelarInscripcion(inscripcion)">
+            Cancelar
+          </button>
+          <span *ngIf="inscripcion.estado === 'cancelada'" class="estado-cancelada">
+            Ya cancelada
+          </span>
         </td>
       </ng-container>
 
