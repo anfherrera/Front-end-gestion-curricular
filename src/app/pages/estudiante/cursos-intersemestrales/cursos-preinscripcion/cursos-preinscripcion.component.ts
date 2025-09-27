@@ -53,13 +53,6 @@ export class CursosPreinscripcionComponent implements OnInit {
         console.error('❌ Error cargando cursos de preinscripción', err);
         // Fallback a cursos legacy
         this.loadCursosLegacy();
-      },
-      complete: () => {
-        // Si no hay datos, mostrar datos de prueba
-        if (this.cursos.length === 0) {
-          console.log('⚠️ No hay cursos para preinscripción, mostrando datos de prueba');
-          this.loadDatosPrueba();
-        }
       }
     });
   }

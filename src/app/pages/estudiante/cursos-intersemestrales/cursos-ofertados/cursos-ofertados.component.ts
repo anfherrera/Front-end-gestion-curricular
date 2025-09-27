@@ -51,13 +51,6 @@ export class CursosOfertadosComponent implements OnInit {
         console.error('❌ Error cargando cursos de verano', err);
         // Fallback a cursos legacy si hay error
         this.loadCursosLegacy();
-      },
-      complete: () => {
-        // Si no hay datos, mostrar datos de prueba
-        if (this.cursos.length === 0) {
-          console.log('⚠️ No hay cursos de verano, mostrando datos de prueba');
-          this.loadDatosPrueba();
-        }
       }
     });
   }

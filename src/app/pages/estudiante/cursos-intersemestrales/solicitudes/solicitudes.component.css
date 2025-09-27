@@ -46,6 +46,10 @@
   margin-bottom: 16px;
 }
 
+.success-icon {
+  color: #4caf50 !important;
+}
+
 .success-message p {
   margin: 8px 0;
   color: #2e7d32;

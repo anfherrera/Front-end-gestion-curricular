@@ -81,15 +81,10 @@ export class SolicitudesComponent implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error cargando cursos disponibles:', error);
-        // Si falla, usar datos de prueba
-        this.loadCursosDisponiblesPrueba();
-      },
-      complete: () => {
-        // Si no hay datos, mostrar datos de prueba
-        if (this.cursosDisponibles.length === 0) {
-          console.log('⚠️ No hay cursos disponibles, mostrando datos de prueba');
-          this.loadCursosDisponiblesPrueba();
-        }
+        this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
@@ -149,22 +144,10 @@ export class SolicitudesComponent implements OnInit {
             message: error.message
           });
           
-          // Si es un error 200 con "Unknown Error", simular éxito temporalmente
-          if (error.status === 200 && error.statusText === 'Unknown Error') {
-            console.log('⚠️ Error 200 detectado, simulando éxito temporal');
-            this.solicitudEnviada = true;
-            this.solicitudForm.reset();
-            this.loadUserData();
-            this.snackBar.open('¡Solicitud enviada exitosamente! (Simulado - Backend en desarrollo)', 'Cerrar', {
-              duration: 5000,
-              panelClass: ['success-snackbar']
-            });
-          } else {
-            this.snackBar.open('Error al enviar la solicitud. Inténtalo de nuevo.', 'Cerrar', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
-          }
+          this.snackBar.open('Error al enviar la solicitud. Inténtalo de nuevo.', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
       });
     } else {
