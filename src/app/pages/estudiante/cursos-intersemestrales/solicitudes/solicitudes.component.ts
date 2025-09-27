@@ -65,13 +65,14 @@ export class SolicitudesComponent implements OnInit {
   }
 
   private loadCursosDisponibles(): void {
+    console.log('🔄 Cargando cursos disponibles para solicitud...');
     this.cursosService.getCursosDisponiblesParaSolicitud().subscribe({
       next: (cursos) => {
         this.cursosDisponibles = cursos;
         console.log('📚 Cursos disponibles cargados:', cursos);
       },
       error: (error) => {
-        console.error('Error cargando cursos disponibles:', error);
+        console.error('❌ Error cargando cursos disponibles:', error);
         this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', {
           duration: 3000,
           panelClass: ['error-snackbar']

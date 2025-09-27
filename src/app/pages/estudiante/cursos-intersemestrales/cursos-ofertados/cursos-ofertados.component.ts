@@ -36,18 +36,28 @@ export class CursosOfertadosComponent implements OnInit {
 
   loadCursos() {
     this.cargando = true;
+    console.log('🔄 Cargando cursos de verano...');
     
     // Cargar cursos de verano disponibles
     this.cursosService.getCursosDisponibles().subscribe({
       next: (cursosVerano) => {
+        console.log('✅ Cursos de verano recibidos:', cursosVerano);
         this.cursosVerano = cursosVerano;
         this.cursos = this.mapCursosToLegacy(cursosVerano);
+        console.log('📋 Cursos mapeados:', this.cursos);
         this.cargando = false;
       },
       error: (err) => {
-        console.error('Error cargando cursos de verano', err);
+        console.error('❌ Error cargando cursos de verano', err);
         // Fallback a cursos legacy si hay error
         this.loadCursosLegacy();
+      },
+      complete: () => {
+        // Si no hay datos, mostrar datos de prueba
+        if (this.cursos.length === 0) {
+          console.log('⚠️ No hay cursos de verano, mostrando datos de prueba');
+          this.loadDatosPrueba();
+        }
       }
     });
   }
@@ -63,6 +73,41 @@ export class CursosOfertadosComponent implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  private loadDatosPrueba() {
+    console.log('📚 Cargando datos de prueba...');
+    this.cursos = [
+      {
+        codigo: 'MAT-101',
+        nombre: 'Matemáticas Básicas',
+        docente: 'Dr. Juan Pérez',
+        cupos: 30,
+        creditos: 3,
+        espacio: 'Aula 201',
+        estado: 'Disponible'
+      },
+      {
+        codigo: 'FIS-102',
+        nombre: 'Física General',
+        docente: 'Dra. María García',
+        cupos: 25,
+        creditos: 4,
+        espacio: 'Laboratorio 1',
+        estado: 'Disponible'
+      },
+      {
+        codigo: 'QUI-103',
+        nombre: 'Química Orgánica',
+        docente: 'Dr. Carlos López',
+        cupos: 20,
+        creditos: 3,
+        espacio: 'Aula 305',
+        estado: 'Disponible'
+      }
+    ];
+    this.cargando = false;
+    console.log('✅ Datos de prueba cargados:', this.cursos);
   }
 
   private mapCursosToLegacy(cursosVerano: CursoOfertadoVerano[]): Curso[] {

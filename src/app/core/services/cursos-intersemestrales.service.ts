@@ -163,17 +163,18 @@ export class CursosIntersemestralesService {
   
   // Obtener cursos disponibles para verano
   getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
-    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/disponibles`);
+    console.log('🌐 Llamando a API:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
   }
 
   // Preinscripción a curso de verano
   crearPreinscripcion(payload: CreatePreinscripcionDTO): Observable<SolicitudCursoVerano> {
-    return this.http.post<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/preinscripcion`, payload);
+    return this.http.post<SolicitudCursoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES, payload);
   }
 
   // Inscripción a curso de verano
   crearInscripcion(payload: CreateInscripcionDTO): Observable<SolicitudCursoVerano> {
-    return this.http.post<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/inscripcion`, payload);
+    return this.http.post<SolicitudCursoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCIONES, payload);
   }
 
   // Obtener solicitudes de un usuario
@@ -244,22 +245,24 @@ export class CursosIntersemestralesService {
   
   // Obtener todos los cursos disponibles para solicitar
   getCursosDisponiblesParaSolicitud(): Observable<CursoDisponible[]> {
-    return this.http.get<CursoDisponible[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-disponibles`);
+    console.log('🌐 Llamando a API:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
+    return this.http.get<CursoDisponible[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
   }
 
   // Obtener condiciones de solicitud (enum)
   getCondicionesSolicitud(): Observable<CondicionSolicitudVerano[]> {
-    return this.http.get<CondicionSolicitudVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/condiciones-solicitud`);
+    console.log('🌐 Llamando a API:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CONDICIONES);
+    return this.http.get<CondicionSolicitudVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CONDICIONES);
   }
 
   // Crear solicitud de curso nuevo
   crearSolicitudCursoNuevo(payload: CreateSolicitudCursoNuevoDTO): Observable<SolicitudCursoNuevo> {
-    return this.http.post<SolicitudCursoNuevo>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`, payload);
+    return this.http.post<SolicitudCursoNuevo>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO, payload);
   }
 
   // Obtener solicitudes de curso nuevo del usuario
   getSolicitudesCursoNuevoUsuario(idUsuario: number): Observable<SolicitudCursoNuevo[]> {
-    return this.http.get<SolicitudCursoNuevo[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo/usuario/${idUsuario}`);
+    return this.http.get<SolicitudCursoNuevo[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO_USUARIO(idUsuario));
   }
 
   // ====== MÉTODOS LEGACY (para compatibilidad) ======
