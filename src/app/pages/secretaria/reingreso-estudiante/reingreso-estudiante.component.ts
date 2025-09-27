@@ -154,27 +154,13 @@ export class ReingresoEstudianteComponent implements OnInit {
         // Descargar archivo Word
         this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
 
-        // Actualizar estado de la solicitud a APROBADA
-        this.reingresoService.approveDefinitively(this.selectedSolicitud!.id_solicitud).subscribe({
-          next: () => {
-            console.log('✅ Estado de solicitud actualizado a APROBADA');
+        // Marcar que el documento fue generado (SIN cambiar el estado aún)
+        this.documentoGenerado = true;
 
-            // Marcar que el documento fue generado
-            this.documentoGenerado = true;
+        this.snackBar.open('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
+        this.loading = false;
 
-            this.snackBar.open('Documento Word generado, descargado y solicitud aprobada. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
-            this.loading = false;
-
-            // Recargar solicitudes para mostrar el cambio de estado
-            this.cargarSolicitudes();
-          },
-          error: (err: any) => {
-            console.error('❌ Error al actualizar estado de solicitud:', err);
-            this.snackBar.open('Documento generado pero error al actualizar estado', 'Cerrar', { duration: 3000 });
-            this.documentoGenerado = true;
-            this.loading = false;
-          }
-        });
+        console.log('✅ Documento generado, estado de solicitud NO cambiado aún');
       },
       error: (err: any) => {
         console.error('❌ Error al generar documento:', err);
@@ -217,6 +203,8 @@ export class ReingresoEstudianteComponent implements OnInit {
 
     this.subiendoPDF = true;
     console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+    console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
+    console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
     // Crear un nuevo archivo con un nombre que contenga las palabras clave necesarias
     const nombreOriginal = this.archivoPDF.name;
@@ -262,20 +250,28 @@ export class ReingresoEstudianteComponent implements OnInit {
     this.enviandoPDF = true;
     console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
 
-    // Simular envío del PDF (el estado ya se actualizó cuando se generó el documento)
-    setTimeout(() => {
-      console.log('✅ PDF enviado al estudiante exitosamente');
-      this.snackBar.open('PDF enviado al estudiante exitosamente ✅', 'Cerrar', { duration: 3000 });
-      this.enviandoPDF = false;
+    // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
+    this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+      next: () => {
+        console.log('✅ Estado de solicitud actualizado a APROBADA');
+        console.log('✅ PDF enviado al estudiante exitosamente');
+        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.enviandoPDF = false;
 
-      // Limpiar el estado
-      this.documentoGenerado = false;
-      this.archivoPDF = null;
-      this.selectedSolicitud = undefined;
+        // Limpiar el estado
+        this.documentoGenerado = false;
+        this.archivoPDF = null;
+        this.selectedSolicitud = undefined;
 
-      // Recargar solicitudes
-      this.cargarSolicitudes();
-    }, 1000);
+        // Recargar solicitudes para mostrar el cambio de estado
+        this.cargarSolicitudes();
+      },
+      error: (err: any) => {
+        console.error('❌ Error al actualizar estado de solicitud:', err);
+        this.snackBar.open('Error al enviar PDF al estudiante', 'Cerrar', { duration: 3000 });
+        this.enviandoPDF = false;
+      }
+    });
   }
 
   /**
