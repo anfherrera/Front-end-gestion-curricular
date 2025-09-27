@@ -57,8 +57,11 @@
       <th mat-header-cell *matHeaderCellDef>Acciones</th>
       <td mat-cell *matCellDef="let curso">
         <ng-container *ngFor="let accion of acciones">
-          <button mat-raised-button color="primary" (click)="ejecutarAccion(accion, curso)">
-            {{ getAccionDisplayName(accion) }}
+          <button mat-icon-button 
+                  (click)="ejecutarAccion(accion, curso)"
+                  class="action-icon-button"
+                  [title]="getAccionDisplayName(accion)">
+            <mat-icon [ngClass]="getAccionIconClass(accion)">{{ getAccionIcon(accion) }}</mat-icon>
           </button>
         </ng-container>
       </td>

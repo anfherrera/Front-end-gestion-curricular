@@ -114,8 +114,16 @@ export class CursosPreinscripcionComponent implements OnInit {
       return;
     }
 
-    const cursoVerano = this.cursosVerano.find(c => c.id_curso.toString() === event.curso.codigo);
+    // Buscar el curso por código o por ID
+    const cursoVerano = this.cursosVerano.find(c => 
+      c.codigo_curso === event.curso.codigo || 
+      c.id_curso.toString() === event.curso.codigo
+    );
     if (!cursoVerano) {
+      console.error('❌ Curso no encontrado:', {
+        codigoBuscado: event.curso.codigo,
+        cursosDisponibles: this.cursosVerano.map(c => ({ id: c.id_curso, codigo: c.codigo_curso }))
+      });
       this.snackBar.open('Error: Curso no encontrado', 'Cerrar', { duration: 3000 });
       return;
     }

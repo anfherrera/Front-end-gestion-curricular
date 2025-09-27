@@ -50,18 +50,25 @@ export class PreinscripcionDialogComponent implements OnInit {
     this.preinscripcionForm = this.fb.group({
       nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
       codigo: ['', [Validators.required, Validators.minLength(5)]],
-      condicion: ['', [Validators.required]],
-      observaciones: ['']
+      condicion: ['', [Validators.required]]
     });
   }
 
   private loadUserData(): void {
     this.usuario = this.authService.getUsuario();
+    console.log('👤 Usuario cargado en preinscripción:', this.usuario);
     if (this.usuario) {
+      // Usar los campos correctos del usuario
+      const nombreCompleto = this.usuario.nombre_completo || `${this.usuario.nombre || ''} ${this.usuario.apellido || ''}`.trim();
+      const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || '';
+      console.log('📝 Datos del usuario - Nombre:', nombreCompleto, 'Código:', codigo);
       this.preinscripcionForm.patchValue({
-        nombreCompleto: `${this.usuario.nombre || ''} ${this.usuario.apellido || ''}`.trim(),
-        codigo: this.usuario.codigo_estudiante || ''
+        nombreCompleto: nombreCompleto,
+        codigo: codigo
       });
+      console.log('✅ Formulario de preinscripción actualizado con datos del usuario');
+    } else {
+      console.log('❌ No se encontró usuario logueado');
     }
   }
 

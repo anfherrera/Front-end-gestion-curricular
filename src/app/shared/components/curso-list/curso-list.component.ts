@@ -65,4 +65,30 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
         return accion.charAt(0).toUpperCase() + accion.slice(1);
     }
   }
+
+  getAccionIcon(accion: string): string {
+    switch (accion) {
+      case 'preinscribir':
+        return 'touch_app';
+      case 'inscribir':
+        return 'person_add';
+      case 'ver':
+        return 'visibility';
+      default:
+        return 'more_vert';
+    }
+  }
+
+  getAccionIconClass(accion: string): string {
+    switch (accion) {
+      case 'preinscribir':
+        return 'preinscribir-icon';
+      case 'inscribir':
+        return 'inscribir-icon';
+      case 'ver':
+        return 'ver-icon';
+      default:
+        return 'default-icon';
+    }
+  }
 }
