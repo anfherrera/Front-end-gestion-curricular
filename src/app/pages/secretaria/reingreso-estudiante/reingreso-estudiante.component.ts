@@ -114,15 +114,20 @@ export class ReingresoEstudianteComponent implements OnInit {
   onSolicitudSeleccionada(solicitudId: number | null): void {
     if (solicitudId === null) {
       this.selectedSolicitud = undefined;
-      this.documentoGenerado = false;
-      this.archivoPDF = null;
+      // Limpiar estado cuando se deselecciona
+      this.limpiarEstado();
       return;
     }
+
+    // Limpiar estado anterior antes de seleccionar nueva solicitud
+    this.limpiarEstado();
+
     // Buscar la solicitud original por ID
     this.reingresoService.getSecretariaRequests().subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
         console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
+        console.log('🧹 Estado limpiado para nueva solicitud');
       }
     });
   }
@@ -135,6 +140,9 @@ export class ReingresoEstudianteComponent implements OnInit {
 
     this.loading = true;
     console.log('📄 Generando documento:', request);
+    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
+    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
+    console.log('👤 Datos del estudiante en request:', request.datosSolicitud);
 
     this.documentGeneratorService.generarDocumento(request).subscribe({
       next: (blob) => {
@@ -180,9 +188,9 @@ export class ReingresoEstudianteComponent implements OnInit {
    * Cancelar generación de documento
    */
   onCancelarGeneracion(): void {
+    this.limpiarEstado();
     this.selectedSolicitud = undefined;
-    this.documentoGenerado = false;
-    this.archivoPDF = null;
+    console.log('❌ Generación de documento cancelada');
   }
 
   /**
@@ -493,5 +501,17 @@ export class ReingresoEstudianteComponent implements OnInit {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
+  }
+
+  /**
+   * Limpiar estado del componente
+   */
+  private limpiarEstado(): void {
+    this.documentoGenerado = false;
+    this.archivoPDF = null;
+    this.subiendoPDF = false;
+    this.enviandoPDF = false;
+    this.loading = false;
+    console.log('🧹 Estado del componente limpiado');
   }
 }

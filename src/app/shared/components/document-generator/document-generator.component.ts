@@ -55,7 +55,7 @@ export class DocumentGeneratorComponent implements OnInit {
   @Input() template!: DocumentTemplate; // Plantilla del documento
   @Input() proceso!: string; // Tipo de proceso (homologacion, paz-salvo, etc.)
   @Input() loading: boolean = false;
-  
+
   @Output() generarDocumento = new EventEmitter<DocumentRequest>();
   @Output() cancelar = new EventEmitter<void>();
 
@@ -83,37 +83,39 @@ export class DocumentGeneratorComponent implements OnInit {
     }
 
     this.documentForm = this.fb.group(formControls);
-    
+
     console.log('🔍 Formulario inicializado:', this.documentForm.value);
   }
 
   private prepareSolicitudData(): void {
     console.log('🔍 Solicitud recibida:', this.solicitud);
-    
+
     // Extraer datos relevantes de la solicitud según el proceso
     this.datosSolicitud = {
       idSolicitud: this.solicitud.id || this.solicitud.id_solicitud,
-      nombreEstudiante: this.solicitud.usuario?.nombre || this.solicitud.objUsuario?.nombre_completo,
+      nombreEstudiante: this.solicitud.usuario?.nombre_completo || this.solicitud.objUsuario?.nombre_completo,
       codigoEstudiante: this.solicitud.usuario?.codigo || this.solicitud.objUsuario?.codigo,
-      programa: this.solicitud.usuario?.programa?.nombre || this.solicitud.objUsuario?.objPrograma?.nombre_programa,
+      programa: this.solicitud.usuario?.objPrograma?.nombre_programa || this.solicitud.objUsuario?.objPrograma?.nombre_programa,
       fechaSolicitud: this.solicitud.fecha || this.solicitud.fecha_registro_solicitud,
       estado: this.solicitud.estado
     };
-    
+
     console.log('🔍 Datos de solicitud preparados:', this.datosSolicitud);
+    console.log('🔍 Usuario extraído:', this.solicitud.objUsuario);
+    console.log('🔍 Programa extraído:', this.solicitud.objUsuario?.objPrograma);
   }
 
   onSubmit(): void {
     console.log('🔍 Formulario válido:', this.documentForm.valid);
     console.log('🔍 Valores del formulario:', this.documentForm.value);
     console.log('🔍 Errores del formulario:', this.documentForm.errors);
-    
+
     if (this.documentForm.valid) {
       const formData = this.documentForm.value;
-      
+
       console.log('🔍 FormData extraído:', formData);
       console.log('🔍 datosSolicitud:', this.datosSolicitud);
-      
+
       const documentRequest: DocumentRequest = {
         idSolicitud: this.datosSolicitud.idSolicitud,
         tipoDocumento: this.template.id,
@@ -137,7 +139,7 @@ export class DocumentGeneratorComponent implements OnInit {
 
   private getAdditionalFields(formData: any): any {
     const additionalFields: any = {};
-    
+
     // Agregar campos específicos según el proceso
     if (this.proceso === 'homologacion') {
       additionalFields.tipoHomologacion = 'ASIGNATURAS';

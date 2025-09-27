@@ -33,7 +33,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
   template!: DocumentTemplate;
   loading: boolean = false;
-  
+
   // Nuevas propiedades para el flujo de PDF
   documentoGenerado: boolean = false;
   archivoPDF: File | null = null;
@@ -100,13 +100,20 @@ export class HomologacionAsignaturasComponent implements OnInit {
   onSolicitudSeleccionada(solicitudId: number | null): void {
     if (solicitudId === null) {
       this.selectedSolicitud = undefined;
+      // Limpiar estado cuando se deselecciona
+      this.limpiarEstado();
       return;
     }
+
+    // Limpiar estado anterior antes de seleccionar nueva solicitud
+    this.limpiarEstado();
+
     // Buscar la solicitud original por ID
     this.homologacionService.getSecretariaRequests().subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
         console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
+        console.log('🧹 Estado limpiado para nueva solicitud');
       }
     });
   }
@@ -119,28 +126,31 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
     this.loading = true;
     console.log('📄 Generando documento:', request);
+    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
+    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
+    console.log('👤 Datos del estudiante en request:', request.datosSolicitud);
 
     this.documentGeneratorService.generarDocumento(request).subscribe({
       next: (blob) => {
         console.log('✅ Documento generado exitosamente');
-        
+
         // Generar nombre de archivo
         const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
-        
+
         // Descargar archivo Word
         this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
-        
+
         // Actualizar estado de la solicitud a APROBADA
         this.homologacionService.approveDefinitively(this.selectedSolicitud!.id_solicitud).subscribe({
           next: () => {
             console.log('✅ Estado de solicitud actualizado a APROBADA');
-            
+
             // Marcar que el documento fue generado
             this.documentoGenerado = true;
-            
+
             this.snackBar.open('Documento Word generado, descargado y solicitud aprobada. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
             this.loading = false;
-            
+
             // Recargar solicitudes para mostrar el cambio de estado
             this.cargarSolicitudes();
           },
@@ -164,9 +174,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
    * Cancelar generación de documento
    */
   onCancelarGeneracion(): void {
+    this.limpiarEstado();
     this.selectedSolicitud = undefined;
-    this.documentoGenerado = false;
-    this.archivoPDF = null;
+    console.log('❌ Generación de documento cancelada');
   }
 
   /**
@@ -226,12 +236,12 @@ export class HomologacionAsignaturasComponent implements OnInit {
       console.log('✅ PDF enviado al estudiante exitosamente');
       this.snackBar.open('PDF enviado al estudiante exitosamente ✅', 'Cerrar', { duration: 3000 });
       this.enviandoPDF = false;
-      
+
       // Limpiar el estado
       this.documentoGenerado = false;
       this.archivoPDF = null;
       this.selectedSolicitud = undefined;
-      
+
       // Recargar solicitudes
       this.cargarSolicitudes();
     }, 1000);
@@ -242,5 +252,17 @@ export class HomologacionAsignaturasComponent implements OnInit {
    */
   puedeEnviarPDF(): boolean {
     return this.documentoGenerado && this.archivoPDF !== null && !this.subiendoPDF && !this.enviandoPDF;
+  }
+
+  /**
+   * Limpiar estado del componente
+   */
+  private limpiarEstado(): void {
+    this.documentoGenerado = false;
+    this.archivoPDF = null;
+    this.subiendoPDF = false;
+    this.enviandoPDF = false;
+    this.loading = false;
+    console.log('🧹 Estado del componente limpiado');
   }
 }

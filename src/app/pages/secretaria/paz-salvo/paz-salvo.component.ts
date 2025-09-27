@@ -33,7 +33,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
   template!: DocumentTemplate;
   loading: boolean = false;
-  
+
   // Nuevas propiedades para el flujo de PDF
   documentoGenerado: boolean = false;
   archivoPDF: File | null = null;
@@ -69,11 +69,11 @@ export class SecretariaPazSalvoComponent implements OnInit {
         const solicitudesFiltradas = sols.filter(sol => {
           const estado = this.getEstadoActual(sol);
           const tieneOficios = this.tieneOficiosPDF(sol);
-          
+
           // Solo mostrar solicitudes APROBADA que no tienen oficios (no han sido enviadas)
           return estado === 'APROBADA' && !tieneOficios;
         });
-        
+
         // Transformar datos para RequestStatusTableComponent
         this.solicitudes = solicitudesFiltradas.map(sol => ({
           id: sol.id_solicitud,
@@ -112,19 +112,19 @@ export class SecretariaPazSalvoComponent implements OnInit {
     if (!solicitud.documentos || solicitud.documentos.length === 0) {
       return false;
     }
-    
+
     // Buscar documentos que sean oficios/resoluciones (PDFs subidos por secretaria)
     return solicitud.documentos.some(doc => {
       if (!doc.nombre) return false;
-      
+
       const nombre = doc.nombre.toLowerCase();
       const esPDF = nombre.endsWith('.pdf');
-      const esOficio = nombre.includes('oficio') || 
-                      nombre.includes('resolucion') || 
+      const esOficio = nombre.includes('oficio') ||
+                      nombre.includes('resolucion') ||
                       nombre.includes('paz') ||
                       nombre.includes('salvo') ||
                       nombre.includes('aprobacion');
-      
+
       return esPDF && esOficio;
     });
   }
@@ -135,8 +135,14 @@ export class SecretariaPazSalvoComponent implements OnInit {
   onSolicitudSeleccionada(solicitudId: number | null): void {
     if (solicitudId === null) {
       this.selectedSolicitud = undefined;
+      // Limpiar estado cuando se deselecciona
+      this.limpiarEstado();
       return;
     }
+
+    // Limpiar estado anterior antes de seleccionar nueva solicitud
+    this.limpiarEstado();
+
     // Buscar la solicitud original por ID
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
@@ -146,9 +152,10 @@ export class SecretariaPazSalvoComponent implements OnInit {
           const tieneOficios = this.tieneOficiosPDF(sol);
           return estado === 'APROBADA' && !tieneOficios;
         });
-        
+
         this.selectedSolicitud = solicitudesFiltradas.find(sol => sol.id_solicitud === solicitudId);
         console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
+        console.log('🧹 Estado limpiado para nueva solicitud');
       }
     });
   }
@@ -161,28 +168,31 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
     this.loading = true;
     console.log('📄 Generando documento:', request);
+    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
+    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
+    console.log('👤 Datos del estudiante en request:', request.datosSolicitud);
 
     this.documentGeneratorService.generarDocumento(request).subscribe({
       next: (blob) => {
         console.log('✅ Documento generado exitosamente');
-        
+
         // Generar nombre de archivo
         const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
-        
+
         // Descargar archivo Word
         this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
-        
+
         // Actualizar estado de la solicitud a APROBADA
         this.pazSalvoService.approveDefinitively(this.selectedSolicitud!.id_solicitud).subscribe({
           next: () => {
             console.log('✅ Estado de solicitud actualizado a APROBADA');
-            
+
             // Marcar que el documento fue generado
             this.documentoGenerado = true;
-            
+
             this.snackBar.open('Documento Word generado, descargado y solicitud aprobada. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
             this.loading = false;
-            
+
             // Recargar solicitudes para mostrar el cambio de estado
             this.cargarSolicitudes();
           },
@@ -206,9 +216,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
    * Cancelar generación de documento
    */
   onCancelarGeneracion(): void {
+    this.limpiarEstado();
     this.selectedSolicitud = undefined;
-    this.documentoGenerado = false;
-    this.archivoPDF = null;
+    console.log('❌ Generación de documento cancelada');
   }
 
   /**
@@ -268,12 +278,12 @@ export class SecretariaPazSalvoComponent implements OnInit {
       console.log('✅ PDF enviado al estudiante exitosamente');
       this.snackBar.open('PDF enviado al estudiante exitosamente ✅', 'Cerrar', { duration: 3000 });
       this.enviandoPDF = false;
-      
+
       // Limpiar el estado
       this.documentoGenerado = false;
       this.archivoPDF = null;
       this.selectedSolicitud = undefined;
-      
+
       // Recargar solicitudes
       this.cargarSolicitudes();
     }, 1000);
@@ -284,5 +294,17 @@ export class SecretariaPazSalvoComponent implements OnInit {
    */
   puedeEnviarPDF(): boolean {
     return this.documentoGenerado && this.archivoPDF !== null && !this.subiendoPDF && !this.enviandoPDF;
+  }
+
+  /**
+   * Limpiar estado del componente
+   */
+  private limpiarEstado(): void {
+    this.documentoGenerado = false;
+    this.archivoPDF = null;
+    this.subiendoPDF = false;
+    this.enviandoPDF = false;
+    this.loading = false;
+    console.log('🧹 Estado del componente limpiado');
   }
 }
