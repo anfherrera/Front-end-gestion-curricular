@@ -12,7 +12,6 @@ export const cursosIntersemestralesRoutes: Routes = [
     path: '',
     component: CursosIntersemestralesComponent,
     children: [
-      { path: '', redirectTo: 'cursos-ofertados', pathMatch: 'full' },
       { path: 'solicitudes', component: SolicitudesComponent },
       { path: 'inscripciones', component: InscripcionesComponent },
       { path: 'cursos-ofertados', component: CursosOfertadosComponent },

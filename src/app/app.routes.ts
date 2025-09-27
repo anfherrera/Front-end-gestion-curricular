@@ -51,7 +51,6 @@ export const routes: Routes = [
         path: 'estudiante/cursos-intersemestrales',
         loadComponent: () => import('./pages/estudiante/cursos-intersemestrales/cursos-intersemestrales.component').then(m => m.CursosIntersemestralesComponent),
         children: [
-          { path: '', redirectTo: 'solicitudes', pathMatch: 'full' },
           { path: 'solicitudes', component: SolicitudesComponent },
           { path: 'inscripciones', component: InscripcionesComponent },
           { path: 'cursos-ofertados', component: CursosOfertadosComponent },

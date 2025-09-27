@@ -49,25 +49,6 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
     console.log('🚀 CURSOS INTERSEMESTRALES COMPONENT INICIADO');
     console.log('📍 URL actual:', this.router.url);
     
-    // Forzar navegación a cursos-ofertados si estamos en la ruta base o en solicitudes
-    const currentUrl = this.router.url;
-    if (currentUrl.endsWith('/cursos-intersemestrales') || 
-        currentUrl.endsWith('/cursos-intersemestrales/') ||
-        currentUrl.includes('/cursos-intersemestrales/solicitudes')) {
-      console.log('🔄 Redirigiendo a cursos-ofertados desde:', currentUrl);
-      this.router.navigate(['cursos-ofertados'], { relativeTo: this.route });
-    }
-    
-    // Escuchar cambios de navegación
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((event: NavigationEnd) => {
-        console.log('🔗 Navegación a:', event.url);
-      });
-    
     this.cargarNotificaciones();
     this.iniciarPollingNotificaciones();
   }
