@@ -14,7 +14,8 @@
       <app-file-upload
         [archivos]="archivosActuales"
         (archivosChange)="onArchivosChange($event)"
-        [reset]="resetFileUpload">
+        [reset]="resetFileUpload"
+        [archivosExclusivos]="archivosExclusivos">
       </app-file-upload>
 
       <div class="enviar-solicitud mt-4">

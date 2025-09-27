@@ -17,6 +17,7 @@ import { map, tap } from 'rxjs/operators';
 export class FileUploadComponent implements OnChanges {
   @Input() archivos: Archivo[] = [];
   @Input() reset = false;                  // Para reiniciar desde el padre
+  @Input() archivosExclusivos: string[] = []; // Archivos que son mutuamente exclusivos
   @Output() archivosChange = new EventEmitter<Archivo[]>();
 
   cargando: boolean = false;
@@ -53,6 +54,27 @@ export class FileUploadComponent implements OnChanges {
       if (archivoDuplicado) {
         alert(`⚠️ El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`);
         return;
+      }
+
+      // Validar archivos exclusivos
+      if (this.archivosExclusivos.length > 0) {
+        const esArchivoExclusivo = this.archivosExclusivos.some(archivoExclusivo => 
+          file.name.includes(archivoExclusivo)
+        );
+        
+        if (esArchivoExclusivo) {
+          // Verificar si ya existe otro archivo exclusivo
+          const archivoExclusivoExistente = this.archivos.find(archivo => 
+            this.archivosExclusivos.some(archivoExclusivo => 
+              archivo.nombre.includes(archivoExclusivo)
+            )
+          );
+          
+          if (archivoExclusivoExistente) {
+            alert(`⚠️ Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${this.archivosExclusivos.join(' o ')}`);
+            return;
+          }
+        }
       }
 
       // Solo agregar el archivo localmente, sin subirlo al backend
