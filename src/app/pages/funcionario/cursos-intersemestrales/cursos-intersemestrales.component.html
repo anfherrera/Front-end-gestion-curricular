@@ -1,12 +1,50 @@
-<h2>Cursos Intersemestrales - Funcionario</h2>
-<nav>
-  <a routerLink="gestionar">Gestionar Cursos</a> |
-  <a routerLink="ofertar">Ofertar Curso</a> |
-  <a routerLink="publicar">Publicar Curso</a> |
-  <a routerLink="preinscribir">Preinscribir Estudiantes</a> |
-  <a routerLink="estudio-academico">Estudio Académico</a> |
-  <a routerLink="inscribir">Inscribir Estudiantes</a> |
-  <a routerLink="solicitudes">Visualizar Solicitudes</a>
-</nav>
+<div class="cursos-intersemestrales-container">
+  <header class="header">
+    <h1>Gestión de Cursos Intersemestrales</h1>
+    
+    <!-- Panel de notificaciones -->
+    <div class="notificaciones-panel" *ngIf="getTotalNotificaciones() > 0">
+      <button mat-icon-button 
+              [matTooltip]="'Tienes ' + getTotalNotificaciones() + ' notificaciones'"
+              class="notificaciones-btn">
+        <mat-icon [matBadge]="getTotalNotificaciones()" 
+                  [matBadgeColor]="getNotificacionesUrgentes() > 0 ? 'warn' : 'primary'"
+                  [matBadgeHidden]="getTotalNotificaciones() === 0">
+          notifications
+        </mat-icon>
+      </button>
+      
+      <button mat-button 
+              color="primary" 
+              (click)="marcarTodasLeidas()"
+              *ngIf="getTotalNotificaciones() > 0">
+        Marcar todas como leídas
+      </button>
+    </div>
+  </header>
 
-<router-outlet></router-outlet>
+  <nav class="menu" role="navigation">
+    <a *ngFor="let opcion of opciones"
+       [routerLink]="opcion.ruta"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
+       class="menu-item">
+      
+      <div class="menu-content">
+        <mat-icon class="menu-icon">{{ opcion.icon }}</mat-icon>
+        <span class="menu-text">{{ opcion.titulo }}</span>
+        
+        <!-- Badge de notificaciones -->
+        <span *ngIf="opcion.badge > 0" 
+              class="badge"
+              [class.urgente]="opcion.ruta === 'solicitudes' && opcion.badge > 0">
+          {{ opcion.badge }}
+        </span>
+      </div>
+    </a>
+  </nav>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

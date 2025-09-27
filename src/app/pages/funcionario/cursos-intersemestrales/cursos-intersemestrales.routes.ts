@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { CursosIntersemestralesComponent } from './cursos-intersemestrales.component';
+import { DashboardFuncionarioComponent } from './dashboard/dashboard.component';
 import { GestionarCursosComponent } from './gestionar-cursos/gestionar-cursos.component';
 import { OfertaCursoComponent } from './oferta-curso/oferta-curso.component';
 import { PublicarCursoComponent } from './publicar-curso/publicar-curso.component';
@@ -13,7 +14,8 @@ export const CursosIntersemestralesFuncionarioRoutes: Routes = [
     path: '',
     component: CursosIntersemestralesComponent,
     children: [
-      { path: '', redirectTo: 'gestionar', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardFuncionarioComponent },
       { path: 'gestionar', component: GestionarCursosComponent },
       { path: 'ofertar', component: OfertaCursoComponent },
       { path: 'publicar', component: PublicarCursoComponent },
