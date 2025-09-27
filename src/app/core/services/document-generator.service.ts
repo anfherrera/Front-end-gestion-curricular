@@ -35,7 +35,7 @@ export class DocumentGeneratorService {
    */
   generarDocumento(request: DocumentRequest): Observable<Blob> {
     console.log('📄 Generando documento Word real...', request);
-    
+
     return new Observable(observer => {
       try {
         // Crear documento Word
@@ -49,7 +49,7 @@ export class DocumentGeneratorService {
         // Generar el archivo Word
         Packer.toBlob(doc).then(blob => {
           console.log('✅ Documento Word generado exitosamente');
-          
+
           // Guardar en la base de datos
           this.guardarDocumentoEnBD(request, blob).subscribe({
             next: (response) => {
@@ -64,12 +64,12 @@ export class DocumentGeneratorService {
               observer.complete();
             }
           });
-          
+
         }).catch(error => {
           console.error('❌ Error al generar documento Word:', error);
           observer.error(error);
         });
-        
+
       } catch (error) {
         console.error('❌ Error al crear documento:', error);
         observer.error(error);
@@ -83,29 +83,29 @@ export class DocumentGeneratorService {
   private guardarDocumentoEnBD(request: DocumentRequest, blob: Blob): Observable<any> {
     console.log('🔍 Debug - Request completo:', request);
     console.log('🔍 Debug - tipoDocumento:', request.tipoDocumento);
-    
-    // Para paz-salvo, NO guardamos en el backend (igual que homologación)
-    if (request.tipoDocumento === 'OFICIO_PAZ_SALVO') {
-      console.log('📄 Paz-salvo: No guardando en backend, solo descargando archivo');
+
+    // Para paz-salvo y reingreso, NO guardamos en el backend (solo descargamos)
+    if (request.tipoDocumento === 'OFICIO_PAZ_SALVO' || request.tipoDocumento === 'OFICIO_REINGRESO') {
+      console.log('📄 ' + request.tipoDocumento + ': No guardando en backend, solo descargando archivo');
       // Retornar un observable que simula éxito
       return new Observable(observer => {
         observer.next({ success: true, message: 'Documento generado para descarga' });
         observer.complete();
       });
     }
-    
+
     // Solo para homologación (aunque tampoco tiene endpoint, pero por si acaso)
     console.log('📄 Homologación: Intentando guardar en backend...');
-    
+
     const formData = new FormData();
-    
+
     // Crear archivo desde blob
     const archivo = new File([blob], this.generarNombreArchivo(request), {
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     });
-    
+
     formData.append('file', archivo);
-    
+
     // Validar y agregar idSolicitud
     if (request.idSolicitud) {
       formData.append('idSolicitud', request.idSolicitud.toString());
@@ -113,9 +113,9 @@ export class DocumentGeneratorService {
       console.warn('⚠️ idSolicitud es undefined, usando valor por defecto');
       formData.append('idSolicitud', '1'); // Valor por defecto
     }
-    
+
     formData.append('tipoDocumento', request.tipoDocumento);
-    
+
     // Validar y agregar numeroDocumento
     if (request.datosDocumento?.numeroDocumento) {
       formData.append('numeroDocumento', request.datosDocumento.numeroDocumento);
@@ -123,7 +123,7 @@ export class DocumentGeneratorService {
       console.warn('⚠️ numeroDocumento es undefined, usando valor por defecto');
       formData.append('numeroDocumento', '001-2024');
     }
-    
+
     // Validar y agregar fechaDocumento
     if (request.datosDocumento?.fechaDocumento) {
       formData.append('fechaDocumento', request.datosDocumento.fechaDocumento.toString());
@@ -131,17 +131,17 @@ export class DocumentGeneratorService {
       console.warn('⚠️ fechaDocumento es undefined, usando fecha actual');
       formData.append('fechaDocumento', new Date().toISOString().split('T')[0]);
     }
-    
+
     if (request.datosDocumento?.observaciones) {
       formData.append('observaciones', request.datosDocumento.observaciones);
     }
 
     console.log('📤 Enviando FormData al backend...');
-    
+
     // Solo para homologación (aunque no tiene endpoint)
     const endpoint = 'http://localhost:5000/api/solicitudes-homologacion/guardarOficio';
     console.log('🔗 Usando endpoint:', endpoint);
-    
+
     return this.http.post(endpoint, formData, {
       headers: this.getAuthHeaders()
     });
@@ -155,10 +155,10 @@ export class DocumentGeneratorService {
     const nombreEstudiante = request.datosSolicitud?.nombreEstudiante || 'Estudiante';
     const numeroDocumento = request.datosDocumento?.numeroDocumento || '001-2024';
     const idSolicitud = request.idSolicitud || '1';
-    
+
     // Limpiar nombre para archivo
     const nombreLimpio = nombreEstudiante.replaceAll(/[^a-zA-Z0-9]/g, '_');
-    
+
     return `${tipoDocumento}_${nombreLimpio}_${idSolicitud}_${numeroDocumento}.docx`;
   }
 

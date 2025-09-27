@@ -297,14 +297,8 @@ export class ReingresoEstudianteService {
    * Subir archivo PDF
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    // Determinar la URL correcta
-    let url: string;
-    if (idSolicitud) {
-      url = `http://localhost:5000/api/solicitudes-reingreso/${idSolicitud}/subir-archivo`;
-    } else {
-      // Fallback al endpoint genérico si no hay idSolicitud
-      url = `http://localhost:5000/api/archivos/subir/pdf`;
-    }
+    // Usar el mismo endpoint genérico que funciona en homologación
+    const url = `http://localhost:5000/api/archivos/subir/pdf`;
 
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -329,8 +323,8 @@ export class ReingresoEstudianteService {
     const formData = new FormData();
     formData.append('file', archivo);
 
-    // Agregar idSolicitud si se proporciona (solo para endpoint genérico)
-    if (idSolicitud && !url.includes('/subir-archivo')) {
+    // Agregar idSolicitud si se proporciona (igual que homologación)
+    if (idSolicitud) {
       formData.append('idSolicitud', idSolicitud.toString());
       console.log('📎 Asociando archivo a solicitud ID:', idSolicitud);
     }
