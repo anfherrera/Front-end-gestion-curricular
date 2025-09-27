@@ -27,9 +27,10 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   opciones = [
+    { titulo: 'Realizar Solicitud', ruta: 'solicitudes', icon: 'add_circle', badge: 0 },
     { titulo: 'Cursos Disponibles', ruta: 'cursos-ofertados', icon: 'school', badge: 0 },
-    { titulo: 'Preinscripciones', ruta: 'cursos-preinscripcion', icon: 'playlist_add', badge: 0 },
-    { titulo: 'Mis Inscripciones', ruta: 'inscripciones', icon: 'how_to_reg', badge: 0 },
+    { titulo: 'Ver Lista de Cursos para Preinscripción', ruta: 'cursos-preinscripcion', icon: 'playlist_add', badge: 0 },
+    { titulo: 'Mis Inscripciones', ruta: 'inscripciones', icon: 'payment', badge: 0 },
     { titulo: 'Seguimiento', ruta: 'ver-solicitud', icon: 'list_alt', badge: 0 },
   ];
 

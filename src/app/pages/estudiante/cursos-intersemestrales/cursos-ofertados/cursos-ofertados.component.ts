@@ -67,10 +67,12 @@ export class CursosOfertadosComponent implements OnInit {
 
   private mapCursosToLegacy(cursosVerano: CursoOfertadoVerano[]): Curso[] {
     return cursosVerano.map(curso => ({
-      codigo: curso.id_curso.toString(),
+      codigo: curso.codigo_curso || curso.id_curso.toString(),
       nombre: curso.nombre_curso,
       docente: `${curso.objDocente.nombre} ${curso.objDocente.apellido}`,
-      cupos: curso.cupo_disponible,
+      cupos: curso.cupo_estimado || curso.cupo_disponible,
+      creditos: curso.objMateria.creditos,
+      espacio: curso.espacio_asignado || 'Por asignar',
       estado: this.mapEstadoCurso(curso.estado)
     }));
   }

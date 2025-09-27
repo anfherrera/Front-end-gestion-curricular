@@ -4,8 +4,8 @@
   <app-curso-list
     *ngIf="!cargando"
     [cursos]="cursos"
-    [displayedColumns]="['codigo','nombre','docente','cupos','estado','acciones']"
-    [acciones]="['inscribir']"
+    [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','estado','acciones']"
+    [acciones]="['ver']"
     (accionClick)="onAccionCurso($event)"
   ></app-curso-list>
 

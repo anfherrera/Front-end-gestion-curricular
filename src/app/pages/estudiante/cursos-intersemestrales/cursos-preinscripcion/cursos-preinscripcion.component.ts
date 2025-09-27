@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
-import { CursosIntersemestralesService, CreatePreinscripcionDTO, CursoOfertadoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { PreinscripcionDialogComponent } from '../../../../shared/components/preinscripcion-dialog/preinscripcion-dialog.component';
+import { CursosIntersemestralesService, CursoOfertadoVerano } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-cursos-preinscripcion',
@@ -23,7 +25,8 @@ export class CursosPreinscripcionComponent implements OnInit {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -65,10 +68,12 @@ export class CursosPreinscripcionComponent implements OnInit {
 
   private mapCursosToLegacy(cursosVerano: CursoOfertadoVerano[]): Curso[] {
     return cursosVerano.map(curso => ({
-      codigo: curso.id_curso.toString(),
+      codigo: curso.codigo_curso || curso.id_curso.toString(),
       nombre: curso.nombre_curso,
       docente: `${curso.objDocente.nombre} ${curso.objDocente.apellido}`,
-      cupos: curso.cupo_disponible,
+      cupos: curso.cupo_estimado || curso.cupo_disponible,
+      creditos: curso.objMateria.creditos,
+      espacio: curso.espacio_asignado || 'Por asignar',
       estado: 'Disponible' as const
     }));
   }
@@ -86,33 +91,22 @@ export class CursosPreinscripcionComponent implements OnInit {
     }
 
     if (event.accion === 'preinscribir') {
-      this.realizarPreinscripcion(cursoVerano);
+      this.abrirDialogoPreinscripcion(cursoVerano);
     }
   }
 
-  private realizarPreinscripcion(curso: CursoOfertadoVerano) {
-    const payload: CreatePreinscripcionDTO = {
-      idUsuario: this.usuario.id_usuario,
-      idCurso: curso.id_curso,
-      nombreSolicitud: `Preinscripción - ${curso.nombre_curso}`
-    };
+  private abrirDialogoPreinscripcion(curso: CursoOfertadoVerano) {
+    const dialogRef = this.dialog.open(PreinscripcionDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: { curso: curso },
+      disableClose: true
+    });
 
-    this.cursosService.crearPreinscripcion(payload).subscribe({
-      next: (solicitud) => {
-        this.snackBar.open(
-          `Preinscripción exitosa en ${curso.nombre_curso}`, 
-          'Cerrar', 
-          { duration: 5000 }
-        );
-        this.loadCursos(); // Recargar para actualizar cupos
-      },
-      error: (error) => {
-        console.error('Error en preinscripción:', error);
-        this.snackBar.open(
-          'Error al realizar la preinscripción. Inténtalo nuevamente.', 
-          'Cerrar', 
-          { duration: 5000 }
-        );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        // La preinscripción fue exitosa, recargar cursos
+        this.loadCursos();
       }
     });
   }

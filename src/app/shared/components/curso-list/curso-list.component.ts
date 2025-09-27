@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -9,6 +9,8 @@ export interface Curso {
   nombre: string;
   docente: string;
   cupos: number;
+  creditos?: number;
+  espacio?: string;
   estado: 'Disponible' | 'Cerrado' | 'En espera';
 }
 
@@ -19,7 +21,7 @@ export interface Curso {
   templateUrl: './curso-list.component.html',
   styleUrls: ['./curso-list.component.css']
 })
-export class CursoListComponent implements AfterViewInit {
+export class CursoListComponent implements AfterViewInit, OnChanges {
   @Input() cursos: Curso[] = [];
   @Input() displayedColumns: string[] = ['codigo', 'nombre', 'docente', 'cupos', 'estado', 'acciones'];
   @Input() acciones: string[] = []; // ejemplo: ['inscribir', 'aprobar', 'rechazar']
@@ -36,8 +38,10 @@ export class CursoListComponent implements AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  ngOnChanges() {
-    this.dataSource.data = this.cursos;
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['cursos']) {
+      this.dataSource.data = this.cursos;
+    }
   }
 
   aplicarFiltro(event: Event) {
@@ -47,5 +51,18 @@ export class CursoListComponent implements AfterViewInit {
 
   ejecutarAccion(accion: string, curso: Curso) {
     this.accionClick.emit({ accion, curso });
+  }
+
+  getAccionDisplayName(accion: string): string {
+    switch (accion) {
+      case 'preinscribir':
+        return 'Señalar el curso';
+      case 'inscribir':
+        return 'Inscribirse';
+      case 'ver':
+        return 'Ver detalles';
+      default:
+        return accion.charAt(0).toUpperCase() + accion.slice(1);
+    }
   }
 }

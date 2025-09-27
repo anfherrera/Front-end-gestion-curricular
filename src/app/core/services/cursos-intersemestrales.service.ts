@@ -31,11 +31,14 @@ export interface Materia {
 export interface CursoOfertadoVerano {
   id_curso: number;
   nombre_curso: string;
+  codigo_curso: string;
   descripcion: string;
   fecha_inicio: Date;
   fecha_fin: Date;
   cupo_maximo: number;
   cupo_disponible: number;
+  cupo_estimado: number;
+  espacio_asignado: string;
   estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado';
   objMateria: Materia;
   objDocente: Usuario;
@@ -61,6 +64,32 @@ export interface Notificacion {
   leida: boolean;
   esUrgente: boolean;
   urlAccion: string;
+}
+
+// ================== MODELOS PARA SOLICITUD DE CURSO NUEVO ==================
+export interface CursoDisponible {
+  id_curso: number;
+  nombre_curso: string;
+  codigo_curso: string;
+  creditos: number;
+  descripcion: string;
+}
+
+export enum CondicionSolicitudVerano {
+  Primera_Vez = 'Primera_Vez',
+  Habilitacion = 'Habilitación',
+  Repeticion = 'Repeteción'
+}
+
+export interface SolicitudCursoNuevo {
+  id_solicitud: number;
+  nombreCompleto: string;
+  codigo: string;
+  curso: string;
+  condicion: CondicionSolicitudVerano;
+  fecha: Date;
+  estado: 'Pendiente' | 'Aprobado' | 'Rechazado';
+  objUsuario: Usuario;
 }
 
 // ================== MODELOS LEGACY (para compatibilidad) ==================
@@ -102,6 +131,14 @@ export interface CreateInscripcionDTO {
 export interface UpdateSolicitudDTO {
   estado?: 'Pendiente' | 'Aprobado' | 'Rechazado' | 'Completado';
   motivoRechazo?: string;
+}
+
+export interface CreateSolicitudCursoNuevoDTO {
+  nombreCompleto: string;
+  codigo: string;
+  curso: string;
+  condicion: CondicionSolicitudVerano;
+  idUsuario: number;
 }
 
 // ================== DTOs LEGACY (para compatibilidad) ==================
@@ -201,6 +238,28 @@ export class CursosIntersemestralesService {
   // Marcar notificación como leída
   marcarNotificacionLeida(idNotificacion: number): Observable<void> {
     return this.http.put<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/${idNotificacion}/marcar-leida`, {});
+  }
+
+  // ====== SOLICITUD DE CURSO NUEVO ======
+  
+  // Obtener todos los cursos disponibles para solicitar
+  getCursosDisponiblesParaSolicitud(): Observable<CursoDisponible[]> {
+    return this.http.get<CursoDisponible[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-disponibles`);
+  }
+
+  // Obtener condiciones de solicitud (enum)
+  getCondicionesSolicitud(): Observable<CondicionSolicitudVerano[]> {
+    return this.http.get<CondicionSolicitudVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/condiciones-solicitud`);
+  }
+
+  // Crear solicitud de curso nuevo
+  crearSolicitudCursoNuevo(payload: CreateSolicitudCursoNuevoDTO): Observable<SolicitudCursoNuevo> {
+    return this.http.post<SolicitudCursoNuevo>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`, payload);
+  }
+
+  // Obtener solicitudes de curso nuevo del usuario
+  getSolicitudesCursoNuevoUsuario(idUsuario: number): Observable<SolicitudCursoNuevo[]> {
+    return this.http.get<SolicitudCursoNuevo[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo/usuario/${idUsuario}`);
   }
 
   // ====== MÉTODOS LEGACY (para compatibilidad) ======
