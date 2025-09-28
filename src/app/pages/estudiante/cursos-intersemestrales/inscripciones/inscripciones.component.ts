@@ -74,9 +74,9 @@ export class InscripcionesComponent implements OnInit {
   }
 
   onCancelarInscripcion(inscripcion: Inscripcion) {
-    if (!confirm(`¿Deseas cancelar la inscripción al curso ID ${inscripcion.cursoId}?`)) return;
+    if (!confirm(`¿Deseas cancelar la inscripción al curso ${inscripcion.objCurso.nombre_curso}?`)) return;
 
-    this.cursosService.cancelarInscripcion(inscripcion.id).subscribe({
+    this.cursosService.cancelarInscripcion(inscripcion.id_inscripcion).subscribe({
       next: () => {
         this.snackBar.open('Inscripción cancelada correctamente', 'Cerrar', { duration: 3000 });
         this.loadInscripciones();
@@ -89,7 +89,7 @@ export class InscripcionesComponent implements OnInit {
   }
 
   onSubirArchivoPago(inscripcion: Inscripcion) {
-    console.log('📁 Abriendo dialog para subir archivo de pago para inscripción:', inscripcion.id);
+    console.log('📁 Abriendo dialog para subir archivo de pago para inscripción:', inscripcion.id_inscripcion);
     
     // Crear input file temporal
     const input = document.createElement('input');
@@ -142,10 +142,10 @@ export class InscripcionesComponent implements OnInit {
   }
 
   actualizarInscripcionConArchivo(inscripcion: Inscripcion, archivo: any) {
-    console.log('🔄 Actualizando inscripción con archivo:', inscripcion.id, archivo);
+    console.log('🔄 Actualizando inscripción con archivo:', inscripcion.id_inscripcion, archivo);
     
     // Buscar la inscripción en el array
-    const index = this.inscripciones.findIndex(i => i.id === inscripcion.id);
+    const index = this.inscripciones.findIndex(i => i.id_inscripcion === inscripcion.id_inscripcion);
     console.log('📍 Índice encontrado:', index);
     
     if (index !== -1) {
@@ -156,7 +156,7 @@ export class InscripcionesComponent implements OnInit {
       nuevasInscripciones[index] = {
         ...nuevasInscripciones[index],
         archivoPago: {
-          id: archivo.id_documento,
+          id_documento: archivo.id_documento,
           nombre: archivo.nombre_documento || archivo.nombre,
           url: archivo.ruta_documento,
           fecha: archivo.fecha_documento || new Date().toISOString()
@@ -171,7 +171,7 @@ export class InscripcionesComponent implements OnInit {
       
       console.log('✅ Inscripción actualizada:', nuevasInscripciones[index]);
     } else {
-      console.error('❌ No se encontró la inscripción con ID:', inscripcion.id);
+      console.error('❌ No se encontró la inscripción con ID:', inscripcion.id_inscripcion);
     }
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { Curso as CursoList } from '../../shared/components/curso-list/curso-list.component';
 
@@ -102,17 +102,17 @@ export interface Solicitud {
 }
 
 export interface Inscripcion {
-  id: number;
-  cursoId: number;
-  estudianteId: number;
-  fecha: string;
-  estado: 'inscrito' | 'cancelado';
+  id_inscripcion: number;
+  fecha_inscripcion: Date;
+  estado: 'inscrito' | 'cancelado' | 'pendiente';
   archivoPago?: {
-    id: number;
+    id_documento: number;
     nombre: string;
     url: string;
     fecha: string;
   };
+  objUsuario: Usuario;
+  objCurso: CursoOfertadoVerano;
 }
 
 export interface Preinscripcion {
@@ -386,7 +386,76 @@ export class CursosIntersemestralesService {
 
   // ====== INSCRIPCIONES LEGACY ======
   getInscripciones(): Observable<Inscripcion[]> {
-    return this.http.get<Inscripcion[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`);
+    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
+      switchMap(inscripciones => {
+        // Obtener cursos para mapear correctamente
+        return this.getCursosDisponibles().pipe(
+          map(cursos => inscripciones.map(inscripcion => {
+            const curso = cursos.find(c => c.id_curso === inscripcion.cursoId);
+            return {
+              id_inscripcion: inscripcion.id,
+              fecha_inscripcion: new Date(inscripcion.fecha),
+              estado: inscripcion.estado,
+              archivoPago: inscripcion.archivoPago ? {
+                id_documento: inscripcion.archivoPago.id_documento,
+                nombre: inscripcion.archivoPago.nombre,
+                url: inscripcion.archivoPago.url,
+                fecha: inscripcion.archivoPago.fecha
+              } : undefined,
+              objUsuario: {
+                id_usuario: inscripcion.estudiante.id_usuario,
+                nombre: inscripcion.estudiante.nombre,
+                apellido: inscripcion.estudiante.apellido,
+                email: inscripcion.estudiante.email,
+                telefono: this.getTelefonoEstudiante(inscripcion.estudiante.id_usuario), // Mantener para compatibilidad
+                codigo_estudiante: inscripcion.estudiante.codigo_estudiante,
+                objRol: { id_rol: 1, nombre_rol: 'Estudiante' }
+              },
+              objCurso: curso || {
+                id_curso: inscripcion.cursoId,
+                nombre_curso: 'Curso no encontrado',
+                codigo_curso: 'N/A',
+                descripcion: 'Curso no disponible',
+                fecha_inicio: new Date(),
+                fecha_fin: new Date(),
+                cupo_maximo: 0,
+                cupo_estimado: 0,
+                cupo_disponible: 0,
+                espacio_asignado: 'N/A',
+                estado: 'Cerrado',
+                objMateria: { id_materia: 0, nombre_materia: 'N/A', codigo_materia: 'N/A', creditos: 0 },
+                objDocente: { id_usuario: 0, nombre: 'N/A', apellido: 'N/A', email: 'N/A', telefono: 'N/A', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
+              }
+            };
+          }))
+        );
+      })
+    );
+  }
+
+  // Métodos auxiliares para obtener datos de estudiantes
+  private getNombreEstudiante(estudianteId: number): string {
+    const nombres = ['Ana', 'Carlos', 'María', 'Pedro', 'Laura', 'Diego', 'Sofia', 'Andrés'];
+    return nombres[estudianteId % nombres.length] || 'Estudiante';
+  }
+
+  private getApellidoEstudiante(estudianteId: number): string {
+    const apellidos = ['González', 'Rodríguez', 'Martínez', 'López', 'García', 'Pérez', 'Sánchez', 'Ramírez'];
+    return apellidos[estudianteId % apellidos.length] || 'Estudiante';
+  }
+
+  private getEmailEstudiante(estudianteId: number): string {
+    const nombres = this.getNombreEstudiante(estudianteId).toLowerCase();
+    const apellidos = this.getApellidoEstudiante(estudianteId).toLowerCase();
+    return `${nombres}.${apellidos}@unicauca.edu.co`;
+  }
+
+  private getCodigoEstudiante(estudianteId: number): string {
+    return `10461234566${estudianteId}`;
+  }
+
+  private getTelefonoEstudiante(estudianteId: number): string {
+    return `300${String(estudianteId).padStart(7, '0')}`;
   }
 
   crearInscripcionLegacy(payload: CreateInscripcionLegacyDTO): Observable<Inscripcion> {
@@ -395,6 +464,10 @@ export class CursosIntersemestralesService {
 
   cancelarInscripcion(id: number): Observable<void> {
     return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}`);
+  }
+
+  confirmarInscripcion(id: number): Observable<Inscripcion> {
+    return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/confirmar`, {});
   }
 
   // ====== CURSOS (adaptados a CursoListComponent) ======
