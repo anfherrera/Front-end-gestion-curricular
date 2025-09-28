@@ -221,6 +221,46 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
   }
 
+  rechazarInscripcion(inscripcion: Inscripcion): void {
+    console.log(`❌ Rechazando inscripción ${inscripcion.id_inscripcion} para estudiante ${inscripcion.objUsuario.nombre} ${inscripcion.objUsuario.apellido}`);
+    
+    // Confirmar el rechazo
+    const confirmacion = confirm(
+      `¿Está seguro de rechazar la inscripción de ${inscripcion.objUsuario.nombre} ${inscripcion.objUsuario.apellido} en el curso ${inscripcion.objCurso.nombre_curso}?`
+    );
+    
+    if (!confirmacion) return;
+    
+    // Llamar al servicio para rechazar la inscripción
+    this.cursosService.rechazarInscripcion(inscripcion.id_inscripcion).subscribe({
+      next: (response) => {
+        console.log('✅ Inscripción rechazada:', response);
+        
+        // Actualizar estado localmente
+        const index = this.inscripcionesFiltradas.findIndex(i => i.id_inscripcion === inscripcion.id_inscripcion);
+        if (index !== -1) {
+          this.inscripcionesFiltradas[index].estado = 'rechazado';
+        }
+        
+        this.snackBar.open(
+          `❌ Inscripción rechazada para ${inscripcion.objUsuario.nombre} ${inscripcion.objUsuario.apellido}`, 
+          'Cerrar', 
+          { 
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          }
+        );
+      },
+      error: (err) => {
+        console.error('❌ Error rechazando inscripción:', err);
+        this.snackBar.open('Error al rechazar la inscripción', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
   getEstadoColor(estado: string): string {
     return '#00138C'; // Color azul consistente
   }

@@ -94,11 +94,19 @@
               </button>
               
               <button mat-icon-button 
-                      *ngIf="inscripcion.archivoPago && inscripcion.estado === 'pendiente'"
+                      *ngIf="inscripcion.estado === 'pendiente'"
                       (click)="confirmarInscripcion(inscripcion)"
                       matTooltip="Confirmar inscripción - Estudiante tiene comprobante"
                       style="color: #4CAF50 !important;">
                 <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
+              </button>
+              
+              <button mat-icon-button 
+                      *ngIf="inscripcion.estado === 'pendiente'"
+                      (click)="rechazarInscripcion(inscripcion)"
+                      matTooltip="Rechazar inscripción"
+                      style="color: #f44336 !important;">
+                <mat-icon style="color: #f44336 !important;">cancel</mat-icon>
               </button>
             </div>
           </td>

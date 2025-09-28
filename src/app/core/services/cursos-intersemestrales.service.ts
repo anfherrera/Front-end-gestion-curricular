@@ -104,7 +104,7 @@ export interface Solicitud {
 export interface Inscripcion {
   id_inscripcion: number;
   fecha_inscripcion: Date;
-  estado: 'inscrito' | 'cancelado' | 'pendiente';
+  estado: 'inscrito' | 'cancelado' | 'pendiente' | 'rechazado';
   archivoPago?: {
     id_documento: number;
     nombre: string;
@@ -468,6 +468,10 @@ export class CursosIntersemestralesService {
 
   confirmarInscripcion(id: number): Observable<Inscripcion> {
     return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/confirmar`, {});
+  }
+
+  rechazarInscripcion(id: number): Observable<Inscripcion> {
+    return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/rechazar`, {});
   }
 
   // ====== CURSOS (adaptados a CursoListComponent) ======

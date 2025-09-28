@@ -156,6 +156,16 @@
   justify-content: center;
 }
 
+/* Estilos para botones de acción */
+.acciones-container button {
+  transition: all 0.3s ease;
+}
+
+.acciones-container button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 .curso-info {
   margin-top: 24px;
   padding: 20px;
