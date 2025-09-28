@@ -113,6 +113,15 @@ export interface Inscripcion {
   };
 }
 
+export interface Preinscripcion {
+  id_preinscripcion: number;
+  fecha_preinscripcion: Date;
+  estado: 'Pendiente' | 'Aprobado' | 'Rechazado';
+  observaciones?: string;
+  objUsuario: Usuario;
+  objCurso: CursoOfertadoVerano;
+}
+
 export interface CursoBackend {
   id: number;
   nombre: string;
@@ -314,6 +323,22 @@ export class CursosIntersemestralesService {
   getTodosLosDocentes(): Observable<Usuario[]> {
     console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/docentes');
     return this.http.get<Usuario[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/docentes`);
+  }
+
+  // ====== PREINSCRIPCIONES (para funcionarios) ======
+  
+  // Obtener preinscripciones por curso
+  getPreinscripcionesPorCurso(idCurso: number): Observable<Preinscripcion[]> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/preinscripciones/curso/${idCurso}`);
+    return this.http.get<Preinscripcion[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/curso/${idCurso}`);
+  }
+
+  // Actualizar observaciones de preinscripción
+  actualizarObservacionesPreinscripcion(idPreinscripcion: number, observaciones: string): Observable<any> {
+    console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/preinscripciones/${idPreinscripcion}/observaciones`);
+    return this.http.put<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${idPreinscripcion}/observaciones`, {
+      observaciones: observaciones
+    });
   }
 
   // Obtener solicitudes de curso nuevo del usuario

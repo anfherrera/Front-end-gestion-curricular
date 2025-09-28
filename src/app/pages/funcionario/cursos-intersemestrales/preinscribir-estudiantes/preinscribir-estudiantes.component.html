@@ -1,21 +1,118 @@
 <app-card-container title="Preinscribir Estudiantes">
-  <app-curso-list
-    [cursos]="cursos"
-    [displayedColumns]="displayedColumns"
-    [acciones]="acciones"
-    (accionClick)="seleccionarCurso($event)">
-  </app-curso-list>
+  
+  <!-- Filtro por curso -->
+  <div class="filtro-section">
+    <h3>📚 Seleccionar Curso</h3>
+    <form [formGroup]="filtroForm">
+      <mat-form-field appearance="outline" class="curso-selector">
+        <mat-label>Selecciona un curso</mat-label>
+        <mat-select formControlName="curso" placeholder="Elige un curso para ver las preinscripciones">
+          <mat-option *ngFor="let curso of cursos" [value]="curso.id_curso">
+            {{ curso.nombre_curso }} ({{ curso.codigo_curso }}) - {{ curso.objDocente.nombre }} {{ curso.objDocente.apellido }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </div>
 
-  <div *ngIf="selectedCurso" class="form-section">
-    <h3>Curso seleccionado: {{ selectedCurso.nombre }}</h3>
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando datos...</p>
+  </div>
 
-    <app-solicitud-form
-      [config]="formConfig"
-      [editable]="true">
-    </app-solicitud-form>
+  <!-- Lista de preinscripciones -->
+  <div *ngIf="cursoSeleccionado && !cargando" class="preinscripciones-section">
+    <h3>👥 Estudiantes Preinscritos en {{ cursoSeleccionado.nombre_curso }}</h3>
+    
+    <div *ngIf="preinscripcionesFiltradas.length === 0" class="no-data">
+      <mat-icon>info</mat-icon>
+      <p>No hay estudiantes preinscritos en este curso.</p>
+    </div>
 
-    <div class="actions">
-      <app-action-button text="Preinscribir" (click)="preinscribir()"></app-action-button>
+    <div *ngIf="preinscripcionesFiltradas.length > 0" class="table-container">
+      <table mat-table [dataSource]="preinscripcionesFiltradas" class="preinscripciones-table">
+        
+        <!-- Columna Estudiante -->
+        <ng-container matColumnDef="estudiante">
+          <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+          <td mat-cell *matCellDef="let preinscripcion">
+            <div class="estudiante-info">
+              <strong>{{ preinscripcion.objUsuario.nombre }} {{ preinscripcion.objUsuario.apellido }}</strong>
+              <small>{{ preinscripcion.objUsuario.email }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna Fecha -->
+        <ng-container matColumnDef="fecha_preinscripcion">
+          <th mat-header-cell *matHeaderCellDef>Fecha de Preinscripción</th>
+          <td mat-cell *matCellDef="let preinscripcion">
+            {{ preinscripcion.fecha_preinscripcion | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <!-- Columna Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let preinscripcion">
+            <span style="background: #00138C !important; color: white !important; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: none !important;">
+              {{ preinscripcion.estado }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Columna Observaciones -->
+        <ng-container matColumnDef="observaciones">
+          <th mat-header-cell *matHeaderCellDef>Observaciones</th>
+          <td mat-cell *matCellDef="let preinscripcion">
+            <div class="observaciones-cell">
+              <span *ngIf="preinscripcion.observaciones; else sinObservaciones">
+                {{ preinscripcion.observaciones }}
+              </span>
+              <ng-template #sinObservaciones>
+                <em class="sin-observaciones">Sin observaciones</em>
+              </ng-template>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let preinscripcion">
+            <button mat-icon-button 
+                    (click)="verDetalles(preinscripcion)"
+                    matTooltip="Ver detalles y agregar observaciones"
+                    style="color: #00138C !important;">
+              <mat-icon style="color: #00138C !important;">visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
     </div>
   </div>
+
+  <!-- Información del curso seleccionado -->
+  <div *ngIf="cursoSeleccionado && !cargando" class="curso-info">
+    <h4>📋 Información del Curso</h4>
+    <div class="info-grid">
+      <div class="info-item">
+        <strong>Docente:</strong> {{ cursoSeleccionado.objDocente.nombre }} {{ cursoSeleccionado.objDocente.apellido }}
+      </div>
+      <div class="info-item">
+        <strong>Cupo Estimado:</strong> {{ cursoSeleccionado.cupo_estimado }} estudiantes
+      </div>
+      <div class="info-item">
+        <strong>Espacio:</strong> {{ cursoSeleccionado.espacio_asignado }}
+      </div>
+      <div class="info-item">
+        <strong>Preinscripciones:</strong> {{ preinscripcionesFiltradas.length }} estudiantes
+      </div>
+    </div>
+  </div>
+
 </app-card-container>
