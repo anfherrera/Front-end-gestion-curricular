@@ -97,7 +97,7 @@ export class ReingresoEstudianteComponent implements OnInit {
           rutaArchivo: '',
           comentarios: ''
         }));
-        if (sols.length) this.selectedSolicitud = sols[0];
+        // No seleccionar ninguna solicitud por defecto
       },
       error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
     });
@@ -206,25 +206,10 @@ export class ReingresoEstudianteComponent implements OnInit {
     console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
     console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
-    // Crear un nuevo archivo con un nombre que contenga las palabras clave necesarias
-    const nombreOriginal = this.archivoPDF.name;
-    const extension = nombreOriginal.split('.').pop();
-    const nombreBase = nombreOriginal.replace(/\.[^/.]+$/, "");
+    console.log('📝 Nombre original del archivo:', this.archivoPDF.name);
 
-    // Generar nombre que contenga palabras clave para que el backend lo reconozca como oficio
-    const nuevoNombre = `resolucion_reingreso_${this.selectedSolicitud.objUsuario.codigo}_${new Date().getFullYear()}.${extension}`;
-
-    // Crear un nuevo archivo con el nombre modificado
-    const archivoConNombreCorrecto = new File([this.archivoPDF], nuevoNombre, {
-      type: this.archivoPDF.type,
-      lastModified: this.archivoPDF.lastModified
-    });
-
-    console.log('📝 Nombre original:', nombreOriginal);
-    console.log('📝 Nombre nuevo:', nuevoNombre);
-
-    // Usar el servicio para subir el PDF con idSolicitud
-    this.reingresoService.subirArchivoPDF(archivoConNombreCorrecto, this.selectedSolicitud.id_solicitud).subscribe({
+    // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
+    this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
       next: (response) => {
         console.log('✅ Archivo PDF subido exitosamente:', response);
         this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
@@ -270,6 +255,72 @@ export class ReingresoEstudianteComponent implements OnInit {
         console.error('❌ Error al actualizar estado de solicitud:', err);
         this.snackBar.open('Error al enviar PDF al estudiante', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
+      }
+    });
+  }
+
+  /**
+   * Enviar documento (unifica subir PDF y enviar al estudiante)
+   */
+  enviarDocumento(): void {
+    if (!this.archivoPDF || !this.selectedSolicitud) {
+      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    // Paso 1: Subir PDF
+    this.subiendoPDF = true;
+    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+    console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
+    console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
+
+    console.log('📝 Nombre original del archivo:', this.archivoPDF.name);
+
+    // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
+    this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+      next: (response) => {
+        console.log('✅ Archivo PDF subido exitosamente:', response);
+        this.subiendoPDF = false;
+
+        // Paso 2: Enviar al estudiante (cambiar estado)
+        this.enviandoPDF = true;
+        console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud?.id_solicitud);
+
+        // Verificar que la solicitud sigue seleccionada
+        if (!this.selectedSolicitud) {
+          console.error('❌ selectedSolicitud es undefined');
+          this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
+          this.enviandoPDF = false;
+          return;
+        }
+
+        // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
+        this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+          next: () => {
+            console.log('✅ Estado de solicitud actualizado a APROBADA');
+            console.log('✅ PDF enviado al estudiante exitosamente');
+            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+            this.enviandoPDF = false;
+
+            // Limpiar el estado
+            this.documentoGenerado = false;
+            this.archivoPDF = null;
+            this.selectedSolicitud = undefined;
+
+            // Recargar solicitudes para mostrar el cambio de estado
+            this.cargarSolicitudes();
+          },
+          error: (err: any) => {
+            console.error('❌ Error al actualizar estado de solicitud:', err);
+            this.snackBar.open('PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+            this.enviandoPDF = false;
+          }
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error al subir archivo PDF:', err);
+        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.subiendoPDF = false;
       }
     });
   }

@@ -41,7 +41,7 @@
         <div class="pdf-upload-section">
           <p class="instruction">
             📄 <strong>Paso 1:</strong> El documento Word ha sido generado y descargado.<br>
-            📤 <strong>Paso 2:</strong> Ahora sube el archivo PDF para enviar al estudiante.
+            📤 <strong>Paso 2:</strong> Selecciona el archivo PDF y envíalo al estudiante.
           </p>
 
           <!-- Selección de archivo PDF -->
@@ -67,28 +67,18 @@
             </span>
           </div>
 
-          <!-- Botones de acción -->
+          <!-- Botón unificado -->
           <div class="action-buttons">
             <button
               mat-raised-button
-              color="accent"
-              [disabled]="!archivoPDF || subiendoPDF"
-              (click)="subirPDF()"
-              class="upload-btn">
-              <mat-icon>cloud_upload</mat-icon>
-              <span *ngIf="subiendoPDF">Subiendo...</span>
-              <span *ngIf="!subiendoPDF">Subir PDF</span>
-            </button>
-
-            <button
-              mat-raised-button
               color="primary"
-              [disabled]="!puedeEnviarPDF()"
-              (click)="enviarPDFAlEstudiante()"
-              class="send-btn">
+              [disabled]="!archivoPDF || subiendoPDF || enviandoPDF"
+              (click)="enviarDocumento()"
+              class="send-document-btn">
               <mat-icon>send</mat-icon>
-              <span *ngIf="enviandoPDF">Enviando...</span>
-              <span *ngIf="!enviandoPDF">Enviar al Estudiante</span>
+              <span *ngIf="subiendoPDF">Subiendo PDF...</span>
+              <span *ngIf="enviandoPDF">Enviando al Estudiante...</span>
+              <span *ngIf="!subiendoPDF && !enviandoPDF">Enviar Documento</span>
             </button>
           </div>
 
