@@ -193,7 +193,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].estado = 'Aprobado';
         }
         
-        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre} ${solicitud.objUsuario.apellido} aprobada. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
+        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre_completo} aprobada. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['success-snackbar']
         });
@@ -221,7 +221,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].estado = 'Rechazado';
         }
         
-        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre} ${solicitud.objUsuario.apellido} rechazada.`, 'Cerrar', { 
+        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre_completo} rechazada.`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -300,7 +300,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         estado: 'Pendiente',
         observaciones: '',
         condicion: 'Primera_Vez',
-        objUsuario: { id_usuario: 4, nombre: 'Pepa', apellido: 'González', email: 'pepa.gonzalez@unicauca.edu.co', telefono: '3001111111', codigo_estudiante: '104612345660', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
+        objUsuario: { id_usuario: 4, nombre_completo: 'Pepa González', rol: { id_rol: 1, nombre: 'Estudiante' }, codigo: '104612345660', correo: 'pepa.gonzalez@unicauca.edu.co', estado_usuario: true, objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Informática' } },
         objCursoOfertadoVerano: this.cursoSeleccionado!,
         tipoSolicitud: 'PREINSCRIPCION'
       },
@@ -311,7 +311,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         estado: 'Pendiente',
         observaciones: '',
         condicion: 'Habilitación',
-        objUsuario: { id_usuario: 5, nombre: 'María', apellido: 'González', email: 'maria.gonzalez@unicauca.edu.co', telefono: '3002222222', codigo_estudiante: '104612345661', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
+        objUsuario: { id_usuario: 5, nombre_completo: 'María González', rol: { id_rol: 1, nombre: 'Estudiante' }, codigo: '104612345661', correo: 'maria.gonzalez@unicauca.edu.co', estado_usuario: true, objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Informática' } },
         objCursoOfertadoVerano: this.cursoSeleccionado!,
         tipoSolicitud: 'PREINSCRIPCION'
       },
@@ -322,7 +322,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         estado: 'Aprobado',
         observaciones: 'Estudiante con buen rendimiento académico',
         condicion: 'Repeteción',
-        objUsuario: { id_usuario: 6, nombre: 'Pedro', apellido: 'Rodríguez', email: 'pedro@unicauca.edu.co', telefono: '3003333333', codigo_estudiante: '104612345662', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
+        objUsuario: { id_usuario: 6, nombre_completo: 'Pedro Rodríguez', rol: { id_rol: 1, nombre: 'Estudiante' }, codigo: '104612345662', correo: 'pedro@unicauca.edu.co', estado_usuario: true, objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Informática' } },
         objCursoOfertadoVerano: this.cursoSeleccionado!,
         tipoSolicitud: 'PREINSCRIPCION'
       }
@@ -353,10 +353,10 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         <h3>📝 Información de la Solicitud</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Nombre Completo:</strong> {{ data.solicitud.objUsuario.nombre }} {{ data.solicitud.objUsuario.apellido }}
+            <strong>Nombre Completo:</strong> {{ data.solicitud.objUsuario.nombre_completo }}
           </div>
           <div class="info-item">
-            <strong>Código:</strong> {{ data.solicitud.objUsuario.codigo_estudiante || 'N/A' }}
+            <strong>Código:</strong> {{ data.solicitud.objUsuario.codigo || 'N/A' }}
           </div>
           <div class="info-item">
             <strong>Condición:</strong> {{ data.solicitud.condicion || 'N/A' }}

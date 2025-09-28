@@ -3,7 +3,6 @@ import { CursosIntersemestralesComponent } from './cursos-intersemestrales.compo
 import { DashboardFuncionarioComponent } from './dashboard/dashboard.component';
 import { GestionarCursosComponent } from './gestionar-cursos/gestionar-cursos.component';
 import { PreinscribirEstudiantesComponent } from './preinscribir-estudiantes/preinscribir-estudiantes.component';
-import { EstudioAcademicoComponent } from './estudio-academico/estudio-academico.component';
 import { InscribirEstudiantesComponent } from './inscribir-estudiantes/inscribir-estudiantes.component';
 import { VisualizarSolicitudesComponent } from './visualizar-solicitudes/visualizar-solicitudes.component';
 
@@ -16,7 +15,6 @@ export const CursosIntersemestralesFuncionarioRoutes: Routes = [
       { path: 'dashboard', component: DashboardFuncionarioComponent },
       { path: 'gestionar', component: GestionarCursosComponent },
       { path: 'preinscribir', component: PreinscribirEstudiantesComponent },
-      { path: 'estudio-academico', component: EstudioAcademicoComponent },
       { path: 'inscribir', component: InscribirEstudiantesComponent },
       { path: 'solicitudes', component: VisualizarSolicitudesComponent },
     ],

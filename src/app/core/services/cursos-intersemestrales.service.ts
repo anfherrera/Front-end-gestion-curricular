@@ -44,6 +44,23 @@ export interface CursoOfertadoVerano {
   objDocente: Usuario;
 }
 
+// Interfaz específica para usuarios en solicitudes (estructura del backend)
+export interface UsuarioSolicitud {
+  id_usuario: number;
+  nombre_completo: string;
+  rol: {
+    id_rol: number;
+    nombre: string;
+  };
+  codigo: string;
+  correo: string;
+  estado_usuario: boolean;
+  objPrograma: {
+    id_programa: number;
+    nombre_programa: string;
+  };
+}
+
 export interface SolicitudCursoVerano {
   id_solicitud: number;
   nombre_solicitud: string;
@@ -51,7 +68,7 @@ export interface SolicitudCursoVerano {
   estado: 'Pendiente' | 'Aprobado' | 'Rechazado' | 'Completado';
   observaciones?: string;
   condicion?: string;
-  objUsuario: Usuario;
+  objUsuario: UsuarioSolicitud;
   objCursoOfertadoVerano: CursoOfertadoVerano;
   tipoSolicitud: 'PREINSCRIPCION' | 'INSCRIPCION';
 }

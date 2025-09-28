@@ -17,10 +17,12 @@ app-card-container {
   background-color: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
+  flex-wrap: wrap;
 }
 
 .filtro-field {
   min-width: 200px;
+  flex: 1;
 }
 
 /* Loading */
@@ -58,6 +60,7 @@ table {
 .estudiante-info strong {
   color: #00138C;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .estudiante-info small {
@@ -80,6 +83,14 @@ table {
 .curso-info small {
   color: #6c757d;
   font-size: 12px;
+}
+
+/* Código de estudiante */
+.codigo-text {
+  color: #00138C;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
 }
 
 /* Badges */

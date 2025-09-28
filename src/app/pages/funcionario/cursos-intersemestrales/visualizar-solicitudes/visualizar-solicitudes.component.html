@@ -1,14 +1,14 @@
-<app-card-container title="Visualizar Solicitudes de Cursos">
+<app-card-container title="Solicitudes de Cursos Intersemestrales de Verano">
   
   <!-- Filtros -->
-  <div class="filtros-container">
+  <div class="filtros-container" [formGroup]="filtroForm">
     <mat-form-field appearance="outline" class="filtro-field">
-      <mat-label>Filtrar por estado</mat-label>
-      <mat-select [(value)]="filtroEstado" (selectionChange)="cargarSolicitudes()">
-        <mat-option value="todos">Todos</mat-option>
-        <mat-option value="Pendiente">Pendientes</mat-option>
-        <mat-option value="Aprobado">Aprobadas</mat-option>
-        <mat-option value="Rechazado">Rechazadas</mat-option>
+      <mat-label>Filtrar por materia</mat-label>
+      <mat-select formControlName="materia">
+        <mat-option value="todos">Todas las materias</mat-option>
+        <mat-option *ngFor="let materia of materias" [value]="materia.id_materia">
+          {{ materia.nombre_materia }} ({{ materia.codigo_materia }})
+        </mat-option>
       </mat-select>
     </mat-form-field>
     
@@ -29,35 +29,42 @@
 
   <!-- Tabla de solicitudes -->
   <div *ngIf="!cargando" class="solicitudes-container">
-    <table mat-table [dataSource]="getSolicitudesFiltradas()" class="mat-elevation-z8">
+    <table mat-table [dataSource]="solicitudesFiltradas" class="mat-elevation-z8">
       
-      <!-- Estudiante -->
-      <ng-container matColumnDef="estudiante">
-        <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+      <!-- Nombre Completo -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre Completo</th>
         <td mat-cell *matCellDef="let solicitud">
           <div class="estudiante-info">
-            <strong>{{ solicitud.objUsuario?.nombre }} {{ solicitud.objUsuario?.apellido }}</strong>
-            <small>{{ solicitud.objUsuario?.codigo_estudiante }}</small>
+            <strong>{{ solicitud.objUsuario?.nombre_completo }}</strong>
           </div>
+        </td>
+      </ng-container>
+
+      <!-- Código -->
+      <ng-container matColumnDef="codigo">
+        <th mat-header-cell *matHeaderCellDef>Código</th>
+        <td mat-cell *matCellDef="let solicitud">
+          <span class="codigo-text">{{ solicitud.objUsuario?.codigo }}</span>
         </td>
       </ng-container>
 
       <!-- Curso -->
       <ng-container matColumnDef="curso">
-        <th mat-header-cell *matHeaderCellDef>Curso Solicitado</th>
+        <th mat-header-cell *matHeaderCellDef>Curso</th>
         <td mat-cell *matCellDef="let solicitud">
           <div class="curso-info">
             <strong>{{ solicitud.objCursoOfertadoVerano?.nombre_curso }}</strong>
-            <small>{{ solicitud.objCursoOfertadoVerano?.codigo_curso }}</small>
+            <small>{{ solicitud.objCursoOfertadoVerano?.codigo_curso }} - {{ solicitud.objCursoOfertadoVerano?.objMateria?.nombre_materia }}</small>
           </div>
         </td>
       </ng-container>
 
-      <!-- Tipo Solicitud -->
-      <ng-container matColumnDef="tipo">
-        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+      <!-- Condición -->
+      <ng-container matColumnDef="condicion">
+        <th mat-header-cell *matHeaderCellDef>Condición</th>
         <td mat-cell *matCellDef="let solicitud">
-          <span class="condicion-badge">{{ solicitud.tipoSolicitud }}</span>
+          <span class="condicion-badge">{{ getCondicionTexto(solicitud.condicion) }}</span>
         </td>
       </ng-container>
 
@@ -69,67 +76,15 @@
         </td>
       </ng-container>
 
-      <!-- Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef>Estado</th>
-        <td mat-cell *matCellDef="let solicitud">
-          <span class="estado-badge" 
-                [style.background-color]="getEstadoColor(solicitud.estado)"
-                [style.color]="'white'">
-            {{ solicitud.estado | titlecase }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- Nombre Solicitud -->
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef>Descripción</th>
-        <td mat-cell *matCellDef="let solicitud">
-          <span class="observaciones-text">
-            {{ solicitud.nombre_solicitud || 'Sin descripción' }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let solicitud">
-          <div class="acciones-container">
-            <button *ngIf="solicitud.estado === 'Pendiente'"
-                    mat-raised-button 
-                    color="primary" 
-                    (click)="onAprobarSolicitud(solicitud)"
-                    class="btn-aprobar">
-              <mat-icon>check</mat-icon>
-              Aprobar
-            </button>
-            
-            <button *ngIf="solicitud.estado === 'Pendiente'"
-                    mat-raised-button 
-                    color="warn" 
-                    (click)="onRechazarSolicitud(solicitud)"
-                    class="btn-rechazar">
-              <mat-icon>close</mat-icon>
-              Rechazar
-            </button>
-            
-            <span *ngIf="solicitud.estado !== 'Pendiente'" class="estado-final">
-              {{ solicitud.estado === 'Aprobado' ? 'Aprobada' : 'Rechazada' }}
-            </span>
-          </div>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="['estudiante','curso','tipo','fecha','estado','nombre','acciones']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['estudiante','curso','tipo','fecha','estado','nombre','acciones'];"></tr>
+      <tr mat-header-row *matHeaderRowDef="['nombre','codigo','curso','condicion','fecha']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['nombre','codigo','curso','condicion','fecha'];"></tr>
     </table>
 
     <!-- Mensaje cuando no hay solicitudes -->
-    <div *ngIf="getSolicitudesFiltradas().length === 0" class="sin-datos">
+    <div *ngIf="solicitudesFiltradas.length === 0" class="sin-datos">
       <mat-icon>info</mat-icon>
       <p>No hay solicitudes para mostrar</p>
-      <p *ngIf="filtroEstado !== 'todos'">Intenta cambiar el filtro de estado</p>
+      <p *ngIf="filtroForm.get('materia')?.value !== 'todos'">Intenta cambiar el filtro de materia</p>
     </div>
   </div>
 

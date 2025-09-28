@@ -32,7 +32,6 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
     { titulo: 'Preinscribir Estudiantes', ruta: 'preinscribir', icon: 'person_add', badge: 0 },
     { titulo: 'Inscribir Estudiantes', ruta: 'inscribir', icon: 'how_to_reg', badge: 0 },
     { titulo: 'Visualizar Solicitudes', ruta: 'solicitudes', icon: 'list_alt', badge: 0 },
-    { titulo: 'Estudio Académico', ruta: 'estudio-academico', icon: 'school', badge: 0 },
   ];
 
   notificacionesNoLeidas = 0;

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { CursosIntersemestralesService, SolicitudCursoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, SolicitudCursoVerano, Materia, UsuarioSolicitud } from '../../../../core/services/cursos-intersemestrales.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 
 @Component({
@@ -9,6 +10,7 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     CardContainerComponent,
     ...MATERIAL_IMPORTS
   ],
@@ -17,106 +19,248 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
 })
 export class VisualizarSolicitudesComponent implements OnInit {
   solicitudes: SolicitudCursoVerano[] = [];
+  solicitudesFiltradas: SolicitudCursoVerano[] = [];
+  materias: Materia[] = [];
   cargando = true;
-  filtroEstado = 'todos';
+  
+  filtroForm: FormGroup;
 
   constructor(
-    private cursosService: CursosIntersemestralesService
+    private cursosService: CursosIntersemestralesService,
+    private fb: FormBuilder
   ) {
     console.log('📋 VISUALIZAR SOLICITUDES COMPONENT CARGADO');
+    
+    this.filtroForm = this.fb.group({
+      materia: ['todos']
+    });
   }
 
   ngOnInit(): void {
+    this.cargarMaterias();
     this.cargarSolicitudes();
+    
+    // Suscribirse a cambios en los filtros
+    this.filtroForm.valueChanges.subscribe(() => {
+      this.aplicarFiltros();
+    });
   }
 
-  cargarSolicitudes() {
-    this.cargando = true;
-    console.log('🔄 Cargando todas las solicitudes...');
-    
-    this.cursosService.getTodasLasSolicitudes().subscribe({
-      next: (solicitudes: SolicitudCursoVerano[]) => {
-        this.solicitudes = solicitudes;
-        console.log('✅ Solicitudes cargadas:', solicitudes);
-        this.cargando = false;
+  cargarMaterias() {
+    console.log('🔄 Cargando materias desde el backend...');
+    this.cursosService.getTodasLasMaterias().subscribe({
+      next: (materias: Materia[]) => {
+        this.materias = materias;
+        console.log('✅ Materias cargadas desde backend:', materias);
       },
       error: (err: any) => {
-        console.error('❌ Error cargando solicitudes', err);
-        this.cargando = false;
+        console.error('❌ Error cargando materias del backend', err);
         // Datos de prueba si falla el backend
-        this.solicitudes = [
-          {
-            id_solicitud: 1,
-            nombre_solicitud: 'Solicitud de curso nuevo',
-            fecha_solicitud: new Date(),
-            estado: 'Pendiente',
-            objUsuario: {
-              id_usuario: 1,
-              nombre: 'Juan',
-              apellido: 'Pérez',
-              email: 'juan.perez@unicauca.edu.co',
-              telefono: '3001234567',
-              codigo_estudiante: '104612345660',
-              objRol: { id_rol: 1, nombre_rol: 'Estudiante' }
-            },
-            objCursoOfertadoVerano: {
-              id_curso: 1,
-              nombre_curso: 'Programación Avanzada',
-              codigo_curso: 'PROG-301',
-              descripcion: 'Curso de programación avanzada',
-              fecha_inicio: new Date(),
-              fecha_fin: new Date(),
-              cupo_maximo: 25,
-              cupo_disponible: 20,
-              cupo_estimado: 25,
-              espacio_asignado: 'Lab 301',
-              estado: 'Abierto',
-              objMateria: { 
-                id_materia: 1, 
-                nombre_materia: 'Programación',
-                codigo_materia: 'PROG',
-                creditos: 4
-              },
-              objDocente: { 
-                id_usuario: 2, 
-                nombre: 'María', 
-                apellido: 'García',
-                email: 'maria.garcia@unicauca.edu.co',
-                telefono: '3007654321',
-                objRol: { id_rol: 2, nombre_rol: 'Docente' }
-              }
-            },
-            tipoSolicitud: 'PREINSCRIPCION'
-          }
+        this.materias = [
+          { id_materia: 1, nombre_materia: 'Programación', codigo_materia: 'PROG', creditos: 4 },
+          { id_materia: 2, nombre_materia: 'Bases de Datos', codigo_materia: 'BD', creditos: 3 },
+          { id_materia: 3, nombre_materia: 'Matemáticas', codigo_materia: 'MAT', creditos: 3 },
+          { id_materia: 4, nombre_materia: 'Desarrollo Web', codigo_materia: 'WEB', creditos: 4 },
+          { id_materia: 5, nombre_materia: 'Inteligencia Artificial', codigo_materia: 'IA', creditos: 4 },
+          { id_materia: 6, nombre_materia: 'Redes de Computadores', codigo_materia: 'RED', creditos: 3 }
         ];
       }
     });
   }
 
-  getSolicitudesFiltradas() {
-    if (this.filtroEstado === 'todos') {
-      return this.solicitudes;
+  cargarSolicitudes() {
+    this.cargando = true;
+    console.log('🔄 Cargando todas las solicitudes desde el backend...');
+    
+    this.cursosService.getTodasLasSolicitudes().subscribe({
+      next: (solicitudes: SolicitudCursoVerano[]) => {
+        this.solicitudes = solicitudes;
+        console.log('✅ Solicitudes cargadas desde backend:', solicitudes);
+        this.aplicarFiltros();
+        this.cargando = false;
+      },
+      error: (err: any) => {
+        console.error('❌ Error cargando solicitudes del backend:', err);
+        console.log('📝 Usando datos de prueba hasta que el backend implemente el endpoint');
+        this.cargando = false;
+        // Datos de prueba si falla el backend
+        this.solicitudes = this.getSolicitudesPrueba();
+        this.aplicarFiltros();
+      }
+    });
+  }
+
+  getSolicitudesPrueba(): SolicitudCursoVerano[] {
+    return [
+      {
+        id_solicitud: 1,
+        nombre_solicitud: 'Solicitud de Curso Nuevo - Programación Avanzada',
+        fecha_solicitud: new Date('2024-01-15'),
+        estado: 'Pendiente',
+        condicion: 'Primera_Vez',
+        observaciones: 'Estudiante solicita curso de programación avanzada para el verano',
+        objUsuario: {
+          id_usuario: 1,
+          nombre_completo: 'Pepa González',
+          rol: { id_rol: 1, nombre: 'Estudiante' },
+          codigo: '104612345660',
+          correo: 'pepa.gonzalez@unicauca.edu.co',
+          estado_usuario: true,
+          objPrograma: {
+            id_programa: 1,
+            nombre_programa: 'Ingeniería Informática'
+          }
+        },
+        objCursoOfertadoVerano: {
+          id_curso: 1,
+          nombre_curso: 'Programación Avanzada',
+          codigo_curso: 'PROG-301',
+          descripcion: 'Curso de programación avanzada',
+          fecha_inicio: new Date(),
+          fecha_fin: new Date(),
+          cupo_maximo: 25,
+          cupo_disponible: 20,
+          cupo_estimado: 25,
+          espacio_asignado: 'Lab 301',
+          estado: 'Abierto',
+          objMateria: { 
+            id_materia: 1, 
+            nombre_materia: 'Programación',
+            codigo_materia: 'PROG',
+            creditos: 4
+          },
+          objDocente: { 
+            id_usuario: 2, 
+            nombre: 'María',
+            apellido: 'García',
+            email: 'maria.garcia@unicauca.edu.co',
+            telefono: '3007654321',
+            objRol: { id_rol: 2, nombre_rol: 'Docente' }
+          }
+        },
+        tipoSolicitud: 'PREINSCRIPCION'
+      },
+      {
+        id_solicitud: 2,
+        nombre_solicitud: 'Solicitud de Curso Nuevo - Bases de Datos Avanzadas',
+        fecha_solicitud: new Date('2024-01-16'),
+        estado: 'Pendiente',
+        condicion: 'Repeticion',
+        observaciones: 'Estudiante necesita reforzar conocimientos en bases de datos',
+        objUsuario: {
+          id_usuario: 2,
+          nombre_completo: 'Carlos López',
+          rol: { id_rol: 1, nombre: 'Estudiante' },
+          codigo: '104612345661',
+          correo: 'carlos.lopez@unicauca.edu.co',
+          estado_usuario: true,
+          objPrograma: {
+            id_programa: 1,
+            nombre_programa: 'Ingeniería Informática'
+          }
+        },
+        objCursoOfertadoVerano: {
+          id_curso: 2,
+          nombre_curso: 'Bases de Datos Avanzadas',
+          codigo_curso: 'BD-301',
+          descripcion: 'Curso de bases de datos avanzadas',
+          fecha_inicio: new Date(),
+          fecha_fin: new Date(),
+          cupo_maximo: 30,
+          cupo_disponible: 25,
+          cupo_estimado: 30,
+          espacio_asignado: 'Aula 201',
+          estado: 'Abierto',
+          objMateria: { 
+            id_materia: 2, 
+            nombre_materia: 'Bases de Datos',
+            codigo_materia: 'BD',
+            creditos: 3
+          },
+          objDocente: { 
+            id_usuario: 3, 
+            nombre: 'Ana',
+            apellido: 'Martínez',
+            email: 'ana.martinez@unicauca.edu.co',
+            telefono: '3008765432',
+            objRol: { id_rol: 2, nombre_rol: 'Docente' }
+          }
+        },
+        tipoSolicitud: 'PREINSCRIPCION'
+      },
+      {
+        id_solicitud: 3,
+        nombre_solicitud: 'Solicitud de Curso Nuevo - Desarrollo Web',
+        fecha_solicitud: new Date('2024-01-17'),
+        estado: 'Pendiente',
+        condicion: 'Primera_Vez',
+        observaciones: 'Estudiante interesado en desarrollo web moderno',
+        objUsuario: {
+          id_usuario: 3,
+          nombre_completo: 'María Rodríguez',
+          rol: { id_rol: 1, nombre: 'Estudiante' },
+          codigo: '104612345662',
+          correo: 'maria.rodriguez@unicauca.edu.co',
+          estado_usuario: true,
+          objPrograma: {
+            id_programa: 1,
+            nombre_programa: 'Ingeniería Informática'
+          }
+        },
+        objCursoOfertadoVerano: {
+          id_curso: 3,
+          nombre_curso: 'Desarrollo Web Moderno',
+          codigo_curso: 'WEB-301',
+          descripcion: 'Curso de desarrollo web con tecnologías modernas',
+          fecha_inicio: new Date(),
+          fecha_fin: new Date(),
+          cupo_maximo: 20,
+          cupo_disponible: 15,
+          cupo_estimado: 20,
+          espacio_asignado: 'Lab 302',
+          estado: 'Abierto',
+          objMateria: { 
+            id_materia: 4, 
+            nombre_materia: 'Desarrollo Web',
+            codigo_materia: 'WEB',
+            creditos: 4
+          },
+          objDocente: { 
+            id_usuario: 4, 
+            nombre: 'Pedro',
+            apellido: 'Sánchez',
+            email: 'pedro.sanchez@unicauca.edu.co',
+            telefono: '3009876543',
+            objRol: { id_rol: 2, nombre_rol: 'Docente' }
+          }
+        },
+        tipoSolicitud: 'PREINSCRIPCION'
+      }
+    ];
+  }
+
+  aplicarFiltros() {
+    const filtros = this.filtroForm.value;
+    let filtradas = [...this.solicitudes];
+
+    // Filtrar por materia
+    if (filtros.materia !== 'todos') {
+      filtradas = filtradas.filter(s => 
+        s.objCursoOfertadoVerano?.objMateria?.id_materia === parseInt(filtros.materia)
+      );
     }
-    return this.solicitudes.filter(s => s.estado === this.filtroEstado);
+
+    this.solicitudesFiltradas = filtradas;
+    console.log('🔍 Filtros aplicados:', filtros, 'Resultados:', filtradas.length);
   }
 
-  onAprobarSolicitud(solicitud: SolicitudCursoVerano) {
-    console.log('✅ Aprobando solicitud:', solicitud.id_solicitud);
-    // TODO: Implementar lógica de aprobación
-  }
 
-  onRechazarSolicitud(solicitud: SolicitudCursoVerano) {
-    console.log('❌ Rechazando solicitud:', solicitud.id_solicitud);
-    // TODO: Implementar lógica de rechazo
-  }
-
-  getEstadoColor(estado: string): string {
-    switch (estado) {
-      case 'Aprobado': return '#28a745';
-      case 'Rechazado': return '#dc3545';
-      case 'Pendiente': return '#ffc107';
-      case 'Completado': return '#17a2b8';
-      default: return '#6c757d';
+  getCondicionTexto(condicion: string): string {
+    switch (condicion) {
+      case 'Primera_Vez': return 'Primera Vez';
+      case 'Repeticion': return 'Repetición';
+      case 'Homologacion': return 'Homologación';
+      default: return condicion;
     }
   }
 }
