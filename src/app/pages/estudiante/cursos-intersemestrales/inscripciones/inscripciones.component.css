@@ -95,6 +95,121 @@ td.mat-cell:last-child {
   font-style: italic;
 }
 
+/* Estilos para archivos de pago */
+.archivo-pago-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sin-archivo {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.archivo-subido {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.archivo-icon {
+  color: #00138C;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.archivo-nombre {
+  font-size: 13px;
+  color: #495057;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.archivo-estado {
+  font-size: 11px;
+  color: #28a745;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: #d4edda;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #c3e6cb;
+}
+
+/* Estilos para acciones */
+.acciones-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-subir {
+  background-color: #00138C !important;
+  color: white !important;
+  font-size: 12px;
+  padding: 6px 14px;
+  min-width: auto;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2);
+}
+
+.btn-subir:hover {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
+}
+
+.btn-subir mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.btn-cancelar {
+  font-size: 12px;
+  padding: 6px 14px;
+  min-width: auto;
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.btn-cancelar:hover {
+  background-color: #c82333 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-cancelar mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .section h3 {

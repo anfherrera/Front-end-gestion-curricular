@@ -105,6 +105,12 @@ export interface Inscripcion {
   estudianteId: number;
   fecha: string;
   estado: 'inscrito' | 'cancelado';
+  archivoPago?: {
+    id: number;
+    nombre: string;
+    url: string;
+    fecha: string;
+  };
 }
 
 export interface CursoBackend {

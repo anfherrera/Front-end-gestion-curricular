@@ -62,24 +62,55 @@
         </td>
       </ng-container>
 
+      <!-- Archivo de Pago -->
+      <ng-container matColumnDef="archivoPago">
+        <th mat-header-cell *matHeaderCellDef>Archivo de Pago</th>
+        <td mat-cell *matCellDef="let inscripcion">
+          <div class="archivo-pago-container">
+            <span *ngIf="!inscripcion.archivoPago" class="sin-archivo">
+              Sin archivo
+            </span>
+            <div *ngIf="inscripcion.archivoPago" class="archivo-subido">
+              <mat-icon class="archivo-icon">attach_file</mat-icon>
+              <span class="archivo-nombre">{{ inscripcion.archivoPago.nombre }}</span>
+              <span class="archivo-estado">Subido</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
       <!-- Acciones -->
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let inscripcion">
-          <button *ngIf="inscripcion.estado !== 'cancelada'" 
-                  mat-raised-button 
-                  color="warn" 
-                  (click)="onCancelarInscripcion(inscripcion)">
-            Cancelar
-          </button>
-          <span *ngIf="inscripcion.estado === 'cancelada'" class="estado-cancelada">
-            Ya cancelada
-          </span>
+          <div class="acciones-container">
+            <button *ngIf="!inscripcion.archivoPago && inscripcion.estado !== 'cancelada'" 
+                    mat-raised-button 
+                    color="primary" 
+                    (click)="onSubirArchivoPago(inscripcion)"
+                    class="btn-subir">
+              <mat-icon>upload</mat-icon>
+              Subir Pago
+            </button>
+            
+            <button *ngIf="inscripcion.estado !== 'cancelada'" 
+                    mat-raised-button 
+                    color="warn" 
+                    (click)="onCancelarInscripcion(inscripcion)"
+                    class="btn-cancelar">
+              <mat-icon>cancel</mat-icon>
+              Cancelar
+            </button>
+            
+            <span *ngIf="inscripcion.estado === 'cancelada'" class="estado-cancelada">
+              Ya cancelada
+            </span>
+          </div>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="['cursoId','fecha','estado','acciones']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['cursoId','fecha','estado','acciones'];"></tr>
+      <tr mat-header-row *matHeaderRowDef="['cursoId','fecha','estado','archivoPago','acciones']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['cursoId','fecha','estado','archivoPago','acciones'];"></tr>
     </table>
   </div>
 
