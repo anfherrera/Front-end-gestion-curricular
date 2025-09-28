@@ -304,6 +304,18 @@ export class CursosIntersemestralesService {
     return this.http.get<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/${id}`);
   }
 
+  // Obtener todas las materias
+  getTodasLasMaterias(): Observable<Materia[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/materias');
+    return this.http.get<Materia[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/materias`);
+  }
+
+  // Obtener todos los docentes
+  getTodosLosDocentes(): Observable<Usuario[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/docentes');
+    return this.http.get<Usuario[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/docentes`);
+  }
+
   // Obtener solicitudes de curso nuevo del usuario
   getSolicitudesCursoNuevoUsuario(idUsuario: number): Observable<SolicitudCursoNuevo[]> {
     return this.http.get<SolicitudCursoNuevo[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO_USUARIO(idUsuario));

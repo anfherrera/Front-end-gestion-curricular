@@ -15,6 +15,7 @@ import {
   CreateCursoDTO, 
   UpdateCursoDTO 
 } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoDialogComponent } from './curso-dialog.component';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -96,13 +97,44 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       next: (cursos) => {
         this.cursos = cursos;
         console.log('✅ Cursos cargados:', cursos);
-        this.cargando = false;
+        this.cargarMateriasYDocentes();
       },
       error: (err) => {
         console.error('❌ Error cargando cursos:', err);
         this.cargando = false;
         // Datos de prueba si falla el backend
         this.cursos = this.getCursosPrueba();
+        this.cargarMateriasYDocentes();
+      }
+    });
+  }
+
+  cargarMateriasYDocentes() {
+    // Cargar materias
+    this.cursosService.getTodasLasMaterias().subscribe({
+      next: (materias) => {
+        this.materias = materias;
+        console.log('✅ Materias cargadas:', materias);
+      },
+      error: (err) => {
+        console.error('❌ Error cargando materias:', err);
+        // Datos de prueba si falla el backend
+        this.materias = this.getMateriasPrueba();
+      }
+    });
+
+    // Cargar docentes
+    this.cursosService.getTodosLosDocentes().subscribe({
+      next: (docentes) => {
+        this.docentes = docentes;
+        console.log('✅ Docentes cargados:', docentes);
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('❌ Error cargando docentes:', err);
+        // Datos de prueba si falla el backend
+        this.docentes = this.getDocentesPrueba();
+        this.cargando = false;
       }
     });
   }
@@ -167,6 +199,80 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     ];
   }
 
+  // Datos de prueba para materias
+  private getMateriasPrueba(): Materia[] {
+    return [
+      {
+        id_materia: 1,
+        nombre_materia: 'Programación',
+        codigo_materia: 'PROG',
+        creditos: 4
+      },
+      {
+        id_materia: 2,
+        nombre_materia: 'Bases de Datos',
+        codigo_materia: 'BD',
+        creditos: 3
+      },
+      {
+        id_materia: 3,
+        nombre_materia: 'Matemáticas',
+        codigo_materia: 'MAT',
+        creditos: 3
+      },
+      {
+        id_materia: 4,
+        nombre_materia: 'Redes de Computadores',
+        codigo_materia: 'RED',
+        creditos: 4
+      },
+      {
+        id_materia: 5,
+        nombre_materia: 'Ingeniería de Software',
+        codigo_materia: 'IS',
+        creditos: 4
+      }
+    ];
+  }
+
+  // Datos de prueba para docentes
+  private getDocentesPrueba(): Usuario[] {
+    return [
+      {
+        id_usuario: 2,
+        nombre: 'María',
+        apellido: 'García',
+        email: 'maria.garcia@unicauca.edu.co',
+        telefono: '3007654321',
+        objRol: { id_rol: 2, nombre_rol: 'Docente' }
+      },
+      {
+        id_usuario: 3,
+        nombre: 'Carlos',
+        apellido: 'López',
+        email: 'carlos.lopez@unicauca.edu.co',
+        telefono: '3009876543',
+        objRol: { id_rol: 2, nombre_rol: 'Docente' }
+      },
+      {
+        id_usuario: 4,
+        nombre: 'Ana',
+        apellido: 'Martínez',
+        email: 'ana.martinez@unicauca.edu.co',
+        telefono: '3001234567',
+        objRol: { id_rol: 2, nombre_rol: 'Docente' }
+      },
+      {
+        id_usuario: 5,
+        nombre: 'Luis',
+        apellido: 'Rodríguez',
+        email: 'luis.rodriguez@unicauca.edu.co',
+        telefono: '3004567890',
+        objRol: { id_rol: 2, nombre_rol: 'Docente' }
+      }
+    ];
+  }
+
   // Abrir dialog para crear nuevo curso
   abrirDialogCrear() {
     this.editando = false;
@@ -175,6 +281,27 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       estado: 'Abierto',
       cupo_maximo: 25,
       cupo_estimado: 25
+    });
+
+    // Abrir dialog
+    const dialogRef = this.dialog.open(CursoDialogComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: {
+        form: this.cursoForm,
+        editando: this.editando,
+        titulo: 'Crear Nuevo Curso',
+        materias: this.materias,
+        docentes: this.docentes
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('🔍 Dialog cerrado con resultado:', result);
+      if (result === 'guardado') {
+        console.log('🔄 Recargando datos después de guardar...');
+        this.cargarDatos();
+      }
     });
   }
 
@@ -195,6 +322,28 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       estado: curso.estado,
       id_materia: curso.objMateria.id_materia,
       id_docente: curso.objDocente.id_usuario
+    });
+
+    // Abrir dialog
+    const dialogRef = this.dialog.open(CursoDialogComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: {
+        form: this.cursoForm,
+        editando: this.editando,
+        titulo: 'Editar Curso',
+        cursoEditando: curso,
+        materias: this.materias,
+        docentes: this.docentes
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('🔍 Dialog de editar cerrado con resultado:', result);
+      if (result === 'guardado') {
+        console.log('🔄 Recargando datos después de editar...');
+        this.cargarDatos();
+      }
     });
   }
 
@@ -260,19 +409,22 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           next: () => {
             console.log('✅ Curso eliminado:', curso.id_curso);
             this.snackBar.open('Curso eliminado exitosamente', 'Cerrar', { duration: 3000 });
+            // Recargar datos inmediatamente
             this.cargarDatos();
           },
           error: (err) => {
             console.error('❌ Error eliminando curso:', err);
             this.snackBar.open('Error al eliminar el curso', 'Cerrar', { duration: 3000 });
+            // Recargar datos incluso si hay error para sincronizar
+            this.cargarDatos();
           }
         });
     }
   }
 
-  // Formatear fecha para input de tipo date
-  private formatearFechaParaInput(fecha: Date): string {
-    return new Date(fecha).toISOString().split('T')[0];
+  // Formatear fecha para date picker
+  private formatearFechaParaInput(fecha: Date): Date {
+    return new Date(fecha);
   }
 
   // Formatear fecha para mostrar
@@ -282,14 +434,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   // Obtener color del estado
   getEstadoColor(estado: string): string {
-    switch (estado) {
-      case 'Abierto': return '#28a745';
-      case 'Publicado': return '#17a2b8';
-      case 'Preinscripcion': return '#ffc107';
-      case 'Inscripcion': return '#fd7e14';
-      case 'Cerrado': return '#dc3545';
-      default: return '#6c757d';
-    }
+    // Todos los estados usan el azul principal de la app
+    return '#00138C';
   }
 
   // Obtener icono del estado

@@ -106,9 +106,13 @@
             [style.color]="'white'"
             [style.border]="'none'"
             [style.outline]="'none'"
+            [style.--mdc-chip-label-text-color]="'white'"
+            [style.--mdc-chip-container-color]="getEstadoColor(curso.estado)"
+            [style.--mdc-chip-outline-color]="'transparent'"
+            [style.--mdc-chip-outline-width]="'0'"
             class="estado-chip">
             <mat-icon [style.color]="'white'">{{ getIconoEstado(curso.estado) }}</mat-icon>
-            {{ curso.estado }}
+            <span [style.color]="'white'">{{ curso.estado }}</span>
           </mat-chip>
         </td>
       </ng-container>
@@ -149,125 +153,3 @@
 
 </app-card-container>
 
-<!-- Dialog para crear/editar curso -->
-<div class="dialog-curso" style="display: none;">
-  <h2 mat-dialog-title>{{ editando ? 'Editar Curso' : 'Crear Nuevo Curso' }}</h2>
-  
-  <form [formGroup]="cursoForm" (ngSubmit)="guardarCurso()">
-    <div class="form-container">
-      
-      <!-- Información básica -->
-      <div class="form-section">
-        <h3>Información Básica</h3>
-        
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Nombre del Curso</mat-label>
-          <input matInput formControlName="nombre_curso" placeholder="Ej: Programación Avanzada">
-          <mat-error *ngIf="cursoForm.get('nombre_curso')?.hasError('required')">
-            El nombre del curso es requerido
-          </mat-error>
-          <mat-error *ngIf="cursoForm.get('nombre_curso')?.hasError('minlength')">
-            El nombre debe tener al menos 3 caracteres
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Código del Curso</mat-label>
-          <input matInput formControlName="codigo_curso" placeholder="Ej: PROG-301">
-          <mat-error *ngIf="cursoForm.get('codigo_curso')?.hasError('required')">
-            El código del curso es requerido
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="form-field full-width">
-          <mat-label>Descripción</mat-label>
-          <textarea matInput formControlName="descripcion" rows="3" placeholder="Describe el contenido del curso"></textarea>
-          <mat-error *ngIf="cursoForm.get('descripcion')?.hasError('required')">
-            La descripción es requerida
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Fechas y cupos -->
-      <div class="form-section">
-        <h3>Fechas y Cupos</h3>
-        
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Fecha de Inicio</mat-label>
-          <input matInput type="date" formControlName="fecha_inicio">
-          <mat-error *ngIf="cursoForm.get('fecha_inicio')?.hasError('required')">
-            La fecha de inicio es requerida
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Fecha de Fin</mat-label>
-          <input matInput type="date" formControlName="fecha_fin">
-          <mat-error *ngIf="cursoForm.get('fecha_fin')?.hasError('required')">
-            La fecha de fin es requerida
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Cupo Máximo</mat-label>
-          <input matInput type="number" formControlName="cupo_maximo" min="1" max="100">
-          <mat-error *ngIf="cursoForm.get('cupo_maximo')?.hasError('required')">
-            El cupo máximo es requerido
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Cupo Estimado</mat-label>
-          <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
-          <mat-error *ngIf="cursoForm.get('cupo_estimado')?.hasError('required')">
-            El cupo estimado es requerido
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Configuración -->
-      <div class="form-section">
-        <h3>Configuración</h3>
-        
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Espacio Asignado</mat-label>
-          <input matInput formControlName="espacio_asignado" placeholder="Ej: Lab 301, Aula 205">
-          <mat-error *ngIf="cursoForm.get('espacio_asignado')?.hasError('required')">
-            El espacio asignado es requerido
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="estado">
-            <mat-option value="Abierto">Abierto</mat-option>
-            <mat-option value="Publicado">Publicado</mat-option>
-            <mat-option value="Preinscripcion">Preinscripción</mat-option>
-            <mat-option value="Inscripcion">Inscripción</mat-option>
-            <mat-option value="Cerrado">Cerrado</mat-option>
-          </mat-select>
-          <mat-error *ngIf="cursoForm.get('estado')?.hasError('required')">
-            El estado es requerido
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-    </div>
-
-    <!-- Botones del dialog -->
-    <div mat-dialog-actions class="dialog-actions">
-      <button mat-button type="button" (click)="cursoForm.reset()">
-        Limpiar
-      </button>
-      <button mat-button type="button">
-        Cancelar
-      </button>
-      <button mat-raised-button 
-              color="primary" 
-              type="submit"
-              [disabled]="cursoForm.invalid">
-        {{ editando ? 'Actualizar' : 'Crear' }} Curso
-      </button>
-    </div>
-  </form>
-</div>
