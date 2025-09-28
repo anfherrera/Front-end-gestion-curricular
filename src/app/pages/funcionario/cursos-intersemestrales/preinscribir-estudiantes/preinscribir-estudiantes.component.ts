@@ -14,7 +14,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService, CursoOfertadoVerano, Preinscripcion } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, CursoOfertadoVerano, Preinscripcion, SolicitudCursoVerano } from '../../../../core/services/cursos-intersemestrales.service';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 
 @Component({
@@ -44,8 +44,8 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   
   // Datos
   cursos: CursoOfertadoVerano[] = [];
-  preinscripciones: Preinscripcion[] = [];
-  preinscripcionesFiltradas: Preinscripcion[] = [];
+  solicitudes: SolicitudCursoVerano[] = [];
+  solicitudesFiltradas: SolicitudCursoVerano[] = [];
   cargando = false;
   
   // Formularios
@@ -54,12 +54,12 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   
   // Estado
   cursoSeleccionado: CursoOfertadoVerano | null = null;
-  preinscripcionSeleccionada: Preinscripcion | null = null;
+  solicitudSeleccionada: SolicitudCursoVerano | null = null;
   
   // Columnas de la tabla
   displayedColumns: string[] = [
     'estudiante', 
-    'fecha_preinscripcion', 
+    'fecha_solicitud', 
     'estado', 
     'observaciones', 
     'acciones'
@@ -88,9 +88,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(cursoId => {
         if (cursoId) {
-          this.cargarPreinscripcionesPorCurso(cursoId);
+          this.cargarSolicitudesPorCurso(cursoId);
         } else {
-          this.preinscripcionesFiltradas = [];
+          this.solicitudesFiltradas = [];
           this.cursoSeleccionado = null;
         }
       });
@@ -119,71 +119,119 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
   }
 
-  cargarPreinscripcionesPorCurso(cursoId: number): void {
+  cargarSolicitudesPorCurso(cursoId: number): void {
     this.cargando = true;
-    console.log(`🔄 Cargando preinscripciones para curso ID: ${cursoId}`);
+    console.log(`🔄 Cargando solicitudes para curso ID: ${cursoId}`);
     
     // Buscar el curso seleccionado
     this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
     
-    this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
-      next: (preinscripciones) => {
-        this.preinscripciones = preinscripciones;
-        this.preinscripcionesFiltradas = preinscripciones;
-        console.log('✅ Preinscripciones cargadas:', preinscripciones);
+    this.cursosService.getTodasLasSolicitudes().subscribe({
+      next: (solicitudes) => {
+        // Filtrar solicitudes por curso
+        this.solicitudes = solicitudes.filter(s => s.objCursoOfertadoVerano.id_curso === cursoId);
+        this.solicitudesFiltradas = this.solicitudes;
+        console.log('✅ Solicitudes cargadas:', this.solicitudes);
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando preinscripciones:', err);
-        this.preinscripcionesFiltradas = this.getPreinscripcionesPrueba();
+        console.error('❌ Error cargando solicitudes:', err);
+        this.solicitudesFiltradas = this.getSolicitudesPrueba();
         this.cargando = false;
       }
     });
   }
 
-  verDetalles(preinscripcion: Preinscripcion): void {
-    this.preinscripcionSeleccionada = preinscripcion;
+  verDetalles(solicitud: SolicitudCursoVerano): void {
+    this.solicitudSeleccionada = solicitud;
     this.observacionForm.patchValue({
-      observaciones: preinscripcion.observaciones || ''
+      observaciones: solicitud.observaciones || ''
     });
     
     // Abrir dialog con detalles
-    this.abrirDialogDetalles(preinscripcion);
+    this.abrirDialogDetalles(solicitud);
   }
 
-  abrirDialogDetalles(preinscripcion: Preinscripcion): void {
+  abrirDialogDetalles(solicitud: SolicitudCursoVerano): void {
     const dialogRef = this.dialog.open(DetallesPreinscripcionDialogComponent, {
       width: '600px',
       maxWidth: '90vw',
       data: {
-        preinscripcion: preinscripcion,
-        curso: this.cursoSeleccionado
+        solicitud: solicitud
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.observaciones !== undefined) {
-        this.actualizarObservaciones(preinscripcion.id_preinscripcion, result.observaciones);
+        this.actualizarObservaciones(solicitud.id_solicitud, result.observaciones);
       }
     });
   }
 
-  actualizarObservaciones(idPreinscripcion: number, observaciones: string): void {
-    console.log(`🔄 Actualizando observaciones para preinscripción ${idPreinscripcion}`);
+  actualizarObservaciones(idSolicitud: number, observaciones: string): void {
+    console.log(`🔄 Actualizando observaciones para solicitud ${idSolicitud}`);
     
-    this.cursosService.actualizarObservacionesPreinscripcion(idPreinscripcion, observaciones).subscribe({
+    // Por ahora solo actualizamos localmente hasta que el backend implemente el endpoint
+    const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === idSolicitud);
+    if (index !== -1) {
+      this.solicitudesFiltradas[index].observaciones = observaciones;
+    }
+    
+    this.snackBar.open('Observaciones guardadas exitosamente', 'Cerrar', { duration: 3000 });
+  }
+
+  aprobarSolicitud(solicitud: SolicitudCursoVerano): void {
+    console.log(`✅ Aprobando solicitud ${solicitud.id_solicitud}`);
+    
+    this.cursosService.aprobarSolicitud(solicitud.id_solicitud).subscribe({
       next: (response) => {
-        console.log('✅ Observaciones actualizadas:', response);
-        this.snackBar.open('Observaciones actualizadas exitosamente', 'Cerrar', { duration: 3000 });
+        console.log('✅ Solicitud aprobada:', response);
         
-        // Recargar preinscripciones
-        if (this.cursoSeleccionado) {
-          this.cargarPreinscripcionesPorCurso(this.cursoSeleccionado.id_curso);
+        // Actualizar estado localmente
+        const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === solicitud.id_solicitud);
+        if (index !== -1) {
+          this.solicitudesFiltradas[index].estado = 'Aprobado';
         }
+        
+        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre} ${solicitud.objUsuario.apellido} aprobada. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
       },
       error: (err) => {
-        console.error('❌ Error actualizando observaciones:', err);
-        this.snackBar.open('Error al actualizar observaciones', 'Cerrar', { duration: 3000 });
+        console.error('❌ Error aprobando solicitud:', err);
+        this.snackBar.open('Error al aprobar la solicitud', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  rechazarSolicitud(solicitud: SolicitudCursoVerano): void {
+    console.log(`❌ Rechazando solicitud ${solicitud.id_solicitud}`);
+    
+    this.cursosService.rechazarSolicitud(solicitud.id_solicitud).subscribe({
+      next: (response) => {
+        console.log('✅ Solicitud rechazada:', response);
+        
+        // Actualizar estado localmente
+        const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === solicitud.id_solicitud);
+        if (index !== -1) {
+          this.solicitudesFiltradas[index].estado = 'Rechazado';
+        }
+        
+        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre} ${solicitud.objUsuario.apellido} rechazada.`, 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error rechazando solicitud:', err);
+        this.snackBar.open('Error al rechazar la solicitud', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
@@ -243,31 +291,40 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private getPreinscripcionesPrueba(): Preinscripcion[] {
+  private getSolicitudesPrueba(): SolicitudCursoVerano[] {
     return [
       {
-        id_preinscripcion: 1,
-        fecha_preinscripcion: new Date('2024-01-10'),
+        id_solicitud: 1,
+        nombre_solicitud: 'Solicitud de Curso Nuevo',
+        fecha_solicitud: new Date('2024-01-10'),
         estado: 'Pendiente',
         observaciones: '',
-        objUsuario: { id_usuario: 4, nombre: 'Juan', apellido: 'Pérez', email: 'juan@unicauca.edu.co', telefono: '3001111111', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
-        objCurso: this.cursoSeleccionado!
+        condicion: 'Primera_Vez',
+        objUsuario: { id_usuario: 4, nombre: 'Pepa', apellido: 'González', email: 'pepa.gonzalez@unicauca.edu.co', telefono: '3001111111', codigo_estudiante: '104612345660', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
+        objCursoOfertadoVerano: this.cursoSeleccionado!,
+        tipoSolicitud: 'PREINSCRIPCION'
       },
       {
-        id_preinscripcion: 2,
-        fecha_preinscripcion: new Date('2024-01-11'),
+        id_solicitud: 2,
+        nombre_solicitud: 'Solicitud de Curso Nuevo',
+        fecha_solicitud: new Date('2024-01-11'),
         estado: 'Pendiente',
         observaciones: '',
-        objUsuario: { id_usuario: 5, nombre: 'María', apellido: 'González', email: 'maria.gonzalez@unicauca.edu.co', telefono: '3002222222', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
-        objCurso: this.cursoSeleccionado!
+        condicion: 'Habilitación',
+        objUsuario: { id_usuario: 5, nombre: 'María', apellido: 'González', email: 'maria.gonzalez@unicauca.edu.co', telefono: '3002222222', codigo_estudiante: '104612345661', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
+        objCursoOfertadoVerano: this.cursoSeleccionado!,
+        tipoSolicitud: 'PREINSCRIPCION'
       },
       {
-        id_preinscripcion: 3,
-        fecha_preinscripcion: new Date('2024-01-12'),
+        id_solicitud: 3,
+        nombre_solicitud: 'Solicitud de Curso Nuevo',
+        fecha_solicitud: new Date('2024-01-12'),
         estado: 'Aprobado',
         observaciones: 'Estudiante con buen rendimiento académico',
-        objUsuario: { id_usuario: 6, nombre: 'Pedro', apellido: 'Rodríguez', email: 'pedro@unicauca.edu.co', telefono: '3003333333', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
-        objCurso: this.cursoSeleccionado!
+        condicion: 'Repeteción',
+        objUsuario: { id_usuario: 6, nombre: 'Pedro', apellido: 'Rodríguez', email: 'pedro@unicauca.edu.co', telefono: '3003333333', codigo_estudiante: '104612345662', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
+        objCursoOfertadoVerano: this.cursoSeleccionado!,
+        tipoSolicitud: 'PREINSCRIPCION'
       }
     ];
   }
@@ -287,68 +344,39 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     MatChipsModule
   ],
   template: `
-    <h2 mat-dialog-title>Detalles de Preinscripción</h2>
+    <!-- Dialog actualizado - versión simplificada -->
+    <h2 mat-dialog-title>Detalles de Solicitud de Curso</h2>
     
     <div mat-dialog-content class="dialog-content">
-      <!-- Información del estudiante -->
-      <div class="info-section">
-        <h3>👤 Información del Estudiante</h3>
+      <!-- Información que llenó el estudiante -->
+      <div class="form-section">
+        <h3>📝 Información de la Solicitud</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Nombre:</strong> {{ data.preinscripcion.objUsuario.nombre }} {{ data.preinscripcion.objUsuario.apellido }}
+            <strong>Nombre Completo:</strong> {{ data.solicitud.objUsuario.nombre }} {{ data.solicitud.objUsuario.apellido }}
           </div>
           <div class="info-item">
-            <strong>Email:</strong> {{ data.preinscripcion.objUsuario.email }}
+            <strong>Código:</strong> {{ data.solicitud.objUsuario.codigo_estudiante || 'N/A' }}
           </div>
           <div class="info-item">
-            <strong>Teléfono:</strong> {{ data.preinscripcion.objUsuario.telefono }}
+            <strong>Condición:</strong> {{ data.solicitud.condicion || 'N/A' }}
           </div>
         </div>
       </div>
 
-      <!-- Información del curso -->
-      <div class="info-section">
-        <h3>📚 Información del Curso</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <strong>Curso:</strong> {{ data.curso?.nombre_curso }}
-          </div>
-          <div class="info-item">
-            <strong>Código:</strong> {{ data.curso?.codigo_curso }}
-          </div>
-          <div class="info-item">
-            <strong>Docente:</strong> {{ data.curso?.objDocente?.nombre }} {{ data.curso?.objDocente?.apellido }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Información de la preinscripción -->
-      <div class="info-section">
-        <h3>📋 Información de Preinscripción</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <strong>Fecha:</strong> {{ data.preinscripcion.fecha_preinscripcion | date:'dd/MM/yyyy HH:mm' }}
-          </div>
-          <div class="info-item">
-            <strong>Estado:</strong> 
-            <mat-chip [style.background-color]="'#00138C'" [style.color]="'white'">
-              {{ data.preinscripcion.estado }}
-            </mat-chip>
-          </div>
-        </div>
-      </div>
-
-      <!-- Campo de observaciones -->
-      <div class="info-section">
-        <h3>📝 Observaciones</h3>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Observaciones del funcionario</mat-label>
-          <textarea matInput 
-                    formControlName="observaciones" 
-                    rows="4" 
-                    placeholder="Agrega observaciones sobre esta preinscripción...">
-          </textarea>
-        </mat-form-field>
+      <!-- Observaciones del funcionario -->
+      <div class="form-section">
+        <h3>📝 Observaciones del Funcionario</h3>
+        <form [formGroup]="observacionesForm">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Agrega observaciones sobre esta preinscripción</mat-label>
+            <textarea matInput 
+                      formControlName="observaciones"
+                      placeholder="Ej: Estudiante con buen rendimiento académico, cumple requisitos..."
+                      rows="4">
+            </textarea>
+          </mat-form-field>
+        </form>
       </div>
     </div>
 
@@ -364,22 +392,29 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   `,
   styles: [`
     .dialog-content {
-      max-height: 60vh;
-      overflow-y: auto;
-      padding: 20px 0;
+      max-width: 600px;
+      padding: 20px;
     }
 
-    .info-section {
-      margin-bottom: 24px;
-      background: #f8f9fa;
+    .curso-info {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border-radius: 8px;
       padding: 16px;
+      margin-bottom: 20px;
+      border-left: 4px solid #00138C;
+    }
+
+    .form-section {
+      margin-bottom: 24px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
       border-radius: 8px;
       border-left: 4px solid #00138C;
     }
 
-    .info-section h3 {
+    .form-section h3 {
+      margin: 0 0 16px 0;
       color: #00138C;
-      margin-bottom: 12px;
       font-size: 16px;
       font-weight: 600;
     }
@@ -387,7 +422,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     .info-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 8px;
+      gap: 12px;
     }
 
     .info-item {
@@ -398,7 +433,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
     .info-item strong {
       color: #333;
-      min-width: 80px;
+      min-width: 120px;
     }
 
     .full-width {
@@ -409,32 +444,14 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      padding: 16px 0;
+      padding: 16px 20px;
       border-top: 1px solid #e0e0e0;
     }
 
-    .dialog-actions button {
-      min-width: 120px;
-    }
-
     ::ng-deep .mat-mdc-form-field {
-      width: 100%;
-    }
-
-    ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
-      color: #e3f2fd;
-    }
-
-    ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
-      color: #00138C;
-    }
-
-    ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
-      color: #6c757d;
-    }
-
-    ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-      color: #00138C;
+      .mat-mdc-text-field-wrapper {
+        background-color: white;
+      }
     }
   `]
 })
@@ -443,11 +460,11 @@ export class DetallesPreinscripcionDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<DetallesPreinscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { preinscripcion: Preinscripcion, curso: CursoOfertadoVerano | null },
+    @Inject(MAT_DIALOG_DATA) public data: { solicitud: SolicitudCursoVerano },
     private fb: FormBuilder
   ) {
     this.observacionesForm = this.fb.group({
-      observaciones: [data.preinscripcion.observaciones || '']
+      observaciones: [data.solicitud.observaciones || '']
     });
   }
 
@@ -459,3 +476,4 @@ export class DetallesPreinscripcionDialogComponent {
     }
   }
 }
+

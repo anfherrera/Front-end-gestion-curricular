@@ -49,6 +49,8 @@ export interface SolicitudCursoVerano {
   nombre_solicitud: string;
   fecha_solicitud: Date;
   estado: 'Pendiente' | 'Aprobado' | 'Rechazado' | 'Completado';
+  observaciones?: string;
+  condicion?: string;
   objUsuario: Usuario;
   objCursoOfertadoVerano: CursoOfertadoVerano;
   tipoSolicitud: 'PREINSCRIPCION' | 'INSCRIPCION';
@@ -118,6 +120,7 @@ export interface Preinscripcion {
   fecha_preinscripcion: Date;
   estado: 'Pendiente' | 'Aprobado' | 'Rechazado';
   observaciones?: string;
+  condicion?: string;
   objUsuario: Usuario;
   objCurso: CursoOfertadoVerano;
 }
@@ -340,6 +343,7 @@ export class CursosIntersemestralesService {
       observaciones: observaciones
     });
   }
+
 
   // Obtener solicitudes de curso nuevo del usuario
   getSolicitudesCursoNuevoUsuario(idUsuario: number): Observable<SolicitudCursoNuevo[]> {
