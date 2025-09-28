@@ -110,18 +110,13 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   }
 
   getEstadoColor(estado: string): string {
-    const colores: { [key: string]: string } = {
-      'Abierto': 'blue',
-      'Publicado': 'green',
-      'Preinscripcion': 'orange',
-      'Inscripcion': 'purple',
-      'Cerrado': 'red'
-    };
-    return colores[estado] || 'gray';
+    // Todos los estados usan el azul principal de la app
+    return '#00138C';
   }
 
   getTipoSolicitudColor(tipo: string): string {
-    return tipo === 'PREINSCRIPCION' ? 'blue' : 'green';
+    // Todos los tipos usan el azul principal de la app
+    return '#00138C';
   }
 
   formatearFecha(fecha: Date): string {

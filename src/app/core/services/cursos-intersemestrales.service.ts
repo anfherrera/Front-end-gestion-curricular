@@ -266,6 +266,12 @@ export class CursosIntersemestralesService {
     return this.http.post<SolicitudCursoNuevo>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO, payload);
   }
 
+  // Obtener todas las solicitudes (para funcionarios)
+  getTodasLasSolicitudes(): Observable<SolicitudCursoVerano[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/solicitudes-curso-nuevo');
+    return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`);
+  }
+
   // Obtener solicitudes de curso nuevo del usuario
   getSolicitudesCursoNuevoUsuario(idUsuario: number): Observable<SolicitudCursoNuevo[]> {
     return this.http.get<SolicitudCursoNuevo[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO_USUARIO(idUsuario));

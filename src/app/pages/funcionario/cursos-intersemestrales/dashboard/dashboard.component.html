@@ -95,9 +95,16 @@
             <div class="curso-status">
               <mat-chip 
                 [style.background-color]="getEstadoColor(curso.estado)"
-                [style.color]="'white'">
-                <mat-icon class="chip-icon">{{ getIconoEstado(curso.estado) }}</mat-icon>
-                {{ curso.estado }}
+                [style.color]="'white'"
+                [style.border]="'none'"
+                [style.outline]="'none'"
+                [style.--mdc-chip-label-text-color]="'white'"
+                [style.--mdc-chip-container-color]="getEstadoColor(curso.estado)"
+                [style.--mdc-chip-outline-color]="'transparent'"
+                [style.--mdc-chip-outline-width]="'0'"
+                class="custom-chip">
+                <mat-icon class="chip-icon" [style.color]="'white'">{{ getIconoEstado(curso.estado) }}</mat-icon>
+                <span [style.color]="'white'">{{ curso.estado }}</span>
               </mat-chip>
               <div class="cupos-info">
                 <small>{{ curso.cupo_disponible }} / {{ curso.cupo_maximo }} cupos</small>

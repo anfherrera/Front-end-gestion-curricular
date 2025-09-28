@@ -191,6 +191,126 @@
   margin-right: 4px;
 }
 
+/* Estilos mejorados para los chips de estado */
+mat-chip {
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  padding: 8px 12px !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  outline: none !important;
+  color: white !important;
+  background-color: #00138C !important;
+}
+
+mat-chip:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+  background-color: #001a99 !important;
+  color: white !important;
+}
+
+mat-chip .chip-icon {
+  color: white !important;
+}
+
+/* Forzar color blanco en el texto del chip */
+mat-chip .mat-chip-text {
+  color: white !important;
+}
+
+mat-chip .mat-chip-text-wrapper {
+  color: white !important;
+}
+
+/* Asegurar que todo el contenido del chip sea blanco */
+mat-chip * {
+  color: white !important;
+}
+
+/* Estilos adicionales para forzar el color blanco */
+.mat-chip.mat-standard-chip {
+  color: white !important;
+  background-color: #00138C !important;
+}
+
+.mat-chip.mat-standard-chip .mat-chip-text {
+  color: white !important;
+}
+
+.mat-chip.mat-standard-chip .mat-chip-remove {
+  color: white !important;
+}
+
+.mat-chip.mat-standard-chip .mat-chip-avatar {
+  color: white !important;
+}
+
+/* Estilos específicos para custom-chip */
+.custom-chip {
+  color: white !important;
+  background-color: #00138C !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 20px !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.custom-chip .mat-chip-text {
+  color: white !important;
+}
+
+.custom-chip .mat-chip-text-wrapper {
+  color: white !important;
+}
+
+.custom-chip .mat-chip-content {
+  color: white !important;
+}
+
+.custom-chip .mat-chip-content * {
+  color: white !important;
+}
+
+/* Variables CSS para Material Design */
+.custom-chip {
+  --mdc-chip-label-text-color: white !important;
+  --mdc-chip-container-color: #00138C !important;
+  --mdc-chip-disabled-label-text-color: white !important;
+  --mdc-chip-disabled-container-color: #00138C !important;
+  --mdc-chip-outline-color: transparent !important;
+  --mdc-chip-outline-width: 0 !important;
+  --mdc-chip-container-shape: 20px !important;
+}
+
+/* Eliminar todos los bordes posibles */
+.custom-chip,
+.custom-chip *,
+mat-chip,
+mat-chip * {
+  border: none !important;
+  outline: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+}
+
+/* Estilos para el contenedor del chip */
+.custom-chip .mat-chip-content {
+  border: none !important;
+  outline: none !important;
+}
+
+.custom-chip .mat-chip-text-wrapper {
+  border: none !important;
+  outline: none !important;
+}
+
 .cupos-info {
   text-align: right;
 }
