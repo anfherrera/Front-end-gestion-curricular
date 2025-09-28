@@ -29,8 +29,6 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
   opciones = [
     { titulo: 'Dashboard', ruta: 'dashboard', icon: 'dashboard', badge: 0 },
     { titulo: 'Gestionar Cursos', ruta: 'gestionar', icon: 'settings', badge: 0 },
-    { titulo: 'Ofertar Curso', ruta: 'ofertar', icon: 'add_circle', badge: 0 },
-    { titulo: 'Publicar Curso', ruta: 'publicar', icon: 'publish', badge: 0 },
     { titulo: 'Preinscribir Estudiantes', ruta: 'preinscribir', icon: 'person_add', badge: 0 },
     { titulo: 'Inscribir Estudiantes', ruta: 'inscribir', icon: 'how_to_reg', badge: 0 },
     { titulo: 'Visualizar Solicitudes', ruta: 'solicitudes', icon: 'list_alt', badge: 0 },
