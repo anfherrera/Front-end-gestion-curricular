@@ -272,6 +272,38 @@ export class CursosIntersemestralesService {
     return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`);
   }
 
+  // ====== GESTIÓN DE CURSOS (para funcionarios) ======
+  
+  // Obtener todos los cursos para gestión
+  getTodosLosCursos(): Observable<CursoOfertadoVerano[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano');
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
+  }
+
+  // Crear nuevo curso
+  crearCurso(payload: CreateCursoDTO): Observable<CursoOfertadoVerano> {
+    console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
+    return this.http.post<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`, payload);
+  }
+
+  // Actualizar curso existente
+  actualizarCurso(id: number, payload: UpdateCursoDTO): Observable<CursoOfertadoVerano> {
+    console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/cursos-verano/${id}`);
+    return this.http.put<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/${id}`, payload);
+  }
+
+  // Eliminar curso
+  eliminarCurso(id: number): Observable<void> {
+    console.log(`🌐 Llamando a API: DELETE /api/cursos-intersemestrales/cursos-verano/${id}`);
+    return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/${id}`);
+  }
+
+  // Obtener curso por ID
+  getCursoPorId(id: number): Observable<CursoOfertadoVerano> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano/${id}`);
+    return this.http.get<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/${id}`);
+  }
+
   // Obtener solicitudes de curso nuevo del usuario
   getSolicitudesCursoNuevoUsuario(idUsuario: number): Observable<SolicitudCursoNuevo[]> {
     return this.http.get<SolicitudCursoNuevo[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO_USUARIO(idUsuario));
@@ -405,4 +437,34 @@ export class CursosIntersemestralesService {
       formData
     );
   }
+}
+
+// ====== DTOs PARA GESTIÓN DE CURSOS ======
+
+export interface CreateCursoDTO {
+  nombre_curso: string;
+  codigo_curso: string;
+  descripcion: string;
+  fecha_inicio: string; // ISO string
+  fecha_fin: string; // ISO string
+  cupo_maximo: number;
+  cupo_estimado: number;
+  espacio_asignado: string;
+  estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado';
+  id_materia: number;
+  id_docente: number;
+}
+
+export interface UpdateCursoDTO {
+  nombre_curso?: string;
+  codigo_curso?: string;
+  descripcion?: string;
+  fecha_inicio?: string; // ISO string
+  fecha_fin?: string; // ISO string
+  cupo_maximo?: number;
+  cupo_estimado?: number;
+  espacio_asignado?: string;
+  estado?: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado';
+  id_materia?: number;
+  id_docente?: number;
 }
