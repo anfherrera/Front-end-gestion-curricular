@@ -8,6 +8,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
 
 @Component({
   selector: 'app-cursos-preinscripcion',
@@ -37,20 +38,27 @@ export class CursosPreinscripcionComponent implements OnInit {
   loadCursos() {
     this.cargando = true;
     console.log('🔄 Cargando cursos para preinscripción...');
+    console.log('🌐 URL del endpoint:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
     
     // Cargar cursos de verano disponibles para preinscripción
     this.cursosService.getCursosDisponibles().subscribe({
       next: (cursosVerano) => {
-        console.log('✅ Todos los cursos de verano recibidos:', cursosVerano);
-        // Filtrar solo cursos en estado de preinscripción
+        console.log('✅ RESPUESTA DEL BACKEND - Todos los cursos de verano recibidos:', cursosVerano);
+        console.log('📊 Cantidad de cursos recibidos:', cursosVerano.length);
+        
+        // Filtrar solo cursos disponibles para preinscripción
         this.cursosVerano = cursosVerano.filter(c => c.estado === 'Preinscripcion');
-        console.log('📋 Cursos filtrados para preinscripción:', this.cursosVerano);
+        console.log('📋 Cursos filtrados para preinscripción (estado=Preinscripcion):', this.cursosVerano);
+        console.log('📊 Cantidad de cursos filtrados:', this.cursosVerano.length);
+        
         this.cursos = this.mapCursosToLegacy(this.cursosVerano);
         console.log('📋 Cursos mapeados para preinscripción:', this.cursos);
+        console.log('📊 Cantidad de cursos mapeados:', this.cursos.length);
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando cursos de preinscripción', err);
+        console.error('❌ ERROR EN LLAMADA AL BACKEND:', err);
+        console.log('🔄 Intentando fallback a cursos legacy...');
         // Fallback a cursos legacy
         this.loadCursosLegacy();
       }
@@ -58,13 +66,18 @@ export class CursosPreinscripcionComponent implements OnInit {
   }
 
   private loadCursosLegacy() {
+    console.log('🔄 FALLBACK: Cargando cursos legacy...');
+    console.log('🌐 URL del endpoint legacy:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/preinscripcion`);
+    
     this.cursosService.getCursosPreinscripcion().subscribe({
       next: (data) => {
+        console.log('✅ FALLBACK: Cursos legacy recibidos:', data);
+        console.log('📊 Cantidad de cursos legacy:', data.length);
         this.cursos = data;
         this.cargando = false;
       },
       error: (err) => {
-        console.error('Error cargando cursos de preinscripción', err);
+        console.error('❌ FALLBACK: Error cargando cursos legacy:', err);
         this.cargando = false;
       }
     });
@@ -104,7 +117,7 @@ export class CursosPreinscripcionComponent implements OnInit {
       cupos: curso.cupo_estimado || curso.cupo_disponible,
       creditos: curso.objMateria.creditos,
       espacio: curso.espacio_asignado || 'Por asignar',
-      estado: 'Disponible' as const
+      estado: curso.estado
     }));
   }
 

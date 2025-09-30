@@ -198,8 +198,8 @@ export class CursosIntersemestralesService {
   
   // Obtener cursos disponibles para verano
   getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
-    console.log('🌐 Llamando a API:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
-    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+    console.log('🌐 Llamando a API:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
   }
 
   // Preinscripción a curso de verano
