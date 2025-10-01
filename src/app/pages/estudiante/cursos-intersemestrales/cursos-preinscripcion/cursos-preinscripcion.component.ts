@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
 import { PreinscripcionDialogComponent } from '../../../../shared/components/preinscripcion-dialog/preinscripcion-dialog.component';
-import { CursosIntersemestralesService, CursoOfertadoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,7 +19,6 @@ import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
 })
 export class CursosPreinscripcionComponent implements OnInit {
   cursos: Curso[] = [];
-  cursosVerano: CursoOfertadoVerano[] = [];
   cargando = true;
   usuario: any = null;
 
@@ -38,22 +37,18 @@ export class CursosPreinscripcionComponent implements OnInit {
   loadCursos() {
     this.cargando = true;
     console.log('🔄 Cargando cursos para preinscripción...');
-    console.log('🌐 URL del endpoint:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
+    console.log('🌐 URL del endpoint:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/preinscripcion`);
     
-    // Cargar cursos de verano disponibles para preinscripción
-    this.cursosService.getCursosDisponibles().subscribe({
-      next: (cursosVerano) => {
-        console.log('✅ RESPUESTA DEL BACKEND - Todos los cursos de verano recibidos:', cursosVerano);
-        console.log('📊 Cantidad de cursos recibidos:', cursosVerano.length);
+    // Cargar cursos específicos para preinscripción
+    this.cursosService.getCursosPreinscripcion().subscribe({
+      next: (cursosPreinscripcion) => {
+        console.log('✅ RESPUESTA DEL BACKEND - Cursos para preinscripción recibidos:', cursosPreinscripcion);
+        console.log('📊 Cantidad de cursos recibidos:', cursosPreinscripcion.length);
         
-        // Filtrar solo cursos disponibles para preinscripción
-        this.cursosVerano = cursosVerano.filter(c => c.estado === 'Preinscripcion');
-        console.log('📋 Cursos filtrados para preinscripción (estado=Preinscripcion):', this.cursosVerano);
-        console.log('📊 Cantidad de cursos filtrados:', this.cursosVerano.length);
-        
-        this.cursos = this.mapCursosToLegacy(this.cursosVerano);
-        console.log('📋 Cursos mapeados para preinscripción:', this.cursos);
-        console.log('📊 Cantidad de cursos mapeados:', this.cursos.length);
+        // Los cursos ya vienen filtrados del backend, no necesitamos filtrar
+        this.cursos = cursosPreinscripcion;
+        console.log('📋 Cursos listos para preinscripción:', this.cursos);
+        console.log('📊 Cantidad de cursos finales:', this.cursos.length);
         this.cargando = false;
       },
       error: (err) => {
@@ -109,17 +104,6 @@ export class CursosPreinscripcionComponent implements OnInit {
     console.log('✅ Datos de prueba para preinscripción cargados:', this.cursos);
   }
 
-  private mapCursosToLegacy(cursosVerano: CursoOfertadoVerano[]): Curso[] {
-    return cursosVerano.map(curso => ({
-      codigo: curso.codigo_curso || curso.id_curso.toString(),
-      nombre: curso.nombre_curso,
-      docente: `${curso.objDocente.nombre} ${curso.objDocente.apellido}`,
-      cupos: curso.cupo_estimado || curso.cupo_disponible,
-      creditos: curso.objMateria.creditos,
-      espacio: curso.espacio_asignado || 'Por asignar',
-      estado: curso.estado
-    }));
-  }
 
   onAccionCurso(event: { accion: string; curso: Curso }) {
     if (!this.usuario?.id_usuario) {
@@ -127,26 +111,23 @@ export class CursosPreinscripcionComponent implements OnInit {
       return;
     }
 
-    // Buscar el curso por código o por ID
-    const cursoVerano = this.cursosVerano.find(c => 
-      c.codigo_curso === event.curso.codigo || 
-      c.id_curso.toString() === event.curso.codigo
-    );
-    if (!cursoVerano) {
+    // Buscar el curso en la lista actual
+    const cursoEncontrado = this.cursos.find(c => c.codigo === event.curso.codigo);
+    if (!cursoEncontrado) {
       console.error('❌ Curso no encontrado:', {
         codigoBuscado: event.curso.codigo,
-        cursosDisponibles: this.cursosVerano.map(c => ({ id: c.id_curso, codigo: c.codigo_curso }))
+        cursosDisponibles: this.cursos.map(c => ({ codigo: c.codigo, nombre: c.nombre }))
       });
       this.snackBar.open('Error: Curso no encontrado', 'Cerrar', { duration: 3000 });
       return;
     }
 
     if (event.accion === 'preinscribir') {
-      this.abrirDialogoPreinscripcion(cursoVerano);
+      this.abrirDialogoPreinscripcion(cursoEncontrado);
     }
   }
 
-  private abrirDialogoPreinscripcion(curso: CursoOfertadoVerano) {
+  private abrirDialogoPreinscripcion(curso: Curso) {
     const dialogRef = this.dialog.open(PreinscripcionDialogComponent, {
       width: '600px',
       maxWidth: '90vw',

@@ -492,7 +492,35 @@ export class CursosIntersemestralesService {
   }
 
   // ====== CURSOS (adaptados a CursoListComponent) ======
+  
+  // Método para corregir problemas de encoding UTF-8
+  private corregirEncoding(texto: string | undefined | null): string {
+    if (!texto) return ''; // ← CAMBIAR: devolver '' en lugar de undefined
+    
+    try {
+      // Intentar corregir caracteres mal codificados
+      return texto
+        .replace(/Ã¡/g, 'á')
+        .replace(/Ã©/g, 'é')
+        .replace(/Ã­/g, 'í')
+        .replace(/Ã³/g, 'ó')
+        .replace(/Ãº/g, 'ú')
+        .replace(/Ã±/g, 'ñ')
+        .replace(/Ã/g, 'Á')
+        .replace(/Ã‰/g, 'É')
+        .replace(/Ã/g, 'Í')
+        .replace(/Ã"/g, 'Ó')
+        .replace(/Ãš/g, 'Ú')
+        .replace(/Ã'/g, 'Ñ');
+    } catch (error) {
+      console.warn('Error corrigiendo encoding:', error);
+      return texto || '';
+    }
+  }
+
   private mapCursoVerano(c: CursoOfertadoVerano): CursoList {
+    console.log('🔍 Mapeando curso:', c);
+    
     let estado: 'Disponible' | 'Cerrado' | 'En espera' = 'En espera';
     switch (c.estado) {
       case 'Abierto':
@@ -506,13 +534,26 @@ export class CursosIntersemestralesService {
         estado = 'Cerrado';
         break;
     }
-    return {
-      codigo: c.id_curso.toString(),
-      nombre: c.nombre_curso,
-      docente: `${c.objDocente.nombre} ${c.objDocente.apellido}`,
-      cupos: c.cupo_disponible,
+    
+    // Usar datos directamente del backend con fallbacks seguros
+    const nombre = this.corregirEncoding(c.nombre_curso) || c.nombre_curso || 'Sin nombre';
+    const docenteNombre = this.corregirEncoding(c.objDocente?.nombre) || c.objDocente?.nombre || '';
+    const docenteApellido = this.corregirEncoding(c.objDocente?.apellido) || c.objDocente?.apellido || '';
+    const docente = docenteNombre && docenteApellido ? `${docenteNombre} ${docenteApellido}`.trim() : 'Sin asignar';
+    const espacio = this.corregirEncoding(c.espacio_asignado) || c.espacio_asignado || 'Por asignar';
+    
+    const cursoMapeado = {
+      codigo: c.codigo_curso || c.id_curso?.toString() || 'N/A',
+      nombre: nombre,
+      docente: docente,
+      cupos: c.cupo_disponible || c.cupo_estimado || 0,
+      creditos: c.objMateria?.creditos || 0,
+      espacio: espacio,
       estado
     };
+    
+    console.log('✅ Curso mapeado:', cursoMapeado);
+    return cursoMapeado;
   }
 
   private mapCursoLegacy(c: CursoBackend): CursoList {
@@ -527,10 +568,12 @@ export class CursosIntersemestralesService {
         break;
     }
     return {
-      codigo: c.id.toString(),
-      nombre: c.nombre,
-      docente: c.docente,
-      cupos: c.cupos,
+      codigo: c.id?.toString() || 'N/A',
+      nombre: c.nombre || 'Sin nombre',
+      docente: c.docente || 'Sin asignar',
+      cupos: c.cupos || 0,
+      creditos: 0, // CursoBackend no tiene créditos, usar valor por defecto
+      espacio: 'Por asignar', // CursoBackend no tiene espacio, usar valor por defecto
       estado
     };
   }
@@ -538,26 +581,26 @@ export class CursosIntersemestralesService {
   // Métodos nuevos para cursos de verano
   getCursosOfertadosVerano(): Observable<CursoList[]> {
     return this.getCursosDisponibles()
-      .pipe(map(cursos => cursos.map(this.mapCursoVerano)));
+      .pipe(map(cursos => cursos.map(curso => this.mapCursoVerano(curso))));
   }
 
   // Métodos legacy (para compatibilidad)
   getCursosOfertados(): Observable<CursoList[]> {
     return this.http
       .get<CursoBackend[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/ofertados`)
-      .pipe(map(cursos => cursos.map(this.mapCursoLegacy)));
+      .pipe(map(cursos => cursos.map(curso => this.mapCursoLegacy(curso))));
   }
 
   getCursosPreinscripcion(): Observable<CursoList[]> {
     return this.http
-      .get<CursoBackend[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/preinscripcion`)
-      .pipe(map(cursos => cursos.map(this.mapCursoLegacy)));
+      .get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/preinscripcion`)
+      .pipe(map(cursos => cursos.map(curso => this.mapCursoVerano(curso))));
   }
 
   getCursosInscritos(): Observable<CursoList[]> {
     return this.http
       .get<CursoBackend[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/inscritos`)
-      .pipe(map(cursos => cursos.map(this.mapCursoLegacy)));
+      .pipe(map(cursos => cursos.map(curso => this.mapCursoLegacy(curso))));
   }
 
   // ====== DOCUMENTOS ======
