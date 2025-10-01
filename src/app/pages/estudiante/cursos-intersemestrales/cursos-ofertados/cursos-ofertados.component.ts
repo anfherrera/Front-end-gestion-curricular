@@ -121,6 +121,7 @@ export class CursosOfertadosComponent implements OnInit {
       case 'Publicado':
       case 'Preinscripcion':
       case 'Inscripcion':
+      case 'Disponible':  // ← AGREGAR ESTE CASE
         return 'Disponible';
       case 'Cerrado':
         return 'Cerrado';

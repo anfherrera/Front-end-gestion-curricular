@@ -39,7 +39,7 @@ export interface CursoOfertadoVerano {
   cupo_disponible: number;
   cupo_estimado: number;
   espacio_asignado: string;
-  estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado';
+  estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado' | 'Disponible';
   objMateria: Materia;
   objDocente: Usuario;
 }
@@ -499,6 +499,7 @@ export class CursosIntersemestralesService {
       case 'Publicado':
       case 'Preinscripcion':
       case 'Inscripcion':
+      case 'Disponible':  // ← AGREGAR ESTE CASE
         estado = 'Disponible';
         break;
       case 'Cerrado':
@@ -585,7 +586,7 @@ export interface CreateCursoDTO {
   cupo_maximo: number;
   cupo_estimado: number;
   espacio_asignado: string;
-  estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado';
+  estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado' | 'Disponible';
   id_materia: number;
   id_docente: number;
 }
@@ -599,7 +600,7 @@ export interface UpdateCursoDTO {
   cupo_maximo?: number;
   cupo_estimado?: number;
   espacio_asignado?: string;
-  estado?: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado';
+  estado?: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado' | 'Disponible';
   id_materia?: number;
   id_docente?: number;
 }
