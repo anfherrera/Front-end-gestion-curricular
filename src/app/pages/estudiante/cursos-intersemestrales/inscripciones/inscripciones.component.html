@@ -45,13 +45,13 @@
       <!-- ID del curso -->
       <ng-container matColumnDef="cursoId">
         <th mat-header-cell *matHeaderCellDef>ID Curso</th>
-        <td mat-cell *matCellDef="let inscripcion">{{ inscripcion.cursoId }}</td>
+        <td mat-cell *matCellDef="let inscripcion">{{ inscripcion.objCurso?.id_curso || 'N/A' }}</td>
       </ng-container>
 
       <!-- Fecha -->
       <ng-container matColumnDef="fecha">
         <th mat-header-cell *matHeaderCellDef>Fecha</th>
-        <td mat-cell *matCellDef="let inscripcion">{{ inscripcion.fecha | date:'short' }}</td>
+        <td mat-cell *matCellDef="let inscripcion">{{ inscripcion.fecha_inscripcion | date:'short' }}</td>
       </ng-container>
 
       <!-- Estado -->
@@ -114,6 +114,21 @@
     </table>
   </div>
 
+  <!-- Mensaje cuando no hay preinscripciones -->
+  <div *ngIf="!cargando && solicitudes.length === 0 && inscripciones.length > 0" class="sin-datos">
+    <mat-icon>info</mat-icon>
+    <p>No tienes preinscripciones registradas.</p>
+    <p>Puedes preinscribirte en cursos desde la sección "Ver Lista de Cursos para Preinscripción".</p>
+  </div>
+
+  <!-- Mensaje cuando no hay inscripciones -->
+  <div *ngIf="!cargando && solicitudes.length > 0 && inscripciones.length === 0" class="sin-datos">
+    <mat-icon>info</mat-icon>
+    <p>No tienes inscripciones registradas.</p>
+    <p>Una vez que tus preinscripciones sean aprobadas, podrás inscribirte en los cursos.</p>
+  </div>
+
+  <!-- Mensaje cuando no hay nada -->
   <div *ngIf="!cargando && solicitudes.length === 0 && inscripciones.length === 0" class="sin-datos">
     <mat-icon>info</mat-icon>
     <p>No tienes inscripciones ni preinscripciones activas.</p>

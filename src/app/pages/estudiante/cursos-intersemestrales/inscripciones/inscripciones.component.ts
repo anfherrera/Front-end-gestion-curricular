@@ -61,14 +61,18 @@ export class InscripcionesComponent implements OnInit {
       return;
     }
 
-    console.log('🔄 Cargando solicitudes del usuario:', this.usuario.id_usuario);
+    console.log('🔄 Cargando preinscripciones del usuario:', this.usuario.id_usuario);
     this.cursosService.getSolicitudesUsuario(this.usuario.id_usuario).subscribe({
       next: data => {
-        this.solicitudes = data;
-        console.log('✅ Solicitudes cargadas:', data);
+        // Filtrar solo las preinscripciones
+        this.solicitudes = data.filter(solicitud => solicitud.tipoSolicitud === 'PREINSCRIPCION');
+        console.log('✅ Preinscripciones cargadas:', this.solicitudes);
+        console.log('📊 Total de solicitudes recibidas:', data.length);
+        console.log('📊 Preinscripciones filtradas:', this.solicitudes.length);
       },
       error: err => {
-        console.error('❌ Error cargando solicitudes', err);
+        console.error('❌ Error cargando preinscripciones', err);
+        this.solicitudes = []; // Asegurar que esté vacío en caso de error
       }
     });
   }
