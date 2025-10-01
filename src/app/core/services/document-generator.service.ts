@@ -34,8 +34,20 @@ export class DocumentGeneratorService {
    * Generar documento usando plantilla
    */
   generarDocumento(request: DocumentRequest): Observable<Blob> {
-    console.log('📄 Generando documento Word real...', request);
+    console.log('📄 Generando documento Word...', request);
+    console.log('🔍 Tipo de documento:', request.tipoDocumento);
 
+    // Para homologación y reingreso, usar el backend
+    if (request.tipoDocumento === 'OFICIO_HOMOLOGACION' || request.tipoDocumento === 'RESOLUCION_REINGRESO') {
+      console.log('📄 Usando backend para generar documento:', request.tipoDocumento);
+      return this.http.post(`${this.apiUrl}/generar`, request, {
+        headers: this.getAuthHeaders(),
+        responseType: 'blob'
+      });
+    }
+
+    // Para otros tipos, usar el generador del frontend
+    console.log('📄 Usando generador del frontend para:', request.tipoDocumento);
     return new Observable(observer => {
       try {
         // Crear documento Word
@@ -85,7 +97,7 @@ export class DocumentGeneratorService {
     console.log('🔍 Debug - tipoDocumento:', request.tipoDocumento);
 
     // Para paz-salvo y reingreso, NO guardamos en el backend (solo descargamos)
-    if (request.tipoDocumento === 'OFICIO_PAZ_SALVO' || request.tipoDocumento === 'OFICIO_REINGRESO') {
+    if (request.tipoDocumento === 'OFICIO_PAZ_SALVO' || request.tipoDocumento === 'RESOLUCION_REINGRESO') {
       console.log('📄 ' + request.tipoDocumento + ': No guardando en backend, solo descargando archivo');
       // Retornar un observable que simula éxito
       return new Observable(observer => {

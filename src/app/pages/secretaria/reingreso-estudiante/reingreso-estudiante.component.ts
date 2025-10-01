@@ -65,9 +65,9 @@ export class ReingresoEstudianteComponent implements OnInit {
   ) {
     // Inicializar plantilla para reingreso
     this.template = {
-      id: 'OFICIO_REINGRESO',
-      nombre: 'Oficio de Reingreso',
-      descripcion: 'Genera un oficio oficial para el proceso de reingreso del estudiante',
+      id: 'RESOLUCION_REINGRESO',
+      nombre: 'Resolución de Reingreso',
+      descripcion: 'Genera una resolución oficial para el proceso de reingreso del estudiante',
       camposRequeridos: [
         'nombreEstudiante',
         'codigoEstudiante',
