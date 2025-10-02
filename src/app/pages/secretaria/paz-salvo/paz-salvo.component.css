@@ -297,13 +297,84 @@
     align-items: stretch;
     gap: 12px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .upload-btn, .send-btn {
     width: 100%;
+  }
+}
+
+/* Estilos para el botón "Tengo un documento" */
+.document-actions {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.document-actions:hover {
+  border-color: #00138C;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+}
+
+.enable-document-btn {
+  min-width: 200px;
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 8px;
+  padding: 16px 32px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 auto 16px auto;
+}
+
+.enable-document-btn:hover {
+  background-color: #001a99 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 19, 140, 0.4);
+}
+
+.enable-document-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.3);
+}
+
+.enable-document-btn mat-icon {
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.action-description {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Responsive para el botón */
+@media (max-width: 768px) {
+  .enable-document-btn {
+    min-width: 160px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+
+  .document-actions {
+    padding: 16px;
   }
 }

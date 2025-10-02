@@ -13,6 +13,8 @@ import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
+import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
+import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 
@@ -27,19 +29,21 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
     MatSnackBarModule,
     MatTableModule,
     MatTooltipModule,
-    RequestStatusTableComponent
+    RequestStatusTableComponent,
+    DocumentationViewerComponent,
+    CardContainerComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
 })
 export class PazSalvoCoordinadorComponent implements OnInit {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
-  
+
   solicitudes: Solicitud[] = [];
   selectedSolicitud: SolicitudHomologacionDTORespuesta | undefined;
 
   constructor(
-    private pazSalvoService: PazSalvoService,
+    public pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
@@ -53,7 +57,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (data) => {
         console.log('📡 Solicitudes recibidas del backend (coordinador):', data);
-        
+
         // Mapear a formato de solicitudes para la tabla
         this.solicitudes = data.map(solicitud => ({
           id: solicitud.id_solicitud,
@@ -70,7 +74,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
             comentario: doc.comentario
           })) || []
         }));
-        
+
         console.log('✅ Solicitudes mapeadas (coordinador):', this.solicitudes);
       },
       error: (err) => {
@@ -99,78 +103,25 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     return this.selectedSolicitud?.documentos ?? [];
   }
 
-  // 📌 Ver documento en nueva pestaña (igual que homologación)
-  verDocumento(documento: DocumentoHomologacion): void {
-    if (!documento.nombre) {
-      this.snackBar.open(`No hay nombre de archivo disponible para el documento`, 'Cerrar', { duration: 3000 });
-      return;
+  /**
+   * Manejar cuando se agrega un comentario desde el DocumentationViewerComponent
+   */
+  onComentarioAgregado(event: {documento: any, comentario: string}): void {
+    if (event.documento.id_documento) {
+      this.pazSalvoService.agregarComentario(event.documento.id_documento, event.comentario).subscribe({
+        next: () => {
+          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          // Recargar la solicitud para actualizar los comentarios
+          this.cargarSolicitudes();
+        },
+        error: (error) => {
+          console.error('Error al añadir comentario:', error);
+          this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+        }
+      });
     }
-
-    // Mostrar mensaje de carga
-    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
-
-    this.pazSalvoService.descargarArchivo(documento.nombre).subscribe({
-      next: (blob: Blob) => {
-        // Crear URL única del blob para evitar cache
-        const url = window.URL.createObjectURL(blob);
-        
-        // Crear un iframe temporal para mostrar el PDF
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.style.width = '100%';
-        iframe.style.height = '600px';
-        iframe.style.border = 'none';
-        
-        // Crear ventana emergente
-        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>${documento.nombre}</title>
-                <style>
-                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                  .header { margin-bottom: 20px; }
-                  .filename { font-size: 18px; font-weight: bold; color: #333; }
-                </style>
-              </head>
-              <body>
-                <div class="header">
-                  <div class="filename">${documento.nombre}</div>
-                </div>
-              </body>
-            </html>
-          `);
-          newWindow.document.body.appendChild(iframe);
-        }
-        
-        // Limpiar la URL después de un tiempo
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 5000);
-
-        this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
-      },
-      error: (error) => {
-        console.error('Error al descargar el documento:', error);
-        console.error('Status:', error.status);
-        console.error('Message:', error.message);
-        console.error('URL:', error.url);
-        
-        let mensajeError = `Error al descargar el documento: ${documento.nombre}`;
-        
-        if (error.status === 404) {
-          mensajeError = `Archivo no encontrado: ${documento.nombre}`;
-        } else if (error.status === 401) {
-          mensajeError = 'No autorizado para descargar el archivo';
-        } else if (error.status === 500) {
-          mensajeError = 'Error interno del servidor al descargar el archivo';
-        }
-        
-        this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
-      }
-    });
   }
+
 
 
   // 📌 Aprobar toda la solicitud
@@ -216,29 +167,4 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
-  agregarComentario(documento: DocumentoHomologacion): void {
-    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
-      width: '500px',
-      data: <ComentarioDialogData>{
-        titulo: 'Añadir Comentario',
-        descripcion: 'Ingrese un comentario para este documento:',
-        placeholder: 'Escriba su comentario aquí...',
-        nombreDocumento: documento.nombre
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((comentario: string) => {
-      if (comentario && documento.id_documento) {
-        this.pazSalvoService.agregarComentario(documento.id_documento, comentario).subscribe({
-          next: () => {
-            this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
-          },
-          error: (error) => {
-            console.error('Error al añadir comentario:', error);
-            this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
-          }
-        });
-      }
-    });
-  }
 }

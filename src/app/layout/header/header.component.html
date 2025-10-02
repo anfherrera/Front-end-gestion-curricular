@@ -5,7 +5,7 @@
       <mat-icon>{{ isSidebarOpen ? 'menu' : 'menu_open' }}</mat-icon>
     </button>
 
-    <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png" 
+    <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png"
          alt="Logo Universidad del Cauca" class="logo" />
 
     <div class="header-title">
@@ -16,6 +16,9 @@
 
   <!-- Usuario e iconos -->
   <div class="header-right">
+    <!-- Indicador de actividad de sesión -->
+    <app-activity-indicator></app-activity-indicator>
+
     <button mat-icon-button class="icon-btn" aria-label="Notificaciones">
       <mat-icon>notifications</mat-icon>
     </button>

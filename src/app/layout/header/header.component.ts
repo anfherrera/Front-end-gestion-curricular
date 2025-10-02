@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ActivityIndicatorComponent } from '../../shared/components/activity-indicator/activity-indicator.component';
 
 @Component({
   selector: 'app-header',
@@ -14,12 +15,13 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   imports: [
-    CommonModule, 
-    MatToolbarModule, 
-    MatIconModule, 
-    MatButtonModule, 
+    CommonModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
+    ActivityIndicatorComponent
   ]
 })
 export class HeaderComponent implements OnInit {
@@ -62,7 +64,7 @@ export class HeaderComponent implements OnInit {
 
   getUserInitials(): string {
     if (!this.userName) return 'U';
-    
+
     const names = this.userName.split(' ');
     if (names.length >= 2) {
       return (names[0][0] + names[1][0]).toUpperCase();

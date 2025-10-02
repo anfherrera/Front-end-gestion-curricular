@@ -58,6 +58,7 @@ export class DocumentGeneratorComponent implements OnInit {
 
   @Output() generarDocumento = new EventEmitter<DocumentRequest>();
   @Output() cancelar = new EventEmitter<void>();
+  @Output() tengoDocumento = new EventEmitter<void>();
 
   documentForm!: FormGroup;
   datosSolicitud: any = {};
@@ -227,5 +228,12 @@ export class DocumentGeneratorComponent implements OnInit {
       'motivoReingreso': 'help_outline'
     };
     return icons[fieldName] || 'info';
+  }
+
+  /**
+   * Maneja el clic en "Tengo un documento"
+   */
+  onTengoDocumento(): void {
+    this.tengoDocumento.emit();
   }
 }

@@ -11,6 +11,7 @@ import { HomologacionAsignaturasService } from '../../../core/services/homologac
 import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
+import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 
@@ -25,19 +26,20 @@ import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared
     MatIconModule,
     MatTooltipModule,
     CardContainerComponent,
-    RequestStatusTableComponent
+    RequestStatusTableComponent,
+    DocumentationViewerComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
-  
+
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
   selectedSolicitud: SolicitudHomologacionDTORespuesta | null = null;
 
   constructor(
-    private homologacionService: HomologacionAsignaturasService,
+    public homologacionService: HomologacionAsignaturasService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
@@ -78,7 +80,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
       this.selectedSolicitud = null;
       return;
     }
-    
+
     // Buscar la solicitud original por ID
     this.homologacionService.getPendingRequests().subscribe({
       next: (sols) => {
@@ -95,103 +97,25 @@ export class HomologacionAsignaturasComponent implements OnInit {
     this.selectedSolicitud = solicitud;
   }
 
-  verDocumento(documento: DocumentoHomologacion): void {
-    if (!documento.nombre) {
-      this.snackBar.open(`No hay nombre de archivo disponible para el documento`, 'Cerrar', { duration: 3000 });
-      return;
+  /**
+   * Manejar cuando se agrega un comentario desde el DocumentationViewerComponent
+   */
+  onComentarioAgregado(event: {documento: any, comentario: string}): void {
+    if (event.documento.id_documento) {
+      this.homologacionService.agregarComentario(event.documento.id_documento, event.comentario).subscribe({
+        next: () => {
+          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          // Recargar la solicitud para actualizar los comentarios
+          this.cargarSolicitudes();
+        },
+        error: (error) => {
+          console.error('Error al añadir comentario:', error);
+          this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+        }
+      });
     }
-
-    // Mostrar mensaje de carga
-    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
-
-    this.homologacionService.descargarArchivo(documento.nombre).subscribe({
-      next: (blob: Blob) => {
-        // Crear URL única del blob para evitar cache
-        const url = window.URL.createObjectURL(blob);
-        
-        // Crear un iframe temporal para mostrar el PDF
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.style.width = '100%';
-        iframe.style.height = '600px';
-        iframe.style.border = 'none';
-        
-        // Crear ventana emergente
-        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>${documento.nombre}</title>
-                <style>
-                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                  .header { margin-bottom: 20px; }
-                  .filename { font-size: 18px; font-weight: bold; color: #333; }
-                </style>
-              </head>
-              <body>
-                <div class="header">
-                  <div class="filename">${documento.nombre}</div>
-                </div>
-              </body>
-            </html>
-          `);
-          newWindow.document.body.appendChild(iframe);
-        }
-        
-        // Limpiar la URL después de un tiempo
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 5000);
-
-        this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
-      },
-      error: (error) => {
-        console.error('Error al descargar el documento:', error);
-        console.error('Status:', error.status);
-        console.error('Message:', error.message);
-        console.error('URL:', error.url);
-        
-        let mensajeError = `Error al descargar el documento: ${documento.nombre}`;
-        
-        if (error.status === 404) {
-          mensajeError = `Archivo no encontrado: ${documento.nombre}`;
-        } else if (error.status === 401) {
-          mensajeError = 'No autorizado para descargar el archivo';
-        } else if (error.status === 500) {
-          mensajeError = 'Error interno del servidor al descargar el archivo';
-        }
-        
-        this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
-      }
-    });
   }
 
-  agregarComentario(documento: DocumentoHomologacion): void {
-    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
-      width: '500px',
-      data: <ComentarioDialogData>{
-        titulo: 'Añadir Comentario',
-        descripcion: 'Ingrese un comentario para este documento:',
-        placeholder: 'Escriba su comentario aquí...',
-        nombreDocumento: documento.nombre
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((comentario: string) => {
-      if (comentario && documento.id_documento) {
-        this.homologacionService.agregarComentario(documento.id_documento, comentario).subscribe({
-          next: () => {
-            this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
-          },
-          error: (error) => {
-            console.error('Error al añadir comentario:', error);
-            this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
-          }
-        });
-      }
-    });
-  }
 
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
@@ -204,7 +128,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
           id_documento: doc.id_documento,
           esValido: true // Marcar como válido al aprobar
         }));
-        
+
         this.homologacionService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).subscribe({
           next: () => {
             this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
@@ -263,7 +187,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
               id_documento: doc.id_documento,
               esValido: false // Marcar como inválido al rechazar
             }));
-            
+
             this.homologacionService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).subscribe({
               next: () => {
                 this.snackBar.open('Solicitud rechazada y documentos actualizados', 'Cerrar', { duration: 3000 });

@@ -11,6 +11,7 @@ import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
+import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -23,7 +24,8 @@ import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '.
     MatProgressBarModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    DocumentGeneratorComponent
+    DocumentGeneratorComponent,
+    DocumentationViewerComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['./homologacion-asignaturas.component.css']
@@ -40,8 +42,11 @@ export class HomologacionAsignaturasComponent implements OnInit {
   subiendoPDF: boolean = false;
   enviandoPDF: boolean = false;
 
+  // Nueva propiedad para controlar la habilitación del generador de documentos
+  documentoHabilitado: boolean = false;
+
   constructor(
-    private homologacionService: HomologacionAsignaturasService,
+    public homologacionService: HomologacionAsignaturasService,
     private documentGeneratorService: DocumentGeneratorService,
     private snackBar: MatSnackBar
   ) {
@@ -116,6 +121,14 @@ export class HomologacionAsignaturasComponent implements OnInit {
         console.log('🧹 Estado limpiado para nueva solicitud');
       }
     });
+  }
+
+  /**
+   * Maneja el clic en "Tengo un documento"
+   */
+  onTengoDocumento(): void {
+    this.documentoHabilitado = true;
+    this.snackBar.open('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.', 'Cerrar', { duration: 3000 });
   }
 
   /**
@@ -316,6 +329,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
     this.archivoPDF = null;
     this.subiendoPDF = false;
     this.enviandoPDF = false;
+    this.documentoHabilitado = false;
     this.loading = false;
     console.log('🧹 Estado del componente limpiado');
   }

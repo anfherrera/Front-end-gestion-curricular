@@ -17,6 +17,7 @@ import { RequestStatusTableComponent } from '../../../shared/components/request-
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
+import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
 
 @Component({
@@ -33,7 +34,8 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
     MatProgressBarModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    DocumentGeneratorComponent
+    DocumentGeneratorComponent,
+    DocumentationViewerComponent
   ],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']
@@ -52,13 +54,16 @@ export class ReingresoEstudianteComponent implements OnInit {
   subiendoPDF: boolean = false;
   enviandoPDF: boolean = false;
 
+  // Nueva propiedad para controlar la habilitación del generador de documentos
+  documentoHabilitado: boolean = false;
+
   // Enums para estados
   EstadosSolicitud = EstadosSolicitud;
   ESTADOS_SOLICITUD_LABELS = ESTADOS_SOLICITUD_LABELS;
   ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
   constructor(
-    private reingresoService: ReingresoEstudianteService,
+    public reingresoService: ReingresoEstudianteService,
     private documentGeneratorService: DocumentGeneratorService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
@@ -130,6 +135,14 @@ export class ReingresoEstudianteComponent implements OnInit {
         console.log('🧹 Estado limpiado para nueva solicitud');
       }
     });
+  }
+
+  /**
+   * Maneja el clic en "Tengo un documento"
+   */
+  onTengoDocumento(): void {
+    this.documentoHabilitado = true;
+    this.snackBar.open('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.', 'Cerrar', { duration: 3000 });
   }
 
   /**
@@ -558,6 +571,7 @@ export class ReingresoEstudianteComponent implements OnInit {
     this.archivoPDF = null;
     this.subiendoPDF = false;
     this.enviandoPDF = false;
+    this.documentoHabilitado = false;
     this.loading = false;
     console.log('🧹 Estado del componente limpiado');
   }

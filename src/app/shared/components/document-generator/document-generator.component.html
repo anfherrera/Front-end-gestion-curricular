@@ -1,5 +1,5 @@
 <div class="document-generator-container">
-  
+
   <!-- Información de la solicitud -->
   <mat-card class="solicitud-info-card">
     <mat-card-header>
@@ -45,15 +45,15 @@
       </mat-card-title>
       <mat-card-subtitle>{{ template.descripcion }}</mat-card-subtitle>
     </mat-card-header>
-    
+
     <mat-card-content>
       <form [formGroup]="documentForm" (ngSubmit)="onSubmit()" class="document-form">
-        
+
         <!-- Número de documento -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Número de {{ template.nombre }}</mat-label>
-          <input matInput 
-                 formControlName="numeroDocumento" 
+          <input matInput
+                 formControlName="numeroDocumento"
                  placeholder="Ej: 001-2024"
                  [class.error]="hasError('numeroDocumento')">
           <mat-icon matSuffix>description</mat-icon>
@@ -65,8 +65,8 @@
         <!-- Fecha del documento -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Fecha del documento</mat-label>
-          <input matInput 
-                 [matDatepicker]="picker" 
+          <input matInput
+                 [matDatepicker]="picker"
                  formControlName="fechaDocumento"
                  [class.error]="hasError('fechaDocumento')">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -80,8 +80,8 @@
         <!-- Observaciones -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Observaciones</mat-label>
-          <textarea matInput 
-                    formControlName="observaciones" 
+          <textarea matInput
+                    formControlName="observaciones"
                     rows="3"
                     placeholder="Observaciones adicionales..."></textarea>
           <mat-icon matSuffix>note</mat-icon>
@@ -91,22 +91,31 @@
     </mat-card-content>
 
     <mat-card-actions class="form-actions">
-      <button mat-button 
-              type="button" 
+      <button mat-button
+              type="button"
               (click)="onCancel()"
               [disabled]="loading">
         <mat-icon>cancel</mat-icon>
         Cancelar
       </button>
-      
-      <button mat-raised-button 
-              color="primary" 
+
+      <button mat-raised-button
+              color="primary"
               type="submit"
               (click)="onSubmit()"
               [disabled]="documentForm.invalid || loading">
         <mat-icon *ngIf="!loading">description</mat-icon>
         <mat-icon *ngIf="loading" class="spinning">refresh</mat-icon>
         {{ loading ? 'Generando...' : 'Generar ' + template.nombre }}
+      </button>
+
+      <button mat-raised-button
+              color="accent"
+              type="button"
+              (click)="onTengoDocumento()"
+              [disabled]="loading">
+        <mat-icon>upload_file</mat-icon>
+        Tengo un documento
       </button>
     </mat-card-actions>
   </mat-card>

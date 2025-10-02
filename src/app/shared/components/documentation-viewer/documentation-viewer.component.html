@@ -1,0 +1,89 @@
+<div class="documentation-viewer">
+  <div class="header">
+    <h3>
+      <mat-icon>folder_open</mat-icon>
+      Documentación Adjunta
+    </h3>
+    <span class="document-count">{{ documentos.length }} documento(s)</span>
+  </div>
+
+  <div *ngIf="documentos.length === 0" class="no-documents">
+    <mat-icon>folder_open</mat-icon>
+    <p>No hay documentos adjuntos para esta solicitud.</p>
+  </div>
+
+  <div *ngIf="documentos.length > 0" class="documents-table">
+    <table mat-table [dataSource]="documentos" class="mat-elevation-z2">
+
+      <!-- Nombre del archivo -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre del Archivo</th>
+        <td mat-cell *matCellDef="let documento">
+          <div class="file-info">
+            <mat-icon class="file-icon">description</mat-icon>
+            <span class="file-name">{{ documento.nombre }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Fecha -->
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef>Fecha de Subida</th>
+        <td mat-cell *matCellDef="let documento">
+          <span class="file-date">{{ formatearFecha(documento.fecha_documento || documento.fechaSubida) }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Comentarios -->
+      <ng-container matColumnDef="comentarios">
+        <th mat-header-cell *matHeaderCellDef>Comentarios</th>
+        <td mat-cell *matCellDef="let documento">
+          <div class="comments-info">
+            <button
+              *ngIf="tieneComentarios(documento)"
+              mat-icon-button
+              color="primary"
+              (click)="verComentariosDocumento(documento)"
+              matTooltip="Ver comentarios ({{ getNumeroComentarios(documento) }})"
+              class="comments-button">
+              <mat-icon>comment</mat-icon>
+              <span class="comment-count">{{ getNumeroComentarios(documento) }}</span>
+            </button>
+            <span *ngIf="!tieneComentarios(documento)" class="no-comments">
+              Sin comentarios
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let documento">
+          <div class="actions-container">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="verDocumento(documento)"
+              matTooltip="Visualizar documento"
+              class="action-button">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button
+              *ngIf="puedeAgregarComentarios"
+              mat-icon-button
+              color="accent"
+              (click)="agregarComentario(documento)"
+              matTooltip="Agregar comentario"
+              class="action-button">
+              <mat-icon>add_comment</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

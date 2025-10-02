@@ -12,6 +12,7 @@ import { ReingresoEstudianteService } from '../../../core/services/reingreso-est
 import { SolicitudReingresoDTORespuesta, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
+import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
@@ -28,7 +29,8 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
     MatTooltipModule,
     MatCardModule,
     CardContainerComponent,
-    RequestStatusTableComponent
+    RequestStatusTableComponent,
+    DocumentationViewerComponent
   ],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']
@@ -45,7 +47,7 @@ export class ReingresoEstudianteComponent implements OnInit {
   ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
   constructor(
-    private reingresoService: ReingresoEstudianteService,
+    public reingresoService: ReingresoEstudianteService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
@@ -109,100 +111,25 @@ export class ReingresoEstudianteComponent implements OnInit {
     return this.ESTADOS_SOLICITUD_LABELS[estado as EstadosSolicitud] || estado;
   }
 
-  verDocumento(documento: DocumentosDTORespuesta): void {
-    if (!documento.nombre) {
-      this.snackBar.open(`No hay nombre de archivo disponible para el documento`, 'Cerrar', { duration: 3000 });
-      return;
+  /**
+   * Manejar cuando se agrega un comentario desde el DocumentationViewerComponent
+   */
+  onComentarioAgregado(event: {documento: any, comentario: string}): void {
+    if (event.documento.id_documento) {
+      this.reingresoService.agregarComentario(event.documento.id_documento, event.comentario).subscribe({
+        next: () => {
+          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          // Recargar la solicitud para actualizar los comentarios
+          this.cargarSolicitudes();
+        },
+        error: (error) => {
+          console.error('Error al añadir comentario:', error);
+          this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+        }
+      });
     }
-
-    // Mostrar mensaje de carga
-    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
-
-    this.reingresoService.descargarArchivo(documento.nombre).subscribe({
-      next: (blob: Blob) => {
-        // Crear URL única del blob para evitar cache
-        const url = window.URL.createObjectURL(blob);
-
-        // Crear un iframe temporal para mostrar el PDF
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.style.width = '100%';
-        iframe.style.height = '600px';
-        iframe.style.border = 'none';
-
-        // Crear ventana emergente
-        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>${documento.nombre}</title>
-                <style>
-                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                  .header { margin-bottom: 20px; }
-                  .filename { font-size: 18px; font-weight: bold; color: #333; }
-                </style>
-              </head>
-              <body>
-                <div class="header">
-                  <div class="filename">${documento.nombre}</div>
-                </div>
-              </body>
-            </html>
-          `);
-          newWindow.document.body.appendChild(iframe);
-        }
-
-        // Limpiar la URL después de un tiempo
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 5000);
-
-        this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
-      },
-      error: (error) => {
-        console.error('Error al descargar el documento:', error);
-
-        let mensajeError = `Error al descargar el documento: ${documento.nombre}`;
-
-        if (error.status === 404) {
-          mensajeError = `Archivo no encontrado: ${documento.nombre}`;
-        } else if (error.status === 401) {
-          mensajeError = 'No autorizado para descargar el archivo';
-        } else if (error.status === 500) {
-          mensajeError = 'Error interno del servidor al descargar el archivo';
-        }
-
-        this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
-      }
-    });
   }
 
-  agregarComentario(documento: DocumentosDTORespuesta): void {
-    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
-      width: '500px',
-      data: <ComentarioDialogData>{
-        titulo: 'Añadir Comentario',
-        descripcion: 'Ingrese un comentario para este documento:',
-        placeholder: 'Escriba su comentario aquí...',
-        nombreDocumento: documento.nombre
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((comentario: string) => {
-      if (comentario && documento.id_documento) {
-        this.reingresoService.agregarComentario(documento.id_documento, comentario).subscribe({
-          next: () => {
-            this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
-          },
-          error: (error) => {
-            console.error('Error al añadir comentario:', error);
-            this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
-          }
-        });
-      }
-    });
-  }
 
   // Métodos para aprobar y rechazar solicitudes
   aprobarSolicitudSeleccionada(): void {

@@ -15,6 +15,21 @@
 
   </app-card-container>
 
+      <!-- Documentación adjunta de la solicitud seleccionada -->
+      <app-card-container
+        *ngIf="selectedSolicitud"
+        title="Documentación Adjunta"
+        icon="folder_open">
+
+        <app-documentation-viewer
+          [documentos]="selectedSolicitud.documentos || []"
+          [solicitudId]="selectedSolicitud.id_solicitud"
+          [proceso]="'homologacion'"
+          [servicio]="homologacionService">
+        </app-documentation-viewer>
+
+      </app-card-container>
+
       <!-- Contenedor para generar documento usando componente genérico -->
       <app-card-container
         *ngIf="selectedSolicitud"
@@ -27,21 +42,25 @@
           [proceso]="'homologacion'"
           [loading]="loading"
           (generarDocumento)="onGenerarDocumento($event)"
-          (cancelar)="onCancelarGeneracion()">
+          (cancelar)="onCancelarGeneracion()"
+          (tengoDocumento)="onTengoDocumento()">
         </app-document-generator>
 
       </app-card-container>
 
       <!-- Contenedor para subir PDF y enviar al estudiante -->
       <app-card-container
-        *ngIf="selectedSolicitud && documentoGenerado"
+        *ngIf="selectedSolicitud && (documentoGenerado || documentoHabilitado)"
         title="Subir PDF y Enviar al Estudiante"
         icon="upload">
 
         <div class="pdf-upload-section">
-          <p class="instruction">
+          <p class="instruction" *ngIf="documentoGenerado">
             📄 <strong>Paso 1:</strong> El documento Word ha sido generado y descargado.<br>
             📤 <strong>Paso 2:</strong> Selecciona el archivo PDF y envíalo al estudiante.
+          </p>
+          <p class="instruction" *ngIf="!documentoGenerado && documentoHabilitado">
+            📤 <strong>Sube tu documento PDF:</strong> Selecciona el archivo PDF que ya tienes listo y envíalo al estudiante.
           </p>
 
           <!-- Selección de archivo PDF -->

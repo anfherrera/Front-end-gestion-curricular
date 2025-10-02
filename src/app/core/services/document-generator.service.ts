@@ -178,6 +178,266 @@ export class DocumentGeneratorService {
    * Crear el contenido del documento Word
    */
   private crearContenidoDocumento(request: DocumentRequest): Paragraph[] {
+    // Verificar el tipo de documento para usar la plantilla correspondiente
+    if (request.tipoDocumento === 'OFICIO_PAZ_SALVO') {
+      return this.crearContenidoPazSalvo(request);
+    } else if (request.tipoDocumento === 'OFICIO_HOMOLOGACION') {
+      return this.crearContenidoHomologacion(request);
+    } else if (request.tipoDocumento === 'RESOLUCION_REINGRESO') {
+      return this.crearContenidoReingreso(request);
+    }
+
+    // Plantilla por defecto (homologación)
+    return this.crearContenidoHomologacion(request);
+  }
+
+  /**
+   * Crear contenido específico para Paz y Salvo Académico
+   */
+  private crearContenidoPazSalvo(request: DocumentRequest): Paragraph[] {
+    const contenido: Paragraph[] = [];
+
+    // Número de documento y fecha
+    contenido.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${request.datosDocumento.numeroDocumento || '8.4.3-55.6/408'}`,
+            bold: true,
+            size: 24
+          })
+        ],
+        alignment: AlignmentType.RIGHT,
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `Popayán, ${this.formatearFecha(request.datosDocumento.fechaDocumento)}`,
+            size: 24
+          })
+        ],
+        alignment: AlignmentType.RIGHT,
+        spacing: { after: 400 }
+      })
+    );
+
+    // Destinatario
+    contenido.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Doctora",
+            size: 24
+          })
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "_________________________ (espacio a modificar)",
+            bold: true,
+            size: 24
+          })
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Secretaria General",
+            size: 24
+          })
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Universidad del Cauca",
+            size: 24
+          })
+        ],
+        spacing: { after: 400 }
+      })
+    );
+
+    // Asunto
+    contenido.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Asunto: Paz y Salvo Académico",
+            bold: true,
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Apreciada Doctora.",
+            size: 24
+          })
+        ],
+        spacing: { after: 400 }
+      })
+    );
+
+    // Cuerpo del documento
+    contenido.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "El Consejo de la Facultad de Ingeniería Electrónica y Telecomunicaciones reunido",
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `en sección ordinaria del día ${this.formatearFecha(request.datosDocumento.fechaDocumento)} y previa revisión del plan`,
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "de estudios, se permite informar a usted que el (la) estudiante",
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${request.datosSolicitud.nombreEstudiante || 'MANUEL ALEJANDRO VALLEJO TRUJILLO'}, identificado (a) con la cedula de ciudadanía`,
+            bold: true,
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `# ${request.datosSolicitud.cedula || '1061807618'} de Popayán, Cauca y código ${request.datosSolicitud.codigoEstudiante || '104614020656'}, puede optar al título`,
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `de ${request.datosSolicitud.titulo || 'INGENIERO DE SISTEMAS'}, por haber cumplido con todos y cada uno de los`,
+            bold: true,
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "requisitos exigidos para el efecto.",
+            size: 24
+          })
+        ],
+        spacing: { after: 400 }
+      })
+    );
+
+    // Información del trabajo de grado
+    contenido.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "El estudiante terminó el plan de estudios el día _________________________ (espacio a modificar), sustentó el",
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `trabajo de grado denominado "${request.datosSolicitud.tituloTrabajoGrado || 'Asistente virtual basado en ChatGPT para resolver preguntas en un curso en línea introductorio de ciencia de datos'}",`,
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "dirigido por el _________________________ (espacio a modificar).",
+            size: 24
+          })
+        ],
+        spacing: { after: 400 }
+      })
+    );
+
+    // Despedida
+    contenido.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Reciba un cordial saludo,",
+            size: 24
+          })
+        ],
+        spacing: { after: 400 }
+      })
+    );
+
+    // Firma
+    contenido.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "ALEJANDRO TOLEDO TOVAR",
+            bold: true,
+            size: 24
+          })
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Presidente Consejo de Facultad",
+            size: 24
+          })
+        ],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Copia: Historia académica estudiante",
+            size: 24
+          })
+        ],
+        spacing: { after: 400 }
+      })
+    );
+
+    return contenido;
+  }
+
+  /**
+   * Crear contenido específico para Homologación
+   */
+  private crearContenidoHomologacion(request: DocumentRequest): Paragraph[] {
     const contenido: Paragraph[] = [];
 
     // Encabezado
@@ -427,6 +687,29 @@ export class DocumentGeneratorService {
   }
 
   /**
+   * Crear contenido específico para Reingreso
+   */
+  private crearContenidoReingreso(request: DocumentRequest): Paragraph[] {
+    // Por ahora, usar la plantilla de homologación como base
+    // Se puede personalizar más adelante si es necesario
+    return this.crearContenidoHomologacion(request);
+  }
+
+  /**
+   * Formatear fecha para el documento
+   */
+  private formatearFecha(fecha: string | Date): string {
+    if (!fecha) return '';
+
+    const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
+    return fechaObj.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  /**
    * Generar oficio de homologación (método específico)
    */
   generarOficioHomologacion(datos: any): Observable<Blob> {
@@ -457,7 +740,7 @@ export class DocumentGeneratorService {
   generarPazSalvo(datos: any): Observable<Blob> {
     const request: DocumentRequest = {
       idSolicitud: datos.idSolicitud,
-      tipoDocumento: 'PAZ_SALVO',
+      tipoDocumento: 'OFICIO_PAZ_SALVO',
       datosDocumento: {
         numeroDocumento: datos.numeroDocumento,
         fechaDocumento: datos.fechaDocumento,
@@ -469,7 +752,11 @@ export class DocumentGeneratorService {
         codigoEstudiante: datos.codigoEstudiante,
         programa: datos.programa,
         fechaSolicitud: datos.fechaSolicitud,
-        estado: datos.estado
+        estado: datos.estado,
+        // Campos específicos para paz y salvo
+        cedula: datos.cedula,
+        titulo: datos.titulo,
+        tituloTrabajoGrado: datos.tituloTrabajoGrado
       }
     };
 
@@ -525,11 +812,11 @@ export class DocumentGeneratorService {
       ],
       'paz-salvo': [
         {
-          id: 'PAZ_SALVO',
-          nombre: 'Paz y Salvo',
-          descripcion: 'Documento que certifica que el estudiante no tiene pendientes académicos',
-          camposRequeridos: ['numeroDocumento', 'fechaDocumento'],
-          camposOpcionales: ['observaciones', 'semestre']
+          id: 'OFICIO_PAZ_SALVO',
+          nombre: 'Paz y Salvo Académico',
+          descripcion: 'Documento que certifica que el estudiante puede optar al título por haber cumplido todos los requisitos',
+          camposRequeridos: ['numeroDocumento', 'fechaDocumento', 'nombreEstudiante', 'codigoEstudiante', 'cedula', 'titulo'],
+          camposOpcionales: ['observaciones', 'tituloTrabajoGrado']
         }
       ],
       reingreso: [
