@@ -150,20 +150,6 @@ export class HomologacionAsignaturasComponent implements OnInit {
     });
   }
 
-  terminarValidacionSeleccionada(): void {
-    if (!this.selectedSolicitud) return;
-
-    this.homologacionService.completeValidation(this.selectedSolicitud.id_solicitud).subscribe({
-      next: () => {
-        this.snackBar.open('Validación completada', 'Cerrar', { duration: 3000 });
-        this.cargarSolicitudes();
-        // Limpiar la selección para actualizar el card de documentación
-        this.selectedSolicitud = null;
-        this.requestStatusTable?.resetSelection();
-      },
-      error: (err) => this.snackBar.open('Error al terminar validación', 'Cerrar', { duration: 3000 })
-    });
-  }
 
   rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;

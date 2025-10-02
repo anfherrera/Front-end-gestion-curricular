@@ -1,0 +1,340 @@
+.pruebas-ecaes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: #f5f7fa;
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+}
+
+/* ================================
+   Selector de período
+   ================================ */
+
+.selector-periodo {
+  margin-bottom: 24px;
+}
+
+.periodo-select {
+  width: 100%;
+  max-width: 400px;
+}
+
+.periodo-select .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* ================================
+   Tabla de fechas mejorada
+   ================================ */
+
+.tabla-fechas {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e3f2fd;
+  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.1);
+  background: white;
+}
+
+.fechas-table {
+  width: 100%;
+  background: white;
+}
+
+/* Header de la tabla mejorado */
+.header-row {
+  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+}
+
+.header-cell {
+  background: transparent !important;
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1rem;
+  padding: 20px 24px !important;
+  border-bottom: none !important;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Celdas de datos mejoradas */
+.data-row {
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.data-row:hover {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+}
+
+.data-row:last-child {
+  border-bottom: none;
+}
+
+.data-row:nth-child(even) {
+  background-color: #fafbff;
+}
+
+.data-row:nth-child(even):hover {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e3f2fd 100%);
+}
+
+.concepto-cell {
+  padding: 18px 24px !important;
+  font-weight: 600;
+  color: #2c3e50;
+  border-right: 1px solid #e8f4fd;
+  width: 65%;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.fecha-cell {
+  padding: 18px 24px !important;
+  color: #00138C;
+  font-weight: 700;
+  text-align: center;
+  width: 35%;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+}
+
+/* ================================
+   Mensaje vacío
+   ================================ */
+
+.mensaje-vacio {
+  text-align: center;
+  color: #888888;
+  font-style: italic;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #e0e0e0;
+}
+
+.mensaje-vacio p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ================================
+   Formulario de solicitud
+   ================================ */
+
+.formulario-solicitud {
+  margin-bottom: 32px;
+}
+
+.form-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* ================================
+   Sección de archivos
+   ================================ */
+
+.seccion-archivos {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+  border-radius: 12px;
+  border: 2px solid #e3f2fd;
+}
+
+.titulo-archivos {
+  margin: 0 0 12px 0;
+  color: #00138C;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.descripcion-archivos {
+  margin: 0 0 20px 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ================================
+   Botón de envío
+   ================================ */
+
+.boton-envio {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.btn-enviar {
+  background: linear-gradient(135deg, #00138C 0%, #001a99 100%) !important;
+  color: white !important;
+  padding: 16px 32px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.3) !important;
+  transition: all 0.3s ease !important;
+  min-width: 200px;
+}
+
+.btn-enviar:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0, 19, 140, 0.4) !important;
+}
+
+.btn-enviar:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ================================
+   Contenido placeholder
+   ================================ */
+
+.placeholder-content {
+  text-align: center;
+  color: #888888;
+  font-style: italic;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #e0e0e0;
+}
+
+.placeholder-content p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ================================
+   Responsive
+   ================================ */
+
+@media (max-width: 768px) {
+  .pruebas-ecaes-container {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .concepto-cell,
+  .fecha-cell,
+  .header-cell {
+    padding: 12px 16px !important;
+    font-size: 0.9rem;
+  }
+
+  .periodo-select {
+    max-width: 100%;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .seccion-archivos {
+    padding: 16px;
+  }
+
+  .btn-enviar {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* ================================
+   Animaciones
+   ================================ */
+
+.tabla-fechas {
+  transition: box-shadow 0.3s ease;
+}
+
+.tabla-fechas:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ================================
+   Material Design overrides
+   ================================ */
+
+.mat-mdc-form-field {
+  font-size: 14px;
+}
+
+.mat-mdc-select-panel {
+  border-radius: 8px;
+}
+
+.mat-mdc-option {
+  padding: 12px 16px;
+}
+
+.mat-mdc-option:hover {
+  background-color: #f0f0f0;
+}
+
+.mat-mdc-option.mdc-list-item--selected {
+  background-color: #00138C;
+  color: white;
+}
+
+/* ================================
+   Estilos para seguimiento de solicitudes
+   ================================ */
+
+.sin-solicitudes {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+  border-radius: 12px;
+  border: 2px dashed #e3f2fd;
+  margin: 20px 0;
+}
+
+.sin-solicitudes mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #00138C;
+  margin-bottom: 16px;
+}
+
+.sin-solicitudes p {
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 500;
+}
