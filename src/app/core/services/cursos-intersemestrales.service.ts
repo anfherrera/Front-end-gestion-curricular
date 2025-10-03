@@ -604,6 +604,7 @@ export class CursosIntersemestralesService {
       .pipe(map(cursos => cursos.map(curso => this.mapCursoVerano(curso))));
   }
 
+
   getCursosInscritos(): Observable<CursoList[]> {
     return this.http
       .get<CursoBackend[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/inscritos`)
