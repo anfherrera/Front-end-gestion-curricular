@@ -34,37 +34,27 @@ export class VerSolicitudComponent implements OnInit {
     this.cargando = true;
     console.log('🔄 Cargando seguimiento completo...');
     
-    // Cargar solicitudes (preinscripciones)
     if (this.usuario?.id_usuario) {
-      this.cursosService.getSolicitudesUsuario(this.usuario.id_usuario).subscribe({
-        next: (solicitudes) => {
-          this.solicitudes = solicitudes;
-          console.log('✅ Solicitudes cargadas:', solicitudes);
-          this.loadInscripciones();
+      // Usar el nuevo endpoint que trae todo junto
+      this.cursosService.getSeguimientoActividades(this.usuario.id_usuario).subscribe({
+        next: (seguimiento) => {
+          this.solicitudes = seguimiento.preinscripciones || [];
+          this.inscripciones = seguimiento.inscripciones || [];
+          this.cargando = false;
+          console.log('✅ Seguimiento cargado:', seguimiento);
+          console.log('📊 Preinscripciones:', this.solicitudes.length);
+          console.log('📊 Inscripciones:', this.inscripciones.length);
         },
         error: (err) => {
-          console.error('❌ Error cargando solicitudes', err);
-          this.loadInscripciones();
+          console.error('❌ Error cargando seguimiento', err);
+          this.cargando = false;
         }
       });
     } else {
-      this.loadInscripciones();
+      this.cargando = false;
     }
   }
 
-  loadInscripciones() {
-    this.cursosService.getInscripciones().subscribe({
-      next: (inscripciones) => {
-        this.inscripciones = inscripciones;
-        console.log('✅ Inscripciones cargadas:', inscripciones);
-        this.cargando = false;
-      },
-      error: (err) => {
-        console.error('❌ Error cargando inscripciones', err);
-        this.cargando = false;
-      }
-    });
-  }
 
   getTotalActividades(): number {
     return this.solicitudes.length + this.inscripciones.length;

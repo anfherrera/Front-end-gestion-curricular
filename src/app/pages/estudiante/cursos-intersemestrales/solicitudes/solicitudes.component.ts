@@ -11,6 +11,7 @@ import {
 import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
 
 @Component({
   selector: 'app-solicitudes',
@@ -122,6 +123,9 @@ export class SolicitudesComponent implements OnInit {
         idUsuario: this.usuario.id_usuario
       };
 
+      console.log('📤 Enviando solicitud con payload:', payload);
+      console.log('🌐 URL del endpoint:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`);
+
       this.cursosService.crearSolicitudCursoNuevo(payload).subscribe({
         next: (response) => {
           this.loading = false;
@@ -141,10 +145,26 @@ export class SolicitudesComponent implements OnInit {
             status: error.status,
             statusText: error.statusText,
             url: error.url,
-            message: error.message
+            message: error.message,
+            error: error.error
           });
           
-          this.snackBar.open('Error al enviar la solicitud. Inténtalo de nuevo.', 'Cerrar', {
+          // Manejar diferentes tipos de errores
+          let mensaje = 'Error al enviar la solicitud. Inténtalo de nuevo.';
+          
+          if (error.status === 500) {
+            mensaje = 'Error del servidor. Por favor, verifica los datos e inténtalo de nuevo.';
+            console.error('🔍 Error 500 - Detalles del servidor:', error.error);
+          } else if (error.status === 400) {
+            mensaje = 'Datos inválidos. Verifica la información e inténtalo de nuevo.';
+            console.error('🔍 Error 400 - Datos inválidos:', error.error);
+          } else if (error.status === 401) {
+            mensaje = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
+          } else if (error.status === 403) {
+            mensaje = 'No tienes permisos para realizar esta acción.';
+          }
+          
+          this.snackBar.open(mensaje, 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
           });

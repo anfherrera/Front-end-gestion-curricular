@@ -490,6 +490,11 @@ export class CursosIntersemestralesService {
     return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}`);
   }
 
+  // Seguimiento de actividades (preinscripciones + inscripciones)
+  getSeguimientoActividades(idUsuario: number): Observable<any> {
+    return this.http.get(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/seguimiento/${idUsuario}`);
+  }
+
   confirmarInscripcion(id: number): Observable<Inscripcion> {
     return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/confirmar`, {});
   }
