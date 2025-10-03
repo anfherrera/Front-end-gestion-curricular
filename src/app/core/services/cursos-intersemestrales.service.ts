@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { Curso as CursoList } from '../../shared/components/curso-list/curso-list.component';
+import { AuthService } from './auth.service';
 
 // ================== MODELOS ACTUALIZADOS ==================
 export interface Usuario {
@@ -192,7 +193,7 @@ export interface CreateInscripcionLegacyDTO {
 // ================== SERVICIO ==================
 @Injectable({ providedIn: 'root' })
 export class CursosIntersemestralesService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   // ====== CURSOS DE VERANO - NUEVAS APIs ======
   
@@ -403,7 +404,13 @@ export class CursosIntersemestralesService {
 
   // ====== INSCRIPCIONES LEGACY ======
   getInscripciones(): Observable<Inscripcion[]> {
-    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
+    // Obtener el usuario autenticado
+    const usuario = this.authService.getUsuario();
+    if (!usuario?.id_usuario) {
+      return of([]); // Retornar array vacío si no hay usuario autenticado
+    }
+    
+    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones-reales/${usuario.id_usuario}`).pipe(
       switchMap(inscripciones => {
         // Obtener cursos para mapear correctamente
         return this.getCursosDisponibles().pipe(
