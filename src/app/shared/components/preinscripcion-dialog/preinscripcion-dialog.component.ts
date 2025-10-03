@@ -114,7 +114,23 @@ export class PreinscripcionDialogComponent implements OnInit {
         error: (error) => {
           this.loading = false;
           console.error('Error enviando preinscripción:', error);
-          this.snackBar.open('Error al enviar la preinscripción. Inténtalo de nuevo.', 'Cerrar', {
+          
+          // Manejar diferentes tipos de errores
+          let mensaje = 'Error al enviar la preinscripción. Inténtalo de nuevo.';
+          
+          if (error.error && error.error.codigo === 'DUPLICATE_PREINSCRIPTION') {
+            mensaje = 'Ya tienes una preinscripción activa para este curso.';
+          } else if (error.error && error.error.codigo === 'COURSE_NOT_AVAILABLE') {
+            mensaje = 'Este curso no está disponible para preinscripción.';
+          } else if (error.error && error.error.codigo === 'NO_CUPOS_AVAILABLE') {
+            mensaje = 'No hay cupos disponibles para este curso.';
+          } else if (error.status === 400) {
+            mensaje = 'Datos inválidos. Verifica la información e inténtalo de nuevo.';
+          } else if (error.status === 500) {
+            mensaje = 'Error del servidor. Inténtalo más tarde.';
+          }
+          
+          this.snackBar.open(mensaje, 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
           });
