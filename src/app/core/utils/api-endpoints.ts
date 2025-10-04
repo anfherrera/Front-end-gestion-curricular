@@ -48,7 +48,7 @@ export class ApiEndpoints {
       PREINSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones`,
       INSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones`,
       SOLICITUDES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/solicitudes`,
-      CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/cursos-disponibles`,
+      CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/materias-disponibles`,
       CONDICIONES: `${this.BASE_URL}/cursos-intersemestrales/condiciones-solicitud`,
       SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo`,
       SOLICITUDES_CURSO_NUEVO_USUARIO: (idUsuario: number) => `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo/usuario/${idUsuario}`,

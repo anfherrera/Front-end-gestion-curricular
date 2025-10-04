@@ -89,7 +89,7 @@
           <div *ngFor="let curso of cursosActivos.slice(0, 5)" class="curso-item">
             <div class="curso-info">
               <h4>{{ curso.nombre_curso }}</h4>
-              <p>{{ curso.objMateria.nombre_materia }} - {{ curso.objDocente.nombre }} {{ curso.objDocente.apellido }}</p>
+              <p>{{ curso.objMateria.nombre }} - {{ curso.objDocente.nombre }} {{ curso.objDocente.apellido }}</p>
               <small>{{ formatearFecha(curso.fecha_inicio) }} - {{ formatearFecha(curso.fecha_fin) }}</small>
             </div>
             <div class="curso-status">

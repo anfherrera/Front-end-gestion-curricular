@@ -24,9 +24,10 @@ export interface Rol {
 
 export interface Materia {
   id_materia: number;
-  nombre_materia: string;
-  codigo_materia: string;
+  codigo: string;
+  nombre: string;
   creditos: number;
+  descripcion: string;
 }
 
 export interface CursoOfertadoVerano {
@@ -279,9 +280,15 @@ export class CursosIntersemestralesService {
 
   // ====== SOLICITUD DE CURSO NUEVO ======
   
-  // Obtener todos los cursos disponibles para solicitar
-  getCursosDisponiblesParaSolicitud(): Observable<CursoDisponible[]> {
+  // Obtener todas las materias disponibles para solicitar
+  getMateriasDisponibles(): Observable<Materia[]> {
     console.log('🌐 Llamando a API:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
+    return this.http.get<Materia[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
+  }
+
+  // Método legacy para compatibilidad
+  getCursosDisponiblesParaSolicitud(): Observable<CursoDisponible[]> {
+    console.log('🌐 Llamando a API (legacy):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
     return this.http.get<CursoDisponible[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
   }
 
@@ -447,7 +454,7 @@ export class CursosIntersemestralesService {
                 cupo_disponible: 0,
                 espacio_asignado: 'N/A',
                 estado: 'Cerrado',
-                objMateria: { id_materia: 0, nombre_materia: 'N/A', codigo_materia: 'N/A', creditos: 0 },
+                objMateria: { id_materia: 0, codigo: 'N/A', nombre: 'N/A', creditos: 0, descripcion: 'N/A' },
                 objDocente: { id_usuario: 0, nombre: 'N/A', apellido: 'N/A', email: 'N/A', telefono: 'N/A', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
               }
             };

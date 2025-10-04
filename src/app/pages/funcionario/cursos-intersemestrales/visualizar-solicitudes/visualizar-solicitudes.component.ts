@@ -57,12 +57,12 @@ export class VisualizarSolicitudesComponent implements OnInit {
         console.error('❌ Error cargando materias del backend', err);
         // Datos de prueba si falla el backend
         this.materias = [
-          { id_materia: 1, nombre_materia: 'Programación', codigo_materia: 'PROG', creditos: 4 },
-          { id_materia: 2, nombre_materia: 'Bases de Datos', codigo_materia: 'BD', creditos: 3 },
-          { id_materia: 3, nombre_materia: 'Matemáticas', codigo_materia: 'MAT', creditos: 3 },
-          { id_materia: 4, nombre_materia: 'Desarrollo Web', codigo_materia: 'WEB', creditos: 4 },
-          { id_materia: 5, nombre_materia: 'Inteligencia Artificial', codigo_materia: 'IA', creditos: 4 },
-          { id_materia: 6, nombre_materia: 'Redes de Computadores', codigo_materia: 'RED', creditos: 3 }
+          { id_materia: 1, codigo: 'PROG', nombre: 'Programación', creditos: 4, descripcion: 'Programación (PROG) - 4 créditos' },
+          { id_materia: 2, codigo: 'BD', nombre: 'Bases de Datos', creditos: 3, descripcion: 'Bases de Datos (BD) - 3 créditos' },
+          { id_materia: 3, codigo: 'MAT', nombre: 'Matemáticas', creditos: 3, descripcion: 'Matemáticas (MAT) - 3 créditos' },
+          { id_materia: 4, codigo: 'WEB', nombre: 'Desarrollo Web', creditos: 4, descripcion: 'Desarrollo Web (WEB) - 4 créditos' },
+          { id_materia: 5, codigo: 'IA', nombre: 'Inteligencia Artificial', creditos: 4, descripcion: 'Inteligencia Artificial (IA) - 4 créditos' },
+          { id_materia: 6, codigo: 'RED', nombre: 'Redes de Computadores', creditos: 3, descripcion: 'Redes de Computadores (RED) - 3 créditos' }
         ];
       }
     });
@@ -125,9 +125,10 @@ export class VisualizarSolicitudesComponent implements OnInit {
           estado: 'Abierto',
           objMateria: { 
             id_materia: 1, 
-            nombre_materia: 'Programación',
-            codigo_materia: 'PROG',
-            creditos: 4
+            codigo: 'PROG',
+            nombre: 'Programación',
+            creditos: 4,
+            descripcion: 'Programación (PROG) - 4 créditos'
           },
           objDocente: { 
             id_usuario: 2, 
@@ -173,9 +174,10 @@ export class VisualizarSolicitudesComponent implements OnInit {
           estado: 'Abierto',
           objMateria: { 
             id_materia: 2, 
-            nombre_materia: 'Bases de Datos',
-            codigo_materia: 'BD',
-            creditos: 3
+            codigo: 'BD',
+            nombre: 'Bases de Datos',
+            creditos: 3,
+            descripcion: 'Bases de Datos (BD) - 3 créditos'
           },
           objDocente: { 
             id_usuario: 3, 
@@ -221,9 +223,10 @@ export class VisualizarSolicitudesComponent implements OnInit {
           estado: 'Abierto',
           objMateria: { 
             id_materia: 4, 
-            nombre_materia: 'Desarrollo Web',
-            codigo_materia: 'WEB',
-            creditos: 4
+            codigo: 'WEB',
+            nombre: 'Desarrollo Web',
+            creditos: 4,
+            descripcion: 'Desarrollo Web (WEB) - 4 créditos'
           },
           objDocente: { 
             id_usuario: 4, 

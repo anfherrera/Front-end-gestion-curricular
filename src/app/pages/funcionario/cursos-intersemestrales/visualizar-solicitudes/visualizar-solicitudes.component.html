@@ -7,7 +7,7 @@
       <mat-select formControlName="materia">
         <mat-option value="todos">Todas las materias</mat-option>
         <mat-option *ngFor="let materia of materias" [value]="materia.id_materia">
-          {{ materia.nombre_materia }} ({{ materia.codigo_materia }})
+          {{ materia.nombre }} ({{ materia.codigo }})
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -55,7 +55,7 @@
         <td mat-cell *matCellDef="let solicitud">
           <div class="curso-info">
             <strong>{{ solicitud.objCursoOfertadoVerano?.nombre_curso }}</strong>
-            <small>{{ solicitud.objCursoOfertadoVerano?.codigo_curso }} - {{ solicitud.objCursoOfertadoVerano?.objMateria?.nombre_materia }}</small>
+            <small>{{ solicitud.objCursoOfertadoVerano?.codigo_curso }} - {{ solicitud.objCursoOfertadoVerano?.objMateria?.nombre }}</small>
           </div>
         </td>
       </ng-container>

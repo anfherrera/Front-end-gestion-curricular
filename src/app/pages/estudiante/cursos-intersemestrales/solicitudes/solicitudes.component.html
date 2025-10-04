@@ -24,17 +24,17 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Curso Solicitado -->
+    <!-- Materia Solicitada -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Curso</mat-label>
-      <mat-select formControlName="curso" placeholder="Selecciona el curso que deseas solicitar">
-        <mat-option *ngFor="let curso of cursosDisponibles" [value]="curso.nombre_curso">
-          {{ curso.nombre_curso }} ({{ curso.codigo_curso }}) - {{ curso.creditos }} créditos
+      <mat-label>Materia</mat-label>
+      <mat-select formControlName="curso" placeholder="Selecciona la materia que deseas solicitar">
+        <mat-option *ngFor="let materia of materiasDisponibles" [value]="materia.nombre">
+          {{ materia.nombre }} ({{ materia.codigo }}) - {{ materia.creditos }} créditos
         </mat-option>
       </mat-select>
       <mat-icon matSuffix>school</mat-icon>
       <mat-error *ngIf="solicitudForm.get('curso')?.hasError('required')">
-        Debes seleccionar un curso
+        Debes seleccionar una materia
       </mat-error>
     </mat-form-field>
 

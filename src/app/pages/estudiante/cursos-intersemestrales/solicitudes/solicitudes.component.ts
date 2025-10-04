@@ -5,6 +5,7 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
 import { 
   CursosIntersemestralesService, 
   CursoDisponible, 
+  Materia,
   CondicionSolicitudVerano,
   CreateSolicitudCursoNuevoDTO 
 } from '../../../../core/services/cursos-intersemestrales.service';
@@ -26,7 +27,7 @@ export class SolicitudesComponent implements OnInit {
   solicitudEnviada = false;
   
   // Datos del backend
-  cursosDisponibles: CursoDisponible[] = [];
+  materiasDisponibles: Materia[] = [];
   condiciones: CondicionSolicitudVerano[] = [];
   usuario: any = null;
 
@@ -74,15 +75,16 @@ export class SolicitudesComponent implements OnInit {
   }
 
   private loadCursosDisponibles(): void {
-    console.log('🔄 Cargando cursos disponibles para solicitud...');
-    this.cursosService.getCursosDisponiblesParaSolicitud().subscribe({
-      next: (cursos) => {
-        this.cursosDisponibles = cursos;
-        console.log('📚 Cursos disponibles cargados:', cursos);
+    console.log('🔄 Cargando materias disponibles para solicitud...');
+    this.cursosService.getMateriasDisponibles().subscribe({
+      next: (materias) => {
+        this.materiasDisponibles = materias;
+        console.log('📚 Materias disponibles cargadas:', materias);
+        console.log(`✅ Cargadas ${materias.length} materias`);
       },
       error: (error) => {
-        console.error('❌ Error cargando cursos disponibles:', error);
-        this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', {
+        console.error('❌ Error cargando materias disponibles:', error);
+        this.snackBar.open('Error al cargar las materias disponibles', 'Cerrar', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -191,39 +193,39 @@ export class SolicitudesComponent implements OnInit {
     });
   }
 
-  private loadCursosDisponiblesPrueba(): void {
-    console.log('📚 Cargando cursos de prueba para solicitud...');
-    this.cursosDisponibles = [
+  private loadMateriasDisponiblesPrueba(): void {
+    console.log('📚 Cargando materias de prueba para solicitud...');
+    this.materiasDisponibles = [
       {
-        id_curso: 1,
-        nombre_curso: 'Inteligencia Artificial',
-        codigo_curso: 'IA-301',
-        creditos: 4,
-        descripcion: 'Curso avanzado de inteligencia artificial y machine learning'
-      },
-      {
-        id_curso: 2,
-        nombre_curso: 'Desarrollo Web Avanzado',
-        codigo_curso: 'WEB-302',
+        id_materia: 1,
+        codigo: 'BD001',
+        nombre: 'Bases de Datos',
         creditos: 3,
-        descripcion: 'Desarrollo de aplicaciones web modernas con frameworks avanzados'
+        descripcion: 'Bases de Datos (BD001) - 3 créditos'
       },
       {
-        id_curso: 3,
-        nombre_curso: 'Ciberseguridad',
-        codigo_curso: 'CS-303',
+        id_materia: 2,
+        codigo: 'PRO001',
+        nombre: 'Programación I',
         creditos: 4,
-        descripcion: 'Fundamentos y técnicas avanzadas de ciberseguridad'
+        descripcion: 'Programación I (PRO001) - 4 créditos'
       },
       {
-        id_curso: 4,
-        nombre_curso: 'Blockchain y Criptomonedas',
-        codigo_curso: 'BC-304',
+        id_materia: 3,
+        codigo: 'WEB001',
+        nombre: 'Desarrollo Web',
         creditos: 3,
-        descripcion: 'Tecnologías blockchain y aplicaciones de criptomonedas'
+        descripcion: 'Desarrollo Web (WEB001) - 3 créditos'
+      },
+      {
+        id_materia: 4,
+        codigo: 'IA001',
+        nombre: 'Inteligencia Artificial',
+        creditos: 4,
+        descripcion: 'Inteligencia Artificial (IA001) - 4 créditos'
       }
     ];
-    console.log('✅ Cursos de prueba cargados:', this.cursosDisponibles);
+    console.log('✅ Materias de prueba cargadas:', this.materiasDisponibles);
   }
 
   getCondicionDisplayName(condicion: CondicionSolicitudVerano): string {

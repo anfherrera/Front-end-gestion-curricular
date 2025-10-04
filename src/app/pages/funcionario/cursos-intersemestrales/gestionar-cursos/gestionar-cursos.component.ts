@@ -156,9 +156,10 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         estado: 'Abierto',
         objMateria: {
           id_materia: 1,
-          nombre_materia: 'Programación',
-          codigo_materia: 'PROG',
-          creditos: 4
+          codigo: 'PROG',
+          nombre: 'Programación',
+          creditos: 4,
+          descripcion: 'Programación (PROG) - 4 créditos'
         },
         objDocente: {
           id_usuario: 2,
@@ -183,9 +184,10 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         estado: 'Publicado',
         objMateria: {
           id_materia: 2,
-          nombre_materia: 'Bases de Datos',
-          codigo_materia: 'BD',
-          creditos: 3
+          codigo: 'BD',
+          nombre: 'Bases de Datos',
+          creditos: 3,
+          descripcion: 'Bases de Datos (BD) - 3 créditos'
         },
         objDocente: {
           id_usuario: 3,
@@ -204,33 +206,38 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     return [
       {
         id_materia: 1,
-        nombre_materia: 'Programación',
-        codigo_materia: 'PROG',
-        creditos: 4
+        codigo: 'PROG',
+        nombre: 'Programación',
+        creditos: 4,
+        descripcion: 'Programación (PROG) - 4 créditos'
       },
       {
         id_materia: 2,
-        nombre_materia: 'Bases de Datos',
-        codigo_materia: 'BD',
-        creditos: 3
+        codigo: 'BD',
+        nombre: 'Bases de Datos',
+        creditos: 3,
+        descripcion: 'Bases de Datos (BD) - 3 créditos'
       },
       {
         id_materia: 3,
-        nombre_materia: 'Matemáticas',
-        codigo_materia: 'MAT',
-        creditos: 3
+        codigo: 'MAT',
+        nombre: 'Matemáticas',
+        creditos: 3,
+        descripcion: 'Matemáticas (MAT) - 3 créditos'
       },
       {
         id_materia: 4,
-        nombre_materia: 'Redes de Computadores',
-        codigo_materia: 'RED',
-        creditos: 4
+        codigo: 'RED',
+        nombre: 'Redes de Computadores',
+        creditos: 4,
+        descripcion: 'Redes de Computadores (RED) - 4 créditos'
       },
       {
         id_materia: 5,
-        nombre_materia: 'Ingeniería de Software',
-        codigo_materia: 'IS',
-        creditos: 4
+        codigo: 'IS',
+        nombre: 'Ingeniería de Software',
+        creditos: 4,
+        descripcion: 'Ingeniería de Software (IS) - 4 créditos'
       }
     ];
   }

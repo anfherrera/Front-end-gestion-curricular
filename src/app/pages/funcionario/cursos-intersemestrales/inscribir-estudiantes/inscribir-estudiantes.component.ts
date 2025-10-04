@@ -280,7 +280,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         cupo_disponible: 20,
         espacio_asignado: 'Aula 301',
         estado: 'Inscripcion',
-        objMateria: { id_materia: 1, nombre_materia: 'Álgebra Lineal', codigo_materia: 'ALG', creditos: 4 },
+        objMateria: { id_materia: 1, codigo: 'ALG', nombre: 'Álgebra Lineal', creditos: 4, descripcion: 'Álgebra Lineal (ALG) - 4 créditos' },
         objDocente: { id_usuario: 1, nombre: 'María', apellido: 'García', email: 'maria@unicauca.edu.co', telefono: '3001234567', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
       },
       {
@@ -295,7 +295,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         cupo_disponible: 25,
         espacio_asignado: 'Aula 205',
         estado: 'Inscripcion',
-        objMateria: { id_materia: 2, nombre_materia: 'Cálculo 1', codigo_materia: 'CAL', creditos: 4 },
+        objMateria: { id_materia: 2, codigo: 'CAL', nombre: 'Cálculo 1', creditos: 4, descripcion: 'Cálculo 1 (CAL) - 4 créditos' },
         objDocente: { id_usuario: 2, nombre: 'Carlos', apellido: 'López', email: 'carlos@unicauca.edu.co', telefono: '3007654321', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
       },
       {
@@ -310,7 +310,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         cupo_disponible: 15,
         espacio_asignado: 'Lab 301',
         estado: 'Inscripcion',
-        objMateria: { id_materia: 3, nombre_materia: 'Programación I', codigo_materia: 'PROG', creditos: 4 },
+        objMateria: { id_materia: 3, codigo: 'PROG', nombre: 'Programación I', creditos: 4, descripcion: 'Programación I (PROG) - 4 créditos' },
         objDocente: { id_usuario: 3, nombre: 'Ana', apellido: 'Martínez', email: 'ana@unicauca.edu.co', telefono: '3009876543', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
       }
     ];
