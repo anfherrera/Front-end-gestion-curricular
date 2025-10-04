@@ -37,29 +37,30 @@ export class CursosPreinscripcionComponent implements OnInit {
 
   loadCursos() {
     this.cargando = true;
-    console.log('🔄 Cargando cursos para preinscripción...');
-    console.log('🌐 URL del endpoint:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/preinscripcion`);
+    console.log('🔄 Cargando cursos reales de la base de datos...');
+    console.log('🌐 Endpoint de datos reales:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
     
-    // Cargar cursos originales del backend para el diálogo
+    // Cargar cursos reales del backend
     this.cursosService.getCursosDisponibles().subscribe({
-      next: (cursosOriginales) => {
-        console.log('✅ CURSOS ORIGINALES DEL BACKEND:', cursosOriginales);
+      next: (cursosReales) => {
+        console.log('✅ CURSOS REALES DE LA BASE DE DATOS:', cursosReales);
+        console.log(`📊 Total de cursos encontrados: ${cursosReales.length}`);
         
-        // 🔍 DEBUG: Ver qué estados tienen los cursos
-        console.log('🔍 Estados de los cursos:', cursosOriginales.map(c => ({ 
-          codigo: c.codigo_curso, 
-          nombre: c.nombre_curso, 
-          estado: c.estado 
-        })));
+        // Mostrar información de los cursos reales
+        if (cursosReales.length > 0) {
+          console.log('🔍 Cursos disponibles:', cursosReales.map(c => ({ 
+            codigo: c.codigo_curso, 
+            nombre: c.nombre_curso, 
+            estado: c.estado 
+          })));
+        } else {
+          console.log('ℹ️ No hay cursos disponibles en la base de datos');
+        }
         
-        // TEMPORAL: Mostrar todos los cursos para debug
-        this.cursosOriginales = cursosOriginales; // ← TEMPORAL: sin filtro
-        console.log('📋 Cursos originales (SIN FILTRAR):', this.cursosOriginales);
+        // Usar todos los cursos reales (sin filtros)
+        this.cursosOriginales = cursosReales;
         
-        // TODO: Filtrar por el estado correcto una vez que sepamos cuál es
-        // this.cursosOriginales = cursosOriginales.filter(c => c.estado === 'Preinscripcion');
-        
-        // Mapear a formato para la tabla (mantener compatibilidad)
+        // Mapear a formato para la tabla
         this.cursos = this.cursosOriginales.map(curso => ({
           codigo: curso.codigo_curso || curso.id_curso?.toString() || 'N/A',
           nombre: curso.nombre_curso || 'Sin nombre',
@@ -74,7 +75,7 @@ export class CursosPreinscripcionComponent implements OnInit {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ ERROR EN LLAMADA AL BACKEND:', err);
+        console.error('❌ ERROR cargando cursos reales:', err);
         console.log('🔄 Intentando fallback a cursos legacy...');
         // Fallback a cursos legacy
         this.loadCursosLegacy();
@@ -100,31 +101,6 @@ export class CursosPreinscripcionComponent implements OnInit {
     });
   }
 
-  private loadDatosPrueba() {
-    console.log('📚 Cargando datos de prueba para preinscripción...');
-    this.cursos = [
-      {
-        codigo: 'PRO-201',
-        nombre: 'Programación Avanzada',
-        docente: 'Dr. Ana Martínez',
-        cupos: 15,
-        creditos: 4,
-        espacio: 'Laboratorio 2',
-        estado: 'Disponible'
-      },
-      {
-        codigo: 'BD-202',
-        nombre: 'Bases de Datos',
-        docente: 'Dr. Roberto Silva',
-        cupos: 18,
-        creditos: 3,
-        espacio: 'Aula 402',
-        estado: 'Disponible'
-      }
-    ];
-    this.cargando = false;
-    console.log('✅ Datos de prueba para preinscripción cargados:', this.cursos);
-  }
 
 
   onAccionCurso(event: { accion: string; curso: Curso }) {

@@ -44,7 +44,7 @@ export class ApiEndpoints {
     
     // ===== CURSOS DE VERANO =====
     CURSOS_VERANO: {
-      DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/disponibles`,
+      DISPONIBLES: `${this.BASE_URL}/cursos-verano/listarCursos`,
       PREINSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones`,
       INSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones`,
       SOLICITUDES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/solicitudes`,

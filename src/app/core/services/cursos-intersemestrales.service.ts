@@ -198,10 +198,10 @@ export class CursosIntersemestralesService {
 
   // ====== CURSOS DE VERANO - NUEVAS APIs ======
   
-  // Obtener cursos disponibles para verano
+  // Obtener cursos disponibles para verano (datos reales de la BD)
   getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
-    console.log('🌐 Llamando a API:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
-    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
+    console.log('🌐 Llamando a API (datos reales):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
   }
 
   // Preinscripción a curso de verano
@@ -280,9 +280,9 @@ export class CursosIntersemestralesService {
 
   // ====== SOLICITUD DE CURSO NUEVO ======
   
-  // Obtener todas las materias disponibles para solicitar
+  // Obtener todas las materias disponibles para solicitar (datos reales de la BD)
   getMateriasDisponibles(): Observable<Materia[]> {
-    console.log('🌐 Llamando a API:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
+    console.log('🌐 Llamando a API (materias reales):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
     return this.http.get<Materia[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
   }
 
