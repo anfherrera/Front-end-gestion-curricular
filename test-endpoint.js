@@ -1,7 +1,7 @@
 // 🧪 ARCHIVO DE PRUEBA PARA EL ENDPOINT PUT
 // Copia y pega este código en la consola del navegador para probar
 
-const probarEndpointPUT = async (cursoId = 1) => {
+const probarEndpointPUT = async (cursoId = 217) => {
   console.log('🚀 Iniciando prueba del endpoint PUT...');
   console.log('📋 Curso ID:', cursoId);
   
@@ -80,7 +80,7 @@ const probarConDatosPersonalizados = async (cursoId, cupo, espacio, estado) => {
 };
 
 // Función para verificar que el curso existe
-const verificarCurso = async (cursoId = 1) => {
+const verificarCurso = async (cursoId = 217) => {
   console.log('🔍 Verificando que el curso existe...');
   
   try {
@@ -107,7 +107,7 @@ const ejecutarPruebasCompletas = async () => {
   
   // 1. Verificar que el curso existe
   console.log('\n1️⃣ Verificando curso...');
-  const curso = await verificarCurso(1);
+  const curso = await verificarCurso(217);
   
   if (!curso) {
     console.log('❌ No se puede continuar: curso no encontrado');
@@ -116,11 +116,11 @@ const ejecutarPruebasCompletas = async () => {
   
   // 2. Probar endpoint PUT con datos básicos
   console.log('\n2️⃣ Probando endpoint PUT...');
-  const resultado1 = await probarEndpointPUT(1);
+  const resultado1 = await probarEndpointPUT(217);
   
   // 3. Probar con datos personalizados
   console.log('\n3️⃣ Probando con datos personalizados...');
-  const resultado2 = await probarConDatosPersonalizados(1, 25, "Aula 205", "Publicado");
+  const resultado2 = await probarConDatosPersonalizados(217, 25, "Aula 205", "Publicado");
   
   // 4. Resumen
   console.log('\n📋 RESUMEN DE PRUEBAS:');

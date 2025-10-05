@@ -89,7 +89,7 @@ export interface CursoDialogData {
             <mat-label>Docente</mat-label>
             <mat-select formControlName="id_docente">
               <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_usuario">
-                {{ docente.nombre }} {{ docente.apellido }} - {{ docente.email }}
+                {{ docente.nombre }} {{ docente.apellido }} ({{ docente.codigo_usuario }})
               </mat-option>
             </mat-select>
             <mat-error *ngIf="data.form.get('id_docente')?.hasError('required')">

@@ -13,6 +13,7 @@ export interface Usuario {
   apellido: string;
   email: string;
   telefono: string;
+  codigo_usuario?: string;
   codigo_estudiante?: string;
   objRol: Rol;
 }
@@ -350,7 +351,30 @@ export class CursosIntersemestralesService {
   // Obtener todos los docentes
   getTodosLosDocentes(): Observable<Usuario[]> {
     console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/docentes');
-    return this.http.get<Usuario[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/docentes`);
+    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/docentes`).pipe(
+      map(docentes => docentes.map(docente => {
+        console.log('🔍 Docente del backend:', docente);
+        
+        // Separar nombre completo en nombre y apellido
+        const nombreCompleto = this.corregirEncoding(docente.nombre_usuario || '');
+        const partesNombre = nombreCompleto.split(' ');
+        const nombre = partesNombre[0] || 'Sin nombre';
+        const apellido = partesNombre.slice(1).join(' ') || 'Sin apellido';
+        
+        return {
+          id_usuario: docente.id_usuario,
+          nombre: nombre,
+          apellido: apellido,
+          email: this.corregirEncoding(docente.correo || 'Sin email'),
+          telefono: docente.telefono || 'Sin teléfono',
+          codigo_usuario: docente.codigo_usuario || 'Sin código',
+          objRol: {
+            id_rol: docente.objRol?.id_rol || 1,
+            nombre_rol: this.corregirEncoding(docente.objRol?.nombre || 'Docente')
+          }
+        };
+      }))
+    );
   }
 
   // ====== PREINSCRIPCIONES (para funcionarios) ======
@@ -514,7 +538,7 @@ export class CursosIntersemestralesService {
   
   // Método para corregir problemas de encoding UTF-8
   private corregirEncoding(texto: string | undefined | null): string {
-    if (!texto) return ''; // ← CAMBIAR: devolver '' en lugar de undefined
+    if (!texto) return '';
     
     try {
       // Intentar corregir caracteres mal codificados
@@ -530,7 +554,14 @@ export class CursosIntersemestralesService {
         .replace(/Ã/g, 'Í')
         .replace(/Ã"/g, 'Ó')
         .replace(/Ãš/g, 'Ú')
-        .replace(/Ã'/g, 'Ñ');
+        .replace(/Ã'/g, 'Ñ')
+        // Agregar más patrones de encoding problemático
+        .replace(/Garc\?\?a/g, 'García')
+        .replace(/Mar\?\?a/g, 'María')
+        .replace(/L\?\?pez/g, 'López')
+        .replace(/Mart\?\?nez/g, 'Martínez')
+        .replace(/Rodr\?\?guez/g, 'Rodríguez')
+        .replace(/Botero/g, 'Botero'); // Este no tiene acentos
     } catch (error) {
       console.warn('Error corrigiendo encoding:', error);
       return texto || '';

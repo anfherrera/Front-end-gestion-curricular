@@ -92,6 +92,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.materias = this.getMateriasPrueba();
+    this.cargarDocentes(); // Cargar docentes reales del backend
   }
 
   ngOnDestroy(): void {
@@ -253,7 +255,26 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // Datos de prueba para docentes
+  // Cargar docentes reales del backend
+  private cargarDocentes() {
+    console.log('👨‍🏫 Cargando docentes reales del backend...');
+    this.cursosService.getTodosLosDocentes()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (docentes) => {
+          console.log('✅ Docentes cargados:', docentes);
+          this.docentes = docentes;
+        },
+        error: (err) => {
+          console.error('❌ Error cargando docentes:', err);
+          this.snackBar.open('Error al cargar docentes', 'Cerrar', { duration: 3000 });
+          // Fallback a datos de prueba si falla la carga
+          this.docentes = this.getDocentesPrueba();
+        }
+      });
+  }
+
+  // Datos de prueba para docentes (fallback)
   private getDocentesPrueba(): Usuario[] {
     return [
       {
