@@ -648,6 +648,40 @@ export class CursoDialogComponent {
           estado: formData.estado
         };
         
+        console.log('🔍 DATOS ENVIADOS AL BACKEND:');
+        console.log('📋 ID del curso:', this.data.cursoEditando.id_curso);
+        console.log('📋 Datos de actualización:', updateData);
+        console.log('📋 URL completa:', `PUT /api/cursos-intersemestrales/cursos-verano/${this.data.cursoEditando.id_curso}`);
+        
+        // Función de prueba para verificar el endpoint
+        console.log('🧪 FUNCIÓN DE PRUEBA PARA EL BACKEND:');
+        console.log(`
+        // Copia y pega esto en la consola del navegador para probar:
+        const probarEndpoint = async () => {
+          try {
+            const response = await fetch('/api/cursos-intersemestrales/cursos-verano/${this.data.cursoEditando.id_curso}', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                cupo_estimado: ${updateData.cupo_estimado},
+                espacio_asignado: "${updateData.espacio_asignado}",
+                estado: "${updateData.estado}"
+              })
+            });
+            
+            const resultado = await response.json();
+            console.log('✅ Respuesta del backend:', resultado);
+            return resultado;
+          } catch (error) {
+            console.error('❌ Error:', error);
+          }
+        };
+        
+        // Ejecutar: probarEndpoint();
+        `);
+        
         this.cursosService.actualizarCurso(this.data.cursoEditando.id_curso, updateData)
           .subscribe({
             next: (cursoActualizado) => {
@@ -657,7 +691,25 @@ export class CursoDialogComponent {
             },
             error: (err) => {
               console.error('❌ Error actualizando curso:', err);
-              this.snackBar.open('Error al actualizar el curso', 'Cerrar', { duration: 3000 });
+              console.error('❌ Detalles del error:', {
+                status: err.status,
+                statusText: err.statusText,
+                url: err.url,
+                error: err.error,
+                message: err.message
+              });
+              
+              // Mostrar mensaje de error más específico
+              let mensajeError = 'Error al actualizar el curso';
+              if (err.status === 500) {
+                mensajeError = 'Error interno del servidor. El endpoint PUT puede no estar implementado en el backend.';
+              } else if (err.status === 400) {
+                mensajeError = 'Datos inválidos enviados al servidor.';
+              } else if (err.status === 404) {
+                mensajeError = 'El curso no fue encontrado.';
+              }
+              
+              this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
               // Cerrar dialog incluso si hay error para que se actualice la lista
               this.dialogRef.close('guardado');
             }
