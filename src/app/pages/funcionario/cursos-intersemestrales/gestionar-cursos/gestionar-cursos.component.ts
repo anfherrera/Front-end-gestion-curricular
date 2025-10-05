@@ -45,6 +45,9 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   editando = false;
   cursoEditando: CursoOfertadoVerano | null = null;
   
+  // Formulario específico para edición (solo campos editables)
+  edicionForm: FormGroup;
+  
   // Columnas de la tabla
   displayedColumns: string[] = [
     'nombre_curso', 
@@ -64,6 +67,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
+    // Formulario completo para crear cursos
     this.cursoForm = this.fb.group({
       nombre_curso: ['', [Validators.required, Validators.minLength(3)]],
       codigo_curso: ['', [Validators.required, Validators.minLength(3)]],
@@ -76,6 +80,13 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       estado: ['Abierto', Validators.required],
       id_materia: ['', Validators.required],
       id_docente: ['', Validators.required]
+    });
+
+    // Formulario específico para edición (solo campos editables)
+    this.edicionForm = this.fb.group({
+      cupo_estimado: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
+      espacio_asignado: ['', [Validators.required, Validators.minLength(3)]],
+      estado: ['Abierto', Validators.required]
     });
   }
 
@@ -312,36 +323,30 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Abrir dialog para editar curso
+  // Abrir dialog para editar curso (solo campos editables)
   abrirDialogEditar(curso: CursoOfertadoVerano) {
     this.editando = true;
     this.cursoEditando = curso;
     
-    this.cursoForm.patchValue({
-      nombre_curso: curso.nombre_curso,
-      codigo_curso: curso.codigo_curso,
-      descripcion: curso.descripcion,
-      fecha_inicio: this.formatearFechaParaInput(curso.fecha_inicio),
-      fecha_fin: this.formatearFechaParaInput(curso.fecha_fin),
-      cupo_maximo: curso.cupo_maximo,
+    // Solo llenar campos editables
+    this.edicionForm.patchValue({
       cupo_estimado: curso.cupo_estimado,
       espacio_asignado: curso.espacio_asignado,
-      estado: curso.estado,
-      id_materia: curso.objMateria.id_materia,
-      id_docente: curso.objDocente.id_usuario
+      estado: curso.estado
     });
 
     // Abrir dialog
     const dialogRef = this.dialog.open(CursoDialogComponent, {
-      width: '800px',
+      width: '600px',
       maxWidth: '90vw',
       data: {
-        form: this.cursoForm,
+        form: this.edicionForm,
         editando: this.editando,
         titulo: 'Editar Curso',
         cursoEditando: curso,
         materias: this.materias,
-        docentes: this.docentes
+        docentes: this.docentes,
+        soloEdicion: true // Flag para indicar que es solo edición
       }
     });
 
@@ -356,15 +361,14 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   // Guardar curso (crear o actualizar)
   guardarCurso() {
-    if (this.cursoForm.valid) {
-      const formData = this.cursoForm.value;
-      
-      if (this.editando && this.cursoEditando) {
-        // Actualizar curso existente
+    if (this.editando && this.cursoEditando) {
+      // Actualizar curso existente (solo campos editables)
+      if (this.edicionForm.valid) {
+        const formData = this.edicionForm.value;
         const updateData: UpdateCursoDTO = {
-          ...formData,
-          fecha_inicio: new Date(formData.fecha_inicio).toISOString(),
-          fecha_fin: new Date(formData.fecha_fin).toISOString()
+          cupo_estimado: formData.cupo_estimado,
+          espacio_asignado: formData.espacio_asignado,
+          estado: formData.estado
         };
         
         this.cursosService.actualizarCurso(this.cursoEditando.id_curso, updateData)
@@ -381,7 +385,12 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
             }
           });
       } else {
-        // Crear nuevo curso
+        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      }
+    } else {
+      // Crear nuevo curso
+      if (this.cursoForm.valid) {
+        const formData = this.cursoForm.value;
         const createData: CreateCursoDTO = {
           ...formData,
           fecha_inicio: new Date(formData.fecha_inicio).toISOString(),
@@ -401,15 +410,19 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
               this.snackBar.open('Error al crear el curso', 'Cerrar', { duration: 3000 });
             }
           });
+      } else {
+        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
       }
-    } else {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
     }
   }
 
   // Eliminar curso
   eliminarCurso(curso: CursoOfertadoVerano) {
-    if (confirm(`¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?`)) {
+    const mensaje = `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
+                   `⚠️ ADVERTENCIA: Esta acción no se puede deshacer.\n` +
+                   `Si hay estudiantes inscritos, la eliminación fallará.`;
+    
+    if (confirm(mensaje)) {
       this.cursosService.eliminarCurso(curso.id_curso)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
@@ -421,7 +434,18 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             console.error('❌ Error eliminando curso:', err);
-            this.snackBar.open('Error al eliminar el curso', 'Cerrar', { duration: 3000 });
+            
+            // Manejo específico de errores
+            let mensajeError = 'Error al eliminar el curso';
+            if (err.status === 400) {
+              mensajeError = 'No se puede eliminar el curso porque tiene estudiantes inscritos';
+            } else if (err.status === 404) {
+              mensajeError = 'El curso no fue encontrado';
+            } else if (err.status === 500) {
+              mensajeError = 'Error interno del servidor';
+            }
+            
+            this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
             // Recargar datos incluso si hay error para sincronizar
             this.cargarDatos();
           }

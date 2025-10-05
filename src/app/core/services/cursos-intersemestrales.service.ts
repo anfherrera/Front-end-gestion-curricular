@@ -314,31 +314,31 @@ export class CursosIntersemestralesService {
   // Obtener todos los cursos para gestión
   getTodosLosCursos(): Observable<CursoOfertadoVerano[]> {
     console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano');
-    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`);
+    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
   }
 
   // Crear nuevo curso
   crearCurso(payload: CreateCursoDTO): Observable<CursoOfertadoVerano> {
     console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
-    return this.http.post<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`, payload);
+    return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES, payload);
   }
 
-  // Actualizar curso existente
+  // Actualizar curso existente (solo campos editables)
   actualizarCurso(id: number, payload: UpdateCursoDTO): Observable<CursoOfertadoVerano> {
     console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/cursos-verano/${id}`);
-    return this.http.put<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/${id}`, payload);
+    return this.http.put<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES}/${id}`, payload);
   }
 
   // Eliminar curso
   eliminarCurso(id: number): Observable<void> {
     console.log(`🌐 Llamando a API: DELETE /api/cursos-intersemestrales/cursos-verano/${id}`);
-    return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/${id}`);
+    return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES}/${id}`);
   }
 
   // Obtener curso por ID
   getCursoPorId(id: number): Observable<CursoOfertadoVerano> {
     console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano/${id}`);
-    return this.http.get<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/${id}`);
+    return this.http.get<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES}/${id}`);
   }
 
   // Obtener todas las materias
@@ -655,15 +655,8 @@ export interface CreateCursoDTO {
 }
 
 export interface UpdateCursoDTO {
-  nombre_curso?: string;
-  codigo_curso?: string;
-  descripcion?: string;
-  fecha_inicio?: string; // ISO string
-  fecha_fin?: string; // ISO string
-  cupo_maximo?: number;
+  // Solo campos editables según requerimientos
   cupo_estimado?: number;
   espacio_asignado?: string;
   estado?: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado' | 'Disponible';
-  id_materia?: number;
-  id_docente?: number;
 }

@@ -18,6 +18,7 @@ export interface CursoDialogData {
   cursoEditando?: any;
   materias?: any[];
   docentes?: any[];
+  soloEdicion?: boolean; // Flag para modo de solo edición
 }
 
 @Component({
@@ -41,8 +42,8 @@ export interface CursoDialogData {
     <form [formGroup]="data.form" (ngSubmit)="guardarCurso()">
       <div mat-dialog-content class="form-container">
         
-        <!-- Información básica -->
-        <div class="form-section">
+        <!-- Información básica (solo para crear) -->
+        <div class="form-section" *ngIf="!data.soloEdicion">
           <h3>Información Básica</h3>
           
           <mat-form-field appearance="outline" class="form-field">
@@ -97,8 +98,27 @@ export interface CursoDialogData {
           </mat-form-field>
         </div>
 
-        <!-- Fechas y cupos -->
-        <div class="form-section">
+        <!-- Información del curso (solo para edición) -->
+        <div class="form-section" *ngIf="data.soloEdicion && data.cursoEditando">
+          <h3>Información del Curso</h3>
+          <div class="info-display">
+            <div class="info-item">
+              <strong>Nombre:</strong> {{ data.cursoEditando.nombre_curso }}
+            </div>
+            <div class="info-item">
+              <strong>Código:</strong> {{ data.cursoEditando.codigo_curso }}
+            </div>
+            <div class="info-item">
+              <strong>Materia:</strong> {{ data.cursoEditando.objMateria?.nombre }} ({{ data.cursoEditando.objMateria?.codigo }})
+            </div>
+            <div class="info-item">
+              <strong>Docente:</strong> {{ data.cursoEditando.objDocente?.nombre }} {{ data.cursoEditando.objDocente?.apellido }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Fechas y cupos (solo para crear) -->
+        <div class="form-section" *ngIf="!data.soloEdicion">
           <h3>Fechas y Cupos</h3>
           
           <mat-form-field appearance="outline" class="form-field">
@@ -138,15 +158,32 @@ export interface CursoDialogData {
           </mat-form-field>
         </div>
 
-        <!-- Configuración -->
+        <!-- Configuración editable -->
         <div class="form-section">
-          <h3>Configuración</h3>
+          <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
           
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Cupo Estimado</mat-label>
+            <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
+            <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('required')">
+              El cupo estimado es requerido
+            </mat-error>
+            <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('min')">
+              El cupo debe ser mayor a 0
+            </mat-error>
+            <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('max')">
+              El cupo no puede ser mayor a 100
+            </mat-error>
+          </mat-form-field>
+
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Espacio Asignado</mat-label>
             <input matInput formControlName="espacio_asignado" placeholder="Ej: Lab 301, Aula 205">
             <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('required')">
               El espacio asignado es requerido
+            </mat-error>
+            <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('minlength')">
+              El espacio debe tener al menos 3 caracteres
             </mat-error>
           </mat-form-field>
 
@@ -169,7 +206,7 @@ export interface CursoDialogData {
 
       <!-- Botones del dialog -->
       <div mat-dialog-actions class="dialog-actions">
-        <button mat-button type="button" (click)="limpiarFormulario()">
+        <button mat-button type="button" (click)="limpiarFormulario()" *ngIf="!data.soloEdicion">
           Limpiar
         </button>
         <button mat-button type="button" (click)="cerrarDialog()">
@@ -561,6 +598,34 @@ export interface CursoDialogData {
     .form-container::-webkit-scrollbar-thumb:hover {
       background: #001a99;
     }
+
+    /* Estilos para información de solo lectura */
+    .info-display {
+      background: #f8f9fa;
+      border: 2px solid #e3f2fd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e3f2fd;
+      font-size: 14px;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-item strong {
+      color: #00138C;
+      min-width: 100px;
+      margin-right: 16px;
+      font-weight: 600;
+    }
   `]
 })
 export class CursoDialogComponent {
@@ -576,11 +641,11 @@ export class CursoDialogComponent {
       const formData = this.data.form.value;
       
       if (this.data.editando && this.data.cursoEditando) {
-        // Actualizar curso existente
+        // Actualizar curso existente (solo campos editables)
         const updateData: UpdateCursoDTO = {
-          ...formData,
-          fecha_inicio: formData.fecha_inicio ? new Date(formData.fecha_inicio).toISOString() : undefined,
-          fecha_fin: formData.fecha_fin ? new Date(formData.fecha_fin).toISOString() : undefined
+          cupo_estimado: formData.cupo_estimado,
+          espacio_asignado: formData.espacio_asignado,
+          estado: formData.estado
         };
         
         this.cursosService.actualizarCurso(this.data.cursoEditando.id_curso, updateData)
