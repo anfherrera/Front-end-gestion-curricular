@@ -41,7 +41,7 @@ interface DocumentoGenerico {
 export class DocumentationViewerComponent implements OnInit {
   @Input() documentos: (DocumentosDTORespuesta | DocumentoHomologacion)[] = [];
   @Input() solicitudId?: number;
-  @Input() proceso: 'homologacion' | 'reingreso' | 'paz-salvo' = 'homologacion';
+  @Input() proceso: 'homologacion' | 'reingreso' | 'paz-salvo' | 'ecaes' = 'homologacion';
   @Input() servicio: any; // Servicio específico para descargar archivos
   @Input() puedeAgregarComentarios: boolean = false; // Controla si se muestra el botón de agregar comentarios
 

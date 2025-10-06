@@ -4,5 +4,6 @@ export enum SolicitudStatusEnum {
   EN_REVISION_FUNCIONARIO = 'En revisión por Funcionario',
   EN_REVISION_COORDINADOR = 'En revisión por Coordinador',
   APROBADA = 'Aprobada',
-  RECHAZADA = 'Rechazada'
+  RECHAZADA = 'Rechazada',
+  PRE_REGISTRADO = 'Pre-registrado'
 }

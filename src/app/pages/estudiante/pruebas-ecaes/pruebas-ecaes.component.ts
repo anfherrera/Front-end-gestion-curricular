@@ -9,12 +9,16 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
+import { ArchivosService } from '../../../core/services/archivos.service';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
+import { InfoPreregistroDialogComponent } from '../../../shared/components/info-preregistro-dialog/info-preregistro-dialog.component';
 import { Archivo, Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 
@@ -68,18 +72,16 @@ export class PruebasEcaesComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   solicitudesCompletas: SolicitudEcaesResponse[] = [];
 
-  // Opciones de tipo de documento
-  tiposDocumento = [
-    { value: 'CC', label: 'Cédula de Ciudadanía' },
-    { value: 'TI', label: 'Tarjeta de Identidad' },
-    { value: 'CE', label: 'Cédula de Extranjería' },
-    { value: 'PA', label: 'Pasaporte' }
-  ];
+  // Opciones de tipo de documento (se cargan desde el backend)
+  tiposDocumento: { value: string, label: string }[] = [];
 
   constructor(
     private pruebasEcaesService: PruebasEcaesService,
+    private archivosService: ArchivosService,
     private snackBar: MatSnackBar,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {
     this.solicitudForm = this.fb.group({
       tipoDocumento: ['CC', Validators.required],
@@ -99,8 +101,49 @@ export class PruebasEcaesComponent implements OnInit {
       console.warn('⚠️ No se encontró usuario en localStorage');
     }
 
+    this.cargarTiposDocumento();
     this.cargarFechasEcaes();
     this.listarSolicitudes();
+  }
+
+  /**
+   * Carga los tipos de documento disponibles desde el backend
+   */
+  cargarTiposDocumento(): void {
+    this.http.get<any>('http://localhost:5000/api/tipos-documento/todos').subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.tiposDocumento = response.data.map((tipo: any) => ({
+            value: tipo.codigo,
+            label: tipo.descripcion
+          }));
+          console.log('📄 Tipos de documento cargados desde backend:', this.tiposDocumento);
+        } else {
+          this.cargarTiposDocumentoFallback();
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar tipos de documento:', error);
+        this.cargarTiposDocumentoFallback();
+      }
+    });
+  }
+
+  /**
+   * Fallback con tipos de documento hardcodeados si el backend no está disponible
+   */
+  private cargarTiposDocumentoFallback(): void {
+    this.tiposDocumento = [
+      { value: 'CC', label: 'Cédula de Ciudadanía' },
+      { value: 'TI', label: 'Tarjeta de Identidad' },
+      { value: 'CE', label: 'Cédula de Extranjería' },
+      { value: 'PA', label: 'Pasaporte' },
+      { value: 'RC', label: 'Registro Civil' },
+      { value: 'NIT', label: 'Número de Identificación Tributaria' },
+      { value: 'NUIP', label: 'Número Único de Identificación Personal' }
+    ];
+    console.log('📄 Tipos de documento fallback cargados:', this.tiposDocumento);
+    this.snackBar.open('⚠️ Usando tipos de documento predeterminados. Verifique la conexión con el backend.', 'Cerrar', { duration: 5000 });
   }
 
   cargarFechasEcaes(): void {
@@ -174,19 +217,71 @@ export class PruebasEcaesComponent implements OnInit {
     const formValue = this.solicitudForm.value;
 
     console.log('📤 Iniciando proceso de envío de solicitud...');
+    console.log('📁 Archivos a subir:', this.archivos);
 
-    // Paso 1: Subir archivos al backend (simulamos que ya están subidos)
-    // En un caso real, aquí subirías los archivos primero
-    const archivosSubidos = this.archivos.map(archivo => ({
-      nombre: archivo.nombre,
-      ruta_documento: archivo.ruta_documento || `uploads/${archivo.nombre}`,
-      fecha_documento: new Date().toISOString(),
-      esValido: true,
-      comentario: 'Documento adjunto para inscripción ECAES',
-      tipoDocumentoSolicitudPazYSalvo: 'ECAES'
-    }));
+    // Paso 1: Subir archivos al backend
+    this.subirArchivos().then(archivosSubidos => {
+      console.log('✅ Archivos subidos exitosamente:', archivosSubidos);
 
-    // Paso 2: Crear la solicitud con la estructura correcta
+      // Paso 2: Crear la solicitud con los archivos subidos
+      this.crearSolicitudConArchivos(formValue, archivosSubidos);
+    }).catch(error => {
+      console.error('❌ Error al subir archivos:', error);
+      this.snackBar.open('Error al subir los archivos. Intente nuevamente.', 'Cerrar', { duration: 5000 });
+      this.enviandoSolicitud = false;
+    });
+  }
+
+  private async subirArchivos(): Promise<any[]> {
+    const archivosSubidos: any[] = [];
+
+    for (const archivo of this.archivos) {
+      try {
+        console.log(`📤 Subiendo archivo: ${archivo.nombre}`);
+
+        // Convertir el archivo del localStorage a File si es necesario
+        const file = await this.convertirArchivoAFile(archivo);
+
+        const response = await this.archivosService.subirPDF(file).toPromise();
+        console.log(`✅ Archivo subido:`, response);
+
+        if (!response) {
+          throw new Error(`No se recibió respuesta del servidor para el archivo ${archivo.nombre}`);
+        }
+
+        // Agregar el archivo subido con la estructura esperada
+        archivosSubidos.push({
+          nombre: response.nombre || archivo.nombre,
+          ruta_documento: response.ruta_documento,
+          fecha_documento: new Date().toISOString(),
+          esValido: true,
+          comentario: 'Documento adjunto para inscripción ECAES',
+          tipoDocumentoSolicitudPazYSalvo: 'ECAES'
+        });
+      } catch (error) {
+        console.error(`❌ Error al subir archivo ${archivo.nombre}:`, error);
+        throw error;
+      }
+    }
+
+    return archivosSubidos;
+  }
+
+  private async convertirArchivoAFile(archivo: Archivo): Promise<File> {
+    // Si el archivo ya tiene la propiedad file (objeto File nativo), lo retornamos directamente
+    if (archivo.file) {
+      return archivo.file;
+    }
+
+    // Si el archivo es un File directamente, lo retornamos
+    if (archivo instanceof File) {
+      return archivo;
+    }
+
+    throw new Error(`No se pudo obtener el archivo ${archivo.nombre}. Asegúrese de que el archivo fue seleccionado correctamente.`);
+  }
+
+  private crearSolicitudConArchivos(formValue: any, archivosSubidos: any[]): void {
     const solicitud = {
       nombre_solicitud: 'Inscripción a Pruebas ECAES',
       fecha_registro_solicitud: new Date().toISOString(),
@@ -207,7 +302,7 @@ export class PruebasEcaesComponent implements OnInit {
       documentos: archivosSubidos
     };
 
-    console.log('📋 Creando solicitud con archivos:', solicitud);
+    console.log('📋 Creando solicitud con archivos subidos:', solicitud);
 
     this.pruebasEcaesService.crearSolicitudEcaes(solicitud).subscribe({
       next: (response: SolicitudEcaesResponse) => {
@@ -337,6 +432,20 @@ export class PruebasEcaesComponent implements OnInit {
     // Implementar lógica para descargar oficio
   }
 
+  mostrarInfoPreregistro(): void {
+    const dialogRef = this.dialog.open(InfoPreregistroDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      disableClose: false,
+      autoFocus: true,
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Diálogo de información cerrado');
+    });
+  }
+
   // ================================
   // Métodos auxiliares
   // ================================
@@ -358,6 +467,10 @@ export class PruebasEcaesComponent implements OnInit {
         return SolicitudStatusEnum.APROBADA;
       case 'rechazada':
         return SolicitudStatusEnum.RECHAZADA;
+      case 'pre_registrado':
+      case 'pre-registrado':
+      case 'preregistrado':
+        return SolicitudStatusEnum.PRE_REGISTRADO;
       default:
         return SolicitudStatusEnum.ENVIADA; // Estado por defecto
     }

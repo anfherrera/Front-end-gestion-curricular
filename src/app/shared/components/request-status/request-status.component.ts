@@ -30,9 +30,11 @@ export class RequestStatusTableComponent implements OnInit {
   @Input() showOficio: boolean = true; // 👈 controla si se muestra la columna
   @Input() showComentarios: boolean = false; // 👈 controla si se muestra la columna de comentarios
   @Input() showSeleccionar: boolean = false; // 👈 controla si se muestra la columna de seleccionar
+  @Input() headerAcciones: string = 'Oficio/Resolución'; // 👈 texto personalizable para el header de acciones
   @Output() verComentarios = new EventEmitter<number>(); // 👈 emite el ID de la solicitud
   @Output() solicitudSeleccionada = new EventEmitter<number | null>(); // 👈 emite el ID de la solicitud seleccionada
   @Output() descargarOficio = new EventEmitter<{id: number, nombreArchivo: string}>(); // 👈 emite datos para descargar oficio
+  @Output() mostrarInfoPreregistro = new EventEmitter<void>(); // 👈 emite evento para mostrar información de pre-registro
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
   selectedSolicitudId: number | null = null; // 👈 rastrear solicitud seleccionada
@@ -61,7 +63,7 @@ export class RequestStatusTableComponent implements OnInit {
       // Seleccionar nueva solicitud
       this.selectedSolicitudId = solicitudId;
     }
-    
+
     // Emitir el ID de la solicitud seleccionada (o null si se deseleccionó)
     this.solicitudSeleccionada.emit(this.selectedSolicitudId);
   }
@@ -82,9 +84,18 @@ export class RequestStatusTableComponent implements OnInit {
     this.descargarOficio.emit({ id: solicitudId, nombreArchivo });
   }
 
+  onMostrarInfoPreregistro(): void {
+    this.mostrarInfoPreregistro.emit();
+  }
+
   puedeDescargarOficio(estado: string): boolean {
     const estadoUpper = estado.toUpperCase();
     return estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_COORDINADOR';
+  }
+
+  esEstadoPreregistrado(estado: string): boolean {
+    const estadoUpper = estado.toUpperCase();
+    return estadoUpper === 'PRE_REGISTRADO' || estadoUpper === 'PRE-REGISTRADO' || estadoUpper === 'PREREGISTRADO';
   }
 
   esSolicitudRechazada(estado: string): boolean {
@@ -107,6 +118,10 @@ export class RequestStatusTableComponent implements OnInit {
       case 'EN_REVISION_COORDINADOR':
       case 'EN REVISIÓN':
         return 'hourglass_top';
+      case 'PRE_REGISTRADO':
+      case 'PRE-REGISTRADO':
+      case 'PREREGISTRADO':
+        return 'info';
       default: return 'info';
     }
   }
@@ -127,6 +142,10 @@ export class RequestStatusTableComponent implements OnInit {
       case 'EN_REVISION_COORDINADOR':
       case 'EN REVISIÓN':
         return 'orange';
+      case 'PRE_REGISTRADO':
+      case 'PRE-REGISTRADO':
+      case 'PREREGISTRADO':
+        return '#1976d2';
       default: return 'gray';
     }
   }

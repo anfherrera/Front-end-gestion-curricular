@@ -15,7 +15,7 @@ export const FuncionarioRoutes: Routes = [
   {
     path: 'pruebas-ecaes',
     loadComponent: () =>
-      import('./pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesComponent),
+      import('./pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesFuncionarioComponent),
     canActivate: [authGuard, RoleGuard],
     data: { role: UserRole.FUNCIONARIO }
   },

@@ -66,7 +66,7 @@ export const routes: Routes = [
       // Funcionario
       // ==========================
        { path: 'funcionario/paz-salvo', loadComponent: () => import('./pages/funcionario/paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent) },
-      { path: 'funcionario/pruebas-ecaes', loadComponent: () => import('./pages/funcionario/pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesComponent) },
+      { path: 'funcionario/pruebas-ecaes', loadComponent: () => import('./pages/funcionario/pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesFuncionarioComponent) },
       {
         path: 'funcionario/cursos-intersemestrales',
         loadChildren: () =>

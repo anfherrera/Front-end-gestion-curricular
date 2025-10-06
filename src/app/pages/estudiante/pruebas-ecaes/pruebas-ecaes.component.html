@@ -108,6 +108,11 @@
         Adjunte los documentos necesarios para su inscripción a las pruebas ECAES.
         Solo se permiten archivos PDF con un tamaño máximo de 10MB.
       </p>
+      <div class="documento-especifico">
+        <p class="texto-documento">
+          <strong>📄 Documento requerido:</strong> Fotocopia de su cédula de ciudadanía por ambos lados (anverso y reverso) en un solo archivo PDF.
+        </p>
+      </div>
 
       <app-file-upload
         [archivos]="archivos"
@@ -146,8 +151,10 @@
           [solicitudes]="solicitudes"
           [showOficio]="true"
           [showComentarios]="true"
+          [headerAcciones]="'Información'"
           (verComentarios)="verComentarios($event)"
-          (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
+          (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)"
+          (mostrarInfoPreregistro)="mostrarInfoPreregistro()">
         </app-request-status-table>
 
       </app-card-container>

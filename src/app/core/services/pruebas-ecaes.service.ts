@@ -108,18 +108,92 @@ export class PruebasEcaesService {
     });
   }
 
+  /**
+   * Aprobar solicitud ECAES como funcionario
+   */
+  approveRequest(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'Enviada' // Para ECAES, "Enviada" corresponde a PRE_REGISTRADO
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Rechazar solicitud ECAES
+   */
+  rejectRequest(requestId: number, reason?: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'Rechazada',
+      comentario: reason || 'Solicitud rechazada por el funcionario'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Método genérico para actualizar estado (mantener para compatibilidad)
+   */
   actualizarEstadoSolicitud(idSolicitud: number, nuevoEstado: string): Observable<any> {
     const payload = {
       idSolicitud: idSolicitud,
       nuevoEstado: nuevoEstado
     };
-    return this.http.post(`${this.apiUrl}/actualizarEstadoSolicitud`, payload, {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, payload, {
       headers: this.getAuthHeaders()
     });
   }
 
   listarSolicitudesEcaes(): Observable<SolicitudEcaesResponse[]> {
     return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitudes-Ecaes`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Publicar fechas de ECAES
+   */
+  publicarFechasEcaes(fechasData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/publicarFechasEcaes`, fechasData, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Listar solicitudes ECAES para funcionario
+   */
+  listarSolicitudesFuncionario(): Observable<SolicitudEcaesResponse[]> {
+    return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitudes-Ecaes/Funcionario`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Descargar archivo PDF por nombre
+   */
+  descargarArchivo(nombreArchivo: string): Observable<Blob> {
+    // URL directa al backend (CORS configurado)
+    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    console.log('🔗 URL de descarga ECAES:', url);
+    console.log('📁 Nombre del archivo:', nombreArchivo);
+
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * Añadir comentario a un documento
+   */
+  agregarComentario(idDocumento: number, comentario: string): Observable<any> {
+    const url = `http://localhost:5000/api/documentos/añadirComentario`;
+    const body = {
+      idDocumento: idDocumento,
+      comentario: comentario
+    };
+
+    console.log('💬 Añadiendo comentario ECAES:', body);
+
+    return this.http.put(url, body, {
       headers: this.getAuthHeaders()
     });
   }
