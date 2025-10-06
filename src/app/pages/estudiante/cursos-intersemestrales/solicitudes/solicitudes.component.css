@@ -1,30 +1,102 @@
-.cargando {
-  margin-top: 16px;
-  font-style: italic;
+/* Formulario de solicitud */
+.solicitud-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
 }
 
-.sin-datos {
-  margin-top: 16px;
-  color: gray;
-  font-style: italic;
-}
-
-table {
+.full-width {
   width: 100%;
-  margin-top: 16px;
 }
 
-span.pendiente {
-  color: orange;
-  font-weight: bold;
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
 }
 
-span.aprobada {
-  color: green;
-  font-weight: bold;
+.action-button {
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-span.rechazada {
-  color: red;
-  font-weight: bold;
+/* Mensaje de éxito */
+.success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+  border-radius: 12px;
+  border: 2px solid #4caf50;
+  margin-top: 20px;
+}
+
+.success-message mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.success-icon {
+  color: #4caf50 !important;
+}
+
+.success-message p {
+  margin: 8px 0;
+  color: #2e7d32;
+}
+
+.success-message p:first-of-type {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.success-message p:last-of-type {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-button {
+    min-width: auto;
+    justify-content: center;
+  }
+  
+  .solicitud-form {
+    padding: 16px 0;
+  }
+}
+
+/* Estilos para campos de formulario */
+mat-form-field {
+  margin-bottom: 8px;
+}
+
+mat-form-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Estados de validación */
+mat-form-field.mat-form-field-invalid .mat-form-field-outline {
+  color: #f44336;
+}
+
+mat-form-field.mat-form-field-valid .mat-form-field-outline {
+  color: #4caf50;
 }

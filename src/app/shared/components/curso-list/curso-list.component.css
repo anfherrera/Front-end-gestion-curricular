@@ -34,3 +34,91 @@ button {
   margin-right: 8px;
   margin-bottom: 4px;
 }
+
+/* Estilos para botones de icono */
+.action-icon-button {
+  margin: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.action-icon-button:hover {
+  transform: scale(1.1);
+}
+
+/* Iconos específicos */
+.preinscribir-icon {
+  color: #00138C !important;
+  font-size: 24px;
+}
+
+.preinscribir-icon:hover {
+  color: #0024CC !important;
+}
+
+.inscribir-icon {
+  color: #4caf50 !important;
+  font-size: 24px;
+}
+
+.inscribir-icon:hover {
+  color: #66bb6a !important;
+}
+
+.ver-icon {
+  color: #2196f3 !important;
+  font-size: 24px;
+}
+
+.ver-icon:hover {
+  color: #42a5f5 !important;
+}
+
+.default-icon {
+  color: #666 !important;
+  font-size: 24px;
+}
+
+.default-icon:hover {
+  color: #999 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tabla-container {
+    padding: 8px;
+    overflow-x: auto;
+  }
+  
+  .filtro {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  table {
+    min-width: 600px;
+  }
+  
+  .action-icon-button {
+    margin: 0 2px;
+  }
+  
+  .preinscribir-icon,
+  .inscribir-icon,
+  .ver-icon,
+  .default-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabla-container {
+    padding: 4px;
+  }
+  
+  .preinscribir-icon,
+  .inscribir-icon,
+  .ver-icon,
+  .default-icon {
+    font-size: 18px;
+  }
+}

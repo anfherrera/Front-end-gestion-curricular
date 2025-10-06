@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { CursosIntersemestralesService, Solicitud } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, SolicitudCursoVerano, Inscripcion } from '../../../../core/services/cursos-intersemestrales.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 
 @Component({
@@ -12,52 +13,51 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
   styleUrls: ['./ver-solicitud.component.css']
 })
 export class VerSolicitudComponent implements OnInit {
-  solicitud: Solicitud | null = null;
-  documentos: any[] = [];
+  solicitudes: SolicitudCursoVerano[] = [];
+  inscripciones: Inscripcion[] = [];
   cargando = true;
+  usuario: any = null;
 
-  // Aquí simula el ID del estudiante actual, reemplazar con auth real
-  estudianteId = 1;
-
-  constructor(private cursosService: CursosIntersemestralesService) {}
+  constructor(
+    private cursosService: CursosIntersemestralesService,
+    private authService: AuthService
+  ) {
+    console.log('📋 SEGUIMIENTO COMPONENT CARGADO');
+  }
 
   ngOnInit(): void {
-    this.loadSolicitud();
+    this.usuario = this.authService.getUsuario();
+    this.loadSeguimiento();
   }
 
-  loadSolicitud() {
+  loadSeguimiento() {
     this.cargando = true;
-    this.cursosService.getSolicitudEstudiante(this.estudianteId).subscribe({
-      next: (data) => {
-        this.solicitud = data;
-        if (data) {
-          this.loadDocumentos(data.id);
-        } else {
+    console.log('🔄 Cargando seguimiento completo...');
+    
+    if (this.usuario?.id_usuario) {
+      // Usar el nuevo endpoint que trae todo junto
+      this.cursosService.getSeguimientoActividades(this.usuario.id_usuario).subscribe({
+        next: (seguimiento) => {
+          this.solicitudes = seguimiento.preinscripciones || [];
+          this.inscripciones = seguimiento.inscripciones || [];
+          this.cargando = false;
+          console.log('✅ Seguimiento cargado:', seguimiento);
+          console.log('📊 Preinscripciones:', this.solicitudes.length);
+          console.log('📊 Inscripciones:', this.inscripciones.length);
+        },
+        error: (err) => {
+          console.error('❌ Error cargando seguimiento', err);
           this.cargando = false;
         }
-      },
-      error: (err) => {
-        console.error('Error cargando la solicitud', err);
-        this.cargando = false;
-      }
-    });
+      });
+    } else {
+      this.cargando = false;
+    }
   }
 
-  loadDocumentos(solicitudId: number) {
-    this.cursosService.getDocumentos(solicitudId).subscribe({
-      next: (docs) => {
-        this.documentos = docs;
-        this.cargando = false;
-      },
-      error: (err) => {
-        console.error('Error cargando documentos', err);
-        this.cargando = false;
-      }
-    });
+
+  getTotalActividades(): number {
+    return this.solicitudes.length + this.inscripciones.length;
   }
 
-  descargarDocumento(doc: any) {
-    // Supone que doc tiene url o nombre
-    window.open(doc.url, '_blank');
-  }
 }

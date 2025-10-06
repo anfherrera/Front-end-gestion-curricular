@@ -1,28 +1,76 @@
-<app-card-container title="Mis Solicitudes">
-  <div *ngIf="loading">Cargando solicitudes...</div>
+<app-card-container title="Solicitud de Cursos Intersemestrales de Verano">
+  <div *ngIf="loading">Cargando...</div>
 
-  <app-solicitud-form 
-    (submitForm)="onSubmitSolicitud($event)" 
-    (clearForm)="onClearSolicitud()">
-  </app-solicitud-form>
+  <!-- Formulario para solicitar curso nuevo -->
+  <form *ngIf="!loading" [formGroup]="solicitudForm" (ngSubmit)="onSubmitSolicitud()" class="solicitud-form">
+    
+    <!-- Nombre Completo -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre Completo</mat-label>
+      <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo">
+      <mat-icon matSuffix>person</mat-icon>
+      <mat-error *ngIf="solicitudForm.get('nombreCompleto')?.hasError('required')">
+        El nombre completo es requerido
+      </mat-error>
+    </mat-form-field>
 
-  <table *ngIf="solicitudes.length > 0" mat-table [dataSource]="solicitudes" class="mat-elevation-z8">
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef> ID </th>
-      <td mat-cell *matCellDef="let s"> {{ s.id }} </td>
-    </ng-container>
+    <!-- Código del Estudiante -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Código</mat-label>
+      <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante">
+      <mat-icon matSuffix>badge</mat-icon>
+      <mat-error *ngIf="solicitudForm.get('codigo')?.hasError('required')">
+        El código es requerido
+      </mat-error>
+    </mat-form-field>
 
-    <ng-container matColumnDef="fecha">
-      <th mat-header-cell *matHeaderCellDef> Fecha </th>
-      <td mat-cell *matCellDef="let s"> {{ s.fecha }} </td>
-    </ng-container>
+    <!-- Materia Solicitada -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Materia</mat-label>
+      <mat-select formControlName="curso" placeholder="Selecciona la materia que deseas solicitar">
+        <mat-option *ngFor="let materia of materiasDisponibles" [value]="materia.nombre">
+          {{ materia.nombre }} ({{ materia.codigo }}) - {{ materia.creditos }} créditos
+        </mat-option>
+      </mat-select>
+      <mat-icon matSuffix>school</mat-icon>
+      <mat-error *ngIf="solicitudForm.get('curso')?.hasError('required')">
+        Debes seleccionar una materia
+      </mat-error>
+    </mat-form-field>
 
-    <ng-container matColumnDef="estado">
-      <th mat-header-cell *matHeaderCellDef> Estado </th>
-      <td mat-cell *matCellDef="let s"> {{ s.estado | titlecase }} </td>
-    </ng-container>
+    <!-- Condición -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Condición</mat-label>
+      <mat-select formControlName="condicion" placeholder="Selecciona la condición de tu solicitud">
+        <mat-option *ngFor="let condicion of condiciones" [value]="condicion">
+          {{ getCondicionDisplayName(condicion) }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matSuffix>assignment</mat-icon>
+      <mat-error *ngIf="solicitudForm.get('condicion')?.hasError('required')">
+        Debes seleccionar una condición
+      </mat-error>
+    </mat-form-field>
 
-    <tr mat-header-row *matHeaderRowDef="['id', 'fecha', 'estado']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['id', 'fecha', 'estado'];"></tr>
-  </table>
+    <!-- Botones -->
+    <div class="form-actions">
+      <button type="button" mat-stroked-button color="warn" (click)="onClearForm()" class="action-button">
+        <mat-icon>clear</mat-icon>
+        Limpiar
+      </button>
+      
+      <button type="submit" mat-raised-button color="primary" 
+              [disabled]="solicitudForm.invalid || loading" class="action-button">
+        <mat-icon>send</mat-icon>
+        Enviar Solicitud
+      </button>
+    </div>
+  </form>
+
+  <!-- Mensaje de éxito -->
+  <div *ngIf="solicitudEnviada" class="success-message">
+    <mat-icon class="success-icon">check_circle</mat-icon>
+    <p>¡Solicitud enviada exitosamente!</p>
+    <p>Tu solicitud ha sido registrada y será revisada por el equipo académico.</p>
+  </div>
 </app-card-container>

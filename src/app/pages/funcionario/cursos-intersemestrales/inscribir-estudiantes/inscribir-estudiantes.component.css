@@ -1,14 +1,362 @@
-:host {
-  display: block;
-  padding: 16px;
+/* Estilos para el componente de inscribir estudiantes */
+
+.filtro-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #e3f2fd;
 }
 
-.form-section {
-  margin-top: 24px;
+.filtro-section h3 {
+  color: #00138C;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.actions {
-  margin-top: 16px;
+.curso-selector {
+  width: 100%;
+  max-width: 500px;
+}
+
+.loading-container {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #666;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.inscripciones-section {
+  margin-bottom: 24px;
+}
+
+.inscripciones-section h3 {
+  color: #00138C;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid #00138C;
+  padding-bottom: 8px;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+}
+
+.no-data mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: #00138C;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+}
+
+.inscripciones-table {
+  width: 100%;
+  background: white;
+}
+
+.inscripciones-table th {
+  background: #00138C !important;
+  color: white !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.inscripciones-table th * {
+  color: white !important;
+}
+
+.inscripciones-table td {
+  border-bottom: 1px solid #e0e0e0;
+  color: #333 !important;
+}
+
+.inscripciones-table td * {
+  color: #333 !important;
+}
+
+.estudiante-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.estudiante-info strong {
+  color: #333 !important;
+  font-size: 14px;
+}
+
+.estudiante-info small {
+  color: #666 !important;
+  font-size: 12px;
+}
+
+.comprobante-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.con-comprobante {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4CAF50 !important;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.con-comprobante mat-icon {
+  color: #4CAF50 !important;
+}
+
+.sin-comprobante {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00138C !important;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.sin-comprobante mat-icon {
+  color: #00138C !important;
+}
+
+/* Contenedor de acciones */
+.acciones-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para botones de acción */
+.acciones-container button {
+  transition: all 0.3s ease;
+}
+
+.acciones-container button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.curso-info {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #e3f2fd;
+}
+
+.curso-info h4 {
+  color: #00138C;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  border-left: 3px solid #00138C;
+}
+
+.info-item strong {
+  color: #00138C;
+  min-width: 120px;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .info-item strong {
+    min-width: auto;
+  }
+  
+  .table-container {
+    font-size: 12px;
+  }
+  
+  .inscripciones-table th,
+  .inscripciones-table td {
+    padding: 8px 4px;
+  }
+}
+
+/* Estilos para mat-form-field */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+  color: #e3f2fd;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  color: #00138C;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: #6c757d;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: #00138C;
+}
+
+/* Forzar color del texto en toda la tabla */
+::ng-deep .inscripciones-table {
+  color: #333 !important;
+}
+
+::ng-deep .inscripciones-table th {
+  background: #00138C !important;
+  color: white !important;
+}
+
+::ng-deep .inscripciones-table th * {
+  color: white !important;
+}
+
+::ng-deep .inscripciones-table th .mat-sort-header-content {
+  color: white !important;
+}
+
+::ng-deep .inscripciones-table th .mat-sort-header-arrow {
+  color: white !important;
+}
+
+::ng-deep .inscripciones-table td {
+  color: #333 !important;
+}
+
+::ng-deep .inscripciones-table td * {
+  color: #333 !important;
+}
+
+::ng-deep .inscripciones-table .estudiante-info {
+  color: #333 !important;
+}
+
+::ng-deep .inscripciones-table .estudiante-info strong {
+  color: #333 !important;
+}
+
+::ng-deep .inscripciones-table .estudiante-info small {
+  color: #666 !important;
+}
+
+/* Estilos para el icono del ojo en acciones - FORZAR */
+::ng-deep .inscripciones-table .mat-mdc-icon-button {
+  color: #00138C !important;
+}
+
+::ng-deep .inscripciones-table .mat-mdc-icon-button .mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .inscripciones-table .mat-mdc-icon-button:hover {
+  background-color: rgba(0, 19, 140, 0.1) !important;
+}
+
+::ng-deep .inscripciones-table .mat-mdc-icon-button:hover .mat-icon {
+  color: #001a99 !important;
+}
+
+/* Forzar color en TODOS los iconos de la tabla */
+::ng-deep .inscripciones-table mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .inscripciones-table button mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .inscripciones-table .mat-icon {
+  color: #00138C !important;
+}
+
+/* Estilos específicos para iconos de comprobante de pago */
+::ng-deep .inscripciones-table .con-comprobante mat-icon {
+  color: #4CAF50 !important;
+}
+
+::ng-deep .inscripciones-table .sin-comprobante mat-icon {
+  color: #00138C !important;
+}
+
+/* Forzar colores en toda la celda de comprobante */
+::ng-deep .inscripciones-table .comprobante-cell mat-icon {
+  color: inherit !important;
+}
+
+::ng-deep .inscripciones-table .comprobante-cell .con-comprobante mat-icon {
+  color: #4CAF50 !important;
+}
+
+::ng-deep .inscripciones-table .comprobante-cell .sin-comprobante mat-icon {
+  color: #00138C !important;
+}
+
+/* Estilos específicos para botones de acción */
+::ng-deep .inscripciones-table button[mat-icon-button] {
+  color: #00138C !important;
+}
+
+::ng-deep .inscripciones-table button[mat-icon-button] .mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .inscripciones-table button[mat-icon-button]:hover {
+  background-color: rgba(0, 19, 140, 0.1) !important;
+}
+
+::ng-deep .inscripciones-table button[mat-icon-button]:hover .mat-icon {
+  color: #001a99 !important;
 }

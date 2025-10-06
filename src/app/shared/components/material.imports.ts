@@ -14,6 +14,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -39,5 +40,6 @@ export const MATERIAL_IMPORTS = [
   MatToolbarModule,
   MatProgressSpinnerModule,
   MatListModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatTooltipModule
 ];

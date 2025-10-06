@@ -1,0 +1,72 @@
+<div class="preinscripcion-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>school</mat-icon>
+    Preinscripción a Curso
+  </h2>
+
+  <mat-dialog-content>
+    <!-- Información del curso -->
+    <div class="curso-info">
+      <h3>{{ data.curso.nombre_curso }}</h3>
+      <div class="curso-details">
+        <p><strong>Código:</strong> {{ data.curso.codigo_curso || data.curso.id_curso }}</p>
+        <p><strong>Créditos:</strong> {{ data.curso.objMateria.creditos }}</p>
+        <p><strong>Docente:</strong> {{ data.curso.objDocente.nombre }} {{ data.curso.objDocente.apellido }}</p>
+        <p><strong>Cupo Estimado:</strong> {{ data.curso.cupo_estimado || data.curso.cupo_disponible }}</p>
+        <p><strong>Espacio:</strong> {{ data.curso.espacio_asignado || 'Por asignar' }}</p>
+      </div>
+    </div>
+
+    <!-- Formulario de preinscripción -->
+    <form [formGroup]="preinscripcionForm" (ngSubmit)="onSubmitPreinscripcion()" class="preinscripcion-form">
+      
+      <!-- Nombre Completo -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre Completo</mat-label>
+        <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="preinscripcionForm.get('nombreCompleto')?.hasError('required')">
+          El nombre completo es requerido
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Código del Estudiante -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Código</mat-label>
+        <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante">
+        <mat-icon matSuffix>badge</mat-icon>
+        <mat-error *ngIf="preinscripcionForm.get('codigo')?.hasError('required')">
+          El código es requerido
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Condición -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Condición</mat-label>
+        <mat-select formControlName="condicion" placeholder="Selecciona la condición de tu preinscripción">
+          <mat-option *ngFor="let condicion of condiciones" [value]="condicion">
+            {{ getCondicionDisplayName(condicion) }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matSuffix>assignment</mat-icon>
+        <mat-error *ngIf="preinscripcionForm.get('condicion')?.hasError('required')">
+          Debes seleccionar una condición
+        </mat-error>
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading">
+      Cancelar
+    </button>
+    <button mat-raised-button color="primary" 
+            (click)="onSubmitPreinscripcion()"
+            [disabled]="preinscripcionForm.invalid || loading">
+      <mat-icon *ngIf="!loading">send</mat-icon>
+      <mat-icon *ngIf="loading">hourglass_empty</mat-icon>
+      {{ loading ? 'Enviando...' : 'Enviar Preinscripción' }}
+    </button>
+  </mat-dialog-actions>
+</div>

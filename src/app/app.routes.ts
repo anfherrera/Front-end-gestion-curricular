@@ -4,7 +4,6 @@ import { CommonRoutes } from './pages/common/common.routes';
 
 // Subcomponentes de cursos intersemestrales
 import { SolicitudesComponent } from './pages/estudiante/cursos-intersemestrales/solicitudes/solicitudes.component';
-import { InscripcionesComponent } from './pages/estudiante/cursos-intersemestrales/inscripciones/inscripciones.component';
 import { CursosOfertadosComponent } from './pages/estudiante/cursos-intersemestrales/cursos-ofertados/cursos-ofertados.component';
 import { CursosPreinscripcionComponent } from './pages/estudiante/cursos-intersemestrales/cursos-preinscripcion/cursos-preinscripcion.component';
 import { VerSolicitudComponent } from './pages/estudiante/cursos-intersemestrales/ver-solicitud/ver-solicitud.component';
@@ -51,9 +50,7 @@ export const routes: Routes = [
         path: 'estudiante/cursos-intersemestrales',
         loadComponent: () => import('./pages/estudiante/cursos-intersemestrales/cursos-intersemestrales.component').then(m => m.CursosIntersemestralesComponent),
         children: [
-          { path: '', redirectTo: 'solicitudes', pathMatch: 'full' },
           { path: 'solicitudes', component: SolicitudesComponent },
-          { path: 'inscripciones', component: InscripcionesComponent },
           { path: 'cursos-ofertados', component: CursosOfertadosComponent },
           { path: 'cursos-preinscripcion', component: CursosPreinscripcionComponent },
           { path: 'ver-solicitud', component: VerSolicitudComponent },

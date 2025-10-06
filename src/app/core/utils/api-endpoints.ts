@@ -40,7 +40,25 @@ export class ApiEndpoints {
     APROBAR: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/aprobar`,
     RECHAZAR: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/rechazar`,
     DOCUMENTOS: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos/upload`
+    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos/upload`,
+    
+    // ===== CURSOS DE VERANO =====
+    CURSOS_VERANO: {
+      DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano`,
+      PREINSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones`,
+      INSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones`,
+      SOLICITUDES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/solicitudes`,
+      CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/materias-disponibles`,
+      CONDICIONES: `${this.BASE_URL}/cursos-intersemestrales/condiciones-solicitud`,
+      SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo`,
+      SOLICITUDES_CURSO_NUEVO_USUARIO: (idUsuario: number) => `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo/usuario/${idUsuario}`,
+      PREINSCRIPCIONES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/curso/${idCurso}`,
+      INSCRIPCIONES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/curso/${idCurso}`,
+      APROBAR_PREINSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/aprobar`,
+      RECHAZAR_PREINSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/rechazar`,
+      VALIDAR_PAGO: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/validar-pago`,
+      COMPLETAR_INSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/completar`
+    }
   };
 
   // ===== HOMOLOGACIÓN DE ASIGNATURAS =====
