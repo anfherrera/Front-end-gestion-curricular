@@ -36,7 +36,6 @@ import { Subject, takeUntil } from 'rxjs';
             <mat-option value="">Todos los estados</mat-option>
             <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
               <div class="estado-option">
-                <mat-icon [style.color]="estado.color">{{ estado.icon }}</mat-icon>
                 <span>{{ estado.label }}</span>
                 <small>{{ estado.descripcion }}</small>
               </div>
@@ -54,7 +53,6 @@ import { Subject, takeUntil } from 'rxjs';
             [style.border]="'1px solid ' + estado.color"
             [class.selected]="estadoSeleccionado === estado.value"
             class="estado-chip">
-            <mat-icon>{{ estado.icon }}</mat-icon>
             <span>{{ estado.label }}</span>
             <span class="count" *ngIf="conteosEstados[estado.value] > 0">
               ({{ conteosEstados[estado.value] }})
@@ -67,7 +65,6 @@ import { Subject, takeUntil } from 'rxjs';
       <div *ngIf="estadoSeleccionado" class="estado-info">
         <div class="info-card">
           <div class="info-header">
-            <mat-icon [style.color]="estadoInfo?.color">{{ estadoInfo?.icon }}</mat-icon>
             <h4>{{ estadoInfo?.label }}</h4>
           </div>
           <p>{{ estadoInfo?.descripcion }}</p>

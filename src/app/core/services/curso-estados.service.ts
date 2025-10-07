@@ -32,42 +32,42 @@ export class CursoEstadosService {
       value: 'Borrador',
       label: 'Borrador',
       color: '#6c757d',
-      icon: 'draft',
+      icon: '',
       descripcion: 'Curso en edición, no visible para estudiantes'
     },
     {
       value: 'Abierto',
       label: 'Abierto',
       color: '#ffc107',
-      icon: 'lock_open',
+      icon: '',
       descripcion: 'Curso configurado, listo para publicar'
     },
     {
       value: 'Publicado',
       label: 'Publicado',
       color: '#17a2b8',
-      icon: 'public',
+      icon: '',
       descripcion: 'Curso visible para estudiantes, pueden solicitar curso nuevo'
     },
     {
       value: 'Preinscripción',
       label: 'Preinscripción',
       color: '#28a745',
-      icon: 'playlist_add',
+      icon: '',
       descripcion: 'Período de preinscripciones abierto'
     },
     {
       value: 'Inscripción',
       label: 'Inscripción',
       color: '#fd7e14',
-      icon: 'how_to_reg',
+      icon: '',
       descripcion: 'Período de inscripciones abierto'
     },
     {
       value: 'Cerrado',
       label: 'Cerrado',
       color: '#dc3545',
-      icon: 'lock',
+      icon: '',
       descripcion: 'Curso finalizado, solo consulta'
     }
   ];
