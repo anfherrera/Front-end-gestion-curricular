@@ -28,32 +28,31 @@ import { Subject, takeUntil } from 'rxjs';
       </div>
       
       <div class="filters-content">
-        <!-- Selector de estado -->
-        <mat-form-field appearance="outline" class="estado-selector">
-          <mat-label>Filtrar por estado</mat-label>
-          <mat-select 
-            [(value)]="estadoSeleccionado" 
-            (selectionChange)="onEstadoChange($event.value)"
-            placeholder="Todos los estados">
-            <mat-option value="">Todos los estados</mat-option>
-            <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
-              <div class="estado-option">
-                <mat-icon>{{ estado.icon }}</mat-icon>
-                <span>{{ estado.label }}</span>
-                <small>{{ estado.descripcion }}</small>
-              </div>
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- Chips de estado rápido -->
+        <!-- Chips de estado con botón TODOS -->
         <div class="estado-chips">
+          <!-- Botón TODOS -->
+          <mat-chip 
+            (click)="onEstadoChange('')"
+            [class.selected]="estadoSeleccionado === ''"
+            [class.loading]="cargandoFiltro"
+            [class.todos-chip]="true"
+            [class.todos-selected]="estadoSeleccionado === ''"
+            class="estado-chip">
+            <mat-icon>list</mat-icon>
+            <span>TODOS</span>
+            <span class="count" *ngIf="cursos.length > 0">
+              ({{ cursos.length }})
+            </span>
+            <mat-spinner *ngIf="cargandoFiltro && estadoSeleccionado === ''" diameter="16" class="chip-spinner"></mat-spinner>
+          </mat-chip>
+
+          <!-- Estados específicos -->
           <mat-chip 
             *ngFor="let estado of estadosDisponibles"
             (click)="onEstadoChange(estado.value)"
             [style.background-color]="estadoSeleccionado === estado.value ? estado.color : 'transparent'"
             [style.color]="estadoSeleccionado === estado.value ? 'white' : estado.color"
-            [style.border]="'1px solid ' + estado.color"
+            [style.border]="'2px solid ' + estado.color"
             [class.selected]="estadoSeleccionado === estado.value"
             [class.loading]="cargandoFiltro"
             class="estado-chip">
@@ -67,19 +66,34 @@ import { Subject, takeUntil } from 'rxjs';
         </div>
       </div>
 
-      <!-- Información del estado seleccionado -->
-      <div *ngIf="estadoSeleccionado" class="estado-info">
+      <!-- Información del estado seleccionado (solo para estados específicos) -->
+      <div *ngIf="estadoSeleccionado && estadoInfo" class="estado-info">
         <div class="info-card">
           <div class="info-header">
-            <h4>{{ estadoInfo?.label }}</h4>
+            <h4>{{ estadoInfo.label }}</h4>
           </div>
-          <p>{{ estadoInfo?.descripcion }}</p>
+          <p>{{ estadoInfo.descripcion }}</p>
           <div class="info-stats">
             <span class="stat">
               <strong>{{ cursosFiltrados.length }}</strong> cursos
             </span>
             <span class="stat" *ngIf="conteosEstados[estadoSeleccionado] > 0">
               <strong>{{ conteosEstados[estadoSeleccionado] }}</strong> total
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información para TODOS los cursos -->
+      <div *ngIf="!estadoSeleccionado" class="estado-info">
+        <div class="info-card">
+          <div class="info-header">
+            <h4>Todos los Cursos</h4>
+          </div>
+          <p>Mostrando todos los cursos disponibles en el sistema</p>
+          <div class="info-stats">
+            <span class="stat">
+              <strong>{{ cursos.length }}</strong> cursos totales
             </span>
           </div>
         </div>
@@ -120,67 +134,71 @@ import { Subject, takeUntil } from 'rxjs';
       gap: 20px;
     }
 
-    .estado-selector {
-      width: 100%;
-    }
-
-    .estado-option {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 0;
-    }
-
-    .estado-option mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    .estado-option span {
-      font-weight: 500;
-      color: #333;
-    }
-
-    .estado-option small {
-      color: #666;
-      font-size: 0.8rem;
-      margin-left: auto;
-    }
 
     .estado-chips {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 12px;
-      justify-content: center;
+      justify-content: flex-start;
+      align-items: center;
+      margin-top: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
     }
 
     .estado-chip {
       cursor: pointer;
       transition: all 0.3s ease;
       font-weight: 500;
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 8px 14px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      min-height: 36px;
+      background: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 13px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+      white-space: nowrap;
+      flex-shrink: 0;
+      /* Eliminar cualquier borde interno de Material Design */
+      --mdc-chip-outline-width: 0;
+      --mdc-chip-container-shape: 6px;
     }
 
-    .estado-chip:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* Eliminar pseudo-elementos y bordes internos */
+    .estado-chip::before,
+    .estado-chip::after {
+      display: none !important;
     }
+
+    /* Eliminar bordes internos de Material Design */
+    .estado-chip .mdc-chip__ripple,
+    .estado-chip .mdc-evolution-chip__ripple {
+      display: none !important;
+    }
+
 
     .estado-chip mat-icon {
       font-size: 16px;
       width: 16px;
       height: 16px;
+      flex-shrink: 0;
     }
 
     .estado-chip .count {
-      font-size: 0.8rem;
-      opacity: 0.8;
+      font-size: 0.75rem;
+      opacity: 0.9;
       margin-left: 4px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.05);
+      padding: 1px 4px;
+      border-radius: 8px;
+      min-width: 16px;
+      text-align: center;
     }
 
     .chip-spinner {
@@ -195,6 +213,50 @@ import { Subject, takeUntil } from 'rxjs';
     .estado-chip.selected {
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transform: translateY(-1px);
+      border-color: currentColor;
+      font-weight: 600;
+    }
+
+
+    .estado-chip.selected .count {
+      background: rgba(255, 255, 255, 0.2);
+      color: inherit;
+    }
+
+    /* Estilos específicos para el botón TODOS */
+    .todos-chip {
+      border: 2px solid #00138C !important;
+    }
+
+    .todos-chip:not(.todos-selected) {
+      background: transparent !important;
+      color: #00138C !important;
+    }
+
+    .todos-chip:not(.todos-selected) mat-icon {
+      color: #00138C !important;
+    }
+
+    .todos-chip:not(.todos-selected) .count {
+      color: #00138C !important;
+    }
+
+    .todos-chip.todos-selected {
+      background: #00138C !important;
+      color: white !important;
+    }
+
+    .todos-chip.todos-selected mat-icon {
+      color: white !important;
+    }
+
+    .todos-chip.todos-selected span {
+      color: white !important;
+    }
+
+    .todos-chip.todos-selected .count {
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
     }
 
     .estado-info {
@@ -295,6 +357,7 @@ export class EstadoFiltersComponent implements OnInit {
 
   ngOnInit(): void {
     this.estadosDisponibles = this.cursoEstadosService.getEstadosDisponibles();
+    this.estadoSeleccionado = ''; // Inicializar como "TODOS"
     this.calcularConteos();
     this.aplicarFiltro();
   }
