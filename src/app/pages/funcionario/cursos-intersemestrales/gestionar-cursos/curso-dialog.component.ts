@@ -701,16 +701,19 @@ export class CursoDialogComponent {
               });
               
               // Mostrar mensaje de error más específico
-              let mensajeError = 'Error al actualizar el curso';
-              if (err.status === 500) {
-                mensajeError = 'Error interno del servidor. El endpoint PUT puede no estar implementado en el backend.';
+              let errorMessage = 'Error al actualizar el curso';
+              if (err.error && err.error.message) {
+                errorMessage = err.error.message;
+              } else if (err.error && typeof err.error === 'string') {
+                errorMessage = err.error;
               } else if (err.status === 400) {
-                mensajeError = 'Datos inválidos enviados al servidor.';
-              } else if (err.status === 404) {
-                mensajeError = 'El curso no fue encontrado.';
+                errorMessage = 'Datos inválidos enviados al servidor';
               }
               
-              this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
+              this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+                duration: 5000, 
+                panelClass: ['error-snackbar'] 
+              });
               // Cerrar dialog incluso si hay error para que se actualice la lista
               this.dialogRef.close('guardado');
             }

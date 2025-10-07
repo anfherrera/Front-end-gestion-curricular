@@ -115,18 +115,21 @@ export class CursosOfertadosComponent implements OnInit {
     }));
   }
 
-  private mapEstadoCurso(estado: string): 'Disponible' | 'Cerrado' | 'En espera' {
+  private mapEstadoCurso(estado: string): 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Publicado' {
     switch (estado) {
-      case 'Abierto':
       case 'Publicado':
-      case 'Preinscripcion':
-      case 'Inscripcion':
-      case 'Disponible':  // ← AGREGAR ESTE CASE
-        return 'Disponible';
+        return 'Publicado';  // Pueden solicitar curso nuevo
+      case 'Preinscripción':
+        return 'Preinscripción';  // Pueden preinscribirse
+      case 'Inscripción':
+        return 'Inscripción';  // Pueden inscribirse
       case 'Cerrado':
-        return 'Cerrado';
+        return 'Cerrado';  // Solo consulta
+      case 'Abierto':
+      case 'Disponible':
+        return 'Disponible';  // Visible pero sin acciones específicas
       default:
-        return 'En espera';
+        return 'En espera';  // Borrador u otros estados
     }
   }
 

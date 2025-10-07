@@ -48,6 +48,9 @@ export class ApiEndpoints {
       DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/disponibles`, // Para estudiantes
       TODOS: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos`, // Para funcionarios
       
+      // Endpoints de gestión (CRUD)
+      GESTION: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano`, // Para crear, actualizar, eliminar
+      
       // Endpoints específicos por estado
       PREINSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/preinscripcion`,
       INSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/inscripcion`,

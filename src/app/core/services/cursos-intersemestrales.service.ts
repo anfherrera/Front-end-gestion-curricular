@@ -346,25 +346,58 @@ export class CursosIntersemestralesService {
   // Crear nuevo curso
   crearCurso(payload: CreateCursoDTO): Observable<CursoOfertadoVerano> {
     console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
-    return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES, payload);
+    
+    // Mapear el estado para el backend
+    const payloadParaBackend = {
+      ...payload,
+      estado: payload.estado ? this.mapEstadoParaBackend(payload.estado) : payload.estado
+    };
+    
+    console.log('📤 Payload original:', payload);
+    console.log('📤 Payload para backend:', payloadParaBackend);
+    
+    return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION, payloadParaBackend);
+  }
+
+  // Mapear estados del frontend al backend (para envío)
+  private mapEstadoParaBackend(estado: string): string {
+    const estadosMap: { [key: string]: string } = {
+      'Borrador': 'Borrador',
+      'Abierto': 'Abierto',
+      'Publicado': 'Publicado', 
+      'Preinscripción': 'Preinscripcion',  // Sin tilde para el backend
+      'Inscripción': 'Inscripcion',        // Sin tilde para el backend
+      'Cerrado': 'Cerrado'
+    };
+    return estadosMap[estado] || estado;
   }
 
   // Actualizar curso existente (solo campos editables)
   actualizarCurso(id: number, payload: UpdateCursoDTO): Observable<CursoOfertadoVerano> {
     console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/cursos-verano/${id}`);
-    return this.http.put<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES}/${id}`, payload);
+    
+    // Mapear el estado para el backend
+    const payloadParaBackend = {
+      ...payload,
+      estado: payload.estado ? this.mapEstadoParaBackend(payload.estado) : payload.estado
+    };
+    
+    console.log('📤 Payload original:', payload);
+    console.log('📤 Payload para backend:', payloadParaBackend);
+    
+    return this.http.put<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION}/${id}`, payloadParaBackend);
   }
 
   // Eliminar curso
   eliminarCurso(id: number): Observable<void> {
     console.log(`🌐 Llamando a API: DELETE /api/cursos-intersemestrales/cursos-verano/${id}`);
-    return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES}/${id}`);
+    return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION}/${id}`);
   }
 
   // Obtener curso por ID
   getCursoPorId(id: number): Observable<CursoOfertadoVerano> {
     console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano/${id}`);
-    return this.http.get<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES}/${id}`);
+    return this.http.get<CursoOfertadoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION}/${id}`);
   }
 
   // Obtener todas las materias
