@@ -9,7 +9,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
@@ -19,6 +19,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { InfoPreregistroDialogComponent } from '../../../shared/components/info-preregistro-dialog/info-preregistro-dialog.component';
+import { ComentariosDialogComponent, ComentariosDialogData } from '../../../shared/components/comentarios-dialog/comentarios-dialog.component';
 import { Archivo, Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 
@@ -35,6 +36,7 @@ import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
+    MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
     CardContainerComponent,
@@ -282,8 +284,12 @@ export class PruebasEcaesComponent implements OnInit {
   }
 
   private crearSolicitudConArchivos(formValue: any, archivosSubidos: any[]): void {
+    // Concatenar el nombre del estudiante al nombre de la solicitud
+    const nombreCompleto = this.usuario.nombre_completo || 'Estudiante';
+    const nombreSolicitud = `Inscripción a Pruebas ECAES - ${nombreCompleto}`;
+
     const solicitud = {
-      nombre_solicitud: 'Inscripción a Pruebas ECAES',
+      nombre_solicitud: nombreSolicitud,
       fecha_registro_solicitud: new Date().toISOString(),
       esSeleccionado: true,
       objUsuario: {
@@ -377,9 +383,13 @@ export class PruebasEcaesComponent implements OnInit {
     console.log('🔍 Rol:', this.usuario.rol.nombre);
     console.log('🔍 ID Usuario:', this.usuario.id_usuario);
 
-    this.pruebasEcaesService.listarSolicitudesEcaes().subscribe({
+    // Usar el endpoint específico por rol y usuario
+    this.pruebasEcaesService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).subscribe({
       next: (data) => {
         console.log('📡 Respuesta del backend (raw):', data);
+        console.log('📡 Tipo de respuesta:', typeof data);
+        console.log('📡 Es array:', Array.isArray(data));
+        console.log('📡 Longitud:', data?.length);
         this.procesarSolicitudes(data);
       },
       error: (err) => {
@@ -406,9 +416,13 @@ export class PruebasEcaesComponent implements OnInit {
       const estados = sol.estadosSolicitud || [];
       const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
+      // Concatenar el nombre del estudiante al nombre de la solicitud
+      const nombreCompleto = sol.objUsuario?.nombre_completo || 'Estudiante';
+      const nombreConEstudiante = `${sol.nombre_solicitud} - ${nombreCompleto}`;
+
       const solicitudTransformada: Solicitud = {
         id: sol.id_solicitud,
-        nombre: sol.nombre_solicitud,
+        nombre: nombreConEstudiante,
         fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
         estado: this.mapearEstado(ultimoEstado?.estado_actual || 'Pendiente'),
         oficioUrl: '',
@@ -422,10 +436,6 @@ export class PruebasEcaesComponent implements OnInit {
     console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
   }
 
-  verComentarios(solicitudId: number): void {
-    console.log('Ver comentarios para solicitud:', solicitudId);
-    // Implementar lógica para mostrar comentarios
-  }
 
   descargarOficio(id: number, nombreArchivo: string): void {
     console.log('Descargar oficio:', id, nombreArchivo);
@@ -474,5 +484,98 @@ export class PruebasEcaesComponent implements OnInit {
       default:
         return SolicitudStatusEnum.ENVIADA; // Estado por defecto
     }
+  }
+
+  // ================================
+  // Métodos para manejo de comentarios
+  // ================================
+
+  /**
+   * Obtener solicitud completa por ID
+   */
+  obtenerSolicitudCompleta(idSolicitud: number): SolicitudEcaesResponse | undefined {
+    return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
+  }
+
+  /**
+   * Obtener comentario de rechazo de una solicitud
+   */
+  obtenerComentarioRechazo(solicitud: SolicitudEcaesResponse): string | null {
+    if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
+      return null;
+    }
+
+    // Buscar el último estado de rechazo
+    const ultimoEstadoRechazo = solicitud.estadosSolicitud
+      .filter(estado => estado.estado_actual?.toLowerCase().includes('rechazada'))
+      .pop();
+
+    if (!ultimoEstadoRechazo) {
+      return null;
+    }
+
+    return ultimoEstadoRechazo.comentario || null;
+  }
+
+  /**
+   * Ver comentarios de una solicitud rechazada
+   */
+  verComentarios(solicitudId: number): void {
+    const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
+
+    if (!solicitudCompleta) {
+      this.snackBar.open('No se encontró la información de la solicitud', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
+      this.snackBar.open('No hay documentos asociados a esta solicitud', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    // Obtener el comentario de rechazo del último estado
+    const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
+
+    console.log('📋 Datos que se envían al diálogo:');
+    console.log('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
+    console.log('  - Documentos:', solicitudCompleta.documentos);
+    console.log('  - Comentario de rechazo:', comentarioRechazo);
+
+    const dialogRef = this.dialog.open(ComentariosDialogComponent, {
+      width: '700px',
+      data: <ComentariosDialogData>{
+        titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
+        documentos: solicitudCompleta.documentos,
+        comentarioRechazo: comentarioRechazo
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('Diálogo de comentarios cerrado');
+    });
+  }
+
+  /**
+   * Verificar si una solicitud tiene comentarios
+   */
+  tieneComentarios(solicitudId: number): boolean {
+    const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
+
+    if (!solicitudCompleta) {
+      return false;
+    }
+
+    // Verificar si tiene comentario de rechazo
+    const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
+    if (comentarioRechazo && comentarioRechazo.trim()) {
+      return true;
+    }
+
+    // Verificar si algún documento tiene comentarios
+    if (solicitudCompleta.documentos && solicitudCompleta.documentos.length > 0) {
+      return solicitudCompleta.documentos.some(doc => doc.comentario && doc.comentario.trim());
+    }
+
+    return false;
   }
 }

@@ -114,7 +114,7 @@ export class PruebasEcaesService {
   approveRequest(requestId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: requestId,
-      nuevoEstado: 'Enviada' // Para ECAES, "Enviada" corresponde a PRE_REGISTRADO
+      nuevoEstado: 'PRE_REGISTRADO' // Cambiar directamente a PRE_REGISTRADO
     }, { headers: this.getAuthHeaders() });
   }
 
@@ -147,6 +147,27 @@ export class PruebasEcaesService {
       headers: this.getAuthHeaders()
     });
   }
+
+  /**
+   * Listar solicitudes ECAES por rol y usuario
+   */
+  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<SolicitudEcaesResponse[]> {
+    let params: any = { rol: rol };
+    if (idUsuario) {
+      params.idUsuario = idUsuario;
+    }
+
+    const url = `${this.apiUrl}/listarSolicitud-ecaes/porRol`;
+    console.log('🌐 URL del endpoint ECAES:', url);
+    console.log('📤 Parámetros enviados:', params);
+    console.log('🔑 Headers:', this.getAuthHeaders());
+
+    return this.http.get<SolicitudEcaesResponse[]>(url, {
+      params: params,
+      headers: this.getAuthHeaders()
+    });
+  }
+
 
   /**
    * Publicar fechas de ECAES
