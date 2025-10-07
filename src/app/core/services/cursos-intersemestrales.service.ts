@@ -31,6 +31,14 @@ export interface Materia {
   descripcion: string;
 }
 
+// Interfaz para el estado del curso (nueva estructura del backend)
+export interface EstadoCurso {
+  idEstado: number;
+  idfkCurso: number;
+  fecha_registro_estado: string;
+  estado_actual: string;
+}
+
 export interface CursoOfertadoVerano {
   id_curso: number;
   nombre_curso: string;
@@ -42,9 +50,13 @@ export interface CursoOfertadoVerano {
   cupo_disponible: number;
   cupo_estimado: number;
   espacio_asignado: string;
-  estado: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
+  // Mantener el campo estado para compatibilidad, pero ahora se obtendrá del estado actual
+  estado?: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
   objMateria: Materia;
   objDocente: Usuario;
+  // Nuevo campo para manejar los estados desde la tabla separada
+  estados?: EstadoCurso[];
+  estado_actual?: string; // Estado actual del curso
 }
 
 // Interfaz específica para usuarios en solicitudes (estructura del backend)
@@ -214,14 +226,30 @@ export class CursosIntersemestralesService {
 
   // Obtener cursos por estado específico
   getCursosPorEstado(estado: string): Observable<CursoOfertadoVerano[]> {
-    const endpoint = estado === 'Preinscripción' 
-      ? ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION
-      : estado === 'Inscripción'
-      ? ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION
-      : ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES;
+    console.log(`🔍 Filtrando cursos por estado: "${estado}"`);
     
-    console.log(`🌐 Llamando a API (estado: ${estado}):`, endpoint);
-    return this.http.get<CursoOfertadoVerano[]>(endpoint);
+    // Para funcionarios, usar endpoint /todos y filtrar localmente
+    if (estado === 'Preinscripción') {
+      console.log(`🌐 Llamando a endpoint específico para Preinscripción:`, ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION);
+      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION);
+    } else if (estado === 'Inscripción') {
+      console.log(`🌐 Llamando a endpoint específico para Inscripción:`, ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION);
+      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION);
+    } else {
+      // Para otros estados, obtener todos los cursos y filtrar localmente
+      console.log(`🌐 Obteniendo todos los cursos para filtrar por estado "${estado}":`, ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS)
+        .pipe(
+          map(cursos => {
+            const cursosFiltrados = cursos.filter(curso => {
+              const estadoActual = this.obtenerEstadoActual(curso);
+              return estadoActual === estado;
+            });
+            console.log(`✅ Cursos filtrados para "${estado}":`, cursosFiltrados.length, 'de', cursos.length);
+            return cursosFiltrados;
+          })
+        );
+    }
   }
 
   // Consultar permisos para un estado y rol específico
@@ -626,11 +654,34 @@ export class CursosIntersemestralesService {
     }
   }
 
+  // Método para obtener el estado actual del curso desde la nueva estructura
+  private obtenerEstadoActual(curso: CursoOfertadoVerano): string {
+    // Si hay estado_actual, usarlo
+    if (curso.estado_actual) {
+      return curso.estado_actual;
+    }
+    
+    // Si hay estados y hay al menos uno, tomar el más reciente
+    if (curso.estados && curso.estados.length > 0) {
+      // Ordenar por fecha_registro_estado descendente y tomar el más reciente
+      const estadoMasReciente = curso.estados
+        .sort((a, b) => new Date(b.fecha_registro_estado).getTime() - new Date(a.fecha_registro_estado).getTime())[0];
+      return estadoMasReciente.estado_actual;
+    }
+    
+    // Fallback al campo estado legacy
+    return curso.estado || 'Borrador';
+  }
+
   private mapCursoVerano(c: CursoOfertadoVerano): CursoList {
     console.log('🔍 Mapeando curso:', c);
     
+    // Obtener el estado actual del curso (de la nueva estructura o del campo legacy)
+    const estadoActual = this.obtenerEstadoActual(c);
+    console.log('🔍 Estado actual del curso:', estadoActual);
+    
     let estado: 'Disponible' | 'Cerrado' | 'En espera' = 'En espera';
-    switch (c.estado) {
+    switch (estadoActual) {
       case 'Abierto':
       case 'Publicado':
       case 'Preinscripción':

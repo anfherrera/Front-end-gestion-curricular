@@ -85,9 +85,35 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   }
 
   private calcularEstadisticasCursos(cursos: CursoOfertadoVerano[]): void {
-    // Contar cursos por estado
-    this.preinscripcionesPendientes = cursos.filter(c => c.estado === 'Preinscripción').length;
-    this.inscripcionesPendientes = cursos.filter(c => c.estado === 'Inscripción').length;
+    // Contar cursos por estado usando la nueva estructura
+    this.preinscripcionesPendientes = cursos.filter(c => {
+      const estadoActual = this.obtenerEstadoActual(c);
+      return estadoActual === 'Preinscripción';
+    }).length;
+    
+    this.inscripcionesPendientes = cursos.filter(c => {
+      const estadoActual = this.obtenerEstadoActual(c);
+      return estadoActual === 'Inscripción';
+    }).length;
+  }
+
+  // Método para obtener el estado actual del curso
+  private obtenerEstadoActual(curso: CursoOfertadoVerano): string {
+    // Si hay estado_actual, usarlo
+    if (curso.estado_actual) {
+      return curso.estado_actual;
+    }
+    
+    // Si hay estados y hay al menos uno, tomar el más reciente
+    if (curso.estados && curso.estados.length > 0) {
+      // Ordenar por fecha_registro_estado descendente y tomar el más reciente
+      const estadoMasReciente = curso.estados
+        .sort((a, b) => new Date(b.fecha_registro_estado).getTime() - new Date(a.fecha_registro_estado).getTime())[0];
+      return estadoMasReciente.estado_actual;
+    }
+    
+    // Fallback al campo estado legacy
+    return curso.estado || 'Borrador';
   }
 
   private cargarNotificaciones(): void {
@@ -141,11 +167,11 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return this.notificacionesService.getColorTipo(tipoNotificacion);
   }
 
-  getEstadoColor(estado: string): string {
-    return this.cursoEstadosService.getColorEstado(estado);
+  getEstadoColor(estado: string | undefined): string {
+    return this.cursoEstadosService.getColorEstado(estado || 'Borrador');
   }
 
-  getIconoEstado(estado: string): string {
-    return this.cursoEstadosService.getIconoEstado(estado);
+  getIconoEstado(estado: string | undefined): string {
+    return this.cursoEstadosService.getIconoEstado(estado || 'Borrador');
   }
 }

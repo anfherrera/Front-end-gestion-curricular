@@ -68,7 +68,7 @@ export class CursosPreinscripcionComponent implements OnInit {
           cupos: curso.cupo_disponible || curso.cupo_estimado || 0,
           creditos: curso.objMateria?.creditos || 0,
           espacio: curso.espacio_asignado || 'Por asignar',
-          estado: curso.estado
+          estado: curso.estado || 'Borrador'
         }));
         
         console.log('📋 Cursos mapeados para tabla:', this.cursos);

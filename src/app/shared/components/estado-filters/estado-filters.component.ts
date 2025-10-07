@@ -4,6 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CursoEstadosService, EstadoCurso } from '../../../core/services/curso-estados.service';
 import { CursosIntersemestralesService, CursoOfertadoVerano } from '../../../core/services/cursos-intersemestrales.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -16,7 +17,8 @@ import { Subject, takeUntil } from 'rxjs';
     MatFormFieldModule,
     MatSelectModule,
     MatChipsModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   template: `
     <div class="filters-container">
@@ -36,6 +38,7 @@ import { Subject, takeUntil } from 'rxjs';
             <mat-option value="">Todos los estados</mat-option>
             <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
               <div class="estado-option">
+                <mat-icon>{{ estado.icon }}</mat-icon>
                 <span>{{ estado.label }}</span>
                 <small>{{ estado.descripcion }}</small>
               </div>
@@ -52,11 +55,14 @@ import { Subject, takeUntil } from 'rxjs';
             [style.color]="estadoSeleccionado === estado.value ? 'white' : estado.color"
             [style.border]="'1px solid ' + estado.color"
             [class.selected]="estadoSeleccionado === estado.value"
+            [class.loading]="cargandoFiltro"
             class="estado-chip">
+            <mat-icon [style.color]="estadoSeleccionado === estado.value ? 'white' : estado.color">{{ estado.icon }}</mat-icon>
             <span>{{ estado.label }}</span>
             <span class="count" *ngIf="conteosEstados[estado.value] > 0">
               ({{ conteosEstados[estado.value] }})
             </span>
+            <mat-spinner *ngIf="cargandoFiltro && estadoSeleccionado === estado.value" diameter="16" class="chip-spinner"></mat-spinner>
           </mat-chip>
         </div>
       </div>
@@ -177,6 +183,20 @@ import { Subject, takeUntil } from 'rxjs';
       margin-left: 4px;
     }
 
+    .chip-spinner {
+      margin-left: 8px;
+    }
+
+    .estado-chip.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .estado-chip.selected {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+    }
+
     .estado-info {
       margin-top: 20px;
     }
@@ -266,6 +286,7 @@ export class EstadoFiltersComponent implements OnInit {
   cursosFiltrados: CursoOfertadoVerano[] = [];
   conteosEstados: { [key: string]: number } = {};
   estadoInfo: EstadoCurso | undefined;
+  cargandoFiltro: boolean = false;
 
   constructor(
     private cursoEstadosService: CursoEstadosService,
@@ -284,9 +305,37 @@ export class EstadoFiltersComponent implements OnInit {
   }
 
   onEstadoChange(estado: string): void {
+    console.log(`🔄 Cambiando filtro a estado: "${estado}"`);
     this.estadoSeleccionado = estado;
     this.estadoInfo = estado ? this.cursoEstadosService.getEstadoPorValor(estado) : undefined;
-    this.aplicarFiltro();
+    this.cargandoFiltro = true;
+    
+    if (estado) {
+      // Llamar al backend para obtener cursos específicos por estado
+      this.cursosService.getCursosPorEstado(estado)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (cursos) => {
+            console.log(`✅ Cursos obtenidos para estado "${estado}":`, cursos);
+            this.cursosFiltrados = cursos;
+            this.cursosFiltradosChange.emit(this.cursosFiltrados);
+            this.cargandoFiltro = false;
+          },
+          error: (error) => {
+            console.error(`❌ Error obteniendo cursos para estado "${estado}":`, error);
+            // Fallback: filtrar localmente
+            console.log(`🔄 Usando filtro local como fallback para "${estado}"`);
+            this.aplicarFiltro();
+            this.cargandoFiltro = false;
+          }
+        });
+    } else {
+      // Si no hay estado seleccionado, mostrar todos los cursos
+      console.log(`🔄 Mostrando todos los cursos (sin filtro)`);
+      this.aplicarFiltro();
+      this.cargandoFiltro = false;
+    }
+    
     this.estadoSeleccionadoChange.emit(estado);
   }
 
@@ -294,7 +343,10 @@ export class EstadoFiltersComponent implements OnInit {
     if (!this.estadoSeleccionado) {
       this.cursosFiltrados = [...this.cursos];
     } else {
-      this.cursosFiltrados = this.cursos.filter(curso => curso.estado === this.estadoSeleccionado);
+      this.cursosFiltrados = this.cursos.filter(curso => {
+        const estadoActual = this.obtenerEstadoActualCurso(curso);
+        return estadoActual === this.estadoSeleccionado;
+      });
     }
     
     this.cursosFiltradosChange.emit(this.cursosFiltrados);
@@ -303,9 +355,50 @@ export class EstadoFiltersComponent implements OnInit {
   private calcularConteos(): void {
     this.conteosEstados = {};
     
+    // Calcular conteos locales primero usando la nueva estructura de estados
     this.estadosDisponibles.forEach(estado => {
-      this.conteosEstados[estado.value] = this.cursos.filter(curso => curso.estado === estado.value).length;
+      this.conteosEstados[estado.value] = this.cursos.filter(curso => {
+        const estadoActual = this.obtenerEstadoActualCurso(curso);
+        return estadoActual === estado.value;
+      }).length;
     });
+    
+    console.log('📊 Conteos locales calculados:', this.conteosEstados);
+    
+    // Actualizar conteos desde el backend para cada estado
+    this.estadosDisponibles.forEach(estado => {
+      this.cursosService.getCursosPorEstado(estado.value)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (cursos) => {
+            this.conteosEstados[estado.value] = cursos.length;
+            console.log(`📊 Conteo actualizado para "${estado.value}":`, cursos.length);
+          },
+          error: (error) => {
+            console.warn(`⚠️ No se pudo obtener conteo para estado "${estado.value}":`, error);
+            // Mantener el conteo local
+          }
+        });
+    });
+  }
+
+  // Método para obtener el estado actual del curso (similar al del servicio)
+  private obtenerEstadoActualCurso(curso: any): string {
+    // Si hay estado_actual, usarlo
+    if (curso.estado_actual) {
+      return curso.estado_actual;
+    }
+    
+    // Si hay estados y hay al menos uno, tomar el más reciente
+    if (curso.estados && curso.estados.length > 0) {
+      // Ordenar por fecha_registro_estado descendente y tomar el más reciente
+      const estadoMasReciente = curso.estados
+        .sort((a: any, b: any) => new Date(b.fecha_registro_estado).getTime() - new Date(a.fecha_registro_estado).getTime())[0];
+      return estadoMasReciente.estado_actual;
+    }
+    
+    // Fallback al campo estado legacy
+    return curso.estado || 'Borrador';
   }
 
   // Método público para actualizar cursos desde el componente padre
@@ -317,9 +410,17 @@ export class EstadoFiltersComponent implements OnInit {
 
   // Método para limpiar filtros
   limpiarFiltros(): void {
+    console.log('🧹 Limpiando filtros');
     this.estadoSeleccionado = '';
     this.estadoInfo = undefined;
+    this.cargandoFiltro = false;
     this.aplicarFiltro();
     this.estadoSeleccionadoChange.emit('');
+  }
+
+  // Método para actualizar conteos cuando cambien los cursos
+  actualizarConteos(): void {
+    console.log('📊 Actualizando conteos...');
+    this.calcularConteos();
   }
 }

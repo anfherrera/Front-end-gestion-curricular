@@ -100,3 +100,21 @@ mat-form-field.mat-form-field-invalid .mat-form-field-outline {
 mat-form-field.mat-form-field-valid .mat-form-field-outline {
   color: #4caf50;
 }
+
+/* Iconos de los campos de formulario - Color azul de la app */
+mat-form-field mat-icon[matSuffix] {
+  color: #00138C !important;
+}
+
+mat-form-field.mat-focused mat-icon[matSuffix] {
+  color: #001a99 !important;
+}
+
+/* Outline del form field con color azul */
+mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #dee2e6;
+}
+
+mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #00138C;
+}

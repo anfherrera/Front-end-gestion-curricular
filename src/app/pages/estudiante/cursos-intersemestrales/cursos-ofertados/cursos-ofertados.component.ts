@@ -111,7 +111,7 @@ export class CursosOfertadosComponent implements OnInit {
       cupos: curso.cupo_estimado || curso.cupo_disponible,
       creditos: curso.objMateria.creditos,
       espacio: curso.espacio_asignado || 'Por asignar',
-      estado: this.mapEstadoCurso(curso.estado)
+      estado: this.mapEstadoCurso(curso.estado || 'Borrador')
     }));
   }
 
