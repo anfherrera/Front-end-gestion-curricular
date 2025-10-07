@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { Curso as CursoList } from '../../shared/components/curso-list/curso-list.component';
 import { AuthService } from './auth.service';
@@ -78,9 +78,10 @@ export interface UsuarioSolicitud {
 
 export interface SolicitudCursoVerano {
   id_solicitud: number;
+  id_preinscripcion?: number; // ✅ Campo adicional para compatibilidad
   nombre_solicitud: string;
   fecha_solicitud: Date;
-  estado: 'Pendiente' | 'Aprobado' | 'Rechazado' | 'Completado';
+  estado: 'Pendiente' | 'Enviado' | 'Enviada' | 'Aprobado' | 'Rechazado' | 'Completado';
   observaciones?: string;
   condicion?: string;
   objUsuario: UsuarioSolicitud;
@@ -122,7 +123,7 @@ export interface SolicitudCursoNuevo {
   curso: string;
   condicion: CondicionSolicitudVerano;
   fecha: Date;
-  estado: 'Pendiente' | 'Aprobado' | 'Rechazado';
+  estado: 'Pendiente' | 'Enviado' | 'Aprobado' | 'Rechazado';
   objUsuario: Usuario;
 }
 
@@ -150,7 +151,7 @@ export interface Inscripcion {
 export interface Preinscripcion {
   id_preinscripcion: number;
   fecha_preinscripcion: Date;
-  estado: 'Pendiente' | 'Aprobado' | 'Rechazado';
+  estado: 'Pendiente' | 'Enviado' | 'Aprobado' | 'Rechazado';
   observaciones?: string;
   condicion?: string;
   objUsuario: Usuario;
@@ -291,13 +292,54 @@ export class CursosIntersemestralesService {
   }
 
   // Aprobar preinscripción
-  aprobarPreinscripcion(id: number): Observable<SolicitudCursoVerano> {
-    return this.http.put<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/preinscripciones/${id}/aprobar`, {});
+  aprobarPreinscripcion(id: number, comentarios?: string): Observable<any> {
+    console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/preinscripciones/${id}/aprobar`);
+    console.log(`🔍 DEBUG - ID enviado:`, id);
+    console.log(`🔍 DEBUG - Comentarios enviados:`, comentarios);
+    
+    // ✅ Endpoint correcto según especificación
+    const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${id}/aprobar`;
+    
+    // ✅ Body simplificado - solo comentarios si se proporcionan
+    const body = comentarios ? { comentarios } : {};
+    console.log(`🔍 DEBUG - Body enviado:`, body);
+    console.log(`🔍 DEBUG - Endpoint final:`, endpoint);
+    
+    return this.http.put<any>(endpoint, body);
   }
 
   // Rechazar preinscripción
-  rechazarPreinscripcion(id: number, motivo?: string): Observable<SolicitudCursoVerano> {
-    return this.http.put<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/preinscripciones/${id}/rechazar`, { motivo });
+  rechazarPreinscripcion(id: number, motivo: string): Observable<any> {
+    console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/preinscripciones/${id}/rechazar`);
+    console.log(`🔍 DEBUG - ID enviado:`, id);
+    console.log(`🔍 DEBUG - Motivo enviado:`, motivo);
+    
+    // ✅ Endpoint correcto según especificación
+    const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${id}/rechazar`;
+    
+    // ✅ Body con motivo obligatorio
+    const body = { motivo };
+    console.log(`🔍 DEBUG - Body enviado:`, body);
+    console.log(`🔍 DEBUG - Endpoint final:`, endpoint);
+    
+    return this.http.put<any>(endpoint, body);
+  }
+
+  // Actualizar observaciones de preinscripción
+  actualizarObservacionesPreinscripcion(id: number, observaciones: string): Observable<any> {
+    console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/preinscripciones/${id}/observaciones`);
+    console.log(`🔍 DEBUG - ID enviado:`, id);
+    console.log(`🔍 DEBUG - Observaciones enviadas:`, observaciones);
+    
+    // ✅ Endpoint correcto según especificación
+    const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${id}/observaciones`;
+    
+    // ✅ Body con observaciones
+    const body = { observaciones };
+    console.log(`🔍 DEBUG - Body enviado:`, body);
+    console.log(`🔍 DEBUG - Endpoint final:`, endpoint);
+    
+    return this.http.put<any>(endpoint, body);
   }
 
   // Validar pago de inscripción
@@ -471,13 +513,7 @@ export class CursosIntersemestralesService {
     return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/curso/${idCurso}`);
   }
 
-  // Actualizar observaciones de preinscripción
-  actualizarObservacionesPreinscripcion(idPreinscripcion: number, observaciones: string): Observable<any> {
-    console.log(`🌐 Llamando a API: PUT /api/cursos-intersemestrales/preinscripciones/${idPreinscripcion}/observaciones`);
-    return this.http.put<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${idPreinscripcion}/observaciones`, {
-      observaciones: observaciones
-    });
-  }
+
 
 
   // Obtener solicitudes de curso nuevo del usuario

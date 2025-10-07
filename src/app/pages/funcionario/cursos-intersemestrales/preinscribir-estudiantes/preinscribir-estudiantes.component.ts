@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +15,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
 import { CursosIntersemestralesService, CursoOfertadoVerano, Preinscripcion, SolicitudCursoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { UserRole } from '../../../../core/enums/roles.enum';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 
 @Component({
@@ -23,6 +25,7 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatSelectModule,
     MatTableModule,
     MatButtonModule,
@@ -56,6 +59,11 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   cursoSeleccionado: CursoOfertadoVerano | null = null;
   solicitudSeleccionada: SolicitudCursoVerano | null = null;
   
+  // Variables para el modal de rechazo
+  motivoRechazo: string = '';
+  motivoRechazoError: string = '';
+  solicitudParaRechazo: SolicitudCursoVerano | null = null;
+  
   // Columnas de la tabla
   displayedColumns: string[] = [
     'estudiante', 
@@ -67,6 +75,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   constructor(
     private cursosService: CursosIntersemestralesService,
+    private authService: AuthService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
@@ -139,6 +148,11 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
             this.solicitudes = solicitudes;
             this.solicitudesFiltradas = this.solicitudes;
             console.log('✅ Preinscripciones cargadas:', this.solicitudes);
+            console.log('🔍 DEBUG - Primera solicitud completa:', this.solicitudes[0]);
+            if (this.solicitudes[0]) {
+              console.log('🔍 DEBUG - Campos disponibles:', Object.keys(this.solicitudes[0]));
+              console.log('🔍 DEBUG - ID de primera solicitud:', this.solicitudes[0].id_solicitud);
+            }
             this.cargando = false;
           },
           error: (err) => {
@@ -163,6 +177,11 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
             this.solicitudes = solicitudes;
             this.solicitudesFiltradas = this.solicitudes;
             console.log('✅ Preinscripciones cargadas (sin info del curso):', this.solicitudes);
+            console.log('🔍 DEBUG - Primera solicitud completa (fallback):', this.solicitudes[0]);
+            if (this.solicitudes[0]) {
+              console.log('🔍 DEBUG - Campos disponibles (fallback):', Object.keys(this.solicitudes[0]));
+              console.log('🔍 DEBUG - ID de primera solicitud (fallback):', this.solicitudes[0].id_solicitud);
+            }
             this.cargando = false;
           },
           error: (err) => {
@@ -180,6 +199,10 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   verDetalles(solicitud: SolicitudCursoVerano): void {
+    // ✅ Usar el campo correcto del ID
+    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
+    console.log(`👁️ Abriendo modal de detalles para preinscripción ${idSolicitud}`);
+    
     this.solicitudSeleccionada = solicitud;
     this.observacionForm.patchValue({
       observaciones: solicitud.observaciones || ''
@@ -200,20 +223,37 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.observaciones !== undefined) {
-        this.actualizarObservaciones(solicitud.id_solicitud, result.observaciones);
+        // ✅ Usar el campo correcto del ID
+        const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
+        this.actualizarObservaciones(idSolicitud, result.observaciones);
       }
     });
   }
 
   actualizarObservaciones(idSolicitud: number, observaciones: string): void {
+    console.log('🔍 DEBUG - ID de solicitud para observaciones:', idSolicitud);
+    console.log('🔍 DEBUG - Observaciones:', observaciones);
+    
+    if (!idSolicitud) {
+      console.error('❌ ERROR: ID de solicitud es undefined para observaciones');
+      this.snackBar.open('Error: No se pudo identificar la preinscripción para guardar observaciones', 'Cerrar', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
     console.log(`🔄 Actualizando observaciones para preinscripción ${idSolicitud}`);
     
     this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).subscribe({
       next: (response) => {
         console.log('✅ Observaciones actualizadas:', response);
         
-        // Actualizar localmente
-        const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === idSolicitud);
+        // Actualizar localmente usando el ID correcto
+        const index = this.solicitudesFiltradas.findIndex(s => {
+          const sId = (s as any).id_solicitud || (s as any).id_preinscripcion;
+          return sId === idSolicitud;
+        });
         if (index !== -1) {
           this.solicitudesFiltradas[index].observaciones = observaciones;
         }
@@ -234,27 +274,66 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   aprobarSolicitud(solicitud: SolicitudCursoVerano): void {
-    console.log(`✅ Aprobando preinscripción ${solicitud.id_solicitud}`);
+    console.log('🔍 DEBUG - Objeto solicitud completo:', solicitud);
+    console.log('🔍 DEBUG - Campos disponibles:', Object.keys(solicitud));
     
-    this.cursosService.aprobarPreinscripcion(solicitud.id_solicitud).subscribe({
+    // ✅ Usar el campo correcto del ID (id_solicitud o id_preinscripcion)
+    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
+    console.log('🔍 DEBUG - ID encontrado:', idSolicitud);
+    console.log('🔍 DEBUG - Tipo de ID:', typeof idSolicitud);
+    
+    if (!idSolicitud) {
+      console.error('❌ ERROR: No se encontró ID de la solicitud');
+      this.snackBar.open('Error: No se pudo identificar la preinscripción', 'Cerrar', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
+    console.log(`✅ Aprobando preinscripción ${idSolicitud}`);
+    
+    this.cursosService.aprobarPreinscripcion(idSolicitud).subscribe({
       next: (response) => {
         console.log('✅ Preinscripción aprobada:', response);
         
-        // Actualizar estado localmente
-        const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === solicitud.id_solicitud);
+        // Actualizar estado localmente usando el ID correcto
+        const index = this.solicitudesFiltradas.findIndex(s => {
+          const sId = (s as any).id_solicitud || (s as any).id_preinscripcion;
+          return sId === idSolicitud;
+        });
         if (index !== -1) {
           this.solicitudesFiltradas[index].estado = 'Aprobado';
         }
         
-        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
+        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['success-snackbar']
         });
       },
       error: (err) => {
         console.error('❌ Error aprobando preinscripción:', err);
-        this.snackBar.open('Error al aprobar la preinscripción', 'Cerrar', { 
-          duration: 3000,
+        console.error('🔍 DEBUG - Status:', err.status);
+        console.error('🔍 DEBUG - Status Text:', err.statusText);
+        console.error('🔍 DEBUG - Error Body:', err.error);
+        console.error('🔍 DEBUG - Full Error:', JSON.stringify(err, null, 2));
+        
+        let errorMessage = 'Error al aprobar la preinscripción';
+        
+        if (err.status === 500) {
+          errorMessage = 'Error interno del servidor. Verifique los logs del backend.';
+        } else if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.error && typeof err.error === 'string') {
+          errorMessage = err.error;
+        } else if (err.status === 404) {
+          errorMessage = 'Preinscripción no encontrada';
+        } else if (err.status === 400) {
+          errorMessage = 'Datos inválidos para aprobar la preinscripción';
+        }
+        
+        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+          duration: 5000,
           panelClass: ['error-snackbar']
         });
       }
@@ -262,27 +341,117 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   rechazarSolicitud(solicitud: SolicitudCursoVerano): void {
-    console.log(`❌ Rechazando preinscripción ${solicitud.id_solicitud}`);
+    // ✅ Usar el campo correcto del ID
+    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
+    console.log(`❌ Abriendo modal de rechazo para preinscripción ${idSolicitud}`);
     
-    this.cursosService.rechazarPreinscripcion(solicitud.id_solicitud).subscribe({
+    // Abrir modal para solicitar motivo de rechazo
+    this.abrirModalRechazo(solicitud);
+  }
+
+  abrirModalRechazo(solicitud: SolicitudCursoVerano): void {
+    this.solicitudParaRechazo = solicitud;
+    this.motivoRechazo = '';
+    this.motivoRechazoError = '';
+    
+    // Mostrar modal Bootstrap
+    const modal = document.getElementById('modalRechazo');
+    if (modal) {
+      (modal as any).style.display = 'block';
+      modal.classList.add('show');
+      modal.setAttribute('aria-modal', 'true');
+    }
+  }
+
+  cancelarRechazo(): void {
+    this.solicitudParaRechazo = null;
+    this.motivoRechazo = '';
+    this.motivoRechazoError = '';
+    
+    // Ocultar modal Bootstrap
+    const modal = document.getElementById('modalRechazo');
+    if (modal) {
+      (modal as any).style.display = 'none';
+      modal.classList.remove('show');
+      modal.removeAttribute('aria-modal');
+    }
+  }
+
+  confirmarRechazo(): void {
+    // Validar motivo
+    if (!this.motivoRechazo || !this.motivoRechazo.trim()) {
+      this.motivoRechazoError = 'El motivo del rechazo es obligatorio';
+      return;
+    }
+
+    if (!this.solicitudParaRechazo) {
+      this.snackBar.open('Error: No se encontró la solicitud para rechazar', 'Cerrar', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    const idSolicitud = (this.solicitudParaRechazo as any).id_solicitud || (this.solicitudParaRechazo as any).id_preinscripcion;
+    const motivo = this.motivoRechazo.trim();
+    console.log('🔍 DEBUG - ID de solicitud para rechazo:', idSolicitud);
+    console.log('🔍 DEBUG - Tipo de ID:', typeof idSolicitud);
+    console.log('🔍 DEBUG - Motivo:', motivo);
+    
+    if (!idSolicitud) {
+      console.error('❌ ERROR: ID de solicitud es undefined o null para rechazo');
+      this.snackBar.open('Error: No se pudo identificar la preinscripción para rechazar', 'Cerrar', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
+    console.log(`❌ Confirmando rechazo de preinscripción ${idSolicitud} con motivo:`, motivo);
+    
+    this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).subscribe({
       next: (response) => {
         console.log('✅ Preinscripción rechazada:', response);
         
-        // Actualizar estado localmente
-        const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === solicitud.id_solicitud);
+        // Actualizar estado localmente usando el ID correcto
+        const index = this.solicitudesFiltradas.findIndex(s => {
+          const sId = (s as any).id_solicitud || (s as any).id_preinscripcion;
+          return sId === idSolicitud;
+        });
         if (index !== -1) {
           this.solicitudesFiltradas[index].estado = 'Rechazado';
         }
         
-        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} rechazada.`, 'Cerrar', { 
+        this.snackBar.open(`Preinscripción rechazada exitosamente. Motivo: ${motivo}`, 'Cerrar', { 
           duration: 5000,
-          panelClass: ['error-snackbar']
+          panelClass: ['success-snackbar']
         });
+        
+        this.cancelarRechazo();
       },
       error: (err) => {
         console.error('❌ Error rechazando preinscripción:', err);
-        this.snackBar.open('Error al rechazar la preinscripción', 'Cerrar', { 
-          duration: 3000,
+        console.error('🔍 DEBUG - Status:', err.status);
+        console.error('🔍 DEBUG - Status Text:', err.statusText);
+        console.error('🔍 DEBUG - Error Body:', err.error);
+        console.error('🔍 DEBUG - Full Error:', JSON.stringify(err, null, 2));
+        
+        let errorMessage = 'Error al rechazar la preinscripción';
+        
+        if (err.status === 500) {
+          errorMessage = 'Error interno del servidor. Verifique los logs del backend.';
+        } else if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.error && typeof err.error === 'string') {
+          errorMessage = err.error;
+        } else if (err.status === 404) {
+          errorMessage = 'Preinscripción no encontrada';
+        } else if (err.status === 400) {
+          errorMessage = 'Datos inválidos para rechazar la preinscripción';
+        }
+        
+        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+          duration: 5000,
           panelClass: ['error-snackbar']
         });
       }
@@ -291,6 +460,48 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   getEstadoColor(estado: string): string {
     return '#00138C'; // Color azul consistente
+  }
+
+  // ===== VALIDACIONES DE PERMISOS =====
+
+  /**
+   * Verificar si el usuario puede gestionar preinscripciones (aprobar/rechazar)
+   */
+  puedeGestionarPreinscripciones(): boolean {
+    const userRole = this.authService.getRole();
+    return userRole === UserRole.FUNCIONARIO || userRole === UserRole.ADMIN || userRole === UserRole.COORDINADOR;
+  }
+
+  /**
+   * Verificar si se puede aprobar una preinscripción específica
+   */
+  puedeAprobar(solicitud: SolicitudCursoVerano): boolean {
+    if (!this.puedeGestionarPreinscripciones()) {
+      return false;
+    }
+    
+    // Se pueden aprobar preinscripciones en estado Pendiente, Enviado o Enviada
+    return solicitud.estado === 'Pendiente' || solicitud.estado === 'Enviado' || solicitud.estado === 'Enviada';
+  }
+
+  /**
+   * Verificar si se puede rechazar una preinscripción específica
+   */
+  puedeRechazar(solicitud: SolicitudCursoVerano): boolean {
+    if (!this.puedeGestionarPreinscripciones()) {
+      return false;
+    }
+    
+    // Se pueden rechazar preinscripciones en estado Pendiente, Enviado o Enviada
+    return solicitud.estado === 'Pendiente' || solicitud.estado === 'Enviado' || solicitud.estado === 'Enviada';
+  }
+
+  /**
+   * Verificar si se puede ver los detalles de una preinscripción
+   */
+  puedeVerDetalles(solicitud: SolicitudCursoVerano): boolean {
+    // Todos los funcionarios pueden ver detalles
+    return this.puedeGestionarPreinscripciones();
   }
 
 }
@@ -437,6 +648,180 @@ export class DetallesPreinscripcionDialogComponent {
     if (this.observacionesForm.valid) {
       this.dialogRef.close({
         observaciones: this.observacionesForm.value.observaciones
+      });
+    }
+  }
+}
+
+// Componente del modal para rechazar preinscripción
+@Component({
+  selector: 'app-rechazo-preinscripcion-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule
+  ],
+  template: `
+    <div class="rechazo-dialog">
+      <h2 mat-dialog-title>
+        <mat-icon style="color: #f44336;">cancel</mat-icon>
+        Rechazar Preinscripción
+      </h2>
+      
+      <div mat-dialog-content class="dialog-content">
+        <div class="info-section">
+          <h3>📝 Información del Estudiante</h3>
+          <div class="student-info">
+            <p><strong>Nombre:</strong> {{ data.solicitud.objUsuario.nombre_completo }}</p>
+            <p><strong>Código:</strong> {{ data.solicitud.objUsuario.codigo || 'N/A' }}</p>
+            <p><strong>Curso:</strong> {{ data.solicitud.objCursoOfertadoVerano.nombre_curso || 'N/A' }}</p>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>⚠️ Motivo del Rechazo</h3>
+          <p class="required-note">El motivo del rechazo es obligatorio para proceder.</p>
+          <form [formGroup]="rechazoForm">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Ingrese el motivo del rechazo</mat-label>
+              <textarea matInput 
+                        formControlName="motivo"
+                        placeholder="Ej: No cumple con los requisitos académicos, cupo lleno, documentación incompleta..."
+                        rows="4"
+                        required>
+              </textarea>
+              <mat-error *ngIf="rechazoForm.get('motivo')?.hasError('required')">
+                El motivo del rechazo es obligatorio
+              </mat-error>
+              <mat-error *ngIf="rechazoForm.get('motivo')?.hasError('minlength')">
+                El motivo debe tener al menos 10 caracteres
+              </mat-error>
+            </mat-form-field>
+          </form>
+        </div>
+      </div>
+
+      <div mat-dialog-actions class="dialog-actions">
+        <button mat-button (click)="dialogRef.close()" class="btn-cancel">
+          <mat-icon>close</mat-icon>
+          Cancelar
+        </button>
+        <button mat-raised-button 
+                color="warn" 
+                (click)="confirmarRechazo()"
+                [disabled]="rechazoForm.invalid"
+                class="btn-reject">
+          <mat-icon>cancel</mat-icon>
+          Confirmar Rechazo
+        </button>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .rechazo-dialog {
+      max-width: 500px;
+    }
+
+    .dialog-content {
+      padding: 20px;
+    }
+
+    .info-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border-left: 4px solid #17a2b8;
+    }
+
+    .info-section h3 {
+      margin: 0 0 12px 0;
+      color: #00138C;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .student-info p {
+      margin: 4px 0;
+      color: #333;
+    }
+
+    .form-section {
+      background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+      border-radius: 8px;
+      padding: 16px;
+      border-left: 4px solid #f44336;
+    }
+
+    .form-section h3 {
+      margin: 0 0 8px 0;
+      color: #f44336;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .required-note {
+      color: #f44336;
+      font-size: 14px;
+      margin: 0 0 16px 0;
+      font-weight: 500;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 20px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .btn-cancel {
+      color: #666;
+    }
+
+    .btn-reject {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .btn-reject:disabled {
+      background-color: #ccc;
+      color: #666;
+    }
+
+    ::ng-deep .mat-mdc-form-field {
+      .mat-mdc-text-field-wrapper {
+        background-color: white;
+      }
+    }
+  `]
+})
+export class RechazoPreinscripcionDialogComponent {
+  rechazoForm: FormGroup;
+
+  constructor(
+    public dialogRef: MatDialogRef<RechazoPreinscripcionDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { solicitud: SolicitudCursoVerano },
+    private fb: FormBuilder
+  ) {
+    this.rechazoForm = this.fb.group({
+      motivo: ['', [Validators.required, Validators.minLength(10)]]
+    });
+  }
+
+  confirmarRechazo(): void {
+    if (this.rechazoForm.valid) {
+      this.dialogRef.close({
+        motivo: this.rechazoForm.value.motivo.trim()
       });
     }
   }

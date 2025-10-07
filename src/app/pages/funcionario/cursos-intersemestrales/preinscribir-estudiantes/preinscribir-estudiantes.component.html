@@ -83,28 +83,37 @@
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let solicitud">
             <div class="acciones-container">
-              <button mat-icon-button 
+              
+              <!-- Botón Ver (solo si tiene permisos) -->
+              <button mat-raised-button 
+                      *ngIf="puedeVerDetalles(solicitud)"
                       (click)="verDetalles(solicitud)"
                       matTooltip="Ver detalles y agregar observaciones"
-                      style="color: #00138C !important;">
-                <mat-icon style="color: #00138C !important;">visibility</mat-icon>
+                      class="btn-ver">
+                <mat-icon>visibility</mat-icon>
+                Ver
               </button>
               
-              <button mat-icon-button 
-                      *ngIf="solicitud.estado === 'Pendiente'"
+              <!-- Botón Aprobar (solo si tiene permisos y estado válido) -->
+              <button mat-raised-button 
+                      *ngIf="puedeAprobar(solicitud)"
                       (click)="aprobarSolicitud(solicitud)"
                       matTooltip="Aprobar preinscripción y pasar a inscripción"
-                      style="color: #4CAF50 !important;">
-                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
+                      class="btn-aprobar">
+                <mat-icon>check_circle</mat-icon>
+                Aprobar
               </button>
               
-              <button mat-icon-button 
-                      *ngIf="solicitud.estado === 'Pendiente'"
+              <!-- Botón Rechazar (solo si tiene permisos y estado válido) -->
+              <button mat-raised-button 
+                      *ngIf="puedeRechazar(solicitud)"
                       (click)="rechazarSolicitud(solicitud)"
                       matTooltip="Rechazar preinscripción"
-                      style="color: #f44336 !important;">
-                <mat-icon style="color: #f44336 !important;">cancel</mat-icon>
+                      class="btn-rechazar">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
               </button>
+              
             </div>
           </td>
         </ng-container>
@@ -144,3 +153,64 @@
   </div>
 
 </app-card-container>
+
+<!-- Modal para motivo de rechazo -->
+<div class="modal fade" id="modalRechazo" tabindex="-1" role="dialog" aria-labelledby="modalRechazoLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalRechazoLabel">
+          <mat-icon>cancel</mat-icon>
+          Rechazar Preinscripción
+        </h5>
+        <button type="button" class="close" (click)="cancelarRechazo()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning" role="alert">
+          <mat-icon>warning</mat-icon>
+          <strong>Atención:</strong> Esta acción no se puede deshacer.
+        </div>
+        
+        <div class="form-group">
+          <label for="motivoRechazo" class="form-label">
+            <strong>Motivo del rechazo *</strong>
+          </label>
+          <textarea 
+            id="motivoRechazo" 
+            placeholder="Ej: Documentación incompleta, no cumple requisitos académicos, etc."
+            rows="4"
+            class="form-control"
+            [(ngModel)]="motivoRechazo"
+            [class.is-invalid]="motivoRechazoError"
+            required>
+          </textarea>
+          <div *ngIf="motivoRechazoError" class="invalid-feedback">
+            {{ motivoRechazoError }}
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Estudiante:</label>
+          <p class="form-control-plaintext">{{ solicitudSeleccionada?.objUsuario?.nombre_completo }}</p>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Curso:</label>
+          <p class="form-control-plaintext">{{ solicitudSeleccionada?.objCursoOfertadoVerano?.nombre_curso }}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelarRechazo()">
+          <mat-icon>close</mat-icon>
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-danger" (click)="confirmarRechazo()" [disabled]="!motivoRechazo || !motivoRechazo.trim()">
+          <mat-icon>cancel</mat-icon>
+          Confirmar Rechazo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
