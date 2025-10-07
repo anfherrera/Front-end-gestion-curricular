@@ -115,7 +115,8 @@ export class CursosOfertadosComponent implements OnInit {
     }));
   }
 
-  private mapEstadoCurso(estado: string): 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Publicado' {
+  private mapEstadoCurso(estado: string): 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Publicado' | 'Abierto' | 'Borrador' {
+    // Mostrar el estado real del backend sin mapear
     switch (estado) {
       case 'Publicado':
         return 'Publicado';  // Pueden solicitar curso nuevo
@@ -126,10 +127,13 @@ export class CursosOfertadosComponent implements OnInit {
       case 'Cerrado':
         return 'Cerrado';  // Solo consulta
       case 'Abierto':
+        return 'Abierto';  // Estado real del backend
+      case 'Borrador':
+        return 'Borrador';  // Estado real del backend
       case 'Disponible':
         return 'Disponible';  // Visible pero sin acciones específicas
       default:
-        return 'En espera';  // Borrador u otros estados
+        return estado as any;  // Devolver el estado real del backend
     }
   }
 
