@@ -7,8 +7,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
-import { ComentariosDialogComponent } from '../comentarios-dialog/comentarios-dialog.component';
-import { ComentarioDialogComponent, ComentarioDialogData } from '../comentario-dialog/comentario-dialog.component';
 
 // Interfaz genérica para documentos
 interface DocumentoGenerico {
@@ -32,8 +30,6 @@ interface DocumentoGenerico {
     MatTooltipModule,
     MatSnackBarModule,
     MatDialogModule,
-    ComentariosDialogComponent,
-    ComentarioDialogComponent
   ],
   templateUrl: './documentation-viewer.component.html',
   styleUrls: ['./documentation-viewer.component.css']
@@ -132,19 +128,8 @@ export class DocumentationViewerComponent implements OnInit {
       return;
     }
 
-    // Abrir diálogo de comentarios
-    const dialogRef = this.dialog.open(ComentariosDialogComponent, {
-      width: '600px',
-      data: {
-        titulo: `Comentarios - ${documento.nombre}`,
-        documentos: [documento],
-        comentarioRechazo: null
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('Diálogo de comentarios cerrado');
-    });
+    // Funcionalidad temporalmente deshabilitada
+    this.snackBar.open('Funcionalidad de comentarios no disponible temporalmente', 'Cerrar', { duration: 3000 });
   }
 
   /**
@@ -181,24 +166,7 @@ export class DocumentationViewerComponent implements OnInit {
    * Agregar comentario a un documento
    */
   agregarComentario(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
-    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
-      width: '500px',
-      data: <ComentarioDialogData>{
-        titulo: 'Añadir Comentario',
-        descripcion: 'Ingrese un comentario para este documento:',
-        placeholder: 'Escriba su comentario aquí...',
-        nombreDocumento: documento.nombre
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((comentario: string) => {
-      if (comentario && documento.id_documento) {
-        // Emitir evento para que el componente padre maneje la lógica
-        this.comentarioAgregado.emit({
-          documento: documento,
-          comentario: comentario
-        });
-      }
-    });
+    // Funcionalidad temporalmente deshabilitada
+    this.snackBar.open('Funcionalidad de comentarios no disponible temporalmente', 'Cerrar', { duration: 3000 });
   }
 }

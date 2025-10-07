@@ -150,7 +150,7 @@ export class CursosOfertadosComponent implements OnInit {
   }
 
   private realizarPreinscripcion(curso: CursoOfertadoVerano) {
-    if (curso.estado !== 'Preinscripcion') {
+    if (curso.estado !== 'Preinscripción') {
       this.snackBar.open('Este curso no está en período de preinscripción', 'Cerrar', { duration: 3000 });
       return;
     }
@@ -158,7 +158,8 @@ export class CursosOfertadosComponent implements OnInit {
     const payload: CreatePreinscripcionDTO = {
       idUsuario: this.usuario.id_usuario,
       idCurso: curso.id_curso,
-      nombreSolicitud: `Preinscripción - ${curso.nombre_curso}`
+      nombreSolicitud: `Preinscripción - ${curso.nombre_curso}`,
+      condicion: 'Primera_Vez' // Valor por defecto para preinscripciones directas
     };
 
     this.cursosService.crearPreinscripcion(payload).subscribe({
@@ -182,7 +183,7 @@ export class CursosOfertadosComponent implements OnInit {
   }
 
   private realizarInscripcion(curso: CursoOfertadoVerano) {
-    if (curso.estado !== 'Inscripcion') {
+    if (curso.estado !== 'Inscripción') {
       this.snackBar.open('Este curso no está en período de inscripción', 'Cerrar', { duration: 3000 });
       return;
     }
@@ -220,10 +221,10 @@ export class CursosOfertadosComponent implements OnInit {
     const acciones: string[] = [];
     
     switch (cursoVerano.estado) {
-      case 'Preinscripcion':
+      case 'Preinscripción':
         acciones.push('preinscribir');
         break;
-      case 'Inscripcion':
+      case 'Inscripción':
         acciones.push('inscribir');
         break;
       case 'Abierto':

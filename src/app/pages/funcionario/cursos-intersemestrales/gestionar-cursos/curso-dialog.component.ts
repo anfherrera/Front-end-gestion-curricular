@@ -190,10 +190,11 @@ export interface CursoDialogData {
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Estado</mat-label>
             <mat-select formControlName="estado">
+              <mat-option value="Borrador">Borrador</mat-option>
               <mat-option value="Abierto">Abierto</mat-option>
               <mat-option value="Publicado">Publicado</mat-option>
-              <mat-option value="Preinscripcion">Preinscripción</mat-option>
-              <mat-option value="Inscripcion">Inscripción</mat-option>
+              <mat-option value="Preinscripción">Preinscripción</mat-option>
+              <mat-option value="Inscripción">Inscripción</mat-option>
               <mat-option value="Cerrado">Cerrado</mat-option>
             </mat-select>
             <mat-error *ngIf="data.form.get('estado')?.hasError('required')">

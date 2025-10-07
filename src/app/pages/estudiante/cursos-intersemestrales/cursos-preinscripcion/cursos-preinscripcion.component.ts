@@ -40,8 +40,8 @@ export class CursosPreinscripcionComponent implements OnInit {
     console.log('🔄 Cargando cursos reales de la base de datos...');
     console.log('🌐 Endpoint de datos reales:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
     
-    // Cargar cursos reales del backend
-    this.cursosService.getCursosDisponibles().subscribe({
+    // Cargar cursos reales del backend (solo cursos en preinscripción)
+    this.cursosService.getCursosPorEstado('Preinscripción').subscribe({
       next: (cursosReales) => {
         console.log('✅ CURSOS REALES DE LA BASE DE DATOS:', cursosReales);
         console.log(`📊 Total de cursos encontrados: ${cursosReales.length}`);

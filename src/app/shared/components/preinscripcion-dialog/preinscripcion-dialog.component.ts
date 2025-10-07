@@ -98,7 +98,8 @@ export class PreinscripcionDialogComponent implements OnInit {
       const payload: CreatePreinscripcionDTO = {
         idUsuario: this.usuario.id_usuario,
         idCurso: this.data.curso.id_curso,
-        nombreSolicitud: `Preinscripción - ${this.data.curso.nombre_curso}`
+        nombreSolicitud: `Preinscripción - ${this.data.curso.nombre_curso}`,
+        condicion: formData.condicion
       };
 
       this.cursosService.crearPreinscripcion(payload).subscribe({

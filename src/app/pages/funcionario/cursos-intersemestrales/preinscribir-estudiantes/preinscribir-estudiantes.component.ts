@@ -113,31 +113,68 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('❌ Error cargando cursos:', err);
-        this.cursos = this.getCursosPrueba();
+        this.cursos = [];
         this.cargando = false;
+        this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
 
   cargarSolicitudesPorCurso(cursoId: number): void {
     this.cargando = true;
-    console.log(`🔄 Cargando solicitudes para curso ID: ${cursoId}`);
+    console.log(`🔄 Cargando información del curso ID: ${cursoId}`);
     
-    // Buscar el curso seleccionado
-    this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
-    
-    this.cursosService.getTodasLasSolicitudes().subscribe({
-      next: (solicitudes) => {
-        // Filtrar solicitudes por curso
-        this.solicitudes = solicitudes.filter(s => s.objCursoOfertadoVerano.id_curso === cursoId);
-        this.solicitudesFiltradas = this.solicitudes;
-        console.log('✅ Solicitudes cargadas:', this.solicitudes);
-        this.cargando = false;
+    // Cargar información actualizada del curso específico
+    this.cursosService.getCursoPorId(cursoId).subscribe({
+      next: (curso) => {
+        this.cursoSeleccionado = curso;
+        console.log('✅ Información del curso cargada:', curso);
+        
+        // Ahora cargar las preinscripciones para este curso
+        this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
+          next: (solicitudes) => {
+            this.solicitudes = solicitudes;
+            this.solicitudesFiltradas = this.solicitudes;
+            console.log('✅ Preinscripciones cargadas:', this.solicitudes);
+            this.cargando = false;
+          },
+          error: (err) => {
+            console.error('❌ Error cargando preinscripciones:', err);
+            this.solicitudesFiltradas = [];
+            this.cargando = false;
+            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', { 
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
       },
       error: (err) => {
-        console.error('❌ Error cargando solicitudes:', err);
-        this.solicitudesFiltradas = this.getSolicitudesPrueba();
-        this.cargando = false;
+        console.error('❌ Error cargando información del curso:', err);
+        // Fallback: buscar el curso en la lista local
+        this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
+        
+        // Intentar cargar preinscripciones de todas formas
+        this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
+          next: (solicitudes) => {
+            this.solicitudes = solicitudes;
+            this.solicitudesFiltradas = this.solicitudes;
+            console.log('✅ Preinscripciones cargadas (sin info del curso):', this.solicitudes);
+            this.cargando = false;
+          },
+          error: (err) => {
+            console.error('❌ Error cargando preinscripciones:', err);
+            this.solicitudesFiltradas = [];
+            this.cargando = false;
+            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', { 
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
       }
     });
   }
@@ -169,23 +206,39 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   actualizarObservaciones(idSolicitud: number, observaciones: string): void {
-    console.log(`🔄 Actualizando observaciones para solicitud ${idSolicitud}`);
+    console.log(`🔄 Actualizando observaciones para preinscripción ${idSolicitud}`);
     
-    // Por ahora solo actualizamos localmente hasta que el backend implemente el endpoint
-    const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === idSolicitud);
-    if (index !== -1) {
-      this.solicitudesFiltradas[index].observaciones = observaciones;
-    }
-    
-    this.snackBar.open('Observaciones guardadas exitosamente', 'Cerrar', { duration: 3000 });
+    this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).subscribe({
+      next: (response) => {
+        console.log('✅ Observaciones actualizadas:', response);
+        
+        // Actualizar localmente
+        const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === idSolicitud);
+        if (index !== -1) {
+          this.solicitudesFiltradas[index].observaciones = observaciones;
+        }
+        
+        this.snackBar.open('Observaciones guardadas exitosamente', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error actualizando observaciones:', err);
+        this.snackBar.open('Error al guardar las observaciones', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 
   aprobarSolicitud(solicitud: SolicitudCursoVerano): void {
-    console.log(`✅ Aprobando solicitud ${solicitud.id_solicitud}`);
+    console.log(`✅ Aprobando preinscripción ${solicitud.id_solicitud}`);
     
-    this.cursosService.aprobarSolicitud(solicitud.id_solicitud).subscribe({
+    this.cursosService.aprobarPreinscripcion(solicitud.id_solicitud).subscribe({
       next: (response) => {
-        console.log('✅ Solicitud aprobada:', response);
+        console.log('✅ Preinscripción aprobada:', response);
         
         // Actualizar estado localmente
         const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === solicitud.id_solicitud);
@@ -193,14 +246,14 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].estado = 'Aprobado';
         }
         
-        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre_completo} aprobada. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
+        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['success-snackbar']
         });
       },
       error: (err) => {
-        console.error('❌ Error aprobando solicitud:', err);
-        this.snackBar.open('Error al aprobar la solicitud', 'Cerrar', { 
+        console.error('❌ Error aprobando preinscripción:', err);
+        this.snackBar.open('Error al aprobar la preinscripción', 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -209,11 +262,11 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   rechazarSolicitud(solicitud: SolicitudCursoVerano): void {
-    console.log(`❌ Rechazando solicitud ${solicitud.id_solicitud}`);
+    console.log(`❌ Rechazando preinscripción ${solicitud.id_solicitud}`);
     
-    this.cursosService.rechazarSolicitud(solicitud.id_solicitud).subscribe({
+    this.cursosService.rechazarPreinscripcion(solicitud.id_solicitud).subscribe({
       next: (response) => {
-        console.log('✅ Solicitud rechazada:', response);
+        console.log('✅ Preinscripción rechazada:', response);
         
         // Actualizar estado localmente
         const index = this.solicitudesFiltradas.findIndex(s => s.id_solicitud === solicitud.id_solicitud);
@@ -221,14 +274,14 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].estado = 'Rechazado';
         }
         
-        this.snackBar.open(`Solicitud de ${solicitud.objUsuario.nombre_completo} rechazada.`, 'Cerrar', { 
+        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} rechazada.`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
       },
       error: (err) => {
-        console.error('❌ Error rechazando solicitud:', err);
-        this.snackBar.open('Error al rechazar la solicitud', 'Cerrar', { 
+        console.error('❌ Error rechazando preinscripción:', err);
+        this.snackBar.open('Error al rechazar la preinscripción', 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -240,94 +293,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     return '#00138C'; // Color azul consistente
   }
 
-  // Datos de prueba
-  private getCursosPrueba(): CursoOfertadoVerano[] {
-    return [
-      {
-        id_curso: 1,
-        nombre_curso: 'Álgebra Lineal',
-        codigo_curso: 'ALG-201',
-        descripcion: 'Fundamentos de álgebra lineal',
-        fecha_inicio: new Date('2024-01-15'),
-        fecha_fin: new Date('2024-03-15'),
-        cupo_maximo: 30,
-        cupo_estimado: 25,
-        cupo_disponible: 20,
-        espacio_asignado: 'Aula 301',
-        estado: 'Preinscripcion',
-        objMateria: { id_materia: 1, codigo: 'ALG', nombre: 'Álgebra Lineal', creditos: 4, descripcion: 'Álgebra Lineal (ALG) - 4 créditos' },
-        objDocente: { id_usuario: 1, nombre: 'María', apellido: 'García', email: 'maria@unicauca.edu.co', telefono: '3001234567', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
-      },
-      {
-        id_curso: 2,
-        nombre_curso: 'Cálculo 1',
-        codigo_curso: 'CAL-101',
-        descripcion: 'Fundamentos de cálculo diferencial',
-        fecha_inicio: new Date('2024-01-15'),
-        fecha_fin: new Date('2024-03-15'),
-        cupo_maximo: 35,
-        cupo_estimado: 30,
-        cupo_disponible: 25,
-        espacio_asignado: 'Aula 205',
-        estado: 'Preinscripcion',
-        objMateria: { id_materia: 2, codigo: 'CAL', nombre: 'Cálculo 1', creditos: 4, descripcion: 'Cálculo 1 (CAL) - 4 créditos' },
-        objDocente: { id_usuario: 2, nombre: 'Carlos', apellido: 'López', email: 'carlos@unicauca.edu.co', telefono: '3007654321', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
-      },
-      {
-        id_curso: 3,
-        nombre_curso: 'Programación I',
-        codigo_curso: 'PROG-201',
-        descripcion: 'Fundamentos de programación',
-        fecha_inicio: new Date('2024-01-15'),
-        fecha_fin: new Date('2024-03-15'),
-        cupo_maximo: 25,
-        cupo_estimado: 20,
-        cupo_disponible: 15,
-        espacio_asignado: 'Lab 301',
-        estado: 'Preinscripcion',
-        objMateria: { id_materia: 3, codigo: 'PROG', nombre: 'Programación I', creditos: 4, descripcion: 'Programación I (PROG) - 4 créditos' },
-        objDocente: { id_usuario: 3, nombre: 'Ana', apellido: 'Martínez', email: 'ana@unicauca.edu.co', telefono: '3009876543', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
-      }
-    ];
-  }
-
-  private getSolicitudesPrueba(): SolicitudCursoVerano[] {
-    return [
-      {
-        id_solicitud: 1,
-        nombre_solicitud: 'Solicitud de Curso Nuevo',
-        fecha_solicitud: new Date('2024-01-10'),
-        estado: 'Pendiente',
-        observaciones: '',
-        condicion: 'Primera_Vez',
-        objUsuario: { id_usuario: 4, nombre_completo: 'Pepa González', rol: { id_rol: 1, nombre: 'Estudiante' }, codigo: '104612345660', correo: 'pepa.gonzalez@unicauca.edu.co', estado_usuario: true, objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Informática' } },
-        objCursoOfertadoVerano: this.cursoSeleccionado!,
-        tipoSolicitud: 'PREINSCRIPCION'
-      },
-      {
-        id_solicitud: 2,
-        nombre_solicitud: 'Solicitud de Curso Nuevo',
-        fecha_solicitud: new Date('2024-01-11'),
-        estado: 'Pendiente',
-        observaciones: '',
-        condicion: 'Habilitación',
-        objUsuario: { id_usuario: 5, nombre_completo: 'María González', rol: { id_rol: 1, nombre: 'Estudiante' }, codigo: '104612345661', correo: 'maria.gonzalez@unicauca.edu.co', estado_usuario: true, objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Informática' } },
-        objCursoOfertadoVerano: this.cursoSeleccionado!,
-        tipoSolicitud: 'PREINSCRIPCION'
-      },
-      {
-        id_solicitud: 3,
-        nombre_solicitud: 'Solicitud de Curso Nuevo',
-        fecha_solicitud: new Date('2024-01-12'),
-        estado: 'Aprobado',
-        observaciones: 'Estudiante con buen rendimiento académico',
-        condicion: 'Repeteción',
-        objUsuario: { id_usuario: 6, nombre_completo: 'Pedro Rodríguez', rol: { id_rol: 1, nombre: 'Estudiante' }, codigo: '104612345662', correo: 'pedro@unicauca.edu.co', estado_usuario: true, objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Informática' } },
-        objCursoOfertadoVerano: this.cursoSeleccionado!,
-        tipoSolicitud: 'PREINSCRIPCION'
-      }
-    ];
-  }
 }
 
 // Componente del dialog para ver detalles de preinscripción

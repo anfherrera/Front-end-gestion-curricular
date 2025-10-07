@@ -9,6 +9,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CursosIntersemestralesService, SolicitudCursoVerano, CursoOfertadoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { NotificacionesService, Notificacion } from '../../../../core/services/notificaciones.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -46,6 +47,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
 
   constructor(
     private cursosService: CursosIntersemestralesService,
+    private cursoEstadosService: CursoEstadosService,
     private notificacionesService: NotificacionesService,
     private authService: AuthService
   ) {}
@@ -68,7 +70,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   }
 
   private cargarCursosActivos(): void {
-    this.cursosService.getCursosDisponibles()
+    this.cursosService.getTodosLosCursosParaFuncionarios()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (cursos) => {
@@ -84,8 +86,8 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
 
   private calcularEstadisticasCursos(cursos: CursoOfertadoVerano[]): void {
     // Contar cursos por estado
-    this.preinscripcionesPendientes = cursos.filter(c => c.estado === 'Preinscripcion').length;
-    this.inscripcionesPendientes = cursos.filter(c => c.estado === 'Inscripcion').length;
+    this.preinscripcionesPendientes = cursos.filter(c => c.estado === 'Preinscripción').length;
+    this.inscripcionesPendientes = cursos.filter(c => c.estado === 'Inscripción').length;
   }
 
   private cargarNotificaciones(): void {
@@ -107,11 +109,6 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     if (this.totalCursosActivos === 0) return 0;
     const cursosGestionados = this.totalCursosActivos - this.preinscripcionesPendientes - this.inscripcionesPendientes;
     return (cursosGestionados / this.totalCursosActivos) * 100;
-  }
-
-  getEstadoColor(estado: string): string {
-    // Todos los estados usan el azul principal de la app
-    return '#00138C';
   }
 
   getTipoSolicitudColor(tipo: string): string {
@@ -144,14 +141,11 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return this.notificacionesService.getColorTipo(tipoNotificacion);
   }
 
+  getEstadoColor(estado: string): string {
+    return this.cursoEstadosService.getColorEstado(estado);
+  }
+
   getIconoEstado(estado: string): string {
-    const iconos: { [key: string]: string } = {
-      'Abierto': 'lock_open',
-      'Publicado': 'visibility',
-      'Preinscripcion': 'person_add',
-      'Inscripcion': 'how_to_reg',
-      'Cerrado': 'lock'
-    };
-    return iconos[estado] || 'help';
+    return this.cursoEstadosService.getIconoEstado(estado);
   }
 }

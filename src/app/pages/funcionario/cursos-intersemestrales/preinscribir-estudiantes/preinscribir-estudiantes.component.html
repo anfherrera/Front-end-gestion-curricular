@@ -8,7 +8,7 @@
         <mat-label>Selecciona un curso</mat-label>
         <mat-select formControlName="curso" placeholder="Elige un curso para ver las preinscripciones">
           <mat-option *ngFor="let curso of cursos" [value]="curso.id_curso">
-            {{ curso.nombre_curso }} ({{ curso.codigo_curso }}) - {{ curso.objDocente.nombre }} {{ curso.objDocente.apellido }}
+            {{ curso.nombre_curso || 'Sin nombre' }} ({{ curso.codigo_curso || 'Sin código' }}) - {{ curso.objDocente.nombre || 'Sin' }} {{ curso.objDocente.apellido || 'docente' }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -23,11 +23,11 @@
 
   <!-- Lista de preinscripciones -->
   <div *ngIf="cursoSeleccionado && !cargando" class="preinscripciones-section">
-    <h3>👥 Solicitudes de Curso Nuevo para {{ cursoSeleccionado.nombre_curso }}</h3>
+    <h3>👥 Preinscripciones para {{ cursoSeleccionado.nombre_curso }}</h3>
     
     <div *ngIf="solicitudesFiltradas.length === 0" class="no-data">
       <mat-icon>info</mat-icon>
-      <p>No hay solicitudes de curso nuevo para este curso.</p>
+      <p>No hay preinscripciones para este curso.</p>
     </div>
 
     <div *ngIf="solicitudesFiltradas.length > 0" class="table-container">
@@ -38,8 +38,9 @@
           <th mat-header-cell *matHeaderCellDef>Estudiante</th>
           <td mat-cell *matCellDef="let solicitud">
             <div class="estudiante-info">
-              <strong>{{ solicitud.objUsuario.nombre }} {{ solicitud.objUsuario.apellido }}</strong>
-              <small>{{ solicitud.objUsuario.email }}</small>
+              <strong>{{ solicitud.objUsuario.nombre_completo || 'Sin nombre' }}</strong>
+              <small>{{ solicitud.objUsuario.correo || 'Sin email' }}</small>
+              <small>Código: {{ solicitud.objUsuario.codigo || 'Sin código' }}</small>
             </div>
           </td>
         </ng-container>
@@ -92,7 +93,7 @@
               <button mat-icon-button 
                       *ngIf="solicitud.estado === 'Pendiente'"
                       (click)="aprobarSolicitud(solicitud)"
-                      matTooltip="Aprobar solicitud y pasar a inscripción"
+                      matTooltip="Aprobar preinscripción y pasar a inscripción"
                       style="color: #4CAF50 !important;">
                 <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
               </button>
@@ -100,7 +101,7 @@
               <button mat-icon-button 
                       *ngIf="solicitud.estado === 'Pendiente'"
                       (click)="rechazarSolicitud(solicitud)"
-                      matTooltip="Rechazar solicitud"
+                      matTooltip="Rechazar preinscripción"
                       style="color: #f44336 !important;">
                 <mat-icon style="color: #f44336 !important;">cancel</mat-icon>
               </button>
@@ -119,16 +120,25 @@
     <h4>📋 Información del Curso</h4>
     <div class="info-grid">
       <div class="info-item">
-        <strong>Docente:</strong> {{ cursoSeleccionado.objDocente.nombre }} {{ cursoSeleccionado.objDocente.apellido }}
+        <strong>Docente:</strong> {{ cursoSeleccionado.objDocente.nombre || 'Sin asignar' }} {{ cursoSeleccionado.objDocente.apellido || '' }}
       </div>
       <div class="info-item">
-        <strong>Cupo Estimado:</strong> {{ cursoSeleccionado.cupo_estimado }} estudiantes
+        <strong>Cupo Estimado:</strong> {{ cursoSeleccionado.cupo_estimado || 0 }} estudiantes
       </div>
       <div class="info-item">
-        <strong>Espacio:</strong> {{ cursoSeleccionado.espacio_asignado }}
+        <strong>Espacio:</strong> {{ cursoSeleccionado.espacio_asignado || 'Por asignar' }}
       </div>
       <div class="info-item">
-        <strong>Solicitudes:</strong> {{ solicitudesFiltradas.length }} estudiantes
+        <strong>Preinscripciones:</strong> {{ solicitudesFiltradas.length }} estudiantes
+      </div>
+      <div class="info-item">
+        <strong>Estado:</strong> {{ cursoSeleccionado.estado || 'Sin estado' }}
+      </div>
+      <div class="info-item">
+        <strong>Fecha Inicio:</strong> {{ cursoSeleccionado.fecha_inicio | date:'dd/MM/yyyy' }}
+      </div>
+      <div class="info-item">
+        <strong>Fecha Fin:</strong> {{ cursoSeleccionado.fecha_fin | date:'dd/MM/yyyy' }}
       </div>
     </div>
   </div>

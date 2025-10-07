@@ -42,7 +42,7 @@ export interface CursoOfertadoVerano {
   cupo_disponible: number;
   cupo_estimado: number;
   espacio_asignado: string;
-  estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado' | 'Disponible';
+  estado: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
   objMateria: Materia;
   objDocente: Usuario;
 }
@@ -158,6 +158,7 @@ export interface CreatePreinscripcionDTO {
   idUsuario: number;
   idCurso: number;
   nombreSolicitud: string;
+  condicion?: string; // Condición de la preinscripción (Primera_Vez, Habilitación, Repetición)
 }
 
 export interface CreateInscripcionDTO {
@@ -199,10 +200,34 @@ export class CursosIntersemestralesService {
 
   // ====== CURSOS DE VERANO - NUEVAS APIs ======
   
-  // Obtener cursos disponibles para verano (datos reales de la BD)
+  // Obtener cursos disponibles para verano (para estudiantes - datos reales de la BD)
   getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
-    console.log('🌐 Llamando a API (datos reales):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+    console.log('🌐 Llamando a API (estudiantes):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
     return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+  }
+
+  // Obtener todos los cursos para funcionarios (incluye todos los estados)
+  getTodosLosCursosParaFuncionarios(): Observable<CursoOfertadoVerano[]> {
+    console.log('🌐 Llamando a API (funcionarios):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+  }
+
+  // Obtener cursos por estado específico
+  getCursosPorEstado(estado: string): Observable<CursoOfertadoVerano[]> {
+    const endpoint = estado === 'Preinscripción' 
+      ? ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION
+      : estado === 'Inscripción'
+      ? ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION
+      : ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES;
+    
+    console.log(`🌐 Llamando a API (estado: ${estado}):`, endpoint);
+    return this.http.get<CursoOfertadoVerano[]>(endpoint);
+  }
+
+  // Consultar permisos para un estado y rol específico
+  getPermisosEstado(estado: string, rol: string): Observable<string[]> {
+    console.log(`🌐 Consultando permisos (${estado}/${rol}):`, ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO(estado, rol));
+    return this.http.get<string[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO(estado, rol));
   }
 
   // Preinscripción a curso de verano
@@ -312,10 +337,10 @@ export class CursosIntersemestralesService {
 
   // ====== GESTIÓN DE CURSOS (para funcionarios) ======
   
-  // Obtener todos los cursos para gestión
+  // Obtener todos los cursos para gestión (legacy - usar getTodosLosCursosParaFuncionarios)
   getTodosLosCursos(): Observable<CursoOfertadoVerano[]> {
-    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano');
-    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+    console.log('🌐 Llamando a API (legacy): GET /api/cursos-intersemestrales/cursos-verano');
+    return this.getTodosLosCursosParaFuncionarios();
   }
 
   // Crear nuevo curso
@@ -379,10 +404,10 @@ export class CursosIntersemestralesService {
 
   // ====== PREINSCRIPCIONES (para funcionarios) ======
   
-  // Obtener preinscripciones por curso
-  getPreinscripcionesPorCurso(idCurso: number): Observable<Preinscripcion[]> {
+  // Obtener preinscripciones por curso (endpoint actualizado)
+  getPreinscripcionesPorCurso(idCurso: number): Observable<SolicitudCursoVerano[]> {
     console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/preinscripciones/curso/${idCurso}`);
-    return this.http.get<Preinscripcion[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/curso/${idCurso}`);
+    return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/curso/${idCurso}`);
   }
 
   // Actualizar observaciones de preinscripción
@@ -575,8 +600,8 @@ export class CursosIntersemestralesService {
     switch (c.estado) {
       case 'Abierto':
       case 'Publicado':
-      case 'Preinscripcion':
-      case 'Inscripcion':
+      case 'Preinscripción':
+      case 'Inscripción':
       case 'Disponible':  // ← AGREGAR ESTE CASE
         estado = 'Disponible';
         break;
@@ -680,7 +705,7 @@ export interface CreateCursoDTO {
   cupo_maximo: number;
   cupo_estimado: number;
   espacio_asignado: string;
-  estado: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado' | 'Disponible';
+  estado: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
   id_materia: number;
   id_docente: number;
 }
@@ -689,5 +714,5 @@ export interface UpdateCursoDTO {
   // Solo campos editables según requerimientos
   cupo_estimado?: number;
   espacio_asignado?: string;
-  estado?: 'Abierto' | 'Publicado' | 'Preinscripcion' | 'Inscripcion' | 'Cerrado' | 'Disponible';
+  estado?: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
 }

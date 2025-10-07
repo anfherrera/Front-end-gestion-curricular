@@ -11,7 +11,7 @@ export interface Curso {
   cupos: number;
   creditos?: number;
   espacio?: string;
-  estado: 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripcion' | 'Inscripcion' | 'Abierto' | 'Publicado';
+  estado: 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Abierto' | 'Publicado' | 'Borrador';
 }
 
 @Component({

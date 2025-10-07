@@ -25,9 +25,17 @@
     <p>Cargando cursos...</p>
   </div>
 
+  <!-- Filtros por estado -->
+  <app-estado-filters
+    *ngIf="!cargando"
+    [cursos]="cursos"
+    (cursosFiltradosChange)="onCursosFiltradosChange($event)"
+    (estadoSeleccionadoChange)="onEstadoSeleccionadoChange($event)">
+  </app-estado-filters>
+
   <!-- Tabla de cursos -->
   <div *ngIf="!cargando" class="cursos-container">
-    <table mat-table [dataSource]="cursos" class="mat-elevation-z8">
+    <table mat-table [dataSource]="cursosFiltrados" class="mat-elevation-z8">
       
       <!-- Nombre del Curso -->
       <ng-container matColumnDef="nombre_curso">
@@ -123,6 +131,7 @@
         <td mat-cell *matCellDef="let curso">
           <div class="acciones-container">
             <button mat-icon-button 
+                    *ngIf="puedeEditar(curso)"
                     (click)="abrirDialogEditar(curso)"
                     matTooltip="Editar curso"
                     class="btn-editar">
@@ -130,6 +139,7 @@
             </button>
             
             <button mat-icon-button 
+                    *ngIf="puedeEliminar(curso)"
                     (click)="eliminarCurso(curso)"
                     matTooltip="Eliminar curso"
                     class="btn-eliminar">

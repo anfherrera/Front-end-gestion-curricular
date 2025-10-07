@@ -4,5 +4,5 @@ export interface Curso {
   nombre: string;       // objMateria.nombre
   docente: string;      // objDocente.nombre
   cupos: number;        // cupo_estimado
-  estado: 'Disponible' | 'Cerrado' | 'En espera'; // calculado según estado del curso
+  estado: 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Abierto' | 'Publicado' | 'Borrador'; // calculado según estado del curso
 }

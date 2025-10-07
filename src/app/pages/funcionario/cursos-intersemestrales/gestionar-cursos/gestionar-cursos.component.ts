@@ -15,6 +15,9 @@ import {
   CreateCursoDTO, 
   UpdateCursoDTO 
 } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoEstadosService, EstadoCurso } from '../../../../core/services/curso-estados.service';
+import { EstadoFiltersComponent } from '../../../../shared/components/estado-filters/estado-filters.component';
+import { ErrorHandlerService } from '../../../../shared/components/error-handler/error-handler.service';
 import { CursoDialogComponent } from './curso-dialog.component';
 
 @Component({
@@ -27,6 +30,7 @@ import { CursoDialogComponent } from './curso-dialog.component';
     MatSnackBarModule,
     MatChipsModule,
     CardContainerComponent,
+    EstadoFiltersComponent,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './gestionar-cursos.component.html',
@@ -36,9 +40,11 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   cursos: CursoOfertadoVerano[] = [];
+  cursosFiltrados: CursoOfertadoVerano[] = [];
   materias: Materia[] = [];
   docentes: Usuario[] = [];
   cargando = true;
+  estadoFiltro = '';
   
   // Formulario para crear/editar curso
   cursoForm: FormGroup;
@@ -63,6 +69,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   constructor(
     private cursosService: CursosIntersemestralesService,
+    private cursoEstadosService: CursoEstadosService,
+    private errorHandler: ErrorHandlerService,
     private fb: FormBuilder,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
@@ -77,7 +85,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       cupo_maximo: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
       cupo_estimado: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
       espacio_asignado: ['', [Validators.required, Validators.minLength(3)]],
-      estado: ['Abierto', Validators.required],
+      estado: ['Borrador', Validators.required],
       id_materia: ['', Validators.required],
       id_docente: ['', Validators.required]
     });
@@ -86,7 +94,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.edicionForm = this.fb.group({
       cupo_estimado: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
       espacio_asignado: ['', [Validators.required, Validators.minLength(3)]],
-      estado: ['Abierto', Validators.required]
+      estado: ['Borrador', Validators.required]
     });
   }
 
@@ -106,14 +114,15 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     console.log('🔄 Cargando datos para gestión de cursos...');
     
     // Cargar cursos, materias y docentes en paralelo
-    this.cursosService.getTodosLosCursos().subscribe({
+    this.cursosService.getTodosLosCursosParaFuncionarios().subscribe({
       next: (cursos) => {
         this.cursos = cursos;
+        this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
         console.log('✅ Cursos cargados:', cursos);
         this.cargarMateriasYDocentes();
       },
       error: (err) => {
-        console.error('❌ Error cargando cursos:', err);
+        this.errorHandler.handleCargaError('cursos');
         this.cargando = false;
         // Datos de prueba si falla el backend
         this.cursos = this.getCursosPrueba();
@@ -401,8 +410,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
               this.cargarDatos();
             },
             error: (err) => {
-              console.error('❌ Error actualizando curso:', err);
-              this.snackBar.open('Error al actualizar el curso', 'Cerrar', { duration: 3000 });
+              this.errorHandler.handleCursoError(err, 'actualizar curso');
             }
           });
       } else {
@@ -427,8 +435,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
               this.cargarDatos();
             },
             error: (err) => {
-              console.error('❌ Error creando curso:', err);
-              this.snackBar.open('Error al crear el curso', 'Cerrar', { duration: 3000 });
+              this.errorHandler.handleCursoError(err, 'crear curso');
             }
           });
       } else {
@@ -486,19 +493,48 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   // Obtener color del estado
   getEstadoColor(estado: string): string {
-    // Todos los estados usan el azul principal de la app
-    return '#00138C';
+    return this.cursoEstadosService.getColorEstado(estado);
   }
 
   // Obtener icono del estado
   getIconoEstado(estado: string): string {
-    switch (estado) {
-      case 'Abierto': return 'lock_open';
-      case 'Publicado': return 'publish';
-      case 'Preinscripcion': return 'person_add';
-      case 'Inscripcion': return 'how_to_reg';
-      case 'Cerrado': return 'lock';
-      default: return 'help';
-    }
+    return this.cursoEstadosService.getIconoEstado(estado);
+  }
+
+  // Validar si se puede editar un curso
+  puedeEditar(curso: CursoOfertadoVerano): boolean {
+    // Por ahora usar lógica básica, después se puede mejorar con roles
+    return curso.estado !== 'Cerrado';
+  }
+
+  // Validar si se puede eliminar un curso
+  puedeEliminar(curso: CursoOfertadoVerano): boolean {
+    // Solo se puede eliminar en estado Borrador
+    return curso.estado === 'Borrador';
+  }
+
+  // Validar transición de estado
+  validarCambioEstado(estadoActual: string, nuevoEstado: string): boolean {
+    return this.cursoEstadosService.validarTransicionEstado(estadoActual, nuevoEstado);
+  }
+
+  // Obtener estados permitidos para un curso
+  getEstadosPermitidos(estadoActual: string): string[] {
+    return this.cursoEstadosService.getEstadosPermitidos(estadoActual);
+  }
+
+  // Métodos para manejar filtros
+  onCursosFiltradosChange(cursos: CursoOfertadoVerano[]): void {
+    this.cursosFiltrados = cursos;
+  }
+
+  onEstadoSeleccionadoChange(estado: string): void {
+    this.estadoFiltro = estado;
+  }
+
+  // Método para actualizar cursos en el filtro
+  actualizarCursosEnFiltro(): void {
+    // Este método se puede llamar después de crear/editar/eliminar cursos
+    // para actualizar el componente de filtros
   }
 }
