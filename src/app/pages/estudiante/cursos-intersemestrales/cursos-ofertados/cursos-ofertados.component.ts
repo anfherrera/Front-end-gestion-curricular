@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
 import { CursosIntersemestralesService, CursoOfertadoVerano, CreatePreinscripcionDTO } from '../../../../core/services/cursos-intersemestrales.service';
@@ -20,17 +21,41 @@ export class CursosOfertadosComponent implements OnInit {
   cursosVerano: CursoOfertadoVerano[] = [];
   cargando = true;
   usuario: any = null;
+  
+  // 🆕 Variables para manejar parámetros de navegación
+  cursoIdDestino?: number;
+  cursoNombreDestino?: string;
+  accionDestino?: string;
+  mostrarMensajeInscripcion = false;
 
   constructor(
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
     private notificacionesService: NotificacionesService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     console.log('🎯 CURSOS OFERTADOS COMPONENT CARGADO');
     this.usuario = this.authService.getUsuario();
+    
+    // 🆕 Verificar parámetros de consulta para navegación desde seguimiento
+    this.route.queryParams.subscribe(params => {
+      if (params['cursoId'] && params['accion'] === 'inscripcion') {
+        this.cursoIdDestino = +params['cursoId'];
+        this.cursoNombreDestino = params['cursoNombre'];
+        this.accionDestino = params['accion'];
+        this.mostrarMensajeInscripcion = true;
+        
+        console.log('🎯 Navegación desde seguimiento:', {
+          cursoId: this.cursoIdDestino,
+          cursoNombre: this.cursoNombreDestino,
+          accion: this.accionDestino
+        });
+      }
+    });
+    
     this.loadCursos();
   }
 
@@ -243,5 +268,13 @@ export class CursosOfertadosComponent implements OnInit {
     }
 
     return acciones;
+  }
+
+  // 🆕 Método para cerrar el mensaje de inscripción
+  cerrarMensajeInscripcion() {
+    this.mostrarMensajeInscripcion = false;
+    this.cursoIdDestino = undefined;
+    this.cursoNombreDestino = undefined;
+    this.accionDestino = undefined;
   }
 }

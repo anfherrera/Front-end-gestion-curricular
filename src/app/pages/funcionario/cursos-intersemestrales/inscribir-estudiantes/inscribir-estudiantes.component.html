@@ -38,8 +38,8 @@
           <th mat-header-cell *matHeaderCellDef>Estudiante</th>
           <td mat-cell *matCellDef="let inscripcion">
             <div class="estudiante-info">
-              <strong>{{ inscripcion.objUsuario.nombre }} {{ inscripcion.objUsuario.apellido }}</strong>
-              <small>{{ inscripcion.objUsuario.email }}</small>
+              <strong>{{ inscripcion.objUsuario?.nombre }} {{ inscripcion.objUsuario?.apellido }}</strong>
+              <small>{{ inscripcion.objUsuario?.email }}</small>
             </div>
           </td>
         </ng-container>
@@ -69,7 +69,7 @@
             <div class="comprobante-cell">
               <span *ngIf="inscripcion.archivoPago; else sinComprobante" class="con-comprobante">
                 <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
-                {{ inscripcion.archivoPago.nombre }}
+                {{ inscripcion.archivoPago?.nombre || 'Comprobante subido' }}
               </span>
               <ng-template #sinComprobante>
                 <span class="sin-comprobante">

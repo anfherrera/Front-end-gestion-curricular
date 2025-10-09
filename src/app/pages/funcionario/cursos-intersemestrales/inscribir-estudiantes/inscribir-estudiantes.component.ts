@@ -99,13 +99,35 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarCursos(): void {
     this.cargando = true;
-    console.log('🔄 Cargando cursos para inscripción...');
+    console.log('🔄 Cargando cursos para inscripción (funcionarios)...');
+    console.log('🔍 Usuario actual:', this.cursosService);
     
-    this.cursosService.getCursosDisponibles().subscribe({
-      next: (cursos) => {
-        console.log('✅ Cursos recibidos del backend:', cursos);
+    // Para funcionarios, usar el endpoint que obtiene todos los cursos
+    this.cursosService.getTodosLosCursosParaFuncionarios().subscribe({
+      next: (response) => {
+        console.log('✅ Respuesta recibida del backend:', response);
+        console.log('🔍 Tipo de respuesta:', typeof response);
+        
+        // El backend devuelve { value: [...], Count: n }
+        let cursos = response;
+        if (response && (response as any).value) {
+          cursos = (response as any).value;
+          console.log('🔍 Cursos extraídos de response.value:', cursos);
+        }
+        
+        console.log('🔍 Cantidad de cursos:', cursos?.length);
+        
         if (cursos && cursos.length > 0) {
-          this.cursos = cursos;
+          // Filtrar solo cursos en estado "Inscripcion" (sin tilde, como viene del backend)
+          this.cursos = cursos.filter((c: any) => c.estado === 'Inscripcion');
+          console.log('✅ Cursos en estado "Inscripcion":', this.cursos);
+          console.log('🔍 Cantidad de cursos filtrados:', this.cursos.length);
+          
+          // Si no hay cursos filtrados, mostrar todos los cursos disponibles
+          if (this.cursos.length === 0) {
+            console.log('⚠️ No hay cursos en estado "Inscripcion", mostrando todos los cursos');
+            this.cursos = cursos;
+          }
         } else {
           console.log('⚠️ No hay cursos del backend, usando datos de prueba');
           this.cursos = this.getCursosPrueba();
@@ -114,6 +136,12 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('❌ Error cargando cursos:', err);
+        console.error('❌ Detalles del error:', {
+          status: err.status,
+          statusText: err.statusText,
+          message: err.message,
+          url: err.url
+        });
         console.log('🔄 Usando datos de prueba para cursos');
         this.cursos = this.getCursosPrueba();
         this.cargando = false;
@@ -129,29 +157,40 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
     console.log('📍 Curso seleccionado:', this.cursoSeleccionado);
     
-    this.cursosService.getInscripciones().subscribe({
+    // Usar el método específico para obtener inscripciones por curso (igual que preinscripciones)
+    this.cursosService.getInscripcionesPorCurso(cursoId).subscribe({
       next: (inscripciones) => {
         console.log('✅ Inscripciones recibidas del backend:', inscripciones);
-        // Filtrar inscripciones por curso y que tengan estado "Aprobado" en preinscripción
-        this.inscripciones = inscripciones.filter(i => 
-          i.objCurso.id_curso === cursoId && 
-          (i.estado === 'inscrito' || i.estado === 'pendiente')
-        );
-        this.inscripcionesFiltradas = this.inscripciones;
-        console.log('✅ Inscripciones filtradas:', this.inscripciones);
+        console.log('🔍 Estructura de primera inscripción:', inscripciones[0]);
+        if (inscripciones[0]) {
+          console.log('🔍 Campos disponibles en inscripción:', Object.keys(inscripciones[0]));
+          console.log('🔍 Estudiante:', inscripciones[0].estudiante);
+          console.log('🔍 Fecha:', inscripciones[0].fecha);
+          console.log('🔍 Estado:', inscripciones[0].estado);
+        }
         
-        // Si no hay inscripciones del backend, usar datos de prueba
+        this.inscripciones = inscripciones;
+        this.inscripcionesFiltradas = this.inscripciones;
+        console.log('✅ Inscripciones cargadas para curso', cursoId, ':', this.inscripciones);
+        
+        // Si no hay inscripciones del backend, mostrar lista vacía
         if (this.inscripciones.length === 0) {
-          console.log('⚠️ No hay inscripciones del backend, usando datos de prueba');
-          this.inscripcionesFiltradas = this.getInscripcionesPrueba();
+          console.log('⚠️ No hay inscripciones del backend, mostrando lista vacía');
+          this.inscripcionesFiltradas = [];
         }
         
         this.cargando = false;
       },
       error: (err) => {
         console.error('❌ Error cargando inscripciones:', err);
-        console.log('🔄 Usando datos de prueba para inscripciones');
-        this.inscripcionesFiltradas = this.getInscripcionesPrueba();
+        console.error('❌ Detalles del error:', {
+          status: err.status,
+          statusText: err.statusText,
+          message: err.message,
+          url: err.url
+        });
+        console.log('🔄 Mostrando lista vacía debido al error');
+        this.inscripcionesFiltradas = [];
         this.cargando = false;
       }
     });
@@ -316,44 +355,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private getInscripcionesPrueba(): Inscripcion[] {
-    return [
-      {
-        id_inscripcion: 1,
-        fecha_inscripcion: new Date('2024-01-10'),
-        estado: 'pendiente',
-        archivoPago: {
-          id_documento: 1,
-          nombre: 'comprobante_pago_pepa.pdf',
-          url: '/uploads/comprobante_pago_pepa.pdf',
-          fecha: '2024-01-10'
-        },
-        objUsuario: { id_usuario: 4, nombre: 'Pepa', apellido: 'González', email: 'pepa.gonzalez@unicauca.edu.co', telefono: '3001111111', codigo_estudiante: '104612345660', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
-        objCurso: this.cursoSeleccionado!
-      },
-      {
-        id_inscripcion: 2,
-        fecha_inscripcion: new Date('2024-01-11'),
-        estado: 'inscrito',
-        archivoPago: {
-          id_documento: 2,
-          nombre: 'comprobante_pago_maria.pdf',
-          url: '/uploads/comprobante_pago_maria.pdf',
-          fecha: '2024-01-11'
-        },
-        objUsuario: { id_usuario: 5, nombre: 'María', apellido: 'González', email: 'maria.gonzalez@unicauca.edu.co', telefono: '3002222222', codigo_estudiante: '104612345661', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
-        objCurso: this.cursoSeleccionado!
-      },
-      {
-        id_inscripcion: 3,
-        fecha_inscripcion: new Date('2024-01-12'),
-        estado: 'pendiente',
-        archivoPago: undefined,
-        objUsuario: { id_usuario: 6, nombre: 'Pedro', apellido: 'Rodríguez', email: 'pedro@unicauca.edu.co', telefono: '3003333333', codigo_estudiante: '104612345662', objRol: { id_rol: 1, nombre_rol: 'Estudiante' } },
-        objCurso: this.cursoSeleccionado!
-      }
-    ];
-  }
 }
 
 // Componente del dialog para ver detalles de inscripción

@@ -87,6 +87,9 @@ export interface SolicitudCursoVerano {
   objUsuario: UsuarioSolicitud;
   objCursoOfertadoVerano: CursoOfertadoVerano;
   tipoSolicitud: 'PREINSCRIPCION' | 'INSCRIPCION';
+  // 🆕 Nuevos campos para el seguimiento mejorado
+  estadoCurso?: string;           // Estado actual del curso
+  accionesDisponibles?: string[]; // Acciones que puede realizar el estudiante
 }
 
 export interface Notificacion {
@@ -146,6 +149,9 @@ export interface Inscripcion {
   };
   objUsuario: Usuario;
   objCurso: CursoOfertadoVerano;
+  // 🆕 Nuevos campos para el seguimiento mejorado
+  estadoCurso?: string;           // Estado actual del curso
+  accionesDisponibles?: string[]; // Acciones que puede realizar el estudiante
 }
 
 export interface Preinscripcion {
@@ -164,6 +170,36 @@ export interface CursoBackend {
   cupos: number;
   docente: string;
   tipo: 'ofertado' | 'preinscripcion' | 'inscrito';
+}
+
+// ================== INTERFACES PARA SEGUIMIENTO MEJORADO ==================
+export interface PreinscripcionSeguimiento {
+  id: number;
+  fecha: string;
+  estado: string;
+  tipo: string;
+  curso: string;
+  estudianteId: number;
+  cursoId: number;
+  estadoCurso?: string;           // 🆕 NUEVO: Estado del curso
+  accionesDisponibles?: string[]; // 🆕 NUEVO: Acciones que puede realizar
+}
+
+export interface InscripcionSeguimiento {
+  id: number;
+  fecha: string;
+  estado: string;
+  tipo: string;
+  curso: string;
+  estudianteId: number;
+  cursoId: number;
+  estadoCurso?: string;           // 🆕 NUEVO: Estado del curso
+  accionesDisponibles?: string[]; // 🆕 NUEVO: Acciones que puede realizar
+}
+
+export interface SeguimientoActividades {
+  preinscripciones: PreinscripcionSeguimiento[];
+  inscripciones: InscripcionSeguimiento[];
 }
 
 // ================== DTOs ACTUALIZADOS ==================
@@ -220,9 +256,9 @@ export class CursosIntersemestralesService {
   }
 
   // Obtener todos los cursos para funcionarios (incluye todos los estados)
-  getTodosLosCursosParaFuncionarios(): Observable<CursoOfertadoVerano[]> {
+  getTodosLosCursosParaFuncionarios(): Observable<any> {
     console.log('🌐 Llamando a API (funcionarios):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
-    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+    return this.http.get<any>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
   }
 
   // Obtener cursos por estado específico
@@ -513,6 +549,28 @@ export class CursosIntersemestralesService {
     return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/curso/${idCurso}`);
   }
 
+  // Obtener inscripciones por curso específico
+  getInscripcionesPorCurso(idCurso: number): Observable<any[]> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/inscripciones para filtrar por curso ${idCurso}`);
+    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
+      map(response => {
+        // El backend devuelve { value: [...], Count: n }
+        let inscripciones = response;
+        if (response && response.value) {
+          inscripciones = response.value;
+        }
+        
+        // Filtrar inscripciones por curso
+        const inscripcionesFiltradas = inscripciones.filter((inscripcion: any) => 
+          inscripcion.cursoId === idCurso
+        );
+        
+        console.log(`✅ Inscripciones filtradas para curso ${idCurso}:`, inscripcionesFiltradas);
+        return inscripcionesFiltradas;
+      })
+    );
+  }
+
 
 
 
@@ -556,6 +614,62 @@ export class CursosIntersemestralesService {
   }
 
   // ====== INSCRIPCIONES LEGACY ======
+  
+  // Obtener todas las inscripciones (para funcionarios)
+  getTodasLasInscripciones(): Observable<Inscripcion[]> {
+    console.log('🌐 Obteniendo todas las inscripciones para funcionarios');
+    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCIONES}`).pipe(
+      switchMap(inscripciones => {
+        // Obtener cursos para mapear correctamente
+        return this.getTodosLosCursosParaFuncionarios().pipe(
+          map(cursos => inscripciones.map(inscripcion => {
+            const curso = cursos.find((c: any) => c.id_curso === inscripcion.cursoId);
+            return {
+              id_inscripcion: inscripcion.id,
+              fecha_inscripcion: new Date(inscripcion.fecha),
+              estado: inscripcion.estado,
+              archivoPago: inscripcion.archivoPago ? {
+                id_documento: inscripcion.archivoPago.id_documento,
+                nombre: inscripcion.archivoPago.nombre,
+                url: inscripcion.archivoPago.url,
+                fecha: inscripcion.archivoPago.fecha
+              } : undefined,
+              objUsuario: inscripcion.usuario,
+              objCurso: curso || inscripcion.curso
+            };
+          }))
+        );
+      }),
+      catchError(error => {
+        console.error('❌ Error obteniendo inscripciones:', error);
+        // Intentar con endpoint alternativo
+        return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
+          switchMap(inscripciones => {
+            return this.getTodosLosCursosParaFuncionarios().pipe(
+              map(cursos => inscripciones.map(inscripcion => {
+                const curso = cursos.find((c: any) => c.id_curso === inscripcion.cursoId);
+                return {
+                  id_inscripcion: inscripcion.id,
+                  fecha_inscripcion: new Date(inscripcion.fecha),
+                  estado: inscripcion.estado,
+                  archivoPago: inscripcion.archivoPago ? {
+                    id_documento: inscripcion.archivoPago.id_documento,
+                    nombre: inscripcion.archivoPago.nombre,
+                    url: inscripcion.archivoPago.url,
+                    fecha: inscripcion.archivoPago.fecha
+                  } : undefined,
+                  objUsuario: inscripcion.usuario,
+                  objCurso: curso || inscripcion.curso
+                };
+              }))
+            );
+          })
+        );
+      })
+    );
+  }
+  
+  // Obtener inscripciones del usuario autenticado
   getInscripciones(): Observable<Inscripcion[]> {
     // Obtener el usuario autenticado
     const usuario = this.authService.getUsuario();
@@ -568,7 +682,7 @@ export class CursosIntersemestralesService {
         // Obtener cursos para mapear correctamente
         return this.getCursosDisponibles().pipe(
           map(cursos => inscripciones.map(inscripcion => {
-            const curso = cursos.find(c => c.id_curso === inscripcion.cursoId);
+            const curso = cursos.find((c: any) => c.id_curso === inscripcion.cursoId);
             return {
               id_inscripcion: inscripcion.id,
               fecha_inscripcion: new Date(inscripcion.fecha),
@@ -644,8 +758,8 @@ export class CursosIntersemestralesService {
   }
 
   // Seguimiento de actividades (preinscripciones + inscripciones)
-  getSeguimientoActividades(idUsuario: number): Observable<any> {
-    return this.http.get(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/seguimiento/${idUsuario}`);
+  getSeguimientoActividades(idUsuario: number): Observable<SeguimientoActividades> {
+    return this.http.get<SeguimientoActividades>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/seguimiento/${idUsuario}`);
   }
 
   confirmarInscripcion(id: number): Observable<Inscripcion> {

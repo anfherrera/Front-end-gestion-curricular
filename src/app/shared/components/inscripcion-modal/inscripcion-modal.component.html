@@ -1,0 +1,105 @@
+<div class="inscripcion-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>
+      <mat-icon>assignment_turned_in</mat-icon>
+      Inscripción al Curso
+    </h2>
+  </div>
+
+  <div class="modal-body">
+    <div class="curso-info">
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Información del Curso</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p><strong>Curso:</strong> {{ data.preinscripcion.curso }}</p>
+          <p><strong>Estado de Preinscripción:</strong> 
+            <span class="estado-aprobado">{{ data.preinscripcion.estado }}</span>
+          </p>
+          <p><strong>Estado del Curso:</strong> 
+            <span class="estado-inscripcion">{{ data.preinscripcion.estadoCurso }}</span>
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <form [formGroup]="inscripcionForm" class="inscripcion-form">
+      <div class="form-section">
+        <h3>Datos del Estudiante</h3>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre Completo</mat-label>
+          <input matInput formControlName="nombreCompleto" readonly>
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Código del Estudiante</mat-label>
+          <input matInput formControlName="codigo" readonly>
+          <mat-icon matSuffix>badge</mat-icon>
+        </mat-form-field>
+
+      </div>
+
+      <div class="form-section">
+        <h3>Comprobante de Pago</h3>
+        
+        <div class="file-upload-section">
+          <div class="file-input-container">
+            <input 
+              type="file" 
+              id="archivoPago" 
+              accept=".pdf" 
+              (change)="onFileSelected($event)"
+              class="file-input">
+            <label for="archivoPago" class="file-input-label">
+              <mat-icon>cloud_upload</mat-icon>
+              <span>Seleccionar comprobante de pago (PDF)</span>
+            </label>
+          </div>
+          
+          <div class="file-info" *ngIf="archivoSeleccionado">
+            <mat-icon class="file-icon">description</mat-icon>
+            <span class="file-name">{{ getFileName() }}</span>
+            <mat-icon class="success-icon">check_circle</mat-icon>
+          </div>
+          
+          <div class="file-requirements">
+            <p><mat-icon>info</mat-icon> Requisitos del archivo:</p>
+            <ul>
+              <li>Formato: PDF únicamente</li>
+              <li>Tamaño máximo: 15MB (temporal)</li>
+              <li>Debe contener el comprobante de pago del curso</li>
+            </ul>
+          </div>
+          
+          <div *ngIf="errorArchivo" class="file-upload-error">
+            <p>
+              <mat-icon>error</mat-icon>
+              {{ errorArchivo }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button mat-button (click)="onCancelar()" [disabled]="cargando">
+      <mat-icon>cancel</mat-icon>
+      Cancelar
+    </button>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()" 
+      [disabled]="!isFormValid || cargando"
+      class="submit-button">
+      <mat-icon *ngIf="!cargando">send</mat-icon>
+      <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
+      {{ cargando ? 'Procesando...' : 'Confirmar Inscripción' }}
+    </button>
+  </div>
+</div>

@@ -30,9 +30,13 @@ export class ArchivosService {
 
   constructor(private http: HttpClient) {}
 
-  subirPDF(file: File): Observable<Archivo> {
+  subirPDF(file: File, inscripcionId?: number): Observable<Archivo> {
     const formData = new FormData();
     formData.append('file', file); // 👈 debe coincidir con @RequestParam("file")
+    
+    if (inscripcionId) {
+      formData.append('inscripcionId', inscripcionId.toString());
+    }
 
     // 👇 Recuperar token desde localStorage
     const token = localStorage.getItem('token');
