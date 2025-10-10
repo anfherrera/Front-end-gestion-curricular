@@ -21,25 +21,27 @@
     <p>Cargando datos...</p>
   </div>
 
-  <!-- Lista de inscripciones -->
+  <!-- Lista de estudiantes elegibles -->
   <div *ngIf="cursoSeleccionado && !cargando" class="inscripciones-section">
-    <h3>👥 Estudiantes Inscritos en {{ cursoSeleccionado.nombre_curso }}</h3>
+    <h3>👥 Estudiantes Elegibles para Inscripción en {{ cursoSeleccionado.nombre_curso }}</h3>
     
-    <div *ngIf="inscripcionesFiltradas.length === 0" class="no-data">
+    <div *ngIf="estudiantesFiltrados.length === 0" class="no-data">
       <mat-icon>info</mat-icon>
-      <p>No hay inscripciones para este curso.</p>
+      <p>No hay estudiantes elegibles para inscripción en este curso.</p>
+      <p><small>Los estudiantes deben haber completado el proceso de preinscripción aprobada y tener su pago validado.</small></p>
     </div>
 
-    <div *ngIf="inscripcionesFiltradas.length > 0" class="table-container">
-      <table mat-table [dataSource]="inscripcionesFiltradas" class="inscripciones-table">
+    <div *ngIf="estudiantesFiltrados.length > 0" class="table-container">
+      <table mat-table [dataSource]="estudiantesFiltrados" class="inscripciones-table">
         
         <!-- Columna Estudiante -->
         <ng-container matColumnDef="estudiante">
           <th mat-header-cell *matHeaderCellDef>Estudiante</th>
-          <td mat-cell *matCellDef="let inscripcion">
+          <td mat-cell *matCellDef="let estudiante">
             <div class="estudiante-info">
-              <strong>{{ inscripcion.objUsuario?.nombre }} {{ inscripcion.objUsuario?.apellido }}</strong>
-              <small>{{ inscripcion.objUsuario?.email }}</small>
+              <strong>{{ estudiante.objUsuario?.nombre_completo }}</strong>
+              <small>{{ estudiante.objUsuario?.correo }}</small>
+              <small>Código: {{ estudiante.objUsuario?.codigo_estudiante }}</small>
             </div>
           </td>
         </ng-container>
@@ -47,17 +49,17 @@
         <!-- Columna Fecha -->
         <ng-container matColumnDef="fecha_inscripcion">
           <th mat-header-cell *matHeaderCellDef>Fecha de Inscripción</th>
-          <td mat-cell *matCellDef="let inscripcion">
-            {{ inscripcion.fecha_inscripcion | date:'dd/MM/yyyy HH:mm' }}
+          <td mat-cell *matCellDef="let estudiante">
+            {{ estudiante.fecha_inscripcion | date:'dd/MM/yyyy HH:mm' }}
           </td>
         </ng-container>
 
         <!-- Columna Estado -->
-        <ng-container matColumnDef="estado">
-          <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td mat-cell *matCellDef="let inscripcion">
+        <ng-container matColumnDef="estado_inscripcion">
+          <th mat-header-cell *matHeaderCellDef>Estado de Inscripción</th>
+          <td mat-cell *matCellDef="let estudiante">
             <span style="background: #00138C !important; color: white !important; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: none !important;">
-              {{ inscripcion.estado }}
+              {{ estudiante.estado_inscripcion }}
             </span>
           </td>
         </ng-container>
@@ -65,11 +67,12 @@
         <!-- Columna Comprobante de Pago -->
         <ng-container matColumnDef="comprobante_pago">
           <th mat-header-cell *matHeaderCellDef>Comprobante de Pago</th>
-          <td mat-cell *matCellDef="let inscripcion">
+          <td mat-cell *matCellDef="let estudiante">
             <div class="comprobante-cell">
-              <span *ngIf="inscripcion.archivoPago; else sinComprobante" class="con-comprobante">
+              <span *ngIf="estudiante.archivoPago; else sinComprobante" class="con-comprobante">
                 <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
-                {{ inscripcion.archivoPago?.nombre || 'Comprobante subido' }}
+                {{ estudiante.archivoPago?.nombre || 'Pago Validado' }}
+                <br><small style="color: #4CAF50; font-weight: bold;">✅ Validado</small>
               </span>
               <ng-template #sinComprobante>
                 <span class="sin-comprobante">
@@ -84,26 +87,26 @@
         <!-- Columna Acciones -->
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let inscripcion">
+          <td mat-cell *matCellDef="let estudiante">
             <div class="acciones-container">
               <button mat-icon-button 
-                      (click)="verDetalles(inscripcion)"
+                      (click)="verDetalles(estudiante)"
                       matTooltip="Ver detalles de inscripción y comprobante"
                       style="color: #00138C !important;">
                 <mat-icon style="color: #00138C !important;">visibility</mat-icon>
               </button>
               
               <button mat-icon-button 
-                      *ngIf="inscripcion.estado === 'pendiente'"
-                      (click)="confirmarInscripcion(inscripcion)"
-                      matTooltip="Confirmar inscripción - Estudiante tiene comprobante"
+                      *ngIf="estudiante.estado_inscripcion === 'Pago_Validado'"
+                      (click)="confirmarInscripcion(estudiante)"
+                      matTooltip="Confirmar inscripción - Estudiante tiene pago validado"
                       style="color: #4CAF50 !important;">
                 <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
               </button>
               
               <button mat-icon-button 
-                      *ngIf="inscripcion.estado === 'pendiente'"
-                      (click)="rechazarInscripcion(inscripcion)"
+                      *ngIf="estudiante.estado_inscripcion === 'Pago_Validado'"
+                      (click)="rechazarInscripcion(estudiante)"
                       matTooltip="Rechazar inscripción"
                       style="color: #f44336 !important;">
                 <mat-icon style="color: #f44336 !important;">cancel</mat-icon>
@@ -132,7 +135,7 @@
         <strong>Espacio:</strong> {{ cursoSeleccionado.espacio_asignado }}
       </div>
       <div class="info-item">
-        <strong>Inscripciones:</strong> {{ inscripcionesFiltradas.length }} estudiantes
+        <strong>Estudiantes Elegibles:</strong> {{ estudiantesFiltrados.length }} estudiantes
       </div>
     </div>
   </div>

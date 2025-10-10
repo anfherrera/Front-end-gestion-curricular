@@ -18,6 +18,30 @@ export interface Usuario {
   objRol: Rol;
 }
 
+// Nueva interfaz para la respuesta del endpoint de estudiantes elegibles
+export interface EstudianteElegible {
+  objUsuario: {
+    id_usuario: number;
+    nombre_completo: string;
+    correo: string;
+    codigo: string;
+    codigo_estudiante: string;
+  };
+  id_preinscripcion: number;
+  fecha_preinscripcion: string;
+  estado_preinscripcion: string;
+  id_inscripcion: number;
+  fecha_inscripcion: string;
+  estado_inscripcion: string;
+  archivoPago: {
+    id_documento: string;
+    nombre: string;
+    url: string;
+    fecha: string;
+  };
+  objCurso: CursoOfertadoVerano;
+}
+
 export interface Rol {
   id_rol: number;
   nombre_rol: string;
@@ -567,6 +591,30 @@ export class CursosIntersemestralesService {
         
         console.log(`✅ Inscripciones filtradas para curso ${idCurso}:`, inscripcionesFiltradas);
         return inscripcionesFiltradas;
+      })
+    );
+  }
+
+  // 🆕 NUEVO: Obtener estudiantes elegibles para inscripción (con pago validado)
+  getEstudiantesElegibles(idCurso: number): Observable<EstudianteElegible[]> {
+    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_ELEGIBLES(idCurso);
+    console.log(`🌐 Llamando a API: GET ${endpoint}`);
+    console.log(`🔍 ID del curso solicitado: ${idCurso}`);
+    
+    return this.http.get<EstudianteElegible[]>(endpoint).pipe(
+      map(estudiantes => {
+        console.log(`📊 Respuesta del backend para curso ${idCurso}:`, estudiantes);
+        console.log(`📊 Tipo de respuesta:`, typeof estudiantes);
+        console.log(`📊 Es array:`, Array.isArray(estudiantes));
+        console.log(`📊 Cantidad de estudiantes:`, estudiantes?.length || 0);
+        
+        if (estudiantes && estudiantes.length > 0) {
+          console.log(`✅ Primer estudiante recibido:`, estudiantes[0]);
+        } else {
+          console.log(`⚠️ No se recibieron estudiantes del backend para el curso ${idCurso}`);
+        }
+        
+        return estudiantes || [];
       })
     );
   }
