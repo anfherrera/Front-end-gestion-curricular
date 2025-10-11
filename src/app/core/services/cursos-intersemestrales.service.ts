@@ -858,36 +858,38 @@ export class CursosIntersemestralesService {
     return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/confirmar`, {});
   }
 
-  rechazarInscripcion(id: number): Observable<Inscripcion> {
-    return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/rechazar`, {});
+
+  // 🆕 NUEVO: Aceptar inscripción usando el endpoint correcto del backend
+  aceptarInscripcion(idInscripcion: number, observaciones: string = "Inscripción aceptada"): Observable<any> {
+    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${idInscripcion}/aceptar`;
+    console.log(`🌐 Llamando a API: PUT ${endpoint}`);
+    console.log(`🔍 ID de inscripción: ${idInscripcion}`);
+    console.log(`🔍 Observaciones: ${observaciones}`);
+    
+    const body = { observaciones };
+    
+    return this.http.put<any>(endpoint, body);
   }
 
-  // 🆕 NUEVO: Aceptar inscripción usando el endpoint correcto
-  aceptarInscripcion(idPreinscripcion: number, observaciones?: string): Observable<AceptarInscripcionResponse> {
-    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ACEPTAR_INSCRIPCION(idPreinscripcion);
+  // 🆕 NUEVO: Rechazar inscripción usando el endpoint correcto del backend
+  rechazarInscripcion(idInscripcion: number, motivo: string): Observable<any> {
+    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${idInscripcion}/rechazar`;
     console.log(`🌐 Llamando a API: PUT ${endpoint}`);
-    console.log(`🔍 ID de preinscripción: ${idPreinscripcion}`);
-    console.log(`🔍 Observaciones: ${observaciones || 'Sin observaciones'}`);
+    console.log(`🔍 ID de inscripción: ${idInscripcion}`);
+    console.log(`🔍 Motivo: ${motivo}`);
     
-    const payload: AceptarInscripcionDTO = {
-      observaciones: observaciones || 'Inscripción aceptada por funcionario'
-    };
+    const body = { motivo };
     
-    return this.http.put<AceptarInscripcionResponse>(endpoint, payload);
+    return this.http.put<any>(endpoint, body);
   }
 
-  // 🆕 NUEVO: Rechazar inscripción usando el endpoint correcto
-  rechazarInscripcionFuncionario(idPreinscripcion: number, motivoRechazo: string): Observable<RechazarInscripcionResponse> {
-    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.RECHAZAR_INSCRIPCION(idPreinscripcion);
-    console.log(`🌐 Llamando a API: PUT ${endpoint}`);
-    console.log(`🔍 ID de preinscripción: ${idPreinscripcion}`);
-    console.log(`🔍 Motivo de rechazo: ${motivoRechazo}`);
+  // 🆕 NUEVO: Descargar comprobante de pago
+  descargarComprobantePago(idInscripcion: number): Observable<Blob> {
+    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${idInscripcion}/comprobante`;
+    console.log(`🌐 Llamando a API: GET ${endpoint}`);
+    console.log(`🔍 ID de inscripción: ${idInscripcion}`);
     
-    const payload: RechazarInscripcionDTO = {
-      motivo_rechazo: motivoRechazo
-    };
-    
-    return this.http.put<RechazarInscripcionResponse>(endpoint, payload);
+    return this.http.get(endpoint, { responseType: 'blob' });
   }
 
   // 🔍 DEBUG: Endpoint para debuggear problemas con inscripciones

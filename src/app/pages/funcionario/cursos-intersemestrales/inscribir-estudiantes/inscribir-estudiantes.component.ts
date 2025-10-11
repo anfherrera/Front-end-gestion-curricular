@@ -260,6 +260,16 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   confirmarInscripcion(estudiante: EstudianteElegible): void {
+    // Verificar que id_solicitud existe (campo principal)
+    if (!estudiante.id_solicitud) {
+      console.error('❌ Error: No se encontró ID de solicitud para el estudiante');
+      this.snackBar.open('Error: No se encontró ID de solicitud para el estudiante', 'Cerrar', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
     console.log(`✅ Aceptando inscripción ${estudiante.id_solicitud} para estudiante ${estudiante.nombre_completo}`);
     
     // Confirmar con el usuario
@@ -269,83 +279,210 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     if (!confirmacion) return;
     
-    // Llamar al endpoint para aceptar la inscripción
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${estudiante.id_solicitud}/aceptar`;
-    const body = {
-      observaciones: "Inscripción aceptada por funcionario"
-    };
+    // Usar el método del servicio con el endpoint correcto
+    this.aceptarInscripcion(estudiante);
+  }
+
+  // Método simple para aceptar inscripción usando el servicio
+  aceptarInscripcion(estudiante: EstudianteElegible): void {
+    const observaciones = "Inscripción aceptada por funcionario";
     
-    this.http.put(endpoint, body).subscribe({
+    this.cursosService.aceptarInscripcion(estudiante.id_solicitud, observaciones).subscribe({
       next: (response) => {
         console.log('✅ Inscripción aceptada:', response);
-        
+        alert('Inscripción aceptada exitosamente');
         // Recargar la lista de estudiantes
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
         }
+      },
+      error: (error) => {
+        console.error('❌ Error aceptando inscripción:', error);
+        alert('Error al aceptar la inscripción');
+      }
+    });
+  }
+
+  private intentarAceptarInscripcion(estudiante: EstudianteElegible): void {
+    console.log(`🔄 Intentando aceptar inscripción para estudiante: ${estudiante.nombre_completo}`);
+    console.log('🔍 Datos disponibles:', {
+      id_solicitud: estudiante.id_solicitud,
+      id_preinscripcion: estudiante.id_preinscripcion,
+      nombre: estudiante.nombre_completo,
+      codigo: estudiante.codigo
+    });
+
+    // Método 1: Intentar con id_preinscripcion si existe
+    if (estudiante.id_preinscripcion) {
+      console.log('🔄 Método 1: Usando id_preinscripcion');
+      this.aceptarConIdPreinscripcion(estudiante);
+      return;
+    }
+
+    // Método 2: Intentar con id_solicitud
+    if (estudiante.id_solicitud) {
+      console.log('🔄 Método 2: Usando id_solicitud');
+      this.aceptarConIdSolicitud(estudiante);
+      return;
+    }
+
+    // Si no hay ningún ID disponible
+    console.error('❌ No se encontró ID de preinscripción ni de solicitud');
+    this.snackBar.open('Error: No se encontró ID válido para procesar la inscripción', 'Cerrar', { 
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  private aceptarConIdPreinscripcion(estudiante: EstudianteElegible): void {
+    // Verificar que id_preinscripcion existe antes de usarlo
+    if (!estudiante.id_preinscripcion) {
+      console.error('❌ Error: id_preinscripcion es undefined');
+      this.procesarError({ status: 400, error: { message: 'ID de preinscripción no disponible' } });
+      return;
+    }
+    
+    console.log(`🔄 Aceptando con ID preinscripción: ${estudiante.id_preinscripcion}`);
+    
+    this.cursosService.aceptarInscripcion(estudiante.id_preinscripcion, 'Inscripción aceptada por funcionario').subscribe({
+      next: (response: any) => {
+        console.log('✅ Inscripción aceptada con id_preinscripcion:', response);
+        this.procesarRespuestaExitosa(estudiante, response);
+      },
+      error: (err: any) => {
+        console.error('❌ Error con id_preinscripcion, intentando con id_solicitud:', err);
+        // Si falla con id_preinscripcion, intentar con id_solicitud
+        if (estudiante.id_solicitud) {
+          this.aceptarConIdSolicitud(estudiante);
+        } else {
+          this.procesarError(err);
+        }
+      }
+    });
+  }
+
+  private aceptarConIdSolicitud(estudiante: EstudianteElegible): void {
+    console.log(`🔄 Aceptando con ID solicitud: ${estudiante.id_solicitud}`);
+    
+    // Probar diferentes endpoints posibles
+    const endpoints = [
+      `http://localhost:5000/api/cursos-intersemestrales/cursos-verano/inscripciones/${estudiante.id_solicitud}/aceptar`,
+      `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${estudiante.id_solicitud}/aceptar`,
+      `http://localhost:5000/api/cursos-intersemestrales/cursos-verano/inscripciones/${estudiante.id_solicitud}/completar`
+    ];
+
+    this.probarEndpoints(endpoints, estudiante, 0);
+  }
+
+  private probarEndpoints(endpoints: string[], estudiante: EstudianteElegible, index: number): void {
+    if (index >= endpoints.length) {
+      console.error('❌ Todos los endpoints fallaron');
+      this.snackBar.open('Error: No se pudo procesar la inscripción con ningún endpoint disponible', 'Cerrar', { 
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    const endpoint = endpoints[index];
+    const body = { observaciones: 'Inscripción aceptada por funcionario' };
+    
+    console.log(`🔄 Probando endpoint ${index + 1}/${endpoints.length}:`, endpoint);
+    
+    this.http.put<any>(endpoint, body).subscribe({
+      next: (response: any) => {
+        console.log(`✅ Éxito con endpoint ${index + 1}:`, response);
+        this.procesarRespuestaExitosa(estudiante, response);
+      },
+      error: (err) => {
+        console.error(`❌ Error con endpoint ${index + 1}:`, err.status, err.statusText);
+        // Intentar con el siguiente endpoint
+        this.probarEndpoints(endpoints, estudiante, index + 1);
+      }
+    });
+  }
+
+  private procesarRespuestaExitosa(estudiante: EstudianteElegible, response: any): void {
+    // Actualizar estado localmente
+    const index = this.estudiantesFiltrados.findIndex(e => e.id_solicitud === estudiante.id_solicitud);
+    if (index !== -1) {
+      this.estudiantesFiltrados[index].estado_inscripcion = 'Inscripcion_Completada';
+    }
+    
+    this.snackBar.open(
+      `✅ Inscripción aceptada exitosamente\nEstudiante: ${estudiante.nombre_completo}\nCurso: ${this.cursoSeleccionado?.nombre_curso || 'Curso seleccionado'}`, 
+      'Cerrar', 
+      { 
+        duration: 5000,
+        panelClass: ['success-snackbar']
+      }
+    );
+    
+    // Recargar la lista para obtener datos actualizados
+    if (this.cursoSeleccionado) {
+      this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
+    }
+  }
+
+  private procesarError(err: any): void {
+    console.error('❌ Error final al aceptar inscripción:', err);
+    
+    let mensajeError = 'Error al aceptar la inscripción';
+    if (err.status === 404) {
+      mensajeError = 'No se encontró la solicitud especificada';
+    } else if (err.status === 400) {
+      mensajeError = `Error en la solicitud: ${err.error?.message || 'La inscripción no puede ser aceptada en su estado actual'}`;
+    } else if (err.status === 500) {
+      mensajeError = `Error interno del servidor: ${err.error?.message || 'Contacte al administrador'}`;
+    }
+    
+    this.snackBar.open(mensajeError, 'Cerrar', { 
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  private procesarAceptacionConIdSolicitud(estudiante: EstudianteElegible): void {
+    // Usar el endpoint correcto para aceptar inscripción
+    console.log(`🔄 Aceptando inscripción con ID solicitud: ${estudiante.id_solicitud}`);
+    console.log('🔍 Datos del estudiante:', {
+      id_solicitud: estudiante.id_solicitud,
+      id_preinscripcion: estudiante.id_preinscripcion,
+      nombre: estudiante.nombre_completo,
+      codigo: estudiante.codigo
+    });
+    
+    // Intentar con el endpoint correcto del backend
+    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/cursos-verano/inscripciones/${estudiante.id_solicitud}/aceptar`;
+    const body = {
+      observaciones: 'Inscripción aceptada por funcionario'
+    };
+    
+    console.log('🔍 Endpoint:', endpoint);
+    console.log('🔍 Body:', body);
+    
+    this.http.put<any>(endpoint, body).subscribe({
+      next: (response: any) => {
+        console.log('✅ Respuesta del servidor:', response);
+        
+        // Actualizar estado localmente
+        const index = this.estudiantesFiltrados.findIndex(e => e.id_solicitud === estudiante.id_solicitud);
+        if (index !== -1) {
+          this.estudiantesFiltrados[index].estado_inscripcion = 'Inscripcion_Completada';
+        }
         
         this.snackBar.open(
-          `✅ Inscripción aceptada para ${estudiante.nombre_completo}. El estudiante ya está oficialmente inscrito en el curso.`, 
+          `✅ Inscripción aceptada exitosamente\nEstudiante: ${estudiante.nombre_completo}\nCurso: ${this.cursoSeleccionado?.nombre_curso || 'Curso seleccionado'}`, 
           'Cerrar', 
           { 
             duration: 5000,
             panelClass: ['success-snackbar']
           }
         );
-      },
-      error: (err) => {
-        console.error('❌ Error aceptando inscripción:', err);
-        this.snackBar.open('Error al aceptar la inscripción', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
-
-  private procesarAceptacion(estudiante: EstudianteElegible): void {
-    // Verificar que id_preinscripcion existe
-    if (!estudiante.id_preinscripcion) {
-      console.error('❌ Error: No se encontró ID de preinscripción para el estudiante');
-      this.snackBar.open('Error: No se encontró ID de preinscripción para el estudiante', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
-    
-    // Usar el endpoint correcto de aceptar inscripción
-    console.log(`🔄 Aceptando inscripción con ID preinscripción: ${estudiante.id_preinscripcion}`);
-    
-    this.cursosService.aceptarInscripcion(estudiante.id_preinscripcion, 'Inscripción aceptada por funcionario').subscribe({
-      next: (response: AceptarInscripcionResponse) => {
-        console.log('✅ Inscripción aceptada:', response);
         
-        if (response.success) {
-          // Actualizar estado localmente
-          const index = this.estudiantesFiltrados.findIndex(e => e.id_preinscripcion === estudiante.id_preinscripcion);
-          if (index !== -1) {
-            this.estudiantesFiltrados[index].estado_inscripcion = 'Inscripcion_Completada';
-          }
-          
-          this.snackBar.open(
-            `✅ ${response.message}\nEstudiante: ${estudiante.objUsuario?.nombre_completo || estudiante.nombre_completo}\nCurso: ${estudiante.objCurso?.nombre_curso || 'Curso no disponible'}`, 
-            'Cerrar', 
-            { 
-              duration: 5000,
-              panelClass: ['success-snackbar']
-            }
-          );
-          
-          // Recargar la lista para obtener datos actualizados
-          if (this.cursoSeleccionado) {
-            this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-          }
-        } else {
-          this.snackBar.open('Error: La respuesta del servidor indica fallo', 'Cerrar', { 
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
+        // Recargar la lista para obtener datos actualizados
+        if (this.cursoSeleccionado) {
+          this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
         }
       },
       error: (err) => {
@@ -354,16 +491,17 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           status: err.status,
           statusText: err.statusText,
           message: err.message,
-          url: err.url
+          url: err.url,
+          error: err.error
         });
         
         let mensajeError = 'Error al aceptar la inscripción';
         if (err.status === 404) {
-          mensajeError = 'No se encontró la preinscripción especificada';
+          mensajeError = 'No se encontró la solicitud especificada';
         } else if (err.status === 400) {
-          mensajeError = 'La inscripción no puede ser aceptada en su estado actual';
+          mensajeError = `Error en la solicitud: ${err.error?.message || 'La inscripción no puede ser aceptada en su estado actual'}`;
         } else if (err.status === 500) {
-          mensajeError = 'Error interno del servidor. Contacte al administrador';
+          mensajeError = `Error interno del servidor: ${err.error?.message || 'Contacte al administrador'}`;
         }
         
         this.snackBar.open(mensajeError, 'Cerrar', { 
@@ -379,38 +517,24 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     // Pedir motivo de rechazo
     const motivo = prompt('Ingrese el motivo del rechazo:');
-    if (!motivo) return;
+    if (!motivo || motivo.trim() === '') {
+      alert('Debe ingresar un motivo para rechazar la inscripción');
+      return;
+    }
     
-    // Llamar al endpoint para rechazar la inscripción
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${estudiante.id_solicitud}/rechazar`;
-    const body = {
-      motivo: motivo
-    };
-    
-    this.http.put(endpoint, body).subscribe({
+    // Usar el servicio para rechazar inscripción
+    this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo).subscribe({
       next: (response) => {
         console.log('❌ Inscripción rechazada:', response);
-        
+        alert('Inscripción rechazada exitosamente');
         // Recargar la lista de estudiantes
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
         }
-        
-        this.snackBar.open(
-          `❌ Inscripción rechazada para ${estudiante.nombre_completo}. Motivo: ${motivo}`, 
-          'Cerrar', 
-          { 
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          }
-        );
       },
-      error: (err) => {
-        console.error('❌ Error rechazando inscripción:', err);
-        this.snackBar.open('Error al rechazar la inscripción', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+      error: (error) => {
+        console.error('❌ Error rechazando inscripción:', error);
+        alert('Error al rechazar la inscripción');
       }
     });
   }
@@ -429,7 +553,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     console.log(`🔄 Procesando rechazo con motivo: ${motivoRechazo}`);
     
     // Llamar al servicio para rechazar la inscripción
-    this.cursosService.rechazarInscripcionFuncionario(estudiante.id_preinscripcion, motivoRechazo).subscribe({
+    this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivoRechazo).subscribe({
       next: (response: RechazarInscripcionResponse) => {
         console.log('✅ Inscripción rechazada:', response);
         
@@ -752,7 +876,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 export class DetallesInscripcionDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<DetallesInscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible }
+    @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible },
+    private cursosService: CursosIntersemestralesService
   ) {}
 
   getEstadoColor(estado: string): string {
@@ -771,57 +896,89 @@ export class DetallesInscripcionDialogComponent {
   }
 
   descargarComprobante(): void {
-    if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
-      console.log('📥 Descargando comprobante:', this.data.estudiante.archivoPago.nombre);
-      console.log('🔗 URL:', this.data.estudiante.archivoPago.url);
-      
-      // Crear un enlace temporal para descargar el archivo
-      const link = document.createElement('a');
-      link.href = this.data.estudiante.archivoPago.url;
-      link.download = this.data.estudiante.archivoPago.nombre;
-      link.target = '_blank';
-      
-      // Agregar al DOM, hacer clic y remover
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      console.warn('No hay URL disponible para descargar el archivo');
+    console.log('📥 Descargando comprobante para estudiante:', this.data.estudiante.nombre_completo);
+    console.log('🔍 ID de solicitud:', this.data.estudiante.id_solicitud);
+    
+    if (!this.data.estudiante.id_solicitud) {
+      console.error('❌ Error: No se encontró ID de solicitud para descargar comprobante');
+      alert('Error: No se encontró ID de solicitud para descargar comprobante');
+      return;
     }
+    
+    // Usar el servicio para descargar comprobante
+    this.cursosService.descargarComprobantePago(this.data.estudiante.id_solicitud).subscribe({
+      next: (blob: Blob) => {
+        console.log('📄 Descargando comprobante de pago');
+        
+        // Crear enlace de descarga
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `comprobante_pago_${this.data.estudiante.nombre_completo}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        
+        console.log('✅ Descarga completada exitosamente');
+        alert('Comprobante descargado exitosamente');
+      },
+      error: (error: any) => {
+        console.error('❌ Error descargando comprobante:', error);
+        alert('Error al descargar el comprobante de pago');
+      }
+    });
   }
 
   verComprobante(): void {
     if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
       console.log('👁️ Abriendo comprobante en nueva ventana:', this.data.estudiante.archivoPago.url);
       
+      // Verificar si la URL es relativa y construir la URL completa
+      let urlCompleta = this.data.estudiante.archivoPago.url;
+      if (urlCompleta.startsWith('/uploads/')) {
+        // Si es una ruta relativa, construir la URL completa del backend
+        urlCompleta = `http://localhost:5000${urlCompleta}`;
+      }
+      
+      console.log('🔗 URL completa para visualización:', urlCompleta);
+      
       // Abrir el archivo en una nueva ventana/pestaña
-      window.open(this.data.estudiante.archivoPago.url, '_blank');
+      window.open(urlCompleta, '_blank');
     } else {
       console.warn('No hay URL disponible para ver el archivo');
+      alert('No hay archivo disponible para visualizar');
     }
   }
 
   copiarURL(): void {
     if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
-      console.log('📋 Copiando URL al portapapeles:', this.data.estudiante.archivoPago.url);
+      // Verificar si la URL es relativa y construir la URL completa
+      let urlCompleta = this.data.estudiante.archivoPago.url;
+      if (urlCompleta.startsWith('/uploads/')) {
+        // Si es una ruta relativa, construir la URL completa del backend
+        urlCompleta = `http://localhost:5000${urlCompleta}`;
+      }
+      
+      console.log('📋 Copiando URL al portapapeles:', urlCompleta);
       
       // Copiar URL al portapapeles
-      navigator.clipboard.writeText(this.data.estudiante.archivoPago.url).then(() => {
+      navigator.clipboard.writeText(urlCompleta).then(() => {
         console.log('✅ URL copiada exitosamente');
-        // Aquí podrías mostrar un snackbar de confirmación
+        alert('URL copiada al portapapeles');
       }).catch(err => {
         console.error('❌ Error copiando URL:', err);
         
         // Fallback para navegadores que no soportan clipboard API
         const textArea = document.createElement('textarea');
-        textArea.value = this.data.estudiante.archivoPago?.url || '';
+        textArea.value = urlCompleta;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
+        alert('URL copiada al portapapeles (método alternativo)');
       });
     } else {
       console.warn('No hay URL disponible para copiar');
+      alert('No hay URL disponible para copiar');
     }
   }
 
