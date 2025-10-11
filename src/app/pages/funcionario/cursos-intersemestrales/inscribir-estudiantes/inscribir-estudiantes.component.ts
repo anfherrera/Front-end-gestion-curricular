@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService, CursoOfertadoVerano, Inscripcion, EstudianteElegible } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, CursoOfertadoVerano, Inscripcion, EstudianteElegible, AceptarInscripcionResponse, RechazarInscripcionResponse, DebugInscripcionResponse } from '../../../../core/services/cursos-intersemestrales.service';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 
 @Component({
@@ -69,7 +70,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     private cursosService: CursosIntersemestralesService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {
     this.filtroForm = this.fb.group({
       curso: ['', Validators.required]
@@ -184,9 +186,10 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         console.log('🔍 Estructura de primer estudiante:', estudiantes[0]);
         if (estudiantes[0]) {
           console.log('🔍 Campos disponibles en estudiante:', Object.keys(estudiantes[0]));
-          console.log('🔍 Usuario:', estudiantes[0].objUsuario);
-          console.log('🔍 Estado inscripción:', estudiantes[0].estado_inscripcion);
-          console.log('🔍 Archivo pago:', estudiantes[0].archivoPago);
+          console.log('🔍 Nombre completo:', estudiantes[0].nombre_completo);
+          console.log('🔍 Código:', estudiantes[0].codigo);
+          console.log('🔍 Tipo solicitud:', estudiantes[0].tipo_solicitud);
+          console.log('🔍 Tiene inscripción formal:', estudiantes[0].tiene_inscripcion_formal);
         }
         
         this.estudiantesElegibles = estudiantes;
@@ -257,28 +260,32 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   confirmarInscripcion(estudiante: EstudianteElegible): void {
-    console.log(`✅ Confirmando inscripción ${estudiante.id_inscripcion} para estudiante ${estudiante.objUsuario.nombre_completo}`);
+    console.log(`✅ Aceptando inscripción ${estudiante.id_solicitud} para estudiante ${estudiante.nombre_completo}`);
     
     // Confirmar con el usuario
     const confirmacion = confirm(
-      `¿Confirmar la inscripción de ${estudiante.objUsuario.nombre_completo} en el curso ${estudiante.objCurso.nombre_curso}?\n\nEl estudiante ya tiene el comprobante de pago validado.`
+      `¿Aceptar la inscripción de ${estudiante.nombre_completo} (${estudiante.codigo})?\n\nEl estudiante ya completó todos los requisitos.`
     );
     
     if (!confirmacion) return;
     
-    // Llamar al servicio para confirmar la inscripción
-    this.cursosService.confirmarInscripcion(estudiante.id_inscripcion).subscribe({
+    // Llamar al endpoint para aceptar la inscripción
+    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${estudiante.id_solicitud}/aceptar`;
+    const body = {
+      observaciones: "Inscripción aceptada por funcionario"
+    };
+    
+    this.http.put(endpoint, body).subscribe({
       next: (response) => {
-        console.log('✅ Inscripción confirmada:', response);
+        console.log('✅ Inscripción aceptada:', response);
         
-        // Actualizar estado localmente
-        const index = this.estudiantesFiltrados.findIndex(e => e.id_inscripcion === estudiante.id_inscripcion);
-        if (index !== -1) {
-          this.estudiantesFiltrados[index].estado_inscripcion = 'Inscrito';
+        // Recargar la lista de estudiantes
+        if (this.cursoSeleccionado) {
+          this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
         }
         
         this.snackBar.open(
-          `✅ Inscripción confirmada para ${estudiante.objUsuario.nombre_completo}. El estudiante ya está oficialmente inscrito en el curso.`, 
+          `✅ Inscripción aceptada para ${estudiante.nombre_completo}. El estudiante ya está oficialmente inscrito en el curso.`, 
           'Cerrar', 
           { 
             duration: 5000,
@@ -287,8 +294,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         );
       },
       error: (err) => {
-        console.error('❌ Error confirmando inscripción:', err);
-        this.snackBar.open('Error al confirmar la inscripción', 'Cerrar', { 
+        console.error('❌ Error aceptando inscripción:', err);
+        this.snackBar.open('Error al aceptar la inscripción', 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -296,29 +303,101 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
   }
 
-  rechazarInscripcion(estudiante: EstudianteElegible): void {
-    console.log(`❌ Rechazando inscripción ${estudiante.id_inscripcion} para estudiante ${estudiante.objUsuario.nombre_completo}`);
+  private procesarAceptacion(estudiante: EstudianteElegible): void {
+    // Verificar que id_preinscripcion existe
+    if (!estudiante.id_preinscripcion) {
+      console.error('❌ Error: No se encontró ID de preinscripción para el estudiante');
+      this.snackBar.open('Error: No se encontró ID de preinscripción para el estudiante', 'Cerrar', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
     
-    // Confirmar el rechazo
-    const confirmacion = confirm(
-      `¿Está seguro de rechazar la inscripción de ${estudiante.objUsuario.nombre_completo} en el curso ${estudiante.objCurso.nombre_curso}?`
-    );
+    // Usar el endpoint correcto de aceptar inscripción
+    console.log(`🔄 Aceptando inscripción con ID preinscripción: ${estudiante.id_preinscripcion}`);
     
-    if (!confirmacion) return;
-    
-    // Llamar al servicio para rechazar la inscripción
-    this.cursosService.rechazarInscripcion(estudiante.id_inscripcion).subscribe({
-      next: (response) => {
-        console.log('✅ Inscripción rechazada:', response);
+    this.cursosService.aceptarInscripcion(estudiante.id_preinscripcion, 'Inscripción aceptada por funcionario').subscribe({
+      next: (response: AceptarInscripcionResponse) => {
+        console.log('✅ Inscripción aceptada:', response);
         
-        // Actualizar estado localmente
-        const index = this.estudiantesFiltrados.findIndex(e => e.id_inscripcion === estudiante.id_inscripcion);
-        if (index !== -1) {
-          this.estudiantesFiltrados[index].estado_inscripcion = 'Rechazado';
+        if (response.success) {
+          // Actualizar estado localmente
+          const index = this.estudiantesFiltrados.findIndex(e => e.id_preinscripcion === estudiante.id_preinscripcion);
+          if (index !== -1) {
+            this.estudiantesFiltrados[index].estado_inscripcion = 'Inscripcion_Completada';
+          }
+          
+          this.snackBar.open(
+            `✅ ${response.message}\nEstudiante: ${estudiante.objUsuario?.nombre_completo || estudiante.nombre_completo}\nCurso: ${estudiante.objCurso?.nombre_curso || 'Curso no disponible'}`, 
+            'Cerrar', 
+            { 
+              duration: 5000,
+              panelClass: ['success-snackbar']
+            }
+          );
+          
+          // Recargar la lista para obtener datos actualizados
+          if (this.cursoSeleccionado) {
+            this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
+          }
+        } else {
+          this.snackBar.open('Error: La respuesta del servidor indica fallo', 'Cerrar', { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error aceptando inscripción:', err);
+        console.error('❌ Detalles del error:', {
+          status: err.status,
+          statusText: err.statusText,
+          message: err.message,
+          url: err.url
+        });
+        
+        let mensajeError = 'Error al aceptar la inscripción';
+        if (err.status === 404) {
+          mensajeError = 'No se encontró la preinscripción especificada';
+        } else if (err.status === 400) {
+          mensajeError = 'La inscripción no puede ser aceptada en su estado actual';
+        } else if (err.status === 500) {
+          mensajeError = 'Error interno del servidor. Contacte al administrador';
+        }
+        
+        this.snackBar.open(mensajeError, 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  rechazarInscripcion(estudiante: EstudianteElegible): void {
+    console.log(`❌ Rechazando inscripción ${estudiante.id_solicitud} para estudiante ${estudiante.nombre_completo}`);
+    
+    // Pedir motivo de rechazo
+    const motivo = prompt('Ingrese el motivo del rechazo:');
+    if (!motivo) return;
+    
+    // Llamar al endpoint para rechazar la inscripción
+    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${estudiante.id_solicitud}/rechazar`;
+    const body = {
+      motivo: motivo
+    };
+    
+    this.http.put(endpoint, body).subscribe({
+      next: (response) => {
+        console.log('❌ Inscripción rechazada:', response);
+        
+        // Recargar la lista de estudiantes
+        if (this.cursoSeleccionado) {
+          this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
         }
         
         this.snackBar.open(
-          `❌ Inscripción rechazada para ${estudiante.objUsuario.nombre_completo}`, 
+          `❌ Inscripción rechazada para ${estudiante.nombre_completo}. Motivo: ${motivo}`, 
           'Cerrar', 
           { 
             duration: 5000,
@@ -336,9 +415,77 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
   }
 
-  getEstadoColor(estado: string): string {
-    return '#00138C'; // Color azul consistente
+  private procesarRechazo(estudiante: EstudianteElegible, motivoRechazo: string): void {
+    // Verificar que id_preinscripcion existe
+    if (!estudiante.id_preinscripcion) {
+      console.error('❌ Error: No se encontró ID de preinscripción para el estudiante');
+      this.snackBar.open('Error: No se encontró ID de preinscripción para el estudiante', 'Cerrar', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
+    console.log(`🔄 Procesando rechazo con motivo: ${motivoRechazo}`);
+    
+    // Llamar al servicio para rechazar la inscripción
+    this.cursosService.rechazarInscripcionFuncionario(estudiante.id_preinscripcion, motivoRechazo).subscribe({
+      next: (response: RechazarInscripcionResponse) => {
+        console.log('✅ Inscripción rechazada:', response);
+        
+        if (response.success) {
+          // Actualizar estado localmente
+          const index = this.estudiantesFiltrados.findIndex(e => e.id_preinscripcion === estudiante.id_preinscripcion);
+          if (index !== -1) {
+            this.estudiantesFiltrados[index].estado_inscripcion = 'Rechazado';
+          }
+          
+          this.snackBar.open(
+            `❌ ${response.message}\nEstudiante: ${estudiante.objUsuario?.nombre_completo || estudiante.nombre_completo}\nMotivo: ${motivoRechazo}`, 
+            'Cerrar', 
+            { 
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            }
+          );
+          
+          // Recargar la lista para obtener datos actualizados
+          if (this.cursoSeleccionado) {
+            this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
+          }
+        } else {
+          this.snackBar.open('Error: La respuesta del servidor indica fallo', 'Cerrar', { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error rechazando inscripción:', err);
+        console.error('❌ Detalles del error:', {
+          status: err.status,
+          statusText: err.statusText,
+          message: err.message,
+          url: err.url
+        });
+        
+        let mensajeError = 'Error al rechazar la inscripción';
+        if (err.status === 404) {
+          mensajeError = 'No se encontró la preinscripción especificada';
+        } else if (err.status === 400) {
+          mensajeError = 'La inscripción no puede ser rechazada en su estado actual';
+        } else if (err.status === 500) {
+          mensajeError = 'Error interno del servidor. Contacte al administrador';
+        }
+        
+        this.snackBar.open(mensajeError, 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
+
 
 
 }
@@ -358,8 +505,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     MatIconModule
   ],
   template: `
-    <!-- Dialog actualizado - versión simplificada -->
-    <h2 mat-dialog-title>Detalles de Inscripción</h2>
+    <!-- Dialog simplificado - Solo solicitud y comprobante -->
+    <h2 mat-dialog-title>📋 Solicitud del Estudiante</h2>
     
     <div mat-dialog-content class="dialog-content">
       <!-- Información del estudiante -->
@@ -367,29 +514,30 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         <h3>👤 Información del Estudiante</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Nombre Completo:</strong> {{ data.estudiante.objUsuario.nombre_completo }}
+            <strong>Nombre Completo:</strong> {{ data.estudiante.nombre_completo }}
           </div>
           <div class="info-item">
-            <strong>Código:</strong> {{ data.estudiante.objUsuario.codigo_estudiante || 'N/A' }}
+            <strong>Código:</strong> {{ data.estudiante.codigo }}
           </div>
           <div class="info-item">
-            <strong>Email:</strong> {{ data.estudiante.objUsuario.correo }}
+            <strong>Tipo de Solicitud:</strong> {{ data.estudiante.tipo_solicitud }}
+          </div>
+          <div class="info-item">
+            <strong>Condición:</strong> {{ data.estudiante.condicion_solicitud }}
+          </div>
+          <div class="info-item">
+            <strong>Inscripción Formal:</strong> {{ data.estudiante.tiene_inscripcion_formal ? 'Sí' : 'No' }}
           </div>
         </div>
       </div>
 
-      <!-- Información de inscripción -->
+
+      <!-- Información de la solicitud -->
       <div class="form-section">
-        <h3>📋 Información de Inscripción</h3>
+        <h3>📝 Detalles de la Solicitud</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Fecha Inscripción:</strong> {{ data.estudiante.fecha_inscripcion | date:'dd/MM/yyyy HH:mm' }}
-          </div>
-          <div class="info-item">
-            <strong>Estado Inscripción:</strong> 
-            <span style="background: #00138C; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-              {{ data.estudiante.estado_inscripcion }}
-            </span>
+            <strong>ID Preinscripción:</strong> {{ data.estudiante.id_preinscripcion }}
           </div>
           <div class="info-item">
             <strong>Fecha Preinscripción:</strong> {{ data.estudiante.fecha_preinscripcion | date:'dd/MM/yyyy HH:mm' }}
@@ -400,6 +548,29 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
               {{ data.estudiante.estado_preinscripcion }}
             </span>
           </div>
+          <div class="info-item">
+            <strong>Motivo de Inclusión:</strong> {{ data.estudiante.motivo_inclusion }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado de inscripción -->
+      <div class="form-section">
+        <h3>📋 Estado de Inscripción</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>Estado Actual:</strong> 
+            <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+              {{ data.estudiante.tipo_solicitud }}
+            </span>
+          </div>
+          <div class="info-item" *ngIf="data.estudiante.id_inscripcion">
+            <strong>ID Inscripción:</strong> {{ data.estudiante.id_inscripcion }}
+          </div>
+          <div class="info-item" *ngIf="data.estudiante.fecha_inscripcion">
+            <strong>Fecha Inscripción:</strong> 
+            {{ data.estudiante.fecha_inscripcion | date:'dd/MM/yyyy HH:mm' }}
+          </div>
         </div>
       </div>
 
@@ -408,24 +579,60 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         <h3>💰 Comprobante de Pago</h3>
         <div class="info-grid">
           <div class="info-item" *ngIf="data.estudiante.archivoPago; else sinComprobante">
-            <strong>Archivo:</strong> {{ data.estudiante.archivoPago.nombre }}
-            <br>
-            <strong>Fecha de subida:</strong> {{ data.estudiante.archivoPago.fecha }}
-            <br>
-            <strong>Estado:</strong> 
-            <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-              Pago Validado ✅
-            </span>
-            <br>
-            <button mat-raised-button color="primary" (click)="descargarComprobante()">
-              <mat-icon>download</mat-icon>
-              Descargar Comprobante
-            </button>
+            <div class="comprobante-info">
+              <strong>Nombre del Archivo:</strong> {{ data.estudiante.archivoPago.nombre }}
+              <br>
+              <strong>ID Documento:</strong> {{ data.estudiante.archivoPago.id_documento || 'No disponible' }}
+              <br>
+              <strong>Fecha de Subida:</strong> 
+              {{ data.estudiante.archivoPago.fecha ? (data.estudiante.archivoPago.fecha | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}
+              <br>
+              <strong>URL del Archivo:</strong> 
+              <span style="font-family: monospace; font-size: 11px; background: #f5f5f5; padding: 2px 4px; border-radius: 3px;">
+                {{ data.estudiante.archivoPago.url || 'No disponible' }}
+              </span>
+              <br>
+              <strong>Estado del Pago:</strong> 
+              <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                Pago Validado ✅
+              </span>
+              <br><br>
+              
+              <!-- Botones de acción para el comprobante -->
+              <div class="comprobante-actions">
+                <button mat-raised-button 
+                        color="primary" 
+                        (click)="descargarComprobante()"
+                        *ngIf="data.estudiante.archivoPago?.url"
+                        style="margin-right: 8px;">
+                  <mat-icon>download</mat-icon>
+                  Descargar Comprobante
+                </button>
+                
+                <button mat-raised-button 
+                        color="accent" 
+                        (click)="verComprobante()"
+                        *ngIf="data.estudiante.archivoPago?.url"
+                        style="margin-right: 8px;">
+                  <mat-icon>visibility</mat-icon>
+                  Ver Comprobante
+                </button>
+                
+                <button mat-stroked-button 
+                        (click)="copiarURL()"
+                        *ngIf="data.estudiante.archivoPago?.url">
+                  <mat-icon>content_copy</mat-icon>
+                  Copiar URL
+                </button>
+              </div>
+            </div>
           </div>
           <ng-template #sinComprobante>
             <div class="info-item">
               <strong>Estado:</strong> 
               <span style="color: #f44336; font-weight: bold;">Sin comprobante de pago</span>
+              <br>
+              <small style="color: #666;">El estudiante no ha subido un comprobante de pago</small>
             </div>
           </ng-template>
         </div>
@@ -435,17 +642,19 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     <div mat-dialog-actions class="dialog-actions">
       <button mat-button (click)="dialogRef.close()">Cerrar</button>
       <button mat-raised-button 
-              *ngIf="data.estudiante.archivoPago && data.estudiante.estado_inscripcion === 'Pago_Validado'"
+              *ngIf="data.estudiante.estado_inscripcion !== 'Inscripcion_Completada'"
               color="primary" 
               (click)="confirmarInscripcion()">
-        Confirmar Inscripción
+        Aceptar Inscripción
       </button>
     </div>
   `,
   styles: [`
     .dialog-content {
-      max-width: 600px;
+      max-width: 800px;
       padding: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .form-section {
@@ -472,12 +681,39 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     .info-item {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
     }
 
     .info-item strong {
       color: #333;
-      min-width: 120px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .comprobante-info {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 6px;
+      border: 1px solid #e9ecef;
+    }
+
+    .comprobante-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .comprobante-actions button {
+      flex: 1;
+      min-width: 140px;
     }
 
     .dialog-actions {
@@ -486,11 +722,29 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       gap: 12px;
       padding: 16px 20px;
       border-top: 1px solid #e0e0e0;
+      background: #f8f9fa;
     }
 
     ::ng-deep .mat-mdc-form-field {
       .mat-mdc-text-field-wrapper {
         background-color: white;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dialog-content {
+        max-width: 95vw;
+        padding: 16px;
+      }
+      
+      .comprobante-actions {
+        flex-direction: column;
+      }
+      
+      .comprobante-actions button {
+        width: 100%;
+        min-width: unset;
       }
     }
   `]
@@ -501,8 +755,26 @@ export class DetallesInscripcionDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible }
   ) {}
 
+  getEstadoColor(estado: string): string {
+    switch (estado) {
+      case 'Inscripcion_Completada':
+        return '#28a745'; // Verde
+      case 'Pago_Validado':
+        return '#00138C'; // Azul
+      case 'Sin inscripción formal':
+        return '#ffc107'; // Amarillo
+      case 'Rechazado':
+        return '#dc3545'; // Rojo
+      default:
+        return '#6c757d'; // Gris
+    }
+  }
+
   descargarComprobante(): void {
-    if (this.data.estudiante.archivoPago) {
+    if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
+      console.log('📥 Descargando comprobante:', this.data.estudiante.archivoPago.nombre);
+      console.log('🔗 URL:', this.data.estudiante.archivoPago.url);
+      
       // Crear un enlace temporal para descargar el archivo
       const link = document.createElement('a');
       link.href = this.data.estudiante.archivoPago.url;
@@ -513,11 +785,155 @@ export class DetallesInscripcionDialogComponent {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    } else {
+      console.warn('No hay URL disponible para descargar el archivo');
+    }
+  }
+
+  verComprobante(): void {
+    if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
+      console.log('👁️ Abriendo comprobante en nueva ventana:', this.data.estudiante.archivoPago.url);
+      
+      // Abrir el archivo en una nueva ventana/pestaña
+      window.open(this.data.estudiante.archivoPago.url, '_blank');
+    } else {
+      console.warn('No hay URL disponible para ver el archivo');
+    }
+  }
+
+  copiarURL(): void {
+    if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
+      console.log('📋 Copiando URL al portapapeles:', this.data.estudiante.archivoPago.url);
+      
+      // Copiar URL al portapapeles
+      navigator.clipboard.writeText(this.data.estudiante.archivoPago.url).then(() => {
+        console.log('✅ URL copiada exitosamente');
+        // Aquí podrías mostrar un snackbar de confirmación
+      }).catch(err => {
+        console.error('❌ Error copiando URL:', err);
+        
+        // Fallback para navegadores que no soportan clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = this.data.estudiante.archivoPago?.url || '';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      });
+    } else {
+      console.warn('No hay URL disponible para copiar');
     }
   }
 
   confirmarInscripcion(): void {
     // Lógica para confirmar la inscripción
     this.dialogRef.close('inscrito');
+  }
+}
+
+// Componente del dialog para pedir motivo de rechazo
+@Component({
+  selector: 'app-motivo-rechazo-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule
+  ],
+  template: `
+    <h2 mat-dialog-title>{{ data.titulo }}</h2>
+    
+    <div mat-dialog-content class="dialog-content">
+      <p class="mensaje">{{ data.mensaje }}</p>
+      
+      <form [formGroup]="motivoForm">
+        <mat-form-field appearance="outline" class="motivo-field">
+          <mat-label>Motivo del rechazo *</mat-label>
+          <textarea matInput 
+                    formControlName="motivo"
+                    placeholder="Explique el motivo del rechazo..."
+                    rows="4"
+                    maxlength="500"></textarea>
+          <mat-hint align="end">{{ motivoForm.get('motivo')?.value?.length || 0 }}/500</mat-hint>
+          <mat-error *ngIf="motivoForm.get('motivo')?.hasError('required')">
+            El motivo es requerido
+          </mat-error>
+          <mat-error *ngIf="motivoForm.get('motivo')?.hasError('minlength')">
+            El motivo debe tener al menos 10 caracteres
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+
+    <div mat-dialog-actions class="dialog-actions">
+      <button mat-button (click)="dialogRef.close()">Cancelar</button>
+      <button mat-raised-button 
+              color="warn" 
+              [disabled]="!motivoForm.valid"
+              (click)="confirmarRechazo()">
+        <mat-icon>cancel</mat-icon>
+        Rechazar Inscripción
+      </button>
+    </div>
+  `,
+  styles: [`
+    .dialog-content {
+      padding: 20px;
+      min-width: 400px;
+    }
+
+    .mensaje {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .motivo-field {
+      width: 100%;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 20px;
+      border-top: 1px solid #e0e0e0;
+      background: #f8f9fa;
+    }
+
+    ::ng-deep .mat-mdc-form-field {
+      .mat-mdc-text-field-wrapper {
+        background-color: white;
+      }
+    }
+  `]
+})
+export class MotivoRechazoDialogComponent {
+  motivoForm: FormGroup;
+
+  constructor(
+    public dialogRef: MatDialogRef<MotivoRechazoDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { 
+      estudiante: EstudianteElegible;
+      titulo: string;
+      mensaje: string;
+    },
+    private fb: FormBuilder
+  ) {
+    this.motivoForm = this.fb.group({
+      motivo: ['', [Validators.required, Validators.minLength(10)]]
+    });
+  }
+
+  confirmarRechazo(): void {
+    if (this.motivoForm.valid) {
+      const motivo = this.motivoForm.get('motivo')?.value;
+      this.dialogRef.close({ motivo: motivo });
+    }
   }
 }

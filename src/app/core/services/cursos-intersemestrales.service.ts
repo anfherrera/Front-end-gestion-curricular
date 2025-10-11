@@ -18,28 +18,37 @@ export interface Usuario {
   objRol: Rol;
 }
 
-// Nueva interfaz para la respuesta del endpoint de estudiantes elegibles
+// Nueva interfaz para la respuesta del endpoint de estudiantes elegibles (estructura real del backend)
 export interface EstudianteElegible {
-  objUsuario: {
+  nombre_completo: string;
+  codigo: string;
+  id_solicitud: number;
+  id_curso: number;
+  tipo_solicitud: string;
+  condicion_solicitud: string;
+  tiene_inscripcion_formal: boolean;
+  // Campos adicionales que pueden venir del backend (opcionales para compatibilidad)
+  objUsuario?: {
     id_usuario: number;
     nombre_completo: string;
     correo: string;
     codigo: string;
     codigo_estudiante: string;
   };
-  id_preinscripcion: number;
-  fecha_preinscripcion: string;
-  estado_preinscripcion: string;
-  id_inscripcion: number;
-  fecha_inscripcion: string;
-  estado_inscripcion: string;
-  archivoPago: {
-    id_documento: string;
+  id_preinscripcion?: number;
+  fecha_preinscripcion?: string;
+  estado_preinscripcion?: string;
+  id_inscripcion?: number;
+  fecha_inscripcion?: string;
+  estado_inscripcion?: string;
+  motivo_inclusion?: string;
+  archivoPago?: {
+    id_documento: string | null;
     nombre: string;
-    url: string;
-    fecha: string;
+    url: string | null;
+    fecha: string | null;
   };
-  objCurso: CursoOfertadoVerano;
+  objCurso?: CursoOfertadoVerano;
 }
 
 export interface Rol {
@@ -243,6 +252,41 @@ export interface CreateInscripcionDTO {
 export interface UpdateSolicitudDTO {
   estado?: 'Pendiente' | 'Aprobado' | 'Rechazado' | 'Completado';
   motivoRechazo?: string;
+}
+
+// DTO para aceptar inscripción
+export interface AceptarInscripcionDTO {
+  observaciones?: string;
+}
+
+// DTO para rechazar inscripción
+export interface RechazarInscripcionDTO {
+  motivo_rechazo: string;
+}
+
+// Respuesta del endpoint de aceptar inscripción
+export interface AceptarInscripcionResponse {
+  success: boolean;
+  message: string;
+}
+
+// Respuesta del endpoint de rechazar inscripción
+export interface RechazarInscripcionResponse {
+  success: boolean;
+  message: string;
+}
+
+// Respuesta del endpoint de debug
+export interface DebugInscripcionResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    preinscripcion_existe: boolean;
+    base_datos_conectada: boolean;
+    tipo_entidad?: string;
+    errores?: string[];
+    detalles?: any;
+  };
 }
 
 export interface CreateSolicitudCursoNuevoDTO {
@@ -817,6 +861,61 @@ export class CursosIntersemestralesService {
   rechazarInscripcion(id: number): Observable<Inscripcion> {
     return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/rechazar`, {});
   }
+
+  // 🆕 NUEVO: Aceptar inscripción usando el endpoint correcto
+  aceptarInscripcion(idPreinscripcion: number, observaciones?: string): Observable<AceptarInscripcionResponse> {
+    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ACEPTAR_INSCRIPCION(idPreinscripcion);
+    console.log(`🌐 Llamando a API: PUT ${endpoint}`);
+    console.log(`🔍 ID de preinscripción: ${idPreinscripcion}`);
+    console.log(`🔍 Observaciones: ${observaciones || 'Sin observaciones'}`);
+    
+    const payload: AceptarInscripcionDTO = {
+      observaciones: observaciones || 'Inscripción aceptada por funcionario'
+    };
+    
+    return this.http.put<AceptarInscripcionResponse>(endpoint, payload);
+  }
+
+  // 🆕 NUEVO: Rechazar inscripción usando el endpoint correcto
+  rechazarInscripcionFuncionario(idPreinscripcion: number, motivoRechazo: string): Observable<RechazarInscripcionResponse> {
+    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.RECHAZAR_INSCRIPCION(idPreinscripcion);
+    console.log(`🌐 Llamando a API: PUT ${endpoint}`);
+    console.log(`🔍 ID de preinscripción: ${idPreinscripcion}`);
+    console.log(`🔍 Motivo de rechazo: ${motivoRechazo}`);
+    
+    const payload: RechazarInscripcionDTO = {
+      motivo_rechazo: motivoRechazo
+    };
+    
+    return this.http.put<RechazarInscripcionResponse>(endpoint, payload);
+  }
+
+  // 🔍 DEBUG: Endpoint para debuggear problemas con inscripciones
+  debugInscripcion(idPreinscripcion: number): Observable<DebugInscripcionResponse> {
+    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DEBUG_INSCRIPCION(idPreinscripcion);
+    console.log(`🔍 Llamando a API de debug: GET ${endpoint}`);
+    console.log(`🔍 ID de preinscripción a debuggear: ${idPreinscripcion}`);
+    
+    return this.http.get<DebugInscripcionResponse>(endpoint);
+  }
+
+  // 🔍 DIAGNÓSTICO: Verificar estado de preinscripciones de un usuario en un curso específico
+  verificarPreinscripcionesUsuario(idUsuario: number, idCurso: number): Observable<any> {
+    const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${idUsuario}/curso/${idCurso}`;
+    console.log(`🔍 Verificando preinscripciones: ${endpoint}`);
+    console.log(`📊 Parámetros: usuario=${idUsuario}, curso=${idCurso}`);
+    return this.http.get<any>(endpoint);
+  }
+
+  // 🔍 DIAGNÓSTICO: Obtener todas las preinscripciones de un usuario
+  getPreinscripcionesUsuario(idUsuario: number): Observable<any[]> {
+    const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${idUsuario}`;
+    console.log(`🔍 Obteniendo preinscripciones del usuario: ${endpoint}`);
+    return this.http.get<any[]>(endpoint);
+  }
+
+  // 🔍 DIAGNÓSTICO: Obtener todas las preinscripciones de un curso (usando método existente)
+  // Nota: Ya existe getPreinscripcionesCurso en la línea 82, no duplicar
 
   // ====== CURSOS (adaptados a CursoListComponent) ======
   

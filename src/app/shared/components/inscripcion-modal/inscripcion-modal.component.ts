@@ -174,7 +174,171 @@ export class InscripcionModalComponent implements OnInit {
     
     console.log('🔍 Payload completo:', payloadCompleto);
     
-    this.cursosService.crearInscripcion(payloadCompleto as any).subscribe({
+    // 🔍 DIAGNÓSTICO COMPLETO: Verificar estado real en backend
+    console.log('🔄 DIAGNÓSTICO COMPLETO - Verificando estado real en la base de datos...');
+    console.log('🔍 Usuario:', this.usuario.id_usuario, this.usuario.nombre_completo);
+    console.log('🔍 Curso:', this.data.preinscripcion.cursoId, this.data.preinscripcion.curso);
+    console.log('🔍 Estado preinscripción actual (frontend):', this.data.preinscripcion.estado);
+    
+    // Realizar diagnóstico completo antes de proceder
+    this.realizarDiagnosticoCompleto();
+  }
+
+  private realizarDiagnosticoCompleto(): void {
+    console.log('🔍 DIAGNÓSTICO PASO 1: Verificando preinscripciones del usuario en el curso...');
+    
+    // Verificar todas las preinscripciones del usuario y filtrar por curso
+    this.cursosService.getPreinscripcionesUsuario(this.usuario.id_usuario).subscribe({
+      next: (todasPreinscripciones) => {
+        console.log('📊 RESULTADO DIAGNÓSTICO - Todas las preinscripciones del usuario:', todasPreinscripciones);
+        console.log('📊 Cantidad total de preinscripciones:', todasPreinscripciones?.length || 0);
+        
+        // Filtrar preinscripciones para este curso específico
+        const preinscripciones = todasPreinscripciones?.filter((p: any) => 
+          p.id_curso === this.data.preinscripcion.cursoId || 
+          p.cursoId === this.data.preinscripcion.cursoId ||
+          p.objCurso?.id_curso === this.data.preinscripcion.cursoId
+        ) || [];
+        
+        console.log('📊 Preinscripciones filtradas para este curso:', preinscripciones);
+        console.log('📊 Cantidad de preinscripciones para este curso:', preinscripciones.length);
+        
+        if (preinscripciones && preinscripciones.length > 0) {
+                preinscripciones.forEach((p: any, index: number) => {
+                  console.log(`📋 Preinscripción ${index + 1}:`, {
+                    id: p.id,
+                    id_solicitud: p.id_solicitud,
+                    estado: p.estado,
+                    id_usuario: p.id_usuario,
+                    id_curso: p.id_curso,
+                    fecha: p.fecha,
+                    usuarioId: p.usuarioId,
+                    cursoId: p.cursoId,
+                    objUsuario: p.objUsuario,
+                    objCurso: p.objCurso
+                  });
+                  console.log(`📋 Preinscripción ${index + 1} - Objeto completo:`, p);
+                });
+          
+          // Buscar una preinscripción aprobada
+          const preinscripcionAprobada = preinscripciones.find((p: any) => p.estado === 'Aprobado');
+          
+          if (preinscripcionAprobada) {
+            console.log('✅ DIAGNÓSTICO: Se encontró preinscripción aprobada, procediendo a crear inscripción...');
+            this.crearInscripcionDirecta();
+          } else {
+            console.log('⚠️ DIAGNÓSTICO: No hay preinscripción aprobada, pero hay preinscripciones existentes');
+            console.log('📋 Estados encontrados:', preinscripciones.map((p: any) => p.estado));
+            this.procesarPreinscripcionesExistentes(preinscripciones);
+          }
+        } else {
+          console.log('❌ DIAGNÓSTICO: No se encontraron preinscripciones para este usuario en este curso');
+          this.crearNuevaPreinscripcion();
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error en diagnóstico de preinscripciones:', error);
+        console.log('🔄 Continuando con flujo alternativo...');
+        this.crearNuevaPreinscripcion();
+      }
+    });
+  }
+
+  private procesarPreinscripcionesExistentes(preinscripciones: any[]): void {
+    console.log('🔍 DIAGNÓSTICO PASO 2: Procesando preinscripciones existentes...');
+    
+    // Buscar la preinscripción más reciente
+    const preinscripcionMasReciente = preinscripciones.reduce((latest, current) => {
+      const latestDate = new Date(latest.fecha || latest.createdAt || 0);
+      const currentDate = new Date(current.fecha || current.createdAt || 0);
+      return currentDate > latestDate ? current : latest;
+    });
+    
+    console.log('📋 Preinscripción más reciente:', preinscripcionMasReciente);
+    
+    // Intentar aprobar la preinscripción más reciente
+    if (preinscripcionMasReciente.id_solicitud || preinscripcionMasReciente.id) {
+      const idParaAprobar = preinscripcionMasReciente.id_solicitud || preinscripcionMasReciente.id;
+      console.log(`🔄 Intentando aprobar preinscripción ID: ${idParaAprobar}`);
+      this.aprobarPreinscripcion(idParaAprobar);
+    } else {
+      console.log('⚠️ No se pudo obtener ID para aprobar, creando nueva preinscripción...');
+      this.crearNuevaPreinscripcion();
+    }
+  }
+
+  private crearNuevaPreinscripcion(): void {
+    console.log('🔍 DIAGNÓSTICO PASO 3: Creando nueva preinscripción...');
+    
+    const preinscripcionPayload = {
+      idUsuario: this.usuario.id_usuario,
+      idCurso: this.data.preinscripcion.cursoId,
+      nombreSolicitud: `Preinscripción - ${this.data.preinscripcion.curso}`,
+      condicion: 'Primera_Vez' // Valor por defecto
+    };
+
+    console.log('📝 Creando preinscripción con payload:', preinscripcionPayload);
+
+    this.cursosService.crearPreinscripcion(preinscripcionPayload).subscribe({
+      next: (preinscripcion) => {
+        console.log('✅ Preinscripción creada:', preinscripcion);
+        
+        // Ahora aprobar la preinscripción
+        this.aprobarPreinscripcion(preinscripcion.id_solicitud);
+      },
+      error: (error) => {
+        console.error('❌ Error creando preinscripción:', error);
+        this.cargando = false;
+        this.snackBar.open(
+          'Error al crear la preinscripción. Por favor, inténtalo de nuevo.',
+          'Cerrar',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
+  }
+
+  private aprobarPreinscripcion(preinscripcionId: number): void {
+    console.log('🔍 DIAGNÓSTICO PASO 4: Aprobando preinscripción ID:', preinscripcionId);
+    
+    this.cursosService.aprobarPreinscripcion(preinscripcionId).subscribe({
+      next: (response) => {
+        console.log('✅ Preinscripción aprobada:', response);
+        
+        // Ahora crear la inscripción
+        this.crearInscripcionDirecta();
+      },
+      error: (error) => {
+        console.error('❌ Error aprobando preinscripción:', error);
+        this.cargando = false;
+        this.snackBar.open(
+          'Error al aprobar la preinscripción. Por favor, inténtalo de nuevo.',
+          'Cerrar',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
+  }
+
+  private crearInscripcionDirecta(): void {
+    console.log('🔍 DIAGNÓSTICO PASO 5: Creando inscripción...');
+    
+    const inscripcionPayload = {
+      idUsuario: this.usuario.id_usuario,
+      idCurso: this.data.preinscripcion.cursoId,
+      nombreSolicitud: `Inscripción - ${this.data.preinscripcion.curso}`
+    };
+    
+    console.log('📝 Creando inscripción con payload:', inscripcionPayload);
+    console.log('🔍 DEBUG - Verificando preinscripción antes de crear inscripción...');
+    console.log('🔍 DEBUG - Usuario ID:', this.usuario.id_usuario);
+    console.log('🔍 DEBUG - Curso ID:', this.data.preinscripcion.cursoId);
+    console.log('🔍 DEBUG - Estado preinscripción:', this.data.preinscripcion.estado);
+    
+    // TEMPORAL: Intentar crear inscripción directamente
+    console.log('🚀 INTENTANDO CREAR INSCRIPCIÓN DIRECTO...');
+    
+    this.cursosService.crearInscripcion(inscripcionPayload).subscribe({
       next: (inscripcion) => {
         console.log('✅ Inscripción creada:', inscripcion);
         
@@ -183,6 +347,17 @@ export class InscripcionModalComponent implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error creando inscripción:', error);
+        
+        // Mostrar detalles completos del error
+        console.log('🚨 ERROR COMPLETO - Detalles:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          error_body: error.error,
+          error_message: error.error?.message || error.error?.error || 'Sin mensaje específico',
+          error_code: error.error?.codigo || 'Sin código específico'
+        });
+        
         this.cargando = false;
         
         let mensajeError = 'Error al crear la inscripción. Por favor, inténtalo de nuevo.';
@@ -192,7 +367,9 @@ export class InscripcionModalComponent implements OnInit {
         } else if (error.status === 500) {
           mensajeError = 'Error interno del servidor. Por favor, contacta al administrador.';
         } else if (error.status === 400) {
-          mensajeError = 'Datos inválidos. Por favor, verifica la información ingresada.';
+          // Mostrar el mensaje específico del backend si está disponible
+          const backendMessage = error.error?.message || error.error?.error || 'Datos inválidos';
+          mensajeError = `Error del servidor: ${backendMessage}`;
         } else if (error.status === 401) {
           mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
         } else if (error.status === 403) {

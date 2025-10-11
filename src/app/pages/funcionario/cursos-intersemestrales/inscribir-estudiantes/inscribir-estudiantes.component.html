@@ -39,47 +39,44 @@
           <th mat-header-cell *matHeaderCellDef>Estudiante</th>
           <td mat-cell *matCellDef="let estudiante">
             <div class="estudiante-info">
-              <strong>{{ estudiante.objUsuario?.nombre_completo }}</strong>
-              <small>{{ estudiante.objUsuario?.correo }}</small>
-              <small>Código: {{ estudiante.objUsuario?.codigo_estudiante }}</small>
+              <strong>{{ estudiante.nombre_completo }}</strong>
+              <small>{{ estudiante.codigo }}</small>
+              <small>Tipo: {{ estudiante.tipo_solicitud }}</small>
             </div>
           </td>
         </ng-container>
 
         <!-- Columna Fecha -->
         <ng-container matColumnDef="fecha_inscripcion">
-          <th mat-header-cell *matHeaderCellDef>Fecha de Inscripción</th>
+          <th mat-header-cell *matHeaderCellDef>Información</th>
           <td mat-cell *matCellDef="let estudiante">
-            {{ estudiante.fecha_inscripcion | date:'dd/MM/yyyy HH:mm' }}
+            <div class="info-estudiante">
+              <small>Condición: {{ estudiante.condicion_solicitud }}</small>
+              <small>Formal: {{ estudiante.tiene_inscripcion_formal ? 'Sí' : 'No' }}</small>
+            </div>
           </td>
         </ng-container>
 
         <!-- Columna Estado -->
         <ng-container matColumnDef="estado_inscripcion">
-          <th mat-header-cell *matHeaderCellDef>Estado de Inscripción</th>
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let estudiante">
-            <span style="background: #00138C !important; color: white !important; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: none !important;">
-              {{ estudiante.estado_inscripcion }}
+            <span style="background: #28a745 !important; color: white !important; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: none !important;">
+              {{ estudiante.tipo_solicitud }}
             </span>
           </td>
         </ng-container>
 
         <!-- Columna Comprobante de Pago -->
         <ng-container matColumnDef="comprobante_pago">
-          <th mat-header-cell *matHeaderCellDef>Comprobante de Pago</th>
+          <th mat-header-cell *matHeaderCellDef>Estado del Proceso</th>
           <td mat-cell *matCellDef="let estudiante">
             <div class="comprobante-cell">
-              <span *ngIf="estudiante.archivoPago; else sinComprobante" class="con-comprobante">
+              <span class="con-comprobante">
                 <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
-                {{ estudiante.archivoPago?.nombre || 'Pago Validado' }}
-                <br><small style="color: #4CAF50; font-weight: bold;">✅ Validado</small>
+                Listo para inscripción
+                <br><small style="color: #4CAF50; font-weight: bold;">✅ Elegible</small>
               </span>
-              <ng-template #sinComprobante>
-                <span class="sin-comprobante">
-                  <mat-icon style="color: #00138C !important;">cancel</mat-icon>
-                  Sin comprobante
-                </span>
-              </ng-template>
             </div>
           </td>
         </ng-container>
@@ -97,15 +94,15 @@
               </button>
               
               <button mat-icon-button 
-                      *ngIf="estudiante.estado_inscripcion === 'Pago_Validado'"
+                      *ngIf="estudiante.tiene_inscripcion_formal"
                       (click)="confirmarInscripcion(estudiante)"
-                      matTooltip="Confirmar inscripción - Estudiante tiene pago validado"
+                      matTooltip="Aceptar inscripción - Estudiante completó todos los requisitos"
                       style="color: #4CAF50 !important;">
                 <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
               </button>
               
               <button mat-icon-button 
-                      *ngIf="estudiante.estado_inscripcion === 'Pago_Validado'"
+                      *ngIf="estudiante.tiene_inscripcion_formal"
                       (click)="rechazarInscripcion(estudiante)"
                       matTooltip="Rechazar inscripción"
                       style="color: #f44336 !important;">
