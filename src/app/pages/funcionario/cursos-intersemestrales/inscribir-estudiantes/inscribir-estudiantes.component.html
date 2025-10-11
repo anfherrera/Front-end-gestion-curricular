@@ -15,6 +15,29 @@
     </form>
   </div>
 
+  <!-- Panel de Estadísticas -->
+  <div *ngIf="estadisticas && cursoSeleccionado" class="estadisticas-panel">
+    <h3>📊 Estadísticas del Curso</h3>
+    <div class="stats-grid">
+      <div class="stat-item total">
+        <span class="stat-number">{{ estadisticas.total_inscripciones || 0 }}</span>
+        <span class="stat-label">Total Inscripciones</span>
+      </div>
+      <div class="stat-item pending">
+        <span class="stat-number">{{ estadisticas.pendientes_revision || 0 }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+      <div class="stat-item accepted">
+        <span class="stat-number">{{ estadisticas.aceptadas || 0 }}</span>
+        <span class="stat-label">Aceptadas</span>
+      </div>
+      <div class="stat-item rejected">
+        <span class="stat-number">{{ estadisticas.rechazadas || 0 }}</span>
+        <span class="stat-label">Rechazadas</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading spinner -->
   <div *ngIf="cargando" class="loading-container">
     <mat-spinner diameter="50"></mat-spinner>

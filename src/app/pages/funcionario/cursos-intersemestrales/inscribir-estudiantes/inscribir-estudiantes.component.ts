@@ -50,6 +50,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   estudiantesElegibles: EstudianteElegible[] = [];
   estudiantesFiltrados: EstudianteElegible[] = [];
   cargando = false;
+  estadisticas: any = null;
   
   // Formularios
   filtroForm: FormGroup;
@@ -87,9 +88,11 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       .subscribe(cursoId => {
         if (cursoId) {
           this.cargarEstudiantesElegibles(cursoId);
+          this.cargarEstadisticas(cursoId);
         } else {
           this.estudiantesFiltrados = [];
           this.cursoSeleccionado = null;
+          this.estadisticas = null;
         }
       });
   }
@@ -235,6 +238,21 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
   }
 
+  cargarEstadisticas(idCurso: number): void {
+    console.log(`📊 Cargando estadísticas para curso ID: ${idCurso}`);
+    
+    this.cursosService.obtenerEstadisticasCurso(idCurso).subscribe({
+      next: (stats) => {
+        console.log('📊 Estadísticas recibidas:', stats);
+        this.estadisticas = stats;
+      },
+      error: (error) => {
+        console.error('❌ Error cargando estadísticas:', error);
+        this.estadisticas = null;
+      }
+    });
+  }
+
   verDetalles(estudiante: EstudianteElegible): void {
     // Abrir dialog con detalles
     this.abrirDialogDetalles(estudiante);
@@ -291,14 +309,15 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       next: (response) => {
         console.log('✅ Inscripción aceptada:', response);
         alert('Inscripción aceptada exitosamente');
-        // Recargar la lista de estudiantes
+        // Recargar la lista de estudiantes y estadísticas
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
+          this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
       },
       error: (error) => {
         console.error('❌ Error aceptando inscripción:', error);
-        alert('Error al aceptar la inscripción');
+        this.manejarErrorInscripcion(error);
       }
     });
   }
@@ -527,16 +546,56 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       next: (response) => {
         console.log('❌ Inscripción rechazada:', response);
         alert('Inscripción rechazada exitosamente');
-        // Recargar la lista de estudiantes
+        // Recargar la lista de estudiantes y estadísticas
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
+          this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
       },
       error: (error) => {
         console.error('❌ Error rechazando inscripción:', error);
-        alert('Error al rechazar la inscripción');
+        this.manejarErrorInscripcion(error);
       }
     });
+  }
+
+  // Método para manejar errores específicos del backend
+  private manejarErrorInscripcion(error: any): void {
+    console.error('🔍 Detalles del error:', error);
+    
+    let mensaje = 'Error al procesar la inscripción';
+    
+    if (error.error?.codigo) {
+      switch (error.error.codigo) {
+        case 'INSCRIPCION_DUPLICADA':
+          mensaje = '⚠️ Ya existe una inscripción activa para este estudiante';
+          break;
+        case 'PREINSCRIPCION_NO_APROBADA':
+          mensaje = '❌ No hay una preinscripción aprobada para este estudiante';
+          break;
+        case 'ESTADO_INVALIDO':
+          mensaje = '❌ El estado actual de la inscripción no permite esta acción';
+          break;
+        case 'INSCRIPCION_NO_ENCONTRADA':
+          mensaje = '❌ No se encontró la inscripción especificada';
+          break;
+        case 'DOCUMENTO_NO_VALIDADO':
+          mensaje = '❌ El documento de pago no ha sido validado';
+          break;
+        default:
+          mensaje = `❌ Error: ${error.error.codigo}`;
+      }
+    } else if (error.error?.error) {
+      mensaje = `❌ Error: ${error.error.error}`;
+    } else if (error.status === 404) {
+      mensaje = '❌ No se encontró el recurso solicitado';
+    } else if (error.status === 400) {
+      mensaje = '❌ Error en la solicitud enviada';
+    } else if (error.status === 500) {
+      mensaje = '❌ Error interno del servidor. Contacte al administrador';
+    }
+    
+    alert(mensaje);
   }
 
   private procesarRechazo(estudiante: EstudianteElegible, motivoRechazo: string): void {

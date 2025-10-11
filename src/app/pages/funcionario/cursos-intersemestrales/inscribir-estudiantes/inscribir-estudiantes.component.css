@@ -360,3 +360,113 @@
 ::ng-deep .inscripciones-table button[mat-icon-button]:hover .mat-icon {
   color: #001a99 !important;
 }
+
+/* Panel de Estadísticas */
+.estadisticas-panel {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+  border-radius: 12px;
+  border: 1px solid #c8e6c9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.estadisticas-panel h3 {
+  color: #2e7d32;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-item {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.stat-item.total {
+  border-left: 4px solid #2196f3;
+}
+
+.stat-item.pending {
+  border-left: 4px solid #ff9800;
+}
+
+.stat-item.accepted {
+  border-left: 4px solid #4caf50;
+}
+
+.stat-item.rejected {
+  border-left: 4px solid #f44336;
+}
+
+.stat-number {
+  display: block;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.stat-item.total .stat-number {
+  color: #2196f3;
+}
+
+.stat-item.pending .stat-number {
+  color: #ff9800;
+}
+
+.stat-item.accepted .stat-number {
+  color: #4caf50;
+}
+
+.stat-item.rejected .stat-number {
+  color: #f44336;
+}
+
+.stat-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* Responsive design para estadísticas */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .stat-item {
+    padding: 16px;
+  }
+  
+  .stat-number {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

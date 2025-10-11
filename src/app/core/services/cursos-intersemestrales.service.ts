@@ -892,6 +892,15 @@ export class CursosIntersemestralesService {
     return this.http.get(endpoint, { responseType: 'blob' });
   }
 
+  // 🆕 NUEVO: Obtener estadísticas del curso
+  obtenerEstadisticasCurso(idCurso: number): Observable<any> {
+    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/curso/${idCurso}/estadisticas`;
+    console.log(`🌐 Llamando a API: GET ${endpoint}`);
+    console.log(`🔍 ID del curso: ${idCurso}`);
+    
+    return this.http.get<any>(endpoint);
+  }
+
   // 🔍 DEBUG: Endpoint para debuggear problemas con inscripciones
   debugInscripcion(idPreinscripcion: number): Observable<DebugInscripcionResponse> {
     const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DEBUG_INSCRIPCION(idPreinscripcion);
