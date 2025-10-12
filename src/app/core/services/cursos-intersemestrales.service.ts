@@ -509,6 +509,12 @@ export class CursosIntersemestralesService {
     return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`);
   }
 
+  // 🆕 Nuevo método para el endpoint actualizado de visualizar solicitudes
+  getSolicitudesVisualizar(): Observable<any[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/solicitudes');
+    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes`);
+  }
+
   // ====== GESTIÓN DE CURSOS (para funcionarios) ======
   
   // Obtener todos los cursos para gestión (legacy - usar getTodosLosCursosParaFuncionarios)

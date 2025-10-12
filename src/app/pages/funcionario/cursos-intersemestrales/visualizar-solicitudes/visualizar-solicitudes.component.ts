@@ -18,8 +18,8 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
   styleUrls: ['./visualizar-solicitudes.component.css']
 })
 export class VisualizarSolicitudesComponent implements OnInit {
-  solicitudes: SolicitudCursoVerano[] = [];
-  solicitudesFiltradas: SolicitudCursoVerano[] = [];
+  solicitudes: any[] = [];
+  solicitudesFiltradas: any[] = [];
   materias: Materia[] = [];
   cargando = true;
   
@@ -70,10 +70,10 @@ export class VisualizarSolicitudesComponent implements OnInit {
 
   cargarSolicitudes() {
     this.cargando = true;
-    console.log('🔄 Cargando todas las solicitudes desde el backend...');
+    console.log('🔄 Cargando todas las solicitudes desde el nuevo endpoint...');
     
-    this.cursosService.getTodasLasSolicitudes().subscribe({
-      next: (solicitudes: SolicitudCursoVerano[]) => {
+    this.cursosService.getSolicitudesVisualizar().subscribe({
+      next: (solicitudes: any[]) => {
         this.solicitudes = solicitudes;
         console.log('✅ Solicitudes cargadas desde backend:', solicitudes);
         this.aplicarFiltros();
@@ -81,10 +81,8 @@ export class VisualizarSolicitudesComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('❌ Error cargando solicitudes del backend:', err);
-        console.log('📝 Usando datos de prueba hasta que el backend implemente el endpoint');
         this.cargando = false;
-        // Datos de prueba si falla el backend
-        this.solicitudes = this.getSolicitudesPrueba();
+        this.solicitudes = [];
         this.aplicarFiltros();
       }
     });
@@ -263,7 +261,46 @@ export class VisualizarSolicitudesComponent implements OnInit {
       case 'Primera_Vez': return 'Primera Vez';
       case 'Repeticion': return 'Repetición';
       case 'Homologacion': return 'Homologación';
+      case 'PRIMERA_VEZ': return 'Primera Vez';
+      case 'REPITENCIA': return 'Repitencia';
+      case 'TRASLADO': return 'Traslado';
+      case 'HABILITACION': return 'Habilitación';
+      case 'Preinscripción': return 'Preinscripción';
       default: return condicion;
+    }
+  }
+
+  // 🆕 Método para obtener el texto del estado
+  getEstadoTexto(estado: string): string {
+    switch (estado?.toUpperCase()) {
+      case 'ENVIADA':
+        return 'Enviada';
+      case 'APROBADO':
+        return 'Aprobado';
+      case 'RECHAZADO':
+        return 'Rechazado';
+      case 'PAGO_VALIDADO':
+        return 'Pago Validado';
+      case 'PAGO_RECHAZADO':
+        return 'Pago Rechazado';
+      default:
+        return estado || 'Sin estado';
+    }
+  }
+
+  // 🆕 Método para obtener la clase CSS del estado
+  getEstadoClass(estado: string): string {
+    switch (estado?.toUpperCase()) {
+      case 'ENVIADA':
+        return 'estado-enviada';
+      case 'APROBADO':
+      case 'PAGO_VALIDADO':
+        return 'estado-aprobado';
+      case 'RECHAZADO':
+      case 'PAGO_RECHAZADO':
+        return 'estado-rechazado';
+      default:
+        return 'estado-default';
     }
   }
 }

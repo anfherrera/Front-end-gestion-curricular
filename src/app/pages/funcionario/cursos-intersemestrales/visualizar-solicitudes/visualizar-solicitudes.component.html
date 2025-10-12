@@ -27,16 +27,25 @@
     <p>Cargando solicitudes...</p>
   </div>
 
-  <!-- Tabla de solicitudes -->
-  <div *ngIf="!cargando" class="solicitudes-container">
-    <table mat-table [dataSource]="solicitudesFiltradas" class="mat-elevation-z8">
+  <!-- Lista de solicitudes -->
+  <div *ngIf="!cargando" class="solicitudes-section">
+    <h3>📋 Todas las Solicitudes</h3>
+    
+    <div *ngIf="solicitudesFiltradas.length === 0" class="no-data">
+      <mat-icon>info</mat-icon>
+      <p>No hay solicitudes para mostrar</p>
+      <p><small>Intenta cambiar el filtro de materia</small></p>
+    </div>
+
+    <div *ngIf="solicitudesFiltradas.length > 0" class="table-container">
+      <table mat-table [dataSource]="solicitudesFiltradas" class="solicitudes-table">
       
       <!-- Nombre Completo -->
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef>Nombre Completo</th>
         <td mat-cell *matCellDef="let solicitud">
           <div class="estudiante-info">
-            <strong>{{ solicitud.objUsuario?.nombre_completo }}</strong>
+            <strong>{{ solicitud.nombreCompleto }}</strong>
           </div>
         </td>
       </ng-container>
@@ -45,7 +54,7 @@
       <ng-container matColumnDef="codigo">
         <th mat-header-cell *matHeaderCellDef>Código</th>
         <td mat-cell *matCellDef="let solicitud">
-          <span class="codigo-text">{{ solicitud.objUsuario?.codigo }}</span>
+          <span class="codigo-text">{{ solicitud.codigo }}</span>
         </td>
       </ng-container>
 
@@ -54,8 +63,7 @@
         <th mat-header-cell *matHeaderCellDef>Curso</th>
         <td mat-cell *matCellDef="let solicitud">
           <div class="curso-info">
-            <strong>{{ solicitud.objCursoOfertadoVerano?.nombre_curso }}</strong>
-            <small>{{ solicitud.objCursoOfertadoVerano?.codigo_curso }} - {{ solicitud.objCursoOfertadoVerano?.objMateria?.nombre }}</small>
+            <strong>{{ solicitud.curso }}</strong>
           </div>
         </td>
       </ng-container>
@@ -64,7 +72,17 @@
       <ng-container matColumnDef="condicion">
         <th mat-header-cell *matHeaderCellDef>Condición</th>
         <td mat-cell *matCellDef="let solicitud">
-          <span class="condicion-badge">{{ getCondicionTexto(solicitud.condicion) }}</span>
+          <span class="condicion-badge" style="border: none !important; border-width: 0 !important; border-style: none !important; border-color: transparent !important; outline: none !important; box-shadow: none !important; font-weight: 400 !important;">{{ getCondicionTexto(solicitud.condicion) }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let solicitud">
+          <span class="estado-badge" [ngClass]="getEstadoClass(solicitud.estado)" style="border: none !important; border-width: 0 !important; border-style: none !important; border-color: transparent !important; outline: none !important; box-shadow: none !important; font-weight: 400 !important;">
+            {{ getEstadoTexto(solicitud.estado) }}
+          </span>
         </td>
       </ng-container>
 
@@ -72,19 +90,13 @@
       <ng-container matColumnDef="fecha">
         <th mat-header-cell *matHeaderCellDef>Fecha</th>
         <td mat-cell *matCellDef="let solicitud">
-          {{ solicitud.fecha_solicitud | date:'short' }}
+          {{ solicitud.fecha | date:'short' }}
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="['nombre','codigo','curso','condicion','fecha']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['nombre','codigo','curso','condicion','fecha'];"></tr>
-    </table>
-
-    <!-- Mensaje cuando no hay solicitudes -->
-    <div *ngIf="solicitudesFiltradas.length === 0" class="sin-datos">
-      <mat-icon>info</mat-icon>
-      <p>No hay solicitudes para mostrar</p>
-      <p *ngIf="filtroForm.get('materia')?.value !== 'todos'">Intenta cambiar el filtro de materia</p>
+        <tr mat-header-row *matHeaderRowDef="['nombre','codigo','curso','condicion','estado','fecha']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['nombre','codigo','curso','condicion','estado','fecha'];"></tr>
+      </table>
     </div>
   </div>
 
