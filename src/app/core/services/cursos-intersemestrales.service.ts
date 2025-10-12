@@ -515,6 +515,12 @@ export class CursosIntersemestralesService {
     return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes`);
   }
 
+  // 🆕 Nuevo método para el filtro de materias
+  getMateriasFiltro(): Observable<any[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/materias-filtro');
+    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/materias-filtro`);
+  }
+
   // ====== GESTIÓN DE CURSOS (para funcionarios) ======
   
   // Obtener todos los cursos para gestión (legacy - usar getTodosLosCursosParaFuncionarios)

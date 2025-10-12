@@ -32,7 +32,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
     console.log('📋 VISUALIZAR SOLICITUDES COMPONENT CARGADO');
     
     this.filtroForm = this.fb.group({
-      materia: ['todos']
+      materia: [0] // Usar 0 como valor por defecto para "Todas las materias"
     });
   }
 
@@ -47,23 +47,30 @@ export class VisualizarSolicitudesComponent implements OnInit {
   }
 
   cargarMaterias() {
-    console.log('🔄 Cargando materias desde el backend...');
-    this.cursosService.getTodasLasMaterias().subscribe({
-      next: (materias: Materia[]) => {
-        this.materias = materias;
-        console.log('✅ Materias cargadas desde backend:', materias);
+    console.log('🔄 Cargando materias desde el nuevo endpoint...');
+    
+    this.cursosService.getMateriasFiltro().subscribe({
+      next: (materias: any[]) => {
+        // Mapear la respuesta del nuevo endpoint al formato esperado
+        this.materias = materias.map(materia => ({
+          id_materia: materia.id,
+          codigo: materia.codigo,
+          nombre: materia.nombre,
+          creditos: 0, // No viene en la respuesta del filtro
+          descripcion: `${materia.nombre} (${materia.codigo})`
+        }));
+        console.log('✅ Materias cargadas desde nuevo endpoint:', this.materias);
       },
       error: (err: any) => {
-        console.error('❌ Error cargando materias del backend', err);
-        // Datos de prueba si falla el backend
+        console.error('❌ Error cargando materias del nuevo endpoint:', err);
+        // Fallback: datos básicos si falla el backend
         this.materias = [
-          { id_materia: 1, codigo: 'PROG', nombre: 'Programación', creditos: 4, descripcion: 'Programación (PROG) - 4 créditos' },
-          { id_materia: 2, codigo: 'BD', nombre: 'Bases de Datos', creditos: 3, descripcion: 'Bases de Datos (BD) - 3 créditos' },
-          { id_materia: 3, codigo: 'MAT', nombre: 'Matemáticas', creditos: 3, descripcion: 'Matemáticas (MAT) - 3 créditos' },
-          { id_materia: 4, codigo: 'WEB', nombre: 'Desarrollo Web', creditos: 4, descripcion: 'Desarrollo Web (WEB) - 4 créditos' },
-          { id_materia: 5, codigo: 'IA', nombre: 'Inteligencia Artificial', creditos: 4, descripcion: 'Inteligencia Artificial (IA) - 4 créditos' },
-          { id_materia: 6, codigo: 'RED', nombre: 'Redes de Computadores', creditos: 3, descripcion: 'Redes de Computadores (RED) - 3 créditos' }
+          { id_materia: 0, codigo: 'TODAS', nombre: 'Todas las materias', creditos: 0, descripcion: 'Todas las materias' },
+          { id_materia: 1, codigo: 'PROG-301', nombre: 'Programación Avanzada', creditos: 0, descripcion: 'Programación Avanzada (PROG-301)' },
+          { id_materia: 2, codigo: 'SOF-201', nombre: 'Calidad de Software', creditos: 0, descripcion: 'Calidad de Software (SOF-201)' },
+          { id_materia: 3, codigo: 'BD-101', nombre: 'Bases de Datos', creditos: 0, descripcion: 'Bases de Datos (BD-101)' }
         ];
+        console.log('✅ Materias cargadas (fallback):', this.materias);
       }
     });
   }
@@ -244,11 +251,17 @@ export class VisualizarSolicitudesComponent implements OnInit {
     const filtros = this.filtroForm.value;
     let filtradas = [...this.solicitudes];
 
-    // Filtrar por materia
-    if (filtros.materia !== 'todos') {
-      filtradas = filtradas.filter(s => 
-        s.objCursoOfertadoVerano?.objMateria?.id_materia === parseInt(filtros.materia)
-      );
+    // Filtrar por materia (ahora usando el nuevo formato)
+    if (filtros.materia && filtros.materia !== 0) {
+      filtradas = filtradas.filter(s => {
+        // Para solicitudes del nuevo endpoint, comparar con el campo 'curso'
+        if (s.curso) {
+          const materiaSeleccionada = this.materias.find(m => m.id_materia === filtros.materia);
+          return materiaSeleccionada && s.curso.toLowerCase().includes(materiaSeleccionada.nombre.toLowerCase());
+        }
+        // Para solicitudes del formato anterior
+        return s.objCursoOfertadoVerano?.objMateria?.id_materia === parseInt(filtros.materia);
+      });
     }
 
     this.solicitudesFiltradas = filtradas;
@@ -258,15 +271,33 @@ export class VisualizarSolicitudesComponent implements OnInit {
 
   getCondicionTexto(condicion: string): string {
     switch (condicion) {
-      case 'Primera_Vez': return 'Primera Vez';
-      case 'Repeticion': return 'Repetición';
-      case 'Homologacion': return 'Homologación';
+      case 'Primera_Vez': 
       case 'PRIMERA_VEZ': return 'Primera Vez';
-      case 'REPITENCIA': return 'Repitencia';
+      case 'Repeticion': 
+      case 'REPITENCIA':
+      case 'REPETECIÓN': return 'Repetición';
+      case 'Homologacion': 
+      case 'HABILITACION':
+      case 'HABILITACIÓN': return 'Habilitación';
       case 'TRASLADO': return 'Traslado';
-      case 'HABILITACION': return 'Habilitación';
       case 'Preinscripción': return 'Preinscripción';
       default: return condicion;
+    }
+  }
+
+  getCondicionClass(condicion: string): string {
+    switch (condicion) {
+      case 'PRIMERA_VEZ':
+      case 'Primera_Vez': return 'condicion-primera-vez';
+      case 'HABILITACIÓN':
+      case 'HABILITACION':
+      case 'Homologacion': return 'condicion-habilitacion';
+      case 'REPETECIÓN':
+      case 'REPITENCIA':
+      case 'Repeticion': return 'condicion-repitencia';
+      case 'TRASLADO': return 'condicion-traslado';
+      case 'Preinscripción': return 'condicion-preinscripcion';
+      default: return 'condicion-default';
     }
   }
 

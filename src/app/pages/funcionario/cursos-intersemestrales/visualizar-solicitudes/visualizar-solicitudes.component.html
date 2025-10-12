@@ -5,9 +5,8 @@
     <mat-form-field appearance="outline" class="filtro-field">
       <mat-label>Filtrar por materia</mat-label>
       <mat-select formControlName="materia">
-        <mat-option value="todos">Todas las materias</mat-option>
         <mat-option *ngFor="let materia of materias" [value]="materia.id_materia">
-          {{ materia.nombre }} ({{ materia.codigo }})
+          {{ materia.nombre }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -68,23 +67,31 @@
         </td>
       </ng-container>
 
-      <!-- Condición -->
-      <ng-container matColumnDef="condicion">
-        <th mat-header-cell *matHeaderCellDef>Condición</th>
-        <td mat-cell *matCellDef="let solicitud">
-          <span class="condicion-badge" style="border: none !important; border-width: 0 !important; border-style: none !important; border-color: transparent !important; outline: none !important; box-shadow: none !important; font-weight: 400 !important;">{{ getCondicionTexto(solicitud.condicion) }}</span>
-        </td>
-      </ng-container>
+        <!-- Condición -->
+        <ng-container matColumnDef="condicion">
+          <th mat-header-cell *matHeaderCellDef>Condición</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <span class="condicion-badge" [ngClass]="getCondicionClass(solicitud.condicion)" style="border: none !important; border-width: 0 !important; border-style: none !important; border-color: transparent !important; outline: none !important; box-shadow: none !important; font-weight: 400 !important;">{{ getCondicionTexto(solicitud.condicion) }}</span>
+          </td>
+        </ng-container>
 
-      <!-- Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef>Estado</th>
-        <td mat-cell *matCellDef="let solicitud">
-          <span class="estado-badge" [ngClass]="getEstadoClass(solicitud.estado)" style="border: none !important; border-width: 0 !important; border-style: none !important; border-color: transparent !important; outline: none !important; box-shadow: none !important; font-weight: 400 !important;">
-            {{ getEstadoTexto(solicitud.estado) }}
-          </span>
-        </td>
-      </ng-container>
+        <!-- Motivo de la Solicitud -->
+        <ng-container matColumnDef="motivo">
+          <th mat-header-cell *matHeaderCellDef>Motivo de la Solicitud</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <span class="motivo-text">{{ solicitud.motivoSolicitud }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <span class="estado-badge" [ngClass]="getEstadoClass(solicitud.estado)" style="border: none !important; border-width: 0 !important; border-style: none !important; border-color: transparent !important; outline: none !important; box-shadow: none !important; font-weight: 400 !important;">
+              {{ getEstadoTexto(solicitud.estado) }}
+            </span>
+          </td>
+        </ng-container>
 
       <!-- Fecha -->
       <ng-container matColumnDef="fecha">
@@ -94,8 +101,8 @@
         </td>
       </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="['nombre','codigo','curso','condicion','estado','fecha']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['nombre','codigo','curso','condicion','estado','fecha'];"></tr>
+    <tr mat-header-row *matHeaderRowDef="['nombre','codigo','curso','condicion','motivo','estado','fecha']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['nombre','codigo','curso','condicion','motivo','estado','fecha'];"></tr>
       </table>
     </div>
   </div>
