@@ -292,7 +292,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     // Confirmar con el usuario
     const confirmacion = confirm(
-      `¿Aceptar la inscripción de ${estudiante.nombre_completo} (${estudiante.codigo})?\n\nEl estudiante ya completó todos los requisitos.`
+      `¿Confirmar la inscripción del estudiante?\n\n📚 Estudiante: ${estudiante.nombre_completo}\n🆔 Código: ${estudiante.codigo}\n✅ Estado: Completó todos los requisitos\n💰 Pago: Validado\n\nAl confirmar, el estudiante quedará oficialmente inscrito en el curso.`
     );
     
     if (!confirmacion) return;
@@ -828,7 +828,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
               *ngIf="data.estudiante.estado_inscripcion !== 'Inscripcion_Completada'"
               color="primary" 
               (click)="confirmarInscripcion()">
-        Aceptar Inscripción
+        Confirmar Inscripción Oficial
       </button>
     </div>
   `,

@@ -85,33 +85,30 @@
             <div class="acciones-container">
               
               <!-- Botón Ver (solo si tiene permisos) -->
-              <button mat-raised-button 
+              <button mat-icon-button 
                       *ngIf="puedeVerDetalles(solicitud)"
                       (click)="verDetalles(solicitud)"
                       matTooltip="Ver detalles y agregar observaciones"
-                      class="btn-ver">
-                <mat-icon>visibility</mat-icon>
-                Ver
+                      style="color: #00138C !important;">
+                <mat-icon style="color: #00138C !important;">visibility</mat-icon>
               </button>
               
               <!-- Botón Aprobar (solo si tiene permisos y estado válido) -->
-              <button mat-raised-button 
+              <button mat-icon-button 
                       *ngIf="puedeAprobar(solicitud)"
                       (click)="aprobarSolicitud(solicitud)"
                       matTooltip="Aprobar preinscripción y pasar a inscripción"
-                      class="btn-aprobar">
-                <mat-icon>check_circle</mat-icon>
-                Aprobar
+                      style="color: #4CAF50 !important;">
+                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
               </button>
               
               <!-- Botón Rechazar (solo si tiene permisos y estado válido) -->
-              <button mat-raised-button 
+              <button mat-icon-button 
                       *ngIf="puedeRechazar(solicitud)"
                       (click)="rechazarSolicitud(solicitud)"
                       matTooltip="Rechazar preinscripción"
-                      class="btn-rechazar">
-                <mat-icon>cancel</mat-icon>
-                Rechazar
+                      style="color: #f44336 !important;">
+                <mat-icon style="color: #f44336 !important;">cancel</mat-icon>
               </button>
               
             </div>

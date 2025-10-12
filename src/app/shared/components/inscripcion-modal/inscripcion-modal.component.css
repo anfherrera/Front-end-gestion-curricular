@@ -1,78 +1,137 @@
 .inscripcion-modal {
-  min-width: 600px;
-  max-width: 700px;
+  min-width: 400px;
+  max-width: 600px;
+  width: 90vw;
+  max-height: 90vh;
+  animation: fadeInUp 0.4s ease-out;
+  overflow-y: auto;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-header {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  padding: 16px 0;
+  border-bottom: 2px solid #e3f2fd;
 }
 
 .modal-header h2 {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
-  color: #1976d2;
+  color: #00138C;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-header h2 mat-icon {
+  color: #00138C;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .modal-body {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .curso-info {
-  margin-bottom: 25px;
+  margin-bottom: 28px;
 }
 
 .info-card {
-  background-color: #f5f5f5;
-  border-left: 4px solid #4caf50;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-left: 4px solid #00138C;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.15);
 }
 
 .info-card mat-card-header {
-  padding-bottom: 10px;
+  padding-bottom: 12px;
 }
 
 .info-card mat-card-title {
-  color: #2e7d32;
+  color: #00138C;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .info-card p {
-  margin: 8px 0;
+  margin: 10px 0;
   font-size: 14px;
+  color: #333;
 }
 
 .estado-aprobado {
   background-color: #e8f5e8;
   color: #2e7d32;
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 4px 12px;
+  border-radius: 16px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .estado-inscripcion {
   background-color: #e3f2fd;
-  color: #1976d2;
-  padding: 2px 8px;
-  border-radius: 12px;
+  color: #00138C;
+  padding: 4px 12px;
+  border-radius: 16px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .inscripcion-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+}
+
+.form-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 4px solid #00138C;
+  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
 }
 
 .form-section h3 {
-  margin: 0 0 15px 0;
-  color: #333;
+  margin: 0 0 16px 0;
+  color: #00138C;
   font-size: 16px;
-  font-weight: 500;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 5px;
+  font-weight: 600;
+  border-bottom: 2px solid #e3f2fd;
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-section h3::before {
+  content: "📝";
+  font-size: 18px;
 }
 
 .full-width {
@@ -82,15 +141,16 @@
 .file-upload-section {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .file-upload-error {
   background-color: #ffebee;
   border: 1px solid #f44336;
-  border-radius: 6px;
-  padding: 15px;
-  margin-top: 10px;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
 }
 
 .file-upload-error p {
@@ -100,6 +160,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 14px;
 }
 
 .file-upload-error mat-icon {
@@ -121,40 +182,55 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 20px;
-  border: 2px dashed #1976d2;
+  gap: 12px;
+  padding: 24px;
+  border: 2px dashed #00138C;
   border-radius: 8px;
-  background-color: #f8f9ff;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
-  color: #1976d2;
+  color: #00138C;
+  font-weight: 500;
+  min-height: 80px;
 }
 
 .file-input-label:hover {
-  background-color: #e3f2fd;
-  border-color: #1565c0;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f8f9ff 100%);
+  border-color: #001a99;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.15);
 }
 
 .file-input-label mat-icon {
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #00138C;
 }
 
 .file-info {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 15px;
-  background-color: #e8f5e8;
-  border-radius: 6px;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+  border-radius: 8px;
   border-left: 4px solid #4caf50;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.file-info:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
 }
 
 .file-icon {
-  color: #1976d2;
+  color: #00138C;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .file-name {
@@ -172,19 +248,28 @@
 }
 
 .file-requirements {
-  background-color: #fff3e0;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffffff 100%);
   border: 1px solid #ffb74d;
-  border-radius: 6px;
-  padding: 15px;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(255, 183, 77, 0.1);
 }
 
 .file-requirements p {
-  margin: 0 0 10px 0;
-  font-weight: 500;
+  margin: 0 0 12px 0;
+  font-weight: 600;
   color: #f57c00;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.file-requirements p mat-icon {
+  color: #f57c00;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .file-requirements ul {
@@ -192,44 +277,438 @@
   padding-left: 20px;
   color: #e65100;
   font-size: 13px;
+  line-height: 1.5;
 }
 
 .file-requirements li {
-  margin: 5px 0;
+  margin: 6px 0;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 2px solid #e3f2fd;
+  flex-shrink: 0;
+  background: white;
 }
 
 .submit-button {
   min-width: 180px;
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #001a99 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+}
+
+.submit-button:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .submit-button mat-icon {
   margin-right: 8px;
+  color: white !important;
 }
 
 .submit-button mat-spinner {
   margin-right: 8px;
 }
 
+/* Estilos para campos de formulario Material Design */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+  color: #e3f2fd;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  color: #00138C;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: #6c757d;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: #00138C;
+}
+
+::ng-deep .mat-mdc-form-field mat-icon[matSuffix] {
+  color: #00138C !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused mat-icon[matSuffix] {
+  color: #001a99 !important;
+}
+
+/* Estilos para el botón cancelar */
+::ng-deep .modal-footer button[mat-button] {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2) !important;
+}
+
+::ng-deep .modal-footer button[mat-button]:hover {
+  background-color: #c82333 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3) !important;
+}
+
+::ng-deep .modal-footer button[mat-button] mat-icon {
+  color: white !important;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .inscripcion-modal {
-    min-width: 90vw;
-    max-width: 95vw;
+    min-width: 95vw;
+    max-width: 98vw;
+    width: 95vw;
+    max-height: 95vh;
+    margin: 10px;
+  }
+  
+  .modal-header {
+    margin-bottom: 16px;
+    padding: 12px 0;
+  }
+  
+  .modal-header h2 {
+    font-size: 18px;
+    gap: 8px;
+  }
+  
+  .modal-header h2 mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .modal-body {
+    margin-bottom: 16px;
+  }
+  
+  .curso-info {
+    margin-bottom: 20px;
+  }
+  
+  .info-card {
+    padding: 12px;
+  }
+  
+  .inscripcion-form {
+    gap: 16px;
+  }
+  
+  .form-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+  }
+  
+  .file-upload-section {
+    gap: 12px;
+  }
+  
+  .file-input-label {
+    padding: 16px;
+    min-height: 60px;
+    font-size: 13px;
+    gap: 8px;
+  }
+  
+  .file-input-label mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .file-info {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .file-requirements {
+    padding: 12px;
+  }
+  
+  .file-requirements p {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  
+  .file-requirements ul {
+    font-size: 12px;
   }
   
   .modal-footer {
     flex-direction: column;
+    gap: 8px;
+    padding-top: 16px;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 2px solid #e3f2fd;
+    margin-top: 16px;
   }
   
   .submit-button {
     width: 100%;
+    min-width: auto;
+    height: 44px;
+    font-size: 14px;
+  }
+  
+  .modal-footer button[mat-button] {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .inscripcion-modal {
+    min-width: 98vw;
+    max-width: 99vw;
+    width: 98vw;
+    max-height: 98vh;
+    margin: 5px;
+  }
+  
+  .modal-header {
+    padding: 8px 0;
+    margin-bottom: 12px;
+  }
+  
+  .modal-header h2 {
+    font-size: 16px;
+    gap: 6px;
+  }
+  
+  .modal-header h2 mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .modal-body {
+    margin-bottom: 12px;
+  }
+  
+  .curso-info {
+    margin-bottom: 16px;
+  }
+  
+  .info-card {
+    padding: 10px;
+  }
+  
+  .info-card p {
+    font-size: 13px;
+    margin: 6px 0;
+  }
+  
+  .estado-aprobado,
+  .estado-inscripcion {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  
+  .inscripcion-form {
+    gap: 12px;
+  }
+  
+  .form-section {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .form-section h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+  }
+  
+  .form-section h3::before {
+    font-size: 16px;
+  }
+  
+  .file-upload-section {
+    gap: 10px;
+  }
+  
+  .file-input-label {
+    padding: 12px;
+    font-size: 12px;
+    min-height: 50px;
+    gap: 6px;
+  }
+  
+  .file-input-label mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .file-info {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  
+  .file-icon,
+  .success-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .file-name {
+    font-size: 13px;
+  }
+  
+  .file-requirements {
+    padding: 10px;
+  }
+  
+  .file-requirements p {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .file-requirements p mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .file-requirements ul {
+    font-size: 11px;
+    padding-left: 16px;
+  }
+  
+  .file-requirements li {
+    margin: 4px 0;
+  }
+  
+  .modal-footer {
+    padding-top: 12px;
+    margin-top: 12px;
+    gap: 6px;
+  }
+  
+  .submit-button {
+    height: 40px;
+    font-size: 13px;
+  }
+  
+  .modal-footer button[mat-button] {
+    height: 40px;
+    font-size: 13px;
+  }
+  
+  .modal-footer button mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Estilos globales para el modal Angular Material */
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  max-height: 90vh !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__content {
+  max-height: calc(90vh - 120px) !important;
+  overflow-y: auto !important;
+  padding: 0 !important;
+}
+
+/* Asegurar que el modal se ajuste al viewport */
+::ng-deep .cdk-overlay-pane {
+  max-width: 95vw !important;
+  max-height: 95vh !important;
+}
+
+/* Scroll personalizado para webkit */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #00138C;
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #001a99;
+}
+
+/* Asegurar que los botones siempre sean visibles */
+.inscripcion-modal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 90vh;
+}
+
+/* Ajustes adicionales para pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .inscripcion-modal {
+    min-width: 99vw;
+    max-width: 100vw;
+    width: 99vw;
+    margin: 2px;
+  }
+  
+  .modal-header h2 {
+    font-size: 14px;
+  }
+  
+  .form-section h3 {
+    font-size: 13px;
+  }
+  
+  .file-input-label {
+    font-size: 11px;
+    padding: 10px;
+  }
+  
+  .submit-button,
+  .modal-footer button[mat-button] {
+    height: 36px;
+    font-size: 12px;
   }
 }
