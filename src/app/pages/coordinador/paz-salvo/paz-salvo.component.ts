@@ -1,5 +1,5 @@
 // src/app/pages/coordinador/paz-salvo/paz-salvo.component.ts
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,7 +45,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   constructor(
     public pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -94,13 +95,70 @@ export class PazSalvoCoordinadorComponent implements OnInit {
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
         console.log('📋 Solicitud seleccionada (coordinador):', this.selectedSolicitud);
+        
+        // Cargar documentos usando el nuevo endpoint
+        if (this.selectedSolicitud) {
+          this.cargarDocumentos(this.selectedSolicitud.id_solicitud);
+        }
+      }
+    });
+  }
+
+  /**
+   * 🆕 Cargar documentos usando el nuevo endpoint para coordinadores
+   */
+  cargarDocumentos(idSolicitud: number): void {
+    console.log('🔍 [DEBUG] Iniciando carga de documentos para solicitud (coordinador):', idSolicitud);
+    
+    const endpoint = `/api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/${idSolicitud}`;
+    console.log('🔍 [DEBUG] Endpoint para coordinador:', endpoint);
+    
+    this.pazSalvoService.obtenerDocumentosCoordinador(idSolicitud).subscribe({
+      next: (documentos: any[]) => {
+        console.log('✅ [DEBUG] Documentos recibidos del backend (coordinador):', documentos);
+        console.log('✅ [DEBUG] Cantidad de documentos:', documentos.length);
+        
+        // Actualizar los documentos de la solicitud seleccionada
+        if (this.selectedSolicitud) {
+          this.selectedSolicitud.documentos = documentos.map(doc => ({
+            id_documento: doc.id,
+            nombre: doc.nombreArchivo || doc.nombre,
+            ruta_documento: doc.ruta,
+            fecha_documento: doc.fecha,
+            esValido: doc.esValido,
+            comentario: doc.comentario
+          }));
+          
+          console.log('✅ [DEBUG] Documentos asignados al componente (coordinador):', this.selectedSolicitud.documentos);
+          console.log('✅ [DEBUG] Cantidad de documentos en solicitud:', this.selectedSolicitud.documentos.length);
+          
+          // Forzar detección de cambios para solucionar el error de Angular
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('❌ [DEBUG] Error al cargar documentos (coordinador):', error);
+        console.error('❌ [DEBUG] Error completo:', JSON.stringify(error));
+        
+        if (this.selectedSolicitud) {
+          this.selectedSolicitud.documentos = [];
+          this.cdr.detectChanges();
+        }
+        
+        this.snackBar.open('Error al cargar documentos', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
   // 📌 Obtener documentos de la solicitud seleccionada (igual que homologación)
   get documentosDelEstudiante(): DocumentoHomologacion[] {
-    return this.selectedSolicitud?.documentos ?? [];
+    if (!this.selectedSolicitud?.documentos) {
+      console.log('🔍 [DEBUG] No hay documentos en la solicitud seleccionada (coordinador)');
+      return [];
+    }
+
+    console.log('🔍 [DEBUG] Documentos en solicitud (coordinador):', this.selectedSolicitud.documentos);
+    return this.selectedSolicitud.documentos;
   }
 
   /**

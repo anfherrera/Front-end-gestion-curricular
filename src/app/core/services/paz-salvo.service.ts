@@ -268,4 +268,26 @@ export class PazSalvoService {
     return this.http.put(url, body, { headers: this.getAuthHeaders() });
   }
 
+  /**
+   * 🆕 Obtener TODOS los documentos de una solicitud de Paz y Salvo
+   * Para funcionarios
+   */
+  obtenerDocumentos(idSolicitud: number): Observable<any[]> {
+    console.log('🌐 Llamando a API: GET /api/solicitudes-pazysalvo/obtenerDocumentos/' + idSolicitud);
+    return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/${idSolicitud}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * 🆕 Obtener TODOS los documentos de una solicitud de Paz y Salvo
+   * Para coordinadores
+   */
+  obtenerDocumentosCoordinador(idSolicitud: number): Observable<any[]> {
+    console.log('🌐 Llamando a API: GET /api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/' + idSolicitud);
+    return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
 }

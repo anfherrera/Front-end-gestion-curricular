@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,7 +48,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
   constructor(
     public pazSalvoService: PazSalvoService,
     private documentGeneratorService: DocumentGeneratorService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {
     // Inicializar plantilla para paz y salvo
     this.template = {
@@ -161,6 +162,11 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.selectedSolicitud = solicitudesFiltradas.find(sol => sol.id_solicitud === solicitudId);
         console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
         console.log('🧹 Estado limpiado para nueva solicitud');
+        
+        // Cargar documentos usando el nuevo endpoint
+        if (this.selectedSolicitud) {
+          this.cargarDocumentos(this.selectedSolicitud.id_solicitud);
+        }
       }
     });
   }
@@ -168,6 +174,52 @@ export class SecretariaPazSalvoComponent implements OnInit {
   /**
    * Maneja el clic en "Tengo un documento"
    */
+  /**
+   * 🆕 Cargar documentos usando el nuevo endpoint para secretaria
+   */
+  cargarDocumentos(idSolicitud: number): void {
+    console.log('🔍 [DEBUG] Iniciando carga de documentos para solicitud (secretaria):', idSolicitud);
+    
+    const endpoint = `/api/solicitudes-pazysalvo/obtenerDocumentos/${idSolicitud}`;
+    console.log('🔍 [DEBUG] Endpoint para secretaria:', endpoint);
+    
+    this.pazSalvoService.obtenerDocumentos(idSolicitud).subscribe({
+      next: (documentos: any[]) => {
+        console.log('✅ [DEBUG] Documentos recibidos del backend (secretaria):', documentos);
+        console.log('✅ [DEBUG] Cantidad de documentos:', documentos.length);
+        
+        // Actualizar los documentos de la solicitud seleccionada
+        if (this.selectedSolicitud) {
+          this.selectedSolicitud.documentos = documentos.map(doc => ({
+            id_documento: doc.id,
+            nombre: doc.nombreArchivo || doc.nombre,
+            ruta_documento: doc.ruta,
+            fecha_documento: doc.fecha,
+            esValido: doc.esValido,
+            comentario: doc.comentario
+          }));
+          
+          console.log('✅ [DEBUG] Documentos asignados al componente (secretaria):', this.selectedSolicitud.documentos);
+          console.log('✅ [DEBUG] Cantidad de documentos en solicitud:', this.selectedSolicitud.documentos.length);
+          
+          // Forzar detección de cambios para solucionar el error de Angular
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('❌ [DEBUG] Error al cargar documentos (secretaria):', error);
+        console.error('❌ [DEBUG] Error completo:', JSON.stringify(error));
+        
+        if (this.selectedSolicitud) {
+          this.selectedSolicitud.documentos = [];
+          this.cdr.detectChanges();
+        }
+        
+        this.snackBar.open('Error al cargar documentos', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
   onTengoDocumento(): void {
     this.documentoHabilitado = true;
     this.snackBar.open('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.', 'Cerrar', { duration: 3000 });
