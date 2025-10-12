@@ -290,15 +290,25 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     console.log(`✅ Aceptando inscripción ${estudiante.id_solicitud} para estudiante ${estudiante.nombre_completo}`);
     
-    // Confirmar con el usuario
-    const confirmacion = confirm(
-      `¿Confirmar la inscripción del estudiante?\n\n📚 Estudiante: ${estudiante.nombre_completo}\n🆔 Código: ${estudiante.codigo}\n✅ Estado: Completó todos los requisitos\n💰 Pago: Validado\n\nAl confirmar, el estudiante quedará oficialmente inscrito en el curso.`
-    );
-    
-    if (!confirmacion) return;
-    
-    // Usar el método del servicio con el endpoint correcto
-    this.aceptarInscripcion(estudiante);
+    // Abrir modal de confirmación personalizado
+    this.abrirModalConfirmacionInscripcion(estudiante);
+  }
+
+  // 🆕 Método para abrir modal de confirmación personalizado
+  private abrirModalConfirmacionInscripcion(estudiante: EstudianteElegible): void {
+    const dialogRef = this.dialog.open(ConfirmacionInscripcionDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: { estudiante: estudiante, curso: this.cursoSeleccionado },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirmar') {
+        // Usar el método del servicio con el endpoint correcto
+        this.aceptarInscripcion(estudiante);
+      }
+    });
   }
 
   // Método simple para aceptar inscripción usando el servicio
@@ -1044,6 +1054,271 @@ export class DetallesInscripcionDialogComponent {
   confirmarInscripcion(): void {
     // Lógica para confirmar la inscripción
     this.dialogRef.close('inscrito');
+  }
+}
+
+// 🆕 Componente del modal de confirmación de inscripción
+@Component({
+  selector: 'app-confirmacion-inscripcion-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule
+  ],
+  template: `
+    <div class="confirmacion-dialog">
+      <div class="dialog-header">
+        <mat-icon class="header-icon">school</mat-icon>
+        <h2 mat-dialog-title>Confirmar Inscripción</h2>
+      </div>
+      
+      <div mat-dialog-content class="dialog-content">
+        <div class="estudiante-info">
+          <div class="info-item">
+            <mat-icon class="info-icon">person</mat-icon>
+            <div class="info-text">
+              <strong>Estudiante:</strong>
+              <span>{{ data.estudiante.nombre_completo }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <mat-icon class="info-icon">badge</mat-icon>
+            <div class="info-text">
+              <strong>Código:</strong>
+              <span>{{ data.estudiante.codigo }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <mat-icon class="info-icon">check_circle</mat-icon>
+            <div class="info-text">
+              <strong>Estado:</strong>
+              <span class="estado-positivo">Completó todos los requisitos</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <mat-icon class="info-icon">payment</mat-icon>
+            <div class="info-text">
+              <strong>Pago:</strong>
+              <span class="estado-positivo">Validado</span>
+            </div>
+          </div>
+          
+          <div class="info-item" *ngIf="data.curso">
+            <mat-icon class="info-icon">book</mat-icon>
+            <div class="info-text">
+              <strong>Curso:</strong>
+              <span>{{ data.curso.nombre_curso }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="confirmacion-mensaje">
+          <p>Al confirmar, el estudiante quedará oficialmente inscrito en el curso.</p>
+        </div>
+      </div>
+
+      <div mat-dialog-actions class="dialog-actions">
+        <button mat-button (click)="dialogRef.close()" class="btn-cancelar">
+          <mat-icon>close</mat-icon>
+          Cancelar
+        </button>
+        <button mat-raised-button (click)="confirmar()" class="btn-confirmar">
+          <mat-icon>check</mat-icon>
+          Confirmar Inscripción
+        </button>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .confirmacion-dialog {
+      padding: 0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .dialog-header {
+      background: linear-gradient(135deg, #00138C 0%, #0024CC 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .dialog-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .dialog-content {
+      padding: 24px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .estudiante-info {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border-radius: 8px;
+      border-left: 4px solid #00138C;
+      box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+    }
+
+    .info-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #00138C;
+      flex-shrink: 0;
+    }
+
+    .info-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .info-text strong {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-text span {
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .estado-positivo {
+      color: #2e7d32 !important;
+      font-weight: 600 !important;
+    }
+
+    .confirmacion-mensaje {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border: 1px solid #90caf9;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .confirmacion-mensaje p {
+      margin: 0;
+      color: #1976d2;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 24px;
+      background: #f8f9fa;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .btn-cancelar {
+      color: #666;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancelar:hover {
+      background: #f5f5f5;
+      border-color: #bbb;
+    }
+
+    .btn-confirmar {
+      background: #00138C !important;
+      color: white !important;
+      border-radius: 6px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-confirmar:hover {
+      background: #001a99 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dialog-header {
+        padding: 16px;
+      }
+
+      .dialog-header h2 {
+        font-size: 18px;
+      }
+
+      .dialog-content {
+        padding: 20px;
+      }
+
+      .info-item {
+        padding: 10px;
+      }
+
+      .dialog-actions {
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px 20px;
+      }
+
+      .btn-cancelar,
+      .btn-confirmar {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  `]
+})
+export class ConfirmacionInscripcionDialogComponent {
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmacionInscripcionDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible, curso: any }
+  ) {}
+
+  confirmar(): void {
+    this.dialogRef.close('confirmar');
   }
 }
 
