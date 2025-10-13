@@ -1,0 +1,136 @@
+<!-- Contenedor principal de notificaciones -->
+<div class="notifications-container">
+  
+  <!-- Botón del icono de notificaciones con badge -->
+  <button mat-icon-button 
+          [matMenuTriggerFor]="notificationsMenu"
+          matTooltip="Notificaciones"
+          class="notifications-button"
+          (click)="actualizarManual()">
+    
+    <!-- Icono de notificaciones -->
+    <mat-icon class="notification-icon">notifications</mat-icon>
+    
+    <!-- Badge con contador de no leídas -->
+    <span class="notification-badge" 
+          *ngIf="totalNoLeidas > 0"
+          [class.urgent]="tieneNotificacionesUrgentes()">
+      {{ totalNoLeidas > 99 ? '99+' : totalNoLeidas }}
+    </span>
+  </button>
+
+  <!-- Menú dropdown de notificaciones -->
+  <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+    
+    <!-- Header del menú -->
+    <div class="menu-header">
+      <div class="header-title">
+        <mat-icon class="header-icon">notifications</mat-icon>
+        <span class="header-text">Notificaciones</span>
+      </div>
+      <div class="header-actions">
+        <button mat-icon-button 
+                (click)="marcarTodasComoLeidas()"
+                *ngIf="totalNoLeidas > 0"
+                matTooltip="Marcar todas como leídas"
+                class="mark-all-button">
+          <mat-icon>done_all</mat-icon>
+        </button>
+        <button mat-icon-button 
+                (click)="actualizarManual()"
+                matTooltip="Actualizar"
+                class="refresh-button">
+          <mat-icon [class.spinning]="isLoading">refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Contenido del menú -->
+    <div class="menu-content">
+      
+      <!-- Estado de carga -->
+      <div class="loading-state" *ngIf="isLoading">
+        <mat-icon class="loading-icon spinning">refresh</mat-icon>
+        <span class="loading-text">Cargando notificaciones...</span>
+      </div>
+
+      <!-- Lista de notificaciones -->
+      <div class="notifications-list" *ngIf="!isLoading && notificaciones.length > 0">
+        
+        <div class="notification-item" 
+             *ngFor="let notificacion of notificaciones; trackBy: trackByNotificationId"
+             [class.urgent]="notificacion.esUrgente"
+             (click)="navegarANotificacion(notificacion)">
+          
+          <!-- Icono de la notificación -->
+          <div class="notification-icon-container">
+            <mat-icon [style.color]="getColorPorTipo(notificacion.tipoSolicitud)"
+                      class="notification-type-icon">
+              {{ getIconoPorTipo(notificacion.tipoSolicitud) }}
+            </mat-icon>
+          </div>
+
+          <!-- Contenido de la notificación -->
+          <div class="notification-content">
+            <div class="notification-header">
+              <h4 class="notification-title">{{ notificacion.titulo }}</h4>
+              <span class="notification-time">{{ notificacion.tiempoTranscurrido }}</span>
+            </div>
+            
+            <p class="notification-message">{{ notificacion.mensaje }}</p>
+            
+            <div class="notification-footer">
+              <mat-chip class="category-chip" 
+                        [style.background-color]="getColorPorTipo(notificacion.tipoSolicitud) + '20'"
+                        [style.color]="getColorPorTipo(notificacion.tipoSolicitud)">
+                {{ getCategoriaDisplay(notificacion.categoria) }}
+              </mat-chip>
+              
+              <span class="notification-action" 
+                    *ngIf="notificacion.accion">
+                {{ getAccionDisplay(notificacion.accion) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Indicador de urgencia -->
+          <div class="urgency-indicator" *ngIf="notificacion.esUrgente">
+            <mat-icon class="urgency-icon">priority_high</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div class="empty-state" *ngIf="!isLoading && notificaciones.length === 0">
+        <mat-icon class="empty-icon">notifications_none</mat-icon>
+        <h4 class="empty-title">No hay notificaciones</h4>
+        <p class="empty-message">No tienes notificaciones pendientes en este momento.</p>
+      </div>
+
+    </div>
+
+    <!-- Footer del menú -->
+    <mat-divider></mat-divider>
+    <div class="menu-footer">
+      <button mat-button 
+              class="view-all-button"
+              (click)="verTodasLasNotificaciones()">
+        <mat-icon>list</mat-icon>
+        Ver todas las notificaciones
+      </button>
+      
+      <!-- Botón de prueba temporal -->
+      <button mat-button 
+              class="test-button"
+              (click)="crearNotificacionPrueba()"
+              style="color: #666; font-size: 12px;">
+        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">science</mat-icon>
+        Crear notificación de prueba
+      </button>
+    </div>
+
+  </mat-menu>
+
+</div>

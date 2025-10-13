@@ -120,12 +120,12 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     this.notificacionesService.getDashboardNotificaciones(this.usuario.id_usuario)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (dashboard) => {
-          this.notificaciones = dashboard.notificacionesRecientes;
-          this.notificacionesNoLeidas = dashboard.notificacionesNoLeidas;
-          this.notificacionesUrgentes = dashboard.notificacionesUrgentes;
+        next: (dashboard: any) => {
+          this.notificaciones = dashboard.notificaciones || [];
+          this.notificacionesNoLeidas = dashboard.totalNoLeidas || 0;
+          this.notificacionesUrgentes = dashboard.notificaciones?.filter((n: any) => n.esUrgente)?.length || 0;
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error cargando notificaciones:', error);
         }
       });
@@ -142,7 +142,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return '#00138C';
   }
 
-  formatearFecha(fecha: Date): string {
+  formatearFecha(fecha: Date | string): string {
     return new Date(fecha).toLocaleDateString('es-ES', {
       year: 'numeric',
       month: 'short',
@@ -151,7 +151,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   }
 
   marcarNotificacionLeida(notificacion: Notificacion): void {
-    this.notificacionesService.marcarNotificacionLeida(notificacion.id_notificacion)
+    this.notificacionesService.marcarNotificacionLeida(notificacion.id || notificacion.id_notificacion || 0)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         notificacion.leida = true;

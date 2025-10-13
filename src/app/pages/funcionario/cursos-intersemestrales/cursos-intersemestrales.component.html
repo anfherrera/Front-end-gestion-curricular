@@ -1,26 +1,6 @@
 <div class="cursos-intersemestrales-container">
   <header class="header">
     <h1>Gestión de Cursos Intersemestrales</h1>
-    
-    <!-- Panel de notificaciones -->
-    <div class="notificaciones-panel" *ngIf="getTotalNotificaciones() > 0">
-      <button mat-icon-button 
-              [matTooltip]="'Tienes ' + getTotalNotificaciones() + ' notificaciones'"
-              class="notificaciones-btn">
-        <mat-icon [matBadge]="getTotalNotificaciones()" 
-                  [matBadgeColor]="getNotificacionesUrgentes() > 0 ? 'warn' : 'primary'"
-                  [matBadgeHidden]="getTotalNotificaciones() === 0">
-          notifications
-        </mat-icon>
-      </button>
-      
-      <button mat-button 
-              color="primary" 
-              (click)="marcarTodasLeidas()"
-              *ngIf="getTotalNotificaciones() > 0">
-        Marcar todas como leídas
-      </button>
-    </div>
   </header>
 
   <nav class="menu" role="navigation">
@@ -34,12 +14,6 @@
         <mat-icon class="menu-icon">{{ opcion.icon }}</mat-icon>
         <span class="menu-text">{{ opcion.titulo }}</span>
         
-        <!-- Badge de notificaciones -->
-        <span *ngIf="opcion.badge > 0" 
-              class="badge"
-              [class.urgente]="opcion.ruta === 'solicitudes' && opcion.badge > 0">
-          {{ opcion.badge }}
-        </span>
       </div>
     </a>
   </nav>
