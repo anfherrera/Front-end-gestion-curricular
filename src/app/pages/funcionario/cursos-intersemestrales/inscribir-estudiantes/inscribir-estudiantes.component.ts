@@ -801,22 +801,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
                   <mat-icon>download</mat-icon>
                   Descargar Comprobante
                 </button>
-                
-                <button mat-raised-button 
-                        color="accent" 
-                        (click)="verComprobante()"
-                        *ngIf="data.estudiante.archivoPago?.url"
-                        style="margin-right: 8px;">
-                  <mat-icon>visibility</mat-icon>
-                  Ver Comprobante
-                </button>
-                
-                <button mat-stroked-button 
-                        (click)="copiarURL()"
-                        *ngIf="data.estudiante.archivoPago?.url">
-                  <mat-icon>content_copy</mat-icon>
-                  Copiar URL
-                </button>
               </div>
             </div>
           </div>
@@ -997,59 +981,6 @@ export class DetallesInscripcionDialogComponent {
     });
   }
 
-  verComprobante(): void {
-    if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
-      console.log('👁️ Abriendo comprobante en nueva ventana:', this.data.estudiante.archivoPago.url);
-      
-      // Verificar si la URL es relativa y construir la URL completa
-      let urlCompleta = this.data.estudiante.archivoPago.url;
-      if (urlCompleta.startsWith('/uploads/')) {
-        // Si es una ruta relativa, construir la URL completa del backend
-        urlCompleta = `http://localhost:5000${urlCompleta}`;
-      }
-      
-      console.log('🔗 URL completa para visualización:', urlCompleta);
-      
-      // Abrir el archivo en una nueva ventana/pestaña
-      window.open(urlCompleta, '_blank');
-    } else {
-      console.warn('No hay URL disponible para ver el archivo');
-      alert('No hay archivo disponible para visualizar');
-    }
-  }
-
-  copiarURL(): void {
-    if (this.data.estudiante.archivoPago && this.data.estudiante.archivoPago.url) {
-      // Verificar si la URL es relativa y construir la URL completa
-      let urlCompleta = this.data.estudiante.archivoPago.url;
-      if (urlCompleta.startsWith('/uploads/')) {
-        // Si es una ruta relativa, construir la URL completa del backend
-        urlCompleta = `http://localhost:5000${urlCompleta}`;
-      }
-      
-      console.log('📋 Copiando URL al portapapeles:', urlCompleta);
-      
-      // Copiar URL al portapapeles
-      navigator.clipboard.writeText(urlCompleta).then(() => {
-        console.log('✅ URL copiada exitosamente');
-        alert('URL copiada al portapapeles');
-      }).catch(err => {
-        console.error('❌ Error copiando URL:', err);
-        
-        // Fallback para navegadores que no soportan clipboard API
-        const textArea = document.createElement('textarea');
-        textArea.value = urlCompleta;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('URL copiada al portapapeles (método alternativo)');
-      });
-    } else {
-      console.warn('No hay URL disponible para copiar');
-      alert('No hay URL disponible para copiar');
-    }
-  }
 
   confirmarInscripcion(): void {
     // Lógica para confirmar la inscripción
@@ -1161,6 +1092,7 @@ export class DetallesInscripcionDialogComponent {
       margin: 0;
       font-size: 20px;
       font-weight: 600;
+      color: white;
     }
 
     .dialog-content {
