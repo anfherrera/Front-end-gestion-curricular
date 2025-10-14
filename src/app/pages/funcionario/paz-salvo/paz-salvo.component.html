@@ -1,19 +1,20 @@
 <div class="funcionario-container">
 
-  <!-- 📌 Contenedor de solicitudes -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Solicitudes de Paz y Salvo Pendientes</mat-card-title>
-    <mat-card-content>
-      <app-request-status-table
-        #requestStatusTable
-        [solicitudes]="solicitudes"
-        [showOficio]="false"
-        [showComentarios]="false"
-        [showSeleccionar]="true"
-        (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
-      </app-request-status-table>
-    </mat-card-content>
-  </mat-card>
+  <!-- 📌 Contenedor de solicitudes usando componente genérico -->
+  <app-card-container
+    title="Solicitudes de Paz y Salvo Pendientes"
+    icon="assignment">
+
+    <app-request-status-table
+      #requestStatusTable
+      [solicitudes]="solicitudes"
+      [showOficio]="false"
+      [showComentarios]="false"
+      [showSeleccionar]="true"
+      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+    </app-request-status-table>
+
+  </app-card-container>
 
   <!-- 📌 Documentación de la solicitud seleccionada -->
   <app-card-container
@@ -22,8 +23,8 @@
     icon="description">
 
     <app-documentation-viewer
-      [documentos]="archivosDelEstudiante"
-      [solicitudId]="selectedSolicitud.id"
+      [documentos]="documentosDelEstudiante"
+      [solicitudId]="selectedSolicitud.id_solicitud"
       [proceso]="'paz-salvo'"
       [servicio]="pazSalvoService"
       [puedeAgregarComentarios]="true"

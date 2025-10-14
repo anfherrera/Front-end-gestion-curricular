@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, map, switchMap } from 'rxjs';
 import { Solicitud, Archivo, Usuario, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 @Injectable({
@@ -85,18 +85,36 @@ export class PazSalvoService {
   }
 
   approveRequest(requestId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+    const url = `${this.apiUrl}/actualizarEstadoSolicitud`;
+    const body = {
       idSolicitud: requestId,
       nuevoEstado: 'APROBADA_FUNCIONARIO'
-    }, { headers: this.getAuthHeaders() });
+    };
+    
+    console.log('✅ Aprobando solicitud de Paz y Salvo:', {
+      url: url,
+      requestId: requestId,
+      body: body
+    });
+    
+    return this.http.put(url, body, { headers: this.getAuthHeaders() });
   }
 
   rejectRequest(requestId: number, reason: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+    const url = `${this.apiUrl}/actualizarEstadoSolicitud`;
+    const body = {
       idSolicitud: requestId,
       nuevoEstado: 'RECHAZADA',
       comentario: reason
-    }, { headers: this.getAuthHeaders() });
+    };
+    
+    console.log('❌ Rechazando solicitud de Paz y Salvo:', {
+      url: url,
+      requestId: requestId,
+      body: body
+    });
+    
+    return this.http.put(url, body, { headers: this.getAuthHeaders() });
   }
 
   completeValidation(requestId: number): Observable<any> {
@@ -147,15 +165,12 @@ export class PazSalvoService {
     });
   }
 
-  subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    // Determinar la URL correcta
-    let url: string;
-    if (idSolicitud) {
-      url = `http://localhost:5000/api/solicitudes-pazysalvo/${idSolicitud}/subir-archivo`;
-    } else {
-      // Fallback al endpoint genérico si no hay idSolicitud
-      url = `http://localhost:5000/api/archivos/subir/pdf`;
-    }
+  /**
+   * Subir documento SIN asociar a una solicitud específica (nuevo flujo)
+   * Los documentos se suben ANTES de crear la solicitud
+   */
+  subirDocumento(archivo: File): Observable<any> {
+    const url = `http://localhost:5000/api/solicitudes-pazysalvo/subir-documento`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -180,13 +195,59 @@ export class PazSalvoService {
     const formData = new FormData();
     formData.append('file', archivo);
     
-    // Agregar idSolicitud si se proporciona (solo para endpoint genérico)
-    if (idSolicitud && !url.includes('/subir-archivo')) {
-      formData.append('idSolicitud', idSolicitud.toString());
-      console.log('📎 Asociando archivo a solicitud ID:', idSolicitud);
+    console.log('🔗 URL para subir documento (nuevo flujo):', url);
+    console.log('📁 Archivo a subir:', archivo.name);
+    console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
+    
+    // Para archivos, no necesitamos Content-Type en los headers
+    const headers = new HttpHeaders({
+      'Authorization': this.getAuthHeaders().get('Authorization') || ''
+    });
+    
+    return this.http.post(url, formData, {
+      headers: headers
+    });
+  }
+
+  /**
+   * Método legacy para mantener compatibilidad (DEPRECATED)
+   * @deprecated Usar subirDocumento() en su lugar
+   */
+  subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
+    console.warn('⚠️ subirArchivoPDF() está deprecated. Usar subirDocumento() para el nuevo flujo.');
+    
+    // Si no hay idSolicitud, usar el nuevo endpoint
+    if (!idSolicitud) {
+      return this.subirDocumento(archivo);
     }
     
-    console.log('🔗 URL para subir archivo PDF:', url);
+    // Para casos legacy con idSolicitud, usar el endpoint anterior
+    const url = `http://localhost:5000/api/solicitudes-pazysalvo/${idSolicitud}/subir-archivo`;
+    
+    // Validaciones del frontend
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    if (archivo.size > maxFileSize) {
+      return new Observable(observer => {
+        observer.error({
+          status: 413,
+          error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(archivo.size / (1024 * 1024)).toFixed(2)}MB` }
+        });
+      });
+    }
+    
+    if (!archivo.name.toLowerCase().endsWith('.pdf')) {
+      return new Observable(observer => {
+        observer.error({
+          status: 415,
+          error: { message: 'Solo se permiten archivos PDF' }
+        });
+      });
+    }
+    
+    const formData = new FormData();
+    formData.append('file', archivo);
+    
+    console.log('🔗 URL para subir archivo PDF (legacy):', url);
     console.log('📁 Archivo a subir:', archivo.name);
     console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
@@ -216,7 +277,15 @@ export class PazSalvoService {
   // Estados y Comentarios
   // ================================
   actualizarEstadoDocumentos(idSolicitud: number, documentos: any[]): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+    const url = `${this.apiUrl}/actualizarEstadoDocumentos`;
+    
+    console.log('📄 Actualizando estado de documentos de Paz y Salvo:', {
+      url: url,
+      idSolicitud: idSolicitud,
+      documentos: documentos
+    });
+    
+    return this.http.put(url, {
       idSolicitud: idSolicitud,
       documentos: documentos
     }, { headers: this.getAuthHeaders() });
@@ -239,12 +308,12 @@ export class PazSalvoService {
   }
 
   /**
-   * Descargar archivo PDF por nombre (igual que homologación)
+   * ✅ CORREGIDO: Descargar archivo PDF usando endpoint específico de Paz y Salvo
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
-    // URL directa al backend (CORS configurado)
-    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    console.log('🔗 URL de descarga:', url);
+    // ✅ USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
+    const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
+    console.log('🔗 URL de descarga (endpoint Paz y Salvo):', url);
     console.log('📁 Nombre del archivo:', nombreArchivo);
     
     return this.http.get(url, {
@@ -254,18 +323,75 @@ export class PazSalvoService {
   }
 
   /**
-   * Añadir comentario a un documento (igual que homologación)
+   * ✅ CORREGIDO: Añadir comentario usando endpoint genérico (igual que homologación)
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
+    // ✅ USAR ENDPOINT GENÉRICO CORRECTO
     const url = `http://localhost:5000/api/documentos/añadirComentario`;
     const body = {
       idDocumento: idDocumento,
       comentario: comentario
     };
     
-    console.log('💬 Añadiendo comentario:', body);
+    console.log('💬 Añadiendo comentario (endpoint genérico):', body);
+    console.log('🔗 URL:', url);
     
     return this.http.put(url, body, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * 🆕 Generar documento de Paz y Salvo usando endpoint específico (para secretaría)
+   */
+  generarDocumento(idSolicitud: number, numeroDocumento: string, fechaDocumento: string, observaciones?: string): Observable<{blob: Blob, filename: string}> {
+    const url = `http://localhost:5000/api/solicitudes-pazysalvo/generar-documento/${idSolicitud}`;
+    
+    console.log('📄 Generando documento de Paz y Salvo usando endpoint específico:', {
+      idSolicitud,
+      numeroDocumento,
+      fechaDocumento,
+      observaciones
+    });
+    console.log('🔗 URL:', url);
+
+    // Crear FormData con los parámetros como indica el usuario
+    const formData = new FormData();
+    formData.append('numeroDocumento', numeroDocumento);
+    formData.append('fechaDocumento', fechaDocumento);
+    if (observaciones) {
+      formData.append('observaciones', observaciones);
+    }
+
+    console.log('📋 FormData creado:', {
+      numeroDocumento,
+      fechaDocumento,
+      observaciones: observaciones || 'Sin observaciones'
+    });
+
+    // Llamar al endpoint específico de Paz y Salvo
+    return this.http.post(url, formData, {
+      headers: this.getAuthHeaders(true), // true para FormData
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      // Procesar respuesta y crear archivo
+      map((response: any) => {
+        const blob = response.body!;
+        let filename = `PAZ_SALVO_${numeroDocumento}.docx`; // Fallback
+        
+        // Obtener nombre del archivo del header Content-Disposition
+        const contentDisposition = response.headers.get('Content-Disposition');
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (filenameMatch) {
+            filename = filenameMatch[1];
+            console.log('📁 Nombre del archivo desde header:', filename);
+          }
+        }
+        
+        console.log('✅ Documento generado exitosamente:', filename);
+        return { blob, filename };
+      })
+    );
   }
 
   /**
@@ -289,5 +415,19 @@ export class PazSalvoService {
       headers: this.getAuthHeaders()
     });
   }
+
+  /**
+   * 🆕 Asociar documentos huérfanos a una solicitud
+   * Para mantener compatibilidad con el flujo anterior si es necesario
+   */
+  asociarDocumentosHuerfanos(idSolicitud: number): Observable<any> {
+    const url = `${this.apiUrl}/asociar-documentos-huerfanos/${idSolicitud}`;
+    console.log('🔗 Asociando documentos huérfanos a solicitud:', idSolicitud);
+    
+    return this.http.post(url, {}, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
 
 }

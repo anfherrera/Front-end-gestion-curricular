@@ -41,7 +41,7 @@
           [template]="template"
           [proceso]="'paz-salvo'"
           [loading]="loading"
-          (generarDocumento)="onGenerarDocumento($event)"
+          (generarDocumento)="generarDocumentoPazSalvo($event)"
           (cancelar)="onCancelarGeneracion()"
           (tengoDocumento)="onTengoDocumento()">
         </app-document-generator>

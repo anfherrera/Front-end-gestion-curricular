@@ -364,6 +364,43 @@ export class SecretariaPazSalvoComponent implements OnInit {
   /**
    * Limpiar estado del componente
    */
+  /**
+   * 🆕 Generar documento de Paz y Salvo usando el endpoint específico
+   */
+  generarDocumentoPazSalvo(documentRequest: DocumentRequest): void {
+    if (!this.selectedSolicitud) {
+      this.snackBar.open('Por favor selecciona una solicitud primero.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    this.loading = true;
+    console.log('📄 Generando documento de Paz y Salvo:', documentRequest);
+    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
+    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
+    console.log('👤 Datos del estudiante en request:', documentRequest.datosSolicitud);
+
+    // Usar DocumentGeneratorService como en homologación
+    this.documentGeneratorService.generarDocumento(documentRequest).subscribe({
+      next: (blob) => {
+        console.log('✅ Documento de Paz y Salvo generado exitosamente');
+
+        // Generar nombre de archivo
+        const nombreArchivo = `${documentRequest.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
+
+        // Descargar archivo Word usando el servicio
+        this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
+
+        this.snackBar.open('Documento de Paz y Salvo generado y descargado exitosamente', 'Cerrar', { duration: 3000 });
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error('❌ Error al generar documento de Paz y Salvo:', err);
+        this.snackBar.open('Error al generar documento: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.loading = false;
+      }
+    });
+  }
+
   private limpiarEstado(): void {
     this.documentoGenerado = false;
     this.archivoPDF = null;

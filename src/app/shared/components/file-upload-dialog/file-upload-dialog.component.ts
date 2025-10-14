@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Archivo } from '../../../core/models/procesos.model';
 import { ArchivosService } from '../../../core/services/archivos.service';
+import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
@@ -18,11 +19,15 @@ export class FileUploadComponent implements OnChanges {
   @Input() archivos: Archivo[] = [];
   @Input() reset = false;                  // Para reiniciar desde el padre
   @Input() archivosExclusivos: string[] = []; // Archivos que son mutuamente exclusivos
+  @Input() proceso: string = 'general';    // Tipo de proceso: 'general', 'paz-salvo', etc.
   @Output() archivosChange = new EventEmitter<Archivo[]>();
 
   cargando: boolean = false;
 
-  constructor(private archivosService: ArchivosService) {}
+  constructor(
+    private archivosService: ArchivosService,
+    private pazSalvoService: PazSalvoService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['reset'] && changes['reset'].currentValue) {
@@ -111,9 +116,20 @@ export class FileUploadComponent implements OnChanges {
 
     this.cargando = true;
 
-    // Subir archivos uno por uno
-    const subidas$ = archivosPendientes.map(archivo =>
-      this.archivosService.subirPDF(archivo.file!).pipe(
+    // Subir archivos uno por uno usando el servicio correcto según el proceso
+    const subidas$ = archivosPendientes.map(archivo => {
+      let subida$: Observable<any>;
+      
+      // Usar el servicio correcto según el proceso
+      if (this.proceso === 'paz-salvo') {
+        console.log('🔄 Usando servicio Paz y Salvo para subir:', archivo.nombre);
+        subida$ = this.pazSalvoService.subirDocumento(archivo.file!);
+      } else {
+        console.log('🔄 Usando servicio genérico para subir:', archivo.nombre);
+        subida$ = this.archivosService.subirPDF(archivo.file!);
+      }
+
+      return subida$.pipe(
         map(archivoSubido => {
           // Actualizar el archivo local con la información del backend
           const index = this.archivos.findIndex(a => a.file === archivo.file);
@@ -122,7 +138,7 @@ export class FileUploadComponent implements OnChanges {
               ...archivoSubido,
               file: archivo.file, // mantener referencia local
               estado: 'aprobado',
-              url: archivoSubido.ruta_documento
+              url: archivoSubido.ruta_documento || archivoSubido.nombre
             };
           }
           return this.archivos[index];
@@ -138,8 +154,8 @@ export class FileUploadComponent implements OnChanges {
             }
           }
         })
-      )
-    );
+      );
+    });
 
     return forkJoin(subidas$).pipe(
       tap({

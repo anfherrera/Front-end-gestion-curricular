@@ -197,72 +197,72 @@ listarSolicitudes() {
 
 
   onSolicitudEnviada() {
-  if (!this.usuario) {
-    console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
-    return;
-  }
+    if (!this.usuario) {
+      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+      return;
+    }
 
     if (!this.fileUploadComponent) {
       console.error('❌ No se puede acceder al componente de archivos.');
       return;
     }
 
-    console.log('📤 Iniciando proceso de envío de solicitud...');
+    console.log('📤 Iniciando proceso de envío de solicitud con NUEVO FLUJO...');
 
-    // Paso 1: Subir archivos al backend
+    // 🆕 NUEVO FLUJO: Paso 1: Subir documentos SIN asociar a solicitud
     this.fileUploadComponent.subirArchivosPendientes().subscribe({
       next: (archivosSubidos) => {
-        console.log('✅ Archivos subidos correctamente:', archivosSubidos);
+        console.log('✅ Documentos subidos correctamente (sin asociar):', archivosSubidos);
 
-        // Paso 2: Crear la solicitud con los archivos ya subidos
-  const solicitud = {
-    nombre_solicitud: `Solicitud_paz_salvo_${this.usuario.nombre_completo}`,
-    fecha_registro_solicitud: new Date().toISOString(),
-    objUsuario: {
-      id_usuario: this.usuario.id_usuario,
-      nombre_completo: this.usuario.nombre_completo,
-      codigo: this.usuario.codigo,
-      correo: this.usuario.correo,
-      objPrograma: this.usuario.objPrograma
-    },
-          archivos: archivosSubidos
-  };
+        // 🆕 NUEVO FLUJO: Paso 2: Crear la solicitud (los documentos se asocian automáticamente)
+        const solicitud = {
+          nombre_solicitud: `Solicitud_paz_salvo_${this.usuario.nombre_completo}`,
+          fecha_registro_solicitud: new Date().toISOString(),
+          objUsuario: {
+            id_usuario: this.usuario.id_usuario,
+            nombre_completo: this.usuario.nombre_completo,
+            codigo: this.usuario.codigo,
+            correo: this.usuario.correo,
+            objPrograma: this.usuario.objPrograma
+          },
+          archivos: archivosSubidos // Los documentos se asociarán automáticamente
+        };
 
-        console.log('📋 Creando solicitud con archivos:', solicitud);
+        console.log('📋 Creando solicitud (documentos se asocian automáticamente):', solicitud);
 
-  this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos).subscribe({
-    next: (resp) => {
-      console.log('✅ Solicitud creada en backend:', resp);
-      this.listarSolicitudes();
+        this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos).subscribe({
+          next: (resp) => {
+            console.log('✅ Solicitud creada en backend:', resp);
+            this.listarSolicitudes();
 
-      // Resetear el file upload
-      this.resetFileUpload = true;
-      setTimeout(() => this.resetFileUpload = false, 0);
+            // Resetear el file upload
+            this.resetFileUpload = true;
+            setTimeout(() => this.resetFileUpload = false, 0);
 
-            this.mostrarMensaje('🎉 ¡Solicitud de paz y salvo enviada correctamente!', 'success');
-    },
-    error: (err) => {
+            this.mostrarMensaje('🎉 ¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
+          },
+          error: (err) => {
             console.error('❌ Error al crear solicitud:', err);
-      if (err.status === 400) {
+            if (err.status === 400) {
               this.mostrarMensaje('⚠️ Error de validación: revisa los datos de la solicitud', 'warning');
-      }
-      if (err.status === 401) {
+            }
+            if (err.status === 401) {
               this.mostrarMensaje('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
             }
           }
         });
       },
       error: (err) => {
-        console.error('❌ Error al subir archivos:', err);
-        this.mostrarMensaje('❌ Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        console.error('❌ Error al subir documentos:', err);
+        this.mostrarMensaje('❌ Error al subir documentos. Por favor, inténtalo de nuevo.', 'error');
         
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
           this.fileUploadComponent.resetearEstadoCarga();
         }
-    }
-  });
-}
+      }
+    });
+  }
 
 /**
  * Verificar si una solicitud está rechazada

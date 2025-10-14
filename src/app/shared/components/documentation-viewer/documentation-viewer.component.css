@@ -98,6 +98,8 @@
   background-color: #e3f2fd;
   border-radius: 50%;
   transition: all 0.2s ease;
+  border: none !important;
+  outline: none !important;
 }
 
 .comments-button:hover {
@@ -105,8 +107,27 @@
   transform: scale(1.1);
 }
 
+.comments-button:active {
+  background-color: #e3f2fd !important;
+  transform: scale(0.95);
+}
+
+.comments-button:focus {
+  background-color: #e3f2fd !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 🔧 CORREGIDO: Forzar estado normal después de cualquier interacción */
+.comments-button:not(:hover):not(:active):not(:focus) {
+  background-color: #e3f2fd !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 .comments-button mat-icon {
   color: #1976d2;
+  pointer-events: none;
 }
 
 .comment-count {
@@ -138,18 +159,59 @@
 }
 
 .action-button {
-  background-color: #f5f5f5;
+  background-color: #f5f5f5 !important;
   border-radius: 50%;
   transition: all 0.2s ease;
+  border: none !important;
+  outline: none !important;
+  position: relative;
+  overflow: hidden;
 }
 
 .action-button:hover {
-  background-color: #e0e0e0;
+  background-color: #e0e0e0 !important;
   transform: scale(1.1);
+}
+
+.action-button:active {
+  background-color: #f5f5f5 !important;
+  transform: scale(0.95);
+}
+
+.action-button:focus {
+  background-color: #f5f5f5 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.action-button:focus-visible {
+  background-color: #f5f5f5 !important;
+  outline: 2px solid #1976d2 !important;
+  outline-offset: 2px !important;
+}
+
+/* 🔧 CORREGIDO: Forzar estado normal después de cualquier interacción */
+.action-button:not(:hover):not(:active):not(:focus) {
+  background-color: #f5f5f5 !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .action-button mat-icon {
   color: #1976d2;
+  pointer-events: none;
+}
+
+/* 🔧 CORREGIDO: Asegurar que no haya estados pegados */
+.action-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  pointer-events: none;
 }
 
 /* Responsive */

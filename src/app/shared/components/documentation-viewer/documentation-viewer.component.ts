@@ -52,84 +52,127 @@ export class DocumentationViewerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('🔍 DocumentationViewerComponent ngOnInit() - Inicializando componente');
+    console.log('📊 Documentos recibidos:', this.documentos);
+    console.log('⚙️ Proceso:', this.proceso);
+    console.log('🔧 Servicio disponible:', !!this.servicio);
+    console.log('📝 Puede agregar comentarios:', this.puedeAgregarComentarios);
+    
     // Agregar columna de comentarios si hay documentos con comentarios
     if (this.documentos.some(doc => !!(doc.comentario && doc.comentario.trim().length > 0))) {
       this.displayedColumns = ['nombre', 'fecha', 'comentarios', 'acciones'];
+      console.log('✅ Columna de comentarios agregada');
+    } else {
+      console.log('ℹ️ Sin comentarios, columnas estándar');
     }
+    
+    console.log('📋 Columnas a mostrar:', this.displayedColumns);
+    
+    // 🔧 PRUEBA: Verificar que los métodos estén disponibles
+    console.log('🔧 PRUEBA - verDocumento disponible:', typeof this.verDocumento);
+    console.log('🔧 PRUEBA - agregarComentario disponible:', typeof this.agregarComentario);
+    console.log('🔧 PRUEBA - verComentariosDocumento disponible:', typeof this.verComentariosDocumento);
   }
 
   /**
-   * Ver documento en nueva ventana
+   * ✅ CORREGIDO: Ver documento usando endpoint genérico (igual que homologación)
    */
   verDocumento(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+    console.log('🔍 verDocumento() llamado con:', documento);
+    console.log('🔍 verDocumento() - Evento de clic detectado correctamente');
+    
     if (!documento.nombre) {
+      console.error('❌ No hay nombre de archivo disponible');
       this.snackBar.open('No hay nombre de archivo disponible para el documento', 'Cerrar', { duration: 3000 });
       return;
     }
 
+    console.log('📁 Descargando documento usando endpoint específico de Paz y Salvo:', documento.nombre);
+    
     // Mostrar mensaje de carga
     this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
 
-    this.servicio.descargarArchivo(documento.nombre).subscribe({
-      next: (blob: Blob) => {
-        // Crear URL única del blob para evitar cache
-        const url = window.URL.createObjectURL(blob);
-
-        // Crear un iframe temporal para mostrar el PDF
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.style.width = '100%';
-        iframe.style.height = '600px';
-        iframe.style.border = 'none';
-
-        // Crear ventana emergente
-        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>${documento.nombre}</title>
-                <style>
-                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                  .header { margin-bottom: 20px; }
-                  .filename { font-size: 18px; font-weight: bold; color: #333; }
-                </style>
-              </head>
-              <body>
-                <div class="header">
-                  <div class="filename">${documento.nombre}</div>
-                </div>
-              </body>
-            </html>
-          `);
-          newWindow.document.body.appendChild(iframe);
+    // ✅ CORREGIDO: Usar el servicio con endpoint específico de Paz y Salvo
+    if (this.servicio && this.servicio.descargarArchivo) {
+      this.servicio.descargarArchivo(documento.nombre).subscribe({
+        next: (blob: Blob) => {
+          console.log('✅ Documento descargado exitosamente:', documento.nombre);
+          this.mostrarDocumentoEnVentana(blob, documento.nombre);
+        },
+        error: (error: any) => {
+          console.error('❌ Error al descargar documento:', error);
+          this.snackBar.open('Error al descargar documento: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
         }
+      });
+    } else {
+      console.error('❌ Servicio no disponible o método descargarArchivo no existe');
+      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
+    }
+  }
 
-        // Limpiar la URL después de un tiempo
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 5000);
 
-        this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
-      },
-      error: (error: any) => {
-        console.error('Error al descargar documento:', error);
-        this.snackBar.open('Error al abrir el documento', 'Cerrar', { duration: 3000 });
-      }
-    });
+  /**
+   * Mostrar documento en nueva ventana (método común)
+   */
+  private mostrarDocumentoEnVentana(blob: Blob, nombreDocumento: string): void {
+    // Crear URL única del blob para evitar cache
+    const url = window.URL.createObjectURL(blob);
+
+    // Crear un iframe temporal para mostrar el PDF
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.style.width = '100%';
+    iframe.style.height = '600px';
+    iframe.style.border = 'none';
+
+    // Crear ventana emergente
+    const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>${nombreDocumento}</title>
+            <style>
+              body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+              .header { margin-bottom: 20px; }
+              .filename { font-size: 18px; font-weight: bold; color: #333; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div class="filename">${nombreDocumento}</div>
+            </div>
+          </body>
+        </html>
+      `);
+      newWindow.document.body.appendChild(iframe);
+    }
+
+    // Limpiar la URL después de un tiempo
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 5000);
+
+    this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
   }
 
   /**
    * Ver comentarios del documento
    */
   verComentariosDocumento(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+    console.log('🔍 verComentariosDocumento() llamado con:', documento);
+    
     if (!documento.comentario || documento.comentario.trim().length === 0) {
+      console.log('❌ Documento sin comentarios');
       this.snackBar.open('Este documento no tiene comentarios', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    // Funcionalidad temporalmente deshabilitada
-    this.snackBar.open('Funcionalidad de comentarios no disponible temporalmente', 'Cerrar', { duration: 3000 });
+    console.log('💬 Mostrando comentarios:', documento.comentario);
+    
+    // ✅ CORREGIDO: Mostrar comentarios en un diálogo
+    const comentario = documento.comentario.trim();
+    alert(`Comentarios del documento "${documento.nombre}":\n\n${comentario}`);
   }
 
   /**
@@ -163,10 +206,59 @@ export class DocumentationViewerComponent implements OnInit {
   }
 
   /**
-   * Agregar comentario a un documento
+   * ✅ CORREGIDO: Agregar comentario usando endpoint genérico (igual que homologación)
    */
   agregarComentario(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
-    // Funcionalidad temporalmente deshabilitada
-    this.snackBar.open('Funcionalidad de comentarios no disponible temporalmente', 'Cerrar', { duration: 3000 });
+    console.log('🔍 agregarComentario() llamado con:', documento);
+    console.log('🔍 agregarComentario() - Evento de clic detectado correctamente');
+    
+    if (!documento.id_documento) {
+      console.error('❌ No hay ID de documento disponible');
+      this.snackBar.open('No hay ID de documento disponible', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    console.log('📝 ID del documento:', documento.id_documento);
+    
+    // Solicitar comentario al usuario
+    const comentario = prompt(`Agregar comentario para el documento "${documento.nombre}":`);
+    
+    if (comentario === null) {
+      console.log('❌ Usuario canceló el comentario');
+      return;
+    }
+
+    if (!comentario.trim()) {
+      this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    console.log('💬 Comentario a agregar usando endpoint genérico:', comentario.trim());
+
+    // Mostrar mensaje de carga
+    this.snackBar.open('Agregando comentario...', 'Cerrar', { duration: 2000 });
+
+    // ✅ CORREGIDO: Usar el servicio con endpoint genérico
+    if (this.servicio && this.servicio.agregarComentario) {
+      this.servicio.agregarComentario(documento.id_documento, comentario.trim()).subscribe({
+        next: (result: any) => {
+          console.log('✅ Comentario agregado exitosamente:', result);
+          this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', { duration: 3000 });
+          // Emitir evento para que el componente padre actualice la vista
+          this.comentarioAgregado.emit({
+            documento: documento,
+            comentario: comentario.trim()
+          });
+        },
+        error: (error: any) => {
+          console.error('❌ Error al agregar comentario:', error);
+          this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        }
+      });
+    } else {
+      console.error('❌ Servicio no disponible o método agregarComentario no existe');
+      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
+    }
   }
+
 }
