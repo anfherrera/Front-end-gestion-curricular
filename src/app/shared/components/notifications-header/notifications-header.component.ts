@@ -47,7 +47,9 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('🔔 [NOTIFICACIONES] Componente inicializado');
-    this.cargarNotificaciones();
+    
+    // Esperar a que el usuario esté disponible antes de cargar notificaciones
+    this.esperarUsuarioYcargarNotificaciones();
     
     // Actualizar notificaciones cada 30 segundos
     this.refreshInterval = setInterval(() => {
@@ -58,6 +60,27 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
+    }
+  }
+
+  esperarUsuarioYcargarNotificaciones(): void {
+    // Verificar si ya tenemos el userId
+    if (this.userId) {
+      this.cargarNotificaciones();
+      return;
+    }
+
+    // Si no tenemos userId, esperar a que el usuario esté disponible
+    const usuario = this.authService.getUsuario();
+    if (usuario?.id) {
+      console.log('✅ [NOTIFICACIONES] Usuario encontrado, cargando notificaciones');
+      this.cargarNotificaciones();
+    } else {
+      console.log('⏳ [NOTIFICACIONES] Esperando a que el usuario esté disponible...');
+      // Intentar nuevamente después de un breve delay
+      setTimeout(() => {
+        this.esperarUsuarioYcargarNotificaciones();
+      }, 100);
     }
   }
 

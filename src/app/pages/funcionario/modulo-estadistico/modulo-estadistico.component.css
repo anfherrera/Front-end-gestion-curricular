@@ -1,0 +1,18 @@
+.modulo-estadistico-container {
+  padding: 20px;
+}
+
+.tab-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.tab-content h2 {
+  color: #1976d2;
+  margin-bottom: 20px;
+}
+
+.tab-content p {
+  color: #666;
+  font-size: 1.1rem;
+}

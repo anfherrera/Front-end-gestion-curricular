@@ -133,7 +133,18 @@ export class ApiEndpoints {
     DASHBOARD: `${this.BASE_URL}/modulo-estadistico/dashboard`,
     REPORTES: `${this.BASE_URL}/modulo-estadistico/reportes`,
     ESTADISTICAS: `${this.BASE_URL}/modulo-estadistico/estadisticas`,
-    EXPORTAR: (formato: string) => `${this.BASE_URL}/modulo-estadistico/exportar/${formato}`
+    EXPORTAR: (formato: string) => `${this.BASE_URL}/modulo-estadistico/exportar/${formato}`,
+    
+    // ===== ENDPOINTS DE ESTADÍSTICAS =====
+    ESTADISTICAS_GLOBALES: `${this.BASE_URL}/estadisticas/globales`,
+    ESTADISTICAS_PROCESO: (nombreProceso: string) => `${this.BASE_URL}/estadisticas/proceso/${nombreProceso}`,
+    ESTADISTICAS_PROGRAMA: (idPrograma: number) => `${this.BASE_URL}/estadisticas/programa/${idPrograma}`,
+    RESUMEN_COMPLETO: `${this.BASE_URL}/estadisticas/resumen-completo`,
+    
+    // ===== NUEVOS ENDPOINTS DEL BACKEND =====
+    POR_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porPeriodoEstadoPrograma`,
+    POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
+    POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`
   };
 
   // ===== DOCUMENTOS =====

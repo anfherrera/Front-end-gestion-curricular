@@ -1,0 +1,241 @@
+<div class="dashboard-container">
+  <!-- Header del Dashboard -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="dashboard-title">
+          <mat-icon>dashboard</mat-icon>
+          Dashboard Estadístico
+        </h1>
+        <p class="dashboard-subtitle">
+          Estadísticas consolidadas de los procesos académicos
+        </p>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="actualizarDatos()" [disabled]="loading">
+          <mat-icon>refresh</mat-icon>
+          Actualizar datos
+        </button>
+        <button mat-raised-button color="accent" (click)="exportarPDF()" [disabled]="loading || !resumenCompleto">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Exportar PDF
+        </button>
+        <button mat-raised-button color="warn" (click)="exportarExcel()" [disabled]="loading || !resumenCompleto">
+          <mat-icon>table_chart</mat-icon>
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>filter_list</mat-icon>
+        Filtros
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form *ngIf="filtrosForm && filtrosForm.controls" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+        <div class="filters-grid">
+          <div class="filter-item">
+            <mat-form-field *ngIf="filtrosForm?.get('proceso')" appearance="outline">
+              <mat-label>Proceso</mat-label>
+              <mat-select formControlName="proceso">
+                <mat-option value="">Todos los procesos</mat-option>
+                <mat-option *ngFor="let proceso of procesosDisponibles" [value]="proceso">
+                  {{ formatearNombreProceso(proceso) }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="filter-item">
+            <mat-form-field *ngIf="filtrosForm?.get('programa')" appearance="outline">
+              <mat-label>Programa</mat-label>
+              <mat-select formControlName="programa">
+                <mat-option value="">Todos los programas</mat-option>
+                <mat-option *ngFor="let programa of programasDisponibles" [value]="programa.id">
+                  {{ programa.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="filter-item">
+            <mat-form-field *ngIf="filtrosForm?.get('fechaInicio')" appearance="outline">
+              <mat-label>Fecha Inicio</mat-label>
+              <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
+              <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+              <mat-datepicker #pickerInicio></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="filter-item">
+            <mat-form-field *ngIf="filtrosForm?.get('fechaFin')" appearance="outline">
+              <mat-label>Fecha Fin</mat-label>
+              <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
+              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFin></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading || !filtrosForm.valid">
+            <mat-icon>search</mat-icon>
+            Aplicar Filtros
+          </button>
+          <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading">
+            <mat-icon>clear</mat-icon>
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <app-loading-spinner></app-loading-spinner>
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon class="error-icon">error</mat-icon>
+    <h3>Error al cargar las estadísticas</h3>
+    <p>No se pudieron cargar los datos del dashboard. Por favor, inténtalo de nuevo.</p>
+    <button mat-raised-button color="primary" (click)="cargarDatos()">
+      <mat-icon>refresh</mat-icon>
+      Reintentar
+    </button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error" class="dashboard-content">
+    
+    <!-- KPIs Cards -->
+    <div class="kpis-section">
+      <h2 class="section-title">
+        <mat-icon>analytics</mat-icon>
+        Indicadores Clave (KPIs)
+      </h2>
+      <div class="kpis-grid">
+        <mat-card *ngFor="let kpi of kpis" class="kpi-card" [class]="'kpi-' + kpi.color">
+          <mat-card-content>
+            <div class="kpi-content">
+              <div class="kpi-icon">
+                <mat-icon>{{ kpi.icono }}</mat-icon>
+              </div>
+              <div class="kpi-data">
+                <h3 class="kpi-value">{{ kpi.valor | number }}</h3>
+                <p class="kpi-title">{{ kpi.titulo }}</p>
+                <p *ngIf="kpi.descripcion" class="kpi-description">{{ kpi.descripcion }}</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <h2 class="section-title">
+        <mat-icon>bar_chart</mat-icon>
+        Análisis Visual
+      </h2>
+      
+      <div class="charts-grid">
+        <!-- Chart de Distribución por Procesos -->
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Distribución por Procesos</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas id="chartProcesos"></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Chart de Tendencia -->
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Tendencia Mensual</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas id="chartTendencia"></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Chart de Distribución por Programa -->
+        <mat-card class="chart-card chart-wide">
+          <mat-card-header>
+            <mat-card-title>Solicitudes por Programa</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas id="chartDistribucion"></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Resumen de Procesos -->
+    <div *ngIf="estadisticasProceso" class="process-details-section">
+      <h2 class="section-title">
+        <mat-icon>list_alt</mat-icon>
+        Detalles del Proceso: {{ formatearNombreProceso(estadisticasProceso.nombreProceso) }}
+      </h2>
+      
+      <mat-card class="process-details-card">
+        <mat-card-content>
+          <div class="process-stats-grid">
+            <div class="process-stat">
+              <mat-icon class="stat-icon approved">check_circle</mat-icon>
+              <div class="stat-content">
+                <h3>{{ estadisticasProceso.aprobadas }}</h3>
+                <p>Aprobadas ({{ estadisticasProceso.porcentajeAprobacion }}%)</p>
+              </div>
+            </div>
+            
+            <div class="process-stat">
+              <mat-icon class="stat-icon rejected">cancel</mat-icon>
+              <div class="stat-content">
+                <h3>{{ estadisticasProceso.rechazadas }}</h3>
+                <p>Rechazadas</p>
+              </div>
+            </div>
+            
+            <div class="process-stat">
+              <mat-icon class="stat-icon pending">pending</mat-icon>
+              <div class="stat-content">
+                <h3>{{ estadisticasProceso.enProceso }}</h3>
+                <p>En Proceso</p>
+              </div>
+            </div>
+            
+            <div class="process-stat">
+              <mat-icon class="stat-icon total">description</mat-icon>
+              <div class="stat-content">
+                <h3>{{ estadisticasProceso.totalSolicitudes }}</h3>
+                <p>Total Solicitudes</p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Información de Actualización -->
+    <div *ngIf="resumenCompleto" class="update-info">
+      <mat-icon>update</mat-icon>
+      <span>Última actualización: {{ resumenCompleto.ultimaActualizacion | date:'short' }}</span>
+    </div>
+  </div>
+</div>
