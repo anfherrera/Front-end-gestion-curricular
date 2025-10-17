@@ -114,15 +114,15 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Carga los datos del dashboard
+   * Carga los datos del dashboard con filtros opcionales
    */
-  cargarDatos(): void {
+  cargarDatos(filtros: FiltroEstadisticas = {}): void {
     this.loading = true;
     this.error = false;
 
-    console.log('🔄 Cargando datos desde el API real...');
+    console.log('🔄 Cargando datos desde el API real con filtros:', filtros);
     
-    const subscription = this.estadisticasService.getEstadisticasGlobales()
+    const subscription = this.estadisticasService.getEstadisticasGlobales(filtros)
       .subscribe({
         next: (datosAPI) => {
           console.log('✅ Datos recibidos del API:', datosAPI);
@@ -393,7 +393,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     };
 
     try {
-      this.chartProcesos = new Chart(ctx, config);
+    this.chartProcesos = new Chart(ctx, config);
       console.log('✅ Gráfico de procesos creado exitosamente');
     } catch (error) {
       console.error('❌ Error al crear gráfico de procesos:', error);
@@ -514,7 +514,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     };
 
     try {
-      this.chartTendencia = new Chart(ctx, config);
+    this.chartTendencia = new Chart(ctx, config);
       console.log('✅ Gráfico de tendencia creado exitosamente');
     } catch (error) {
       console.error('❌ Error al crear gráfico de tendencia:', error);
@@ -619,7 +619,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     };
 
     try {
-      this.chartDistribucion = new Chart(ctx, config);
+    this.chartDistribucion = new Chart(ctx, config);
       console.log('✅ Gráfico de distribución por programas creado exitosamente');
     } catch (error) {
       console.error('❌ Error al crear gráfico de distribución:', error);
@@ -627,56 +627,23 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Aplica filtros y actualiza los datos usando endpoints reales del backend
+   * Aplica filtros y actualiza los datos usando el endpoint actualizado del backend
    */
   aplicarFiltros(): void {
     if (this.filtrosForm && this.filtrosForm.valid) {
-      const filtros: FiltrosDashboard = this.filtrosForm.value;
+      const formValue = this.filtrosForm.value;
+      
+      // Convertir filtros al formato correcto
+      const filtros: FiltroEstadisticas = {};
+      if (formValue.proceso) filtros.proceso = formValue.proceso;
+      if (formValue.programa) filtros.programa = formValue.programa;
+      if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
+      if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
+      
       console.log('🔍 Aplicando filtros:', filtros);
       
-      this.loading = true;
-      this.error = false;
-      
-      // Determinar qué endpoint usar basado en los filtros aplicados
-      let endpointObservable;
-      
-      if (filtros.proceso) {
-        // Si hay filtro por proceso, usar endpoint específico por proceso
-        const tipoProceso = this.mapearProcesoAFiltro(filtros.proceso);
-        endpointObservable = this.estadisticasService.getEstadisticasPorProceso(tipoProceso);
-      } else {
-        // Si hay otros filtros, usar endpoint por período, estado y programa
-        endpointObservable = this.estadisticasService.getEstadisticasPorPeriodoEstadoPrograma(
-          filtros.fechaInicio?.toISOString().split('T')[0], // Convertir Date a string YYYY-MM-DD
-          filtros.fechaFin?.toISOString().split('T')[0],   // Convertir Date a string YYYY-MM-DD
-          filtros.programa,
-          filtros.estado
-        );
-      }
-      
-      const subscription = endpointObservable.subscribe({
-        next: (datosAPI) => {
-          console.log('✅ Datos filtrados recibidos del API:', datosAPI);
-          
-          // Convertir datos del API al formato del dashboard
-          this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
-          
-          this.generarKPIs();
-          this.crearCharts();
-          this.loading = false;
-          this.mostrarExito('Filtros aplicados correctamente');
-        },
-        error: (error) => {
-          console.error('❌ Error al aplicar filtros:', error);
-          
-          // Fallback a datos sin filtros si hay error
-          console.log('🔄 Usando datos globales como fallback...');
-          this.cargarDatos();
-          this.mostrarError('Error al aplicar filtros, mostrando datos globales');
-        }
-      });
-      
-      this.subscriptions.push(subscription);
+      // Usar el método de carga de datos con filtros
+      this.cargarDatos(filtros);
     }
   }
 
@@ -812,142 +779,72 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Exporta el dashboard completo a PDF usando html2canvas y jsPDF
+   * Exporta el reporte de estadísticas como archivo de texto (ACTUALIZADO)
    */
   async exportarPDF(): Promise<void> {
-    console.log('📄 Iniciando exportación a PDF...');
-    if (!this.resumenCompleto) {
-      this.mostrarError('No hay datos para exportar');
-      return;
+    console.log('📄 Iniciando exportación de reporte de texto desde el backend...');
+    
+    // Obtener filtros actuales
+    const filtros: FiltroEstadisticas = {};
+    if (this.filtrosForm) {
+      const formValue = this.filtrosForm.value;
+      if (formValue.proceso) filtros.proceso = formValue.proceso;
+      if (formValue.programa) filtros.programa = formValue.programa;
+      if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
+      if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
     }
 
+    console.log('🔍 Filtros aplicados:', filtros);
+    this.loading = true;
+    this.mostrarExito('Descargando reporte de estadísticas...');
+
     try {
-      // Mostrar indicador de carga
-      this.mostrarExito('Generando PDF...');
-
-      // Obtener el elemento del dashboard
-      const dashboardElement = document.querySelector('.dashboard-container');
-      if (!dashboardElement) {
-        this.mostrarError('No se pudo encontrar el contenido del dashboard');
-        return;
-      }
-
-      // Crear canvas con html2canvas
-      const canvas = await html2canvas(dashboardElement as HTMLElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff'
-      });
-
-      // Crear PDF
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      // Calcular dimensiones para ajustar al PDF
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 10;
-
-      // Agregar título
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Dashboard Estadístico - Universidad del Cauca', pdfWidth / 2, 10, { align: 'center' });
-
-      // Agregar fecha
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Generado el: ${new Date().toLocaleDateString('es-CO')}`, pdfWidth / 2, 20, { align: 'center' });
-
-      // Agregar imagen del dashboard
-      pdf.addImage(imgData, 'PNG', imgX, 30, imgWidth * ratio, imgHeight * ratio);
-
-      // Descargar PDF
-      const fileName = `dashboard-estadistico-${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(fileName);
-
-      this.mostrarExito('PDF exportado correctamente');
+      // Usar método con fetch para mejor control de errores
+      await this.estadisticasService.exportarPDFConFetch(filtros);
+      this.loading = false;
+      this.mostrarExito('Reporte de estadísticas descargado exitosamente');
     } catch (error) {
-      console.error('Error al exportar PDF:', error);
-      this.mostrarError('Error al generar el PDF');
+      console.error('❌ Error al exportar reporte:', error);
+      this.loading = false;
+      this.mostrarError('Error al descargar el reporte. Intenta con el método directo.');
+      
+      // Fallback al método directo
+      this.estadisticasService.exportarPDFDirecto(filtros);
     }
   }
 
   /**
-   * Exporta los datos del dashboard a Excel usando xlsx
+   * Exporta los datos del dashboard a Excel usando el endpoint del backend (ACTUALIZADO)
    */
-  exportarExcel(): void {
-    console.log('📊 Iniciando exportación a Excel...');
-    if (!this.resumenCompleto) {
-      this.mostrarError('No hay datos para exportar');
-      return;
+  async exportarExcel(): Promise<void> {
+    console.log('📊 Iniciando exportación a Excel desde el backend...');
+    
+    // Obtener filtros actuales
+    const filtros: FiltroEstadisticas = {};
+    if (this.filtrosForm) {
+      const formValue = this.filtrosForm.value;
+      if (formValue.proceso) filtros.proceso = formValue.proceso;
+      if (formValue.programa) filtros.programa = formValue.programa;
+      if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
+      if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
     }
 
+    console.log('🔍 Filtros aplicados:', filtros);
+    this.loading = true;
+    this.mostrarExito('Descargando Excel desde el backend...');
+
     try {
-      // Crear workbook
-      const workbook = XLSX.utils.book_new();
-
-      // Hoja 1: Estadísticas Globales
-      const globalesData = [
-        ['ESTADÍSTICAS GLOBALES', ''],
-        ['Total Solicitudes', this.resumenCompleto.estadisticasGlobales.totalSolicitudes.toString()],
-        ['Solicitudes Aprobadas', this.resumenCompleto.estadisticasGlobales.solicitudesAprobadas.toString()],
-        ['Solicitudes Rechazadas', this.resumenCompleto.estadisticasGlobales.solicitudesRechazadas.toString()],
-        ['Solicitudes en Proceso', this.resumenCompleto.estadisticasGlobales.solicitudesEnProceso.toString()],
-        ['Total Estudiantes', this.resumenCompleto.estadisticasGlobales.totalEstudiantes.toString()],
-        ['Total Programas', this.resumenCompleto.estadisticasGlobales.totalProgramas.toString()],
-        ['', ''],
-        ['Última Actualización', new Date(this.resumenCompleto.ultimaActualizacion).toLocaleString('es-CO')]
-      ];
-
-      const globalesSheet = XLSX.utils.aoa_to_sheet(globalesData);
-      XLSX.utils.book_append_sheet(workbook, globalesSheet, 'Estadísticas Globales');
-
-      // Hoja 2: Estadísticas por Proceso
-      const procesosData = [
-        ['ESTADÍSTICAS POR PROCESO', '', '', '', '', ''],
-        ['Proceso', 'Total', 'Aprobadas', 'Rechazadas', 'En Proceso', '% Aprobación']
-      ];
-
-      this.resumenCompleto.estadisticasPorProceso.forEach(proceso => {
-        procesosData.push([
-          this.formatearNombreProceso(proceso.nombreProceso),
-          proceso.totalSolicitudes.toString(),
-          proceso.aprobadas.toString(),
-          proceso.rechazadas.toString(),
-          proceso.enProceso.toString(),
-          proceso.porcentajeAprobacion.toString()
-        ]);
-      });
-
-      const procesosSheet = XLSX.utils.aoa_to_sheet(procesosData);
-      XLSX.utils.book_append_sheet(workbook, procesosSheet, 'Estadísticas por Proceso');
-
-      // Hoja 3: Resumen de KPIs
-      const kpisData = [
-        ['INDICADORES CLAVE (KPIs)', ''],
-        ['KPI', 'Valor']
-      ];
-
-      this.kpis.forEach(kpi => {
-        kpisData.push([kpi.titulo, kpi.valor.toString()]);
-      });
-
-      const kpisSheet = XLSX.utils.aoa_to_sheet(kpisData);
-      XLSX.utils.book_append_sheet(workbook, kpisSheet, 'KPIs');
-
-      // Descargar archivo Excel
-      const fileName = `dashboard-estadistico-${new Date().toISOString().split('T')[0]}.xlsx`;
-      XLSX.writeFile(workbook, fileName);
-
-      this.mostrarExito('Excel exportado correctamente');
+      // Usar método con fetch para mejor control de errores
+      await this.estadisticasService.exportarExcelConFetch(filtros);
+      this.loading = false;
+      this.mostrarExito('Excel descargado exitosamente');
     } catch (error) {
-      console.error('Error al exportar Excel:', error);
-      this.mostrarError('Error al generar el Excel');
+      console.error('❌ Error al exportar Excel:', error);
+      this.loading = false;
+      this.mostrarError('Error al descargar el Excel. Intenta con el método directo.');
+      
+      // Fallback al método directo
+      this.estadisticasService.exportarExcelDirecto(filtros);
     }
   }
 }

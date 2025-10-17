@@ -20,10 +20,28 @@ export class EstadisticasService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Obtiene estadísticas globales del API real
+   * Obtiene estadísticas globales del API real con filtros opcionales
    */
-  getEstadisticasGlobales(): Observable<EstadisticasGlobalesAPI> {
-    return this.http.get<EstadisticasGlobalesAPI>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES);
+  getEstadisticasGlobales(filtros: FiltroEstadisticas = {}): Observable<EstadisticasGlobalesAPI> {
+    let params = new HttpParams();
+    
+    if (filtros.proceso) {
+      params = params.set('proceso', filtros.proceso);
+    }
+    
+    if (filtros.programa) {
+      params = params.set('idPrograma', filtros.programa.toString());
+    }
+    
+    if (filtros.fechaInicio) {
+      params = params.set('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params = params.set('fechaFin', filtros.fechaFin);
+    }
+
+    return this.http.get<EstadisticasGlobalesAPI>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES, { params });
   }
 
   /**
@@ -362,6 +380,228 @@ export class EstadisticasService {
       ],
       ultimaActualizacion: new Date().toISOString()
     };
+  }
+
+  /**
+   * Exporta estadísticas a PDF usando el endpoint del backend (ACTUALIZADO)
+   * @param filtros Filtros a aplicar en la exportación
+   */
+  exportarPDF(filtros: FiltroEstadisticas = {}): Observable<Blob> {
+    let params = new HttpParams();
+    
+    if (filtros.proceso) {
+      params = params.set('proceso', filtros.proceso);
+    }
+    
+    if (filtros.programa) {
+      params = params.set('idPrograma', filtros.programa.toString());
+    }
+    
+    if (filtros.fechaInicio) {
+      params = params.set('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params = params.set('fechaFin', filtros.fechaFin);
+    }
+
+    console.log('📄 Exportando PDF con filtros:', filtros);
+    console.log('🔗 URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF);
+
+    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * Exporta estadísticas a Excel usando el endpoint del backend (ACTUALIZADO)
+   * @param filtros Filtros a aplicar en la exportación
+   */
+  exportarExcel(filtros: FiltroEstadisticas = {}): Observable<Blob> {
+    let params = new HttpParams();
+    
+    if (filtros.proceso) {
+      params = params.set('proceso', filtros.proceso);
+    }
+    
+    if (filtros.programa) {
+      params = params.set('idPrograma', filtros.programa.toString());
+    }
+    
+    if (filtros.fechaInicio) {
+      params = params.set('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params = params.set('fechaFin', filtros.fechaFin);
+    }
+
+    console.log('📊 Exportando Excel con filtros:', filtros);
+    console.log('🔗 URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL);
+
+    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * Exporta reporte de texto usando fetch (método recomendado)
+   * @param filtros Filtros a aplicar en la exportación
+   */
+  async exportarPDFConFetch(filtros: FiltroEstadisticas = {}): Promise<void> {
+    const params = new URLSearchParams();
+    
+    if (filtros.proceso) {
+      params.append('proceso', filtros.proceso);
+    }
+    
+    if (filtros.programa) {
+      params.append('idPrograma', filtros.programa.toString());
+    }
+    
+    if (filtros.fechaInicio) {
+      params.append('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params.append('fechaFin', filtros.fechaFin);
+    }
+
+    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
+    console.log('📄 Descargando reporte de texto con fetch:', url);
+    
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'estadisticas.txt'; // ✅ Cambiado a .txt
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      console.log('✅ Reporte de texto descargado exitosamente');
+    } catch (error) {
+      console.error('❌ Error al descargar reporte de texto:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Exporta reporte de texto usando window.open() (método alternativo)
+   * @param filtros Filtros a aplicar en la exportación
+   */
+  exportarPDFDirecto(filtros: FiltroEstadisticas = {}): void {
+    const params = new URLSearchParams();
+    
+    if (filtros.proceso) {
+      params.append('proceso', filtros.proceso);
+    }
+    
+    if (filtros.programa) {
+      params.append('idPrograma', filtros.programa.toString());
+    }
+    
+    if (filtros.fechaInicio) {
+      params.append('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params.append('fechaFin', filtros.fechaFin);
+    }
+
+    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
+    console.log('📄 Descargando reporte de texto directamente:', url);
+    
+    // Abrir en nueva ventana para descarga directa
+    window.open(url, '_blank');
+  }
+
+  /**
+   * Exporta Excel usando fetch (método recomendado)
+   * @param filtros Filtros a aplicar en la exportación
+   */
+  async exportarExcelConFetch(filtros: FiltroEstadisticas = {}): Promise<void> {
+    const params = new URLSearchParams();
+    
+    if (filtros.proceso) {
+      params.append('proceso', filtros.proceso);
+    }
+    
+    if (filtros.programa) {
+      params.append('idPrograma', filtros.programa.toString());
+    }
+    
+    if (filtros.fechaInicio) {
+      params.append('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params.append('fechaFin', filtros.fechaFin);
+    }
+
+    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
+    console.log('📊 Descargando Excel con fetch:', url);
+    
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'estadisticas.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      console.log('✅ Excel descargado exitosamente');
+    } catch (error) {
+      console.error('❌ Error al descargar Excel:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Exporta Excel usando window.open() (método alternativo)
+   * @param filtros Filtros a aplicar en la exportación
+   */
+  exportarExcelDirecto(filtros: FiltroEstadisticas = {}): void {
+    const params = new URLSearchParams();
+    
+    if (filtros.proceso) {
+      params.append('proceso', filtros.proceso);
+    }
+    
+    if (filtros.programa) {
+      params.append('idPrograma', filtros.programa.toString());
+    }
+    
+    if (filtros.fechaInicio) {
+      params.append('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params.append('fechaFin', filtros.fechaFin);
+    }
+
+    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
+    console.log('📊 Descargando Excel directamente:', url);
+    
+    // Abrir en nueva ventana para descarga directa
+    window.open(url, '_blank');
   }
 
   /**

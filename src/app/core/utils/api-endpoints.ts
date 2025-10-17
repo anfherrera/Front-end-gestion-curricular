@@ -135,7 +135,7 @@ export class ApiEndpoints {
     ESTADISTICAS: `${this.BASE_URL}/modulo-estadistico/estadisticas`,
     EXPORTAR: (formato: string) => `${this.BASE_URL}/modulo-estadistico/exportar/${formato}`,
     
-    // ===== ENDPOINTS DE ESTADÍSTICAS =====
+    // ===== ENDPOINTS DE ESTADÍSTICAS (ACTUALIZADOS) =====
     ESTADISTICAS_GLOBALES: `${this.BASE_URL}/estadisticas/globales`,
     ESTADISTICAS_PROCESO: (nombreProceso: string) => `${this.BASE_URL}/estadisticas/proceso/${nombreProceso}`,
     ESTADISTICAS_PROGRAMA: (idPrograma: number) => `${this.BASE_URL}/estadisticas/programa/${idPrograma}`,
@@ -144,7 +144,11 @@ export class ApiEndpoints {
     // ===== NUEVOS ENDPOINTS DEL BACKEND =====
     POR_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porPeriodoEstadoPrograma`,
     POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
-    POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`
+    POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`,
+    
+    // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
+    EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
+    EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`
   };
 
   // ===== DOCUMENTOS =====
