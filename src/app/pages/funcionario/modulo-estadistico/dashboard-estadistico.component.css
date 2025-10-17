@@ -363,6 +363,10 @@
   max-height: 600px;
 }
 
+.estadisticas-estado-section {
+  margin-bottom: 20px;
+}
+
 @media (max-width: 768px) {
   .nuevas-estadisticas-grid {
     grid-template-columns: 1fr;

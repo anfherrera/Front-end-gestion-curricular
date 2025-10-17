@@ -150,6 +150,7 @@ export class ApiEndpoints {
     TOTAL_ESTUDIANTES: `${this.BASE_URL}/estadisticas/total-estudiantes`,
     ESTUDIANTES_POR_PROGRAMA: `${this.BASE_URL}/estadisticas/estudiantes-por-programa`,
     ESTADISTICAS_POR_PROCESO: `${this.BASE_URL}/estadisticas/estadisticas-por-proceso`,
+    ESTADO_SOLICITUDES: `${this.BASE_URL}/estadisticas/estado-solicitudes`,
     
     // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,

@@ -13,6 +13,7 @@ import {
   TotalEstudiantesResponse,
   EstudiantesPorProgramaResponse,
   EstadisticasPorProcesoResponse,
+  EstadoSolicitudesResponse,
   EstadisticasCompletas
 } from '../models/estadisticas.model';
 
@@ -195,6 +196,15 @@ export class EstadisticasService {
   }
 
   /**
+   * Obtiene estadísticas por estado de solicitudes
+   * @returns Observable con la respuesta del endpoint de estado de solicitudes
+   */
+  getEstadoSolicitudes(): Observable<EstadoSolicitudesResponse> {
+    console.log('📊 Obteniendo estado de solicitudes desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
+    return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
+  }
+
+  /**
    * Obtiene todas las estadísticas de estudiantes en una sola llamada
    * @returns Observable con todas las estadísticas consolidadas
    */
@@ -205,6 +215,7 @@ export class EstadisticasService {
       let totalEstudiantes = 0;
       let estudiantesPorPrograma: { [programa: string]: number } = {};
       let estadisticasPorProceso: { [proceso: string]: any } = {};
+      let estadoSolicitudes: { [estado: string]: any } = {};
       let fechaConsulta = new Date().toISOString();
       let error: string | undefined;
 
@@ -212,11 +223,12 @@ export class EstadisticasService {
       const totalEstudiantes$ = this.getTotalEstudiantes();
       const estudiantesPorPrograma$ = this.getEstudiantesPorPrograma();
       const estadisticasPorProceso$ = this.getEstadisticasDetalladasPorProceso();
+      const estadoSolicitudes$ = this.getEstadoSolicitudes();
 
       // Combinar todas las respuestas
       const combined$ = new Observable(subscriber => {
         let completed = 0;
-        const total = 3;
+        const total = 4;
 
         totalEstudiantes$.subscribe({
           next: (response) => {
@@ -278,6 +290,26 @@ export class EstadisticasService {
             }
           }
         });
+
+        estadoSolicitudes$.subscribe({
+          next: (response) => {
+            estadoSolicitudes = response.estados;
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          },
+          error: (err) => {
+            console.error('Error obteniendo estado de solicitudes:', err);
+            error = 'Error al obtener estado de solicitudes';
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          }
+        });
       });
 
       combined$.subscribe({
@@ -286,6 +318,7 @@ export class EstadisticasService {
             totalEstudiantes,
             estudiantesPorPrograma,
             estadisticasPorProceso,
+            estadoSolicitudes,
             fechaConsulta,
             loading: false,
             error

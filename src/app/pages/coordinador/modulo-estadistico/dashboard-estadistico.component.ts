@@ -22,6 +22,7 @@ import { EstadisticasService } from '../../../core/services/estadisticas.service
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { EstudiantesPorProgramaComponent } from '../../../shared/components/estudiantes-por-programa/estudiantes-por-programa.component';
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
+import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { 
   ResumenCompleto, 
   EstadisticasProceso, 
@@ -51,7 +52,8 @@ Chart.register(...registerables);
     MatInputModule,
     LoadingSpinnerComponent,
     EstudiantesPorProgramaComponent,
-    EstadisticasPorProcesoComponent
+    EstadisticasPorProcesoComponent,
+    EstadisticasPorEstadoComponent
   ],
   templateUrl: './dashboard-estadistico.component.html',
   styleUrls: ['./dashboard-estadistico.component.css']

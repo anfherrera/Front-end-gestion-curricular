@@ -137,12 +137,34 @@ export interface ProgramaData {
 }
 
 /**
+ * Interfaz para información de un estado específico
+ */
+export interface EstadoInfo {
+  cantidad: number;
+  porcentaje: number;
+  descripcion: string;
+  color: string;
+  icono: string;
+}
+
+/**
+ * Interfaz para la respuesta del endpoint de estado de solicitudes
+ */
+export interface EstadoSolicitudesResponse {
+  totalSolicitudes: number;
+  estados: { [estado: string]: EstadoInfo };
+  fechaConsulta: string;
+  descripcion: string;
+}
+
+/**
  * Interfaz consolidada para todas las estadísticas
  */
 export interface EstadisticasCompletas {
   totalEstudiantes: number;
   estudiantesPorPrograma: { [programa: string]: number };
   estadisticasPorProceso: { [proceso: string]: any };
+  estadoSolicitudes: { [estado: string]: EstadoInfo };
   fechaConsulta: string;
   loading: boolean;
   error?: string;
