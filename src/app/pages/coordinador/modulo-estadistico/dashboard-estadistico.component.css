@@ -230,8 +230,84 @@
 }
 
 .kpi-info .kpi-icon {
-  background: linear-gradient(135deg, #17a2b8, #6f42c1);
+  background: linear-gradient(135deg, #17a2b8, #138496);
   color: white;
+}
+
+/* Estilos específicos para la tarjeta KPI de estudiantes */
+.kpi-info {
+  border-left-color: #17a2b8;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #17a2b8, #138496, #20c997);
+  animation: shimmer 2s infinite;
+}
+
+.kpi-info .kpi-icon {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+  color: white;
+  box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+  position: relative;
+}
+
+.kpi-info .kpi-icon::after {
+  content: '👥';
+  position: absolute;
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.kpi-info .kpi-value {
+  color: #17a2b8;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(23, 162, 184, 0.1);
+}
+
+.kpi-info .kpi-title {
+  color: #138496;
+  font-weight: 600;
+}
+
+.kpi-info .kpi-description {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Animación shimmer para la tarjeta de estudiantes */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Estado de carga para la tarjeta de estudiantes */
+.kpi-info.loading .kpi-value {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: loading-shimmer 1.5s infinite;
+  color: transparent;
+  border-radius: 4px;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
 }
 
 .kpi-secondary .kpi-icon {

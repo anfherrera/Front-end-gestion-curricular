@@ -9,7 +9,8 @@ import {
   ResumenCompleto,
   FiltroEstadisticas,
   FiltrosDashboard,
-  EstadisticasGlobalesAPI
+  EstadisticasGlobalesAPI,
+  TotalEstudiantesResponse
 } from '../models/estadisticas.model';
 
 @Injectable({
@@ -161,6 +162,15 @@ export class EstadisticasService {
     params = params.set('tipoProceso', tipoProceso);
     
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.POR_PROCESO, { params });
+  }
+
+  /**
+   * Obtiene el número total de estudiantes registrados en el sistema
+   * @returns Observable con la respuesta del endpoint de estudiantes
+   */
+  getTotalEstudiantes(): Observable<TotalEstudiantesResponse> {
+    console.log('📊 Obteniendo total de estudiantes desde:', ApiEndpoints.MODULO_ESTADISTICO.TOTAL_ESTUDIANTES);
+    return this.http.get<TotalEstudiantesResponse>(ApiEndpoints.MODULO_ESTADISTICO.TOTAL_ESTUDIANTES);
   }
 
   /**

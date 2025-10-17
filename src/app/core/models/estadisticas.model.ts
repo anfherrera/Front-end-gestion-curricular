@@ -99,3 +99,12 @@ export interface EstadisticasGlobalesAPI {
     [key: string]: number;
   };
 }
+
+/**
+ * Interfaz para la respuesta del endpoint de total de estudiantes
+ */
+export interface TotalEstudiantesResponse {
+  totalEstudiantes: number;
+  fechaConsulta: string;
+  descripcion: string;
+}

@@ -61,6 +61,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // Datos del dashboard
   resumenCompleto: ResumenCompleto | null = null;
   estadisticasProceso: EstadisticasProceso | null = null;
+  totalEstudiantes: number = 0;
+  loadingEstudiantes = false;
   
   // Filtros
   filtros: FiltroEstadisticas = {};
@@ -153,6 +155,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(subscription);
 
+    // Cargar total de estudiantes desde el endpoint específico
+    this.cargarTotalEstudiantes();
+
     // Comentamos la llamada real al backend por ahora
     /*
     const subscription = this.estadisticasService.getResumenCompleto().subscribe({
@@ -172,6 +177,47 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(subscription);
     */
+  }
+
+  /**
+   * Carga el total de estudiantes desde el endpoint específico
+   */
+  private cargarTotalEstudiantes(): void {
+    this.loadingEstudiantes = true;
+    
+    const subscription = this.estadisticasService.getTotalEstudiantes()
+      .subscribe({
+        next: (response) => {
+          console.log('✅ Total de estudiantes obtenido:', response);
+          this.totalEstudiantes = response.totalEstudiantes;
+          this.loadingEstudiantes = false;
+          
+          // Actualizar KPIs si ya están generados
+          if (this.kpis.length > 0) {
+            this.actualizarKPIEstudiantes();
+          }
+        },
+        error: (error) => {
+          console.error('❌ Error al obtener total de estudiantes:', error);
+          this.loadingEstudiantes = false;
+          
+          // Usar valor por defecto en caso de error
+          this.totalEstudiantes = 0;
+          this.mostrarError('Error al cargar el total de estudiantes');
+        }
+      });
+
+    this.subscriptions.push(subscription);
+  }
+
+  /**
+   * Actualiza el KPI de estudiantes con el valor real del endpoint
+   */
+  private actualizarKPIEstudiantes(): void {
+    const kpiEstudiantes = this.kpis.find(kpi => kpi.titulo === 'Estudiantes');
+    if (kpiEstudiantes) {
+      kpiEstudiantes.valor = this.totalEstudiantes;
+    }
   }
 
   /**
@@ -288,10 +334,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       },
       {
         titulo: 'Estudiantes',
-        valor: globales.totalEstudiantes,
+        valor: this.totalEstudiantes > 0 ? this.totalEstudiantes : globales.totalEstudiantes,
         icono: 'people',
         color: 'info',
-        descripcion: 'Total de estudiantes'
+        descripcion: 'Total de estudiantes registrados'
       },
       {
         titulo: 'Programas',

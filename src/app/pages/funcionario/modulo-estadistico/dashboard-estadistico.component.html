@@ -123,14 +123,17 @@
         Indicadores Clave (KPIs)
       </h2>
       <div class="kpis-grid">
-        <mat-card *ngFor="let kpi of kpis" class="kpi-card" [class]="'kpi-' + kpi.color">
+        <mat-card *ngFor="let kpi of kpis" class="kpi-card" [class]="'kpi-' + kpi.color" [class.loading]="kpi.titulo === 'Estudiantes' && loadingEstudiantes">
           <mat-card-content>
             <div class="kpi-content">
               <div class="kpi-icon">
                 <mat-icon>{{ kpi.icono }}</mat-icon>
               </div>
               <div class="kpi-data">
-                <h3 class="kpi-value">{{ kpi.valor | number }}</h3>
+                <h3 class="kpi-value">
+                  <span *ngIf="kpi.titulo === 'Estudiantes' && loadingEstudiantes">...</span>
+                  <span *ngIf="!(kpi.titulo === 'Estudiantes' && loadingEstudiantes)">{{ kpi.valor | number }}</span>
+                </h3>
                 <p class="kpi-title">{{ kpi.titulo }}</p>
                 <p *ngIf="kpi.descripcion" class="kpi-description">{{ kpi.descripcion }}</p>
               </div>
