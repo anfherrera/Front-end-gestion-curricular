@@ -10,7 +10,10 @@ import {
   FiltroEstadisticas,
   FiltrosDashboard,
   EstadisticasGlobalesAPI,
-  TotalEstudiantesResponse
+  TotalEstudiantesResponse,
+  EstudiantesPorProgramaResponse,
+  EstadisticasPorProcesoResponse,
+  EstadisticasCompletas
 } from '../models/estadisticas.model';
 
 @Injectable({
@@ -171,6 +174,130 @@ export class EstadisticasService {
   getTotalEstudiantes(): Observable<TotalEstudiantesResponse> {
     console.log('📊 Obteniendo total de estudiantes desde:', ApiEndpoints.MODULO_ESTADISTICO.TOTAL_ESTUDIANTES);
     return this.http.get<TotalEstudiantesResponse>(ApiEndpoints.MODULO_ESTADISTICO.TOTAL_ESTUDIANTES);
+  }
+
+  /**
+   * Obtiene la distribución de estudiantes por programa académico
+   * @returns Observable con la respuesta del endpoint de estudiantes por programa
+   */
+  getEstudiantesPorPrograma(): Observable<EstudiantesPorProgramaResponse> {
+    console.log('📊 Obteniendo estudiantes por programa desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTUDIANTES_POR_PROGRAMA);
+    return this.http.get<EstudiantesPorProgramaResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTUDIANTES_POR_PROGRAMA);
+  }
+
+  /**
+   * Obtiene estadísticas detalladas por proceso académico
+   * @returns Observable con la respuesta del endpoint de estadísticas por proceso
+   */
+  getEstadisticasDetalladasPorProceso(): Observable<EstadisticasPorProcesoResponse> {
+    console.log('📊 Obteniendo estadísticas por proceso desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO);
+    return this.http.get<EstadisticasPorProcesoResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO);
+  }
+
+  /**
+   * Obtiene todas las estadísticas de estudiantes en una sola llamada
+   * @returns Observable con todas las estadísticas consolidadas
+   */
+  getEstadisticasCompletas(): Observable<EstadisticasCompletas> {
+    console.log('📊 Obteniendo estadísticas completas...');
+    
+    return new Observable(observer => {
+      let totalEstudiantes = 0;
+      let estudiantesPorPrograma: { [programa: string]: number } = {};
+      let estadisticasPorProceso: { [proceso: string]: any } = {};
+      let fechaConsulta = new Date().toISOString();
+      let error: string | undefined;
+
+      // Ejecutar todas las llamadas en paralelo
+      const totalEstudiantes$ = this.getTotalEstudiantes();
+      const estudiantesPorPrograma$ = this.getEstudiantesPorPrograma();
+      const estadisticasPorProceso$ = this.getEstadisticasDetalladasPorProceso();
+
+      // Combinar todas las respuestas
+      const combined$ = new Observable(subscriber => {
+        let completed = 0;
+        const total = 3;
+
+        totalEstudiantes$.subscribe({
+          next: (response) => {
+            totalEstudiantes = response.totalEstudiantes;
+            fechaConsulta = response.fechaConsulta;
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          },
+          error: (err) => {
+            console.error('Error obteniendo total de estudiantes:', err);
+            error = 'Error al obtener total de estudiantes';
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          }
+        });
+
+        estudiantesPorPrograma$.subscribe({
+          next: (response) => {
+            estudiantesPorPrograma = response.estudiantesPorPrograma;
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          },
+          error: (err) => {
+            console.error('Error obteniendo estudiantes por programa:', err);
+            error = 'Error al obtener estudiantes por programa';
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          }
+        });
+
+        estadisticasPorProceso$.subscribe({
+          next: (response) => {
+            estadisticasPorProceso = response.estadisticasPorProceso;
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          },
+          error: (err) => {
+            console.error('Error obteniendo estadísticas por proceso:', err);
+            error = 'Error al obtener estadísticas por proceso';
+            completed++;
+            if (completed === total) {
+              subscriber.next(true);
+              subscriber.complete();
+            }
+          }
+        });
+      });
+
+      combined$.subscribe({
+        next: () => {
+          const resultado: EstadisticasCompletas = {
+            totalEstudiantes,
+            estudiantesPorPrograma,
+            estadisticasPorProceso,
+            fechaConsulta,
+            loading: false,
+            error
+          };
+          observer.next(resultado);
+          observer.complete();
+        },
+        error: (err) => {
+          observer.error(err);
+        }
+      });
+    });
   }
 
   /**

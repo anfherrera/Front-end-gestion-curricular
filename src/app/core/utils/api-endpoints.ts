@@ -146,8 +146,10 @@ export class ApiEndpoints {
     POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
     POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`,
     
-    // ===== ENDPOINT DE ESTUDIANTES =====
-    TOTAL_ESTUDIANTES: `${this.BASE_URL}/api/estadisticas/total-estudiantes`,
+    // ===== ENDPOINTS DE ESTUDIANTES =====
+    TOTAL_ESTUDIANTES: `${this.BASE_URL}/estadisticas/total-estudiantes`,
+    ESTUDIANTES_POR_PROGRAMA: `${this.BASE_URL}/estadisticas/estudiantes-por-programa`,
+    ESTADISTICAS_POR_PROCESO: `${this.BASE_URL}/estadisticas/estadisticas-por-proceso`,
     
     // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,

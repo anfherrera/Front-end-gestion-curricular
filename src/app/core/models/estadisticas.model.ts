@@ -108,3 +108,42 @@ export interface TotalEstudiantesResponse {
   fechaConsulta: string;
   descripcion: string;
 }
+
+/**
+ * Interfaz para la respuesta del endpoint de estudiantes por programa
+ */
+export interface EstudiantesPorProgramaResponse {
+  estudiantesPorPrograma: { [programa: string]: number };
+  fechaConsulta: string;
+  descripcion: string;
+}
+
+/**
+ * Interfaz para la respuesta del endpoint de estadísticas por proceso
+ */
+export interface EstadisticasPorProcesoResponse {
+  estadisticasPorProceso: { [proceso: string]: any };
+  fechaConsulta: string;
+  descripcion: string;
+}
+
+/**
+ * Interfaz para datos de programa en el dashboard
+ */
+export interface ProgramaData {
+  nombre: string;
+  cantidad: number;
+  porcentaje?: number;
+}
+
+/**
+ * Interfaz consolidada para todas las estadísticas
+ */
+export interface EstadisticasCompletas {
+  totalEstudiantes: number;
+  estudiantesPorPrograma: { [programa: string]: number };
+  estadisticasPorProceso: { [proceso: string]: any };
+  fechaConsulta: string;
+  loading: boolean;
+  error?: string;
+}

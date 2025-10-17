@@ -349,6 +349,27 @@
   margin: 0;
 }
 
+/* Nuevas Estadísticas Section */
+.nuevas-estadisticas-section {
+  margin-bottom: 40px;
+}
+
+.nuevas-estadisticas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: start;
+  max-height: 600px;
+}
+
+@media (max-width: 768px) {
+  .nuevas-estadisticas-grid {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+}
+
 /* Charts Section */
 .charts-section {
   margin-bottom: 40px;

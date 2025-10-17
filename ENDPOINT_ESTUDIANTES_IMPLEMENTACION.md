@@ -2,7 +2,7 @@
 
 ## 🎯 Resumen de la Implementación
 
-Se ha implementado exitosamente la integración del endpoint `GET /api/estadisticas/total-estudiantes` en el sistema de gestión curricular. La implementación incluye:
+Se ha implementado exitosamente la integración del endpoint `GET http://localhost:5000/api/estadisticas/total-estudiantes` en el sistema de gestión curricular. La implementación incluye:
 
 ### ✅ Componentes Implementados
 
@@ -44,10 +44,16 @@ this.estadisticasService.getTotalEstudiantes().subscribe({
 
 ```typescript
 interface TotalEstudiantesResponse {
-  totalEstudiantes: number;        // Ej: 115
-  fechaConsulta: string;           // Ej: "2024-01-15T10:30:00.000Z"
+  totalEstudiantes: number;        // Ej: 2
+  fechaConsulta: string;           // Ej: "2025-10-17T18:55:51.498+00:00"
   descripcion: string;             // Ej: "Total de estudiantes registrados en el sistema"
 }
+```
+
+### URL del Endpoint
+
+```
+GET http://localhost:5000/api/estadisticas/total-estudiantes
 ```
 
 ## 🎨 Características Visuales
@@ -178,6 +184,37 @@ ng serve
 # Navegar a los dashboards
 # - /funcionario/modulo-estadistico
 # - /coordinador/modulo-estadistico
+```
+
+### Script de Prueba del Endpoint
+
+Se ha creado un script de prueba (`test-endpoint-estudiantes.js`) que puedes usar en la consola del navegador:
+
+```javascript
+// Cargar el script en la consola del navegador
+// Luego ejecutar:
+
+// Prueba básica
+probarEndpointEstudiantes();
+
+// Prueba múltiple
+probarEndpointMultiple(3);
+
+// Verificar CORS
+verificarCORS();
+
+// Ejecutar todas las pruebas
+ejecutarTodasLasPruebas();
+```
+
+### Prueba Manual en la Consola
+
+```javascript
+// Prueba directa del endpoint
+fetch('http://localhost:5000/api/estadisticas/total-estudiantes')
+  .then(response => response.json())
+  .then(data => console.log('Datos:', data))
+  .catch(error => console.error('Error:', error));
 ```
 
 ## 📋 Checklist de Implementación
