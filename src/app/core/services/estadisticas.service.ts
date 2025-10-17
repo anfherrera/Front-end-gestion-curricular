@@ -195,6 +195,53 @@ export class EstadisticasService {
     return this.http.get<EstadisticasPorProcesoResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO);
   }
 
+  // ===== NUEVOS MÉTODOS PARA LOS 8 ENDPOINTS =====
+
+  /**
+   * Obtiene resumen por proceso con estilos
+   * @returns Observable con la respuesta del endpoint de resumen por proceso
+   */
+  getResumenPorProceso(): Observable<any> {
+    console.log('📊 Obteniendo resumen por proceso desde:', ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_POR_PROCESO);
+    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_POR_PROCESO);
+  }
+
+  /**
+   * Obtiene configuración de estilos
+   * @returns Observable con la respuesta del endpoint de configuración de estilos
+   */
+  getConfiguracionEstilos(): Observable<any> {
+    console.log('🎨 Obteniendo configuración de estilos desde:', ApiEndpoints.MODULO_ESTADISTICO.CONFIGURACION_ESTILOS);
+    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.CONFIGURACION_ESTILOS);
+  }
+
+  /**
+   * Obtiene estadísticas por período
+   * @returns Observable con la respuesta del endpoint de estadísticas por período
+   */
+  getEstadisticasPorPeriodo(): Observable<any> {
+    console.log('📅 Obteniendo estadísticas por período desde:', ApiEndpoints.MODULO_ESTADISTICO.POR_PERIODO);
+    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.POR_PERIODO);
+  }
+
+  /**
+   * Obtiene estadísticas por programa académico
+   * @returns Observable con la respuesta del endpoint de estadísticas por programa
+   */
+  getEstadisticasPorPrograma(): Observable<any> {
+    console.log('📚 Obteniendo estadísticas por programa desde:', ApiEndpoints.MODULO_ESTADISTICO.POR_PROGRAMA);
+    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.POR_PROGRAMA);
+  }
+
+  /**
+   * Obtiene tiempo de procesamiento
+   * @returns Observable con la respuesta del endpoint de tiempo de procesamiento
+   */
+  getTiempoProcesamiento(): Observable<any> {
+    console.log('⏱️ Obteniendo tiempo de procesamiento desde:', ApiEndpoints.MODULO_ESTADISTICO.TIEMPO_PROCESAMIENTO);
+    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.TIEMPO_PROCESAMIENTO);
+  }
+
   /**
    * Obtiene estadísticas por estado de solicitudes
    * @returns Observable con la respuesta del endpoint de estado de solicitudes

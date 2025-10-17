@@ -146,11 +146,33 @@ export class ApiEndpoints {
     POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
     POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`,
     
-    // ===== ENDPOINTS DE ESTUDIANTES =====
+    // ===== ENDPOINTS DE ESTADÍSTICAS COMPLETOS (8 ENDPOINTS) =====
+    // 1. Total de Estudiantes
     TOTAL_ESTUDIANTES: `${this.BASE_URL}/estadisticas/total-estudiantes`,
+    
+    // 2. Estudiantes por Programa
     ESTUDIANTES_POR_PROGRAMA: `${this.BASE_URL}/estadisticas/estudiantes-por-programa`,
+    
+    // 3. Estadísticas por Proceso
     ESTADISTICAS_POR_PROCESO: `${this.BASE_URL}/estadisticas/estadisticas-por-proceso`,
+    
+    // 4. Resumen por Proceso (Con Estilos)
+    RESUMEN_POR_PROCESO: `${this.BASE_URL}/estadisticas/resumen-por-proceso`,
+    
+    // 5. Configuración de Estilos
+    CONFIGURACION_ESTILOS: `${this.BASE_URL}/estadisticas/configuracion-estilos`,
+    
+    // 6. Estadísticas por Estado de Solicitudes
     ESTADO_SOLICITUDES: `${this.BASE_URL}/estadisticas/estado-solicitudes`,
+    
+    // 7. Estadísticas por Período/Mes
+    POR_PERIODO: `${this.BASE_URL}/estadisticas/por-periodo`,
+    
+    // 8. Estadísticas por Programa Académico
+    POR_PROGRAMA: `${this.BASE_URL}/estadisticas/por-programa`,
+    
+    // 9. Tiempo Promedio de Procesamiento
+    TIEMPO_PROCESAMIENTO: `${this.BASE_URL}/estadisticas/tiempo-procesamiento`,
     
     // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,

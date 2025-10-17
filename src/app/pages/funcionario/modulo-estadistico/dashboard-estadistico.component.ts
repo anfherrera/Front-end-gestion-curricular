@@ -70,6 +70,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   totalEstudiantes: number = 0;
   loadingEstudiantes = false;
   
+  // Nuevos datos de endpoints faltantes
+  tiempoProcesamientoData: any = null;
+  resumenPorProcesoData: any = null;
+  estadisticasPorProgramaData: any = null;
+  
   // Filtros
   filtros: FiltroEstadisticas = {};
   filtrosForm: FormGroup | null = null;
@@ -163,6 +168,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     // Cargar total de estudiantes desde el endpoint específico
     this.cargarTotalEstudiantes();
+    
+    // Cargar nuevos endpoints faltantes
+    this.cargarTiempoProcesamiento();
+    this.cargarResumenPorProceso();
+    this.cargarEstadisticasPorPrograma();
 
     // Comentamos la llamada real al backend por ahora
     /*
@@ -299,6 +309,114 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       estadisticasPorPrograma: [],
       ultimaActualizacion: new Date().toISOString()
     };
+  }
+
+  /**
+   * Carga datos de tiempo de procesamiento
+   */
+  private cargarTiempoProcesamiento(): void {
+    console.log('🔄 Cargando tiempo de procesamiento...');
+    
+    const subscription = this.estadisticasService.getTiempoProcesamiento()
+      .subscribe({
+        next: (data: any) => {
+          console.log('✅ Tiempo de procesamiento cargado:', data);
+          this.tiempoProcesamientoData = data;
+        },
+        error: (error: any) => {
+          console.error('❌ Error cargando tiempo de procesamiento:', error);
+          // No mostrar error al usuario, solo log
+        }
+      });
+
+    this.subscriptions.push(subscription);
+  }
+
+  /**
+   * Carga datos de resumen por proceso
+   */
+  private cargarResumenPorProceso(): void {
+    console.log('🔄 Cargando resumen por proceso...');
+    
+    const subscription = this.estadisticasService.getResumenPorProceso()
+      .subscribe({
+        next: (data: any) => {
+          console.log('✅ Resumen por proceso cargado:', data);
+          this.resumenPorProcesoData = data;
+        },
+        error: (error: any) => {
+          console.error('❌ Error cargando resumen por proceso:', error);
+          // No mostrar error al usuario, solo log
+        }
+      });
+
+    this.subscriptions.push(subscription);
+  }
+
+  /**
+   * Carga datos de estadísticas por programa
+   */
+  private cargarEstadisticasPorPrograma(): void {
+    console.log('🔄 Cargando estadísticas por programa...');
+    
+    const subscription = this.estadisticasService.getEstadisticasPorPrograma()
+      .subscribe({
+        next: (data: any) => {
+          console.log('✅ Estadísticas por programa cargadas:', data);
+          this.estadisticasPorProgramaData = data;
+        },
+        error: (error: any) => {
+          console.error('❌ Error cargando estadísticas por programa:', error);
+          // No mostrar error al usuario, solo log
+        }
+      });
+
+    this.subscriptions.push(subscription);
+  }
+
+  // Métodos helper para manejar los datos del tiempo de procesamiento
+  getTiempoProcesosKeys(): string[] {
+    return this.tiempoProcesamientoData?.porProceso ? Object.keys(this.tiempoProcesamientoData.porProceso) : [];
+  }
+
+  getTiempoProcesoColor(proceso: string): string {
+    return this.tiempoProcesamientoData?.porProceso?.[proceso]?.color || '#17a2b8';
+  }
+
+  getTiempoProcesoIcon(proceso: string): string {
+    const icono = this.tiempoProcesamientoData?.porProceso?.[proceso]?.icono || 'schedule';
+    return this.convertirIconoFA(icono);
+  }
+
+  getTiempoProcesoValue(proceso: string, campo: string): number {
+    return this.tiempoProcesamientoData?.porProceso?.[proceso]?.[campo] || 0;
+  }
+
+  getTiempoPromedioGeneral(): number {
+    if (!this.tiempoProcesamientoData?.analisisEficiencia?.tiempoPromedioGeneral) return 0;
+    return Math.round(this.tiempoProcesamientoData.analisisEficiencia.tiempoPromedioGeneral * 10) / 10;
+  }
+
+  getEficienciaGeneral(): number {
+    if (!this.tiempoProcesamientoData?.analisisEficiencia?.eficienciaGeneral) return 0;
+    return Math.round(this.tiempoProcesamientoData.analisisEficiencia.eficienciaGeneral * 10) / 10;
+  }
+
+  convertirIconoFA(iconoFA: string): string {
+    const iconMap: { [key: string]: string } = {
+      'fas fa-check-circle': 'check_circle',
+      'fas fa-paper-plane': 'send',
+      'fas fa-times-circle': 'cancel',
+      'fas fa-clock': 'schedule',
+      'fas fa-school': 'school',
+      'fas fa-graduation-cap': 'school',
+      'fas fa-book': 'book',
+      'fas fa-laptop-code': 'computer',
+      'fas fa-cogs': 'settings',
+      'fas fa-tasks': 'assignment',
+      'fas fa-chart-line': 'trending_up'
+    };
+    return iconMap[iconoFA] || 'help_outline';
   }
 
   /**
