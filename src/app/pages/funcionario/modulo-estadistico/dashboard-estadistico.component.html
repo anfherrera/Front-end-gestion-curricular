@@ -140,37 +140,6 @@
             </div>
           </mat-card-content>
         </mat-card>
-        
-        <!-- NUEVOS KPIs - Tiempo Promedio y Eficiencia -->
-        <mat-card class="kpi-card tiempo-promedio" *ngIf="tiempoProcesamientoData">
-          <mat-card-content>
-            <div class="kpi-content">
-              <div class="kpi-icon">
-                <mat-icon>schedule</mat-icon>
-              </div>
-              <div class="kpi-data">
-                <h3 class="kpi-value">{{ getTiempoPromedioGeneral() }} días</h3>
-                <p class="kpi-title">Tiempo Promedio</p>
-                <p class="kpi-description">Tiempo promedio de procesamiento</p>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        
-        <mat-card class="kpi-card eficiencia" *ngIf="tiempoProcesamientoData">
-          <mat-card-content>
-            <div class="kpi-content">
-              <div class="kpi-icon">
-                <mat-icon>trending_up</mat-icon>
-              </div>
-              <div class="kpi-data">
-                <h3 class="kpi-value">{{ getEficienciaGeneral() }}%</h3>
-                <p class="kpi-title">Eficiencia</p>
-                <p class="kpi-description">Eficiencia general del sistema</p>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
       </div>
     </div>
 
@@ -193,40 +162,6 @@
         <div class="estadisticas-estado-section">
           <app-estadisticas-por-estado></app-estadisticas-por-estado>
         </div>
-    </div>
-
-    <!-- NUEVA SECCIÓN - Tiempo de Procesamiento -->
-    <div class="estadistica-card tiempo-procesamiento">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>schedule</mat-icon>
-            ⏱️ Tiempo de Procesamiento
-          </mat-card-title>
-          <mat-card-subtitle>Análisis de eficiencia por proceso</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="tiempo-grid" *ngIf="tiempoProcesamientoData">
-            <div *ngFor="let proceso of getTiempoProcesosKeys()" class="tiempo-card" 
-                 [style.borderLeftColor]="getTiempoProcesoColor(proceso)">
-              <div class="tiempo-header">
-                <mat-icon [style.color]="getTiempoProcesoColor(proceso)">
-                  {{ getTiempoProcesoIcon(proceso) }}
-                </mat-icon>
-                <h4>{{ proceso }}</h4>
-              </div>
-              <div class="tiempo-metrics">
-                <div class="tiempo-promedio">{{ getTiempoProcesoValue(proceso, 'tiempoPromedio') }} días</div>
-                <div class="tiempo-eficiencia">Eficiencia: {{ getTiempoProcesoValue(proceso, 'eficiencia') }}%</div>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="!tiempoProcesamientoData" class="loading-placeholder">
-            <mat-spinner diameter="30"></mat-spinner>
-            <p>Cargando datos de tiempo de procesamiento...</p>
-          </div>
-        </mat-card-content>
-      </mat-card>
     </div>
 
     <!-- Charts Section -->
