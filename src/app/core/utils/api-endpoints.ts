@@ -152,6 +152,9 @@ export class ApiEndpoints {
     ESTADISTICAS_POR_PROCESO: `${this.BASE_URL}/estadisticas/estadisticas-por-proceso`,
     ESTADO_SOLICITUDES: `${this.BASE_URL}/estadisticas/estado-solicitudes`,
     
+    // ===== NUEVO ENDPOINT - TENDENCIAS Y COMPARATIVAS =====
+    TENDENCIAS_COMPARATIVAS: `${this.BASE_URL}/estadisticas/tendencias-comparativas`,
+    
     // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
     EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`

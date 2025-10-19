@@ -14,6 +14,7 @@ import {
   EstudiantesPorProgramaResponse,
   EstadisticasPorProcesoResponse,
   EstadoSolicitudesResponse,
+  TendenciasComparativasResponse,
   EstadisticasCompletas
 } from '../models/estadisticas.model';
 
@@ -203,6 +204,15 @@ export class EstadisticasService {
   getEstadoSolicitudes(): Observable<EstadoSolicitudesResponse> {
     console.log('📊 Obteniendo estado de solicitudes desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
     return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
+  }
+
+  /**
+   * Obtiene tendencias y comparativas estratégicas
+   * @returns Observable con la respuesta del endpoint de tendencias y comparativas
+   */
+  getTendenciasComparativas(): Observable<TendenciasComparativasResponse> {
+    console.log('📈 Obteniendo tendencias y comparativas desde:', ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
+    return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
   }
 
   /**

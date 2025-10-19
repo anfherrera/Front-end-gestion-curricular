@@ -23,6 +23,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 import { EstudiantesPorProgramaComponent } from '../../../shared/components/estudiantes-por-programa/estudiantes-por-programa.component';
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
 import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
+import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
 import { 
   ResumenCompleto, 
   EstadisticasProceso, 
@@ -53,7 +54,8 @@ Chart.register(...registerables);
     LoadingSpinnerComponent,
     EstudiantesPorProgramaComponent,
     EstadisticasPorProcesoComponent,
-    EstadisticasPorEstadoComponent
+    EstadisticasPorEstadoComponent,
+    TendenciasComparativasComponent
   ],
   templateUrl: './dashboard-estadistico.component.html',
   styleUrls: ['./dashboard-estadistico.component.css']

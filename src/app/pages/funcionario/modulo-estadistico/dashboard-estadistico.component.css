@@ -588,6 +588,18 @@
   border-radius: 8px;
 }
 
+/* ===== ESTILOS PARA TENDENCIAS Y COMPARATIVAS ===== */
+
+.tendencias-comparativas-section {
+  margin: 30px 0;
+  padding: 0 20px;
+}
+
+.tendencias-comparativas-section app-tendencias-comparativas {
+  display: block;
+  width: 100%;
+}
+
 /* Snackbar Styles */
 .success-snackbar {
   background-color: #4caf50 !important;

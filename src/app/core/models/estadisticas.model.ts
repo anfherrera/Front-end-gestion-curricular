@@ -157,6 +157,51 @@ export interface EstadoSolicitudesResponse {
   descripcion: string;
 }
 
+// ===== INTERFACES PARA TENDENCIAS Y COMPARATIVAS =====
+
+export interface CrecimientoTemporal {
+  tendenciaSolicitudes: string;
+  crecimientoSolicitudes: number;
+  tendenciaEstudiantes: string;
+  crecimientoEstudiantes: number;
+  mesesAnalizados: number;
+}
+
+export interface ComparativaProcesos {
+  procesoMasDemandado: string;
+  procesoMasEficiente: string | null;
+  eficienciaMasAlta: number;
+  demandaMasAlta: number;
+  solicitudesPorProceso: { [proceso: string]: number };
+  aprobadasPorProceso: { [proceso: string]: number };
+}
+
+export interface ComparativaProgramas {
+  programaMasActivo: string;
+  programaConMasEstudiantes: string;
+  maxSolicitudes: number;
+  maxEstudiantes: number;
+  solicitudesPorPrograma: { [programa: string]: number };
+  estudiantesPorPrograma: { [programa: string]: number };
+}
+
+export interface ResumenEstrategico {
+  totalSolicitudes: number;
+  totalEstudiantes: number;
+  totalProgramas: number;
+  periodoAnalizado: string;
+  recomendacionEstrategica: string;
+}
+
+export interface TendenciasComparativasResponse {
+  fechaConsulta: string;
+  descripcion: string;
+  crecimientoTemporal: CrecimientoTemporal;
+  comparativaProcesos: ComparativaProcesos;
+  comparativaProgramas: ComparativaProgramas;
+  resumenEstrategico: ResumenEstrategico;
+}
+
 /**
  * Interfaz consolidada para todas las estadísticas
  */
