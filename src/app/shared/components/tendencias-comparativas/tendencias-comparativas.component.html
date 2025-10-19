@@ -7,6 +7,13 @@
         📈 Tendencias y Comparativas
       </mat-card-title>
       <mat-card-subtitle>Análisis estratégico de tendencias y comparativas</mat-card-subtitle>
+      
+      <!-- Botón de debug -->
+      <div class="debug-actions" *ngIf="data">
+        <button mat-icon-button (click)="verificarDatos()" matTooltip="Verificar datos en consola">
+          <mat-icon>bug_report</mat-icon>
+        </button>
+      </div>
     </mat-card-header>
     
     <mat-card-content>

@@ -37,6 +37,22 @@
   margin: 8px 0 0 0;
 }
 
+/* Debug Actions */
+.debug-actions {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.debug-actions button {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.debug-actions button:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Loading y Error States */
 .loading-container, .error-container {
   display: flex;

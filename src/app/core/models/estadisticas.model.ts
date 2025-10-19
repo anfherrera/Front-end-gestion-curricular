@@ -3,6 +3,7 @@ export interface EstadisticasGlobales {
   solicitudesAprobadas: number;
   solicitudesRechazadas: number;
   solicitudesEnProceso: number;
+  solicitudesEnviadas?: number;
   totalEstudiantes: number;
   totalProgramas: number;
 }

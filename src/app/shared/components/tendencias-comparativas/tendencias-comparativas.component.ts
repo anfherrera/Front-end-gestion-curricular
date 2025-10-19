@@ -58,6 +58,8 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           console.log('✅ Tendencias y comparativas cargadas:', response);
+          console.log('🔍 Comparativa Programas:', response.comparativaProgramas);
+          console.log('🔍 Resumen Estratégico:', response.resumenEstrategico);
           this.data = response;
           this.loading = false;
           this.mostrarExito('Tendencias y comparativas cargadas correctamente');
@@ -117,6 +119,32 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy {
    */
   getObjectKeys(obj: any): string[] {
     return obj ? Object.keys(obj) : [];
+  }
+
+  /**
+   * Verifica si los datos están disponibles para renderizar
+   */
+  verificarDatos(): void {
+    if (this.data) {
+      console.log('🔍 VERIFICACIÓN DE DATOS:');
+      console.log('  - data existe:', !!this.data);
+      console.log('  - comparativaProgramas existe:', !!this.data.comparativaProgramas);
+      console.log('  - resumenEstrategico existe:', !!this.data.resumenEstrategico);
+      
+      if (this.data.comparativaProgramas) {
+        console.log('  - comparativaProgramas keys:', Object.keys(this.data.comparativaProgramas));
+        console.log('  - programaMasActivo:', this.data.comparativaProgramas.programaMasActivo);
+        console.log('  - solicitudesPorPrograma keys:', Object.keys(this.data.comparativaProgramas.solicitudesPorPrograma || {}));
+      }
+      
+      if (this.data.resumenEstrategico) {
+        console.log('  - resumenEstrategico keys:', Object.keys(this.data.resumenEstrategico));
+        console.log('  - totalSolicitudes:', this.data.resumenEstrategico.totalSolicitudes);
+        console.log('  - recomendacionEstrategica:', this.data.resumenEstrategico.recomendacionEstrategica);
+      }
+    } else {
+      console.log('⚠️ No hay datos disponibles para verificar');
+    }
   }
 
   /**
