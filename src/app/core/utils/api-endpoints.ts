@@ -152,6 +152,10 @@ export class ApiEndpoints {
     ESTADISTICAS_POR_PROCESO: `${this.BASE_URL}/estadisticas/estadisticas-por-proceso`,
     ESTADO_SOLICITUDES: `${this.BASE_URL}/estadisticas/estado-solicitudes`,
     
+    // ===== ENDPOINTS MEJORADOS =====
+    ESTADISTICAS_POR_PROGRAMA_MEJORADAS: `${this.BASE_URL}/estadisticas/por-programa`,
+    ESTADISTICAS_POR_PERIODO_MEJORADAS: `${this.BASE_URL}/estadisticas/por-periodo`,
+    
     // ===== NUEVO ENDPOINT - TENDENCIAS Y COMPARATIVAS =====
     TENDENCIAS_COMPARATIVAS: `${this.BASE_URL}/estadisticas/tendencias-comparativas`,
     

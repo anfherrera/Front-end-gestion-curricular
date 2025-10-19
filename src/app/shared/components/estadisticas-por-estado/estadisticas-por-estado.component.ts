@@ -77,6 +77,37 @@ import { Subscription } from 'rxjs';
             </div>
           </div>
         </div>
+
+        <!-- NUEVA SECCIÓN: Análisis Mejorado -->
+        <div *ngIf="!loading && !error && data?.analisis" class="analisis-section">
+          <h4 class="analisis-title">
+            <mat-icon>analytics</mat-icon>
+            📊 Análisis de Rendimiento
+          </h4>
+          
+          <div class="analisis-grid">
+            <div class="analisis-item">
+              <div class="analisis-label">Solicitudes Pendientes</div>
+              <div class="analisis-valor">{{ data?.analisis?.solicitudesPendientes || 0 }}</div>
+            </div>
+            
+            <div class="analisis-item">
+              <div class="analisis-label">Solicitudes Completadas</div>
+              <div class="analisis-valor">{{ data?.analisis?.solicitudesCompletadas || 0 }}</div>
+            </div>
+            
+            <div class="analisis-item">
+              <div class="analisis-label">Tasa de Resolución</div>
+              <div class="analisis-valor">{{ formatPorcentaje(data?.analisis?.tasaResolucion || 0) }}</div>
+            </div>
+            
+            <div class="analisis-item">
+              <div class="analisis-label">Estado Más Común</div>
+              <div class="analisis-valor">{{ data?.analisis?.estadoMasComun || 'N/A' }}</div>
+            </div>
+          </div>
+        </div>
+
       </mat-card-content>
       
       <mat-card-actions *ngIf="!loading && !error && estadosData.length > 0">
@@ -307,6 +338,52 @@ import { Subscription } from 'rxjs';
       margin-left: auto;
     }
 
+    /* ===== NUEVOS ESTILOS PARA SECCIONES MEJORADAS ===== */
+    
+    .analisis-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    .analisis-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #00138C;
+    }
+
+    .analisis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .analisis-item {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      padding: 16px;
+      border-radius: 10px;
+      border-left: 4px solid #00138C;
+      text-align: center;
+    }
+
+    .analisis-label {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .analisis-valor {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00138C;
+    }
+
+
     @media (max-width: 768px) {
       .estados-grid {
         grid-template-columns: 1fr;
@@ -319,10 +396,15 @@ import { Subscription } from 'rxjs';
       .estado-cantidad {
         font-size: 1.5rem;
       }
+
+      .analisis-grid {
+        grid-template-columns: 1fr;
+      }
     }
   `]
 })
 export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
+  data: EstadoSolicitudesResponse | null = null;
   estadosData: Array<{nombre: string} & EstadoInfo> = [];
   totalSolicitudes = 0;
   fechaConsulta = '';
@@ -340,11 +422,12 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = false;
 
-    const sub = this.estadisticasService.getEstadoSolicitudes()
+    const sub = this.estadisticasService.getEstadoSolicitudesMejorado()
       .subscribe({
         next: (response: EstadoSolicitudesResponse) => {
-          console.log('✅ Estado de solicitudes obtenido:', response);
+          console.log('✅ Estado de solicitudes mejorado obtenido:', response);
           
+          this.data = response;
           this.fechaConsulta = response.fechaConsulta;
           this.totalSolicitudes = response.totalSolicitudes;
           
@@ -383,6 +466,21 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
     };
     
     return iconMap[icono] || 'help_outline';
+  }
+
+
+  /**
+   * Obtiene las claves de un objeto para iterar
+   */
+  getObjectKeys(obj: any): string[] {
+    return obj ? Object.keys(obj) : [];
+  }
+
+  /**
+   * Formatea un número como porcentaje
+   */
+  formatPorcentaje(valor: number): string {
+    return `${valor.toFixed(1)}%`;
   }
 
   ngOnDestroy(): void {

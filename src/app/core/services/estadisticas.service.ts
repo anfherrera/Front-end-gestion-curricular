@@ -15,7 +15,9 @@ import {
   EstadisticasPorProcesoResponse,
   EstadoSolicitudesResponse,
   TendenciasComparativasResponse,
-  EstadisticasCompletas
+  EstadisticasCompletas,
+  EstadisticasPorProgramaMejoradasResponse,
+  EstadisticasPorPeriodoMejoradasResponse
 } from '../models/estadisticas.model';
 
 @Injectable({
@@ -192,8 +194,10 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint de estadísticas por proceso
    */
   getEstadisticasDetalladasPorProceso(): Observable<EstadisticasPorProcesoResponse> {
-    console.log('📊 Obteniendo estadísticas por proceso desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO);
-    return this.http.get<EstadisticasPorProcesoResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO);
+    // 🔧 Agregar timestamp para evitar caché
+    const url = `${ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO}?t=${Date.now()}`;
+    console.log('📊 Obteniendo estadísticas por proceso desde:', url);
+    return this.http.get<EstadisticasPorProcesoResponse>(url);
   }
 
 
@@ -213,6 +217,35 @@ export class EstadisticasService {
   getTendenciasComparativas(): Observable<TendenciasComparativasResponse> {
     console.log('📈 Obteniendo tendencias y comparativas desde:', ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
     return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
+  }
+
+  // ===== MÉTODOS PARA ENDPOINTS MEJORADOS =====
+
+  /**
+   * Obtiene estadísticas por programa mejoradas con análisis de rendimiento
+   * @returns Observable con la respuesta del endpoint mejorado de estadísticas por programa
+   */
+  getEstadisticasPorProgramaMejoradas(): Observable<EstadisticasPorProgramaMejoradasResponse> {
+    console.log('📊 Obteniendo estadísticas por programa mejoradas desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROGRAMA_MEJORADAS);
+    return this.http.get<EstadisticasPorProgramaMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROGRAMA_MEJORADAS);
+  }
+
+  /**
+   * Obtiene estadísticas por período mejoradas con tendencias y proyecciones
+   * @returns Observable con la respuesta del endpoint mejorado de estadísticas por período
+   */
+  getEstadisticasPorPeriodoMejoradas(): Observable<EstadisticasPorPeriodoMejoradasResponse> {
+    console.log('📈 Obteniendo estadísticas por período mejoradas desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PERIODO_MEJORADAS);
+    return this.http.get<EstadisticasPorPeriodoMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PERIODO_MEJORADAS);
+  }
+
+  /**
+   * Obtiene estado de solicitudes mejorado con análisis de distribución
+   * @returns Observable con la respuesta del endpoint mejorado de estado de solicitudes
+   */
+  getEstadoSolicitudesMejorado(): Observable<EstadoSolicitudesResponse> {
+    console.log('📋 Obteniendo estado de solicitudes mejorado desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
+    return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
   }
 
   /**

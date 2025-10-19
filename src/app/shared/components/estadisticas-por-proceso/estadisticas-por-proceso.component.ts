@@ -18,6 +18,7 @@ interface ProcesoData {
   aprobadas?: number;
   rechazadas?: number;
   enProceso?: number;
+  enviadas?: number;
   porcentajeAprobacion?: number;
 }
 
@@ -99,6 +100,14 @@ interface ProcesoData {
                     <span class="stat-value">{{ proceso.enProceso || 0 }}</span>
                     <span class="stat-label">En Proceso</span>
                   </div>
+                  <div class="stat-item enviadas">
+                    <mat-icon>send</mat-icon>
+                    <span class="stat-value">{{ proceso.enviadas || 0 }}</span>
+                    <span class="stat-label">Enviadas</span>
+                  </div>
+                </div>
+                
+                <div class="stat-row">
                   <div class="stat-item porcentaje" *ngIf="proceso.porcentajeAprobacion !== undefined">
                     <mat-icon>trending_up</mat-icon>
                     <span class="stat-value">{{ proceso.porcentajeAprobacion | number:'1.1-1' }}%</span>
@@ -133,6 +142,10 @@ interface ProcesoData {
         <button mat-icon-button (click)="cargarDatos()" 
                 matTooltip="Actualizar datos">
           <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-icon-button (click)="limpiarCacheYRecargar()" 
+                matTooltip="Limpiar caché y recargar">
+          <mat-icon>cached</mat-icon>
         </button>
         <span class="spacer"></span>
         <small *ngIf="fechaConsulta" class="fecha-actualizacion">
@@ -335,6 +348,7 @@ interface ProcesoData {
     .stat-item.aprobadas mat-icon { color: #4caf50; }
     .stat-item.rechazadas mat-icon { color: #f44336; }
     .stat-item.en-proceso mat-icon { color: #ff9800; }
+    .stat-item.enviadas mat-icon { color: #ffc107; }
     .stat-item.porcentaje mat-icon { color: #2196f3; }
 
     .proceso-datos-raw {
@@ -412,8 +426,39 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
         next: (response: EstadisticasPorProcesoResponse) => {
           console.log('✅ Estadísticas por proceso obtenidas:', response);
           
+          // 🔍 DEBUG: Verificar datos específicos de los procesos problemáticos
+          const pazYSalvo = response.estadisticasPorProceso['Paz y Salvo'];
+          const cursosVerano = response.estadisticasPorProceso['Cursos de Verano'];
+          
+          console.log('🔍 DEBUG - PAZ Y SALVO:', {
+            total: pazYSalvo?.totalSolicitudes,
+            aprobadas: pazYSalvo?.aprobadas,
+            rechazadas: pazYSalvo?.rechazadas,
+            enProceso: pazYSalvo?.enProceso,
+            enviadas: pazYSalvo?.enviadas,
+            tipoEnviadas: typeof pazYSalvo?.enviadas
+          });
+          
+          console.log('🔍 DEBUG - CURSOS DE VERANO:', {
+            total: cursosVerano?.totalSolicitudes,
+            aprobadas: cursosVerano?.aprobadas,
+            rechazadas: cursosVerano?.rechazadas,
+            enProceso: cursosVerano?.enProceso,
+            enviadas: cursosVerano?.enviadas,
+            tipoEnviadas: typeof cursosVerano?.enviadas
+          });
+          
+          // 🔍 DEBUG: Verificar estructura completa de datos
+          console.log('🔍 DEBUG - ESTRUCTURA COMPLETA:', response.estadisticasPorProceso);
+          
           this.fechaConsulta = response.fechaConsulta;
           this.procesosData = this.procesarDatos(response.estadisticasPorProceso);
+          
+          // Validar que los números sumen correctamente
+          this.procesosData.forEach(proceso => {
+            this.validarNumerosProceso(proceso);
+          });
+          
           this.loading = false;
         },
         error: (error) => {
@@ -428,16 +473,28 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
 
   private procesarDatos(estadisticasPorProceso: { [proceso: string]: any }): ProcesoData[] {
     return Object.entries(estadisticasPorProceso)
-      .map(([nombre, datos]) => ({
-        nombre,
-        nombreFormateado: this.formatearNombreProceso(nombre),
-        datos,
-        totalSolicitudes: this.extraerTotalSolicitudes(datos),
-        aprobadas: this.extraerAprobadas(datos),
-        rechazadas: this.extraerRechazadas(datos),
-        enProceso: this.extraerEnProceso(datos),
-        porcentajeAprobacion: this.calcularPorcentajeAprobacion(datos)
-      }))
+      .map(([nombre, datos]) => {
+        const enviadas = this.extraerEnviadas(datos);
+        
+        // 🔍 DEBUG: Log del mapeo para cada proceso
+        console.log(`🔍 MAPEO - ${nombre}:`, {
+          datosOriginales: datos,
+          enviadasExtraidas: enviadas,
+          tipoEnviadas: typeof enviadas
+        });
+        
+        return {
+          nombre,
+          nombreFormateado: this.formatearNombreProceso(nombre),
+          datos,
+          totalSolicitudes: this.extraerTotalSolicitudes(datos),
+          aprobadas: this.extraerAprobadas(datos),
+          rechazadas: this.extraerRechazadas(datos),
+          enProceso: this.extraerEnProceso(datos),
+          enviadas: enviadas, // ✅ AGREGADO: Mapear campo enviadas
+          porcentajeAprobacion: this.calcularPorcentajeAprobacion(datos)
+        };
+      })
       .sort((a, b) => (b.totalSolicitudes || 0) - (a.totalSolicitudes || 0));
   }
 
@@ -476,6 +533,13 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     if (datos?.enProceso) return datos.enProceso;
     if (datos?.pending) return datos.pending;
     if (datos?.inProcess) return datos.inProcess;
+    return 0;
+  }
+
+  private extraerEnviadas(datos: any): number {
+    if (datos?.enviadas) return datos.enviadas;
+    if (datos?.sent) return datos.sent;
+    if (datos?.submitted) return datos.submitted;
     return 0;
   }
 
@@ -520,7 +584,47 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     return [];
   }
 
+  /**
+   * Verifica que los números de un proceso sumen correctamente
+   */
+  validarNumerosProceso(proceso: any): boolean {
+    if (!proceso) return false;
+    
+    const suma = (proceso.aprobadas || 0) + (proceso.rechazadas || 0) + 
+                 (proceso.enProceso || 0) + (proceso.enviadas || 0);
+    const total = proceso.totalSolicitudes || 0;
+    
+    if (suma !== total) {
+      console.warn(`⚠️ Discrepancia en ${proceso.nombreProceso || 'proceso'}: ${suma} vs ${total}`);
+    }
+    
+    return suma === total;
+  }
+
   toggleDatosRaw(): void {
     this.mostrarDatosRaw = !this.mostrarDatosRaw;
+  }
+
+  /**
+   * 🔧 Método temporal para limpiar caché y recargar datos
+   */
+  limpiarCacheYRecargar(): void {
+    console.log('🔄 Limpiando caché y recargando datos...');
+    
+    // Limpiar localStorage y sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Limpiar caché del navegador si está disponible
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          caches.delete(name);
+        });
+      });
+    }
+    
+    // Recargar los datos
+    this.cargarDatos();
   }
 }

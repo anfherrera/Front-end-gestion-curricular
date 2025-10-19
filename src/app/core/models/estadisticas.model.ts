@@ -13,6 +13,7 @@ export interface EstadisticasProceso {
   aprobadas: number;
   rechazadas: number;
   enProceso: number;
+  enviadas?: number;
   pendientes: number;
   porcentajeAprobacion: number;
   tendenciaMensual: TendenciaData[];
@@ -145,6 +146,8 @@ export interface EstadoInfo {
   descripcion: string;
   color: string;
   icono: string;
+  procesos?: { [proceso: string]: number };  // Distribución por proceso
+  programas?: { [programa: string]: number }; // Distribución por programa
 }
 
 /**
@@ -153,6 +156,66 @@ export interface EstadoInfo {
 export interface EstadoSolicitudesResponse {
   totalSolicitudes: number;
   estados: { [estado: string]: EstadoInfo };
+  fechaConsulta: string;
+  descripcion: string;
+  analisis?: {                    // NUEVO: Sección de análisis
+    solicitudesPendientes: number;
+    solicitudesCompletadas: number;
+    tasaResolucion: number;
+    estadoMasComun: string;
+  };
+}
+
+// ===== INTERFACES PARA ENDPOINTS MEJORADOS =====
+
+/**
+ * Interfaz para estadísticas por programa mejoradas
+ */
+export interface ProgramaEstadisticasMejoradas {
+  totalSolicitudes: number;
+  estudiantes: number;
+  porcentaje: number;
+  eficiencia: number;             // Tasa de aprobación
+  tiempoPromedio: number;         // Días de procesamiento
+  procesos: { [proceso: string]: number };  // Distribución por proceso
+  color: string;                  // Color específico
+  icono: string;                  // Icono específico
+}
+
+export interface EstadisticasPorProgramaMejoradasResponse {
+  porPrograma: { [programa: string]: ProgramaEstadisticasMejoradas };
+  analisis: {                     // NUEVO: Sección de análisis
+    programaMasActivo: string;
+    programaMasEficiente: string;
+    eficienciaMaxima: number;
+    totalProgramas: number;
+  };
+  fechaConsulta: string;
+  descripcion: string;
+}
+
+/**
+ * Interfaz para estadísticas por período mejoradas
+ */
+export interface PeriodoEstadisticasMejoradas {
+  solicitudes: number;
+  estudiantes: number;
+  porcentaje: number;
+  eficiencia: number;             // NUEVO: Tasa de aprobación
+  tiempoPromedio: number;         // NUEVO: Días de procesamiento
+  procesos: { [proceso: string]: number };  // NUEVO: Distribución por proceso
+  color: string;                  // NUEVO: Color específico
+  icono: string;                  // NUEVO: Icono específico
+}
+
+export interface EstadisticasPorPeriodoMejoradasResponse {
+  porMes: { [mes: string]: PeriodoEstadisticasMejoradas };
+  tendencias: {                   // NUEVO: Sección de tendencias
+    tendenciaGeneral: string;
+    crecimientoPromedio: number;
+    mesMasActivo: string;
+    promedioMensual: number;
+  };
   fechaConsulta: string;
   descripcion: string;
 }
