@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api', // Backend Java/Spring Boot
+  apiUrl: 'http://localhost:5000/api', // Backend Node.js
   // Configuración para desarrollo
   debug: true,
   logLevel: 'debug',

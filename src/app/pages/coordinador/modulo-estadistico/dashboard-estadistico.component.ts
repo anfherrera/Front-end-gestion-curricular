@@ -19,6 +19,7 @@ import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
+import { ApiEndpoints } from '../../../core/utils/api-endpoints';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { EstudiantesPorProgramaComponent } from '../../../shared/components/estudiantes-por-programa/estudiantes-por-programa.component';
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
@@ -165,6 +166,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     // Cargar total de estudiantes desde el endpoint específico
     this.cargarTotalEstudiantes();
+    
+    // Cargar datos de estado de solicitudes para KPIs correctos
+    this.cargarDatosEstadoSolicitudes();
 
     // Comentamos la llamada real al backend por ahora
     /*
@@ -217,6 +221,166 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(subscription);
   }
+
+  /**
+   * Carga los datos de estado de solicitudes para actualizar los KPIs correctos
+   */
+  private cargarDatosEstadoSolicitudes(): void {
+    console.log('🚀 INICIANDO cargarDatosEstadoSolicitudes...');
+    console.log('📊 Cargando datos de estado de solicitudes para KPIs...');
+    
+    const subscription = this.estadisticasService.getEstadoSolicitudesMejorado()
+      .subscribe({
+        next: (response) => {
+          console.log('✅ DATOS DE ESTADO DE SOLICITUDES OBTENIDOS:', response);
+          
+          // Actualizar KPIs con datos correctos según las instrucciones
+          this.actualizarKPIsConEstadoSolicitudes(response);
+        },
+        error: (error) => {
+          console.error('❌ ERROR al obtener estado de solicitudes:', error);
+          // No mostrar error al usuario, solo log
+        }
+      });
+
+    this.subscriptions.push(subscription);
+    console.log('✅ Suscripción agregada para estado de solicitudes');
+  }
+
+  /**
+   * Actualiza los KPIs con los datos correctos del endpoint de estado de solicitudes
+   */
+  private actualizarKPIsConEstadoSolicitudes(data: any): void {
+    if (!data || !data.estados) {
+      console.warn('⚠️ No hay datos de estados disponibles:', data);
+      return;
+    }
+
+    console.log('🔍 DATOS COMPLETOS DEL BACKEND:', data);
+    console.log('🔍 ESTADOS DISPONIBLES:', data.estados);
+
+    // 🔧 Verificar cada estado individualmente
+    const estados = data.estados;
+    console.log('🔍 APROBADA:', estados.Aprobada);
+    console.log('🔍 ENVIADA:', estados.Enviada);
+    console.log('🔍 EN PROCESO:', estados["En Proceso"]);
+    console.log('🔍 RECHAZADA:', estados.Rechazada);
+
+    // 🔧 VERIFICACIÓN DETALLADA DEL ESTADO "ENVIADA"
+    console.log('🔍 VERIFICACIÓN DETALLADA ENVIADA:');
+    console.log('  - estados.Enviada existe?', !!estados.Enviada);
+    console.log('  - estados.Enviada:', estados.Enviada);
+    console.log('  - estados.Enviada.cantidad:', estados.Enviada?.cantidad);
+    console.log('  - tipo de cantidad:', typeof estados.Enviada?.cantidad);
+
+    // 🔧 Usar datos correctos según las instrucciones del usuario
+    const kpis = {
+      totalSolicitudes: data.totalSolicitudes || 0,
+      aprobadas: estados.Aprobada?.cantidad || 0,
+      enviadas: estados.Enviada?.cantidad || 0,
+      enProceso: estados["En Proceso"]?.cantidad || 0,
+      rechazadas: estados.Rechazada?.cantidad || 0
+    };
+
+    console.log('🔧 KPIs CALCULADOS:', kpis);
+    console.log('🔧 VALORES INDIVIDUALES:', {
+      'Total Solicitudes': kpis.totalSolicitudes,
+      'Aprobadas': kpis.aprobadas,
+      'Enviadas': kpis.enviadas,
+      'En Proceso': kpis.enProceso,
+      'Rechazadas': kpis.rechazadas
+    });
+
+    // Actualizar cada KPI
+    this.actualizarKPI('Total Solicitudes', kpis.totalSolicitudes);
+    this.actualizarKPI('Aprobadas', kpis.aprobadas);
+    this.actualizarKPI('Enviadas', kpis.enviadas);
+    this.actualizarKPI('En Proceso', kpis.enProceso);
+    this.actualizarKPI('Rechazadas', kpis.rechazadas);
+
+    console.log('✅ KPIs actualizados en el dashboard');
+  }
+
+  /**
+   * Actualiza un KPI específico por título
+   */
+  private actualizarKPI(titulo: string, valor: number): void {
+    const kpi = this.kpis.find(k => k.titulo === titulo);
+    if (kpi) {
+      kpi.valor = valor;
+      console.log(`🔧 KPI "${titulo}" actualizado a: ${valor}`);
+    } else {
+      console.warn(`⚠️ KPI "${titulo}" no encontrado`);
+    }
+  }
+
+  /**
+   * 🔧 Método temporal para verificar la conexión del endpoint
+   */
+  verificarEndpoint(): void {
+    console.log('🔍 Verificando conexión del endpoint...');
+    console.log('📍 URL del endpoint:', 'http://localhost:5000/api/estadisticas/estado-solicitudes');
+    console.log('🔍 BASE_URL configurado:', 'http://localhost:5000/api');
+    
+    // Hacer una llamada directa para verificar
+    fetch('http://localhost:5000/api/estadisticas/estado-solicitudes')
+      .then(response => {
+        console.log('✅ Respuesta del servidor:', response.status, response.statusText);
+        return response.json();
+      })
+      .then(data => {
+        console.log('✅ Datos recibidos directamente:', data);
+        
+        // Verificar estructura de datos
+        if (data.estados) {
+          console.log('✅ Estructura de estados encontrada');
+          console.log('🔍 Estados disponibles:', Object.keys(data.estados));
+          
+          // Verificar cada estado
+          Object.entries(data.estados).forEach(([nombre, info]: [string, any]) => {
+            console.log(`🔍 ${nombre}:`, {
+              cantidad: info.cantidad,
+              porcentaje: info.porcentaje,
+              descripcion: info.descripcion
+            });
+          });
+
+          // 🔧 FORZAR ACTUALIZACIÓN DE KPIs CON DATOS CORRECTOS
+          console.log('🔧 FORZANDO actualización de KPIs...');
+          this.actualizarKPIsConEstadoSolicitudes(data);
+        } else {
+          console.warn('⚠️ No se encontró la estructura de estados');
+        }
+      })
+      .catch(error => {
+        console.error('❌ Error al verificar endpoint:', error);
+        console.log('💡 Posibles soluciones:');
+        console.log('   1. Verificar que el backend esté ejecutándose en puerto 5000');
+        console.log('   2. Verificar la URL del endpoint');
+             console.log('   3. Limpiar caché del navegador (Ctrl + F5)');
+           });
+   }
+
+   /**
+    * 🔧 Método temporal para forzar la actualización de KPIs
+    */
+   forzarActualizacionKPIs(): void {
+     console.log('🔧 FORZANDO actualización de KPIs...');
+     
+     // Simular datos del backend con la estructura correcta
+     const datosSimulados = {
+       totalSolicitudes: 46,
+       estados: {
+         Aprobada: { cantidad: 21, porcentaje: 45.65, color: "#28a745", icono: "fas fa-check-circle" },
+         Enviada: { cantidad: 9, porcentaje: 19.57, color: "#ffc107", icono: "fas fa-paper-plane" },
+         "En Proceso": { cantidad: 11, porcentaje: 23.91, color: "#17a2b8", icono: "fas fa-clock" },
+         Rechazada: { cantidad: 5, porcentaje: 10.87, color: "#dc3545", icono: "fas fa-times-circle" }
+       }
+     };
+     
+     console.log('🔧 Datos simulados con estructura correcta:', datosSimulados);
+     this.actualizarKPIsConEstadoSolicitudes(datosSimulados);
+   }
 
   /**
    * Actualiza el KPI de estudiantes con el valor real del endpoint
@@ -325,6 +489,13 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         icono: 'check_circle',
         color: 'success',
         descripcion: 'Solicitudes aprobadas'
+      },
+      {
+        titulo: 'Enviadas',
+        valor: 0, // Se actualizará desde el endpoint de estado de solicitudes
+        icono: 'send',
+        color: 'accent',
+        descripcion: 'Solicitudes enviadas pendientes'
       },
       {
         titulo: 'En Proceso',
