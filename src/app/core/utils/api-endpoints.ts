@@ -159,6 +159,9 @@ export class ApiEndpoints {
     // ===== NUEVO ENDPOINT - TENDENCIAS Y COMPARATIVAS =====
     TENDENCIAS_COMPARATIVAS: `${this.BASE_URL}/estadisticas/tendencias-comparativas`,
     
+    // ===== NUEVO ENDPOINT - CURSOS DE VERANO =====
+    CURSOS_VERANO: `${this.BASE_URL}/estadisticas/cursos-verano`,
+    
     // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
     EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`

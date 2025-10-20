@@ -278,3 +278,103 @@ export interface EstadisticasCompletas {
   loading: boolean;
   error?: string;
 }
+
+// ===== MODELOS PARA CURSOS DE VERANO =====
+
+export interface MateriaPrediccion {
+  nombre: string;
+  demandaActual: number;
+  demandaEstimada: number;
+  tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
+  variacion: number;
+  porcentajeVariacion: number;
+}
+
+export interface ProgramaPrediccion {
+  nombre: string;
+  demandaActual: number;
+  demandaEstimada: number;
+  tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
+  variacion: number;
+}
+
+export interface PrediccionesTemporales {
+  mesPico: string;
+  demandaActualMesPico: number;
+  demandaEstimadaMesPico: number;
+  mesesRecomendados: string[];
+}
+
+export interface RecomendacionFutura {
+  tipo: string;
+  titulo: string;
+  descripcion: string;
+  prioridad: "ALTA" | "MEDIA" | "BAJA";
+  accion: string;
+}
+
+export interface PrediccionesCursosVerano {
+  demandaEstimadaProximoPeriodo: number;
+  materiasConTendenciaCreciente: MateriaPrediccion[];
+  materiasConTendenciaDecreciente: MateriaPrediccion[];
+  materiasEstables: MateriaPrediccion[];
+  programasConTendenciaCreciente: ProgramaPrediccion[];
+  programasConTendenciaDecreciente: ProgramaPrediccion[];
+  prediccionesTemporales: PrediccionesTemporales;
+  recomendacionesFuturas: RecomendacionFutura[];
+  confiabilidad: "ALTA" | "MEDIA" | "BAJA";
+  fechaPrediccion: string;
+  metodologia: string;
+}
+
+export interface TopMateria {
+  nombre: string;
+  solicitudes: number;
+  porcentaje: number;
+}
+
+export interface AnalisisPrograma {
+  nombre: string;
+  solicitudes: number;
+  porcentaje: number;
+}
+
+export interface TendenciaTemporal {
+  mes: string;
+  solicitudes: number;
+  porcentaje: number;
+}
+
+export interface EstadosSolicitudes {
+  Aprobada: number;
+  Enviada: number;
+  "En Proceso": number;
+  Rechazada: number;
+}
+
+export interface Recomendacion {
+  tipo: string;
+  titulo: string;
+  descripcion: string;
+  prioridad: "ALTA" | "MEDIA" | "BAJA";
+  accion: string;
+}
+
+export interface ResumenCursosVerano {
+  totalSolicitudes: number;
+  materiasUnicas: number;
+  programasParticipantes: number;
+  tasaAprobacion: number;
+}
+
+export interface CursosVeranoResponse {
+  fechaConsulta: string;
+  descripcion: string;
+  resumen: ResumenCursosVerano;
+  topMaterias: TopMateria[];
+  analisisPorPrograma: AnalisisPrograma[];
+  tendenciasTemporales: TendenciaTemporal[];
+  estadosSolicitudes: EstadosSolicitudes;
+  recomendaciones: Recomendacion[];
+  predicciones: PrediccionesCursosVerano;
+}

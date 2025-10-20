@@ -91,23 +91,24 @@
 .section-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
+  border-left: 4px solid #00138C;
 }
 
 .section-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .section-card mat-card-header {
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  background: linear-gradient(135deg, #00138C, #001a99);
   margin: -16px -16px 16px -16px;
   padding: 16px;
   border-radius: 12px 12px 0 0;
-  border-bottom: 2px solid #00138C;
+  border-bottom: none;
 }
 
 .section-card mat-card-title {
@@ -116,7 +117,7 @@
   gap: 8px;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #1e293b;
+  color: white;
   margin: 0;
 }
 
@@ -199,19 +200,22 @@
 }
 
 .mas-activo {
-  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
-  border-color: #8b5cf6;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-color: #00138C;
+  border: 2px solid #00138C;
 }
 
 .mas-estudiantes {
-  background: linear-gradient(135deg, #fed7aa, #fdba74);
-  border-color: #f97316;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-color: #00138C;
+  border: 2px solid #00138C;
 }
 
 .highlight-item h4 {
   margin: 0 0 8px 0;
   font-size: 0.9rem;
   font-weight: 600;
+  color: #333;
 }
 
 .highlight-valor {
@@ -219,11 +223,13 @@
   font-weight: 700;
   margin-bottom: 4px;
   line-height: 1.2;
+  color: #00138C;
 }
 
 .highlight-descripcion {
   font-size: 0.8rem;
-  opacity: 0.8;
+  color: #6c757d;
+  font-weight: 500;
 }
 
 .procesos-lista, .programas-lista {
@@ -234,18 +240,24 @@
   margin: 0 0 12px 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #374151;
+  color: #333;
 }
 
 .proceso-item, .programa-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
+  padding: 12px 16px;
   margin-bottom: 8px;
-  background: #f8fafc;
+  background: #f8f9fa;
   border-radius: 8px;
   border-left: 4px solid #00138C;
+  transition: all 0.3s ease;
+}
+
+.programa-item:hover {
+  background: #e9ecef;
+  transform: translateX(4px);
 }
 
 .proceso-info, .programa-info {
@@ -255,9 +267,10 @@
 }
 
 .proceso-nombre, .programa-nombre {
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.3;
 }
 
 .proceso-cantidad {
@@ -270,23 +283,24 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 4px;
 }
 
 .programa-solicitudes, .programa-estudiantes {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #6c757d;
+  font-weight: 500;
 }
 
 .programa-solicitudes {
   font-weight: 600;
-  color: #3b82f6;
+  color: #00138C;
 }
 
 /* Resumen Estratégico */
 .resumen-card {
-  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-  border: 2px solid #0ea5e9;
+  background: white;
+  border: 2px solid #00138C;
 }
 
 .resumen-metrics {

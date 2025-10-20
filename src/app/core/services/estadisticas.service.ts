@@ -17,7 +17,8 @@ import {
   TendenciasComparativasResponse,
   EstadisticasCompletas,
   EstadisticasPorProgramaMejoradasResponse,
-  EstadisticasPorPeriodoMejoradasResponse
+  EstadisticasPorPeriodoMejoradasResponse,
+  CursosVeranoResponse
 } from '../models/estadisticas.model';
 
 @Injectable({
@@ -217,6 +218,15 @@ export class EstadisticasService {
   getTendenciasComparativas(): Observable<TendenciasComparativasResponse> {
     console.log('📈 Obteniendo tendencias y comparativas desde:', ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
     return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
+  }
+
+  /**
+   * Obtiene estadísticas completas de cursos de verano con predicciones
+   * @returns Observable con la respuesta del endpoint de cursos de verano
+   */
+  getCursosVeranoEstadisticas(): Observable<CursosVeranoResponse> {
+    console.log('🏖️ Obteniendo estadísticas de cursos de verano desde:', ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO);
+    return this.http.get<CursosVeranoResponse>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO);
   }
 
   // ===== MÉTODOS PARA ENDPOINTS MEJORADOS =====

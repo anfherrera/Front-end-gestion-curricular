@@ -1,0 +1,557 @@
+<!-- ===== HEADER DEL DASHBOARD ===== -->
+<div class="dashboard-header">
+  <div class="header-content">
+    <div class="header-text">
+      <div class="dashboard-title">
+        <mat-icon>beach_access</mat-icon>
+        Dashboard de Cursos de Verano
+      </div>
+      <p class="dashboard-subtitle">Análisis y Predicciones de Demanda</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="actualizarDatos()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Actualizar datos
+      </button>
+      <button mat-raised-button color="accent" (click)="exportarPDF()" [disabled]="loading || !data">
+        <mat-icon>description</mat-icon>
+        Exportar PDF
+      </button>
+      <button mat-raised-button color="warn" (click)="exportarExcel()" [disabled]="loading || !data">
+        <mat-icon>table_chart</mat-icon>
+        Exportar Excel
+      </button>
+      <button mat-raised-button color="accent" (click)="cargarDatosDePrueba()">
+        <mat-icon>bug_report</mat-icon>
+        🧪 Datos de Prueba
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOADING SPINNER ===== -->
+<div *ngIf="loading" class="loading-container">
+  <mat-spinner diameter="60"></mat-spinner>
+  <p>Cargando estadísticas de cursos de verano...</p>
+</div>
+
+<!-- ===== ERROR MESSAGE ===== -->
+<div *ngIf="error && !loading" class="error-container">
+  <mat-icon class="error-icon">error</mat-icon>
+  <h3>Error al cargar los datos</h3>
+  <p>{{ error }}</p>
+  <button mat-raised-button color="primary" (click)="cargarDatos()">
+    <mat-icon>refresh</mat-icon>
+    Reintentar
+  </button>
+</div>
+
+<!-- ===== CONTENIDO PRINCIPAL ===== -->
+<div *ngIf="data && !loading" class="dashboard-container">
+  <div class="dashboard-content">
+  
+  <!-- ===== KPIs PRINCIPALES ===== -->
+  <div class="kpis-section">
+    <h2 class="section-title">
+      <mat-icon>dashboard</mat-icon>
+      Indicadores Principales
+    </h2>
+    <div class="kpis-grid">
+      <mat-card class="kpi-card total-solicitudes">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>description</mat-icon>
+            Total Solicitudes
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ data.resumen.totalSolicitudes }}</div>
+          <div class="kpi-description">Solicitudes de cursos de verano</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card materias-unicas">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>school</mat-icon>
+            Materias Únicas
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ data.resumen.materiasUnicas }}</div>
+          <div class="kpi-description">Materias ofertadas</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card programas-participantes">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>people</mat-icon>
+            Programas Participantes
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ data.resumen.programasParticipantes }}</div>
+          <div class="kpi-description">Programas con solicitudes</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card tasa-aprobacion">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>check_circle</mat-icon>
+            Tasa de Aprobación
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ data.resumen.tasaAprobacion }}%</div>
+          <div class="kpi-description">Porcentaje de aprobación</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- ===== TABS PRINCIPALES ===== -->
+  <mat-tab-group class="main-tabs" animationDuration="300ms">
+    
+    <!-- ===== TAB: ANÁLISIS ACTUAL ===== -->
+    <mat-tab label="Análisis Actual">
+      <div class="tab-content">
+        
+        <!-- ===== GRÁFICOS DE ANÁLISIS ===== -->
+        <div class="charts-section">
+          <div class="chart-row">
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>pie_chart</mat-icon>
+                  Top Materias por Demanda
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="chart-container">
+                  <canvas id="chartMaterias"></canvas>
+                </div>
+                <!-- CONECTAR A LOS DATOS DEL BACKEND -->
+                <div class="chart-data" *ngIf="data && data.topMaterias && data.topMaterias.length > 0; else noDataMaterias">
+                  <div *ngFor="let materia of data.topMaterias" class="materia-item">
+                    <div class="materia-nombre">{{ materia.nombre }}</div>
+                    <div class="materia-solicitudes">{{ materia.solicitudes }} solicitudes</div>
+                    <div class="materia-porcentaje">{{ materia.porcentaje }}%</div>
+                  </div>
+                </div>
+                <ng-template #noDataMaterias>
+                  <div class="no-data">No hay datos disponibles</div>
+                </ng-template>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>bar_chart</mat-icon>
+                  Análisis por Programa
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="chart-container">
+                  <canvas id="chartProgramas"></canvas>
+                </div>
+                <!-- CONECTAR A LOS DATOS DEL BACKEND -->
+                <div class="chart-data" *ngIf="data && data.analisisPorPrograma && data.analisisPorPrograma.length > 0; else noDataProgramas">
+                  <div *ngFor="let programa of data.analisisPorPrograma" class="programa-item">
+                    <div class="programa-nombre">{{ programa.nombre }}</div>
+                    <div class="programa-solicitudes">{{ programa.solicitudes }} solicitudes</div>
+                    <div class="programa-porcentaje">{{ programa.porcentaje }}%</div>
+                  </div>
+                </div>
+                <ng-template #noDataProgramas>
+                  <div class="no-data">No hay datos disponibles</div>
+                </ng-template>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="chart-row">
+            <mat-card class="chart-card full-width">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>show_chart</mat-icon>
+                  Tendencias Temporales
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <!-- ELIMINAR el área blanca vacía y mostrar solo los datos -->
+                <div *ngIf="data && data.tendenciasTemporales && data.tendenciasTemporales.length > 0" class="tendencias-data">
+                  <div *ngFor="let tendencia of data.tendenciasTemporales" class="tendencia-card">
+                    <div class="tendencia-mes">{{ tendencia.mes }}</div>
+                    <div class="tendencia-solicitudes">{{ tendencia.solicitudes }} solicitudes</div>
+                    <div class="tendencia-porcentaje">{{ tendencia.porcentaje }}%</div>
+                  </div>
+                </div>
+                <div *ngIf="!data || !data.tendenciasTemporales || data.tendenciasTemporales.length === 0" class="no-data">
+                  No hay datos de tendencias temporales disponibles
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- ===== ESTADOS DE SOLICITUDES ===== -->
+        <div class="estados-section">
+          <h3 class="section-title">
+            <mat-icon>assignment</mat-icon>
+            Estados de Solicitudes
+          </h3>
+          <div class="estados-grid">
+            <mat-card class="estado-card aprobada">
+              <mat-card-content>
+                <div class="estado-header">
+                  <mat-icon>check_circle</mat-icon>
+                  <span class="estado-nombre">Aprobada</span>
+                </div>
+                <div class="estado-valor">{{ data.estadosSolicitudes.Aprobada }}</div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="estado-card enviada">
+              <mat-card-content>
+                <div class="estado-header">
+                  <mat-icon>send</mat-icon>
+                  <span class="estado-nombre">Enviada</span>
+                </div>
+                <div class="estado-valor">{{ data.estadosSolicitudes.Enviada }}</div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="estado-card en-proceso">
+              <mat-card-content>
+                <div class="estado-header">
+                  <mat-icon>hourglass_empty</mat-icon>
+                  <span class="estado-nombre">En Proceso</span>
+                </div>
+                <div class="estado-valor">{{ data.estadosSolicitudes['En Proceso'] }}</div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="estado-card rechazada">
+              <mat-card-content>
+                <div class="estado-header">
+                  <mat-icon>cancel</mat-icon>
+                  <span class="estado-nombre">Rechazada</span>
+                </div>
+                <div class="estado-valor">{{ data.estadosSolicitudes.Rechazada }}</div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- ===== RECOMENDACIONES ACTUALES ===== -->
+        <div class="recomendaciones-section">
+          <h3 class="section-title">
+            <mat-icon>lightbulb</mat-icon>
+            Recomendaciones Actuales
+          </h3>
+          <div class="recomendaciones-grid">
+            <mat-card *ngFor="let recomendacion of data.recomendaciones" 
+                      class="recomendacion-card"
+                      [class]="'prioridad-' + recomendacion.prioridad.toLowerCase()">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon [matTooltip]="recomendacion.prioridad">
+                    {{ getIconByPriority(recomendacion.prioridad) }}
+                  </mat-icon>
+                  {{ recomendacion.titulo }}
+                </mat-card-title>
+                <mat-card-subtitle>{{ recomendacion.tipo }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p>{{ recomendacion.descripcion }}</p>
+                <div class="recomendacion-accion">
+                  <strong>Acción:</strong> {{ recomendacion.accion }}
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ===== TAB: PREDICCIONES ===== -->
+    <mat-tab label="Predicciones">
+      <div class="tab-content predicciones-content">
+        
+        <!-- ===== RESUMEN DE PREDICCIONES ===== -->
+        <div class="predicciones-resumen">
+          <mat-card class="resumen-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>psychology</mat-icon>
+                Resumen de Predicciones
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="resumen-grid">
+                <div class="resumen-item">
+                  <div class="resumen-label">Demanda Estimada Próximo Período</div>
+                  <div class="resumen-valor">{{ data.predicciones.demandaEstimadaProximoPeriodo }}</div>
+                </div>
+                <div class="resumen-item">
+                  <div class="resumen-label">Confiabilidad</div>
+                  <div class="resumen-valor confiabilidad" 
+                       [class]="'confiabilidad-' + data.predicciones.confiabilidad.toLowerCase()">
+                    {{ data.predicciones.confiabilidad }}
+                  </div>
+                </div>
+                <div class="resumen-item">
+                  <div class="resumen-label">Fecha de Predicción</div>
+                  <div class="resumen-valor">{{ data.predicciones.fechaPrediccion | date:'short' }}</div>
+                </div>
+                <div class="resumen-item">
+                  <div class="resumen-label">Metodología</div>
+                  <div class="resumen-valor">{{ data.predicciones.metodologia }}</div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- ===== GRÁFICOS DE PREDICCIONES ===== -->
+        <div class="predicciones-charts">
+          <div class="chart-row">
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>trending_up</mat-icon>
+                  Predicciones por Materia
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <!-- ELIMINAR el área blanca vacía y mostrar directamente las tarjetas -->
+                <div *ngIf="data && data.predicciones && data.predicciones.materiasConTendenciaCreciente && data.predicciones.materiasConTendenciaCreciente.length > 0" class="predicciones-materias">
+                  <div *ngFor="let materia of data.predicciones.materiasConTendenciaCreciente" class="prediccion-materia-card">
+                    <div class="materia-nombre">{{ materia.nombre }}</div>
+                    <div class="demanda-actual">Actual: {{ materia.demandaActual }}</div>
+                    <div class="demanda-estimada">Estimada: {{ materia.demandaEstimada }}</div>
+                    <div class="variacion">Variación: {{ materia.variacion }}</div>
+                    <div class="tendencia creciente">CRECIENTE</div>
+                  </div>
+                </div>
+                <div *ngIf="!data || !data.predicciones || !data.predicciones.materiasConTendenciaCreciente || data.predicciones.materiasConTendenciaCreciente.length === 0" class="no-data">
+                  No hay datos de predicciones disponibles
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>school</mat-icon>
+                  Predicciones por Programa
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <!-- ELIMINAR el área blanca vacía y mostrar directamente las tarjetas -->
+                <div *ngIf="data && data.predicciones && data.predicciones.programasConTendenciaCreciente && data.predicciones.programasConTendenciaCreciente.length > 0" class="predicciones-programas">
+                  <div *ngFor="let programa of data.predicciones.programasConTendenciaCreciente" class="prediccion-programa-card">
+                    <div class="programa-nombre">{{ programa.nombre }}</div>
+                    <div class="demanda-actual">Actual: {{ programa.demandaActual }}</div>
+                    <div class="demanda-estimada">Estimada: {{ programa.demandaEstimada }}</div>
+                    <div class="variacion">Variación: {{ programa.variacion }}</div>
+                    <div class="tendencia creciente">CRECIENTE</div>
+                  </div>
+                </div>
+                <div *ngIf="!data || !data.predicciones || !data.predicciones.programasConTendenciaCreciente || data.predicciones.programasConTendenciaCreciente.length === 0" class="no-data">
+                  No hay datos de predicciones disponibles
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="chart-row">
+            <mat-card class="chart-card full-width">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>schedule</mat-icon>
+                  Predicciones Temporales
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <!-- REEMPLAZAR la sección de "Predicciones Temporales" -->
+                <div *ngIf="data && data.predicciones && data.predicciones.prediccionesTemporales" class="predicciones-temporales">
+                  <div class="prediccion-temporal-card">
+                    <div class="mes-pico">Mes Pico: {{ data.predicciones.prediccionesTemporales.mesPico }}</div>
+                    <div class="demanda-actual">Demanda Actual: {{ data.predicciones.prediccionesTemporales.demandaActualMesPico }}</div>
+                    <div class="demanda-estimada">Demanda Estimada: {{ data.predicciones.demandaEstimadaProximoPeriodo }}</div>
+                    <div class="meses-recomendados">
+                      <span>Meses Recomendados: </span>
+                      <span *ngFor="let mes of data.predicciones.prediccionesTemporales.mesesRecomendados; let last = last">
+                        {{ mes }}<span *ngIf="!last">, </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="!data || !data.predicciones || !data.predicciones.prediccionesTemporales" class="no-data">
+                  No hay datos de predicciones temporales disponibles
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- ===== ANÁLISIS DE TENDENCIAS ===== -->
+        <div class="tendencias-section">
+          <h3 class="section-title">
+            <mat-icon>analytics</mat-icon>
+            Análisis de Tendencias
+          </h3>
+          
+          <mat-accordion>
+            <!-- ===== MATERIAS CON TENDENCIA CRECIENTE ===== -->
+            <mat-expansion-panel *ngIf="data.predicciones.materiasConTendenciaCreciente.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon class="tendencia-creciente">trending_up</mat-icon>
+                  Materias con Tendencia Creciente
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ data.predicciones.materiasConTendenciaCreciente.length }} materias
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="tendencias-content">
+                <mat-card *ngFor="let materia of data.predicciones.materiasConTendenciaCreciente" 
+                          class="tendencia-card creciente">
+                  <mat-card-content>
+                    <div class="tendencia-header">
+                      <h4>{{ materia.nombre }}</h4>
+                      <mat-chip [color]="'primary'" selected>
+                        <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
+                        {{ materia.porcentajeVariacion }}%
+                      </mat-chip>
+                    </div>
+                    <div class="tendencia-datos">
+                      <div class="dato-item">
+                        <span class="dato-label">Demanda Actual:</span>
+                        <span class="dato-valor">{{ materia.demandaActual }}</span>
+                      </div>
+                      <div class="dato-item">
+                        <span class="dato-label">Demanda Estimada:</span>
+                        <span class="dato-valor">{{ materia.demandaEstimada }}</span>
+                      </div>
+                      <div class="dato-item">
+                        <span class="dato-label">Variación:</span>
+                        <span class="dato-valor" [style.color]="getTendenciaColor(materia.tendencia)">
+                          {{ materia.variacion > 0 ? '+' : '' }}{{ materia.variacion }}
+                        </span>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- ===== MATERIAS CON TENDENCIA DECRECIENTE ===== -->
+            <mat-expansion-panel *ngIf="data.predicciones.materiasConTendenciaDecreciente.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon class="tendencia-decreciente">trending_down</mat-icon>
+                  Materias con Tendencia Decreciente
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ data.predicciones.materiasConTendenciaDecreciente.length }} materias
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="tendencias-content">
+                <mat-card *ngFor="let materia of data.predicciones.materiasConTendenciaDecreciente" 
+                          class="tendencia-card decreciente">
+                  <mat-card-content>
+                    <div class="tendencia-header">
+                      <h4>{{ materia.nombre }}</h4>
+                      <mat-chip [color]="'warn'" selected>
+                        <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
+                        {{ materia.porcentajeVariacion }}%
+                      </mat-chip>
+                    </div>
+                    <div class="tendencia-datos">
+                      <div class="dato-item">
+                        <span class="dato-label">Demanda Actual:</span>
+                        <span class="dato-valor">{{ materia.demandaActual }}</span>
+                      </div>
+                      <div class="dato-item">
+                        <span class="dato-label">Demanda Estimada:</span>
+                        <span class="dato-valor">{{ materia.demandaEstimada }}</span>
+                      </div>
+                      <div class="dato-item">
+                        <span class="dato-label">Variación:</span>
+                        <span class="dato-valor" [style.color]="getTendenciaColor(materia.tendencia)">
+                          {{ materia.variacion > 0 ? '+' : '' }}{{ materia.variacion }}
+                        </span>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- ===== MATERIAS ESTABLES ===== -->
+            <mat-expansion-panel *ngIf="data.predicciones.materiasEstables.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon class="tendencia-estable">trending_flat</mat-icon>
+                  Materias Estables
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ data.predicciones.materiasEstables.length }} materias
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="tendencias-content">
+                <mat-card *ngFor="let materia of data.predicciones.materiasEstables" 
+                          class="tendencia-card estable">
+                  <mat-card-content>
+                    <div class="tendencia-header">
+                      <h4>{{ materia.nombre }}</h4>
+                      <mat-chip [color]="'accent'" selected>
+                        <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
+                        {{ materia.porcentajeVariacion }}%
+                      </mat-chip>
+                    </div>
+                    <div class="tendencia-datos">
+                      <div class="dato-item">
+                        <span class="dato-label">Demanda Actual:</span>
+                        <span class="dato-valor">{{ materia.demandaActual }}</span>
+                      </div>
+                      <div class="dato-item">
+                        <span class="dato-label">Demanda Estimada:</span>
+                        <span class="dato-valor">{{ materia.demandaEstimada }}</span>
+                      </div>
+                      <div class="dato-item">
+                        <span class="dato-label">Variación:</span>
+                        <span class="dato-valor" [style.color]="getTendenciaColor(materia.tendencia)">
+                          {{ materia.variacion > 0 ? '+' : '' }}{{ materia.variacion }}
+                        </span>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+
+        <!-- ===== RECOMENDACIONES FUTURAS ===== -->
+        <div class="recomendaciones-futuras">
+          <h3>Recomendaciones Futuras</h3>
+          <div class="recomendaciones-grid">
+            <!-- Usar CSS Grid para distribuir uniformemente -->
+            <div *ngFor="let rec of data?.predicciones?.recomendacionesFuturas" class="recomendacion-card">
+              <div class="recomendacion-titulo">{{ rec.titulo }}</div>
+              <div class="recomendacion-descripcion">{{ rec.descripcion }}</div>
+              <div class="recomendacion-accion">{{ rec.accion }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  </div>
+</div>

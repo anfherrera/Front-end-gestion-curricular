@@ -1,18 +1,13 @@
 <div class="modulo-estadistico-container">
-  <mat-tab-group>
-    <mat-tab label="Dashboard Estadístico">
-      <app-dashboard-estadistico></app-dashboard-estadistico>
-    </mat-tab>
-    <mat-tab label="Reportes">
+  <mat-tab-group class="main-tabs" animationDuration="300ms">
+    <mat-tab label="Dashboard General">
       <div class="tab-content">
-        <h2>Reportes</h2>
-        <p>Funcionalidad de reportes en desarrollo...</p>
+        <app-dashboard-estadistico></app-dashboard-estadistico>
       </div>
     </mat-tab>
-    <mat-tab label="Exportar Datos">
+    <mat-tab label="Cursos de Verano">
       <div class="tab-content">
-        <h2>Exportar Datos</h2>
-        <p>Funcionalidad de exportación en desarrollo...</p>
+        <app-cursos-verano-dashboard></app-cursos-verano-dashboard>
       </div>
     </mat-tab>
   </mat-tab-group>
