@@ -18,8 +18,7 @@ import {
   EstadisticasCompletas,
   EstadisticasPorProgramaMejoradasResponse,
   EstadisticasPorPeriodoMejoradasResponse,
-  CursosVeranoResponse,
-  TendenciaTemporal
+  CursosVeranoResponse
 } from '../models/estadisticas.model';
 
 @Injectable({
@@ -228,15 +227,6 @@ export class EstadisticasService {
   getCursosVeranoEstadisticas(): Observable<CursosVeranoResponse> {
     console.log('🏖️ Obteniendo estadísticas de cursos de verano desde:', ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO);
     return this.http.get<CursosVeranoResponse>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO);
-  }
-
-  /**
-   * Obtiene solo las tendencias temporales de cursos de verano (OPTIMIZADO)
-   * Carga más rápida, solo datos temporales
-   */
-  getCursosVeranoTendenciasTemporales(): Observable<{tendenciasTemporales: TendenciaTemporal[]}> {
-    console.log('📈 [OPTIMIZADO] Obteniendo tendencias temporales desde:', ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_TENDENCIAS_TEMPORALES);
-    return this.http.get<{tendenciasTemporales: TendenciaTemporal[]}>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_TENDENCIAS_TEMPORALES);
   }
 
   // ===== MÉTODOS PARA ENDPOINTS MEJORADOS =====
@@ -642,14 +632,31 @@ export class EstadisticasService {
     console.log('📄 [DEBUG] Exportando PDF con filtros:', filtros);
     console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF);
 
-    // ✅ Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF, {
       params,
       responseType: 'blob',
       headers: {
-        'Accept': 'application/pdf'
-      }
-    });
+        'Accept': 'application/pdf',
+        'Content-Type': 'application/pdf'
+      },
+      observe: 'response' // Para verificar headers
+    }).pipe(
+      map(response => {
+        console.log('📊 [DEBUG] Response headers:', response.headers);
+        console.log('📊 [DEBUG] Content-Type:', response.headers.get('content-type'));
+        console.log('📊 [DEBUG] Content-Length:', response.headers.get('content-length'));
+        
+        // Verificar content-type
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/pdf')) {
+          console.log('✅ [DEBUG] Content-Type válido para PDF');
+          return response.body as Blob;
+        } else {
+          console.error('❌ [DEBUG] Content-Type inválido:', contentType);
+          throw new Error(`El servidor no devolvió un PDF válido. Content-Type: ${contentType}`);
+        }
+      })
+    );
   }
 
   /**
@@ -678,76 +685,32 @@ export class EstadisticasService {
     console.log('📊 [DEBUG] Exportando Excel con filtros:', filtros);
     console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL);
 
-    // ✅ Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL, {
       params,
       responseType: 'blob',
       headers: {
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      }
-    });
-  }
-
-  // ===== MÉTODOS DE EXPORTACIÓN ESPECÍFICOS =====
-
-  /**
-   * Exporta reporte PDF del Dashboard General
-   */
-  exportarReporteGeneral(): Observable<Blob> {
-    console.log('📄 [DEBUG] Exportando PDF del Dashboard General...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_GENERAL);
-
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_GENERAL, {
-      responseType: 'blob',
-      headers: {
-        'Accept': 'application/pdf'
-      }
-    });
-  }
-
-  /**
-   * Exporta reporte Excel del Dashboard General
-   */
-  exportarExcelGeneral(): Observable<Blob> {
-    console.log('📊 [DEBUG] Exportando Excel del Dashboard General...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_GENERAL);
-
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_GENERAL, {
-      responseType: 'blob',
-      headers: {
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      }
-    });
-  }
-
-  /**
-   * Exporta reporte PDF de Cursos de Verano
-   */
-  exportarReporteCursosVerano(): Observable<Blob> {
-    console.log('📄 [DEBUG] Exportando PDF de Cursos de Verano...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_CURSOS_VERANO);
-
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_CURSOS_VERANO, {
-      responseType: 'blob',
-      headers: {
-        'Accept': 'application/pdf'
-      }
-    });
-  }
-
-  /**
-   * Exporta reporte Excel de Cursos de Verano
-   */
-  exportarExcelCursosVerano(): Observable<Blob> {
-    console.log('📊 [DEBUG] Exportando Excel de Cursos de Verano...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_CURSOS_VERANO);
-
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_CURSOS_VERANO, {
-      responseType: 'blob',
-      headers: {
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      }
-    });
+        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      },
+      observe: 'response' // Para verificar headers
+    }).pipe(
+      map(response => {
+        console.log('📊 [DEBUG] Response headers:', response.headers);
+        console.log('📊 [DEBUG] Content-Type:', response.headers.get('content-type'));
+        console.log('📊 [DEBUG] Content-Length:', response.headers.get('content-length'));
+        
+        // Verificar content-type
+        const contentType = response.headers.get('content-type');
+        if (contentType && (contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') || 
+                           contentType.includes('application/vnd.ms-excel'))) {
+          console.log('✅ [DEBUG] Content-Type válido para Excel');
+          return response.body as Blob;
+        } else {
+          console.error('❌ [DEBUG] Content-Type inválido:', contentType);
+          throw new Error(`El servidor no devolvió un Excel válido. Content-Type: ${contentType}`);
+        }
+      })
+    );
   }
 
   /**

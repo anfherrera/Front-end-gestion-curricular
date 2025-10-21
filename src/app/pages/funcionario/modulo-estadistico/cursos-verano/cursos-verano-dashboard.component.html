@@ -7,11 +7,15 @@
         Dashboard de Cursos de Verano
       </div>
       <p class="dashboard-subtitle">Análisis y Predicciones de Demanda</p>
+      <div class="last-update" *ngIf="!loading">
+        <mat-icon>schedule</mat-icon>
+        Última actualización: {{ ultimaActualizacion | date:'short' }}
+      </div>
     </div>
     <div class="header-actions">
-      <button mat-raised-button color="primary" (click)="actualizarDatos()" [disabled]="loading">
-        <mat-icon>refresh</mat-icon>
-        Actualizar datos
+      <button mat-raised-button color="primary" (click)="refrescarDatos()" [disabled]="loading">
+        <mat-icon [class.fa-spin]="loading">refresh</mat-icon>
+        {{ loading ? 'Actualizando...' : 'Actualizar' }}
       </button>
       <button mat-raised-button color="accent" (click)="exportarPDF()" [disabled]="loading || !data">
         <mat-icon>description</mat-icon>
@@ -21,18 +25,26 @@
         <mat-icon>table_chart</mat-icon>
         Exportar Excel
       </button>
-      <button mat-raised-button color="accent" (click)="cargarDatosDePrueba()">
-        <mat-icon>bug_report</mat-icon>
-        🧪 Datos de Prueba
+      <button mat-raised-button color="accent" (click)="verificarConexionBackend()">
+        <mat-icon>network_check</mat-icon>
+        🔍 Verificar Backend
+      </button>
+      <button mat-raised-button color="primary" (click)="cargarTendenciasTemporalesOptimizadas()">
+        <mat-icon>speed</mat-icon>
+        📈 Carga Optimizada
+      </button>
+      <button mat-raised-button color="warn" (click)="probarVelocidadCarga()">
+        <mat-icon>timer</mat-icon>
+        ⚡ Probar Velocidad
       </button>
     </div>
   </div>
 </div>
 
 <!-- ===== LOADING SPINNER ===== -->
-<div *ngIf="loading" class="loading-container">
-  <mat-spinner diameter="60"></mat-spinner>
-  <p>Cargando estadísticas de cursos de verano...</p>
+<div *ngIf="loading" class="loading-indicator">
+  <mat-spinner diameter="40"></mat-spinner>
+  <span>Actualizando datos...</span>
 </div>
 
 <!-- ===== ERROR MESSAGE ===== -->
@@ -112,11 +124,23 @@
   </div>
 
   <!-- ===== TABS PRINCIPALES ===== -->
-  <mat-tab-group class="main-tabs" animationDuration="300ms">
-    
-    <!-- ===== TAB: ANÁLISIS ACTUAL ===== -->
-    <mat-tab label="Análisis Actual">
-      <div class="tab-content">
+  <div class="dashboard-tabs">
+    <button 
+      (click)="cambiarTab('analisis-actual')" 
+      [class.active]="activeTab === 'analisis-actual'"
+      class="tab-button">
+      Análisis Actual
+    </button>
+    <button 
+      (click)="cambiarTab('predicciones')" 
+      [class.active]="activeTab === 'predicciones'"
+      class="tab-button">
+      Predicciones
+    </button>
+  </div>
+
+  <!-- ===== CONTENIDO DE ANÁLISIS ACTUAL ===== -->
+  <div *ngIf="activeTab === 'analisis-actual'" class="tab-content">
         
         <!-- ===== GRÁFICOS DE ANÁLISIS ===== -->
         <div class="charts-section">
@@ -129,8 +153,19 @@
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content>
-                <div class="chart-container">
-                  <canvas id="chartMaterias"></canvas>
+                <div class="chart-content">
+                  <!-- Mostrar loading mientras se carga la gráfica -->
+                  <div *ngIf="loading" class="chart-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando gráfica...
+                  </div>
+                  
+                  <!-- Canvas para la gráfica -->
+                  <canvas 
+                    id="materiasChart" 
+                    *ngIf="!loading && topMateriasData && topMateriasData.length > 0"
+                    width="400" 
+                    height="200">
+                  </canvas>
                 </div>
                 <!-- CONECTAR A LOS DATOS DEL BACKEND -->
                 <div class="chart-data" *ngIf="data && data.topMaterias && data.topMaterias.length > 0; else noDataMaterias">
@@ -154,8 +189,19 @@
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content>
-                <div class="chart-container">
-                  <canvas id="chartProgramas"></canvas>
+                <div class="chart-content">
+                  <!-- Mostrar loading mientras se carga la gráfica -->
+                  <div *ngIf="loading" class="chart-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando gráfica...
+                  </div>
+                  
+                  <!-- Canvas para la gráfica -->
+                  <canvas 
+                    id="programasChart" 
+                    *ngIf="!loading && analisisProgramaData && analisisProgramaData.length > 0"
+                    width="400" 
+                    height="200">
+                  </canvas>
                 </div>
                 <!-- CONECTAR A LOS DATOS DEL BACKEND -->
                 <div class="chart-data" *ngIf="data && data.analisisPorPrograma && data.analisisPorPrograma.length > 0; else noDataProgramas">
@@ -181,16 +227,33 @@
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content>
-                <!-- ELIMINAR el área blanca vacía y mostrar solo los datos -->
-                <div *ngIf="data && data.tendenciasTemporales && data.tendenciasTemporales.length > 0" class="tendencias-data">
-                  <div *ngFor="let tendencia of data.tendenciasTemporales" class="tendencia-card">
-                    <div class="tendencia-mes">{{ tendencia.mes }}</div>
-                    <div class="tendencia-solicitudes">{{ tendencia.solicitudes }} solicitudes</div>
-                    <div class="tendencia-porcentaje">{{ tendencia.porcentaje }}%</div>
+                <div class="chart-content">
+                  <!-- Mostrar loading mientras se carga la gráfica -->
+                  <div *ngIf="loading" class="chart-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando gráfica...
                   </div>
-                </div>
-                <div *ngIf="!data || !data.tendenciasTemporales || data.tendenciasTemporales.length === 0" class="no-data">
-                  No hay datos de tendencias temporales disponibles
+                  
+                  <!-- Canvas para la gráfica -->
+                  <canvas 
+                    id="tendenciasChart" 
+                    *ngIf="!loading && tendenciasTemporalesData && tendenciasTemporalesData.length > 0"
+                    width="400" 
+                    height="200">
+                  </canvas>
+                  
+                  <!-- Mostrar datos si no hay gráfica -->
+                  <div *ngIf="!loading && data && data.tendenciasTemporales && data.tendenciasTemporales.length > 0 && !tendenciasTemporalesData?.length" class="tendencias-data">
+                    <div *ngFor="let tendencia of data.tendenciasTemporales" class="tendencia-card">
+                      <div class="tendencia-mes">{{ tendencia.mes }}</div>
+                      <div class="tendencia-solicitudes">{{ tendencia.solicitudes }} solicitudes</div>
+                      <div class="tendencia-porcentaje">{{ tendencia.porcentaje }}%</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Mensaje si no hay datos -->
+                  <div *ngIf="!loading && (!data || !data.tendenciasTemporales || data.tendenciasTemporales.length === 0)" class="no-data">
+                    No hay datos de tendencias temporales disponibles
+                  </div>
                 </div>
               </mat-card-content>
             </mat-card>
@@ -275,11 +338,10 @@
           </div>
         </div>
       </div>
-    </mat-tab>
+  </div>
 
-    <!-- ===== TAB: PREDICCIONES ===== -->
-    <mat-tab label="Predicciones">
-      <div class="tab-content predicciones-content">
+  <!-- ===== CONTENIDO DE PREDICCIONES ===== -->
+  <div *ngIf="activeTab === 'predicciones'" class="tab-content predicciones-content">
         
         <!-- ===== RESUMEN DE PREDICCIONES ===== -->
         <div class="predicciones-resumen">
@@ -551,7 +613,4 @@
           </div>
         </div>
       </div>
-    </mat-tab>
-  </mat-tab-group>
   </div>
-</div>

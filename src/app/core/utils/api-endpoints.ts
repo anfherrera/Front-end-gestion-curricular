@@ -162,9 +162,21 @@ export class ApiEndpoints {
     // ===== NUEVO ENDPOINT - CURSOS DE VERANO =====
     CURSOS_VERANO: `${this.BASE_URL}/estadisticas/cursos-verano`,
     
+    // ===== ENDPOINTS OPTIMIZADOS - CURSOS DE VERANO =====
+    CURSOS_VERANO_TENDENCIAS_TEMPORALES: `${this.BASE_URL}/estadisticas/cursos-verano/tendencias-temporales`,
+    
     // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
-    EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`
+    EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`,
+    
+    // ===== ENDPOINTS DE EXPORTACIÓN ESPECÍFICOS =====
+    // Dashboard General
+    EXPORTAR_PDF_GENERAL: `${this.BASE_URL}/estadisticas/export/pdf/general`,
+    EXPORTAR_EXCEL_GENERAL: `${this.BASE_URL}/estadisticas/export/excel/general`,
+    
+    // Cursos de Verano
+    EXPORTAR_PDF_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/pdf/cursos-verano`,
+    EXPORTAR_EXCEL_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/excel/cursos-verano`
   };
 
   // ===== DOCUMENTOS =====

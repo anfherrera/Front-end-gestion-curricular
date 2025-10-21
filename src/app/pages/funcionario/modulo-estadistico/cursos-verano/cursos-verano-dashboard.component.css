@@ -31,6 +31,22 @@
   flex: 1;
 }
 
+.last-update {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 8px;
+}
+
+.last-update mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
 .header-actions {
   display: flex;
   gap: 10px;
@@ -78,6 +94,19 @@
   margin-top: 1rem;
   color: #6c757d;
   font-size: 1.1rem;
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px 0;
+  color: #6c757d;
+  font-size: 0.9rem;
 }
 
 .error-container {
@@ -870,6 +899,159 @@
 /* Ajustar altura automáticamente */
 .chart-container:has(.chart-content:empty) {
   display: none;
+}
+
+/* Estilos para tarjetas de predicciones */
+.prediccion-programa-card, .prediccion-temporal-card {
+  background: #f0f8ff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.prediccion-programa-card:hover, .prediccion-temporal-card:hover {
+  background: #e6f3ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.no-data {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+/* ===== ESTILOS PARA NAVEGACIÓN ENTRE PESTAÑAS ===== */
+
+.dashboard-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e9ecef;
+  background: white;
+  border-radius: 8px 8px 0 0;
+  padding: 0;
+}
+
+.tab-button {
+  padding: 15px 25px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6c757d;
+  flex: 1;
+  text-align: center;
+}
+
+.tab-button.active {
+  border-bottom-color: #00138C;
+  color: #00138C;
+  font-weight: bold;
+  background: #f8f9fa;
+}
+
+.tab-button:hover {
+  background-color: #f8f9fa;
+  color: #00138C;
+}
+
+.tab-button:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.tab-button:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+/* ===== ESTILOS PARA LOADING DE GRÁFICAS ===== */
+
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #6c757d;
+  font-size: 1.1em;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.chart-loading i {
+  margin-right: 10px;
+  font-size: 1.5em;
+  color: #00138C;
+}
+
+/* ===== MEJORAS PARA GRÁFICAS ===== */
+
+.chart-content {
+  position: relative;
+  min-height: 200px;
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* ===== RESPONSIVE PARA PESTAÑAS ===== */
+
+@media (max-width: 768px) {
+  .dashboard-tabs {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 0;
+  }
+  
+  .tab-button:first-child,
+  .tab-button:last-child {
+    border-radius: 0;
+  }
+  
+  .tab-button.active {
+    border-bottom-color: #00138C;
+    border-left: 3px solid #00138C;
+  }
+}
+
+/* ===== ESTILOS PARA SNACKBARS ===== */
+
+::ng-deep .success-snackbar {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+::ng-deep .success-snackbar .mat-simple-snackbar-action {
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar .mat-simple-snackbar-action {
+  color: white !important;
 }
 
 /* Tendencia Data */

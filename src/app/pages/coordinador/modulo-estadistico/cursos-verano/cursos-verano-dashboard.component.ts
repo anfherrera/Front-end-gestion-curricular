@@ -59,6 +59,17 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   data: CursosVeranoResponse | null = null;
   loading = true;
   error: string | null = null;
+  ultimaActualizacion: Date = new Date();
+  private intervalId: any;
+
+  // Propiedades para mapear datos del backend a las gráficas
+  tendenciasTemporalesData: any[] = [];
+  topMateriasData: any[] = [];
+  analisisProgramaData: any[] = [];
+  prediccionesData: any = {};
+
+  // Control de navegación entre pestañas
+  activeTab: string = 'analisis-actual';
 
   // ===== PROPIEDADES DE GRÁFICOS =====
   chartMaterias: Chart | null = null;
@@ -89,21 +100,69 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.cargarDatos();
+    // Cargar primero las tendencias temporales de forma optimizada para una carga más rápida
+    this.cargarTendenciasTemporalesOptimizadas();
+    
+    // Luego cargar todos los datos completos en segundo plano
+    setTimeout(() => {
+      this.cargarDatos();
+    }, 100);
+    
+    // Actualizar cada 30 segundos
+    this.intervalId = setInterval(() => {
+      this.cargarDatos();
+    }, 30000);
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.destruirGraficos();
+    
+    // Limpiar el intervalo de actualización automática
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   // ===== MÉTODOS DE CARGA DE DATOS =====
+
+  /**
+   * Carga solo las tendencias temporales de forma optimizada (MÁS RÁPIDO)
+   */
+  cargarTendenciasTemporalesOptimizadas(): void {
+    console.log('📈 [OPTIMIZADO] Cargando tendencias temporales de forma optimizada...');
+    
+    this.estadisticasService.getCursosVeranoTendenciasTemporales().subscribe({
+      next: (response) => {
+        console.log('✅ [OPTIMIZADO] Tendencias temporales recibidas:', response);
+        console.log('📊 [OPTIMIZADO] Datos:', response.tendenciasTemporales);
+        
+        // Asignar solo los datos de tendencias temporales
+        this.tendenciasTemporalesData = response.tendenciasTemporales || [];
+        
+        // Actualizar la gráfica inmediatamente
+        if (this.tendenciasTemporalesData.length > 0) {
+          this.crearGraficaTendencias();
+        }
+        
+        console.log('✅ [OPTIMIZADO] Tendencias temporales cargadas y gráfica actualizada');
+      },
+      error: (error) => {
+        console.error('❌ [OPTIMIZADO] Error al cargar tendencias temporales:', error);
+        // Fallback: cargar datos completos
+        this.cargarDatos();
+      }
+    });
+  }
 
   cargarDatos(): void {
     this.loading = true;
     this.error = null;
 
+    console.log('🔄 [DEBUG] Iniciando carga de datos...');
+    console.log('🔄 [DEBUG] Pestaña activa actual:', this.activeTab);
     console.log('🏖️ [DEBUG] Llamando al endpoint...');
+    console.log('🏖️ [DEBUG] URL del endpoint:', 'http://localhost:5000/api/estadisticas/cursos-verano');
     
     const subscription = this.estadisticasService.getCursosVeranoEstadisticas().subscribe({
       next: (response) => {
@@ -133,20 +192,32 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           predicciones: response.predicciones
         });
         
+        // Asignar datos reales del backend
         this.data = response;
+        this.tendenciasTemporalesData = response.tendenciasTemporales || [];
+        this.topMateriasData = response.topMaterias || [];
+        this.analisisProgramaData = response.analisisPorPrograma || [];
+        this.prediccionesData = response.predicciones || {};
+        
+        console.log('✅ [DEBUG] Pestaña activa después de recibir datos:', this.activeTab);
+        console.log('✅ [DEBUG] Datos mapeados:', {
+          tendenciasTemporalesData: this.tendenciasTemporalesData,
+          topMateriasData: this.topMateriasData,
+          analisisProgramaData: this.analisisProgramaData
+        });
+        
+        this.ultimaActualizacion = new Date(); // Actualizar timestamp
         this.loading = false;
         
-        // Crear gráficos después de cargar los datos
+        // Cargar gráficas después de un pequeño delay
         setTimeout(() => {
-          this.crearGraficos();
-        }, 100);
+          this.cargarGraficasAsync();
+        }, 200);
       },
       error: (error) => {
-        console.error('❌ [DEBUG] Error:', error);
-        console.log('🔄 Cargando datos de prueba...');
-        
-        // Cargar datos de prueba si falla la API
-        this.cargarDatosDePrueba();
+        console.error('❌ [DEBUG] Error al conectar con el backend:', error);
+        console.error('❌ [DEBUG] URL del endpoint:', 'http://localhost:5000/api/estadisticas/cursos-verano');
+        this.error = 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.';
         this.loading = false;
       }
     });
@@ -281,6 +352,337 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   actualizarDatos(): void {
     this.cargarDatos();
+  }
+
+  refrescarDatos(): void {
+    console.log('🔄 Refrescando datos de cursos de verano...');
+    this.cargarDatos();
+  }
+
+  // Método para cambiar de pestaña
+  cambiarTab(tab: string): void {
+    this.activeTab = tab;
+    console.log('🔄 [DEBUG] Cambiando a pestaña:', tab);
+    
+    // Cargar gráficas después de cambiar de pestaña
+    setTimeout(() => {
+      this.cargarGraficasAsync();
+    }, 100);
+  }
+
+  verificarConexionBackend(): void {
+    console.log('🔍 [DEBUG] Verificando conexión con el backend...');
+    console.log('🔍 [DEBUG] URL del endpoint:', 'http://localhost:5000/api/estadisticas/cursos-verano');
+    
+    // Hacer una llamada directa para verificar la conexión
+    fetch('http://localhost:5000/api/estadisticas/cursos-verano')
+      .then(response => {
+        console.log('🔍 [DEBUG] Respuesta del servidor:', response.status, response.statusText);
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+      })
+      .then(data => {
+        console.log('✅ [DEBUG] Datos recibidos del backend:', data);
+        console.log('✅ [DEBUG] Estructura de datos:', {
+          topMaterias: data.topMaterias,
+          analisisPorPrograma: data.analisisPorPrograma,
+          tendenciasTemporales: data.tendenciasTemporales,
+          predicciones: data.predicciones
+        });
+      })
+      .catch(error => {
+        console.error('❌ [DEBUG] Error de conexión:', error);
+        console.error('❌ [DEBUG] Verifique que el servidor backend esté ejecutándose en http://localhost:5000');
+      });
+  }
+
+  /**
+   * Prueba la diferencia de velocidad entre carga completa y optimizada
+   */
+  probarVelocidadCarga(): void {
+    console.log('⚡ [PRUEBA DE VELOCIDAD] Iniciando comparación de velocidad...');
+    
+    // Prueba 1: Carga completa
+    console.time('🔄 Carga Completa');
+    const inicioCompleta = performance.now();
+    
+    this.estadisticasService.getCursosVeranoEstadisticas().subscribe({
+      next: (response) => {
+        const finCompleta = performance.now();
+        const tiempoCompleta = finCompleta - inicioCompleta;
+        console.timeEnd('🔄 Carga Completa');
+        console.log(`🔄 [PRUEBA] Carga completa: ${tiempoCompleta.toFixed(2)}ms`);
+        
+        // Prueba 2: Carga optimizada
+        console.time('⚡ Carga Optimizada');
+        const inicioOptimizada = performance.now();
+        
+        this.estadisticasService.getCursosVeranoTendenciasTemporales().subscribe({
+          next: (responseOpt) => {
+            const finOptimizada = performance.now();
+            const tiempoOptimizada = finOptimizada - inicioOptimizada;
+            console.timeEnd('⚡ Carga Optimizada');
+            console.log(`⚡ [PRUEBA] Carga optimizada: ${tiempoOptimizada.toFixed(2)}ms`);
+            
+            // Comparación
+            const mejora = ((tiempoCompleta - tiempoOptimizada) / tiempoCompleta) * 100;
+            console.log(`🚀 [RESULTADO] Mejora de velocidad: ${mejora.toFixed(1)}% más rápido`);
+            
+            this.snackBar.open(
+              `⚡ Carga optimizada ${mejora.toFixed(1)}% más rápida (${tiempoOptimizada.toFixed(0)}ms vs ${tiempoCompleta.toFixed(0)}ms)`, 
+              'Cerrar', 
+              { duration: 5000, panelClass: ['success-snackbar'] }
+            );
+          },
+          error: (error) => {
+            console.error('❌ Error en carga optimizada:', error);
+          }
+        });
+      },
+      error: (error) => {
+        console.error('❌ Error en carga completa:', error);
+      }
+    });
+  }
+
+  // ===== MÉTODOS PARA ACTUALIZAR GRÁFICAS CON DATOS REALES =====
+
+  // Método para cargar gráficas de forma asíncrona
+  cargarGraficasAsync(): void {
+    console.log('📊 Cargando gráficas de forma asíncrona...');
+    console.log('📊 Pestaña activa:', this.activeTab);
+    
+    // Cargar gráficas después de que los datos estén listos
+    setTimeout(() => {
+      this.inicializarGraficas();
+    }, 100); // Pequeño delay para asegurar que el DOM esté listo
+  }
+
+  inicializarGraficas(): void {
+    console.log('📊 Inicializando gráficas...');
+    
+    // Inicializar gráfica de tendencias temporales
+    if (this.tendenciasTemporalesData && this.tendenciasTemporalesData.length > 0) {
+      this.crearGraficaTendencias();
+    }
+    
+    // Inicializar gráfica de top materias
+    if (this.topMateriasData && this.topMateriasData.length > 0) {
+      this.crearGraficaTopMaterias();
+    }
+    
+    // Inicializar gráfica de análisis por programa
+    if (this.analisisProgramaData && this.analisisProgramaData.length > 0) {
+      this.crearGraficaAnalisisPrograma();
+    }
+  }
+
+  actualizarGraficas(): void {
+    console.log('📊 Actualizando gráficas con datos del backend...');
+    
+    // Actualizar gráfica de tendencias temporales
+    if (this.tendenciasTemporalesData && this.tendenciasTemporalesData.length > 0) {
+      this.actualizarGraficaTendencias();
+    }
+    
+    // Actualizar gráfica de top materias
+    if (this.topMateriasData && this.topMateriasData.length > 0) {
+      this.actualizarGraficaTopMaterias();
+    }
+    
+    // Actualizar gráfica de análisis por programa
+    if (this.analisisProgramaData && this.analisisProgramaData.length > 0) {
+      this.actualizarGraficaAnalisisPrograma();
+    }
+    
+    // Crear gráficos adicionales
+    this.crearGraficos();
+  }
+
+  actualizarGraficaTendencias(): void {
+    console.log('📈 Actualizando gráfica de tendencias temporales con datos:', this.tendenciasTemporalesData);
+    
+    // Mapear datos del backend a la estructura de la gráfica
+    const labels = this.tendenciasTemporalesData.map(t => t.mes);
+    const data = this.tendenciasTemporalesData.map(t => t.solicitudes);
+    
+    console.log('📈 Labels:', labels);
+    console.log('📈 Data:', data);
+    
+    // Si existe la gráfica, actualizarla
+    if (this.chartTendencias) {
+      this.chartTendencias.data.labels = labels;
+      this.chartTendencias.data.datasets[0].data = data;
+      this.chartTendencias.update();
+    }
+  }
+
+  actualizarGraficaTopMaterias(): void {
+    console.log('🍩 Actualizando gráfica de top materias con datos:', this.topMateriasData);
+    
+    const labels = this.topMateriasData.map(m => m.nombre);
+    const data = this.topMateriasData.map(m => m.solicitudes);
+    
+    console.log('🍩 Labels:', labels);
+    console.log('🍩 Data:', data);
+    
+    // Si existe la gráfica, actualizarla
+    if (this.chartMaterias) {
+      this.chartMaterias.data.labels = labels;
+      this.chartMaterias.data.datasets[0].data = data;
+      this.chartMaterias.update();
+    }
+  }
+
+  actualizarGraficaAnalisisPrograma(): void {
+    console.log('📊 Actualizando gráfica de análisis por programa con datos:', this.analisisProgramaData);
+    
+    const labels = this.analisisProgramaData.map(p => p.nombre);
+    const data = this.analisisProgramaData.map(p => p.solicitudes);
+    
+    console.log('📊 Labels:', labels);
+    console.log('📊 Data:', data);
+    
+    // Si existe la gráfica, actualizarla
+    if (this.chartProgramas) {
+      this.chartProgramas.data.labels = labels;
+      this.chartProgramas.data.datasets[0].data = data;
+      this.chartProgramas.update();
+    }
+  }
+
+  // ===== MÉTODOS PARA CREAR GRÁFICAS =====
+
+  crearGraficaTendencias(): void {
+    console.log('📈 Creando gráfica de tendencias temporales...');
+    
+    const ctx = document.getElementById('tendenciasChart') as HTMLCanvasElement;
+    if (!ctx) {
+      console.log('❌ No se encontró el canvas tendenciasChart');
+      return;
+    }
+    
+    // Destruir gráfica anterior si existe
+    if (this.chartTendencias) {
+      this.chartTendencias.destroy();
+    }
+    
+    // Crear nueva gráfica
+    this.chartTendencias = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: this.tendenciasTemporalesData.map(t => t.mes),
+        datasets: [{
+          label: 'Solicitudes',
+          data: this.tendenciasTemporalesData.map(t => t.solicitudes),
+          borderColor: '#36A2EB',
+          backgroundColor: 'rgba(54, 162, 235, 0.1)',
+          fill: true,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1000 // Animación más rápida
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+    
+    console.log('✅ Gráfica de tendencias creada exitosamente');
+  }
+
+  crearGraficaTopMaterias(): void {
+    console.log('🍩 Creando gráfica de top materias...');
+    
+    const ctx = document.getElementById('materiasChart') as HTMLCanvasElement;
+    if (!ctx) {
+      console.log('❌ No se encontró el canvas materiasChart');
+      return;
+    }
+    
+    // Destruir gráfica anterior si existe
+    if (this.chartMaterias) {
+      this.chartMaterias.destroy();
+    }
+    
+    // Crear nueva gráfica
+    this.chartMaterias = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: this.topMateriasData.map(m => m.nombre),
+        datasets: [{
+          data: this.topMateriasData.map(m => m.solicitudes),
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1000
+        }
+      }
+    });
+    
+    console.log('✅ Gráfica de materias creada exitosamente');
+  }
+
+  crearGraficaAnalisisPrograma(): void {
+    console.log('📊 Creando gráfica de análisis por programa...');
+    
+    const ctx = document.getElementById('programasChart') as HTMLCanvasElement;
+    if (!ctx) {
+      console.log('❌ No se encontró el canvas programasChart');
+      return;
+    }
+    
+    // Destruir gráfica anterior si existe
+    if (this.chartProgramas) {
+      this.chartProgramas.destroy();
+    }
+    
+    // Crear nueva gráfica
+    this.chartProgramas = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: this.analisisProgramaData.map(p => p.nombre),
+        datasets: [{
+          label: 'Solicitudes por Programa',
+          data: this.analisisProgramaData.map(p => p.solicitudes),
+          backgroundColor: '#FF6384'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1000
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+    
+    console.log('✅ Gráfica de programas creada exitosamente');
   }
 
   // ===== MÉTODOS DE GRÁFICOS =====
@@ -746,16 +1148,106 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   // ===== MÉTODOS DE EXPORTACIÓN =====
 
   exportarPDF(): void {
-    // TODO: Implementar exportación a PDF
-    this.snackBar.open('Funcionalidad de exportación PDF en desarrollo', 'Cerrar', {
-      duration: 3000
+    console.log('📄 [DEBUG] Iniciando exportación a PDF de Cursos de Verano...');
+    
+    this.estadisticasService.exportarReporteCursosVerano().subscribe({
+      next: (blob: Blob) => {
+        console.log('✅ [DEBUG] PDF recibido del backend:', blob);
+        console.log('📊 [DEBUG] Tipo de archivo:', blob.type);
+        console.log('📊 [DEBUG] Tamaño del archivo:', blob.size, 'bytes');
+        
+        // ✅ Verificar que sea un blob válido
+        if (blob && blob.size > 0) {
+          console.log('✅ [DEBUG] Blob válido para PDF');
+          
+          // Crear URL del blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Crear enlace de descarga
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `reporte_cursos_verano_${new Date().toISOString().split('T')[0]}.pdf`;
+          
+          // Simular clic para descargar
+          document.body.appendChild(link);
+          link.click();
+          
+          // Limpiar
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          
+          this.snackBar.open('✅ Reporte PDF descargado exitosamente', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        } else {
+          console.error('❌ [DEBUG] El archivo PDF está vacío o corrupto');
+          this.snackBar.open('❌ El archivo PDF está vacío o corrupto', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      },
+      error: (error) => {
+        console.error('❌ [DEBUG] Error al exportar PDF:', error);
+        
+        this.snackBar.open('❌ Error al exportar el reporte PDF', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
     });
   }
 
   exportarExcel(): void {
-    // TODO: Implementar exportación a Excel
-    this.snackBar.open('Funcionalidad de exportación Excel en desarrollo', 'Cerrar', {
-      duration: 3000
+    console.log('📊 [DEBUG] Iniciando exportación a Excel de Cursos de Verano...');
+    
+    this.estadisticasService.exportarExcelCursosVerano().subscribe({
+      next: (blob: Blob) => {
+        console.log('✅ [DEBUG] Excel recibido del backend:', blob);
+        console.log('📊 [DEBUG] Tipo de archivo:', blob.type);
+        console.log('📊 [DEBUG] Tamaño del archivo:', blob.size, 'bytes');
+        
+        // ✅ Verificar que sea un blob válido
+        if (blob && blob.size > 0) {
+          console.log('✅ [DEBUG] Blob válido para Excel');
+          
+          // Crear URL del blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Crear enlace de descarga
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `reporte_cursos_verano_${new Date().toISOString().split('T')[0]}.xlsx`;
+          
+          // Simular clic para descargar
+          document.body.appendChild(link);
+          link.click();
+          
+          // Limpiar
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          
+          this.snackBar.open('✅ Reporte Excel descargado exitosamente', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        } else {
+          console.error('❌ [DEBUG] El archivo Excel está vacío o corrupto');
+          this.snackBar.open('❌ El archivo Excel está vacío o corrupto', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      },
+      error: (error) => {
+        console.error('❌ [DEBUG] Error al exportar Excel:', error);
+        
+        this.snackBar.open('❌ Error al exportar el reporte Excel', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
     });
   }
 }

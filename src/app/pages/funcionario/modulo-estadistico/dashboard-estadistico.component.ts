@@ -1320,34 +1320,53 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Exporta el reporte de estadísticas como archivo de texto (ACTUALIZADO)
    */
   async exportarPDF(): Promise<void> {
-    console.log('📄 Iniciando exportación de reporte de texto desde el backend...');
+    console.log('📄 [DEBUG] Iniciando exportación de PDF del Dashboard General...');
     
-    // Obtener filtros actuales
-    const filtros: FiltroEstadisticas = {};
-    if (this.filtrosForm) {
-      const formValue = this.filtrosForm.value;
-      if (formValue.proceso) filtros.proceso = formValue.proceso;
-      if (formValue.programa) filtros.programa = formValue.programa;
-      if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
-      if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
-    }
-
-    console.log('🔍 Filtros aplicados:', filtros);
     this.loading = true;
-    this.mostrarExito('Descargando reporte de estadísticas...');
+    this.mostrarExito('Descargando reporte PDF del Dashboard General...');
 
     try {
-      // Usar método con fetch para mejor control de errores
-      await this.estadisticasService.exportarPDFConFetch(filtros);
-      this.loading = false;
-      this.mostrarExito('Reporte de estadísticas descargado exitosamente');
+      // Usar el nuevo endpoint específico para Dashboard General
+      this.estadisticasService.exportarReporteGeneral().subscribe({
+        next: (blob: Blob) => {
+          console.log('✅ [DEBUG] PDF del Dashboard General recibido:', blob);
+          console.log('📊 [DEBUG] Tipo de archivo:', blob.type);
+          console.log('📊 [DEBUG] Tamaño del archivo:', blob.size, 'bytes');
+          
+          if (blob && blob.size > 0) {
+            // Crear URL del blob
+            const url = window.URL.createObjectURL(blob);
+            
+            // Crear enlace de descarga
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `reporte_dashboard_general_${new Date().toISOString().split('T')[0]}.pdf`;
+            
+            // Simular clic para descargar
+            document.body.appendChild(link);
+            link.click();
+            
+            // Limpiar
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            this.loading = false;
+            this.mostrarExito('Reporte PDF del Dashboard General descargado exitosamente');
+          } else {
+            this.loading = false;
+            this.mostrarError('El archivo PDF está vacío o corrupto');
+          }
+        },
+        error: (error) => {
+          console.error('❌ [DEBUG] Error al exportar PDF del Dashboard General:', error);
+          this.loading = false;
+          this.mostrarError('Error al exportar el reporte PDF del Dashboard General');
+        }
+      });
     } catch (error) {
       console.error('❌ Error al exportar reporte:', error);
       this.loading = false;
-      this.mostrarError('Error al descargar el reporte. Intenta con el método directo.');
-      
-      // Fallback al método directo
-      this.estadisticasService.exportarPDFDirecto(filtros);
+      this.mostrarError('Error al descargar el reporte PDF del Dashboard General');
     }
   }
 
@@ -1355,34 +1374,53 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Exporta los datos del dashboard a Excel usando el endpoint del backend (ACTUALIZADO)
    */
   async exportarExcel(): Promise<void> {
-    console.log('📊 Iniciando exportación a Excel desde el backend...');
+    console.log('📊 [DEBUG] Iniciando exportación de Excel del Dashboard General...');
     
-    // Obtener filtros actuales
-    const filtros: FiltroEstadisticas = {};
-    if (this.filtrosForm) {
-      const formValue = this.filtrosForm.value;
-      if (formValue.proceso) filtros.proceso = formValue.proceso;
-      if (formValue.programa) filtros.programa = formValue.programa;
-      if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
-      if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
-    }
-
-    console.log('🔍 Filtros aplicados:', filtros);
     this.loading = true;
-    this.mostrarExito('Descargando Excel desde el backend...');
+    this.mostrarExito('Descargando Excel del Dashboard General...');
 
     try {
-      // Usar método con fetch para mejor control de errores
-      await this.estadisticasService.exportarExcelConFetch(filtros);
-      this.loading = false;
-      this.mostrarExito('Excel descargado exitosamente');
+      // Usar el nuevo endpoint específico para Dashboard General
+      this.estadisticasService.exportarExcelGeneral().subscribe({
+        next: (blob: Blob) => {
+          console.log('✅ [DEBUG] Excel del Dashboard General recibido:', blob);
+          console.log('📊 [DEBUG] Tipo de archivo:', blob.type);
+          console.log('📊 [DEBUG] Tamaño del archivo:', blob.size, 'bytes');
+          
+          if (blob && blob.size > 0) {
+            // Crear URL del blob
+            const url = window.URL.createObjectURL(blob);
+            
+            // Crear enlace de descarga
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `reporte_dashboard_general_${new Date().toISOString().split('T')[0]}.xlsx`;
+            
+            // Simular clic para descargar
+            document.body.appendChild(link);
+            link.click();
+            
+            // Limpiar
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            this.loading = false;
+            this.mostrarExito('Reporte Excel del Dashboard General descargado exitosamente');
+          } else {
+            this.loading = false;
+            this.mostrarError('El archivo Excel está vacío o corrupto');
+          }
+        },
+        error: (error) => {
+          console.error('❌ [DEBUG] Error al exportar Excel del Dashboard General:', error);
+          this.loading = false;
+          this.mostrarError('Error al exportar el reporte Excel del Dashboard General');
+        }
+      });
     } catch (error) {
       console.error('❌ Error al exportar Excel:', error);
       this.loading = false;
-      this.mostrarError('Error al descargar el Excel. Intenta con el método directo.');
-      
-      // Fallback al método directo
-      this.estadisticasService.exportarExcelDirecto(filtros);
+      this.mostrarError('Error al descargar el reporte Excel del Dashboard General');
     }
   }
 }
