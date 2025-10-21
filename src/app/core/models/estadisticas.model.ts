@@ -6,6 +6,7 @@ export interface EstadisticasGlobales {
   solicitudesEnviadas?: number;
   totalEstudiantes: number;
   totalProgramas: number;
+  predicciones?: PrediccionesGlobales;
 }
 
 export interface EstadisticasProceso {
@@ -100,6 +101,7 @@ export interface EstadisticasGlobalesAPI {
   porPrograma: {
     [key: string]: number;
   };
+  predicciones?: PrediccionesGlobales;
 }
 
 /**
@@ -325,6 +327,15 @@ export interface PrediccionesCursosVerano {
   confiabilidad: "ALTA" | "MEDIA" | "BAJA";
   fechaPrediccion: string;
   metodologia: string;
+  // Nuevos campos para la pestaña de Recomendaciones
+  estadisticasRecomendaciones?: {
+    totalRecomendaciones: number;
+    prioridadAlta: number;
+    prioridadMedia: number;
+    prioridadBaja: number;
+    alertasCriticas: number;
+  };
+  alertasCriticas?: any[];
 }
 
 export interface TopMateria {
@@ -377,4 +388,43 @@ export interface CursosVeranoResponse {
   estadosSolicitudes: EstadosSolicitudes;
   recomendaciones: Recomendacion[];
   predicciones: PrediccionesCursosVerano;
+}
+
+// ===== INTERFACES PARA PREDICCIONES GLOBALES (DASHBOARD GENERAL) =====
+
+export interface PrediccionItem {
+  nombre: string;
+  tipo: 'PROCESO' | 'PROGRAMA';
+  demandaActual: number;
+  demandaEstimada: number;
+  variacion: number;
+  porcentajeVariacion: number;
+  tendencia: 'CRECIENTE' | 'DECRECIENTE' | 'ESTABLE';
+  pendiente: number;
+  rSquared: number;
+  modeloUtilizado: string;
+}
+
+export interface PrediccionesGlobales {
+  // Predicción Global
+  demandaTotalActual: number;
+  demandaTotalEstimada: number;
+  variacionTotal: number;
+  porcentajeVariacionTotal: number;
+  
+  // Predicciones por Proceso
+  procesosConTendenciaCreciente: PrediccionItem[];
+  procesosConTendenciaDecreciente: PrediccionItem[];
+  procesosEstables: PrediccionItem[];
+  
+  // Predicciones por Programa
+  programasConTendenciaCreciente: PrediccionItem[];
+  programasConTendenciaDecreciente: PrediccionItem[];
+  programasEstables: PrediccionItem[];
+  
+  // Metadata
+  metodologia: string;
+  confiabilidad: 'ALTA' | 'MEDIA' | 'BAJA';
+  fechaPrediccion: string;
+  umbralTendencia: number;
 }

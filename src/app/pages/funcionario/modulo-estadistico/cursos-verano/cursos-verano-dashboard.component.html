@@ -137,6 +137,12 @@
       class="tab-button">
       Predicciones
     </button>
+    <button 
+      (click)="cambiarTab('recomendaciones')" 
+      [class.active]="activeTab === 'recomendaciones'"
+      class="tab-button">
+      🔮 Recomendaciones
+    </button>
   </div>
 
   <!-- ===== CONTENIDO DE ANÁLISIS ACTUAL ===== -->
@@ -613,4 +619,141 @@
           </div>
         </div>
       </div>
+  </div>
+
+  <!-- ===== CONTENIDO DE RECOMENDACIONES ===== -->
+  <div *ngIf="activeTab === 'recomendaciones'" class="tab-content recomendaciones-tab">
+    
+    <!-- RESUMEN DE RECOMENDACIONES -->
+    <mat-card class="resumen-recomendaciones-card">
+      <mat-card-header>
+        <mat-card-title>📊 Resumen de Recomendaciones</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-grid">
+          <div class="stat alta">
+            <div class="numero">{{ estadisticasRecomendaciones.prioridadAlta || 0 }}</div>
+            <div class="label">🔴 ALTAS</div>
+          </div>
+          <div class="stat media">
+            <div class="numero">{{ estadisticasRecomendaciones.prioridadMedia || 0 }}</div>
+            <div class="label">🟡 MEDIAS</div>
+          </div>
+          <div class="stat baja">
+            <div class="numero">{{ estadisticasRecomendaciones.prioridadBaja || 0 }}</div>
+            <div class="label">🟢 BAJAS</div>
+          </div>
+          <div class="stat critica" *ngIf="estadisticasRecomendaciones.alertasCriticas > 0">
+            <div class="numero">{{ estadisticasRecomendaciones.alertasCriticas }}</div>
+            <div class="label">⚠️ CRÍTICAS</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ALERTAS CRÍTICAS -->
+    <mat-card class="alerta-critica-card" *ngFor="let alerta of alertasCriticas">
+      <mat-card-content>
+        <h3>{{ alerta.titulo }}</h3>
+        <p>{{ alerta.descripcion }}</p>
+        <div class="acciones-urgentes">
+          <strong>🚨 ACCIONES URGENTES:</strong>
+          <ul>
+            <li *ngFor="let accion of alerta.acciones">{{ accion }}</li>
+          </ul>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- RECOMENDACIONES -->
+    <div class="recomendaciones-list">
+      <mat-card class="rec-card" 
+           *ngFor="let rec of recomendaciones"
+           [style.border-left-color]="getColorPrioridad(rec.prioridad)">
+        
+        <mat-card-content>
+          <div class="header">
+            <span class="badge" [style.background]="getColorPrioridad(rec.prioridad)">
+              {{ getIconoPrioridad(rec.prioridad) }} {{ rec.prioridad }}
+            </span>
+            <h3>{{ rec.titulo }}</h3>
+            <button mat-icon-button class="btn-expandir" (click)="toggleExpandir(rec.id)">
+              <mat-icon>{{ estaExpandida(rec.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </div>
+          
+          <p class="descripcion">{{ rec.descripcion }}</p>
+          
+          <!-- PROYECCIÓN -->
+          <div class="seccion" *ngIf="rec.demandaActual">
+            <strong>📈 PROYECCIÓN:</strong>
+            <p>{{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes 
+               ({{ rec.porcentajeCrecimiento > 0 ? '+' : '' }}{{ rec.porcentajeCrecimiento }}%)</p>
+          </div>
+          
+          <!-- RECURSOS -->
+          <div class="seccion" *ngIf="rec.recursos">
+            <strong>👥 RECURSOS NECESARIOS:</strong>
+            <ul>
+              <li>{{ rec.recursos.docentes }} docente(s) especializado(s)</li>
+              <li>{{ rec.recursos.aulas }} aula(s) o laboratorio(s)</li>
+              <li *ngIf="rec.recursos.laboratorios">{{ rec.recursos.laboratorios }} laboratorio(s)</li>
+              <li>{{ rec.recursos.gruposRecomendados }} grupo(s) de {{ rec.recursos.capacidadPorGrupo }} estudiantes</li>
+            </ul>
+          </div>
+          
+          <!-- ACCIONES -->
+          <div class="seccion">
+            <strong>✅ ACCIONES RECOMENDADAS:</strong>
+            <div class="checklist">
+              <div class="checklist-item" *ngFor="let accion of rec.acciones; let i = index">
+                <mat-checkbox [id]="rec.id + '_' + i">{{ accion }}</mat-checkbox>
+              </div>
+            </div>
+          </div>
+          
+          <!-- DETALLES EXPANDIDOS -->
+          <div *ngIf="estaExpandida(rec.id)" class="detalles-expandidos">
+            
+            <div class="seccion" *ngIf="rec.cronograma">
+              <strong>📅 CRONOGRAMA:</strong>
+              <ul>
+                <li>⏰ Inicio gestión: {{ rec.cronograma.inicioGestion }}</li>
+                <li>📢 Publicación oferta: {{ rec.cronograma.publicacionOferta }}</li>
+                <li>👨‍🏫 Contratación docentes: {{ rec.cronograma.contratacionDocentes }}</li>
+                <li>📝 Inicio inscripciones: {{ rec.cronograma.inicioInscripciones }}</li>
+              </ul>
+            </div>
+            
+            <div class="seccion" *ngIf="rec.impacto">
+              <strong>💰 IMPACTO ESPERADO:</strong>
+              <ul>
+                <li>Estudiantes atendidos: {{ rec.impacto.estudiantesAtendidos }}</li>
+                <li>Estudiantes beneficiados: {{ rec.impacto.estudiantesBeneficiados }}</li>
+                <li>Cobertura objetivo: {{ rec.impacto.tasaCoberturaObjetivo }}</li>
+                <li>Inversión estimada: {{ rec.impacto.inversionEstimada }}</li>
+              </ul>
+            </div>
+            
+            <div class="seccion justificacion">
+              <strong>💡 JUSTIFICACIÓN:</strong>
+              <p>{{ rec.justificacion }}</p>
+            </div>
+            
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Mensaje si no hay recomendaciones -->
+    <mat-card *ngIf="!recomendaciones || recomendaciones.length === 0" class="no-data-card">
+      <mat-card-content>
+        <div class="no-data">
+          <mat-icon>info</mat-icon>
+          <p>No hay recomendaciones disponibles en este momento.</p>
+          <p>Las recomendaciones se generan automáticamente basándose en el análisis de tendencias y predicciones.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
   </div>

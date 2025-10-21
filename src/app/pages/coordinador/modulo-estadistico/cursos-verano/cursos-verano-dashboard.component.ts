@@ -12,6 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Subscription } from 'rxjs';
 import { Chart, ChartConfiguration, ChartData, ChartOptions, registerables } from 'chart.js';
 
@@ -49,7 +50,8 @@ Chart.register(...registerables);
     MatDividerModule,
     MatListModule,
     MatExpansionModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatCheckboxModule
   ],
   templateUrl: './cursos-verano-dashboard.component.html',
   styleUrls: ['./cursos-verano-dashboard.component.css']
@@ -70,6 +72,12 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   // Control de navegación entre pestañas
   activeTab: string = 'analisis-actual';
+  
+  // Propiedades para Predicciones y Recomendaciones
+  recomendaciones: any[] = [];
+  alertasCriticas: any[] = [];
+  estadisticasRecomendaciones: any = {};
+  expandidas = new Set<string>();
 
   // ===== PROPIEDADES DE GRÁFICOS =====
   chartMaterias: Chart | null = null;
@@ -198,6 +206,20 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         this.topMateriasData = response.topMaterias || [];
         this.analisisProgramaData = response.analisisPorPrograma || [];
         this.prediccionesData = response.predicciones || {};
+        
+        // ✅ NUEVO: Extraer recomendaciones y alertas
+        if (response.predicciones) {
+          this.recomendaciones = response.predicciones.recomendacionesFuturas || [];
+          this.alertasCriticas = response.predicciones.alertasCriticas || [];
+          this.estadisticasRecomendaciones = response.predicciones.estadisticasRecomendaciones || {};
+          
+          // Ordenar recomendaciones por prioridad
+          this.ordenarPorPrioridad();
+          
+          console.log('🔮 [RECOMENDACIONES] Recomendaciones futuras:', this.recomendaciones.length);
+          console.log('⚠️ [ALERTAS] Alertas críticas:', this.alertasCriticas.length);
+          console.log('📊 [STATS] Estadísticas:', this.estadisticasRecomendaciones);
+        }
         
         console.log('✅ [DEBUG] Pestaña activa después de recibir datos:', this.activeTab);
         console.log('✅ [DEBUG] Datos mapeados:', {
@@ -1143,6 +1165,65 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       duration: 5000,
       panelClass: ['error-snackbar']
     });
+  }
+
+  // ===== MÉTODOS PARA PREDICCIONES Y RECOMENDACIONES =====
+
+  /**
+   * Ordena las recomendaciones por prioridad
+   */
+  ordenarPorPrioridad(): void {
+    const orden: any = { 'CRITICA': 0, 'ALTA': 1, 'MEDIA': 2, 'BAJA': 3 };
+    this.recomendaciones.sort((a, b) => {
+      const prioridadA = orden[a.prioridad] !== undefined ? orden[a.prioridad] : 999;
+      const prioridadB = orden[b.prioridad] !== undefined ? orden[b.prioridad] : 999;
+      return prioridadA - prioridadB;
+    });
+  }
+
+  /**
+   * Alterna el estado expandido de una recomendación
+   */
+  toggleExpandir(id: string): void {
+    if (this.expandidas.has(id)) {
+      this.expandidas.delete(id);
+    } else {
+      this.expandidas.add(id);
+    }
+    console.log('🔄 Toggle expandir:', id, 'Expandida:', this.expandidas.has(id));
+  }
+
+  /**
+   * Verifica si una recomendación está expandida
+   */
+  estaExpandida(id: string): boolean {
+    return this.expandidas.has(id);
+  }
+
+  /**
+   * Obtiene el color según la prioridad
+   */
+  getColorPrioridad(prioridad: string): string {
+    const colores: any = {
+      'CRITICA': '#DC2626',
+      'ALTA': '#EF4444',
+      'MEDIA': '#F59E0B',
+      'BAJA': '#10B981'
+    };
+    return colores[prioridad] || '#6B7280';
+  }
+
+  /**
+   * Obtiene el icono según la prioridad
+   */
+  getIconoPrioridad(prioridad: string): string {
+    const iconos: any = {
+      'CRITICA': '🔴',
+      'ALTA': '🔴',
+      'MEDIA': '🟡',
+      'BAJA': '🟢'
+    };
+    return iconos[prioridad] || '⚪';
   }
 
   // ===== MÉTODOS DE EXPORTACIÓN =====

@@ -82,6 +82,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // KPIs
   kpis: KPIData[] = [];
   
+  // Predicciones (Regresión Lineal)
+  prediccionesGlobales: any = null;
+  mostrarPredicciones: boolean = false;
+  
   // Charts
   chartProcesos: Chart | null = null;
   chartTendencia: Chart | null = null;
@@ -145,6 +149,18 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           
           // Convertir datos del API al formato del dashboard
           this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
+          
+          // ✅ NUEVO: Extraer predicciones con Regresión Lineal
+          if (datosAPI.predicciones) {
+            this.prediccionesGlobales = datosAPI.predicciones;
+            this.mostrarPredicciones = true;
+            console.log('🔮 [PREDICCIONES] Predicciones recibidas:', this.prediccionesGlobales);
+            console.log('📊 [PREDICCIONES] Demanda actual:', this.prediccionesGlobales.demandaTotalActual);
+            console.log('📈 [PREDICCIONES] Demanda estimada:', this.prediccionesGlobales.demandaTotalEstimada);
+            console.log('🔺 [PREDICCIONES] Variación:', this.prediccionesGlobales.variacionTotal, `(${this.prediccionesGlobales.porcentajeVariacionTotal}%)`);
+            console.log('✅ [PREDICCIONES] Confiabilidad:', this.prediccionesGlobales.confiabilidad);
+            console.log('🔬 [PREDICCIONES] Metodología:', this.prediccionesGlobales.metodologia);
+          }
           
           this.generarKPIs();
           this.crearCharts();
@@ -555,18 +571,76 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos reales del backend para el gráfico de procesos
+   * ✅ CORREGIDO: Usa el endpoint correcto /api/estadisticas/globales
    */
   private async cargarDatosRealesProcesos(): Promise<any> {
     try {
       console.log('🔄 Cargando datos reales de procesos desde el backend...');
-      const response = await fetch('http://localhost:5000/api/estadisticas/estadisticas-por-proceso-funcional');
-      const data = await response.json();
-      console.log('✅ Datos reales de procesos obtenidos:', data);
-      return data;
+      console.log('📡 [ENDPOINT CORREGIDO] Usando: /api/estadisticas/globales');
+      
+      // ✅ Usar el endpoint correcto que SÍ existe
+      const data: any = await this.estadisticasService.getEstadisticasGlobales({}).toPromise();
+      
+      console.log('✅ Datos globales obtenidos:', data);
+      console.log('📊 Datos de procesos (porTipoProceso):', data.porTipoProceso);
+      
+      // Convertir el objeto porTipoProceso a la estructura esperada
+      if (data && data.porTipoProceso) {
+        const estadisticasPorProceso: any = {};
+        
+        Object.entries(data.porTipoProceso).forEach(([nombre, cantidad]) => {
+          estadisticasPorProceso[nombre] = {
+            totalSolicitudes: cantidad as number,
+            // Agregar predicción si existe
+            prediccionDemanda: this.obtenerPrediccionProceso(nombre, data.predicciones)
+          };
+        });
+        
+        console.log('✅ Estadísticas por proceso procesadas:', estadisticasPorProceso);
+        
+        return {
+          estadisticasPorProceso: estadisticasPorProceso
+        };
+      } else {
+        console.warn('⚠️ No hay datos de procesos en la respuesta');
+        return null;
+      }
+      
     } catch (error) {
       console.error('❌ Error obteniendo datos reales de procesos:', error);
       return null;
     }
+  }
+
+  /**
+   * Obtiene la predicción de demanda para un proceso específico
+   */
+  private obtenerPrediccionProceso(nombreProceso: string, predicciones: any): number | null {
+    if (!predicciones) {
+      return null;
+    }
+    
+    // Buscar en procesos crecientes
+    if (predicciones.procesosConTendenciaCreciente) {
+      const proceso = predicciones.procesosConTendenciaCreciente.find(
+        (p: any) => p.nombre === nombreProceso
+      );
+      if (proceso) {
+        return proceso.demandaEstimada;
+      }
+    }
+    
+    // Buscar en procesos decrecientes
+    if (predicciones.procesosConTendenciaDecreciente) {
+      const procesoDecreciente = predicciones.procesosConTendenciaDecreciente.find(
+        (p: any) => p.nombre === nombreProceso
+      );
+      if (procesoDecreciente) {
+        return procesoDecreciente.demandaEstimada;
+      }
+    }
+    
+    return null;
   }
 
   /**
