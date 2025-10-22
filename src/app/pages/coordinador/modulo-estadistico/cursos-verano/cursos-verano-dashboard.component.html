@@ -25,18 +25,6 @@
         <mat-icon>table_chart</mat-icon>
         Exportar Excel
       </button>
-      <button mat-raised-button color="accent" (click)="verificarConexionBackend()">
-        <mat-icon>network_check</mat-icon>
-        🔍 Verificar Backend
-      </button>
-      <button mat-raised-button color="primary" (click)="cargarTendenciasTemporalesOptimizadas()">
-        <mat-icon>speed</mat-icon>
-        📈 Carga Optimizada
-      </button>
-      <button mat-raised-button color="warn" (click)="probarVelocidadCarga()">
-        <mat-icon>timer</mat-icon>
-        ⚡ Probar Velocidad
-      </button>
     </div>
   </div>
 </div>
@@ -121,8 +109,7 @@
         </mat-card-content>
       </mat-card>
     </div>
-  </div>
-
+  
   <!-- ===== TABS PRINCIPALES ===== -->
   <div class="dashboard-tabs">
     <button 
@@ -137,12 +124,12 @@
       class="tab-button">
       Predicciones
     </button>
-    <button 
-      (click)="cambiarTab('recomendaciones')" 
-      [class.active]="activeTab === 'recomendaciones'"
-      class="tab-button">
-      🔮 Recomendaciones
-    </button>
+        <button 
+          (click)="cambiarTab('recomendaciones')" 
+          [class.active]="activeTab === 'recomendaciones'"
+          class="tab-button">
+          Recomendaciones
+        </button>
   </div>
 
   <!-- ===== CONTENIDO DE ANÁLISIS ACTUAL ===== -->
@@ -622,12 +609,12 @@
   </div>
 
   <!-- ===== CONTENIDO DE RECOMENDACIONES ===== -->
-  <div *ngIf="activeTab === 'recomendaciones'" class="tab-content recomendaciones-tab">
-    
-    <!-- RESUMEN DE RECOMENDACIONES -->
-    <mat-card class="resumen-recomendaciones-card">
+  <div *ngIf="activeTab === 'recomendaciones'" class="tab-content">
+    <div class="recomendaciones-section">
+      <!-- RESUMEN DE RECOMENDACIONES -->
+      <mat-card class="resumen-recomendaciones-card">
       <mat-card-header>
-        <mat-card-title>📊 Resumen de Recomendaciones</mat-card-title>
+        <mat-card-title>Resumen de Recomendaciones</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="stats-grid">
@@ -686,7 +673,7 @@
           
           <!-- PROYECCIÓN -->
           <div class="seccion" *ngIf="rec.demandaActual">
-            <strong>📈 PROYECCIÓN:</strong>
+            <strong>PROYECCIÓN:</strong>
             <p>{{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes 
                ({{ rec.porcentajeCrecimiento > 0 ? '+' : '' }}{{ rec.porcentajeCrecimiento }}%)</p>
           </div>
@@ -755,5 +742,7 @@
         </div>
       </mat-card-content>
     </mat-card>
-
+    </div>
   </div>
+  
+  </div> <!-- Cierre dashboard-content -->

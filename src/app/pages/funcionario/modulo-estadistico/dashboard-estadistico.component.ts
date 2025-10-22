@@ -663,16 +663,21 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Crea el gráfico de distribución por procesos con datos reales
    */
   private async crearChartProcesos(): Promise<void> {
+    console.log('🎨 [DEBUG] Iniciando creación de gráfico de procesos...');
     const ctx = document.getElementById('chartProcesos') as HTMLCanvasElement;
+    console.log('🎨 [DEBUG] Canvas encontrado:', ctx);
     if (!ctx) {
-      console.warn('⚠️ Canvas chartProcesos no encontrado');
+      console.error('❌ Canvas chartProcesos no encontrado en el DOM');
       return;
     }
 
     this.destruirChart('chartProcesos');
+    console.log('🎨 [DEBUG] Chart anterior destruido (si existía)');
 
     // Cargar datos reales del backend
+    console.log('🎨 [DEBUG] Cargando datos del backend...');
     const datosReales = await this.cargarDatosRealesProcesos();
+    console.log('🎨 [DEBUG] Datos recibidos:', datosReales);
     
     if (!datosReales || !datosReales.estadisticasPorProceso) {
       console.warn('⚠️ No hay datos reales de procesos para el gráfico, usando datos de fallback');
@@ -680,7 +685,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('📊 Creando gráfico de procesos con datos reales:', datosReales.estadisticasPorProceso);
+    console.log('📊 [DEBUG] Creando gráfico de procesos con datos reales:', datosReales.estadisticasPorProceso);
     
     // ✅ Verificar el mapeo de datos (ahora incluye ECAES)
     console.log('🔍 VERIFICACIÓN DE MAPEO - Procesos:');

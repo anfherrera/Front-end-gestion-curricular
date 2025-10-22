@@ -386,10 +386,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
     console.log('🔄 [DEBUG] Cambiando a pestaña:', tab);
     
-    // Cargar gráficas después de cambiar de pestaña
-    setTimeout(() => {
-      this.cargarGraficasAsync();
-    }, 100);
+    // Solo cargar gráficas si NO es recomendaciones
+    if (tab !== 'recomendaciones') {
+      setTimeout(() => {
+        this.cargarGraficasAsync();
+      }, 100);
+    } else {
+      console.log('ℹ️ Pestaña de recomendaciones, no se cargan gráficos');
+    }
   }
 
   verificarConexionBackend(): void {
@@ -485,20 +489,26 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   inicializarGraficas(): void {
     console.log('📊 Inicializando gráficas...');
+    console.log('📊 Pestaña activa:', this.activeTab);
     
-    // Inicializar gráfica de tendencias temporales
-    if (this.tendenciasTemporalesData && this.tendenciasTemporalesData.length > 0) {
-      this.crearGraficaTendencias();
-    }
-    
-    // Inicializar gráfica de top materias
-    if (this.topMateriasData && this.topMateriasData.length > 0) {
-      this.crearGraficaTopMaterias();
-    }
-    
-    // Inicializar gráfica de análisis por programa
-    if (this.analisisProgramaData && this.analisisProgramaData.length > 0) {
-      this.crearGraficaAnalisisPrograma();
+    // Solo crear gráficos si NO estamos en recomendaciones
+    if (this.activeTab !== 'recomendaciones') {
+      // Inicializar gráfica de tendencias temporales
+      if (this.tendenciasTemporalesData && this.tendenciasTemporalesData.length > 0) {
+        this.crearGraficaTendencias();
+      }
+      
+      // Inicializar gráfica de top materias
+      if (this.topMateriasData && this.topMateriasData.length > 0) {
+        this.crearGraficaTopMaterias();
+      }
+      
+      // Inicializar gráfica de análisis por programa
+      if (this.analisisProgramaData && this.analisisProgramaData.length > 0) {
+        this.crearGraficaAnalisisPrograma();
+      }
+    } else {
+      console.log('ℹ️ Pestaña de recomendaciones, saltando creación de gráficos');
     }
   }
 
