@@ -82,9 +82,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // KPIs
   kpis: KPIData[] = [];
   
-  // Predicciones (Regresión Lineal)
-  prediccionesGlobales: any = null;
-  mostrarPredicciones: boolean = false;
+  // ❌ ELIMINADO: Predicciones (ya no están disponibles en /api/estadisticas/globales)
   
   // Charts
   chartProcesos: Chart | null = null;
@@ -113,10 +111,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     this.inicializarDatos();
     
-    // ✅ Inicializar KPIs inmediatamente con valores reales
-    this.generarKPIs();
+    // ❌ ELIMINADO: No llamar generarKPIs() aquí porque resumenCompleto aún no tiene datos
+    // generarKPIs() se llamará automáticamente en cargarDatos() después de recibir los datos del backend
     
-    // Luego cargar datos del backend
+    // Cargar datos del backend
     this.cargarDatos();
   }
 
@@ -150,17 +148,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           // Convertir datos del API al formato del dashboard
           this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
           
-          // ✅ NUEVO: Extraer predicciones con Regresión Lineal
-          if (datosAPI.predicciones) {
-            this.prediccionesGlobales = datosAPI.predicciones;
-            this.mostrarPredicciones = true;
-            console.log('🔮 [PREDICCIONES] Predicciones recibidas:', this.prediccionesGlobales);
-            console.log('📊 [PREDICCIONES] Demanda actual:', this.prediccionesGlobales.demandaTotalActual);
-            console.log('📈 [PREDICCIONES] Demanda estimada:', this.prediccionesGlobales.demandaTotalEstimada);
-            console.log('🔺 [PREDICCIONES] Variación:', this.prediccionesGlobales.variacionTotal, `(${this.prediccionesGlobales.porcentajeVariacionTotal}%)`);
-            console.log('✅ [PREDICCIONES] Confiabilidad:', this.prediccionesGlobales.confiabilidad);
-            console.log('🔬 [PREDICCIONES] Metodología:', this.prediccionesGlobales.metodologia);
-          }
+          // ❌ ELIMINADO: Predicciones (ya no están disponibles en /api/estadisticas/globales)
           
           this.generarKPIs();
           this.crearCharts();
@@ -303,13 +291,20 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     console.log('  - estados.Enviada.cantidad:', estados.Enviada?.cantidad);
     console.log('  - tipo de cantidad:', typeof estados.Enviada?.cantidad);
 
-    // 🔧 Usar datos correctos según las instrucciones del usuario
+    // ✅ CALCULAR totalSolicitudes sumando todos los estados
+    const aprobadas = estados.Aprobada?.cantidad || 0;
+    const enviadas = estados.Enviada?.cantidad || 0;
+    const enProceso = estados["En Proceso"]?.cantidad || 0;
+    const rechazadas = estados.Rechazada?.cantidad || 0;
+    
+    const totalCalculado = aprobadas + enviadas + enProceso + rechazadas;
+
     const kpis = {
-      totalSolicitudes: data.totalSolicitudes || 0,
-      aprobadas: estados.Aprobada?.cantidad || 0,
-      enviadas: estados.Enviada?.cantidad || 0,
-      enProceso: estados["En Proceso"]?.cantidad || 0,
-      rechazadas: estados.Rechazada?.cantidad || 0
+      totalSolicitudes: totalCalculado,
+      aprobadas: aprobadas,
+      enviadas: enviadas,
+      enProceso: enProceso,
+      rechazadas: rechazadas
     };
 
     console.log('🔧 KPIs CALCULADOS:', kpis);
@@ -496,64 +491,65 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Genera los KPIs iniciales con valores por defecto REALES
+   * Genera los KPIs con datos del backend (resumenCompleto)
    */
   private generarKPIs(): void {
-    // ✅ Usar valores reales del backend como fallback
+    // ✅ CORREGIDO: Leer valores de resumenCompleto.estadisticasGlobales
+    const estadisticas = this.resumenCompleto?.estadisticasGlobales;
+    
     this.kpis = [
       {
         titulo: 'Total Solicitudes',
-        valor: 46, // ✅ Valor real del backend
+        valor: estadisticas?.totalSolicitudes || 0,
         icono: 'description',
         color: 'primary',
         descripcion: 'Solicitudes en todos los procesos'
       },
       {
         titulo: 'Aprobadas',
-        valor: 21, // ✅ Valor real del backend
+        valor: estadisticas?.solicitudesAprobadas || 0,
         icono: 'check_circle',
         color: 'success',
         descripcion: 'Solicitudes aprobadas'
       },
       {
         titulo: 'Enviadas',
-        valor: 9, // ✅ Valor real del backend
+        valor: estadisticas?.solicitudesEnviadas || 0,
         icono: 'send',
         color: 'accent',
         descripcion: 'Solicitudes enviadas pendientes'
       },
       {
         titulo: 'En Proceso',
-        valor: 11, // ✅ Valor real del backend
+        valor: estadisticas?.solicitudesEnProceso || 0,
         icono: 'pending',
         color: 'warning',
         descripcion: 'Solicitudes en revisión'
       },
       {
         titulo: 'Rechazadas',
-        valor: 5, // ✅ Valor real del backend
+        valor: estadisticas?.solicitudesRechazadas || 0,
         icono: 'cancel',
         color: 'error',
         descripcion: 'Solicitudes rechazadas'
       },
       {
         titulo: 'Estudiantes',
-        valor: 7, // ✅ Valor real del backend
+        valor: estadisticas?.totalEstudiantes || 0,
         icono: 'people',
         color: 'info',
         descripcion: 'Total de estudiantes registrados'
       },
       {
         titulo: 'Programas',
-        valor: 4, // ✅ Valor real del backend
+        valor: estadisticas?.totalProgramas || 0,
         icono: 'school',
         color: 'purple',
         descripcion: 'Programas académicos'
       }
     ];
     
-    console.log('✅ KPIs inicializados con valores reales del backend');
-    this.loading = false; // ✅ Marcar como cargado
+    this.loading = false;
   }
 
   /**
@@ -590,9 +586,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         
         Object.entries(data.porTipoProceso).forEach(([nombre, cantidad]) => {
           estadisticasPorProceso[nombre] = {
-            totalSolicitudes: cantidad as number,
-            // Agregar predicción si existe
-            prediccionDemanda: this.obtenerPrediccionProceso(nombre, data.predicciones)
+            totalSolicitudes: cantidad as number
+            // ❌ ELIMINADO: prediccionDemanda (ya no disponible)
           };
         });
         
@@ -612,36 +607,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Obtiene la predicción de demanda para un proceso específico
-   */
-  private obtenerPrediccionProceso(nombreProceso: string, predicciones: any): number | null {
-    if (!predicciones) {
-      return null;
-    }
-    
-    // Buscar en procesos crecientes
-    if (predicciones.procesosConTendenciaCreciente) {
-      const proceso = predicciones.procesosConTendenciaCreciente.find(
-        (p: any) => p.nombre === nombreProceso
-      );
-      if (proceso) {
-        return proceso.demandaEstimada;
-      }
-    }
-    
-    // Buscar en procesos decrecientes
-    if (predicciones.procesosConTendenciaDecreciente) {
-      const procesoDecreciente = predicciones.procesosConTendenciaDecreciente.find(
-        (p: any) => p.nombre === nombreProceso
-      );
-      if (procesoDecreciente) {
-        return procesoDecreciente.demandaEstimada;
-      }
-    }
-    
-    return null;
-  }
+  // ❌ ELIMINADO: obtenerPrediccionProceso() (ya no disponible en /api/estadisticas/globales)
 
   /**
    * Carga datos reales del backend para el gráfico de tendencia
@@ -663,21 +629,16 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Crea el gráfico de distribución por procesos con datos reales
    */
   private async crearChartProcesos(): Promise<void> {
-    console.log('🎨 [DEBUG] Iniciando creación de gráfico de procesos...');
     const ctx = document.getElementById('chartProcesos') as HTMLCanvasElement;
-    console.log('🎨 [DEBUG] Canvas encontrado:', ctx);
     if (!ctx) {
       console.error('❌ Canvas chartProcesos no encontrado en el DOM');
       return;
     }
 
     this.destruirChart('chartProcesos');
-    console.log('🎨 [DEBUG] Chart anterior destruido (si existía)');
 
     // Cargar datos reales del backend
-    console.log('🎨 [DEBUG] Cargando datos del backend...');
     const datosReales = await this.cargarDatosRealesProcesos();
-    console.log('🎨 [DEBUG] Datos recibidos:', datosReales);
     
     if (!datosReales || !datosReales.estadisticasPorProceso) {
       console.warn('⚠️ No hay datos reales de procesos para el gráfico, usando datos de fallback');
@@ -685,39 +646,57 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('📊 [DEBUG] Creando gráfico de procesos con datos reales:', datosReales.estadisticasPorProceso);
+    // ✅ CORREGIDO: Transformar el objeto a arrays
+    const labels = Object.keys(datosReales.estadisticasPorProceso);
+    const valores = Object.values(datosReales.estadisticasPorProceso).map((p: any) => p.totalSolicitudes);
     
-    // ✅ Verificar el mapeo de datos (ahora incluye ECAES)
-    console.log('🔍 VERIFICACIÓN DE MAPEO - Procesos:');
-    console.log('  - Paz y Salvo:', datosReales.estadisticasPorProceso['Paz y Salvo']?.totalSolicitudes || 'NO ENCONTRADO');
-    console.log('  - Cursos de Verano:', datosReales.estadisticasPorProceso['Cursos de Verano']?.totalSolicitudes || 'NO ENCONTRADO');
-    console.log('  - Reingreso:', datosReales.estadisticasPorProceso['Reingreso']?.totalSolicitudes || 'NO ENCONTRADO');
-    console.log('  - Homologación:', datosReales.estadisticasPorProceso['Homologación']?.totalSolicitudes || 'NO ENCONTRADO');
-    console.log('  - ECAES:', datosReales.estadisticasPorProceso['ECAES']?.totalSolicitudes || 'NO ENCONTRADO');
-
-    // Mapear datos según la estructura del backend (ahora incluye ECAES)
-    const datosDonut = [
-      { name: 'Paz y Salvo', value: datosReales.estadisticasPorProceso['Paz y Salvo']?.totalSolicitudes || 0 },
-      { name: 'Cursos de Verano', value: datosReales.estadisticasPorProceso['Cursos de Verano']?.totalSolicitudes || 0 },
-      { name: 'Reingreso', value: datosReales.estadisticasPorProceso['Reingreso']?.totalSolicitudes || 0 },
-      { name: 'Homologación', value: datosReales.estadisticasPorProceso['Homologación']?.totalSolicitudes || 0 },
-      { name: 'ECAES', value: datosReales.estadisticasPorProceso['ECAES']?.totalSolicitudes || 0 }
-    ];
-
-    console.log('📊 Datos del gráfico de donut mapeados:', datosDonut);
+    // ✅ Simplificar nombres (eliminar "Solicitud de " y "Solicitud ")
+    const labelsSimplificados = labels.map(label => 
+      label.replace("Solicitud de ", "").replace("Solicitud ", "")
+    );
+    
+    // 🎨 Mapeo explícito de colores por proceso (cada uno único y distintivo)
+    const coloresPorProceso: {[key: string]: string} = {
+      'Cursos de Verano': '#2196F3',      // 🔵 Azul
+      'Paz y Salvo': '#FF9800',           // 🟠 Naranja
+      'Reingreso': '#4CAF50',             // 🟢 Verde
+      'ECAES': '#F44336',                 // 🔴 Rojo
+      'Homologación': '#9C27B0'           // 🟣 Morado
+    };
+    
+    // 🔍 DEBUG: Mostrar procesos y labels
+    console.log('🎨 Labels originales:', labels);
+    console.log('🎨 Labels simplificados:', labelsSimplificados);
+    
+    // Asignar colores según el nombre del proceso
+    const colores = labelsSimplificados.map(label => {
+      // Buscar coincidencia exacta primero
+      if (coloresPorProceso[label]) {
+        console.log(`✅ Coincidencia exacta: ${label} → ${coloresPorProceso[label]}`);
+        return coloresPorProceso[label];
+      }
+      
+      // Si no hay coincidencia exacta, buscar por inclusión
+      for (const [proceso, color] of Object.entries(coloresPorProceso)) {
+        if (label.includes(proceso)) {
+          console.log(`✅ Coincidencia parcial: ${label} incluye ${proceso} → ${color}`);
+          return color;
+        }
+      }
+      
+      // Color por defecto si no se encuentra
+      console.warn(`⚠️ Sin coincidencia para: ${label} → usando color por defecto`);
+      return '#607D8B';
+    });
+    
+    console.log('🎨 Colores finales asignados:', colores);
 
     const data: ChartData<'doughnut'> = {
-      labels: datosDonut.map(d => d.name),
+      labels: labelsSimplificados,
       datasets: [{
         label: 'Solicitudes',
-        data: datosDonut.map(d => d.value),
-        backgroundColor: [
-          '#ff9800', // Naranja - Paz y Salvo
-          '#8e24aa', // Púrpura - Reingreso
-          '#4caf50', // Verde - Homologación
-          '#2196f3', // Azul - Cursos de Verano
-          '#f44336'  // Rojo - ECAES
-        ],
+        data: valores,
+        backgroundColor: colores,
         borderWidth: 3,
         borderColor: '#fff',
         hoverBorderWidth: 4
@@ -764,7 +743,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     try {
       this.chartProcesos = new Chart(ctx, config);
-      console.log('✅ Gráfico de procesos creado exitosamente con datos reales');
+      console.log('✅ Gráfico de procesos creado exitosamente');
     } catch (error) {
       console.error('❌ Error al crear gráfico de procesos:', error);
     }
@@ -843,7 +822,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     };
 
     try {
-      this.chartProcesos = new Chart(ctx, config);
+    this.chartProcesos = new Chart(ctx, config);
       console.log('✅ Gráfico de procesos creado exitosamente con datos de fallback');
     } catch (error) {
       console.error('❌ Error al crear gráfico de procesos:', error);
@@ -1131,7 +1110,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     };
 
     try {
-      this.chartTendencia = new Chart(ctx, config);
+    this.chartTendencia = new Chart(ctx, config);
       console.log('✅ Gráfico de tendencia creado exitosamente con datos de fallback');
     } catch (error) {
       console.error('❌ Error al crear gráfico de tendencia:', error);
@@ -1429,7 +1408,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             
-            this.loading = false;
+      this.loading = false;
             this.mostrarExito('Reporte PDF del Dashboard General descargado exitosamente');
           } else {
             this.loading = false;
@@ -1483,7 +1462,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             
-            this.loading = false;
+      this.loading = false;
             this.mostrarExito('Reporte Excel del Dashboard General descargado exitosamente');
           } else {
             this.loading = false;

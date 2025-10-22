@@ -43,12 +43,50 @@ export class VerSolicitudComponent implements OnInit {
       // Usar el nuevo endpoint que trae todo junto
       this.cursosService.getSeguimientoActividades(this.usuario.id_usuario).subscribe({
         next: (seguimiento: SeguimientoActividades) => {
+          console.log('=== 📊 DEBUGGING SEGUIMIENTO ===');
+          console.log('📦 Respuesta completa:', seguimiento);
+          console.log('📝 Preinscripciones:', seguimiento.preinscripciones);
+          console.log('🎓 Inscripciones:', seguimiento.inscripciones);
+          
           this.preinscripciones = seguimiento.preinscripciones || [];
           this.inscripciones = seguimiento.inscripciones || [];
           this.cargando = false;
-          console.log('✅ Seguimiento cargado:', seguimiento);
-          console.log('📊 Preinscripciones:', this.preinscripciones.length);
-          console.log('📊 Inscripciones:', this.inscripciones.length);
+          
+          // Verificar cada preinscripción
+          console.log('\n📊 INSCRIPCIONES DISPONIBLES:');
+          this.inscripciones.forEach((insc: any, index: number) => {
+            console.log(`  ${index + 1}. Curso ID: ${insc.cursoId}, Curso: ${insc.curso}, Estado: ${insc.estado}`);
+            console.log(`  🔍 DEBUG - Objeto completo:`, insc);
+          });
+          
+          console.log('\n📋 PREINSCRIPCIONES Y VALIDACIÓN:');
+          this.preinscripciones.forEach((pre: PreinscripcionSeguimiento, index: number) => {
+            console.log(`\n--- Preinscripción ${index + 1}: ${pre.curso} ---`);
+            console.log('  • Curso ID:', pre.cursoId);
+            console.log('  • Estado:', pre.estado);
+            console.log('  • Estado Curso:', pre.estadoCurso);
+            console.log('  • Acciones:', pre.accionesDisponibles);
+            
+            const inscripcionRelacionada = this.inscripciones.find((i: any) => {
+              const idCurso = i.cursoId || i.id_curso || i.curso_id || i.idCurso;
+              return idCurso === pre.cursoId;
+            });
+            if (inscripcionRelacionada) {
+              const idCurso = (inscripcionRelacionada as any).cursoId || (inscripcionRelacionada as any).id_curso || (inscripcionRelacionada as any).curso_id;
+              console.log(`  ⚠️ INSCRIPCIÓN ENCONTRADA:`, {
+                cursoId: idCurso,
+                estado: inscripcionRelacionada.estado,
+                curso: inscripcionRelacionada.curso
+              });
+            } else {
+              console.log('  ✓ No hay inscripción para este curso');
+            }
+            
+            const mostrarBoton = this.mostrarBotonInscripcion(pre);
+            console.log(`  ${mostrarBoton ? '✅ MOSTRAR' : '❌ OCULTAR'} botón de inscripción`);
+          });
+          
+          console.log('\n=== ✅ FIN DEBUGGING ===\n');
         },
         error: (err) => {
           console.error('❌ Error cargando seguimiento', err);
@@ -119,6 +157,97 @@ export class VerSolicitudComponent implements OnInit {
     
     const accion = acciones[0];
     return accion === 'proceder_inscripcion' || accion === 'revisar_motivo_rechazo';
+  }
+
+  /**
+   * Determina si debe mostrarse el botón "Inscribirse al Curso"
+   * Solo se muestra si:
+   * 1. La preinscripción está APROBADA
+   * 2. El curso está en estado de INSCRIPCIÓN
+   * 3. NO existe una inscripción activa para ese curso
+   * 
+   * @param preinscripcion - Datos de la preinscripción
+   * @returns true si se debe mostrar el botón, false en caso contrario
+   */
+  mostrarBotonInscripcion(preinscripcion: PreinscripcionSeguimiento): boolean {
+    // 1. Verificar que la preinscripción esté aprobada
+    const estadoPreinscripcion = (preinscripcion.estado || '').toUpperCase();
+    if (estadoPreinscripcion !== 'APROBADO') {
+      return false;
+    }
+    
+    // 2. Verificar que el curso esté en estado de inscripción
+    const estadoCurso = (preinscripcion.estadoCurso || '').toUpperCase();
+    if (estadoCurso !== 'INSCRIPCION') {
+      return false;
+    }
+    
+    // 3. Verificar que NO exista una inscripción activa para este curso
+    const tieneInscripcionActiva = this.tieneInscripcionEnCurso(preinscripcion.cursoId);
+    
+    return !tieneInscripcionActiva;
+  }
+
+  /**
+   * Verifica si existe una inscripción activa (no rechazada) para un curso
+   * @param cursoId - ID del curso a verificar
+   * @returns true si existe una inscripción activa, false en caso contrario
+   */
+  tieneInscripcionEnCurso(cursoId: number): boolean {
+    if (!this.inscripciones || this.inscripciones.length === 0) {
+      return false;
+    }
+    
+    // Buscar inscripción por cursoId (manejo de diferentes nombres de campo del backend)
+    const inscripcionEncontrada = this.inscripciones.find((insc: any) => {
+      const idCursoInscripcion = insc.cursoId || insc.id_curso || insc.curso_id || insc.idCurso;
+      return idCursoInscripcion === cursoId;
+    });
+    
+    if (!inscripcionEncontrada) {
+      return false; // No hay inscripción para este curso
+    }
+    
+    // Verificar el estado de la inscripción (normalizar a mayúsculas y manejar guiones bajos)
+    const estadoInscripcion = (inscripcionEncontrada.estado || '').toUpperCase().replace(/_/g, '_');
+    
+    // Estados que permiten re-inscripción (pago rechazado)
+    const estadosRechazados = ['PAGO_RECHAZADO', 'PAGO RECHAZADO', 'RECHAZADO'];
+    
+    if (estadosRechazados.includes(estadoInscripcion)) {
+      return false; // No considerarla como activa, permitir nueva inscripción
+    }
+    
+    // Cualquier otro estado se considera inscripción activa
+    return true;
+  }
+
+  /**
+   * Obtiene el mensaje informativo cuando ya existe una inscripción
+   * @param cursoId - ID del curso
+   * @returns Mensaje descriptivo del estado de la inscripción
+   */
+  getMensajeInscripcionExistente(cursoId: number): string {
+    const inscripcion = this.inscripciones.find((insc: any) => {
+      const idCurso = insc.cursoId || insc.id_curso || insc.curso_id || insc.idCurso;
+      return idCurso === cursoId;
+    });
+    
+    if (!inscripcion) return '';
+    
+    const estado = (inscripcion.estado || '').toUpperCase().replace(/_/g, '_');
+    
+    if (estado.includes('PAGO') && estado.includes('VALIDADO')) {
+      return 'Pago validado - Inscripción confirmada';
+    } else if (estado.includes('INSCRITO')) {
+      return 'Ya estás inscrito en este curso';
+    } else if (estado.includes('ENVIADA') || estado.includes('ENVIADO')) {
+      return 'Inscripción enviada - Esperando validación de pago';
+    } else if (estado.includes('EN') && estado.includes('PROCESO')) {
+      return 'Inscripción en proceso';
+    }
+    
+    return 'Ya tienes una inscripción para este curso';
   }
 
   // 🆕 Método para manejar el clic en una acción

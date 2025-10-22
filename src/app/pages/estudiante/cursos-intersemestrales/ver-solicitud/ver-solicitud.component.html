@@ -70,24 +70,62 @@
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let preinscripcion">
-          <div class="acciones-container" *ngIf="preinscripcion.accionesDisponibles && preinscripcion.accionesDisponibles.length > 0">
+          <!-- Botón de inscripción (solo si pasa validación) -->
+          <div class="acciones-container" *ngIf="mostrarBotonInscripcion(preinscripcion)">
             <button 
-              *ngIf="esAccionClickeable(preinscripcion.accionesDisponibles)"
               mat-raised-button 
               color="primary"
               class="accion-btn"
               (click)="manejarAccion(preinscripcion)">
-              <mat-icon>{{ getIconoAccion(preinscripcion.accionesDisponibles) }}</mat-icon>
-              {{ getTextoAccion(preinscripcion.accionesDisponibles) }}
+              <mat-icon>school</mat-icon>
+              Inscribirse al Curso
             </button>
-            <div 
-              *ngIf="!esAccionClickeable(preinscripcion.accionesDisponibles)"
-              class="accion-info">
-              <mat-icon class="accion-icon">{{ getIconoAccion(preinscripcion.accionesDisponibles) }}</mat-icon>
-              <span>{{ getTextoAccion(preinscripcion.accionesDisponibles) }}</span>
-            </div>
           </div>
-          <span *ngIf="!preinscripcion.accionesDisponibles || preinscripcion.accionesDisponibles.length === 0" class="text-muted">
+          
+          <!-- Mensaje cuando ya existe inscripción activa -->
+          <div 
+            *ngIf="!mostrarBotonInscripcion(preinscripcion) && 
+                   preinscripcion.estadoCurso?.toUpperCase() === 'INSCRIPCION' && 
+                   preinscripcion.estado?.toUpperCase() === 'APROBADO' &&
+                   tieneInscripcionEnCurso(preinscripcion.cursoId)"
+            class="mensaje-inscripcion-existente">
+            <mat-icon class="icono-check">check_circle</mat-icon>
+            <span>{{ getMensajeInscripcionExistente(preinscripcion.cursoId) }}</span>
+          </div>
+          
+          <!-- Mensaje cuando está esperando aprobación -->
+          <div 
+            *ngIf="preinscripcion.estado?.toUpperCase() === 'ENVIADA'"
+            class="mensaje-pendiente">
+            <mat-icon class="icono-pendiente">hourglass_empty</mat-icon>
+            <span>Esperando aprobación</span>
+          </div>
+          
+          <!-- Mensaje cuando la preinscripción fue rechazada -->
+          <div 
+            *ngIf="preinscripcion.estado?.toUpperCase() === 'RECHAZADO'"
+            class="mensaje-rechazado">
+            <mat-icon class="icono-rechazado">cancel</mat-icon>
+            <span>Preinscripción rechazada</span>
+          </div>
+          
+          <!-- Mensaje cuando el curso no está en inscripción -->
+          <div 
+            *ngIf="preinscripcion.estado?.toUpperCase() === 'APROBADO' && 
+                   preinscripcion.estadoCurso?.toUpperCase() !== 'INSCRIPCION' &&
+                   !tieneInscripcionEnCurso(preinscripcion.cursoId)"
+            class="mensaje-esperando">
+            <mat-icon class="icono-esperando">schedule</mat-icon>
+            <span>Esperando apertura de inscripciones</span>
+          </div>
+          
+          <!-- Sin acciones -->
+          <span 
+            *ngIf="!preinscripcion.estado || 
+                   (preinscripcion.estado?.toUpperCase() !== 'APROBADO' && 
+                    preinscripcion.estado?.toUpperCase() !== 'ENVIADA' && 
+                    preinscripcion.estado?.toUpperCase() !== 'RECHAZADO')" 
+            class="text-muted">
             Sin acciones
           </span>
         </td>

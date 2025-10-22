@@ -78,6 +78,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   alertasCriticas: any[] = [];
   estadisticasRecomendaciones: any = {};
   expandidas = new Set<string>();
+  totalRecomendaciones: number = 0;
 
   // ===== PROPIEDADES DE GRÁFICOS =====
   chartMaterias: Chart | null = null;
@@ -207,19 +208,16 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         this.analisisProgramaData = response.analisisPorPrograma || [];
         this.prediccionesData = response.predicciones || {};
         
-        // ✅ NUEVO: Extraer recomendaciones y alertas
+        // ✅ ACTUALIZADO: Recomendaciones ahora están en el nivel superior
+        this.recomendaciones = response.recomendaciones || [];
         if (response.predicciones) {
-          this.recomendaciones = response.predicciones.recomendacionesFuturas || [];
           this.alertasCriticas = response.predicciones.alertasCriticas || [];
           this.estadisticasRecomendaciones = response.predicciones.estadisticasRecomendaciones || {};
-          
-          // Ordenar recomendaciones por prioridad
-          this.ordenarPorPrioridad();
-          
-          console.log('🔮 [RECOMENDACIONES] Recomendaciones futuras:', this.recomendaciones.length);
-          console.log('⚠️ [ALERTAS] Alertas críticas:', this.alertasCriticas.length);
-          console.log('📊 [STATS] Estadísticas:', this.estadisticasRecomendaciones);
+          this.totalRecomendaciones = this.estadisticasRecomendaciones.totalRecomendaciones || this.recomendaciones.length;
         }
+        
+        // Ordenar recomendaciones por prioridad
+        this.ordenarPorPrioridad();
         
         console.log('✅ [DEBUG] Pestaña activa después de recibir datos:', this.activeTab);
         console.log('✅ [DEBUG] Datos mapeados:', {
@@ -287,14 +285,22 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           titulo: 'Enfocar oferta en Ingeniería de Sistemas',
           descripcion: 'Este programa representa 44.44% de las solicitudes',
           prioridad: 'ALTA',
-          accion: 'Priorizar cursos que beneficien a este programa'
+          acciones: [
+            'Priorizar cursos que beneficien a este programa',
+            'Aumentar oferta de cupos para este programa',
+            'Evaluar demanda específica por materia'
+          ]
         },
         {
           tipo: 'BAJA_APROBACION',
           titulo: 'Mejorar criterios de selección',
           descripcion: 'Tasa de aprobación del 44.44%',
           prioridad: 'MEDIA',
-          accion: 'Revisar criterios de selección para cursos de verano'
+          acciones: [
+            'Revisar criterios de selección para cursos de verano',
+            'Analizar causas de rechazo',
+            'Mejorar comunicación de requisitos'
+          ]
         }
       ],
       predicciones: {
@@ -334,7 +340,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
             demandaActual: 4,
             demandaEstimada: 6,
             tendencia: 'CRECIENTE',
-            variacion: 2
+            variacion: 2,
+            porcentajeVariacion: 50
           }
         ],
         programasConTendenciaDecreciente: [],
@@ -344,25 +351,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           demandaEstimadaMesPico: 6,
           mesesRecomendados: ['Marzo', 'Abril', 'Mayo']
         },
-        recomendacionesFuturas: [
-          {
-            tipo: 'EXPANSION_OFERTA',
-            titulo: 'Expandir oferta de Programación Avanzada',
-            descripcion: 'Demanda creciente del 50% para el próximo período',
-            prioridad: 'ALTA',
-            accion: 'Abrir más secciones de Programación Avanzada'
-          },
-          {
-            tipo: 'NUEVA_MATERIA',
-            titulo: 'Considerar nueva materia en IA',
-            descripcion: 'Tendencia creciente en tecnologías emergentes',
-            prioridad: 'MEDIA',
-            accion: 'Evaluar viabilidad de curso de Inteligencia Artificial'
-          }
-        ],
+        // ❌ ELIMINADO: recomendacionesFuturas (ahora está en nivel superior como 'recomendaciones')
         confiabilidad: 'ALTA',
-        fechaPrediccion: new Date().toISOString(),
-        metodologia: 'Análisis de tendencias históricas y patrones estacionales'
+        fechaPrediccion: new Date().toISOString()
+        // ❌ ELIMINADO: metodologia (campo técnico innecesario)
       }
     };
 
@@ -394,6 +386,15 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     } else {
       console.log('ℹ️ Pestaña de recomendaciones, no se cargan gráficos');
     }
+  }
+
+  /**
+   * Navega a una pestaña específica desde botones de acción
+   */
+  irAPestana(pestana: string): void {
+    this.cambiarTab(pestana);
+    // Scroll suave al inicio
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   verificarConexionBackend(): void {

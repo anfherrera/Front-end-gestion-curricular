@@ -302,34 +302,6 @@
           </div>
         </div>
 
-        <!-- ===== RECOMENDACIONES ACTUALES ===== -->
-        <div class="recomendaciones-section">
-          <h3 class="section-title">
-            <mat-icon>lightbulb</mat-icon>
-            Recomendaciones Actuales
-          </h3>
-          <div class="recomendaciones-grid">
-            <mat-card *ngFor="let recomendacion of data.recomendaciones" 
-                      class="recomendacion-card"
-                      [class]="'prioridad-' + recomendacion.prioridad.toLowerCase()">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon [matTooltip]="recomendacion.prioridad">
-                    {{ getIconByPriority(recomendacion.prioridad) }}
-                  </mat-icon>
-                  {{ recomendacion.titulo }}
-                </mat-card-title>
-                <mat-card-subtitle>{{ recomendacion.tipo }}</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <p>{{ recomendacion.descripcion }}</p>
-                <div class="recomendacion-accion">
-                  <strong>Acción:</strong> {{ recomendacion.accion }}
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-        </div>
       </div>
   </div>
 
@@ -362,10 +334,7 @@
                   <div class="resumen-label">Fecha de Predicción</div>
                   <div class="resumen-valor">{{ data.predicciones.fechaPrediccion | date:'short' }}</div>
                 </div>
-                <div class="resumen-item">
-                  <div class="resumen-label">Metodología</div>
-                  <div class="resumen-valor">{{ data.predicciones.metodologia }}</div>
-                </div>
+                <!-- ❌ ELIMINADO: Metodología (campo técnico innecesario) -->
               </div>
             </mat-card-content>
           </mat-card>
@@ -593,18 +562,6 @@
           </mat-accordion>
         </div>
 
-        <!-- ===== RECOMENDACIONES FUTURAS ===== -->
-        <div class="recomendaciones-futuras">
-          <h3>Recomendaciones Futuras</h3>
-          <div class="recomendaciones-grid">
-            <!-- Usar CSS Grid para distribuir uniformemente -->
-            <div *ngFor="let rec of data?.predicciones?.recomendacionesFuturas" class="recomendacion-card">
-              <div class="recomendacion-titulo">{{ rec.titulo }}</div>
-              <div class="recomendacion-descripcion">{{ rec.descripcion }}</div>
-              <div class="recomendacion-accion">{{ rec.accion }}</div>
-            </div>
-          </div>
-        </div>
       </div>
   </div>
 

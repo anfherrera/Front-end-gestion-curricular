@@ -290,6 +290,7 @@ export interface MateriaPrediccion {
   tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
   variacion: number;
   porcentajeVariacion: number;
+  // ❌ ELIMINADOS (backend ya no los envía): pendiente, rSquared, modeloUtilizado
 }
 
 export interface ProgramaPrediccion {
@@ -298,6 +299,8 @@ export interface ProgramaPrediccion {
   demandaEstimada: number;
   tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
   variacion: number;
+  porcentajeVariacion: number;
+  // ❌ ELIMINADOS (backend ya no los envía): pendiente, rSquared, modeloUtilizado
 }
 
 export interface PrediccionesTemporales {
@@ -323,10 +326,10 @@ export interface PrediccionesCursosVerano {
   programasConTendenciaCreciente: ProgramaPrediccion[];
   programasConTendenciaDecreciente: ProgramaPrediccion[];
   prediccionesTemporales: PrediccionesTemporales;
-  recomendacionesFuturas: RecomendacionFutura[];
+  // ❌ ELIMINADO: recomendacionesFuturas (ahora está en el nivel superior como 'recomendaciones')
   confiabilidad: "ALTA" | "MEDIA" | "BAJA";
   fechaPrediccion: string;
-  metodologia: string;
+  // ❌ ELIMINADO: metodologia (campo técnico innecesario)
   // Nuevos campos para la pestaña de Recomendaciones
   estadisticasRecomendaciones?: {
     totalRecomendaciones: number;
@@ -368,7 +371,7 @@ export interface Recomendacion {
   titulo: string;
   descripcion: string;
   prioridad: "ALTA" | "MEDIA" | "BAJA";
-  accion: string;
+  acciones: string[]; // Array de acciones recomendadas
 }
 
 export interface ResumenCursosVerano {
@@ -400,9 +403,7 @@ export interface PrediccionItem {
   variacion: number;
   porcentajeVariacion: number;
   tendencia: 'CRECIENTE' | 'DECRECIENTE' | 'ESTABLE';
-  pendiente: number;
-  rSquared: number;
-  modeloUtilizado: string;
+  // ❌ ELIMINADOS (backend ya no los envía): pendiente, rSquared, modeloUtilizado
 }
 
 export interface PrediccionesGlobales {
@@ -423,7 +424,7 @@ export interface PrediccionesGlobales {
   programasEstables: PrediccionItem[];
   
   // Metadata
-  metodologia: string;
+  // ❌ ELIMINADO: metodologia (campo técnico innecesario)
   confiabilidad: 'ALTA' | 'MEDIA' | 'BAJA';
   fechaPrediccion: string;
   umbralTendencia: number;
