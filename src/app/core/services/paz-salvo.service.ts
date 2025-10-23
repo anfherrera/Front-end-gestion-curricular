@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, catchError, map, switchMap } from 'rxjs';
 import { Solicitud, Archivo, Usuario, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
@@ -22,26 +22,94 @@ export class PazSalvoService {
   // ================================
   // Solicitudes
   // ================================
+  
+  /**
+   * ✅ CORREGIDO FINAL: Listar solicitudes por rol
+   * @param rol - "ESTUDIANTE", "FUNCIONARIO", "COORDINADOR", "SECRETARIA"
+   * @param idUsuario - ID del usuario (solo necesario para ESTUDIANTE)
+   * 
+   * IMPORTANTE: Ahora usa endpoints específicos con mayúscula inicial (igual que Homologación)
+   * - FUNCIONARIO → /Funcionario
+   * - COORDINADOR → /Coordinador
+   * - SECRETARIA → /Secretaria
+   * - ESTUDIANTE → /porRol?rol=ESTUDIANTE&idUsuario=X
+   */
+  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<SolicitudHomologacionDTORespuesta[]> {
+    const rolUpper = rol.toUpperCase();
+    
+    // ESTUDIANTE usa el endpoint /porRol con parámetros
+    if (rolUpper === 'ESTUDIANTE') {
+      let params = new HttpParams()
+        .set('rol', 'ESTUDIANTE')
+        .set('idUsuario', idUsuario?.toString() || '');
+      
+      console.log(`📋 [ESTUDIANTE] Usando endpoint /porRol`);
+      console.log(`📋 URL: ${this.apiUrl}/listarSolicitud-PazYSalvo/porRol?${params.toString()}`);
+      
+      return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+        `${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`,
+        { params, headers: this.getAuthHeaders() }
+      );
+    }
+    
+    // FUNCIONARIO, COORDINADOR, SECRETARIA usan endpoints específicos con mayúscula inicial
+    let endpoint = '';
+    if (rolUpper === 'FUNCIONARIO') {
+      endpoint = 'Funcionario';
+    } else if (rolUpper === 'COORDINADOR') {
+      endpoint = 'Coordinador';
+    } else if (rolUpper === 'SECRETARIA' || rolUpper === 'SECRETARIO') {
+      endpoint = 'Secretaria';
+    }
+    
+    console.log(`📋 [${rol}] Usando endpoint específico: /${endpoint}`);
+    console.log(`📋 URL: ${this.apiUrl}/listarSolicitud-PazYSalvo/${endpoint}`);
+    
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/${endpoint}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /**
+   * Obtener solicitudes para estudiante
+   * Usa el endpoint /porRol con parámetros
+   */
   getStudentRequests(studentId: number): Observable<SolicitudHomologacionDTORespuesta[]> {
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo`, { headers: this.getAuthHeaders() });
+    return this.listarSolicitudesPorRol('ESTUDIANTE', studentId);
   }
 
+  /**
+   * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
+   * Igual que Homologación: usa endpoint directo /Funcionario
+   */
   getPendingRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/funcionario`, { headers: this.getAuthHeaders() });
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Funcionario`, 
+      { headers: this.getAuthHeaders() }
+    );
   }
 
+  /**
+   * Obtener solicitudes para coordinador
+   * Igual que Homologación: usa endpoint directo /Coordinador
+   */
   getCoordinatorRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/coordinador`, { headers: this.getAuthHeaders() });
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Coordinador`, 
+      { headers: this.getAuthHeaders() }
+    );
   }
 
   /**
    * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
-   * Nota: El backend no tiene endpoint específico para secretaria, usamos el general y filtramos
+   * Igual que Homologación: usa endpoint directo /Secretaria
    */
   getSecretariaRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo`, { 
-      headers: this.getAuthHeaders() 
-    });
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria`, 
+      { headers: this.getAuthHeaders() }
+    );
   }
 
   getRequestById(requestId: number): Observable<Solicitud> {
@@ -292,10 +360,15 @@ export class PazSalvoService {
   }
 
   approveDefinitively(idSolicitud: number): Observable<any> {
-    // Usar el endpoint correcto de paz y salvo
+    // ⚠️ IMPORTANTE: El coordinador debe enviar exactamente "APROBADA_COORDINADOR"
+    const nuevoEstado = 'APROBADA_COORDINADOR';
+    
+    console.log('🔄 [COORDINADOR] Aprobando solicitud:', idSolicitud);
+    console.log('📝 Estado a enviar:', nuevoEstado);
+    
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: idSolicitud,
-      nuevoEstado: 'APROBADA'
+      nuevoEstado: nuevoEstado
     }, { headers: this.getAuthHeaders() });
   }
 

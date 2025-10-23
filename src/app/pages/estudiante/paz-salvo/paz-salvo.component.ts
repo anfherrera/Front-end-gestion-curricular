@@ -110,10 +110,16 @@ listarSolicitudes() {
   }
 
   console.log('🔍 Usuario encontrado:', this.usuario);
-  console.log('🔍 Rol:', this.usuario.rol.nombre);
+  console.log('🔍 Rol:', this.usuario.rol?.nombre || 'ESTUDIANTE');
   console.log('🔍 ID Usuario:', this.usuario.id_usuario);
 
-  this.pazSalvoService.getStudentRequests(this.usuario.id_usuario).subscribe({
+  // ✅ CORREGIDO: Usar el nuevo método con rol e idUsuario
+  const rol = 'ESTUDIANTE';
+  const idUsuario = this.usuario.id_usuario;
+  
+  console.log('📡 Llamando a listarSolicitudesPorRol con:', { rol, idUsuario });
+
+  this.pazSalvoService.listarSolicitudesPorRol(rol, idUsuario).subscribe({
     next: (data) => {
       console.log('📡 Respuesta del backend (raw):', data);
       console.log('📡 Tipo de respuesta:', typeof data);

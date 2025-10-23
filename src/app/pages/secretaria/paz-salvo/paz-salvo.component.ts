@@ -69,16 +69,18 @@ export class SecretariaPazSalvoComponent implements OnInit {
    * Cargar solicitudes pendientes para secretaría
    */
   cargarSolicitudes(): void {
+    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getSecretariaRequests()
+    console.log('📡 Llamando a getSecretariaRequests (endpoint directo /Secretaria)');
+    
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        // Filtrar solo solicitudes que están en estado APROBADA y que no tienen oficios PDF
-        const solicitudesFiltradas = sols.filter(sol => {
-          const estado = this.getEstadoActual(sol);
-          const tieneOficios = this.tieneOficiosPDF(sol);
-
-          // Solo mostrar solicitudes APROBADA que no tienen oficios (no han sido enviadas)
-          return estado === 'APROBADA' && !tieneOficios;
-        });
+        console.log('📡 Respuesta del backend para secretaria:', sols);
+        
+        // ✅ CORREGIDO: Filtrar solicitudes con estado APROBADA_COORDINADOR (igual que Homologación)
+        // El backend YA filtra por estado, así que mostramos TODAS las que llegan
+        const solicitudesFiltradas = sols;
+        
+        console.log('📋 Estados de las solicitudes:', sols.map(s => this.getEstadoActual(s)));
 
         // Transformar datos para RequestStatusTableComponent
         this.solicitudes = solicitudesFiltradas.map(sol => ({
@@ -94,7 +96,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         console.log('📋 Solicitudes filtradas (APROBADA sin oficios):', solicitudesFiltradas.length);
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes:', err);
+        console.error('❌ Error al cargar solicitudes (secretaria):', err);
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
@@ -149,18 +151,13 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Limpiar estado anterior antes de seleccionar nueva solicitud
     this.limpiarEstado();
 
+    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        // Filtrar solo solicitudes que están en estado APROBADA y que no tienen oficios PDF
-        const solicitudesFiltradas = sols.filter(sol => {
-          const estado = this.getEstadoActual(sol);
-          const tieneOficios = this.tieneOficiosPDF(sol);
-          return estado === 'APROBADA' && !tieneOficios;
-        });
-
-        this.selectedSolicitud = solicitudesFiltradas.find(sol => sol.id_solicitud === solicitudId);
-        console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
+        // ✅ El backend YA filtra, solo buscamos la solicitud por ID
+        this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
+        console.log('✅ Solicitud seleccionada (secretaria):', this.selectedSolicitud);
         console.log('🧹 Estado limpiado para nueva solicitud');
         
         // Cargar documentos usando el nuevo endpoint

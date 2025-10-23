@@ -49,8 +49,13 @@ export class PazSalvoComponent implements OnInit {
   }
 
   cargarSolicitudes(): void {
+    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getPendingRequests()
+    console.log('📡 Llamando a getPendingRequests (endpoint directo /Funcionario)');
+    
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
+        console.log('📡 Respuesta del backend para funcionario:', sols);
+        
         // Transformar datos para RequestStatusTableComponent (igual que homologación)
         this.solicitudes = sols.map(sol => ({
           id: sol.id_solicitud,
@@ -60,10 +65,15 @@ export class PazSalvoComponent implements OnInit {
           rutaArchivo: '',
           comentarios: ''
         }));
+        
+        console.log('✅ Solicitudes cargadas para funcionario:', this.solicitudes);
         // ✅ CORREGIDO: No seleccionar automáticamente la primera solicitud
         // Los documentos solo se mostrarán cuando el usuario seleccione manualmente
       },
-      error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes para funcionario:', err);
+        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -82,10 +92,12 @@ export class PazSalvoComponent implements OnInit {
       return;
     }
 
-    // Buscar la solicitud original por ID (igual que homologación)
+    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo
+    // Buscar la solicitud original por ID
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId) || null;
+        console.log('📋 Solicitud seleccionada (funcionario):', this.selectedSolicitud);
       }
     });
   }

@@ -55,6 +55,9 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
   // 📌 Cargar solicitudes pendientes según el rol del usuario actual
   cargarSolicitudes(): void {
+    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getCoordinatorRequests()
+    console.log('📡 Llamando a getCoordinatorRequests (endpoint directo /Coordinador)');
+    
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (data) => {
         console.log('📡 Solicitudes recibidas del backend (coordinador):', data);
@@ -90,6 +93,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
       this.selectedSolicitud = undefined;
       return;
     }
+    
+    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (sols) => {
