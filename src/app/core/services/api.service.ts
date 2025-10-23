@@ -7,6 +7,23 @@ import { ApiEndpoints } from '../utils/api-endpoints';
 export class ApiService {
   private http = inject(HttpClient);
 
+  // ===== MÉTODOS GENÉRICOS HTTP =====
+  get(url: string): Observable<any> {
+    return this.http.get(`${ApiEndpoints.BASE_URL}/${url}`);
+  }
+
+  post(url: string, body: any): Observable<any> {
+    return this.http.post(`${ApiEndpoints.BASE_URL}/${url}`, body);
+  }
+
+  put(url: string, body: any): Observable<any> {
+    return this.http.put(`${ApiEndpoints.BASE_URL}/${url}`, body);
+  }
+
+  delete(url: string): Observable<any> {
+    return this.http.delete(`${ApiEndpoints.BASE_URL}/${url}`);
+  }
+
   // ===== AUTENTICACIÓN =====
   login(correo: string, password: string): Observable<any> {
     // Conectar al backend real

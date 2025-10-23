@@ -1,1 +1,127 @@
-<p>manage-processes works!</p>
+<div class="container-admin">
+  <div class="header-section">
+    <h2>
+      <mat-icon>settings</mat-icon>
+      Gestión de Procesos
+    </h2>
+    
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="crearProceso()">
+        <mat-icon>add</mat-icon>
+        Nuevo Proceso
+      </button>
+      <button mat-raised-button (click)="cargarProcesos()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Recargar
+      </button>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar proceso</mat-label>
+      <input 
+        matInput 
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="buscar()"
+        placeholder="Nombre del proceso"
+      >
+      <mat-icon matPrefix>search</mat-icon>
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="limpiarBusqueda()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <button mat-raised-button color="accent" (click)="buscar()" [disabled]="loading || !searchTerm">
+      Buscar
+    </button>
+  </div>
+
+  <div class="table-container" *ngIf="!loading">
+    <table mat-table [dataSource]="procesos" class="mat-elevation-z2">
+      <!-- ID Column -->
+      <ng-container matColumnDef="id_proceso">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let proceso">{{ proceso.id_proceso }}</td>
+      </ng-container>
+
+      <!-- Nombre Column -->
+      <ng-container matColumnDef="nombre_proceso">
+        <th mat-header-cell *matHeaderCellDef>Nombre del Proceso</th>
+        <td mat-cell *matCellDef="let proceso">
+          <strong>{{ proceso.nombre_proceso }}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Descripción Column -->
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef>Descripción</th>
+        <td mat-cell *matCellDef="let proceso">
+          {{ proceso.descripcion || 'Sin descripción' }}
+        </td>
+      </ng-container>
+
+      <!-- Estado Column -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let proceso">
+          <mat-chip [color]="proceso.estado_proceso ? 'primary' : ''">
+            {{ proceso.estado_proceso ? 'Activo' : 'Inactivo' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Acciones Column -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="actions-column">Acciones</th>
+        <td mat-cell *matCellDef="let proceso" class="actions-column">
+          <button 
+            mat-icon-button 
+            color="primary"
+            (click)="editarProceso(proceso)"
+            matTooltip="Editar proceso"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            [color]="proceso.estado_proceso ? 'warn' : 'primary'"
+            (click)="cambiarEstado(proceso)"
+            [matTooltip]="proceso.estado_proceso ? 'Desactivar' : 'Activar'"
+          >
+            <mat-icon>{{ proceso.estado_proceso ? 'block' : 'check_circle' }}</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            color="warn"
+            (click)="eliminarProceso(proceso)"
+            matTooltip="Eliminar proceso"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Fila vacía -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+          <div class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            <p>No se encontraron procesos</p>
+            <button mat-raised-button color="primary" (click)="crearProceso()">
+              <mat-icon>add</mat-icon>
+              Agregar Primer Proceso
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Cargando procesos...</p>
+  </div>
+</div>

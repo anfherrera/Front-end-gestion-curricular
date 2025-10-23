@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ data.isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ data.isEditMode ? 'Editar' : 'Nuevo' }} Proceso
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="procesoForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del Proceso</mat-label>
+      <input 
+        matInput 
+        formControlName="nombre_proceso"
+        placeholder="Ej: Proceso Paz y Salvo"
+        [disabled]="loading"
+        autofocus
+      >
+      <mat-icon matPrefix>settings</mat-icon>
+      <mat-error *ngIf="nombreProceso?.hasError('required')">
+        El nombre es obligatorio
+      </mat-error>
+      <mat-error *ngIf="nombreProceso?.hasError('minlength')">
+        El nombre debe tener al menos 3 caracteres
+      </mat-error>
+      <mat-error *ngIf="nombreProceso?.hasError('maxlength')">
+        El nombre no puede exceder 100 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción</mat-label>
+      <textarea 
+        matInput 
+        formControlName="descripcion"
+        placeholder="Descripción detallada del proceso"
+        [disabled]="loading"
+        rows="4"
+      ></textarea>
+      <mat-icon matPrefix>description</mat-icon>
+      <mat-error *ngIf="descripcion?.hasError('maxlength')">
+        La descripción no puede exceder 500 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="estado_proceso" [disabled]="loading">
+      Proceso activo
+    </mat-checkbox>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button 
+    mat-stroked-button 
+    (click)="cancelar()"
+    [disabled]="loading"
+  >
+    <mat-icon>cancel</mat-icon>
+    Cancelar
+  </button>
+  <button 
+    mat-raised-button 
+    color="primary"
+    (click)="guardar()"
+    [disabled]="loading || procesoForm.invalid"
+  >
+    <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+    <mat-icon *ngIf="!loading">save</mat-icon>
+    {{ data.isEditMode ? 'Actualizar' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>
+

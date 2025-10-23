@@ -1,0 +1,86 @@
+<div class="container-admin">
+  <div class="header-section">
+    <h2>
+      <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Editar' : 'Nuevo' }} Docente
+    </h2>
+    <button mat-stroked-button (click)="cancelar()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="docenteForm" (ngSubmit)="guardar()">
+        <div class="form-grid">
+          <!-- Código del Docente -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Código del Docente</mat-label>
+            <input 
+              matInput 
+              formControlName="codigo_docente"
+              placeholder="Ej: DOC001"
+              [disabled]="loading"
+            >
+            <mat-icon matPrefix>badge</mat-icon>
+            <mat-error *ngIf="codigoDocente?.hasError('required')">
+              El código es obligatorio
+            </mat-error>
+            <mat-error *ngIf="codigoDocente?.hasError('minlength')">
+              El código debe tener al menos 3 caracteres
+            </mat-error>
+            <mat-error *ngIf="codigoDocente?.hasError('maxlength')">
+              El código no puede exceder 12 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Nombre del Docente -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre Completo</mat-label>
+            <input 
+              matInput 
+              formControlName="nombre_docente"
+              placeholder="Ej: Juan Pérez García"
+              [disabled]="loading"
+            >
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="nombreDocente?.hasError('required')">
+              El nombre es obligatorio
+            </mat-error>
+            <mat-error *ngIf="nombreDocente?.hasError('minlength')">
+              El nombre debe tener al menos 3 caracteres
+            </mat-error>
+            <mat-error *ngIf="nombreDocente?.hasError('maxlength')">
+              El nombre no puede exceder 100 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button 
+            mat-stroked-button 
+            type="button"
+            (click)="cancelar()"
+            [disabled]="loading"
+          >
+            <mat-icon>cancel</mat-icon>
+            Cancelar
+          </button>
+          <button 
+            mat-raised-button 
+            color="primary"
+            type="submit"
+            [disabled]="loading || docenteForm.invalid"
+          >
+            <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+            <mat-icon *ngIf="!loading">save</mat-icon>
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
+

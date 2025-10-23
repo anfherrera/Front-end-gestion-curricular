@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { RoleGuard } from './core/guards/role.guard';
+import { UserRole } from './core/enums/roles.enum';
 import { CommonRoutes } from './pages/common/common.routes';
 
 // Subcomponentes de cursos intersemestrales
@@ -93,10 +95,13 @@ export const routes: Routes = [
       // ==========================
       // Admin
       // ==========================
-      { path: 'admin/dashboard', loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent) },
-      { path: 'admin/manage-users', loadComponent: () => import('./pages/admin/manage-users/manage-users.component').then(m => m.ManageUsersComponent) },
-      { path: 'admin/manage-roles', loadComponent: () => import('./pages/admin/manage-roles/manage-roles.component').then(m => m.ManageRolesComponent) },
-      { path: 'admin/manage-processes', loadComponent: () => import('./pages/admin/manage-processes/manage-processes.component').then(m => m.ManageProcessesComponent) },
+      {
+        path: 'admin',
+        loadChildren: () =>
+          import('./pages/admin/admin.routes').then(m => m.AdminRoutes),
+        canActivate: [RoleGuard],
+        data: { role: UserRole.ADMIN }
+      },
     ],
   },
 

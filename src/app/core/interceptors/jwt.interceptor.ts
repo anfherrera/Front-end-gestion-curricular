@@ -22,15 +22,27 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
       return next(req); // No se envía token porque está expirado
     }
 
-    // Si el token es válido, lo agregamos al header
+    // Si el token es válido, lo agregamos al header con UTF-8
     const clonedReq = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json; charset=utf-8',
+        'Accept': 'application/json',
+        'Accept-Charset': 'utf-8'
       }
     });
 
     return next(clonedReq);
   }
 
-  return next(req);
+  // Peticiones sin token también deben tener UTF-8
+  const clonedReq = req.clone({
+    setHeaders: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Accept': 'application/json',
+      'Accept-Charset': 'utf-8'
+    }
+  });
+
+  return next(clonedReq);
 };

@@ -1,1 +1,101 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="header-section">
+    <h1>
+      <mat-icon>dashboard</mat-icon>
+      Panel de Administración
+    </h1>
+    <p class="subtitle">Gestión centralizada del sistema académico</p>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <div class="stats-grid" *ngIf="!loading">
+    <!-- Card Docentes -->
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon class="card-icon docentes">school</mat-icon>
+        <div>
+          <mat-card-title>Docentes</mat-card-title>
+          <mat-card-subtitle>Gestión de docentes</mat-card-subtitle>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ totalDocentes }}</div>
+        <p class="stat-label">Docentes registrados</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/admin/docentes">
+          <mat-icon>list</mat-icon>
+          Ver Docentes
+        </button>
+        <button mat-stroked-button routerLink="/admin/docentes/crear">
+          <mat-icon>add</mat-icon>
+          Nuevo
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Card Programas -->
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon class="card-icon programas">assignment</mat-icon>
+        <div>
+          <mat-card-title>Programas</mat-card-title>
+          <mat-card-subtitle>Gestión de programas académicos</mat-card-subtitle>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ totalProgramas }}</div>
+        <p class="stat-label">Programas registrados</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/admin/programas">
+          <mat-icon>list</mat-icon>
+          Ver Programas
+        </button>
+        <button mat-stroked-button routerLink="/admin/programas/crear">
+          <mat-icon>add</mat-icon>
+          Nuevo
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Card Roles -->
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon class="card-icon roles">admin_panel_settings</mat-icon>
+        <div>
+          <mat-card-title>Roles</mat-card-title>
+          <mat-card-subtitle>Gestión de roles del sistema</mat-card-subtitle>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ totalRoles }}</div>
+        <p class="stat-label">Roles configurados</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/admin/manage-roles">
+          <mat-icon>list</mat-icon>
+          Ver Roles
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div class="actions-section" *ngIf="!loading">
+    <h2>Acciones Rápidas</h2>
+    <div class="actions-grid">
+      <button mat-raised-button color="accent" routerLink="/admin/manage-users">
+        <mat-icon>people</mat-icon>
+        Gestionar Usuarios
+      </button>
+      <button mat-raised-button routerLink="/admin/manage-roles">
+        <mat-icon>admin_panel_settings</mat-icon>
+        Gestionar Roles
+      </button>
+    </div>
+  </div>
+</div>

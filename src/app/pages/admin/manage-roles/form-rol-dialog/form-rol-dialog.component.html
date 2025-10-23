@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ data.isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ data.isEditMode ? 'Editar' : 'Nuevo' }} Rol
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="rolForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del Rol</mat-label>
+      <input 
+        matInput 
+        formControlName="nombre"
+        placeholder="Ej: Administrador"
+        [disabled]="loading"
+        autofocus
+      >
+      <mat-icon matPrefix>admin_panel_settings</mat-icon>
+      <mat-error *ngIf="nombre?.hasError('required')">
+        El nombre es obligatorio
+      </mat-error>
+      <mat-error *ngIf="nombre?.hasError('minlength')">
+        El nombre debe tener al menos 3 caracteres
+      </mat-error>
+      <mat-error *ngIf="nombre?.hasError('maxlength')">
+        El nombre no puede exceder 50 caracteres
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button 
+    mat-stroked-button 
+    (click)="cancelar()"
+    [disabled]="loading"
+  >
+    <mat-icon>cancel</mat-icon>
+    Cancelar
+  </button>
+  <button 
+    mat-raised-button 
+    color="primary"
+    (click)="guardar()"
+    [disabled]="loading || rolForm.invalid"
+  >
+    <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+    <mat-icon *ngIf="!loading">save</mat-icon>
+    {{ data.isEditMode ? 'Actualizar' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>
+

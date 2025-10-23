@@ -80,7 +80,27 @@ export class AuthService {
     if (!storage) return null;
 
     const userData = storage.getItem(this.USER_KEY);
-    return userData ? JSON.parse(userData) : null;
+    if (!userData) return null;
+    
+    const usuario = JSON.parse(userData);
+    
+    // CORRECCIÓN: Sincronizar el rol del localStorage con el del usuario
+    if (usuario?.rol?.nombre) {
+      const rolActualEnStorage = storage.getItem(this.ROLE_KEY);
+      const rolDelUsuario = usuario.rol.nombre.toLowerCase();
+      
+      // Normalizar el rol esperado
+      let rolEsperado = rolDelUsuario;
+      if (rolDelUsuario === 'administrador') rolEsperado = 'admin';
+      if (rolDelUsuario === 'secretario') rolEsperado = 'secretaria';
+      
+      // Si el rol guardado no coincide con el del usuario, actualizarlo
+      if (rolActualEnStorage !== rolEsperado) {
+        this.setRole(usuario.rol.nombre);
+      }
+    }
+    
+    return usuario;
   }
 
   // ===== ROL =====
@@ -88,7 +108,8 @@ export class AuthService {
     let normalizedRole: UserRole;
 
     switch (role.toLowerCase()) {
-      case 'admin': normalizedRole = UserRole.ADMIN; break;
+      case 'admin':
+      case 'administrador': normalizedRole = UserRole.ADMIN; break;
       case 'funcionario': normalizedRole = UserRole.FUNCIONARIO; break;
       case 'coordinador': normalizedRole = UserRole.COORDINADOR; break;
       case 'secretario':

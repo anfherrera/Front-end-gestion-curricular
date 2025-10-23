@@ -19,12 +19,26 @@ export class RoleGuard implements CanActivate {
       return false;
     }
 
-    if (userRole !== expectedRole) {
+    // Normalizar roles para comparación (convertir a minúsculas y manejar sinónimos)
+    const normalizedUserRole = this.normalizeRole(userRole);
+    const normalizedExpectedRole = this.normalizeRole(expectedRole);
+
+    if (normalizedUserRole !== normalizedExpectedRole) {
       // Rol no coincide, manda a home
       this.router.navigate(['/home']);
       return false;
     }
 
     return true;
+  }
+
+  private normalizeRole(role: string): string {
+    const normalized = role.toLowerCase().trim();
+    
+    // Mapear sinónimos
+    if (normalized === 'administrador') return 'admin';
+    if (normalized === 'secretario') return 'secretaria';
+    
+    return normalized;
   }
 }

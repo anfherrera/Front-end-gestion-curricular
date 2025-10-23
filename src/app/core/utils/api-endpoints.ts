@@ -1,7 +1,7 @@
 import { environment } from '../../../environments/environment';
 
 export class ApiEndpoints {
-  private static readonly BASE_URL = environment.apiUrl;
+  static readonly BASE_URL = environment.apiUrl;
 
   // ===== AUTENTICACIÓN =====
   static readonly AUTH = {

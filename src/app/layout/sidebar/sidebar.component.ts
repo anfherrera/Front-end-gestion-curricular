@@ -29,7 +29,21 @@ export class SidebarComponent implements OnChanges {
     private router: Router,
     private dialog: MatDialog
   ) {
-    const backendRole = this.authService.getRole();
+    // Intentar obtener el rol del localStorage primero
+    let backendRole = this.authService.getRole();
+    
+    // FALLBACK: Si el rol es null o incorrecto, leer del usuario directamente
+    if (!backendRole || backendRole === UserRole.ESTUDIANTE) {
+      const usuario = this.authService.getUsuario();
+      if (usuario?.rol?.nombre) {
+        const rolDelUsuario = usuario.rol.nombre;
+        // Actualizar el rol en el servicio
+        this.authService.setRole(rolDelUsuario);
+        // Volver a leer el rol actualizado
+        backendRole = this.authService.getRole();
+      }
+    }
+    
     this.roleLower = this.mapBackendRoleToUserRole(backendRole);
     this.menuItems = SIDEBAR_ITEMS.filter(item => item.roles.includes(this.roleLower));
   }
@@ -40,7 +54,8 @@ export class SidebarComponent implements OnChanges {
 
   private mapBackendRoleToUserRole(backendRole: string | null | undefined): UserRole {
     switch (backendRole?.toLowerCase()) {
-      case 'admin': return UserRole.ADMIN;
+      case 'admin':
+      case 'administrador': return UserRole.ADMIN;
       case 'funcionario': return UserRole.FUNCIONARIO;
       case 'coordinador': return UserRole.COORDINADOR;
       case 'secretario':
