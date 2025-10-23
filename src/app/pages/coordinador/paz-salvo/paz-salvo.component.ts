@@ -188,12 +188,13 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
 
   // 📌 Aprobar toda la solicitud
+  // ✅ IGUAL QUE HOMOLOGACIÓN: Usar approveAsCoordinador() que envía 'APROBADA_COORDINADOR'
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+    this.pazSalvoService.approveAsCoordinador(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        this.snackBar.open('Paz y Salvo aprobado definitivamente ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();

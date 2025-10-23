@@ -224,6 +224,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
   /**
    * Generar documento usando el componente genérico
+   * ✅ IGUAL QUE HOMOLOGACIÓN: NO actualiza el estado aquí, solo genera el documento
    */
   onGenerarDocumento(request: DocumentRequest): void {
     if (!this.selectedSolicitud) return;
@@ -244,27 +245,11 @@ export class SecretariaPazSalvoComponent implements OnInit {
         // Descargar archivo Word
         this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
 
-        // Actualizar estado de la solicitud a APROBADA
-        this.pazSalvoService.approveDefinitively(this.selectedSolicitud!.id_solicitud).subscribe({
-          next: () => {
-            console.log('✅ Estado de solicitud actualizado a APROBADA');
+        // Marcar que el documento fue generado (SIN cambiar el estado de la solicitud)
+        this.documentoGenerado = true;
 
-            // Marcar que el documento fue generado
-            this.documentoGenerado = true;
-
-            this.snackBar.open('Documento Word generado, descargado y solicitud aprobada. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
-            this.loading = false;
-
-            // Recargar solicitudes para mostrar el cambio de estado
-            this.cargarSolicitudes();
-          },
-          error: (err: any) => {
-            console.error('❌ Error al actualizar estado de solicitud:', err);
-            this.snackBar.open('Documento generado pero error al actualizar estado', 'Cerrar', { duration: 3000 });
-            this.documentoGenerado = true;
-            this.loading = false;
-          }
-        });
+        this.snackBar.open('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
+        this.loading = false;
       },
       error: (err: any) => {
         console.error('❌ Error al generar documento:', err);
@@ -297,23 +282,61 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
-   * Subir archivo PDF al servidor
+   * Enviar documento (unifica subir PDF y enviar al estudiante)
+   * ✅ IGUAL QUE HOMOLOGACIÓN: Sube el PDF y LUEGO actualiza el estado
    */
-  subirPDF(): void {
+  enviarDocumento(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
       this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
       return;
     }
 
+    // Paso 1: Subir PDF
     this.subiendoPDF = true;
     console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+    console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
+    console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
     // Usar el servicio para subir el PDF con idSolicitud
     this.pazSalvoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
       next: (response) => {
         console.log('✅ Archivo PDF subido exitosamente:', response);
-        this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
         this.subiendoPDF = false;
+
+        // Paso 2: Enviar al estudiante (cambiar estado)
+        this.enviandoPDF = true;
+        console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud?.id_solicitud);
+
+        // Verificar que la solicitud sigue seleccionada
+        if (!this.selectedSolicitud) {
+          console.error('❌ selectedSolicitud es undefined');
+          this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
+          this.enviandoPDF = false;
+          return;
+        }
+
+        // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
+        this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+          next: () => {
+            console.log('✅ Estado de solicitud actualizado a APROBADA');
+            console.log('✅ PDF enviado al estudiante exitosamente');
+            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+            this.enviandoPDF = false;
+
+            // Limpiar el estado
+            this.documentoGenerado = false;
+            this.archivoPDF = null;
+            this.selectedSolicitud = undefined;
+
+            // Recargar solicitudes para mostrar el cambio de estado
+            this.cargarSolicitudes();
+          },
+          error: (err: any) => {
+            console.error('❌ Error al actualizar estado de solicitud:', err);
+            this.snackBar.open('PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+            this.enviandoPDF = false;
+          }
+        });
       },
       error: (err) => {
         console.error('❌ Error al subir archivo PDF:', err);
@@ -321,34 +344,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.subiendoPDF = false;
       }
     });
-  }
-
-  /**
-   * Enviar PDF al estudiante (igual que homologación)
-   */
-  enviarPDFAlEstudiante(): void {
-    if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor sube un archivo PDF primero', 'Cerrar', { duration: 3000 });
-      return;
-    }
-
-    this.enviandoPDF = true;
-    console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
-
-    // Simular envío del PDF (el estado ya se actualizó cuando se generó el documento)
-    setTimeout(() => {
-      console.log('✅ PDF enviado al estudiante exitosamente');
-      this.snackBar.open('PDF enviado al estudiante exitosamente ✅', 'Cerrar', { duration: 3000 });
-      this.enviandoPDF = false;
-
-      // Limpiar el estado
-      this.documentoGenerado = false;
-      this.archivoPDF = null;
-      this.selectedSolicitud = undefined;
-
-      // Recargar solicitudes
-      this.cargarSolicitudes();
-    }, 1000);
   }
 
   /**
@@ -361,43 +356,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
   /**
    * Limpiar estado del componente
    */
-  /**
-   * 🆕 Generar documento de Paz y Salvo usando el endpoint específico
-   */
-  generarDocumentoPazSalvo(documentRequest: DocumentRequest): void {
-    if (!this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona una solicitud primero.', 'Cerrar', { duration: 3000 });
-      return;
-    }
-
-    this.loading = true;
-    console.log('📄 Generando documento de Paz y Salvo:', documentRequest);
-    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
-    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
-    console.log('👤 Datos del estudiante en request:', documentRequest.datosSolicitud);
-
-    // Usar DocumentGeneratorService como en homologación
-    this.documentGeneratorService.generarDocumento(documentRequest).subscribe({
-      next: (blob) => {
-        console.log('✅ Documento de Paz y Salvo generado exitosamente');
-
-        // Generar nombre de archivo
-        const nombreArchivo = `${documentRequest.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
-
-        // Descargar archivo Word usando el servicio
-        this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
-
-        this.snackBar.open('Documento de Paz y Salvo generado y descargado exitosamente', 'Cerrar', { duration: 3000 });
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.error('❌ Error al generar documento de Paz y Salvo:', err);
-        this.snackBar.open('Error al generar documento: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
-        this.loading = false;
-      }
-    });
-  }
-
   private limpiarEstado(): void {
     this.documentoGenerado = false;
     this.archivoPDF = null;

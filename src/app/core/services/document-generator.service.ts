@@ -37,7 +37,45 @@ export class DocumentGeneratorService {
     console.log('📄 Generando documento Word...', request);
     console.log('🔍 Tipo de documento:', request.tipoDocumento);
 
-    // Para homologación y reingreso, usar el backend
+    // ✅ Para PAZ Y SALVO, usar endpoint específico
+    if (request.tipoDocumento === 'OFICIO_PAZ_SALVO') {
+      console.log('📄 Usando endpoint específico de Paz y Salvo');
+      
+      const formData = new FormData();
+      
+      // Campos OBLIGATORIOS
+      formData.append('numeroDocumento', request.datosDocumento.numeroDocumento);
+      formData.append('fechaDocumento', request.datosDocumento.fechaDocumento.toString());
+      
+      // Campos OPCIONALES
+      if (request.datosSolicitud?.cedula) {
+        formData.append('cedulaEstudiante', request.datosSolicitud.cedula);
+      }
+      if (request.datosSolicitud?.tituloTrabajoGrado) {
+        formData.append('tituloTrabajoGrado', request.datosSolicitud.tituloTrabajoGrado);
+      }
+      if (request.datosSolicitud?.directorTrabajoGrado) {
+        formData.append('directorTrabajoGrado', request.datosSolicitud.directorTrabajoGrado);
+      }
+      if (request.datosDocumento?.observaciones) {
+        formData.append('observaciones', request.datosDocumento.observaciones);
+      }
+      
+      const url = `http://localhost:5000/api/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`;
+      console.log('🔗 URL para generar Paz y Salvo:', url);
+      
+      // Para FormData, no usar Content-Type (el navegador lo establece automáticamente)
+      const headers = new HttpHeaders({
+        'Authorization': this.getAuthHeaders().get('Authorization') || ''
+      });
+      
+      return this.http.post(url, formData, {
+        headers: headers,
+        responseType: 'blob'
+      });
+    }
+
+    // Para homologación y reingreso, usar el backend genérico
     if (request.tipoDocumento === 'OFICIO_HOMOLOGACION' || request.tipoDocumento === 'RESOLUCION_REINGRESO') {
       console.log('📄 Usando backend para generar documento:', request.tipoDocumento);
       return this.http.post(`${this.apiUrl}/generar`, request, {

@@ -278,19 +278,10 @@ export class PazSalvoService {
   }
 
   /**
-   * Método legacy para mantener compatibilidad (DEPRECATED)
-   * @deprecated Usar subirDocumento() en su lugar
+   * ✅ IGUAL QUE HOMOLOGACIÓN: Subir archivo PDF usando endpoint genérico
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    console.warn('⚠️ subirArchivoPDF() está deprecated. Usar subirDocumento() para el nuevo flujo.');
-    
-    // Si no hay idSolicitud, usar el nuevo endpoint
-    if (!idSolicitud) {
-      return this.subirDocumento(archivo);
-    }
-    
-    // Para casos legacy con idSolicitud, usar el endpoint anterior
-    const url = `http://localhost:5000/api/solicitudes-pazysalvo/${idSolicitud}/subir-archivo`;
+    const url = `http://localhost:5000/api/archivos/subir/pdf`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -315,7 +306,13 @@ export class PazSalvoService {
     const formData = new FormData();
     formData.append('file', archivo);
     
-    console.log('🔗 URL para subir archivo PDF (legacy):', url);
+    // Agregar idSolicitud si se proporciona
+    if (idSolicitud) {
+      formData.append('idSolicitud', idSolicitud.toString());
+      console.log('📎 Asociando archivo a solicitud ID:', idSolicitud);
+    }
+    
+    console.log('🔗 URL para subir archivo PDF:', url);
     console.log('📁 Archivo a subir:', archivo.name);
     console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
@@ -359,16 +356,25 @@ export class PazSalvoService {
     }, { headers: this.getAuthHeaders() });
   }
 
+  /**
+   * Aprobar solicitud como coordinador
+   * ✅ IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA_COORDINADOR'
+   */
+  approveAsCoordinador(requestId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
+      idSolicitud: requestId,
+      nuevoEstado: 'APROBADA_COORDINADOR'
+    }, { headers: this.getAuthHeaders() });
+  }
+
+  /**
+   * Aprobar definitivamente la solicitud (usado por SECRETARIA)
+   * ✅ IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA' como estado final
+   */
   approveDefinitively(idSolicitud: number): Observable<any> {
-    // ⚠️ IMPORTANTE: El coordinador debe enviar exactamente "APROBADA_COORDINADOR"
-    const nuevoEstado = 'APROBADA_COORDINADOR';
-    
-    console.log('🔄 [COORDINADOR] Aprobando solicitud:', idSolicitud);
-    console.log('📝 Estado a enviar:', nuevoEstado);
-    
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
       idSolicitud: idSolicitud,
-      nuevoEstado: nuevoEstado
+      nuevoEstado: 'APROBADA'
     }, { headers: this.getAuthHeaders() });
   }
 
