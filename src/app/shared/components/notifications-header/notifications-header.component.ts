@@ -46,15 +46,8 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('🔔 [NOTIFICACIONES] Componente inicializado');
-    
-    // Esperar a que el usuario esté disponible antes de cargar notificaciones
-    this.esperarUsuarioYcargarNotificaciones();
-    
-    // Actualizar notificaciones cada 30 segundos
-    this.refreshInterval = setInterval(() => {
-      this.cargarNotificaciones();
-    }, 30000);
+    // Notificaciones deshabilitadas
+    // No cargar notificaciones ni iniciar polling
   }
 
   ngOnDestroy(): void {

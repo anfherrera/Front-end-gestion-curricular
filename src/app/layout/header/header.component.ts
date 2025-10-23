@@ -8,7 +8,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ActivityIndicatorComponent } from '../../shared/components/activity-indicator/activity-indicator.component';
-import { NotificationsHeaderComponent } from '../../shared/components/notifications-header/notifications-header.component';
 
 @Component({
   selector: 'app-header',
@@ -22,8 +21,7 @@ import { NotificationsHeaderComponent } from '../../shared/components/notificati
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    ActivityIndicatorComponent,
-    NotificationsHeaderComponent
+    ActivityIndicatorComponent
   ]
 })
 export class HeaderComponent implements OnInit {
@@ -32,7 +30,6 @@ export class HeaderComponent implements OnInit {
   isSidebarOpen = true;
   userName: string = '';
   userEmail: string = '';
-  currentUserId?: number;
 
   constructor(
     private authService: AuthService,
@@ -44,7 +41,6 @@ export class HeaderComponent implements OnInit {
     if (usuario) {
       this.userName = usuario.nombre_completo;
       this.userEmail = usuario.correo;
-      this.currentUserId = usuario.id;
     }
   }
 

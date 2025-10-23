@@ -49,80 +49,24 @@ export class NotificacionesService {
    * Obtiene las notificaciones del header para un usuario específico
    */
   obtenerNotificacionesHeader(idUsuario: number): Observable<NotificacionesResponse> {
-    console.log('🔔 [NOTIFICACIONES] Obteniendo notificaciones para usuario:', idUsuario);
-    
-    // Por ahora, usar datos de prueba hasta que el backend esté disponible
-    const notificacionesPrueba: NotificacionesResponse = {
-      totalNoLeidas: 2,
-      cursosVeranoNoLeidas: 1,
-      notificaciones: [
-        {
-          id: 1,
-          titulo: 'Solicitud de Curso Intersemestral Aprobada',
-          mensaje: 'Tu solicitud para el curso "Matemáticas Avanzadas" ha sido aprobada. Puedes proceder con la inscripción.',
-          tipoSolicitud: 'CURSO_VERANO',
-          tipoNotificacion: 'APROBADO',
-          fechaCreacion: new Date().toISOString(),
-          esUrgente: false,
-          accion: 'REALIZAR_INSCRIPCION',
-          urlAccion: '/estudiante/cursos-intersemestrales',
-          categoria: 'Cursos Intersemestrales',
-          icono: 'school',
-          color: '#1976d2',
-          tiempoTranscurrido: 'Hace 2 horas',
-          leida: false
-        },
-        {
-          id: 2,
-          titulo: 'Documentos Pendientes - Paz y Salvo',
-          mensaje: 'Faltan algunos documentos para completar tu solicitud de paz y salvo. Por favor, revisa y actualiza la información.',
-          tipoSolicitud: 'PAZ_SALVO',
-          tipoNotificacion: 'PENDIENTE',
-          fechaCreacion: new Date(Date.now() - 3600000).toISOString(),
-          esUrgente: true,
-          accion: 'REVISAR_DOCUMENTOS',
-          urlAccion: '/estudiante/paz-salvo',
-          categoria: 'Paz y Salvo',
-          icono: 'verified',
-          color: '#d32f2f',
-          tiempoTranscurrido: 'Hace 1 hora',
-          leida: false
-        }
-      ],
+    // Notificaciones deshabilitadas - retornar vacío
+    const notificacionesVacias: NotificacionesResponse = {
+      totalNoLeidas: 0,
+      cursosVeranoNoLeidas: 0,
+      notificaciones: [],
       categorias: {
-        CURSO_VERANO: 1,
+        CURSO_VERANO: 0,
         ECAES: 0,
         REINGRESO: 0,
         HOMOLOGACION: 0,
-        PAZ_SALVO: 1
+        PAZ_SALVO: 0
       }
     };
 
-    // Simular una llamada HTTP con delay
     return new Observable(observer => {
-      setTimeout(() => {
-        console.log('✅ [NOTIFICACIONES] Notificaciones de prueba cargadas:', notificacionesPrueba);
-        console.log('📊 [NOTIFICACIONES] Total no leídas:', notificacionesPrueba.totalNoLeidas);
-        console.log('📋 [NOTIFICACIONES] Cantidad de notificaciones:', notificacionesPrueba.notificaciones.length);
-        
-        this.notificacionesSubject.next(notificacionesPrueba);
-        observer.next(notificacionesPrueba);
-        observer.complete();
-      }, 500); // Simular delay de red
+      observer.next(notificacionesVacias);
+      observer.complete();
     });
-
-    // Código original para cuando el backend esté disponible:
-    /*
-    return this.http.get<NotificacionesResponse>(`${this.apiUrl}/header/${idUsuario}`)
-      .pipe(
-        tap(response => {
-          console.log('✅ [NOTIFICACIONES] Notificaciones recibidas:', response);
-          console.log('📊 [NOTIFICACIONES] Total no leídas:', response.totalNoLeidas);
-          console.log('📋 [NOTIFICACIONES] Cantidad de notificaciones:', response.notificaciones.length);
-          this.notificacionesSubject.next(response);
-        })
-      );
-    */
   }
 
   /**
