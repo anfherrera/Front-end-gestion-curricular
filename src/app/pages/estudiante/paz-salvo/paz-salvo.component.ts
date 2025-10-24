@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -59,7 +59,8 @@ export class PazSalvoComponent implements OnInit {
     private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -241,9 +242,15 @@ listarSolicitudes() {
             console.log('✅ Solicitud creada en backend:', resp);
             this.listarSolicitudes();
 
-            // Resetear el file upload
-            this.resetFileUpload = true;
-            setTimeout(() => this.resetFileUpload = false, 0);
+            // ✅ FIX: Resetear el file upload en el siguiente ciclo de detección para evitar NG0100
+            setTimeout(() => {
+              this.resetFileUpload = true;
+              this.cdr.detectChanges(); // Forzar detección de cambios
+              setTimeout(() => {
+                this.resetFileUpload = false;
+                this.cdr.detectChanges(); // Forzar detección de cambios
+              }, 0);
+            }, 0);
 
             this.mostrarMensaje('🎉 ¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
           },

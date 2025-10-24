@@ -128,15 +128,19 @@ export class PazSalvoService {
         nombre_completo: usuario.nombre_completo || "Usuario",
         codigo: usuario.codigo || "104612345678",
         correo: usuario.email_usuario || "usuario@unicauca.edu.co",
+        // ✅ FIX: Agregar id_rol e id_programa como campos requeridos
+        id_rol: usuario.id_rol || usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
+        id_programa: usuario.id_programa || usuario.objPrograma?.id_programa || 1, // Programa por defecto
         objPrograma: usuario.objPrograma || {
-          id_programa: 1,
-          nombre_programa: "Ingeniería de Sistemas"
+          id_programa: usuario.id_programa || usuario.objPrograma?.id_programa || 1,
+          nombre_programa: usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
         }
       },
       archivos: archivos
     };
 
     console.log('📤 Enviando solicitud de paz y salvo:', body);
+    console.log('📤 Usuario completo:', usuario);
     console.log('📤 Headers:', this.getAuthHeaders());
     console.log('📤 URL:', `${this.apiUrl}/crearSolicitud-PazYSalvo`);
     

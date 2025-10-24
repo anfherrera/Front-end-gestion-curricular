@@ -9,6 +9,9 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   const token = authService.getToken();
 
+  // 🔧 Detectar si es una petición con archivos (FormData)
+  const isFormData = req.body instanceof FormData;
+
   if (token) {
     // Decodificar token para validar expiración
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -22,20 +25,29 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
       return next(req); // No se envía token porque está expirado
     }
 
-    // Si el token es válido, lo agregamos al header con UTF-8
-    const clonedReq = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json; charset=utf-8',
-        'Accept': 'application/json',
-        'Accept-Charset': 'utf-8'
-      }
-    });
+    // Si el token es válido, lo agregamos al header
+    // ✅ NO configurar Content-Type para FormData (archivos)
+    const headers: any = {
+      Authorization: `Bearer ${token}`,
+    };
 
+    // Solo agregar Content-Type si NO es FormData
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json; charset=utf-8';
+      headers['Accept'] = 'application/json';
+      headers['Accept-Charset'] = 'utf-8';
+    }
+
+    const clonedReq = req.clone({ setHeaders: headers });
     return next(clonedReq);
   }
 
-  // Peticiones sin token también deben tener UTF-8
+  // Peticiones sin token
+  // ✅ NO configurar Content-Type para FormData (archivos)
+  if (isFormData) {
+    return next(req); // Dejar que el navegador configure el Content-Type automáticamente
+  }
+
   const clonedReq = req.clone({
     setHeaders: {
       'Content-Type': 'application/json; charset=utf-8',
