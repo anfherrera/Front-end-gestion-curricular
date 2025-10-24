@@ -157,6 +157,14 @@ mat-table {
   background-color: #001066 !important;
 }
 
+::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn {
+  background-color: #f44336 !important;
+}
+
+::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn:hover {
+  background-color: #d32f2f !important;
+}
+
 .loading-container, .error-container, .empty-container {
   display: flex;
   flex-direction: column;
@@ -207,6 +215,28 @@ button[color="primary"] mat-icon {
   margin-right: 8px;
   color: white;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Estilos para notificaciones personalizadas */
+::ng-deep .snackbar-success {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+::ng-deep .snackbar-warning {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+::ng-deep .snackbar-error {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+::ng-deep .snackbar-success .mat-mdc-button,
+::ng-deep .snackbar-warning .mat-mdc-button,
+::ng-deep .snackbar-error .mat-mdc-button {
+  color: white !important;
 }
 
 /* Responsive */

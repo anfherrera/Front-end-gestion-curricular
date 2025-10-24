@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -92,18 +93,59 @@ export class ListaDocentesComponent implements OnInit {
   }
 
   eliminarDocente(docente: DocenteDTORespuesta): void {
-    if (!confirm(`¿Está seguro de eliminar al docente "${docente.nombre_docente}"?`)) {
+    if (!confirm(`¿Está seguro de eliminar al docente "${docente.nombre_docente}"?\n\nEsta acción no se puede deshacer.`)) {
       return;
     }
 
+    this.loading = true;
+
     this.docentesService.eliminarDocente(docente.id_docente).subscribe({
       next: () => {
-        this.snackBar.open('Docente eliminado exitosamente', 'Cerrar', { duration: 3000 });
+        this.loading = false;
+        // ✅ Status 200 OK - Éxito
+        this.snackBar.open('✅ Docente eliminado exitosamente', 'Cerrar', { 
+          duration: 4000,
+          panelClass: ['snackbar-success']
+        });
         this.cargarDocentes();
       },
-      error: (err) => {
-        console.error('Error al eliminar:', err);
-        this.snackBar.open('Error al eliminar el docente', 'Cerrar', { duration: 3000 });
+      error: (error: HttpErrorResponse) => {
+        this.loading = false;
+        console.error('Error al eliminar docente:', error);
+
+        // ❌ Manejo de errores específicos
+        if (error.status === 409) {
+          // Docente tiene cursos asignados
+          const mensaje = error.error?.mensaje || 
+                'El docente tiene cursos asignados. Por favor, reasigne los cursos a otro docente antes de eliminar.';
+          this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
+            duration: 6000,
+            panelClass: ['snackbar-warning']
+          });
+        } else if (error.status === 404) {
+          // Docente no encontrado
+          this.snackBar.open('❌ Docente no encontrado', 'Cerrar', { 
+            duration: 4000,
+            panelClass: ['snackbar-error']
+          });
+        } else if (error.status === 500) {
+          // Error interno del servidor
+          const mensajeError = error.error?.message || error.error?.mensaje || 
+                'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.';
+          this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', { 
+            duration: 6000,
+            panelClass: ['snackbar-error']
+          });
+          console.error('Detalles del error 500:', error.error);
+        } else {
+          // Otro error
+          const mensajeError = error.error?.message || error.error?.mensaje || 
+                'Ocurrió un error al eliminar el docente.';
+          this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', { 
+            duration: 4000,
+            panelClass: ['snackbar-error']
+          });
+        }
       }
     });
   }

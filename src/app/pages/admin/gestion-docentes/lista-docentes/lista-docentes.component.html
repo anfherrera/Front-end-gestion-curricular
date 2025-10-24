@@ -72,9 +72,10 @@
           </button>
           <button 
             mat-mini-fab 
-            color="primary"
+            color="warn"
             (click)="eliminarDocente(docente)"
             matTooltip="Eliminar docente"
+            [disabled]="loading"
           >
             <mat-icon>delete</mat-icon>
           </button>
