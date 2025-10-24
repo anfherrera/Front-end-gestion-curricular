@@ -11,8 +11,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { DocentesService } from '../../services/docentes.service';
-import { DocenteDTORespuesta } from '../../models/docente.interface';
+import { DocentesService } from '../../../../core/services/docentes.service';
+import { DocenteDTORespuesta } from '../../../../core/models/docente.interface';
+import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 
 @Component({
   selector: 'app-lista-docentes',
@@ -54,7 +55,7 @@ export class ListaDocentesComponent implements OnInit {
     
     this.docentesService.listarDocentes().subscribe({
       next: (data) => {
-        this.docentes = data;
+        this.docentes = corregirEncodingObjeto(data);
         this.loading = false;
       },
       error: (err) => {
@@ -74,7 +75,7 @@ export class ListaDocentesComponent implements OnInit {
     this.loading = true;
     this.docentesService.buscarPorNombre(this.searchTerm).subscribe({
       next: (data) => {
-        this.docentes = data;
+        this.docentes = corregirEncodingObjeto(data);
         this.loading = false;
       },
       error: (err) => {

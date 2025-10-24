@@ -9,8 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { RolesAdminService } from '../../services/roles-admin.service';
-import { RolDTOPeticion, RolDTORespuesta } from '../../models/rol.interface';
+import { RolesAdminService } from '../../../../core/services/roles-admin.service';
+import { RolDTOPeticion, RolDTORespuesta } from '../../../../core/models/rol.interface';
 
 export interface FormRolDialogData {
   rol: RolDTORespuesta | null;

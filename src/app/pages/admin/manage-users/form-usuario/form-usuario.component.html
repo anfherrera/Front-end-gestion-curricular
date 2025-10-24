@@ -24,7 +24,8 @@
               <input 
                 matInput 
                 formControlName="codigo"
-                placeholder="EST001, DOC001, ADM001"
+                placeholder="Ej: DOC001, EST001, ADM001"
+                maxlength="50"
               >
               <mat-icon matPrefix>badge</mat-icon>
               <mat-error *ngIf="usuarioForm.get('codigo')?.hasError('required')">
@@ -33,6 +34,10 @@
               <mat-error *ngIf="usuarioForm.get('codigo')?.hasError('minlength')">
                 Mínimo 3 caracteres
               </mat-error>
+              <mat-error *ngIf="usuarioForm.get('codigo')?.hasError('maxlength')">
+                Máximo 50 caracteres
+              </mat-error>
+              <mat-hint>Código único del usuario (3-50 caracteres)</mat-hint>
             </mat-form-field>
           </div>
 
@@ -47,6 +52,9 @@
               <mat-icon matPrefix>person</mat-icon>
               <mat-error *ngIf="usuarioForm.get('nombre_completo')?.hasError('required')">
                 El nombre es requerido
+              </mat-error>
+              <mat-error *ngIf="usuarioForm.get('nombre_completo')?.hasError('minlength')">
+                Mínimo 3 caracteres
               </mat-error>
             </mat-form-field>
           </div>
@@ -64,8 +72,8 @@
               <mat-error *ngIf="usuarioForm.get('correo')?.hasError('required')">
                 El correo es requerido
               </mat-error>
-              <mat-error *ngIf="usuarioForm.get('correo')?.hasError('email')">
-                Ingrese un correo válido
+              <mat-error *ngIf="usuarioForm.get('correo')?.hasError('email') || usuarioForm.get('correo')?.hasError('pattern')">
+                Debe ser un correo institucional &#64;unicauca.edu.co
               </mat-error>
             </mat-form-field>
           </div>

@@ -6,9 +6,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { DocentesService } from '../services/docentes.service';
-import { ProgramasService } from '../services/programas.service';
-import { RolesAdminService } from '../services/roles-admin.service';
+import { DocentesService } from '../../../core/services/docentes.service';
+import { ProgramasService } from '../../../core/services/programas.service';
+import { RolesAdminService } from '../../../core/services/roles-admin.service';
 
 @Component({
   selector: 'app-dashboard',

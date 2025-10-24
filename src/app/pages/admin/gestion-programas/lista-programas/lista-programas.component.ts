@@ -11,8 +11,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { ProgramasService } from '../../services/programas.service';
-import { ProgramaDTORespuesta } from '../../models/programa.interface';
+import { ProgramasService } from '../../../../core/services/programas.service';
+import { ProgramaDTORespuesta } from '../../../../core/models/programa.interface';
+import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 
 @Component({
   selector: 'app-lista-programas',
@@ -54,7 +55,7 @@ export class ListaProgramasComponent implements OnInit {
     
     this.programasService.listarProgramas().subscribe({
       next: (data) => {
-        this.programas = data;
+        this.programas = corregirEncodingObjeto(data);
         this.loading = false;
       },
       error: (err) => {
@@ -74,7 +75,7 @@ export class ListaProgramasComponent implements OnInit {
     this.loading = true;
     this.programasService.buscarPorNombre(this.searchTerm).subscribe({
       next: (data) => {
-        this.programas = data;
+        this.programas = corregirEncodingObjeto(data);
         this.loading = false;
       },
       error: (err) => {

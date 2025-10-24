@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UsuarioDTOPeticion, UsuarioDTORespuesta } from '../models/usuario.interface';
-import { ApiEndpoints } from '../../../core/utils/api-endpoints';
+import { ApiEndpoints } from '../utils/api-endpoints';
 
 @Injectable({
   providedIn: 'root'

@@ -11,9 +11,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
-import { RolesAdminService } from '../services/roles-admin.service';
-import { RolDTORespuesta, RolDTOPeticion } from '../models/rol.interface';
+import { RolesAdminService } from '../../../core/services/roles-admin.service';
+import { RolDTORespuesta, RolDTOPeticion } from '../../../core/models/rol.interface';
 import { FormRolDialogComponent } from './form-rol-dialog/form-rol-dialog.component';
+import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
 
 @Component({
   selector: 'app-manage-roles',
@@ -55,7 +56,7 @@ export class ManageRolesComponent implements OnInit {
     
     this.rolesService.listarRoles().subscribe({
       next: (data) => {
-        this.roles = data;
+        this.roles = corregirEncodingObjeto(data);
         this.loading = false;
       },
       error: (err) => {

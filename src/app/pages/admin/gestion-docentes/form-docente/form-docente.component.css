@@ -1,14 +1,20 @@
 .container-admin {
   padding: 24px;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
 }
 
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .header-section h2 {
@@ -16,33 +22,139 @@
   align-items: center;
   gap: 12px;
   margin: 0;
-  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+  color: #00138C;
 }
 
-.form-card {
-  margin-top: 24px;
+.header-section h2 mat-icon {
+  color: #00138C;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+mat-card {
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: white;
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .form-grid {
   display: grid;
-  gap: 16px;
+  gap: 24px;
 }
 
 .full-width {
   width: 100%;
 }
 
+/* Estilos mejorados para mat-form-field */
+::ng-deep .form-container mat-form-field {
+  font-size: 16px;
+}
+
+::ng-deep .form-container .mat-mdc-text-field-wrapper {
+  background-color: #fafafa;
+}
+
+::ng-deep .form-container .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  background-color: #f5f5f5;
+}
+
+/* Iconos con colores distintivos */
+::ng-deep .form-container mat-icon[matprefix] {
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+}
+
+/* Icono de código (badge) - Azul */
+::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo_docente"]) mat-icon[matprefix] {
+  color: #00138C;
+}
+
+/* Icono de nombre (person) - Azul */
+::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_docente"]) mat-icon[matprefix] {
+  color: #00138C;
+}
+
+/* Efecto hover en iconos */
+::ng-deep .form-container mat-form-field:hover mat-icon[matprefix] {
+  /* Sin animaciones para mejor rendimiento */
+}
+
+/* Hints más visibles */
+::ng-deep .form-container mat-hint {
+  font-size: 12px;
+  color: #757575;
+  font-style: italic;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #e0e0e0;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 2px solid #e8eaf6;
 }
 
 .form-actions button {
-  min-width: 120px;
+  min-width: 140px;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.form-actions button mat-icon {
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+}
+
+.form-actions button[color="primary"] {
+  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.3);
+}
+
+.form-actions button[color="primary"]:hover {
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
+  transform: translateY(-1px);
+}
+
+.form-actions button:not([color]):hover {
+  background-color: #f5f5f5;
+}
+
+.form-actions button[color="primary"] mat-icon {
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.form-actions button:not([color]) mat-icon {
+  color: #757575;
+}
+
+.form-actions button:hover mat-icon {
+  transform: scale(1.1) rotate(-5deg);
 }
 
 .form-actions button mat-spinner {
@@ -50,24 +162,40 @@
   margin-right: 8px;
 }
 
+/* Estados de error más claros */
+::ng-deep .form-container .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+  background-color: #ffebee;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container-admin {
     padding: 16px;
+    background: #f5f7fa;
   }
 
   .header-section {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+    padding: 16px;
+  }
+
+  .header-section h2 {
+    font-size: 22px;
+  }
+
+  mat-card {
+    padding: 20px;
+    border-radius: 12px;
   }
 
   .form-actions {
     flex-direction: column-reverse;
+    gap: 12px;
   }
 
   .form-actions button {
     width: 100%;
   }
 }
-

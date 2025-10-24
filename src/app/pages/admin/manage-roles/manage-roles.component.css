@@ -1,14 +1,32 @@
 .container-admin {
   padding: 24px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
 }
 
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: fadeInDown 0.4s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header-section h2 {
@@ -16,103 +34,231 @@
   align-items: center;
   gap: 12px;
   margin: 0;
-  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+  color: #00138C;
 }
 
-.actions {
-  display: flex;
-  gap: 12px;
-}
-
-.search-section {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  align-items: center;
-}
-
-.search-field {
-  flex: 1;
-  max-width: 400px;
+.header-section h2 mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #00138C;
 }
 
 .table-container {
   background: white;
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.4s ease 0.2s both;
+  border: 1px solid #e8eaf6;
 }
 
-table {
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+mat-table {
   width: 100%;
 }
 
+::ng-deep .table-container .mat-mdc-header-row {
+  background-color: #00138C !important;
+  font-weight: 600;
+}
+
+::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
+  color: white !important;
+  font-weight: 600 !important;
+  background-color: #00138C !important;
+  border-bottom: 2px solid #3949ab !important;
+}
+
+::ng-deep .table-container .mat-mdc-row {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+::ng-deep .table-container .mat-mdc-row .mat-mdc-cell {
+  border-bottom-color: #e0e0e0 !important;
+}
+
+::ng-deep .table-container .mat-mdc-row:hover {
+  background-color: #f8f9ff !important;
+}
+
 .actions-column {
-  text-align: right;
-  width: 150px;
+  width: 180px;
+  white-space: nowrap;
 }
 
-.no-data {
+.actions-column button {
+  margin: 0 4px;
+  transition: all 0.2s ease;
+}
+
+.actions-column button mat-icon {
+  transition: transform 0.2s ease;
+}
+
+.actions-column button:hover mat-icon {
+  transform: scale(1.15);
+}
+
+/* Colores de los botones de acción */
+.actions-column button[color="primary"] mat-icon {
+  color: white;
+}
+
+.actions-column button[color="warn"] mat-icon {
+  color: white;
+}
+
+::ng-deep .table-container .mat-mdc-row {
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeInRow 0.4s ease forwards;
+}
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+::ng-deep .table-container .mat-mdc-row:nth-child(1) { animation-delay: 0.05s; }
+::ng-deep .table-container .mat-mdc-row:nth-child(2) { animation-delay: 0.1s; }
+::ng-deep .table-container .mat-mdc-row:nth-child(3) { animation-delay: 0.15s; }
+::ng-deep .table-container .mat-mdc-row:nth-child(4) { animation-delay: 0.2s; }
+::ng-deep .table-container .mat-mdc-row:nth-child(5) { animation-delay: 0.25s; }
+::ng-deep .table-container .mat-mdc-row:nth-child(6) { animation-delay: 0.3s; }
+::ng-deep .table-container .mat-mdc-row:nth-child(7) { animation-delay: 0.35s; }
+::ng-deep .table-container .mat-mdc-row:nth-child(8) { animation-delay: 0.4s; }
+
+::ng-deep .table-container .mat-mdc-row:hover {
+  background-color: #f8f9ff !important;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.actions-column {
+  width: 180px;
+  white-space: nowrap;
   text-align: center;
-  padding: 48px !important;
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  color: #666;
+::ng-deep .actions-column .mat-mdc-mini-fab {
+  width: 36px !important;
+  height: 36px !important;
+  background-color: #00138C !important;
+  transition: background-color 0.2s ease !important;
+  margin: 0 4px !important;
 }
 
-.empty-state mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: #ccc;
+::ng-deep .actions-column .mat-mdc-mini-fab mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: white !important;
 }
 
-.empty-state p {
-  margin: 0;
-  font-size: 16px;
+::ng-deep .actions-column .mat-mdc-mini-fab:hover {
+  background-color: #001066 !important;
 }
 
-.loading-container {
+.loading-container, .error-container, .empty-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px;
-  gap: 16px;
+  padding: 60px;
+  gap: 20px;
 }
 
-.loading-container p {
+.loading-container mat-spinner {
+  margin-bottom: 16px;
+}
+
+.error-container mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #f44336;
+}
+
+.empty-container mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #9e9e9e;
+}
+
+.loading-container p, .error-container p, .empty-container p {
   color: #666;
+  font-size: 18px;
+  font-weight: 500;
   margin: 0;
+}
+
+/* Botón nuevo con estilo */
+button[color="primary"] {
+  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.3);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+button[color="primary"]:hover {
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
+  transform: translateY(-2px);
+}
+
+button[color="primary"] mat-icon {
+  margin-right: 8px;
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+  .container-admin {
+    padding: 16px;
+    background: #f5f7fa;
+  }
+
   .header-section {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+    padding: 16px;
   }
 
-  .search-section {
-    flex-direction: column;
-    align-items: stretch;
+  .header-section h2 {
+    font-size: 22px;
   }
 
-  .search-field {
-    max-width: 100%;
+  .table-container {
+    padding: 16px;
+    overflow-x: auto;
   }
 
-  .actions {
-    width: 100%;
+  .actions-column {
+    width: auto;
   }
 
-  .actions button {
-    flex: 1;
+  .actions-column button {
+    margin: 4px 2px;
   }
 }
-

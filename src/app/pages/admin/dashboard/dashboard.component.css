@@ -2,10 +2,16 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
 }
 
 .header-section {
   margin-bottom: 32px;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .header-section h1 {
@@ -13,14 +19,23 @@
   align-items: center;
   gap: 12px;
   margin: 0 0 8px 0;
-  color: #1976d2;
   font-size: 32px;
+  font-weight: 600;
+  color: #00138C;
+}
+
+.header-section h1 mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #00138C;
 }
 
 .subtitle {
   color: #666;
   font-size: 16px;
   margin: 0;
+  font-weight: 400;
 }
 
 .loading-container {
@@ -28,12 +43,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 64px;
-  gap: 16px;
+  padding: 80px;
+  gap: 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 16px;
 }
 
 .loading-container p {
   color: #666;
+  font-size: 18px;
+  font-weight: 500;
   margin: 0;
 }
 
@@ -45,12 +69,15 @@
 }
 
 .stat-card {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: box-shadow 0.2s ease;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background-color: #ffffff !important;
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
 }
 
 .stat-card mat-card-header {
@@ -60,33 +87,32 @@
   margin-bottom: 16px;
 }
 
+.stat-card mat-card-title {
+  color: #00138C !important;
+  font-weight: 600;
+}
+
+.stat-card mat-card-subtitle {
+  color: #666 !important;
+}
+
 .card-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  padding: 12px;
-}
-
-.card-icon.docentes {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.card-icon.programas {
-  background-color: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.card-icon.roles {
-  background-color: #fff3e0;
-  color: #f57c00;
+  font-size: 40px;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #00138C;
+  color: white;
 }
 
 .stat-number {
   font-size: 48px;
   font-weight: bold;
-  color: #1976d2;
+  color: #00138C;
   margin-bottom: 8px;
 }
 
@@ -94,13 +120,23 @@
   color: #666;
   font-size: 14px;
   margin: 0;
+  font-weight: 500;
 }
 
 mat-card-actions {
   display: flex;
   gap: 8px;
   padding: 16px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 2px solid #e8eaf6;
+}
+
+mat-card-actions button {
+  flex: 1;
+  font-weight: 500;
+}
+
+mat-card-actions button mat-icon {
+  margin-right: 4px;
 }
 
 .actions-section {
@@ -109,7 +145,9 @@ mat-card-actions {
 
 .actions-section h2 {
   margin-bottom: 16px;
-  color: #333;
+  color: #00138C;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .actions-grid {
@@ -119,18 +157,31 @@ mat-card-actions {
 }
 
 .actions-grid button {
-  padding: 16px;
+  padding: 20px;
   height: auto;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
 }
 
 .actions-grid button mat-icon {
   margin-right: 8px;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: white;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 16px;
+    background: #f5f7fa;
+  }
+
+  .header-section {
+    padding: 20px;
   }
 
   .header-section h1 {
@@ -152,5 +203,8 @@ mat-card-actions {
   .actions-grid {
     grid-template-columns: 1fr;
   }
-}
 
+  .loading-container {
+    padding: 40px 20px;
+  }
+}

@@ -10,8 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 
-import { ProgramasService } from '../../services/programas.service';
-import { ProgramaDTOPeticion } from '../../models/programa.interface';
+import { ProgramasService } from '../../../../core/services/programas.service';
+import { ProgramaDTOPeticion } from '../../../../core/models/programa.interface';
 
 @Component({
   selector: 'app-form-programa',

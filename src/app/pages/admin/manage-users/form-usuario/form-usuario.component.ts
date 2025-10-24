@@ -11,10 +11,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 
-import { UsuariosService } from '../../services/usuarios.service';
-import { RolesAdminService } from '../../services/roles-admin.service';
-import { ProgramasService } from '../../services/programas.service';
-import { UsuarioDTOPeticion } from '../../models/usuario.interface';
+import { UsuariosService } from '../../../../core/services/usuarios.service';
+import { RolesAdminService } from '../../../../core/services/roles-admin.service';
+import { ProgramasService } from '../../../../core/services/programas.service';
+import { UsuarioDTOPeticion } from '../../../../core/models/usuario.interface';
+import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 
 @Component({
   selector: 'app-form-usuario',
@@ -53,9 +54,20 @@ export class FormUsuarioComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     this.usuarioForm = this.fb.group({
-      codigo: ['', [Validators.required, Validators.minLength(3)]],
-      nombre_completo: ['', [Validators.required]],
-      correo: ['', [Validators.required, Validators.email]],
+      codigo: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        Validators.maxLength(50)
+      ]],
+      nombre_completo: ['', [
+        Validators.required,
+        Validators.minLength(3)
+      ]],
+      correo: ['', [
+        Validators.required, 
+        Validators.email,
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@unicauca\.edu\.co$/)
+      ]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       estado_usuario: [1, Validators.required],
       id_rol: ['', Validators.required],
@@ -82,7 +94,7 @@ export class FormUsuarioComponent implements OnInit {
   cargarRoles(): void {
     this.rolesService.listarRoles().subscribe({
       next: (data) => {
-        this.roles = data;
+        this.roles = corregirEncodingObjeto(data);
       },
       error: (err: any) => {
         console.error('Error al cargar roles:', err);
@@ -94,7 +106,7 @@ export class FormUsuarioComponent implements OnInit {
   cargarProgramas(): void {
     this.programasService.listarProgramas().subscribe({
       next: (data) => {
-        this.programas = data;
+        this.programas = corregirEncodingObjeto(data);
       },
       error: (err: any) => {
         console.error('Error al cargar programas:', err);
@@ -109,16 +121,20 @@ export class FormUsuarioComponent implements OnInit {
     this.loading = true;
     this.usuariosService.buscarUsuarioPorId(this.usuarioId).subscribe({
       next: (data: any) => {
-        console.log('Usuario cargado:', data);
+        console.log('Usuario cargado (original):', data);
+        
+        // ✅ Corregir encoding de tildes y caracteres especiales
+        const usuarioCorregido = corregirEncodingObjeto(data);
+        console.log('Usuario cargado (corregido):', usuarioCorregido);
         
         // Llenar el formulario con TODOS los datos del usuario
         this.usuarioForm.patchValue({
-          codigo: data.codigo || '',
-          nombre_completo: data.nombre_completo || '',
-          correo: data.correo || '',
-          estado_usuario: data.estado_usuario !== undefined ? data.estado_usuario : 1,
-          id_rol: data.objRol?.id_rol || data.rol?.id_rol || '',
-          id_programa: data.objPrograma?.id_programa || data.programa?.id_programa || ''
+          codigo: usuarioCorregido.codigo || '',
+          nombre_completo: usuarioCorregido.nombre_completo || '',
+          correo: usuarioCorregido.correo || '',
+          estado_usuario: usuarioCorregido.estado_usuario !== undefined ? usuarioCorregido.estado_usuario : 1,
+          id_rol: usuarioCorregido.objRol?.id_rol || usuarioCorregido.rol?.id_rol || '',
+          id_programa: usuarioCorregido.objPrograma?.id_programa || usuarioCorregido.programa?.id_programa || ''
         });
         
         // NO llenar el campo password para que quede vacío (indicando que no se cambiará)
@@ -148,26 +164,33 @@ export class FormUsuarioComponent implements OnInit {
     this.loading = true;
     const formValue = this.usuarioForm.value;
     
-    const usuarioData: UsuarioDTOPeticion = {
+    // ✅ FORMATO SIMPLE - SOLO IDs (backend actualizado)
+    const usuarioData: any = {
       codigo: formValue.codigo,
       nombre_completo: formValue.nombre_completo,
       correo: formValue.correo,
-      estado_usuario: formValue.estado_usuario,
-      objRol: { id_rol: +formValue.id_rol },
-      objPrograma: { id_programa: +formValue.id_programa }
+      estado_usuario: formValue.estado_usuario === 1 || formValue.estado_usuario === true,
+      id_rol: +formValue.id_rol,           // Solo el ID (número)
+      id_programa: +formValue.id_programa  // Solo el ID (número)
     };
 
-    // Solo agregar password si se proporcionó
+    // Password solo si tiene contenido
     if (formValue.password && formValue.password.trim() !== '') {
       usuarioData.password = formValue.password;
     }
 
+    // ID solo al actualizar
     if (this.isEditMode && this.usuarioId) {
       usuarioData.id_usuario = this.usuarioId;
+    }
+
+    console.log('📤 JSON enviado:', JSON.stringify(usuarioData, null, 2));
+
+    if (this.isEditMode && this.usuarioId) {
       this.actualizarUsuario(usuarioData);
     } else {
-      // Al crear, la contraseña es obligatoria
-      if (!formValue.password) {
+      // Al crear, validar que la contraseña esté presente
+      if (!formValue.password || formValue.password.trim() === '') {
         this.snackBar.open('La contraseña es obligatoria al crear un usuario', 'Cerrar', { duration: 3000 });
         this.loading = false;
         return;
@@ -176,31 +199,33 @@ export class FormUsuarioComponent implements OnInit {
     }
   }
 
-  crearUsuario(data: UsuarioDTOPeticion): void {
+  private crearUsuario(data: any): void {
     this.usuariosService.crearUsuario(data).subscribe({
-      next: () => {
-        this.snackBar.open('Usuario creado exitosamente', 'Cerrar', { duration: 3000 });
+      next: (response) => {
+        console.log('✅ Usuario creado:', response);
+        this.snackBar.open('✅ Usuario creado exitosamente', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
-        console.error('Error al crear usuario:', err);
-        const mensaje = err.error?.mensaje || 'Error al crear usuario';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        console.error('❌ Error:', err);
+        const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
+        this.snackBar.open('❌ Error: ' + mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;
       }
     });
   }
 
-  actualizarUsuario(data: UsuarioDTOPeticion): void {
+  private actualizarUsuario(data: any): void {
     this.usuariosService.actualizarUsuario(data).subscribe({
-      next: () => {
-        this.snackBar.open('Usuario actualizado exitosamente', 'Cerrar', { duration: 3000 });
+      next: (response) => {
+        console.log('✅ Usuario actualizado:', response);
+        this.snackBar.open('✅ Usuario actualizado exitosamente', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
-        console.error('Error al actualizar usuario:', err);
-        const mensaje = err.error?.mensaje || 'Error al actualizar usuario';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        console.error('❌ Error:', err);
+        const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
+        this.snackBar.open('❌ Error: ' + mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;
       }
     });

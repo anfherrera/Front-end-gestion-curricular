@@ -10,8 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 
-import { DocentesService } from '../../services/docentes.service';
-import { DocenteDTOPeticion } from '../../models/docente.interface';
+import { DocentesService } from '../../../../core/services/docentes.service';
+import { DocenteDTOPeticion } from '../../../../core/models/docente.interface';
 
 @Component({
   selector: 'app-form-docente',
