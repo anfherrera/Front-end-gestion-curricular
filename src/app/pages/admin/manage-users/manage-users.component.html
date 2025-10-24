@@ -65,9 +65,9 @@
       <ng-container matColumnDef="rol">
         <th mat-header-cell *matHeaderCellDef>Rol</th>
         <td mat-cell *matCellDef="let usuario">
-          <mat-chip>
+          <span class="badge-rol" [ngClass]="getRolClass(usuario.rol?.nombre || usuario.objRol?.nombre)">
             {{ usuario.rol?.nombre || usuario.objRol?.nombre || 'Sin rol' }}
-          </mat-chip>
+          </span>
         </td>
       </ng-container>
 
@@ -75,9 +75,9 @@
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef>Estado</th>
         <td mat-cell *matCellDef="let usuario">
-          <mat-chip [ngClass]="usuario.estado_usuario ? 'estado-activo' : 'estado-inactivo'">
+          <span class="badge-estado" [ngClass]="usuario.estado_usuario ? 'estado-activo' : 'estado-inactivo'">
             {{ usuario.estado_usuario ? 'Activo' : 'Inactivo' }}
-          </mat-chip>
+          </span>
         </td>
       </ng-container>
 
@@ -95,17 +95,19 @@
           </button>
           <button 
             mat-mini-fab 
-            color="primary"
+            [ngClass]="usuario.estado_usuario ? 'btn-estado-activo' : 'btn-estado-inactivo'"
             (click)="cambiarEstado(usuario)"
-            [matTooltip]="usuario.estado_usuario ? 'Deshabilitar' : 'Habilitar'"
+            [matTooltip]="usuario.estado_usuario ? 'Click para desactivar' : 'Click para activar'"
+            [disabled]="loading"
           >
             <mat-icon>{{ usuario.estado_usuario ? 'block' : 'check_circle' }}</mat-icon>
           </button>
           <button 
             mat-mini-fab 
-            color="primary"
+            color="warn"
             (click)="eliminarUsuario(usuario)"
             matTooltip="Eliminar usuario"
+            [disabled]="loading"
           >
             <mat-icon>delete</mat-icon>
           </button>

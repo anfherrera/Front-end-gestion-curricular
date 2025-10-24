@@ -35,5 +35,14 @@ export class UsuariosService {
   actualizarEstado(id: number, estado: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstado/${id}`, { estado_usuario: estado });
   }
+
+  /**
+   * Cambia el estado de un usuario (activo/inactivo)
+   * @param id ID del usuario
+   * @returns Observable con el usuario actualizado
+   */
+  cambiarEstadoUsuario(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/cambiarEstado/${id}`, {});
+  }
 }
 

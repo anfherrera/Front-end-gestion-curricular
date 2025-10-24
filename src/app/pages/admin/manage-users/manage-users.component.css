@@ -157,32 +157,180 @@ mat-table {
   background-color: #001066 !important;
 }
 
-/* Chip de estado con colores */
-::ng-deep mat-chip.estado-activo {
+/* Botones de estado personalizados */
+::ng-deep .actions-column .mat-mdc-mini-fab.btn-estado-activo {
+  background-color: #43a047 !important;
+}
+
+::ng-deep .actions-column .mat-mdc-mini-fab.btn-estado-activo:hover {
+  background-color: #2e7d32 !important;
+}
+
+::ng-deep .actions-column .mat-mdc-mini-fab.btn-estado-inactivo {
+  background-color: #f44336 !important;
+}
+
+::ng-deep .actions-column .mat-mdc-mini-fab.btn-estado-inactivo:hover {
+  background-color: #d32f2f !important;
+}
+
+/* Botón de eliminar (warn) */
+::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn {
+  background-color: #f44336 !important;
+}
+
+::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn:hover {
+  background-color: #d32f2f !important;
+}
+
+/* === BADGES PERSONALIZADOS === */
+
+/* Badge base styles */
+.badge-rol,
+.badge-estado {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: capitalize;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+}
+
+.badge-rol:hover,
+.badge-estado:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* === BADGES DE ROL === */
+
+/* Administrador - Rojo */
+.badge-rol.rol-admin {
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(229, 57, 53, 0.4);
+}
+
+.badge-rol.rol-admin:hover {
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.5);
+}
+
+/* Coordinador - Púrpura */
+.badge-rol.rol-coordinador {
+  background: linear-gradient(135deg, #8e24aa 0%, #6a1b9a 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(142, 36, 170, 0.4);
+}
+
+.badge-rol.rol-coordinador:hover {
+  box-shadow: 0 4px 12px rgba(142, 36, 170, 0.5);
+}
+
+/* Funcionario - Azul oscuro */
+.badge-rol.rol-funcionario {
+  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.4);
+}
+
+.badge-rol.rol-funcionario:hover {
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.5);
+}
+
+/* Estudiante - Verde */
+.badge-rol.rol-estudiante {
+  background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(67, 160, 71, 0.4);
+}
+
+.badge-rol.rol-estudiante:hover {
+  box-shadow: 0 4px 12px rgba(67, 160, 71, 0.5);
+}
+
+/* Secretaria - Naranja */
+.badge-rol.rol-secretaria {
+  background: linear-gradient(135deg, #fb8c00 0%, #ef6c00 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(251, 140, 0, 0.4);
+}
+
+.badge-rol.rol-secretaria:hover {
+  box-shadow: 0 4px 12px rgba(251, 140, 0, 0.5);
+}
+
+/* Docente - Azul cian */
+.badge-rol.rol-docente {
+  background: linear-gradient(135deg, #00acc1 0%, #00838f 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 172, 193, 0.4);
+}
+
+.badge-rol.rol-docente:hover {
+  box-shadow: 0 4px 12px rgba(0, 172, 193, 0.5);
+}
+
+/* Rol por defecto */
+.badge-rol.rol-default {
+  background: linear-gradient(135deg, #757575 0%, #616161 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(117, 117, 117, 0.4);
+}
+
+/* === BADGES DE ESTADO === */
+
+/* Estado Activo - Verde brillante */
+.badge-estado.estado-activo {
+  background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 12px rgba(102, 187, 106, 0.6);
+  }
+}
+
+.badge-estado.estado-activo:hover {
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.5);
+  animation: none;
+}
+
+/* Estado Inactivo - Rojo brillante */
+.badge-estado.estado-inactivo {
+  background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(239, 83, 80, 0.4);
+}
+
+.badge-estado.estado-inactivo:hover {
+  box-shadow: 0 4px 12px rgba(239, 83, 80, 0.5);
+}
+
+/* === ESTILOS PARA NOTIFICACIONES (SNACKBAR) === */
+
+::ng-deep .snackbar-success {
   background-color: #4caf50 !important;
   color: white !important;
-  font-weight: 600;
-  border: none !important;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
 }
 
-::ng-deep mat-chip.estado-inactivo {
+::ng-deep .snackbar-error {
   background-color: #f44336 !important;
   color: white !important;
-  font-weight: 600;
-  border: none !important;
-  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
 }
 
-/* Chips de rol con estilo */
-::ng-deep .table-container mat-chip {
-  font-weight: 600;
-  border-radius: 16px;
-  border: 2px solid #e0e0e0 !important;
-  background-color: #f5f5f5 !important;
-  color: #333 !important;
-  padding: 4px 12px !important;
-  font-size: 13px;
+::ng-deep .snackbar-success .mat-mdc-button,
+::ng-deep .snackbar-error .mat-mdc-button {
+  color: white !important;
 }
 
 /* Estilo para la fila vacía */

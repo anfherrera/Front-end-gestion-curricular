@@ -87,22 +87,40 @@ export class ManageUsersComponent implements OnInit {
     this.cargarUsuarios();
   }
 
+  /**
+   * Cambia el estado de un usuario (activo <-> inactivo)
+   */
   cambiarEstado(usuario: any): void {
-    const nuevoEstado = usuario.estado_usuario ? 0 : 1;
-    const mensaje = nuevoEstado === 1 ? 'habilitar' : 'deshabilitar';
+    const nuevoEstado = !usuario.estado_usuario ? 'activar' : 'desactivar';
     
-    if (!confirm(`¿Está seguro de ${mensaje} al usuario "${usuario.nombre_completo}"?`)) {
+    // Confirmación antes de cambiar el estado
+    if (!confirm(`¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`)) {
       return;
     }
 
-    this.usuariosService.actualizarEstado(usuario.id_usuario, nuevoEstado).subscribe({
-      next: () => {
-        this.snackBar.open(`Usuario ${mensaje}do exitosamente`, 'Cerrar', { duration: 3000 });
-        this.cargarUsuarios();
+    this.loading = true;
+
+    this.usuariosService.cambiarEstadoUsuario(usuario.id_usuario).subscribe({
+      next: (response) => {
+        this.loading = false;
+        // Actualizar el estado en la tabla sin recargar toda la lista
+        usuario.estado_usuario = response.estado_usuario;
+        
+        // Mostrar mensaje de éxito
+        this.snackBar.open(`✅ Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['snackbar-success']
+        });
       },
-      error: (err: any) => {
-        console.error('Error al cambiar estado:', err);
-        this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', { duration: 3000 });
+      error: (error: any) => {
+        this.loading = false;
+        console.error('Error al cambiar el estado:', error);
+        
+        // Mostrar mensaje de error
+        this.snackBar.open('❌ Error al cambiar el estado del usuario', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['snackbar-error']
+        });
       }
     });
   }
@@ -130,5 +148,16 @@ export class ManageUsersComponent implements OnInit {
     if (rolLower.includes('coordinador')) return 'accent';
     if (rolLower.includes('funcionario')) return 'primary';
     return '';
+  }
+
+  getRolClass(rol: string): string {
+    const rolLower = rol?.toLowerCase() || '';
+    if (rolLower.includes('admin')) return 'rol-admin';
+    if (rolLower.includes('coordinador')) return 'rol-coordinador';
+    if (rolLower.includes('funcionario')) return 'rol-funcionario';
+    if (rolLower.includes('estudiante')) return 'rol-estudiante';
+    if (rolLower.includes('secretaria')) return 'rol-secretaria';
+    if (rolLower.includes('docente')) return 'rol-docente';
+    return 'rol-default';
   }
 }
