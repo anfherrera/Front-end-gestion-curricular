@@ -8,6 +8,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:usabilidad": "ng test --code-coverage --watch=false",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
+    "test:all": "npm run test:usabilidad && npm run test:e2e",
+    "test:reporte": "node scripts/generar-reporte-usabilidad.js",
     "serve:ssr:Front-end-gestion-curricular": "node dist/front-end-gestion-curricular/server/server.mjs"
   },
   "private": true,
