@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { DocentesService } from '../../../../core/services/docentes.service';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { DocenteDTORespuesta } from '../../../../core/models/docente.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 
@@ -43,6 +44,7 @@ export class ListaDocentesComponent implements OnInit {
 
   constructor(
     private docentesService: DocentesService,
+    private errorHandler: ErrorHandlerService,
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
@@ -113,11 +115,18 @@ export class ListaDocentesComponent implements OnInit {
         this.loading = false;
         console.error('Error al eliminar docente:', error);
 
+        // Extraer mensaje de error usando el servicio
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        
         // ❌ Manejo de errores específicos
-        if (error.status === 409) {
-          // Docente tiene cursos asignados
-          const mensaje = error.error?.mensaje || 
-                'El docente tiene cursos asignados. Por favor, reasigne los cursos a otro docente antes de eliminar.';
+        if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+          // Error de dependencias (400) - Docente tiene cursos asignados
+          this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
+            duration: 6000,
+            panelClass: ['snackbar-warning']
+          });
+        } else if (error.status === 409) {
+          // Conflicto (respaldo para compatibilidad)
           this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
             duration: 6000,
             panelClass: ['snackbar-warning']
@@ -128,20 +137,9 @@ export class ListaDocentesComponent implements OnInit {
             duration: 4000,
             panelClass: ['snackbar-error']
           });
-        } else if (error.status === 500) {
-          // Error interno del servidor
-          const mensajeError = error.error?.message || error.error?.mensaje || 
-                'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.';
-          this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', { 
-            duration: 6000,
-            panelClass: ['snackbar-error']
-          });
-          console.error('Detalles del error 500:', error.error);
         } else {
-          // Otro error
-          const mensajeError = error.error?.message || error.error?.mensaje || 
-                'Ocurrió un error al eliminar el docente.';
-          this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', { 
+          // Otros errores (500, etc.)
+          this.snackBar.open(`❌ ${mensaje}`, 'Cerrar', { 
             duration: 4000,
             panelClass: ['snackbar-error']
           });

@@ -323,12 +323,18 @@ mat-table {
   color: white !important;
 }
 
+::ng-deep .snackbar-warning {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
 ::ng-deep .snackbar-error {
   background-color: #f44336 !important;
   color: white !important;
 }
 
 ::ng-deep .snackbar-success .mat-mdc-button,
+::ng-deep .snackbar-warning .mat-mdc-button,
 ::ng-deep .snackbar-error .mat-mdc-button {
   color: white !important;
 }

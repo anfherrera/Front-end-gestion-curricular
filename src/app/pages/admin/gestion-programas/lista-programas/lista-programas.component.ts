@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { ProgramasService } from '../../../../core/services/programas.service';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { ProgramaDTORespuesta } from '../../../../core/models/programa.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 
@@ -42,6 +44,7 @@ export class ListaProgramasComponent implements OnInit {
 
   constructor(
     private programasService: ProgramasService,
+    private errorHandler: ErrorHandlerService,
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
@@ -92,18 +95,48 @@ export class ListaProgramasComponent implements OnInit {
   }
 
   eliminarPrograma(programa: ProgramaDTORespuesta): void {
-    if (!confirm(`¿Está seguro de eliminar el programa "${programa.nombre_programa}"?`)) {
+    if (!confirm(`¿Está seguro de eliminar el programa "${programa.nombre_programa}"?\n\nEsta acción no se puede deshacer.`)) {
       return;
     }
 
+    this.loading = true;
+
     this.programasService.eliminarPrograma(programa.id_programa).subscribe({
       next: () => {
-        this.snackBar.open('Programa eliminado exitosamente', 'Cerrar', { duration: 3000 });
+        this.loading = false;
+        this.snackBar.open('✅ Programa eliminado exitosamente', 'Cerrar', { 
+          duration: 3000,
+          panelClass: ['snackbar-success']
+        });
         this.cargarProgramas();
       },
-      error: (err) => {
-        console.error('Error al eliminar:', err);
-        this.snackBar.open('Error al eliminar el programa', 'Cerrar', { duration: 3000 });
+      error: (error: HttpErrorResponse) => {
+        this.loading = false;
+        console.error('Error al eliminar programa:', error);
+        
+        // Extraer mensaje de error usando el servicio
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        
+        // Determinar el tipo de error
+        if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+          // Error de dependencias (400) - Programa tiene usuarios asociados
+          this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
+            duration: 6000,
+            panelClass: ['snackbar-warning']
+          });
+        } else if (error.status === 404) {
+          // No encontrado
+          this.snackBar.open('❌ Programa no encontrado', 'Cerrar', { 
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
+        } else {
+          // Otros errores
+          this.snackBar.open(`❌ ${mensaje}`, 'Cerrar', { 
+            duration: 4000,
+            panelClass: ['snackbar-error']
+          });
+        }
       }
     });
   }
