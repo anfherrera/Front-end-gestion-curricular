@@ -207,11 +207,8 @@ export class PazSalvoService {
     const formData = new FormData();
     formData.append('archivo', archivo);
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${localStorage.getItem('token') || ''}`
-    });
-
-    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/subir-archivo`, formData, { headers });
+    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
+    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/subir-archivo`, formData);
   }
 
   /**
@@ -271,14 +268,8 @@ export class PazSalvoService {
     console.log('📁 Archivo a subir:', archivo.name);
     console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
-    // Para archivos, no necesitamos Content-Type en los headers
-    const headers = new HttpHeaders({
-      'Authorization': this.getAuthHeaders().get('Authorization') || ''
-    });
-    
-    return this.http.post(url, formData, {
-      headers: headers
-    });
+    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
+    return this.http.post(url, formData);
   }
 
   /**
@@ -320,14 +311,8 @@ export class PazSalvoService {
     console.log('📁 Archivo a subir:', archivo.name);
     console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
-    // Para archivos, no necesitamos Content-Type en los headers
-    const headers = new HttpHeaders({
-      'Authorization': this.getAuthHeaders().get('Authorization') || ''
-    });
-    
-    return this.http.post(url, formData, {
-      headers: headers
-    });
+    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
+    return this.http.post(url, formData);
   }
 
   downloadFile(requestId: number, archivoNombre: string): Observable<Blob> {

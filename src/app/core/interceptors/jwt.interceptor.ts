@@ -25,6 +25,26 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
       return next(req); // No se envía token porque está expirado
     }
 
+    // Detectar si la petición es multipart/form-data (subida de archivos)
+    const isFormData = req.body instanceof FormData;
+
+    // Si el token es válido, lo agregamos al header
+    // IMPORTANTE: No establecer Content-Type para FormData, el navegador lo hace automáticamente
+    const headers: any = {
+      Authorization: `Bearer ${token}`
+    };
+
+    // Solo agregar Content-Type si NO es FormData
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json; charset=utf-8';
+      headers['Accept'] = 'application/json';
+      headers['Accept-Charset'] = 'utf-8';
+    }
+
+    const clonedReq = req.clone({
+      setHeaders: headers
+    });
+
     // Si el token es válido, lo agregamos al header
     // ✅ NO configurar Content-Type para FormData (archivos)
     const headers: any = {
@@ -42,6 +62,22 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
     return next(clonedReq);
   }
 
+  // Peticiones sin token
+  const isFormData = req.body instanceof FormData;
+  
+  // Solo agregar Content-Type si NO es FormData
+  if (!isFormData) {
+    const clonedReq = req.clone({
+      setHeaders: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Accept': 'application/json',
+        'Accept-Charset': 'utf-8'
+      }
+    });
+    return next(clonedReq);
+  }
+
+  return next(req);
   // Peticiones sin token
   // ✅ NO configurar Content-Type para FormData (archivos)
   if (isFormData) {
