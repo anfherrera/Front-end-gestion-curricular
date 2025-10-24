@@ -296,10 +296,16 @@ export class PruebasEcaesComponent implements OnInit {
         id_usuario: this.usuario.id_usuario,
         nombre_completo: this.usuario.nombre_completo,
         codigo: this.usuario.codigo,
-        correo: this.usuario.correo,
+        correo: this.usuario.correo || this.usuario.email_usuario,
         rol: this.usuario.rol,
         estado_usuario: this.usuario.estado_usuario,
-        objPrograma: this.usuario.objPrograma
+        // ✅ FIX: Agregar id_rol e id_programa como campos requeridos por el backend
+        id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1,
+        id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
+        objPrograma: this.usuario.objPrograma || {
+          id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
+          nombre_programa: this.usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
+        }
       },
       tipoDocumento: formValue.tipoDocumento,
       numero_documento: formValue.numero_documento,
@@ -309,6 +315,7 @@ export class PruebasEcaesComponent implements OnInit {
     };
 
     console.log('📋 Creando solicitud con archivos subidos:', solicitud);
+    console.log('👤 Usuario completo:', this.usuario);
 
     this.pruebasEcaesService.crearSolicitudEcaes(solicitud).subscribe({
       next: (response: SolicitudEcaesResponse) => {

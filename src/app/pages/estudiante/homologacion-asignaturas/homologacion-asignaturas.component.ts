@@ -404,13 +404,20 @@ export class HomologacionAsignaturasComponent implements OnInit {
       id_usuario: this.usuario.id_usuario,
       nombre_completo: this.usuario.nombre_completo,
       codigo: this.usuario.codigo,
-      correo: this.usuario.correo,
-      objPrograma: this.usuario.objPrograma
+      correo: this.usuario.correo || this.usuario.email_usuario,
+      // ✅ FIX: Agregar id_rol e id_programa como campos requeridos por el backend
+      id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
+      id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
+      objPrograma: this.usuario.objPrograma || {
+        id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
+        nombre_programa: this.usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
+      }
     },
           archivos: archivosSubidos
   };
 
         console.log('📋 Creando solicitud con archivos:', solicitud);
+        console.log('👤 Usuario completo:', this.usuario);
 
   this.homologacionService.crearSolicitud(solicitud).subscribe({
     next: (resp) => {

@@ -153,6 +153,8 @@ export interface UsuarioDTOPeticion {
   codigo: string;
   correo: string;
   estado_usuario: boolean;
+  id_rol?: number; // ✅ Campo requerido por el backend
+  id_programa?: number; // ✅ Campo requerido por el backend
   objPrograma: Programa;
 }
 
