@@ -18,7 +18,7 @@
 // }
 //=====================================
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Archivo } from '../models/procesos.model';
 
@@ -38,13 +38,8 @@ export class ArchivosService {
       formData.append('inscripcionId', inscripcionId.toString());
     }
 
-    // 👇 Recuperar token desde localStorage
-    const token = localStorage.getItem('token');
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-
-    return this.http.post<Archivo>(`${this.apiUrl}/subir/pdf`, formData, { headers });
+    // El JWT interceptor agrega automáticamente el token Authorization
+    // No es necesario establecer headers manualmente aquí
+    return this.http.post<Archivo>(`${this.apiUrl}/subir/pdf`, formData);
   }
 }

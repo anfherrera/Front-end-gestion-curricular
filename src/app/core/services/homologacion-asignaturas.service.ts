@@ -376,14 +376,9 @@ export class HomologacionAsignaturasService {
     console.log('📁 Archivo a subir:', archivo.name);
     console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
-    // Para archivos, no necesitamos Content-Type en los headers
-    const headers = new HttpHeaders({
-      'Authorization': this.getAuthHeaders().get('Authorization') || ''
-    });
-    
-    return this.http.post(url, formData, {
-      headers: headers
-    });
+    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
+    // Esto permite que el navegador establezca el Content-Type correcto: multipart/form-data
+    return this.http.post(url, formData);
   }
 
   /**
