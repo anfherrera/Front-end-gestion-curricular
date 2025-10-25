@@ -3,6 +3,7 @@
 // ***********************************************************
 
 import './commands';
+import 'cypress-axe';
 
 // Configuración global
 Cypress.on('uncaught:exception', (err, runnable) => {

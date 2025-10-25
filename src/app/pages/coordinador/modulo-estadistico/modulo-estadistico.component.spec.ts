@@ -228,7 +228,6 @@ describe('ModuloEstadisticoComponent - Pruebas de Usabilidad', () => {
     it('ME-024: Un coordinador debe poder ver estadísticas generales fácilmente', () => {
       const dashboard = compiled.querySelector('app-dashboard-estadistico');
       expect(dashboard).toBeTruthy();
-      expect(dashboard).toBeVisible;
       metricasUsabilidad.interaccionesExitosas++;
     });
 

@@ -145,6 +145,7 @@ describe('CursosIntersemestralesService - Pruebas Unitarias', () => {
   describe('3. Gestión de Preinscripciones', () => {
     it('CI-006: Debe crear preinscripción correctamente', (done) => {
       const payload = {
+        nombreSolicitud: 'Preinscripción Test',
         idUsuario: 1,
         idCurso: 1,
         tipoCurso: 'Regular',
@@ -211,6 +212,7 @@ describe('CursosIntersemestralesService - Pruebas Unitarias', () => {
   describe('4. Gestión de Inscripciones', () => {
     it('CI-011: Debe crear inscripción correctamente', (done) => {
       const payload = {
+        nombreSolicitud: 'Inscripción Test',
         idUsuario: 1,
         idCurso: 1,
         tipoCurso: 'Regular',
@@ -329,29 +331,31 @@ describe('CursosIntersemestralesService - Pruebas Unitarias', () => {
 
   describe('6. Gestión de Cursos (CRUD)', () => {
     it('CI-022: Debe crear curso nuevo', (done) => {
-      const payload = {
+      const payload: any = {
         nombre_curso: 'Nuevo Curso',
         codigo_curso: 'NC-001',
         descripcion: 'Descripción del curso',
         fecha_inicio: '2025-06-01',
         fecha_fin: '2025-07-31',
         cupo_maximo: 30,
+        cupo_estimado: 30,
+        estado: 'Borrador',
         espacio_asignado: 'Aula 101',
-        idMateria: 1,
-        idDocente: 10
+        id_materia: 1,
+        id_docente: 10
       };
 
       service.crearCurso(payload).subscribe(() => done());
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/cursos') && req.request.method === 'POST'
+        request.url.includes('/cursos') && request.method === 'POST'
       );
       expect(req.request.body.nombre_curso).toBe('Nuevo Curso');
       req.flush({ id_curso: 1 });
     });
 
     it('CI-023: Debe actualizar curso existente', (done) => {
-      const payload = {
+      const payload: any = {
         nombre_curso: 'Curso Actualizado',
         cupo_maximo: 35
       };
