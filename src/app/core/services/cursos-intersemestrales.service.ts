@@ -79,6 +79,8 @@ export interface CursoOfertadoVerano {
   descripcion: string;
   fecha_inicio: Date;
   fecha_fin: Date;
+  // ✨ NUEVO: Período académico
+  periodoAcademico?: string; // Ejemplo: "2025-1", "2025-2"
   cupo_maximo: number;
   cupo_disponible: number;
   cupo_estimado: number;
@@ -315,12 +317,54 @@ export interface CreateInscripcionLegacyDTO {
 export class CursosIntersemestralesService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  // ====== PERÍODOS ACADÉMICOS ======
+
+  // Obtener todos los períodos académicos disponibles (2020-1 a 2030-2)
+  getPeriodosAcademicos(): Observable<string[]> {
+    console.log('🌐 Llamando a API: GET /api/periodos-academicos/todos');
+    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE.replace('/cursos-intersemestrales', '')}/periodos-academicos/todos`).pipe(
+      map(response => response.data || response)
+    );
+  }
+
+  // Obtener período académico actual
+  getPeriodoActual(): Observable<string> {
+    console.log('🌐 Llamando a API: GET /api/periodos-academicos/actual');
+    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE.replace('/cursos-intersemestrales', '')}/periodos-academicos/actual`).pipe(
+      map(response => response.data || response)
+    );
+  }
+
+  // Obtener períodos que tienen cursos registrados
+  getPeriodosRegistrados(): Observable<string[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/periodos-registrados');
+    return this.http.get<string[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/periodos-registrados`);
+  }
+
   // ====== CURSOS DE VERANO - NUEVAS APIs ======
   
   // Obtener cursos disponibles para verano (para estudiantes - datos reales de la BD)
   getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
     console.log('🌐 Llamando a API (estudiantes):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
     return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+  }
+
+  // Obtener cursos filtrados por período académico
+  getCursosPorPeriodo(periodo: string): Observable<CursoOfertadoVerano[]> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano/periodo/${periodo}`);
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/periodo/${periodo}`);
+  }
+
+  // Obtener cursos activos en una fecha específica
+  getCursosActivos(fecha: string): Observable<CursoOfertadoVerano[]> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-activos/${fecha}`);
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-activos/${fecha}`);
+  }
+
+  // Obtener estadísticas por período
+  getEstadisticasPorPeriodo(periodo: string): Observable<any> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/estadisticas/periodo/${periodo}`);
+    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/estadisticas/periodo/${periodo}`);
   }
 
   // Obtener todos los cursos para funcionarios (incluye todos los estados)
@@ -1106,6 +1150,8 @@ export interface CreateCursoDTO {
   descripcion: string;
   fecha_inicio: string; // ISO string
   fecha_fin: string; // ISO string
+  // ✨ NUEVO: Período académico
+  periodoAcademico?: string; // Ejemplo: "2025-1", "2025-2"
   cupo_maximo: number;
   cupo_estimado: number;
   espacio_asignado: string;

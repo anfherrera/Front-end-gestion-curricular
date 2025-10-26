@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
+import { PeriodoSelectorComponent } from '../../../../shared/components/periodo-selector/periodo-selector.component';
 import { CursosIntersemestralesService, CursoOfertadoVerano, CreatePreinscripcionDTO } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificacionesService } from '../../../../core/services/notificaciones.service';
@@ -12,15 +13,17 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-cursos-ofertados',
   standalone: true,
-  imports: [CommonModule, CardContainerComponent, CursoListComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, CardContainerComponent, CursoListComponent, PeriodoSelectorComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-ofertados.component.html',
   styleUrls: ['./cursos-ofertados.component.css']
 })
 export class CursosOfertadosComponent implements OnInit {
   cursos: Curso[] = [];
   cursosVerano: CursoOfertadoVerano[] = [];
+  cursosVeranoOriginales: CursoOfertadoVerano[] = []; // ✨ NUEVO: Para guardar todos los cursos antes de filtrar
   cargando = true;
   usuario: any = null;
+  periodoSeleccionado = ''; // ✨ NUEVO: Período seleccionado para filtrar
   
   // 🆕 Variables para manejar parámetros de navegación
   cursoIdDestino?: number;
@@ -67,9 +70,8 @@ export class CursosOfertadosComponent implements OnInit {
     this.cursosService.getCursosDisponibles().subscribe({
       next: (cursosVerano) => {
         console.log('✅ Cursos de verano recibidos:', cursosVerano);
-        this.cursosVerano = cursosVerano;
-        this.cursos = this.mapCursosToLegacy(cursosVerano);
-        console.log('📋 Cursos mapeados:', this.cursos);
+        this.cursosVeranoOriginales = cursosVerano; // ✨ NUEVO: Guardar originales
+        this.aplicarFiltroPeriodo(); // ✨ NUEVO: Aplicar filtro si hay período seleccionado
         this.cargando = false;
       },
       error: (err) => {
@@ -78,6 +80,47 @@ export class CursosOfertadosComponent implements OnInit {
         this.loadCursosLegacy();
       }
     });
+  }
+
+  // ✨ NUEVO: Manejar cambio de período
+  onPeriodoChange(periodo: string): void {
+    console.log('📅 Período seleccionado:', periodo);
+    this.periodoSeleccionado = periodo;
+    
+    if (!periodo) {
+      // Si no hay período seleccionado, cargar todos los cursos
+      this.loadCursos();
+    } else {
+      // Cargar cursos filtrados por período
+      this.cargando = true;
+      this.cursosService.getCursosPorPeriodo(periodo).subscribe({
+        next: (cursosVerano) => {
+          console.log(`✅ Cursos del período ${periodo} recibidos:`, cursosVerano);
+          this.cursosVerano = cursosVerano;
+          this.cursos = this.mapCursosToLegacy(cursosVerano);
+          this.cargando = false;
+        },
+        error: (err) => {
+          console.error(`❌ Error cargando cursos del período ${periodo}:`, err);
+          this.cargando = false;
+        }
+      });
+    }
+  }
+
+  // ✨ NUEVO: Aplicar filtro de período a los cursos cargados
+  private aplicarFiltroPeriodo(): void {
+    if (!this.periodoSeleccionado) {
+      // Sin filtro, mostrar todos
+      this.cursosVerano = this.cursosVeranoOriginales;
+    } else {
+      // Filtrar por período
+      this.cursosVerano = this.cursosVeranoOriginales.filter(
+        curso => curso.periodoAcademico === this.periodoSeleccionado
+      );
+    }
+    this.cursos = this.mapCursosToLegacy(this.cursosVerano);
+    console.log('📋 Cursos después de filtro:', this.cursos);
   }
 
   private loadCursosLegacy() {
@@ -136,7 +179,11 @@ export class CursosOfertadosComponent implements OnInit {
       cupos: curso.cupo_estimado || curso.cupo_disponible,
       creditos: curso.objMateria.creditos,
       espacio: curso.espacio_asignado || 'Por asignar',
-      estado: this.mapEstadoCurso(curso.estado || 'Borrador')
+      estado: this.mapEstadoCurso(curso.estado || 'Borrador'),
+      // ✨ NUEVO: Mapear período y fechas
+      periodoAcademico: curso.periodoAcademico,
+      fecha_inicio: curso.fecha_inicio,
+      fecha_fin: curso.fecha_fin
     }));
   }
 

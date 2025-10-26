@@ -70,16 +70,44 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   }
 
   private cargarCursosActivos(): void {
+    console.log('🔄 Intentando cargar cursos activos...');
+    console.log('🌐 URL del backend:', 'http://localhost:5000/api/cursos-intersemestrales/cursos-verano/todos');
+    
     this.cursosService.getTodosLosCursosParaFuncionarios()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (cursos) => {
+          console.log('✅ Cursos recibidos del backend:', cursos);
+          console.log('📊 Total de cursos:', cursos.length);
+          
+          if (cursos.length === 0) {
+            console.warn('⚠️ PROBLEMA: El backend devolvió un array vacío []');
+            console.warn('📋 POSIBLES CAUSAS:');
+            console.warn('   1. El query SQL en el backend tiene filtros muy restrictivos');
+            console.warn('   2. Los JOINs con materias/usuarios están fallando');
+            console.warn('   3. No hay datos en la tabla cursos_ofertados_verano');
+            console.warn('📖 Sigue la guía: ARREGLAR-CONEXION-BACKEND-FRONTEND.md');
+          } else {
+            console.log('✅ Primer curso:', cursos[0]);
+          }
+          
           this.cursosActivos = cursos;
           this.totalCursosActivos = cursos.length;
           this.calcularEstadisticasCursos(cursos);
         },
         error: (error) => {
-          console.error('Error cargando cursos activos:', error);
+          console.error('❌ Error cargando cursos activos:', error);
+          console.error('❌ Detalles del error:', {
+            status: error.status,
+            statusText: error.statusText,
+            message: error.message,
+            url: error.url
+          });
+          console.error('🔧 SOLUCIONES:');
+          console.error('   - Si ves error 404: El endpoint no existe en el backend');
+          console.error('   - Si ves error 500: Hay un error en el query SQL del backend');
+          console.error('   - Si ves CORS: Configura CORS en el backend');
+          console.error('   - Si no ves nada: El backend no está corriendo');
         }
       });
   }

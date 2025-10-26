@@ -1,4 +1,11 @@
 <app-card-container title="Cursos Ofertados">
+  <!-- ✨ NUEVO: Selector de período -->
+  <app-periodo-selector
+    *ngIf="!cargando"
+    [soloRegistrados]="true"
+    (periodoChange)="onPeriodoChange($event)"
+  ></app-periodo-selector>
+
   <div *ngIf="cargando" class="cargando">Cargando cursos...</div>
 
   <!-- 🆕 Mensaje informativo para inscripción desde seguimiento -->
@@ -32,7 +39,7 @@
   <app-curso-list
     *ngIf="!cargando"
     [cursos]="cursos"
-    [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','estado']"
+    [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','periodo','fecha_inicio','fecha_fin','duracion','estado']"
     [acciones]="[]"
     (accionClick)="onAccionCurso($event)"
   ></app-curso-list>

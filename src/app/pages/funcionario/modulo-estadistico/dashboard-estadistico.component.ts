@@ -25,6 +25,7 @@ import { EstudiantesPorProgramaComponent } from '../../../shared/components/estu
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
 import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
+import { PeriodoSelectorComponent } from '../../../shared/components/periodo-selector/periodo-selector.component'; // ✨ NUEVO
 import { 
   ResumenCompleto, 
   EstadisticasProceso, 
@@ -56,7 +57,8 @@ Chart.register(...registerables);
     EstudiantesPorProgramaComponent,
     EstadisticasPorProcesoComponent,
     EstadisticasPorEstadoComponent,
-    TendenciasComparativasComponent
+    TendenciasComparativasComponent,
+    PeriodoSelectorComponent // ✨ NUEVO
   ],
   templateUrl: './dashboard-estadistico.component.html',
   styleUrls: ['./dashboard-estadistico.component.css']
@@ -106,7 +108,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       proceso: [''],
       programa: [''],
       fechaInicio: [''],
-      fechaFin: ['']
+      fechaFin: [''],
+      periodoAcademico: [''] // ✨ NUEVO: Campo para período académico
     });
     
     this.inicializarDatos();
@@ -1223,6 +1226,16 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * ✨ NUEVO: Maneja el cambio de período académico
+   */
+  onPeriodoChange(periodo: string): void {
+    if (this.filtrosForm) {
+      this.filtrosForm.patchValue({ periodoAcademico: periodo });
+      console.log('📅 Período seleccionado:', periodo);
+    }
+  }
+
+  /**
    * Aplica filtros y actualiza los datos usando el endpoint actualizado del backend
    */
   aplicarFiltros(): void {
@@ -1235,6 +1248,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       if (formValue.programa) filtros.programa = formValue.programa;
       if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
       if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
+      if (formValue.periodoAcademico) filtros.periodoAcademico = formValue.periodoAcademico; // ✨ NUEVO
       
       console.log('🔍 Aplicando filtros:', filtros);
       

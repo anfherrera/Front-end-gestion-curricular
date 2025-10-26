@@ -55,6 +55,15 @@ export class EstadisticasService {
   }
 
   /**
+   * ✨ NUEVO: Obtiene estadísticas filtradas por período académico
+   * @param periodo Período académico (ej: "2025-1")
+   */
+  getEstadisticasPorPeriodo(periodo: string): Observable<any> {
+    console.log(`🌐 Llamando a API: GET /api/estadisticas/periodo/${periodo}`);
+    return this.http.get<any>(`${ApiEndpoints.MODULO_ESTADISTICO.BASE}/periodo/${periodo}`);
+  }
+
+  /**
    * Obtiene estadísticas globales (método legacy para compatibilidad)
    */
   getEstadisticasGlobalesLegacy(): Observable<EstadisticasGlobales> {

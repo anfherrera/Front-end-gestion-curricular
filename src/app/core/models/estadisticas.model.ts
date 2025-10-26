@@ -60,6 +60,7 @@ export interface FiltroEstadisticas {
   programa?: number;
   fechaInicio?: string;
   fechaFin?: string;
+  periodoAcademico?: string; // ✨ NUEVO: Filtro por período académico (ej: "2025-1")
 }
 
 export interface KPIData {
