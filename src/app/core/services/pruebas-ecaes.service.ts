@@ -22,9 +22,10 @@ export interface SolicitudEcaesRequest {
     nombre_completo: string;
     codigo: string;
     correo: string;
-    rol: any;
+    // El backend ahora espera identificadores en lugar de objetos anidados
     estado_usuario: boolean;
-    objPrograma: any;
+    id_rol?: number;
+    id_programa?: number;
   };
   tipoDocumento: string;
   numero_documento: string;
