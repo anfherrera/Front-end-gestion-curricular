@@ -251,10 +251,21 @@ export class PruebasEcaesComponent implements OnInit {
           throw new Error(`No se recibió respuesta del servidor para el archivo ${archivo.nombre}`);
         }
 
+        // Normalizar posible nombre de propiedad que contiene la ruta en la respuesta del backend
+  const r: any = response as any;
+  const ruta = r.ruta_documento ?? r.rutaDocumento ?? r.ruta ?? r.path ?? r.url ?? r.data?.ruta_documento ?? r.data?.path ?? null;
+
+  console.log('🔎 Ruta detectada en respuesta:', ruta, ' (response keys):', Object.keys(r || {}));
+
+        if (!ruta) {
+          // Si la ruta no está presente, lanzamos un error claro para evitar enviar un body inválido
+          throw new Error(`La respuesta del servidor para el archivo ${archivo.nombre} no contiene la ruta del documento (ruta_documento). Respuesta recibida: ${JSON.stringify(response)}`);
+        }
+
         // Agregar el archivo subido con la estructura esperada
         archivosSubidos.push({
           nombre: response.nombre || archivo.nombre,
-          ruta_documento: response.ruta_documento,
+          ruta_documento: ruta,
           fecha_documento: new Date().toISOString(),
           esValido: true,
           comentario: 'Documento adjunto para inscripción ECAES',
@@ -297,15 +308,10 @@ export class PruebasEcaesComponent implements OnInit {
         nombre_completo: this.usuario.nombre_completo,
         codigo: this.usuario.codigo,
         correo: this.usuario.correo || this.usuario.email_usuario,
-        rol: this.usuario.rol,
         estado_usuario: this.usuario.estado_usuario,
-        // ✅ FIX: Agregar id_rol e id_programa como campos requeridos por el backend
-        id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1,
-        id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-        objPrograma: this.usuario.objPrograma || {
-          id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-          nombre_programa: this.usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
-        }
+        // Enviar solo los identificadores que el backend ahora espera
+        id_rol: this.usuario.id_rol ?? this.usuario.objRol?.id_rol ?? this.usuario.rol?.id_rol ?? 1,
+        id_programa: this.usuario.id_programa ?? this.usuario.objPrograma?.id_programa ?? 1
       },
       tipoDocumento: formValue.tipoDocumento,
       numero_documento: formValue.numero_documento,
