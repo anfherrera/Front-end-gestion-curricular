@@ -86,18 +86,30 @@
             </span>
           </div>
 
-          <!-- Botón unificado (igual que Homologación) -->
+          <!-- Botones separados: Subir PDF y Enviar al Estudiante -->
           <div class="action-buttons">
+            <!-- Botón 1: Subir PDF al servidor -->
             <button
               mat-raised-button
               color="primary"
               [disabled]="!archivoPDF || subiendoPDF || enviandoPDF"
-              (click)="enviarDocumento()"
-              class="send-document-btn">
-              <mat-icon>send</mat-icon>
+              (click)="subirPDF()"
+              class="upload-btn">
+              <mat-icon>cloud_upload</mat-icon>
               <span *ngIf="subiendoPDF">Subiendo PDF...</span>
-              <span *ngIf="enviandoPDF">Enviando al Estudiante...</span>
-              <span *ngIf="!subiendoPDF && !enviandoPDF">Enviar Documento</span>
+              <span *ngIf="!subiendoPDF">Subir PDF</span>
+            </button>
+
+            <!-- Botón 2: Enviar al Estudiante -->
+            <button
+              mat-raised-button
+              color="accent"
+              [disabled]="!archivoPDF || subiendoPDF || enviandoPDF"
+              (click)="enviarPDFAlEstudiante()"
+              class="send-btn">
+              <mat-icon>send</mat-icon>
+              <span *ngIf="enviandoPDF">Enviando...</span>
+              <span *ngIf="!enviandoPDF">Enviar al Estudiante</span>
             </button>
           </div>
 

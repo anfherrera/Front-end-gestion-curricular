@@ -411,7 +411,7 @@ descargarOficio(idOficio: number, nombreArchivo: string): void {
 }
 
 /**
- * Obtener oficios y descargar (igual que homologación)
+ * Obtener oficios y descargar
  */
 private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
   this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
@@ -425,7 +425,7 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
       
       // Tomar el primer oficio disponible
       const oficio = oficios[0];
-      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_paz_salvo_${idSolicitud}.pdf`;
+      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`;
       
       // Intentar descargar usando el endpoint de archivos
       this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
@@ -445,21 +445,20 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
 private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
   console.log('📁 Descargando archivo por nombre:', nombreArchivo);
   
-  // Usar el endpoint específico de paz-salvo
-  if (idSolicitud) {
-    const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargarOficio/${idSolicitud}`;
-    
-    // Crear headers con autorización
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    
-    this.http.get(url, {
-      headers: headers,
-      responseType: 'blob',
-      observe: 'response'
-    }).subscribe({
+  // Usar el endpoint de solicitudes de paz-salvo que acabamos de crear
+  const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargarOficio/${idSolicitud || 1}`;
+  
+  // Crear headers con autorización
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+  
+  this.http.get(url, {
+    headers: headers,
+    responseType: 'blob',
+    observe: 'response'
+  }).subscribe({
     next: (response) => {
       console.log('✅ Archivo descargado exitosamente');
       
@@ -517,42 +516,6 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
       this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
     }
   });
-  } else {
-    // Fallback: usar endpoint genérico si no hay idSolicitud
-    console.log('⚠️ No hay idSolicitud, usando endpoint genérico');
-    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    
-    this.http.get(url, {
-      headers: headers,
-      responseType: 'blob',
-      observe: 'response'
-    }).subscribe({
-      next: (response) => {
-        console.log('✅ Archivo descargado exitosamente (endpoint genérico)');
-        
-        const blob = response.body!;
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = nombreDescarga || nombreArchivo;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        this.mostrarMensaje('Archivo descargado exitosamente', 'success');
-      },
-      error: (err) => {
-        console.error('❌ Error al descargar archivo (endpoint genérico):', err);
-        this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
-      }
-    });
-  }
 }
 
 /**

@@ -282,6 +282,69 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
+   * Subir archivo PDF al servidor
+   */
+  subirPDF(): void {
+    if (!this.archivoPDF || !this.selectedSolicitud) {
+      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    this.subiendoPDF = true;
+    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+
+    // Usar el servicio para subir el PDF con idSolicitud
+    this.pazSalvoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+      next: (response) => {
+        console.log('✅ Archivo PDF subido exitosamente:', response);
+        this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
+        this.subiendoPDF = false;
+      },
+      error: (err) => {
+        console.error('❌ Error al subir archivo PDF:', err);
+        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.subiendoPDF = false;
+      }
+    });
+  }
+
+  /**
+   * Enviar PDF al estudiante (cambia el estado a APROBADA)
+   */
+  enviarPDFAlEstudiante(): void {
+    if (!this.selectedSolicitud) {
+      this.snackBar.open('Por favor selecciona una solicitud', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    this.enviandoPDF = true;
+    console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
+
+    // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
+    this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+      next: () => {
+        console.log('✅ Estado de solicitud actualizado a APROBADA');
+        console.log('✅ PDF enviado al estudiante exitosamente');
+        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.enviandoPDF = false;
+
+        // Limpiar el estado
+        this.documentoGenerado = false;
+        this.archivoPDF = null;
+        this.selectedSolicitud = undefined;
+
+        // Recargar solicitudes
+        this.cargarSolicitudes();
+      },
+      error: (err: any) => {
+        console.error('❌ Error al actualizar estado de solicitud:', err);
+        this.snackBar.open('Error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+        this.enviandoPDF = false;
+      }
+    });
+  }
+
+  /**
    * Enviar documento (unifica subir PDF y enviar al estudiante)
    * ✅ IGUAL QUE HOMOLOGACIÓN: Sube el PDF y LUEGO actualiza el estado
    */

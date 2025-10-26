@@ -325,3 +325,26 @@
     padding: 16px;
   }
 }
+
+/* Estilo específico para botón "Enviar al Estudiante" (color="accent") */
+::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:not(:disabled) {
+  background-color: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 12px 24px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease-in-out !important;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+}
+
+::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:hover:not(:disabled) {
+  background-color: #218838 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4) !important;
+}
+
+::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:active:not(:disabled) {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+}
