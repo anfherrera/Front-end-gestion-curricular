@@ -362,10 +362,11 @@ export interface TendenciaTemporal {
 }
 
 export interface EstadosSolicitudes {
-  Aprobada: number;
-  Enviada: number;
-  "En Proceso": number;
-  Rechazada: number;
+  APROBADA: number;
+  ENVIADA: number;
+  APROBADA_FUNCIONARIO: number;
+  APROBADA_COORDINADOR: number;
+  RECHAZADA: number;
 }
 
 export interface Recomendacion {

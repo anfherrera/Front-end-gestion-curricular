@@ -345,9 +345,44 @@
   font-size: 1.5rem;
 }
 
+/* Colores para los iconos de cada estado */
+.estado-card.aprobada mat-icon {
+  color: #28a745;
+}
+
+.estado-card.enviada mat-icon {
+  color: #ffc107;
+}
+
+.estado-card.en-proceso mat-icon {
+  color: #17a2b8;
+}
+
+.estado-card.rechazada mat-icon {
+  color: #dc3545;
+}
+
 .estado-nombre {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1rem;
+  color: #333;
+}
+
+/* Colores específicos para cada estado */
+.estado-card.aprobada .estado-nombre {
+  color: #28a745;
+}
+
+.estado-card.enviada .estado-nombre {
+  color: #ffc107;
+}
+
+.estado-card.en-proceso .estado-nombre {
+  color: #17a2b8;
+}
+
+.estado-card.rechazada .estado-nombre {
+  color: #dc3545;
 }
 
 .estado-valor {

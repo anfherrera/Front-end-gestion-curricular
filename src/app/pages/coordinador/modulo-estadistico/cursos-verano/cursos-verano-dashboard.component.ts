@@ -274,10 +274,11 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         { mes: 'Marzo', solicitudes: 4, porcentaje: 44.44 }
       ],
       estadosSolicitudes: {
-        Aprobada: 4,
-        Enviada: 2,
-        'En Proceso': 2,
-        Rechazada: 1
+        APROBADA: 4,
+        ENVIADA: 2,
+        APROBADA_FUNCIONARIO: 2,
+        APROBADA_COORDINADOR: 0,
+        RECHAZADA: 1
       },
       recomendaciones: [
         {
