@@ -11,15 +11,39 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (token) {
     // Decodificar token para validar expiración
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const exp = payload.exp * 1000; // Convertir a milisegundos
-    const now = Date.now();
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000; // Convertir a milisegundos
+      const now = Date.now();
 
-    if (exp < now) {
-      console.warn('⏳ Token expirado. Cerrando sesión...');
-      authService.logout();
-      router.navigate(['/login']);
-      return next(req); // No se envía token porque está expirado
+      if (exp < now) {
+        console.warn('⏳ Token expirado. Las peticiones se enviarán sin autenticación.');
+        console.warn('💡 Por favor, cierre sesión y vuelva a iniciar sesión.');
+        
+        // NO cerrar sesión automáticamente, solo no enviar el token
+        // authService.logout();
+        // router.navigate(['/login']);
+        
+        // Continuar con la petición SIN token
+        const isFormData = req.body instanceof FormData;
+        
+        if (!isFormData) {
+          const clonedReq = req.clone({
+            setHeaders: {
+              'Content-Type': 'application/json; charset=utf-8',
+              'Accept': 'application/json',
+              'Accept-Charset': 'utf-8'
+            }
+          });
+          return next(clonedReq);
+        }
+        
+        return next(req);
+      }
+    } catch (error) {
+      console.error('❌ Error decodificando token:', error);
+      // Si hay error decodificando, continuar sin token
+      return next(req);
     }
 
     // Detectar si la petición es multipart/form-data (subida de archivos)

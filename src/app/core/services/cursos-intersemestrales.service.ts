@@ -319,19 +319,128 @@ export class CursosIntersemestralesService {
 
   // ====== PERÍODOS ACADÉMICOS ======
 
+  // Interfaz para la respuesta de períodos del backend
+  private mapPeriodosResponse(response: any): string[] {
+    if (!response) return [];
+    
+    const data = response.success ? response.data : response;
+    
+    // Si el backend devuelve array de objetos con { valor, descripcion }
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && 'valor' in data[0]) {
+      return data.map((p: any) => p.valor);
+    }
+    
+    // Si el backend devuelve array de strings directamente
+    if (Array.isArray(data)) {
+      return data;
+    }
+    
+    return [];
+  }
+
   // Obtener todos los períodos académicos disponibles (2020-1 a 2030-2)
   getPeriodosAcademicos(): Observable<string[]> {
-    console.log('🌐 Llamando a API: GET /api/periodos-academicos/todos');
-    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE.replace('/cursos-intersemestrales', '')}/periodos-academicos/todos`).pipe(
-      map(response => response.data || response)
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.TODOS;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend:', response);
+        const periodos = this.mapPeriodosResponse(response);
+        console.log('✅ [PERIODOS] Períodos mapeados:', periodos);
+        return periodos;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo períodos académicos:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of([]);
+      })
+    );
+  }
+
+  // ✨ NUEVO: Obtener solo períodos futuros (recomendado para crear cursos)
+  getPeriodosFuturos(): Observable<string[]> {
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.FUTUROS;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend (futuros):', response);
+        const periodos = this.mapPeriodosResponse(response);
+        console.log('✅ [PERIODOS] Períodos futuros mapeados:', periodos);
+        return periodos;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo períodos futuros:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of([]);
+      })
+    );
+  }
+
+  // ✨ NUEVO: Obtener períodos recientes (últimos 5 años)
+  getPeriodosRecientes(): Observable<string[]> {
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend (recientes):', response);
+        const periodos = this.mapPeriodosResponse(response);
+        console.log('✅ [PERIODOS] Períodos recientes mapeados:', periodos);
+        return periodos;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo períodos recientes:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of([]);
+      })
     );
   }
 
   // Obtener período académico actual
   getPeriodoActual(): Observable<string> {
-    console.log('🌐 Llamando a API: GET /api/periodos-academicos/actual');
-    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE.replace('/cursos-intersemestrales', '')}/periodos-academicos/actual`).pipe(
-      map(response => response.data || response)
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend (actual):', response);
+        if (!response) return '';
+        const data = response.success ? response.data : response;
+        const periodo = data?.valor || data || '';
+        console.log('✅ [PERIODOS] Período actual mapeado:', periodo);
+        return periodo;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo período actual:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of('');
+      })
     );
   }
 

@@ -12,6 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
+    // ✅ INTERCEPTOR ARREGLADO: Ya no cancela peticiones con token expirado
     provideHttpClient(withInterceptors([JwtInterceptor]), withFetch()),
     importProvidersFrom(BrowserAnimationsModule),
     PreinscripcionDialogComponent

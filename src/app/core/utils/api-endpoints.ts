@@ -31,6 +31,16 @@ export class ApiEndpoints {
     DELETE: (id: string) => `${this.BASE_URL}/procesos/${id}`
   };
 
+  // ===== PERÍODOS ACADÉMICOS =====
+  static readonly PERIODOS_ACADEMICOS = {
+    BASE: `${this.BASE_URL}/periodos-academicos`,
+    TODOS: `${this.BASE_URL}/periodos-academicos/todos`,
+    FUTUROS: `${this.BASE_URL}/periodos-academicos/futuros`,
+    RECIENTES: `${this.BASE_URL}/periodos-academicos/recientes`,
+    ACTUAL: `${this.BASE_URL}/periodos-academicos/actual`,
+    VALIDAR: (periodo: string) => `${this.BASE_URL}/periodos-academicos/validar/${periodo}`
+  };
+
   // ===== CURSOS INTERSEMESTRALES =====
   static readonly CURSOS_INTERSEMESTRALES = {
     BASE: `${this.BASE_URL}/cursos-intersemestrales`,

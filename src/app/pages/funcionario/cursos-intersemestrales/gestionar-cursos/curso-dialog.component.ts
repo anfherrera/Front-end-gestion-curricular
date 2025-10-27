@@ -708,16 +708,58 @@ export class CursoDialogComponent implements OnInit {
     }
   }
 
-  // ✨ NUEVO: Cargar períodos académicos
+  // ✨ NUEVO: Cargar períodos académicos (solo futuros para crear cursos)
   private cargarPeriodos(): void {
+    console.log('🔄 Cargando períodos académicos...');
+    
+    // Usar períodos futuros para crear cursos nuevos (recomendado)
+    this.cursosService.getPeriodosFuturos().subscribe({
+      next: (periodos) => {
+        this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
+        console.log('✅ Períodos futuros cargados:', this.periodos);
+        console.log('📊 Total de períodos:', this.periodos.length);
+        
+        // Si hay períodos disponibles, pre-seleccionar el primer período futuro
+        if (this.periodos.length > 0 && !this.data.editando) {
+          const primerPeriodo = this.periodos[0];
+          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+          console.log('✨ Período pre-seleccionado:', primerPeriodo);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error cargando períodos futuros:', error);
+        console.error('🔍 Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          message: error.message
+        });
+        
+        // Si falla, intentar con todos los períodos como fallback
+        console.warn('⚠️ Intentando cargar TODOS los períodos como fallback...');
+        this.cargarTodosLosPeriodos();
+      }
+    });
+  }
+
+  // Método de fallback para cargar todos los períodos
+  private cargarTodosLosPeriodos(): void {
     this.cursosService.getPeriodosAcademicos().subscribe({
       next: (periodos) => {
         this.periodos = ordenarPeriodos(periodos, 'desc'); // Más recientes primero
-        console.log('✅ Períodos académicos cargados:', this.periodos);
+        console.log('✅ Todos los períodos cargados (fallback):', this.periodos);
+        
+        if (this.periodos.length > 0 && !this.data.editando) {
+          const primerPeriodo = this.periodos[0];
+          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+        }
       },
       error: (error) => {
-        console.error('❌ Error cargando períodos:', error);
-        this.snackBar.open('Error al cargar los períodos académicos', 'Cerrar', { duration: 3000 });
+        console.error('❌ Error crítico cargando períodos:', error);
+        this.snackBar.open('⚠️ No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
