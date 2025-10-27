@@ -1238,51 +1238,82 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Aplica filtros y actualiza los datos usando el endpoint actualizado del backend
+   * Aplica los filtros seleccionados y recarga los datos
+   * ✅ ACTUALIZADO: Envía los filtros en el formato correcto al backend
    */
   aplicarFiltros(): void {
     if (this.filtrosForm && this.filtrosForm.valid) {
       const formValue = this.filtrosForm.value;
       
-      // Convertir filtros al formato correcto
-      const filtros: FiltroEstadisticas = {};
-      if (formValue.proceso) filtros.proceso = formValue.proceso;
-      if (formValue.programa) filtros.programa = formValue.programa;
-      if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
-      if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
-      if (formValue.periodoAcademico) filtros.periodoAcademico = formValue.periodoAcademico; // ✨ NUEVO
+      // Validar que fechaFin no sea menor que fechaInicio
+      if (formValue.fechaInicio && formValue.fechaFin) {
+        const inicio = new Date(formValue.fechaInicio);
+        const fin = new Date(formValue.fechaFin);
+        if (fin < inicio) {
+          this.mostrarError('La fecha de fin no puede ser anterior a la fecha de inicio');
+          return;
+        }
+      }
       
-      console.log('🔍 Aplicando filtros:', filtros);
+      // Convertir filtros al formato correcto (formato yyyy-MM-dd para fechas)
+      const filtros: FiltroEstadisticas = {};
+      
+      // Proceso: enviar solo si no es "Todos los procesos"
+      if (formValue.proceso && formValue.proceso !== '' && formValue.proceso !== 'Todos los procesos') {
+        filtros.proceso = formValue.proceso;
+      }
+      
+      // Programa: enviar como número (idPrograma)
+      if (formValue.programa && formValue.programa !== '' && formValue.programa !== 'Todos los programas') {
+        filtros.programa = Number(formValue.programa);
+      }
+      
+      // Fechas: convertir a formato yyyy-MM-dd
+      if (formValue.fechaInicio) {
+        const fecha = new Date(formValue.fechaInicio);
+        filtros.fechaInicio = fecha.toISOString().split('T')[0];
+      }
+      
+      if (formValue.fechaFin) {
+        const fecha = new Date(formValue.fechaFin);
+        filtros.fechaFin = fecha.toISOString().split('T')[0];
+      }
+      
+      if (formValue.periodoAcademico) {
+        filtros.periodoAcademico = formValue.periodoAcademico;
+      }
+      
+      console.log('🔍 Aplicando filtros al backend:', filtros);
+      console.log('📋 Detalle de filtros:');
+      console.log('  - Proceso:', filtros.proceso || 'Todos');
+      console.log('  - Programa (ID):', filtros.programa || 'Todos');
+      console.log('  - Fecha Inicio:', filtros.fechaInicio || 'Sin filtro');
+      console.log('  - Fecha Fin:', filtros.fechaFin || 'Sin filtro');
       
       // Usar el método de carga de datos con filtros
       this.cargarDatos(filtros);
+      
+      this.mostrarExito('Filtros aplicados correctamente');
     }
   }
 
   /**
-   * Mapea el proceso interno al formato esperado por el backend
-   */
-  private mapearProcesoAFiltro(proceso: string): string {
-    const mapeo: { [key: string]: string } = {
-      'reingreso': 'Solicitud de Reingreso',
-      'homologacion': 'Solicitud de Homologacion',
-      'cursos-intersemestrales': 'Solicitud Curso Verano',
-      'pruebas-ecaes': 'Solicitud ECAES',
-      'paz-salvo': 'Solicitud Paz y Salvo'
-    };
-    
-    return mapeo[proceso] || proceso;
-  }
-
-  /**
-   * Limpia todos los filtros
+   * Limpia todos los filtros y recarga los datos completos
+   * ✅ ACTUALIZADO: Resetea el formulario a valores vacíos
    */
   limpiarFiltros(): void {
     console.log('🧹 Limpiando filtros...');
     if (this.filtrosForm) {
-      this.filtrosForm.reset();
+      this.filtrosForm.reset({
+        proceso: '',
+        programa: '',
+        fechaInicio: '',
+        fechaFin: '',
+        periodoAcademico: ''
+      });
     }
-    this.cargarDatos(); // Volver a cargar datos globales
+    // Volver a cargar datos sin filtros
+    this.cargarDatos();
     this.mostrarExito('Filtros limpiados correctamente');
   }
 
@@ -1310,18 +1341,22 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Formatea el nombre del proceso para mostrar
+   * Formatea el nombre del proceso para mostrarlo en la UI
+   * ✅ ACTUALIZADO: Los nombres ya vienen en el formato correcto del backend
    */
   formatearNombreProceso(proceso: string): string {
-    const nombres: { [key: string]: string } = {
+    // Los nombres ahora vienen directamente del backend en el formato correcto
+    // Si por alguna razón viene un nombre antiguo, lo mapeamos
+    const nombresLegacy: { [key: string]: string } = {
       'paz-salvo': 'Paz y Salvo',
       'reingreso-estudiante': 'Reingreso',
       'homologacion-asignaturas': 'Homologación',
       'cursos-de-verano': 'Cursos de Verano',
+      'cursos-intersemestrales': 'Cursos de Verano',
       'pruebas-ecaes': 'ECAES'
     };
     
-    return nombres[proceso] || proceso;
+    return nombresLegacy[proceso] || proceso;
   }
 
   /**

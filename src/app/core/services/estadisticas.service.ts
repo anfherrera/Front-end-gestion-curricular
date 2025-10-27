@@ -407,15 +407,16 @@ export class EstadisticasService {
   }
 
   /**
-   * Obtiene la lista de procesos disponibles
+   * Obtiene la lista de procesos disponibles (nombres exactos del backend)
+   * ✅ ACTUALIZADO: Usa los nombres exactos que el backend espera según el backend
    */
   getProcesosDisponibles(): string[] {
     return [
-      'reingreso-estudiante',
-      'homologacion-asignaturas', 
-      'cursos-intersemestrales',
-      'pruebas-ecaes',
-      'paz-salvo'
+      'Reingreso',
+      'Homologación',
+      'Cursos de Verano',
+      'ECAES',
+      'Paz y Salvo'
     ];
   }
 
