@@ -2,8 +2,8 @@ export interface EstadisticasGlobales {
   totalSolicitudes: number;
   solicitudesAprobadas: number;
   solicitudesRechazadas: number;
+  solicitudesEnviadas: number; // ✅ Campo obligatorio del backend
   solicitudesEnProceso: number;
-  solicitudesEnviadas?: number;
   totalEstudiantes: number;
   totalProgramas: number;
   predicciones?: PrediccionesGlobales;
@@ -90,6 +90,7 @@ export interface EstadisticasGlobalesAPI {
   fechaConsulta: string;
   totalSolicitudes: number;
   totalAprobadas: number;
+  totalEnviadas: number; // ✅ Campo del backend
   totalEnProceso: number;
   totalRechazadas: number;
   porcentajeAprobacion: number;

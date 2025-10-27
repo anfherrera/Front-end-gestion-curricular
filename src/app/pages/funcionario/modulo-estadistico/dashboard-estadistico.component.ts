@@ -179,8 +179,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // Cargar total de estudiantes desde el endpoint específico
     this.cargarTotalEstudiantes();
     
-    // Cargar datos de estado de solicitudes para KPIs correctos
-    this.cargarDatosEstadoSolicitudes();
+    // ❌ DESHABILITADO: No usar endpoint separado de estado de solicitudes
+    // Los datos ya vienen correctos desde /api/estadisticas/globales
+    // this.cargarDatosEstadoSolicitudes();
 
     // Comentamos la llamada real al backend por ahora
     /*
@@ -252,12 +253,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           // ✅ FALLBACK: Usar valores reales si el endpoint falla
           console.log('🔄 Usando valores de fallback del backend...');
           const datosFallback = {
-            totalSolicitudes: 46,
+            totalSolicitudes: 50,
             estados: {
-              Aprobada: { cantidad: 21, porcentaje: 45.65 },
-              Enviada: { cantidad: 9, porcentaje: 19.57 },
-              "En Proceso": { cantidad: 11, porcentaje: 23.91 },
-              Rechazada: { cantidad: 5, porcentaje: 10.87 }
+              APROBADA: { cantidad: 32, porcentaje: 64.0 },
+              ENVIADA: { cantidad: 9, porcentaje: 18.0 },
+              APROBADA_FUNCIONARIO: { cantidad: 15, porcentaje: 30.0 },
+              RECHAZADA: { cantidad: 5, porcentaje: 10.0 }
             }
           };
           
@@ -282,23 +283,24 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     // 🔧 Verificar cada estado individualmente
     const estados = data.estados;
-    console.log('🔍 APROBADA:', estados.Aprobada);
-    console.log('🔍 ENVIADA:', estados.Enviada);
-    console.log('🔍 EN PROCESO:', estados["En Proceso"]);
-    console.log('🔍 RECHAZADA:', estados.Rechazada);
+    console.log('🔍 APROBADA:', estados.APROBADA);
+    console.log('🔍 ENVIADA:', estados.ENVIADA);
+    console.log('🔍 APROBADA_FUNCIONARIO:', estados.APROBADA_FUNCIONARIO);
+    console.log('🔍 RECHAZADA:', estados.RECHAZADA);
 
     // 🔧 VERIFICACIÓN DETALLADA DEL ESTADO "ENVIADA"
     console.log('🔍 VERIFICACIÓN DETALLADA ENVIADA:');
-    console.log('  - estados.Enviada existe?', !!estados.Enviada);
-    console.log('  - estados.Enviada:', estados.Enviada);
-    console.log('  - estados.Enviada.cantidad:', estados.Enviada?.cantidad);
-    console.log('  - tipo de cantidad:', typeof estados.Enviada?.cantidad);
+    console.log('  - estados.ENVIADA existe?', !!estados.ENVIADA);
+    console.log('  - estados.ENVIADA:', estados.ENVIADA);
+    console.log('  - estados.ENVIADA.cantidad:', estados.ENVIADA?.cantidad);
+    console.log('  - tipo de cantidad:', typeof estados.ENVIADA?.cantidad);
 
     // ✅ CALCULAR totalSolicitudes sumando todos los estados
-    const aprobadas = estados.Aprobada?.cantidad || 0;
-    const enviadas = estados.Enviada?.cantidad || 0;
-    const enProceso = estados["En Proceso"]?.cantidad || 0;
-    const rechazadas = estados.Rechazada?.cantidad || 0;
+    // El backend envía: APROBADA, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA
+    const aprobadas = (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0);
+    const enviadas = estados.ENVIADA?.cantidad || 0;
+    const enProceso = estados.APROBADA_FUNCIONARIO?.cantidad || 0; // Las aprobadas por funcionario están "en proceso"
+    const rechazadas = estados.RECHAZADA?.cantidad || 0;
     
     const totalCalculado = aprobadas + enviadas + enProceso + rechazadas;
 
@@ -538,7 +540,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       },
       {
         titulo: 'Estudiantes',
-        valor: estadisticas?.totalEstudiantes || 0,
+        valor: this.totalEstudiantes || 0, // ✅ Usar el valor real si ya está disponible
         icono: 'people',
         color: 'info',
         descripcion: 'Total de estudiantes registrados'

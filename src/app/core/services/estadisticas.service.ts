@@ -465,6 +465,7 @@ export class EstadisticasService {
           totalSolicitudes: procesoFiltrado.totalSolicitudes,
           solicitudesAprobadas: procesoFiltrado.aprobadas,
           solicitudesRechazadas: procesoFiltrado.rechazadas,
+          solicitudesEnviadas: procesoFiltrado.enviadas || 0, // ✅ Campo obligatorio
           solicitudesEnProceso: procesoFiltrado.enProceso,
           totalEstudiantes: Math.floor(procesoFiltrado.totalSolicitudes * 2.6), // Aproximación
           totalProgramas: 1
@@ -485,6 +486,7 @@ export class EstadisticasService {
           totalSolicitudes: Math.floor(estadisticasGlobales.totalSolicitudes * factor),
           solicitudesAprobadas: Math.floor(estadisticasGlobales.solicitudesAprobadas * factor),
           solicitudesRechazadas: Math.floor(estadisticasGlobales.solicitudesRechazadas * factor),
+          solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factor), // ✅ Campo obligatorio
           solicitudesEnProceso: Math.floor(estadisticasGlobales.solicitudesEnProceso * factor),
           totalEstudiantes: Math.floor(estadisticasGlobales.totalEstudiantes * factor),
           totalProgramas: 1
@@ -500,6 +502,7 @@ export class EstadisticasService {
         totalSolicitudes: Math.floor(estadisticasGlobales.totalSolicitudes * factorFecha),
         solicitudesAprobadas: Math.floor(estadisticasGlobales.solicitudesAprobadas * factorFecha),
         solicitudesRechazadas: Math.floor(estadisticasGlobales.solicitudesRechazadas * factorFecha),
+        solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factorFecha), // ✅ Campo obligatorio
         solicitudesEnProceso: Math.floor(estadisticasGlobales.solicitudesEnProceso * factorFecha),
         totalEstudiantes: Math.floor(estadisticasGlobales.totalEstudiantes * factorFecha),
         totalProgramas: estadisticasGlobales.totalProgramas
@@ -523,6 +526,7 @@ export class EstadisticasService {
         totalSolicitudes: 1247,
         solicitudesAprobadas: 892,
         solicitudesRechazadas: 156,
+        solicitudesEnviadas: 120, // ✅ Campo obligatorio
         solicitudesEnProceso: 199,
         totalEstudiantes: 3241,
         totalProgramas: 5
@@ -999,8 +1003,9 @@ export class EstadisticasService {
         totalSolicitudes: datosAPI.totalSolicitudes,
         solicitudesAprobadas: datosAPI.totalAprobadas,
         solicitudesRechazadas: datosAPI.totalRechazadas,
+        solicitudesEnviadas: datosAPI.totalEnviadas, // ✅ Mapeo correcto del backend
         solicitudesEnProceso: datosAPI.totalEnProceso,
-        totalEstudiantes: Math.floor(datosAPI.totalSolicitudes * 2.5), // Aproximación
+        totalEstudiantes: 0, // Se actualizará con el valor real del endpoint /api/estadisticas/total-estudiantes
         totalProgramas: Object.keys(datosAPI.porPrograma).length
       },
       estadisticasPorProceso,

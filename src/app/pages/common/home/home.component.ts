@@ -90,6 +90,7 @@ export class HomeComponent implements OnInit {
       // Filtrar por rol para opciones generales
       switch (this.roleLower) {
         case 'coordinador':
+          return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'ajustes'].includes(p.route);
         case 'funcionario':
           return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'ajustes'].includes(p.route);
         case 'estudiante':
