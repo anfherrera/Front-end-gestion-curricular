@@ -326,6 +326,7 @@ export interface PrediccionesCursosVerano {
   materiasConTendenciaDecreciente: MateriaPrediccion[];
   materiasEstables: MateriaPrediccion[];
   programasConTendenciaCreciente: ProgramaPrediccion[];
+  todasLasPrediccionesPorPrograma: ProgramaPrediccion[]; // ✅ NUEVO: Lista completa de todos los programas
   programasConTendenciaDecreciente: ProgramaPrediccion[];
   prediccionesTemporales: PrediccionesTemporales;
   // ❌ ELIMINADO: recomendacionesFuturas (ahora está en el nivel superior como 'recomendaciones')

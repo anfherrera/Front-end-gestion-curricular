@@ -176,7 +176,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         console.log('🔍 [DEBUG] Predicciones:', response.predicciones);
         console.log('🔍 [DEBUG] Predicciones temporales:', response.predicciones?.prediccionesTemporales);
         console.log('🔍 [DEBUG] Predicciones materias:', response.predicciones?.materiasConTendenciaCreciente);
-        console.log('🔍 [DEBUG] Predicciones programas:', response.predicciones?.programasConTendenciaCreciente);
+        console.log('🔍 [DEBUG] Predicciones programas (TODOS):', response.predicciones?.todasLasPrediccionesPorPrograma);
         console.log('🔍 Demanda estimada del backend:', response.predicciones?.demandaEstimadaProximoPeriodo);
         console.log('🔍 [DEBUG] Demanda estimada próximo período:', response.predicciones?.demandaEstimadaProximoPeriodo);
         console.log('🔍 [DEBUG] Demanda estimada mes pico:', response.predicciones?.prediccionesTemporales?.demandaEstimadaMesPico);
@@ -337,6 +337,40 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
             tendencia: 'CRECIENTE',
             variacion: 2,
             porcentajeVariacion: 50
+          }
+        ],
+        todasLasPrediccionesPorPrograma: [
+          {
+            nombre: 'Ingeniería de Sistemas',
+            demandaActual: 4,
+            demandaEstimada: 6,
+            tendencia: 'CRECIENTE',
+            variacion: 2,
+            porcentajeVariacion: 50
+          },
+          {
+            nombre: 'Ingeniería Electrónica',
+            demandaActual: 3,
+            demandaEstimada: 4,
+            tendencia: 'CRECIENTE',
+            variacion: 1,
+            porcentajeVariacion: 33.33
+          },
+          {
+            nombre: 'Ingeniería Automática',
+            demandaActual: 2,
+            demandaEstimada: 2,
+            tendencia: 'ESTABLE',
+            variacion: 0,
+            porcentajeVariacion: 0
+          },
+          {
+            nombre: 'Tecnología Telemática',
+            demandaActual: 2,
+            demandaEstimada: 1,
+            tendencia: 'DECRECIENTE',
+            variacion: -1,
+            porcentajeVariacion: -50
           }
         ],
         programasConTendenciaDecreciente: [],
@@ -974,14 +1008,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   crearGraficoPrediccionesProgramas(): void {
-    if (!this.data?.predicciones?.programasConTendenciaCreciente) return;
+    if (!this.data?.predicciones?.todasLasPrediccionesPorPrograma) return;
 
     const ctx = document.getElementById('chartPrediccionesProgramas') as HTMLCanvasElement;
     if (!ctx) return;
 
     this.destruirGrafico('chartPrediccionesProgramas');
 
-    const programas = this.data.predicciones.programasConTendenciaCreciente.slice(0, 5); // Top 5
+    const programas = this.data.predicciones.todasLasPrediccionesPorPrograma.slice(0, 5); // Top 5
 
     const data: ChartData<'bar'> = {
       labels: programas.map(p => p.nombre),
