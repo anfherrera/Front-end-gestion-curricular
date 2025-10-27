@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,7 @@ import { ActivityIndicatorComponent } from '../../shared/components/activity-ind
   standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush, // ✅ OnPush - datos no cambian constantemente
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -30,6 +31,8 @@ export class HeaderComponent implements OnInit {
   isSidebarOpen = true;
   userName: string = '';
   userEmail: string = '';
+  userInitials: string = 'U'; // ✅ CACHEAR para evitar recalcular en cada ciclo
+  userRole: string = 'Usuario'; // ✅ CACHEAR
 
   constructor(
     private authService: AuthService,
@@ -41,6 +44,9 @@ export class HeaderComponent implements OnInit {
     if (usuario) {
       this.userName = usuario.nombre_completo;
       this.userEmail = usuario.correo;
+      // ✅ Calcular UNA VEZ en ngOnInit
+      this.userInitials = this.calculateUserInitials();
+      this.userRole = this.calculateUserRole();
     }
   }
 
@@ -62,7 +68,8 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  getUserInitials(): string {
+  // ✅ Métodos privados para calcular UNA VEZ
+  private calculateUserInitials(): string {
     if (!this.userName) return 'U';
 
     const names = this.userName.split(' ');
@@ -72,7 +79,7 @@ export class HeaderComponent implements OnInit {
     return this.userName.substring(0, 2).toUpperCase();
   }
 
-  getUserRole(): string {
+  private calculateUserRole(): string {
     const role = this.authService.getRole();
     switch (role?.toLowerCase()) {
       case 'admin': return 'Administrador';
@@ -83,5 +90,14 @@ export class HeaderComponent implements OnInit {
       case 'estudiante': return 'Estudiante';
       default: return 'Usuario';
     }
+  }
+
+  // ✅ Getters públicos que devuelven propiedades cacheadas (no recalculan)
+  getUserInitials(): string {
+    return this.userInitials;
+  }
+
+  getUserRole(): string {
+    return this.userRole;
   }
 }

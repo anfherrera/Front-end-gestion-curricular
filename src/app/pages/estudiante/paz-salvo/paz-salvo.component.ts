@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Subject, takeUntil } from 'rxjs'; // ✅ Agregar para limpieza de suscripciones
 
 import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -34,8 +35,11 @@ import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
 })
-export class PazSalvoComponent implements OnInit {
+export class PazSalvoComponent implements OnInit, OnDestroy {
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent
+
+  // ✅ Subject para limpieza de suscripciones
+  private destroy$ = new Subject<void>();
 
   solicitudes: Solicitud[] = [];
   solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
@@ -82,6 +86,12 @@ export class PazSalvoComponent implements OnInit {
     }, 2000);
   }
 
+  ngOnDestroy(): void {
+    // ✅ Limpiar todas las suscripciones
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   onArchivosChange(archivos: Archivo[]) {
     this.archivosActuales = archivos;
   }
@@ -120,7 +130,9 @@ listarSolicitudes() {
   
   console.log('📡 Llamando a listarSolicitudesPorRol con:', { rol, idUsuario });
 
-  this.pazSalvoService.listarSolicitudesPorRol(rol, idUsuario).subscribe({
+  this.pazSalvoService.listarSolicitudesPorRol(rol, idUsuario)
+    .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
+    .subscribe({
     next: (data) => {
       console.log('📡 Respuesta del backend (raw):', data);
       console.log('📡 Tipo de respuesta:', typeof data);
@@ -217,7 +229,9 @@ listarSolicitudes() {
     console.log('📤 Iniciando proceso de envío de solicitud con NUEVO FLUJO...');
 
     // 🆕 NUEVO FLUJO: Paso 1: Subir documentos SIN asociar a solicitud
-    this.fileUploadComponent.subirArchivosPendientes().subscribe({
+    this.fileUploadComponent.subirArchivosPendientes()
+      .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
+      .subscribe({
       next: (archivosSubidos) => {
         console.log('✅ Documentos subidos correctamente (sin asociar):', archivosSubidos);
 
@@ -237,7 +251,9 @@ listarSolicitudes() {
 
         console.log('📋 Creando solicitud (documentos se asocian automáticamente):', solicitud);
 
-        this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos).subscribe({
+        this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos)
+          .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
+          .subscribe({
           next: (resp) => {
             console.log('✅ Solicitud creada en backend:', resp);
             this.listarSolicitudes();

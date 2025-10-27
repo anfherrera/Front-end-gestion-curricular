@@ -1,5 +1,5 @@
 // src/app/layout/sidebar/sidebar.component.ts
-import { Component, EventEmitter, Output, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +15,7 @@ import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-sa
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush, // ✅ OnPush - menu items estáticos
   imports: [CommonModule, MatIconModule, MatButtonModule]
 })
 export class SidebarComponent implements OnChanges {
@@ -50,6 +51,11 @@ export class SidebarComponent implements OnChanges {
 
   ngOnChanges() {
     this.isSidebarOpen = this.isOpen;
+  }
+
+  // ✅ TrackBy para optimizar ngFor
+  trackByLabel(index: number, item: ConfigSidebarItem): string {
+    return item.label;
   }
 
   private mapBackendRoleToUserRole(backendRole: string | null | undefined): UserRole {
