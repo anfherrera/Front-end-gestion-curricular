@@ -86,7 +86,7 @@
       </mat-card-header>
       <mat-card-content>
         <div class="cursos-list" *ngIf="cursosActivos.length > 0; else noCursos">
-          <div *ngFor="let curso of cursosActivos.slice(0, 5)" class="curso-item">
+          <div *ngFor="let curso of cursosActivos.slice(0, 5); trackBy: trackByCursoId" class="curso-item">
             <div class="curso-info">
               <h4>{{ curso.nombre_curso }}</h4>
               <p>{{ curso.objMateria.nombre }} - {{ curso.objDocente.nombre }} {{ curso.objDocente.apellido }}</p>
@@ -138,7 +138,7 @@
       </mat-card-header>
       <mat-card-content>
         <div class="notificaciones-list" *ngIf="notificaciones.length > 0; else noNotificaciones">
-          <div *ngFor="let notificacion of notificaciones" 
+          <div *ngFor="let notificacion of notificaciones; trackBy: trackByNotificacionId" 
                class="notificacion-item"
                [class.no-leida]="!notificacion.leida"
                (click)="marcarNotificacionLeida(notificacion)">

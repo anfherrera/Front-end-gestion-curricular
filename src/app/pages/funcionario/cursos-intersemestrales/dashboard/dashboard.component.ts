@@ -62,6 +62,8 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    // ✅ Limpiar cache al destruir componente
+    this.fechasFormateadas.clear();
   }
 
   private cargarDatos(): void {
@@ -142,12 +144,19 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return '#00138C';
   }
 
+  // ✅ Cachear para no recalcular en cada detección de cambios
+  private fechasFormateadas = new Map<string, string>();
+
   formatearFecha(fecha: Date | string): string {
-    return new Date(fecha).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    const key = fecha.toString();
+    if (!this.fechasFormateadas.has(key)) {
+      this.fechasFormateadas.set(key, new Date(fecha).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }));
+    }
+    return this.fechasFormateadas.get(key)!;
   }
 
   marcarNotificacionLeida(notificacion: Notificacion): void {
@@ -173,5 +182,14 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
 
   getIconoEstado(estado: string | undefined): string {
     return this.cursoEstadosService.getIconoEstado(estado || 'Borrador');
+  }
+
+  // ✅ TrackBy functions para optimizar ngFor
+  trackByCursoId(index: number, curso: CursoOfertadoVerano): number {
+    return curso.id_curso;
+  }
+
+  trackByNotificacionId(index: number, notificacion: Notificacion): number {
+    return notificacion.id || notificacion.id_notificacion || index;
   }
 }

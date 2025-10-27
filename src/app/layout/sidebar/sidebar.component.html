@@ -1,7 +1,7 @@
 <!-- sidebar.component.html -->
 <nav [class.closed]="!isSidebarOpen" class="sidebar">
   <ul>
-    <li *ngFor="let item of menuItems">
+    <li *ngFor="let item of menuItems; trackBy: trackByLabel">
       <!-- Separador visual -->
       <div *ngIf="item.action === 'separator'" class="sidebar-separator">
         <hr>

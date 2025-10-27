@@ -554,15 +554,17 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Crea los gráficos del dashboard con datos reales
+   * ✅ OPTIMIZADO: Usa requestAnimationFrame para mejor rendimiento
    */
   private async crearCharts(): Promise<void> {
     if (!this.resumenCompleto) return;
 
-    setTimeout(async () => {
+    // ✅ Usar requestAnimationFrame en lugar de setTimeout
+    requestAnimationFrame(async () => {
       await this.crearChartProcesos();
       await this.crearChartTendencia();
       this.crearChartDistribucion();
-    }, 100);
+    });
   }
 
   /**
@@ -734,9 +736,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         animation: {
-          animateRotate: true,
-          animateScale: true,
-          duration: 1000
+          animateRotate: false, // ✅ Desactivado para mejorar rendimiento
+          animateScale: false,
+          duration: 0 // ✅ Sin animación = más rápido
         }
       }
     };
@@ -814,9 +816,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         animation: {
-          animateRotate: true,
-          animateScale: true,
-          duration: 1000
+          animateRotate: false, // ✅ Desactivado para mejorar rendimiento
+          animateScale: false,
+          duration: 0 // ✅ Sin animación = más rápido
         }
       }
     };
@@ -956,8 +958,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           intersect: false
         },
         animation: {
-          duration: 1000,
-          easing: 'easeInOutQuart'
+          duration: 0, // ✅ Sin animación para mejor rendimiento
+          easing: 'linear'
         }
       }
     };
@@ -1103,8 +1105,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           intersect: false
         },
         animation: {
-          duration: 1000,
-          easing: 'easeInOutQuart'
+          duration: 0, // ✅ Sin animación para mejor rendimiento
+          easing: 'linear'
         }
       }
     };
@@ -1208,8 +1210,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         animation: {
-          duration: 1000,
-          easing: 'easeInOutQuart'
+          duration: 0, // ✅ Sin animación para mejor rendimiento
+          easing: 'linear'
         }
       }
     };
@@ -1426,6 +1428,19 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       this.loading = false;
       this.mostrarError('Error al descargar el reporte PDF del Dashboard General');
     }
+  }
+
+  // ✅ TrackBy functions para optimizar ngFor
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  trackByProgramaId(index: number, programa: any): number {
+    return programa.id || index;
+  }
+
+  trackByKpiTitulo(index: number, kpi: any): string {
+    return kpi.titulo || index.toString();
   }
 
   /**

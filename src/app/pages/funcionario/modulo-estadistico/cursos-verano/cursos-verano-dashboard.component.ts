@@ -117,20 +117,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       this.cargarDatos();
     }, 100);
     
-    // Actualizar cada 30 segundos
-    this.intervalId = setInterval(() => {
-      this.cargarDatos();
-    }, 30000);
+    // ✅ OPTIMIZACIÓN: Eliminado setInterval (refresco manual solamente)
+    // El usuario puede refrescar con el botón "Actualizar datos"
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.destruirGraficos();
-    
-    // Limpiar el intervalo de actualización automática
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+    // ✅ intervalId eliminado - ya no se usa
   }
 
   // ===== MÉTODOS DE CARGA DE DATOS =====

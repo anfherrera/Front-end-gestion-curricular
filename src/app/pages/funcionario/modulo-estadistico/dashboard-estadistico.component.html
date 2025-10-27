@@ -44,7 +44,7 @@
               <mat-label>Proceso</mat-label>
               <mat-select formControlName="proceso">
                 <mat-option value="">Todos los procesos</mat-option>
-                <mat-option *ngFor="let proceso of procesosDisponibles" [value]="proceso">
+                <mat-option *ngFor="let proceso of procesosDisponibles; trackBy: trackByIndex" [value]="proceso">
                   {{ formatearNombreProceso(proceso) }}
                 </mat-option>
               </mat-select>
@@ -56,7 +56,7 @@
               <mat-label>Programa</mat-label>
               <mat-select formControlName="programa">
                 <mat-option value="">Todos los programas</mat-option>
-                <mat-option *ngFor="let programa of programasDisponibles" [value]="programa.id">
+                <mat-option *ngFor="let programa of programasDisponibles; trackBy: trackByProgramaId" [value]="programa.id">
                   {{ programa.nombre }}
                 </mat-option>
               </mat-select>
@@ -123,7 +123,7 @@
         Indicadores Clave (KPIs)
       </h2>
       <div class="kpis-grid">
-        <mat-card *ngFor="let kpi of kpis" class="kpi-card" [class]="'kpi-' + kpi.color" [class.loading]="kpi.titulo === 'Estudiantes' && loadingEstudiantes">
+        <mat-card *ngFor="let kpi of kpis; trackBy: trackByKpiTitulo" class="kpi-card" [class]="'kpi-' + kpi.color" [class.loading]="kpi.titulo === 'Estudiantes' && loadingEstudiantes">
           <mat-card-content>
             <div class="kpi-content">
               <div class="kpi-icon">
