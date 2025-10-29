@@ -46,7 +46,7 @@
 
   <!-- Lista de estudiantes elegibles -->
   <div *ngIf="cursoSeleccionado && !cargando" class="inscripciones-section">
-    <h3>👥 Estudiantes Elegibles para Inscripción en {{ cursoSeleccionado.nombre_curso }}</h3>
+    <h3>👥 Estudiantes Elegibles para Inscripción en {{ cursoSeleccionado.nombre_curso | utfFix }}</h3>
     
     <div *ngIf="estudiantesFiltrados.length === 0" class="no-data">
       <mat-icon>info</mat-icon>
@@ -62,7 +62,7 @@
           <th mat-header-cell *matHeaderCellDef>Estudiante</th>
           <td mat-cell *matCellDef="let estudiante">
             <div class="estudiante-info">
-              <strong>{{ estudiante.nombre_completo }}</strong>
+              <strong>{{ estudiante.nombre_completo | utfFix }}</strong>
               <small>{{ estudiante.codigo }}</small>
               <small>Tipo: {{ estudiante.tipo_solicitud }}</small>
             </div>

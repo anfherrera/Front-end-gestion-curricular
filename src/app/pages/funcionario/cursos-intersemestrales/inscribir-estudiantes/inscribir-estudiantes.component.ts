@@ -18,6 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
 import { CursosIntersemestralesService, CursoOfertadoVerano, Inscripcion, EstudianteElegible, AceptarInscripcionResponse, RechazarInscripcionResponse, DebugInscripcionResponse } from '../../../../core/services/cursos-intersemestrales.service';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
+import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -37,7 +38,8 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
     MatChipsModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    CardContainerComponent
+    CardContainerComponent,
+    UtfFixPipe
   ],
   templateUrl: './inscribir-estudiantes.component.html',
   styleUrls: ['./inscribir-estudiantes.component.css']
@@ -421,7 +423,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
-    MatIconModule
+    MatIconModule,
+    UtfFixPipe
   ],
   template: `
     <!-- Dialog simplificado - Solo solicitud y comprobante -->
@@ -433,7 +436,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         <h3>👤 Información del Estudiante</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Nombre Completo:</strong> {{ data.estudiante.nombre_completo }}
+            <strong>Nombre Completo:</strong> {{ data.estudiante.nombre_completo | utfFix }}
           </div>
           <div class="info-item">
             <strong>Código:</strong> {{ data.estudiante.codigo }}
@@ -756,7 +759,8 @@ export class DetallesInscripcionDialogComponent {
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    UtfFixPipe
   ],
   template: `
     <div class="confirmacion-dialog">
@@ -771,7 +775,7 @@ export class DetallesInscripcionDialogComponent {
             <mat-icon class="info-icon">person</mat-icon>
             <div class="info-text">
               <strong>Estudiante:</strong>
-              <span>{{ data.estudiante.nombre_completo }}</span>
+              <span>{{ data.estudiante.nombre_completo | utfFix }}</span>
             </div>
           </div>
           
@@ -787,7 +791,7 @@ export class DetallesInscripcionDialogComponent {
             <mat-icon class="info-icon">book</mat-icon>
             <div class="info-text">
               <strong>Curso:</strong>
-              <span>{{ data.curso.nombre }}</span>
+              <span>{{ data.curso.nombre | utfFix }}</span>
             </div>
           </div>
         </div>

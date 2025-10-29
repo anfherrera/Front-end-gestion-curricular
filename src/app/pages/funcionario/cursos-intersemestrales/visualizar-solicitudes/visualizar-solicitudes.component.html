@@ -6,7 +6,7 @@
       <mat-label>Filtrar por materia</mat-label>
       <mat-select formControlName="materia">
         <mat-option *ngFor="let materia of materias" [value]="materia.id_materia">
-          {{ materia.nombre }}
+          {{ materia.nombre | utfFix }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -44,7 +44,7 @@
         <th mat-header-cell *matHeaderCellDef>Nombre Completo</th>
         <td mat-cell *matCellDef="let solicitud">
           <div class="estudiante-info">
-            <strong>{{ solicitud.nombreCompleto }}</strong>
+            <strong>{{ solicitud.nombreCompleto | utfFix }}</strong>
           </div>
         </td>
       </ng-container>
@@ -62,7 +62,7 @@
         <th mat-header-cell *matHeaderCellDef>Curso</th>
         <td mat-cell *matCellDef="let solicitud">
           <div class="curso-info">
-            <strong>{{ solicitud.curso }}</strong>
+            <strong>{{ solicitud.curso | utfFix }}</strong>
           </div>
         </td>
       </ng-container>
@@ -79,7 +79,7 @@
         <ng-container matColumnDef="motivo">
           <th mat-header-cell *matHeaderCellDef>Motivo de la Solicitud</th>
           <td mat-cell *matCellDef="let solicitud">
-            <span class="motivo-text">{{ solicitud.motivoSolicitud }}</span>
+            <span class="motivo-text">{{ solicitud.motivoSolicitud | utfFix }}</span>
           </td>
         </ng-container>
 

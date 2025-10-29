@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursosIntersemestralesService, SolicitudCursoVerano, Materia, UsuarioSolicitud } from '../../../../core/services/cursos-intersemestrales.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
+import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 
 @Component({
   selector: 'app-visualizar-solicitudes',
@@ -12,7 +13,8 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
     CommonModule,
     ReactiveFormsModule,
     CardContainerComponent,
-    ...MATERIAL_IMPORTS
+    ...MATERIAL_IMPORTS,
+    UtfFixPipe
   ],
   templateUrl: './visualizar-solicitudes.component.html',
   styleUrls: ['./visualizar-solicitudes.component.css']
