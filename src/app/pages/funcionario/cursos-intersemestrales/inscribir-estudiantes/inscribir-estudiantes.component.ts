@@ -195,12 +195,19 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           console.log('🔍 Tiene inscripción formal:', estudiantes[0].tiene_inscripcion_formal);
         }
         
-        this.estudiantesElegibles = estudiantes;
-        this.estudiantesFiltrados = this.estudiantesElegibles;
+        // Normalizar estado: usar estado_inscripcion o, si no viene, estado_actual
+        const normalizados = estudiantes.map((e: any) => ({
+          ...e,
+          estado_inscripcion: e.estado_inscripcion || e.estado_actual || null
+        }));
+        
+        this.estudiantesElegibles = normalizados;
+        // Mostrar como elegibles únicamente los que no están rechazados
+        this.estudiantesFiltrados = this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado');
         console.log('✅ Estudiantes elegibles cargados para curso', cursoId, ':', this.estudiantesElegibles);
         
         // Si no hay estudiantes elegibles, mostrar mensaje informativo
-        if (this.estudiantesElegibles.length === 0) {
+        if (this.estudiantesFiltrados.length === 0) {
           console.log('⚠️ No hay estudiantes elegibles - todos deben tener preinscripción aprobada y pago validado');
           this.estudiantesFiltrados = [];
           
@@ -347,8 +354,10 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       next: (response) => {
         console.log('❌ Inscripción rechazada:', response);
         alert('Inscripción rechazada exitosamente');
-        // Recargar la lista de estudiantes y estadísticas
+        
+        // 🔄 REFRESCAR LA LISTA DESPUÉS DEL RECHAZO EXITOSO
         if (this.cursoSeleccionado) {
+          console.log('🔄 Refrescando lista de estudiantes después del rechazo...');
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
           this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
