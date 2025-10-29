@@ -1054,7 +1054,12 @@ export class CursosIntersemestralesService {
     console.log(`🌐 Llamando a API: GET ${endpoint}`);
     console.log(`🔍 ID de inscripción: ${idInscripcion}`);
     
-    return this.http.get(endpoint, { responseType: 'blob' });
+    return this.http.get(endpoint, { 
+      responseType: 'blob',
+      headers: {
+        'Accept': 'application/pdf'
+      }
+    });
   }
 
   // 🆕 NUEVO: Obtener estadísticas del curso

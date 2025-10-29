@@ -198,6 +198,14 @@ export class ApiEndpoints {
     UPLOAD: `${this.BASE_URL}/documentos/upload`
   };
 
+  // ===== ARCHIVOS =====
+  static readonly ARCHIVOS = {
+    BASE: `${this.BASE_URL}/archivos`,
+    SUBIR_PDF: `${this.BASE_URL}/archivos/subir/pdf`,
+    DESCARGAR_PDF: (filename: string) => `${this.BASE_URL}/archivos/descargar/pdf?filename=${encodeURIComponent(filename)}`,
+    DESCARGAR_PDF_POR_INSCRIPCION: (inscripcionId: number) => `${this.BASE_URL}/archivos/descargar/pdf/inscripcion/${inscripcionId}`
+  };
+
   // ===== ROLES =====
   static readonly ROLES = {
     BASE: `${this.BASE_URL}/roles`,
