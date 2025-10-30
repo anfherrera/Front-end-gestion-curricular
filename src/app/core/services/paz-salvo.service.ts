@@ -235,6 +235,49 @@ export class PazSalvoService {
   }
 
   /**
+   * Subir oficio PDF asociado a una solicitud (Secretaría)
+   * POST /api/solicitudes-pazysalvo/subir-oficio-pdf/{idSolicitud}
+   */
+  subirOficioPdf(idSolicitud: number, archivo: File): Observable<any> {
+    const url = `${this.apiUrl}/subir-oficio-pdf/${idSolicitud}`;
+    const formData = new FormData();
+    formData.append('file', archivo);
+
+    return this.http.post(url, formData);
+  }
+
+  /**
+   * Descargar primer oficio/resolución detectado por solicitud (Funcionario)
+   * GET /api/solicitudes-pazysalvo/descargarOficio/{idSolicitud}
+   */
+  descargarOficioPorSolicitud(idSolicitud: number): Observable<Blob> {
+    const url = `${this.apiUrl}/descargarOficio/${idSolicitud}`;
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      switchMap((resp: any) => {
+        const parsed = this.parseFilenameFromHeaders(resp);
+        if (parsed) {
+          const blob: Blob = resp.body as Blob;
+          (blob as any).filename = parsed;
+          return new Observable<Blob>(observer => { observer.next(blob); observer.complete(); });
+        }
+        // Fallback: obtener nombre del primer oficio de la solicitud
+        return this.obtenerOficios(idSolicitud).pipe(
+          map((oficios: any[]) => {
+            const candidato = oficios?.[0]?.nombreArchivo || oficios?.[0]?.nombre || `oficio_${idSolicitud}.pdf`;
+            const blob: Blob = resp.body as Blob;
+            (blob as any).filename = candidato;
+            return blob;
+          })
+        );
+      })
+    );
+  }
+
+  /**
    * Subir documento SIN asociar a una solicitud específica (nuevo flujo)
    * Los documentos se suben ANTES de crear la solicitud
    */
@@ -386,8 +429,37 @@ export class PazSalvoService {
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
-      responseType: 'blob'
-    });
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map((resp: any) => {
+        const filename = this.parseFilenameFromHeaders(resp) || nombreArchivo || 'oficio.pdf';
+        const blob: Blob = resp.body as Blob;
+        (blob as any).filename = filename;
+        return blob;
+      })
+    );
+  }
+
+  /**
+   * Alias más semántico para descargar por nombre de archivo
+   */
+  descargarPorNombre(filename: string): Observable<Blob> {
+    return this.descargarArchivo(filename);
+  }
+
+  private parseFilenameFromHeaders(resp: any): string | null {
+    try {
+      const h = resp?.headers;
+      const cd: string = h?.get?.('Content-Disposition') || h?.get?.('content-disposition') || '';
+      if (!cd) return null;
+      const match = cd.match(/filename\*=UTF-8''([^;]+)|filename=\"?([^\";]+)\"?/i);
+      const raw = match?.[1] || match?.[2];
+      if (!raw) return null;
+      return decodeURIComponent(raw);
+    } catch {
+      return null;
+    }
   }
 
   /**

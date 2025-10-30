@@ -382,7 +382,7 @@
                     <div class="demanda-actual">Actual: {{ programa.demandaActual }}</div>
                     <div class="demanda-estimada">Estimada: {{ programa.demandaEstimada }}</div>
                     <div class="variacion">Variación: {{ programa.variacion }}</div>
-                    <div class="tendencia" [ngClass]="'tendencia-' + programa.tendencia?.toLowerCase()">{{ programa.tendencia }}</div>
+                    <div class="tendencia" [ngClass]="'tendencia-' + programa.tendencia.toLowerCase()">{{ programa.tendencia }}</div>
                   </div>
                 </div>
                 <div *ngIf="!data || !data.predicciones || !data.predicciones.todasLasPrediccionesPorPrograma || data.predicciones.todasLasPrediccionesPorPrograma.length === 0" class="no-data">

@@ -11,7 +11,6 @@ import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
-import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 
 @Component({
   selector: 'app-secretaria-paz-salvo',
@@ -24,8 +23,7 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
     MatProgressBarModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    DocumentGeneratorComponent,
-    DocumentationViewerComponent
+    DocumentGeneratorComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
@@ -177,10 +175,10 @@ export class SecretariaPazSalvoComponent implements OnInit {
   cargarDocumentos(idSolicitud: number): void {
     console.log('🔍 [DEBUG] Iniciando carga de documentos para solicitud (secretaria):', idSolicitud);
     
-    const endpoint = `/api/solicitudes-pazysalvo/obtenerDocumentos/${idSolicitud}`;
+    const endpoint = `/api/solicitudes-pazysalvo/obtenerOficios/${idSolicitud}`;
     console.log('🔍 [DEBUG] Endpoint para secretaria:', endpoint);
     
-    this.pazSalvoService.obtenerDocumentos(idSolicitud).subscribe({
+    this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
       next: (documentos: any[]) => {
         console.log('✅ [DEBUG] Documentos recibidos del backend (secretaria):', documentos);
         console.log('✅ [DEBUG] Cantidad de documentos:', documentos.length);
@@ -293,8 +291,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
     this.subiendoPDF = true;
     console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
 
-    // Usar el servicio para subir el PDF con idSolicitud
-    this.pazSalvoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+    // Usar el endpoint específico de Paz y Salvo para subir el oficio PDF
+    this.pazSalvoService.subirOficioPdf(this.selectedSolicitud.id_solicitud, this.archivoPDF).subscribe({
       next: (response) => {
         console.log('✅ Archivo PDF subido exitosamente:', response);
         this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
@@ -360,8 +358,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
     console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
     console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
-    // Usar el servicio para subir el PDF con idSolicitud
-    this.pazSalvoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+    // Usar el endpoint específico de Paz y Salvo para subir el oficio PDF
+    this.pazSalvoService.subirOficioPdf(this.selectedSolicitud.id_solicitud, this.archivoPDF).subscribe({
       next: (response) => {
         console.log('✅ Archivo PDF subido exitosamente:', response);
         this.subiendoPDF = false;
