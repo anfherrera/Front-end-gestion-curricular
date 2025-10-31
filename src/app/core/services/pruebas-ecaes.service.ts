@@ -180,6 +180,24 @@ export class PruebasEcaesService {
   }
 
   /**
+   * Buscar fechas ECAES por período académico
+   */
+  buscarFechasPorPeriodo(periodoAcademico: string): Observable<FechaEcaes> {
+    return this.http.get<FechaEcaes>(`${this.apiUrl}/buscarFechasPorPeriodo/${encodeURIComponent(periodoAcademico)}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Actualizar fechas ECAES existentes
+   */
+  actualizarFechasEcaes(fechasData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/actualizarFechasEcaes`, fechasData, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
    * Listar solicitudes ECAES para funcionario
    */
   listarSolicitudesFuncionario(): Observable<SolicitudEcaesResponse[]> {

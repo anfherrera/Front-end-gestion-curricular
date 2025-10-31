@@ -171,9 +171,32 @@ export class PruebasEcaesComponent implements OnInit {
     ) || null;
   }
 
+  private parseFechaSinZona(fecha: string): Date | null {
+    if (!fecha) {
+      return null;
+    }
+
+    const soloFecha = fecha.includes('T') ? fecha.split('T')[0] : fecha;
+    const partes = soloFecha.split('-');
+
+    if (partes.length !== 3) {
+      return new Date(fecha);
+    }
+
+    const year = Number(partes[0]);
+    const month = Number(partes[1]) - 1; // JS months 0-based
+    const day = Number(partes[2]);
+
+    return new Date(year, month, day);
+  }
+
   getFechaFormateada(fecha: string): string {
-    if (!fecha) return '';
-    const fechaObj = new Date(fecha);
+    const fechaObj = this.parseFechaSinZona(fecha);
+
+    if (!fechaObj || isNaN(fechaObj.getTime())) {
+      return '';
+    }
+
     return fechaObj.toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',

@@ -46,6 +46,10 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
   // Formulario para publicar fechas
   fechasForm: FormGroup;
   publicandoFechas: boolean = false;
+  esModoEdicion: boolean = false;
+  idFechaEcaesActual: number | null = null;
+  periodoAnterior: string = '';
+  cargandoFechas: boolean = false;
 
   // Datos para las secciones
   solicitudesPendientes: any[] = [];
@@ -76,6 +80,18 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos();
+    
+    // Suscribirse a cambios en el período académico para detectar fechas existentes
+    this.fechasForm.get('periodoAcademico')?.valueChanges.subscribe(periodo => {
+      // Solo buscar si el período realmente cambió y no estamos cargando fechas
+      if (periodo && periodo !== this.periodoAnterior && !this.cargandoFechas) {
+        this.periodoAnterior = periodo;
+        this.buscarFechasExistentes(periodo);
+      } else if (!periodo) {
+        this.periodoAnterior = '';
+        this.limpiarFormularioFechas();
+      }
+    });
   }
 
   cargarDatos(): void {
@@ -173,6 +189,99 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     return 'Pendiente';
   }
 
+  /**
+   * Buscar fechas existentes cuando se selecciona un período
+   */
+  buscarFechasExistentes(periodoAcademico: string): void {
+    this.cargandoFechas = true;
+    this.pruebasEcaesService.buscarFechasPorPeriodo(periodoAcademico).subscribe({
+      next: (fechas) => {
+        console.log('📅 Fechas encontradas para período:', periodoAcademico, fechas);
+        // Cargar fechas en el formulario
+        this.cargarFechasEnFormulario(fechas);
+        this.esModoEdicion = true;
+        this.idFechaEcaesActual = fechas.idFechaEcaes;
+        this.cargandoFechas = false;
+        this.snackBar.open('Fechas existentes cargadas. Puede editarlas.', 'Cerrar', { duration: 3000 });
+      },
+      error: (error) => {
+        this.cargandoFechas = false;
+        if (error.status === 404) {
+          console.log('📅 No hay fechas existentes para el período:', periodoAcademico);
+          // No hay fechas, modo creación
+          this.esModoEdicion = false;
+          this.idFechaEcaesActual = null;
+          // Limpiar solo las fechas, mantener el período
+          this.limpiarSoloFechas();
+        } else {
+          console.error('❌ Error al buscar fechas:', error);
+          this.snackBar.open('Error al buscar fechas existentes', 'Cerrar', { duration: 3000 });
+        }
+      }
+    });
+  }
+
+  /**
+   * Cargar fechas en el formulario
+   */
+  cargarFechasEnFormulario(fechas: FechaEcaes): void {
+    // Convertir strings de fecha (YYYY-MM-DD) a objetos Date
+    // Usar una forma que funcione mejor con Angular Material DatePicker
+    const convertirFecha = (fechaStr: string | null): Date | null => {
+      if (!fechaStr) return null;
+      // Parsear la fecha manualmente para evitar problemas de timezone
+      const partes = fechaStr.split('-');
+      if (partes.length === 3) {
+        const año = parseInt(partes[0], 10);
+        const mes = parseInt(partes[1], 10) - 1; // Los meses en JS son 0-indexed
+        const dia = parseInt(partes[2], 10);
+        return new Date(año, mes, dia);
+      }
+      return new Date(fechaStr);
+    };
+
+    // Usar setTimeout para asegurar que el patchValue no interfiera con otros eventos
+    setTimeout(() => {
+      this.fechasForm.patchValue({
+        inscripcion_est_by_facultad: convertirFecha(fechas.inscripcion_est_by_facultad),
+        registro_recaudo_ordinario: convertirFecha(fechas.registro_recaudo_ordinario),
+        registro_recaudo_extraordinario: convertirFecha(fechas.registro_recaudo_extraordinario),
+        citacion: convertirFecha(fechas.citacion),
+        aplicacion: convertirFecha(fechas.aplicacion),
+        resultados_individuales: convertirFecha(fechas.resultados_individuales)
+      }, { emitEvent: false }); // No emitir eventos para evitar loops
+    }, 100);
+  }
+
+  /**
+   * Limpiar solo los campos de fechas, manteniendo el período
+   */
+  limpiarSoloFechas(): void {
+    const periodoAcademico = this.fechasForm.get('periodoAcademico')?.value;
+    this.fechasForm.patchValue({
+      inscripcion_est_by_facultad: null,
+      registro_recaudo_ordinario: null,
+      registro_recaudo_extraordinario: null,
+      citacion: null,
+      aplicacion: null,
+      resultados_individuales: null
+    }, { emitEvent: false }); // No emitir eventos
+    if (periodoAcademico) {
+      this.fechasForm.get('periodoAcademico')?.setValue(periodoAcademico, { emitEvent: false });
+    }
+  }
+
+  /**
+   * Formatear fecha a YYYY-MM-DD para evitar problemas de timezone
+   */
+  private formatearFechaParaBackend(fecha: Date): string {
+    if (!fecha) return '';
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   publicarFechas(): void {
     if (this.fechasForm.invalid) {
       this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', { duration: 3000 });
@@ -182,36 +291,71 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     this.publicandoFechas = true;
     const formValue = this.fechasForm.value;
 
-    // Convertir fechas a formato ISO
-    const fechasData = {
+    // Preparar datos: convertir fechas a formato YYYY-MM-DD (sin timezone)
+    const fechasData: any = {
       periodoAcademico: formValue.periodoAcademico,
-      inscripcion_est_by_facultad: formValue.inscripcion_est_by_facultad.toISOString(),
-      registro_recaudo_ordinario: formValue.registro_recaudo_ordinario.toISOString(),
-      registro_recaudo_extraordinario: formValue.registro_recaudo_extraordinario.toISOString(),
-      citacion: formValue.citacion.toISOString(),
-      aplicacion: formValue.aplicacion.toISOString(),
-      resultados_individuales: formValue.resultados_individuales.toISOString()
+      inscripcion_est_by_facultad: this.formatearFechaParaBackend(formValue.inscripcion_est_by_facultad),
+      registro_recaudo_ordinario: this.formatearFechaParaBackend(formValue.registro_recaudo_ordinario),
+      registro_recaudo_extraordinario: this.formatearFechaParaBackend(formValue.registro_recaudo_extraordinario),
+      citacion: this.formatearFechaParaBackend(formValue.citacion),
+      aplicacion: this.formatearFechaParaBackend(formValue.aplicacion),
+      resultados_individuales: this.formatearFechaParaBackend(formValue.resultados_individuales)
     };
 
-    console.log('📅 Publicando fechas ECAES:', fechasData);
+    // Si estamos en modo edición, incluir el ID
+    if (this.esModoEdicion && this.idFechaEcaesActual) {
+      fechasData.idFechaEcaes = this.idFechaEcaesActual;
+    }
 
-    this.pruebasEcaesService.publicarFechasEcaes(fechasData).subscribe({
+    console.log('📅 ' + (this.esModoEdicion ? 'Actualizando' : 'Publicando') + ' fechas ECAES:', fechasData);
+
+    const operacion = this.esModoEdicion 
+      ? this.pruebasEcaesService.actualizarFechasEcaes(fechasData)
+      : this.pruebasEcaesService.publicarFechasEcaes(fechasData);
+
+    operacion.subscribe({
       next: (response) => {
-        console.log('✅ Fechas publicadas exitosamente:', response);
-        this.snackBar.open('Fechas publicadas exitosamente ✅', 'Cerrar', { duration: 3000 });
-        this.limpiarFormularioFechas();
+        console.log('✅ Fechas ' + (this.esModoEdicion ? 'actualizadas' : 'publicadas') + ' exitosamente:', response);
+        this.snackBar.open(
+          `Fechas ${this.esModoEdicion ? 'actualizadas' : 'publicadas'} exitosamente ✅`, 
+          'Cerrar', 
+          { duration: 3000 }
+        );
+        
+        // Mantener el modo de edición si se actualizó
+        if (this.esModoEdicion && response.idFechaEcaes) {
+          this.idFechaEcaesActual = response.idFechaEcaes;
+        } else {
+          // Si se creó, cambiar a modo edición con el nuevo ID
+          if (response.idFechaEcaes) {
+            this.esModoEdicion = true;
+            this.idFechaEcaesActual = response.idFechaEcaes;
+          }
+        }
+        
+        this.publicandoFechas = false;
+        
+        // Limpiar solo los campos de fechas, manteniendo el período académico
+        this.limpiarSoloFechas();
       },
       error: (error) => {
-        console.error('❌ Error al publicar fechas:', error);
-        this.snackBar.open(`Error al publicar las fechas: ${error.error?.message || error.message}`, 'Cerrar', { duration: 5000 });
+        console.error('❌ Error al ' + (this.esModoEdicion ? 'actualizar' : 'publicar') + ' fechas:', error);
+        this.snackBar.open(
+          `Error al ${this.esModoEdicion ? 'actualizar' : 'publicar'} las fechas: ${error.error?.message || error.message}`, 
+          'Cerrar', 
+          { duration: 5000 }
+        );
         this.publicandoFechas = false;
       }
     });
   }
 
   limpiarFormularioFechas(): void {
-    this.fechasForm.reset();
+    this.fechasForm.reset({ emitEvent: false });
     this.publicandoFechas = false;
+    this.esModoEdicion = false;
+    this.idFechaEcaesActual = null;
+    this.periodoAnterior = '';
   }
 
   esCampoInvalido(campo: string): boolean {

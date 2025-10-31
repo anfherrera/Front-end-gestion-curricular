@@ -103,7 +103,7 @@
 
       </div>
 
-      <!-- Botón de publicación -->
+      <!-- Botón de publicación/actualización -->
       <div class="boton-publicacion">
         <button
           mat-raised-button
@@ -111,9 +111,12 @@
           (click)="publicarFechas()"
           [disabled]="publicandoFechas || fechasForm.invalid"
           class="btn-publicar">
-          <mat-icon *ngIf="!publicandoFechas">publish</mat-icon>
+          <mat-icon *ngIf="!publicandoFechas">{{ esModoEdicion ? 'save' : 'publish' }}</mat-icon>
           <mat-icon *ngIf="publicandoFechas" class="spinning">refresh</mat-icon>
-          {{ publicandoFechas ? 'Publicando...' : 'Publicar' }}
+          {{ publicandoFechas 
+            ? (esModoEdicion ? 'Actualizando...' : 'Publicando...') 
+            : (esModoEdicion ? 'Actualizar Fechas' : 'Publicar Fechas') 
+          }}
         </button>
       </div>
 
