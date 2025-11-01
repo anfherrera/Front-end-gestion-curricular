@@ -183,16 +183,24 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     });
 
     it('PZS-010: getCoordinatorRequests debe obtener solicitudes de coordinador', (done) => {
-      service.getCoordinatorRequests().subscribe(() => done());
+      service.getCoordinatorRequests().subscribe((solicitudes) => {
+        expect(solicitudes).toEqual([]);
+        done();
+      });
       
       const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Coordinador`);
+      expect(req.request.method).toBe('GET');
       req.flush([]);
     });
 
     it('PZS-011: getSecretariaRequests debe obtener solicitudes de secretaría', (done) => {
-      service.getSecretariaRequests().subscribe(() => done());
+      service.getSecretariaRequests().subscribe((solicitudes) => {
+        expect(solicitudes).toEqual([]);
+        done();
+      });
       
       const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Secretaria`);
+      expect(req.request.method).toBe('GET');
       req.flush([]);
     });
   });
@@ -496,6 +504,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     });
 
     it('PZS-034: Debe manejar error 500 del servidor', (done) => {
+      authService.getUsuario.and.returnValue(mockUsuario);
       service.sendRequest(1, []).subscribe({
         error: (error) => {
           expect(error.status).toBe(500);
@@ -530,9 +539,13 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     });
 
     it('PZS-037: Debe obtener documentos como coordinador', (done) => {
-      service.obtenerDocumentosCoordinador(1).subscribe(() => done());
+      service.obtenerDocumentosCoordinador(1).subscribe((documentos) => {
+        expect(documentos).toEqual([]);
+        done();
+      });
       
       const req = httpMock.expectOne(`${apiUrl}/obtenerDocumentos/coordinador/1`);
+      expect(req.request.method).toBe('GET');
       req.flush([]);
     });
   });

@@ -74,7 +74,8 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
 
       const req = httpMock.expectOne((r) => r.url.includes('/crearSolicitud-PazYSalvo'));
       expect(req.request.method).toBe('POST');
-      expect(req.request.body.id_usuario).toBe(idUsuario);
+      expect(req.request.body.objUsuario.id_usuario).toBe(idUsuario);
+      expect(req.request.body.archivos).toEqual(archivos);
       req.flush({ id_solicitud: 1, mensaje: 'Solicitud creada' });
       tick();
     }));
@@ -140,7 +141,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/listarSolicitud-PazYSalvo/porRol'));
+      const req = httpMock.expectOne((r) => r.url.endsWith('/listarSolicitud-PazYSalvo/Funcionario'));
       req.flush(mockSolicitudes);
       tick();
     }));
@@ -166,7 +167,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/descargar-archivo'));
+      const req = httpMock.expectOne((r) => r.url.includes('/descargar-documento'));
       expect(req.request.responseType).toBe('blob');
       req.flush(mockPDF);
       tick();
@@ -193,7 +194,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/descargar-oficio'));
+      const req = httpMock.expectOne((r) => r.url.includes('/descargarOficio/'));
       req.flush(mockPDF);
       tick();
     }));
@@ -217,8 +218,9 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/aprobar-coordinador'));
-      expect(req.request.method).toBe('POST');
+      const req = httpMock.expectOne((r) => r.url.includes('/actualizarEstadoSolicitud'));
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body.nuevoEstado).toBe('APROBADA_COORDINADOR');
       req.flush({ mensaje: 'Aprobación exitosa', oficioGenerado: true });
       tick();
     }));

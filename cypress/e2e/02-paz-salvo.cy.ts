@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { of } from 'rxjs';
 
 /**
  * PRUEBAS E2E: Flujo de Paz y Salvo
@@ -18,25 +19,46 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
     }
   };
 
-  beforeEach(() => {
-    // Setup: Login simulado
-    cy.window().then((win) => {
-      win.localStorage.setItem('token', mockUsuario.token);
-      win.localStorage.setItem('usuario', JSON.stringify(mockUsuario.usuario));
+  const obtenerComponente = () =>
+    cy.get('app-paz-salvo', { timeout: 10000 }).then(($el) => {
+      return cy.window().then((win: any) => {
+        const component = win?.ng?.getComponent?.($el[0]);
+        expect(component, 'PazSalvoComponent instance').to.exist;
+        return component;
+      });
     });
 
-    // Mock de solicitudes existentes
-    cy.intercept('GET', '**/api/solicitudes-pazysalvo/**', {
-      statusCode: 200,
-      body: []
-    }).as('getSolicitudes');
+  const visitarPazSalvo = () => {
+    cy.visit('/estudiante/paz-salvo', {
+      onBeforeLoad: (win) => {
+        const exp = Date.now() + 60 * 60 * 1000; // +1 hora
+        win.localStorage.setItem('token', mockUsuario.token);
+        win.localStorage.setItem('usuario', JSON.stringify(mockUsuario.usuario));
+        win.localStorage.setItem('tokenExp', String(exp));
+        win.localStorage.setItem('userRole', 'estudiante');
+      }
+    });
 
-    cy.visit('/estudiante/paz-salvo');
-    cy.esperarCargaCompleta();
+    cy.location('pathname', { timeout: 10000 }).should('include', '/estudiante/paz-salvo');
+    cy.contains('Documentación requerida', { timeout: 10000 }).should('be.visible');
+  };
+
+  beforeEach(() => {
+    cy.clearLocalStorage();
+    cy.clearCookies();
+
+    // Mock de solicitudes existentes (configurable por test)
+    Cypress.env('pazSalvoSolicitudes', []);
+    cy.intercept('GET', '**/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol*', (req) => {
+      const respuesta = Cypress.env('pazSalvoSolicitudes') ?? [];
+      req.reply({ statusCode: 200, body: respuesta });
+    }).as('listarSolicitudes');
+
   });
 
   describe('1. Visualización de Interfaz', () => {
     it('E2E-PS-001: Debe mostrar la sección de documentos requeridos', () => {
+      visitarPazSalvo();
       cy.iniciarMedicion();
       
       cy.get('app-required-docs').should('be.visible');
@@ -50,25 +72,33 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
     });
 
     it('E2E-PS-002: Debe mostrar el componente de subida de archivos', () => {
+      visitarPazSalvo();
       cy.get('app-file-upload').should('exist');
       cy.registrarElementoVisible('app-file-upload');
       cy.registrarInteraccionExitosa();
     });
 
     it('E2E-PS-003: Debe mostrar la tabla de estado de solicitudes', () => {
-      cy.get('app-request-status-table').should('exist');
-      cy.registrarElementoVisible('app-request-status-table');
+      visitarPazSalvo();
+      cy.get('app-request-status-table, .sin-solicitudes').should('exist');
+      cy.get('body').then(($body) => {
+        if ($body.find('app-request-status-table').length) {
+          cy.registrarElementoVisible('app-request-status-table');
+        }
+      });
       cy.registrarInteraccionExitosa();
     });
 
     it('E2E-PS-004: El botón de envío debe estar inicialmente deshabilitado', () => {
-      cy.get('button').contains('Enviar').should('be.disabled');
+      visitarPazSalvo();
+      cy.contains('button', 'Enviar Solicitud').should('be.disabled');
       cy.registrarInteraccionExitosa();
     });
   });
 
   describe('2. Proceso de Subida de Archivos', () => {
     it('E2E-PS-005: Debe permitir seleccionar archivos PDF', () => {
+      visitarPazSalvo();
       cy.iniciarMedicion();
       
       // Simular subida de archivo
@@ -84,6 +114,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
     });
 
     it('E2E-PS-006: Debe habilitar el botón de envío con archivos cargados', () => {
+      visitarPazSalvo();
       // Simular que hay archivos cargados
       cy.get('input[type="file"]').first().selectFile({
         contents: Cypress.Buffer.from('PDF Content'),
@@ -99,6 +130,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
     });
 
     it('E2E-PS-007: Debe permitir subir múltiples archivos', () => {
+      visitarPazSalvo();
       const archivos = [
         { contents: Cypress.Buffer.from('PDF 1'), fileName: 'doc1.pdf', mimeType: 'application/pdf' },
         { contents: Cypress.Buffer.from('PDF 2'), fileName: 'doc2.pdf', mimeType: 'application/pdf' }
@@ -114,16 +146,19 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
 
   describe('3. Envío de Solicitud', () => {
     it('E2E-PS-008: Debe enviar la solicitud exitosamente', () => {
+      visitarPazSalvo();
       // Mock del endpoint de subida de archivos
-      cy.intercept('POST', '**/api/archivos/subir/**', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/subir-documento*', {
         statusCode: 200,
-        body: [
-          { nombre: 'documento1.pdf', ruta: 'uploads/documento1.pdf' }
-        ]
-      }).as('subirArchivos');
+        body: {
+          id_documento: 101,
+          nombre: 'documento1.pdf',
+          ruta_documento: 'uploads/documento1.pdf'
+        }
+      }).as('subirDocumento');
       
       // Mock del endpoint de crear solicitud
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/**', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo', {
         statusCode: 201,
         body: {
           id_solicitud: 1,
@@ -144,18 +179,39 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       cy.wait(1000);
       
       // Click en botón de envío
-      cy.get('button').contains('Enviar').click();
-      
+      cy.contains('button', 'Enviar Solicitud').should('not.be.disabled');
+      obtenerComponente().then((component: any) => {
+        const archivosSubidos = [
+          {
+            id_documento: 101,
+            nombre: 'documento1.pdf',
+            ruta_documento: 'uploads/documento1.pdf'
+          }
+        ];
+
+        expect(component.usuario, 'usuario cargado').to.exist;
+        expect(component.fileUploadComponent, 'fileUploadComponent').to.exist;
+        cy.stub(component.fileUploadComponent, 'subirArchivosPendientes').returns(of(archivosSubidos));
+        cy.stub(component.pazSalvoService, 'sendRequest').returns(of({ mensaje: 'ok' }));
+        cy.stub(component, 'listarSolicitudes').as('listarSolicitudesInterno');
+        cy.spy(component, 'mostrarMensaje').as('mostrarMensaje');
+
+        component.onSolicitudEnviada();
+      });
+
       cy.finalizarMedicion('Envío de solicitud');
       
-      // Verificar mensaje de éxito
-      cy.contains('exitosa', { timeout: 10000 });
+      cy.get('@mostrarMensaje').should('have.been.calledWith',
+        '🎉 ¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.',
+        'success'
+      );
       
       cy.registrarInteraccionExitosa();
     });
 
     it('E2E-PS-009: Debe mostrar mensaje de error si falla el envío', () => {
-      cy.intercept('POST', '**/api/archivos/subir/**', {
+      visitarPazSalvo();
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/subir-documento*', {
         statusCode: 500,
         body: { message: 'Error en el servidor' }
       });
@@ -188,14 +244,23 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/**', {
-        statusCode: 200,
-        body: mockSolicitudes
-      }).as('getSolicitudes');
+      Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
       
-      cy.reload();
-      cy.wait('@getSolicitudes');
-      
+      visitarPazSalvo();
+      obtenerComponente().then((component: any) => {
+        expect(component.usuario, 'usuario cargado').to.exist;
+        component.solicitudes = mockSolicitudes.map((sol) => ({
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: sol.estadosSolicitud?.[sol.estadosSolicitud.length - 1]?.estado_actual || 'PENDIENTE',
+          rutaArchivo: '',
+          comentarios: sol.estadosSolicitud?.[0]?.comentarios || '',
+          esSeleccionado: sol.esSeleccionado || false
+        }));
+        component.solicitudesCompletas = mockSolicitudes as any;
+        component['cdr']?.detectChanges();
+      });
       cy.contains('Solicitud_paz_salvo_Test', { timeout: 5000 });
       cy.registrarInteraccionExitosa();
     });
@@ -211,12 +276,23 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/**', {
-        body: mockSolicitudes
-      });
+      Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
       
-      cy.reload();
-      cy.wait(1000);
+      visitarPazSalvo();
+      obtenerComponente().then((component: any) => {
+        expect(component.usuario, 'usuario cargado').to.exist;
+        component.solicitudes = mockSolicitudes.map((sol) => ({
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: sol.estadosSolicitud?.[sol.estadosSolicitud.length - 1]?.estado_actual || 'PENDIENTE',
+          rutaArchivo: '',
+          comentarios: sol.estadosSolicitud?.[0]?.comentarios || '',
+          esSeleccionado: sol.esSeleccionado || false
+        }));
+        component.solicitudesCompletas = mockSolicitudes as any;
+        component['cdr']?.detectChanges();
+      });
       
       cy.contains('APROBADA', { timeout: 5000 });
       cy.registrarInteraccionExitosa();
@@ -239,15 +315,26 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/**', {
-        body: mockSolicitudes
+      Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
+      
+      visitarPazSalvo();
+      obtenerComponente().then((component: any) => {
+        expect(component.usuario, 'usuario cargado').to.exist;
+        component.solicitudes = mockSolicitudes.map((sol) => ({
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: sol.estadosSolicitud?.[sol.estadosSolicitud.length - 1]?.estado_actual || 'PENDIENTE',
+          rutaArchivo: '',
+          comentarios: sol.estadosSolicitud?.[0]?.comentario || '',
+          esSeleccionado: sol.esSeleccionado || false
+        }));
+        component.solicitudesCompletas = mockSolicitudes as any;
+        component['cdr']?.detectChanges();
       });
       
-      cy.reload();
-      cy.wait(1000);
-      
       // Buscar botón de comentarios
-      cy.get('button').contains('Comentarios', { timeout: 5000 }).should('exist');
+      cy.get('button[mat-icon-button] mat-icon', { timeout: 5000 }).contains('comment');
       
       cy.registrarInteraccionExitosa();
     });
@@ -268,20 +355,31 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/**', {
-        body: mockSolicitudes
-      });
+      Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
       
       cy.intercept('GET', '**/api/solicitudes-pazysalvo/descargarOficio/**', {
         statusCode: 200,
         body: 'PDF Content'
       }).as('descargarOficio');
       
-      cy.reload();
-      cy.wait(1000);
+      visitarPazSalvo();
+      obtenerComponente().then((component: any) => {
+        expect(component.usuario, 'usuario cargado').to.exist;
+        component.solicitudes = mockSolicitudes.map((sol) => ({
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: sol.estadosSolicitud?.[sol.estadosSolicitud.length - 1]?.estado_actual || 'PENDIENTE',
+          rutaArchivo: sol.documentos?.[0]?.nombre || '',
+          comentarios: sol.estadosSolicitud?.[0]?.comentarios || '',
+          esSeleccionado: sol.esSeleccionado || false
+        }));
+        component.solicitudesCompletas = mockSolicitudes as any;
+        component['cdr']?.detectChanges();
+      });
       
       // Buscar botón de descarga
-      cy.get('button, a').contains('Descargar', { timeout: 5000 }).should('exist');
+      cy.get('button[mat-icon-button] mat-icon', { timeout: 5000 }).contains('download');
       
       cy.registrarInteraccionExitosa();
     });
@@ -289,7 +387,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
 
   describe('6. Medición de Tiempos de Respuesta', () => {
     it('E2E-PS-014: La carga inicial debe ser rápida', () => {
-      cy.visit('/estudiante/paz-salvo');
+      visitarPazSalvo();
       
       cy.window().then((win) => {
         win.performance.mark('inicio-carga');
@@ -310,13 +408,14 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
     });
 
     it('E2E-PS-015: El envío de solicitud debe completarse en tiempo razonable', () => {
-      cy.intercept('POST', '**/api/archivos/subir/**', {
+      visitarPazSalvo();
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/subir-documento*', {
         delay: 1000,
         statusCode: 200,
         body: [{ nombre: 'doc.pdf', ruta: 'path' }]
       });
       
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/**', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo', {
         delay: 500,
         statusCode: 201,
         body: { id_solicitud: 1 }

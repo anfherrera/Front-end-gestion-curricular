@@ -2,6 +2,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ApiEndpoints } from '../../../core/utils/api-endpoints';
 
 /**
  * ===================================================
@@ -75,7 +76,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/estadisticas/globales'));
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES);
       req.flush(mockEstadisticas);
       tick();
     }));
@@ -105,7 +106,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/estadisticas/proceso/paz_salvo'));
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PROCESO('paz_salvo'));
       req.flush(mockEstadisticas);
       tick();
     }));
@@ -126,7 +127,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/estadisticas/proceso/cursos_intersemestrales'));
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PROCESO('cursos_intersemestrales'));
       req.flush(mockEstadisticas);
       tick();
     }));
@@ -159,7 +160,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes(`/estadisticas/programa/${programaId}`));
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PROGRAMA(programaId));
       req.flush(mockEstadisticas);
       tick();
     }));
@@ -174,7 +175,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
   describe('HU-04: Filtrar por Período', () => {
     it('ACEP-EST-005: DADO que quiero ver un período específico, CUANDO aplico filtro, ENTONCES veo solo ese período', fakeAsync(() => {
       // GIVEN: Quiero ver solo período 2025-01
-      const filtros = { periodo: '2025-01' };
+      const periodo = '2025-01';
       const mockEstadisticas: any = {
         totalSolicitudes: 100,
         solicitudesAprobadas: 80,
@@ -183,17 +184,13 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       };
 
       // WHEN: Aplico filtro de período
-      service.getEstadisticasGlobales(filtros as any).subscribe((stats) => {
+      service.getEstadisticasPorPeriodo(periodo).subscribe((stats) => {
         // THEN: Veo datos del período filtrado
         expect(stats.totalSolicitudes).toBe(100);
       });
       tick();
 
-      const req = httpMock.expectOne((r) => 
-        r.url.includes('/estadisticas/globales') &&
-        r.params.has('periodo')
-      );
-      expect(req.request.params.get('periodo')).toBe('2025-01');
+      const req = httpMock.expectOne((r) => r.url === `${ApiEndpoints.MODULO_ESTADISTICO.BASE}/periodo/${periodo}`);
       req.flush(mockEstadisticas);
       tick();
     }));
@@ -208,21 +205,20 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
   describe('HU-05: Total de Estudiantes', () => {
     it('ACEP-EST-006: DADO que quiero conocer población estudiantil, CUANDO consulto total, ENTONCES veo cantidad', fakeAsync(() => {
       // GIVEN: Hay estudiantes en el sistema
-      const mockTotal: any = {
-        total: 1500,
-        activos: 1400,
-        inactivos: 100
+      const mockTotal = {
+        totalEstudiantes: 1500,
+        fechaConsulta: new Date().toISOString(),
+        descripcion: 'Total actualizado'
       };
 
       // WHEN: Consulto total de estudiantes
-      service.getTotalEstudiantes().subscribe((total: any) => {
+      service.getTotalEstudiantes().subscribe((total) => {
         // THEN: Veo cantidad total
-        expect(total.total).toBe(1500);
-        expect(total.activos).toBe(1400);
+        expect(total.totalEstudiantes).toBe(1500);
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/estadisticas/estudiantes/total'));
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.TOTAL_ESTUDIANTES);
       req.flush(mockTotal);
       tick();
     }));
@@ -237,22 +233,26 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
   describe('HU-06: Estado de Solicitudes', () => {
     it('ACEP-EST-007: DADO que quiero monitorear solicitudes, CUANDO consulto estados, ENTONCES veo distribución', fakeAsync(() => {
       // GIVEN: Hay solicitudes en diferentes estados
-      const mockEstados: any = {
-        total: 150,
-        aprobadas: 100,
-        pendientes: 30,
-        rechazadas: 20
+      const mockEstados = {
+        totalSolicitudes: 150,
+        estados: {
+          APROBADA: { cantidad: 100, porcentaje: 66.6, descripcion: '', color: '', icono: '' },
+          PENDIENTE: { cantidad: 30, porcentaje: 20, descripcion: '', color: '', icono: '' },
+          RECHAZADA: { cantidad: 20, porcentaje: 13.4, descripcion: '', color: '', icono: '' }
+        },
+        fechaConsulta: new Date().toISOString(),
+        descripcion: 'Distribución actual'
       };
 
       // WHEN: Consulto estado de solicitudes
-      service.getEstadoSolicitudes().subscribe((estados: any) => {
+      service.getEstadoSolicitudes().subscribe((estados) => {
         // THEN: Veo distribución por estado
-        expect(estados.total).toBe(150);
-        expect(estados.aprobadas).toBeGreaterThan(estados.rechazadas);
+        expect(estados.totalSolicitudes).toBe(150);
+        expect(estados.estados['APROBADA'].cantidad).toBeGreaterThan(estados.estados['RECHAZADA'].cantidad);
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/estadisticas/solicitudes/estado'));
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
       req.flush(mockEstados);
       tick();
     }));
@@ -280,7 +280,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/estadisticas/por-proceso'));
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.POR_PROCESO && r.params.get('tipoProceso') === 'paz_salvo');
       req.flush(mockEstadisticas.paz_salvo);
       tick();
     }));

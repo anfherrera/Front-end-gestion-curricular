@@ -2,6 +2,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ApiEndpoints } from '../../../core/utils/api-endpoints';
 
 /**
  * ======================================================
@@ -85,7 +86,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/cursos'));
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
       req.flush(mockCursos);
       tick();
     }));
@@ -114,7 +115,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/preinscripciones'));
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES);
       expect(req.request.method).toBe('POST');
       expect(req.request.body.idCurso).toBe(1);
       req.flush({ id_solicitud: 1, mensaje: 'Preinscripción creada' });
@@ -145,7 +146,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/preinscripciones/usuario'));
+      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${mockEstudiante.id_usuario}`);
       req.flush(mockPreinscripciones);
       tick();
     }));
@@ -174,7 +175,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/inscripciones'));
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCIONES);
       expect(req.request.method).toBe('POST');
       req.flush({ id: 1, mensaje: 'Inscripción exitosa' });
       tick();
@@ -207,7 +208,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/notificaciones/usuario'));
+      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/usuario/${mockEstudiante.id_usuario}`);
       req.flush(mockNotificaciones);
       tick();
     }));
@@ -231,7 +232,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes(`/notificaciones/${notificacionId}/leer`));
+      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/${notificacionId}/marcar-leida`);
       expect(req.request.method).toBe('PUT');
       req.flush({ mensaje: 'Notificación marcada como leída' });
       tick();
@@ -264,7 +265,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/cursos') && r.method === 'POST');
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION);
       expect(req.request.body.nombre_curso).toBe('Algoritmos Avanzados');
       req.flush({ id_curso: 5, mensaje: 'Curso creado' });
       tick();
