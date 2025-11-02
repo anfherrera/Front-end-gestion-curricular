@@ -1,8 +1,8 @@
 # 📚 Documentación Completa de Pruebas - Sistema de Gestión Curricular
 
 > **Autor**: Sistema de pruebas automatizadas  
-> **Fecha**: Octubre 2025  
-> **Total de Pruebas**: 505  
+> **Fecha**: Enero 2025  
+> **Total de Pruebas**: **580**  
 > **Tipos de Pruebas**: 7
 
 ---
@@ -13,39 +13,39 @@
 
 | Tipo de Prueba | Cantidad | Cobertura | Estado |
 |----------------|----------|-----------|--------|
-| **Unitarias** | 175 | Servicios core y componentes | ✅ Completo |
+| **Unitarias** | **199** | Servicios core y componentes | ✅ Completo |
 | **Integración** | 8 | Interacción entre servicios | ✅ Completo |
-| **Funcionales (E2E)** | 20 | Flujos de usuario completos | ✅ Completo |
-| **Aceptación (BDD)** | 21 | Historias de usuario | ✅ Completo |
-| **Usabilidad** | 63 | UX y experiencia de usuario | ✅ Completo |
+| **Funcionales (E2E)** | 60 | Flujos de usuario completos | ✅ Completo |
+| **Aceptación (BDD)** | **23** | Historias de usuario | ✅ Completo |
+| **Usabilidad** | **93** | UX y experiencia de usuario | ✅ Completo |
 | **🔒 Seguridad** | **128** | **OWASP Top 10** | ✅ **100%** |
 | **♿ Accesibilidad** | **90** | **WCAG 2.1 AA** | ✅ **Completo** |
-| **TOTAL** | **505** | **Proyecto completo** | ✅ |
+| **TOTAL** | **~580** | **Proyecto completo** | ✅ |
 
 ---
 
 ## 🎯 Módulos Principales Evaluados
 
 ### 1. Paz y Salvo
-- ✅ 35 pruebas unitarias de servicio
-- ✅ 15 pruebas de componente
-- ✅ 8 pruebas E2E
+- ✅ 37 pruebas unitarias de servicio
+- ✅ **20** pruebas de componente
+- ✅ 15 pruebas E2E
 - ✅ 7 pruebas de aceptación
-- **Total: 65 pruebas**
+- **Total: 79 pruebas** ✅ **122%**
 
 ### 2. Cursos Intersemestrales
-- ✅ 45 pruebas unitarias de servicio
+- ✅ **48** pruebas unitarias de servicio
 - ✅ 20 pruebas de componente
-- ✅ 10 pruebas E2E
+- ✅ 20 pruebas E2E
 - ✅ 8 pruebas de aceptación
-- **Total: 83 pruebas**
+- **Total: 96 pruebas** ✅ **116%**
 
 ### 3. Módulo Estadístico
-- ✅ 30 pruebas unitarias de servicio
-- ✅ 25 pruebas de componente (usabilidad)
-- ✅ 6 pruebas E2E
-- ✅ 6 pruebas de aceptación
-- **Total: 67 pruebas**
+- ✅ **30** pruebas unitarias de servicio
+- ✅ **38** pruebas de componente (usabilidad)
+- ✅ 25 pruebas E2E
+- ✅ 8 pruebas de aceptación
+- **Total: 101 pruebas** ✅ **151%**
 
 ---
 

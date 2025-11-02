@@ -77,4 +77,55 @@ describe('ModuloEstadisticoComponent (Funcionario)', () => {
     const cursosStub = compiled.querySelector('.cursos-verano-stub');
     expect(cursosStub?.textContent?.trim()).toBe('Cursos Funcionario Stub');
   });
+
+  describe('Usabilidad para funcionario', () => {
+    it('ME-FUNC-001: Debe mostrar estructura válida del componente', () => {
+      expect(compiled.querySelector('.modulo-estadistico-container')).toBeTruthy();
+      expect(compiled.querySelector('mat-tab-group')).toBeTruthy();
+    });
+
+    it('ME-FUNC-002: Debe renderizar correctamente los tabs', () => {
+      const tabs = compiled.querySelectorAll('.mdc-tab');
+      expect(tabs.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('ME-FUNC-003: Debe tener contenido stub específico de funcionario', () => {
+      const dashboardStub = compiled.querySelector('.dashboard-stub');
+      expect(dashboardStub?.textContent).toContain('Funcionario');
+    });
+
+    it('ME-FUNC-004: Debe permitir navegación fluida entre tabs', async () => {
+      const tabGroupDebug = fixture.debugElement.query(By.directive(MatTabGroup));
+      const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
+      
+      tabGroup.selectedIndex = 0;
+      fixture.detectChanges();
+      await fixture.whenStable();
+      
+      tabGroup.selectedIndex = 1;
+      fixture.detectChanges();
+      await fixture.whenStable();
+      
+      expect(tabGroup.selectedIndex).toBe(1);
+    });
+
+    it('ME-FUNC-005: El componente debe inicializarse sin errores', () => {
+      expect(() => component).not.toThrow();
+      expect(component).toBeTruthy();
+    });
+
+    it('ME-FUNC-006: Debe manejar correctamente las animaciones', () => {
+      const tabGroup = compiled.querySelector('mat-tab-group');
+      expect(tabGroup?.getAttribute('animationDuration')).toBe('0ms');
+    });
+
+    it('ME-FUNC-007: Debe mantener estabilidad en múltiples detectChanges', () => {
+      for (let i = 0; i < 3; i++) {
+        fixture.detectChanges();
+      }
+      
+      const container = compiled.querySelector('.modulo-estadistico-container');
+      expect(container).toBeTruthy();
+    });
+  });
 });

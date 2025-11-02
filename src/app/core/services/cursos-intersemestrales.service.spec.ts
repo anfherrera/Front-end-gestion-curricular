@@ -402,5 +402,328 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush({ message: 'Error interno' }, { status: 500, statusText: 'Internal Server Error' });
     });
   });
+
+  describe('Períodos Académicos', () => {
+    it('debe obtener todos los períodos académicos disponibles', (done) => {
+      const periodos = ['2024-1', '2024-2', '2025-1', '2025-2'];
+
+      service.getPeriodosAcademicos().subscribe((result) => {
+        expect(result).toEqual(periodos);
+        done();
+      });
+
+      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/todos');
+      expect(req.request.method).toBe('GET');
+      req.flush(periodos);
+    });
+
+    it('debe obtener períodos futuros', (done) => {
+      const periodosFuturos = ['2025-2', '2026-1', '2026-2'];
+
+      service.getPeriodosFuturos().subscribe((result) => {
+        expect(result).toEqual(periodosFuturos);
+        done();
+      });
+
+      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/futuros');
+      expect(req.request.method).toBe('GET');
+      req.flush(periodosFuturos);
+    });
+
+    it('debe obtener períodos recientes', (done) => {
+      const periodosRecientes = ['2024-1', '2024-2', '2025-1'];
+
+      service.getPeriodosRecientes().subscribe((result) => {
+        expect(result).toEqual(periodosRecientes);
+        done();
+      });
+
+      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/recientes');
+      expect(req.request.method).toBe('GET');
+      req.flush(periodosRecientes);
+    });
+
+    it('debe obtener el período académico actual', (done) => {
+      const periodoActual = '2025-1';
+
+      service.getPeriodoActual().subscribe((result) => {
+        expect(result).toBe(periodoActual);
+        done();
+      });
+
+      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/actual');
+      expect(req.request.method).toBe('GET');
+      req.flush(periodoActual);
+    });
+
+    it('debe obtener períodos registrados', (done) => {
+      const periodosRegistrados = ['2024-1', '2024-2', '2025-1'];
+
+      service.getPeriodosRegistrados().subscribe((result) => {
+        expect(result).toEqual(periodosRegistrados);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/periodos-registrados`);
+      expect(req.request.method).toBe('GET');
+      req.flush(periodosRegistrados);
+    });
+  });
+
+  describe('Filtrado de cursos', () => {
+    it('debe obtener cursos por período académico', (done) => {
+      const cursos = [buildCurso({ periodoAcademico: '2025-1' })];
+
+      service.getCursosPorPeriodo('2025-1').subscribe((result) => {
+        expect(result).toEqual(cursos);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/periodo/2025-1`);
+      expect(req.request.method).toBe('GET');
+      req.flush(cursos);
+    });
+
+    it('debe obtener cursos activos en una fecha específica', (done) => {
+      const fecha = '2025-06-15';
+      const cursos = [buildCurso()];
+
+      service.getCursosActivos(fecha).subscribe((result) => {
+        expect(result).toEqual(cursos);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/cursos-activos/${fecha}`);
+      expect(req.request.method).toBe('GET');
+      req.flush(cursos);
+    });
+
+    it('debe obtener estadísticas por período', (done) => {
+      const estadisticas = { totalCursos: 10, totalEstudiantes: 150 };
+
+      service.getEstadisticasPorPeriodo('2025-1').subscribe((result) => {
+        expect(result).toEqual(estadisticas);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/estadisticas/periodo/2025-1`);
+      expect(req.request.method).toBe('GET');
+      req.flush(estadisticas);
+    });
+  });
+
+  describe('Gestión de funcionarios', () => {
+    it('debe obtener todos los cursos para funcionarios', (done) => {
+      const cursos = [buildCurso()];
+
+      service.getTodosLosCursosParaFuncionarios().subscribe((result) => {
+        expect(result).toEqual(cursos);
+        done();
+      });
+
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      expect(req.request.method).toBe('GET');
+      req.flush(cursos);
+    });
+
+    it('debe obtener preinscripciones por curso', (done) => {
+      const preinscripciones = [{ id_solicitud: 1 } as SolicitudCursoVerano];
+
+      service.getPreinscripcionesPorCurso(5).subscribe((result) => {
+        expect(result).toEqual(preinscripciones);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/preinscripciones/curso/5`);
+      expect(req.request.method).toBe('GET');
+      req.flush(preinscripciones);
+    });
+
+    it('debe obtener inscripciones por curso específico', (done) => {
+      const inscripciones = [{ id: 1 }];
+
+      service.getInscripcionesPorCurso(5).subscribe((result) => {
+        expect(Array.isArray(result)).toBe(true);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/inscripciones`);
+      expect(req.request.method).toBe('GET');
+      req.flush(inscripciones);
+    });
+
+    it('debe obtener estudiantes elegibles para inscripción', (done) => {
+      const estudiantesElegibles = [{ nombre_completo: 'Juan Pérez', codigo: '123' }];
+
+      service.getEstudiantesElegibles(10).subscribe((result) => {
+        expect(result).toEqual(estudiantesElegibles);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/10/estudiantes-elegibles`);
+      expect(req.request.method).toBe('GET');
+      req.flush(estudiantesElegibles);
+    });
+  });
+
+  describe('Notificaciones', () => {
+    it('debe obtener notificaciones de usuario', (done) => {
+      const notificaciones = [{ id_notificacion: 1, tipoSolicitud: 'Preinscripción' }];
+
+      service.getNotificacionesUsuario(1).subscribe((result) => {
+        expect(result).toEqual(notificaciones);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/usuario/1`);
+      expect(req.request.method).toBe('GET');
+      req.flush(notificaciones);
+    });
+
+    it('debe obtener notificaciones no leídas', (done) => {
+      const notificaciones = [{ id_notificacion: 1, leida: false }];
+
+      service.getNotificacionesNoLeidas(1).subscribe((result) => {
+        expect(result).toEqual(notificaciones);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/usuario/1/no-leidas`);
+      expect(req.request.method).toBe('GET');
+      req.flush(notificaciones);
+    });
+
+    it('debe obtener dashboard de notificaciones', (done) => {
+      const notificaciones = [{ id_notificacion: 1 }];
+
+      service.getDashboardNotificaciones(1).subscribe((result) => {
+        expect(result).toEqual(notificaciones);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/dashboard/1`);
+      expect(req.request.method).toBe('GET');
+      req.flush(notificaciones);
+    });
+
+    it('debe marcar notificación como leída', (done) => {
+      service.marcarNotificacionLeida(5).subscribe(() => {
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/5/marcar-leida`);
+      expect(req.request.method).toBe('PUT');
+      req.flush({});
+    });
+  });
+
+  describe('Solicitudes de curso nuevo', () => {
+    it('debe obtener materias disponibles', (done) => {
+      const materias = [{ id_materia: 1, nombre: 'Matemáticas', codigo: 'MAT-101' }];
+
+      service.getMateriasDisponibles().subscribe((result) => {
+        expect(result).toEqual(materias);
+        done();
+      });
+
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
+      expect(req.request.method).toBe('GET');
+      req.flush(materias);
+    });
+
+    it('debe obtener condiciones de solicitud', (done) => {
+      const condiciones = ['Primera_Vez', 'Habilitación', 'Repetición'];
+
+      service.getCondicionesSolicitud().subscribe((result) => {
+        expect(result).toEqual(condiciones);
+        done();
+      });
+
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CONDICIONES);
+      expect(req.request.method).toBe('GET');
+      req.flush(condiciones);
+    });
+
+    it('debe obtener todas las solicitudes', (done) => {
+      const solicitudes = [{ id_solicitud: 1 } as SolicitudCursoVerano];
+
+      service.getTodasLasSolicitudes().subscribe((result) => {
+        expect(result).toEqual(solicitudes);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/solicitudes-curso-nuevo`);
+      expect(req.request.method).toBe('GET');
+      req.flush(solicitudes);
+    });
+
+    it('debe obtener solicitudes para visualizar', (done) => {
+      const solicitudes = [{ id: 1 }];
+
+      service.getSolicitudesVisualizar().subscribe((result) => {
+        expect(result).toEqual(solicitudes);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/solicitudes`);
+      expect(req.request.method).toBe('GET');
+      req.flush(solicitudes);
+    });
+
+    it('debe obtener materias para filtro', (done) => {
+      const materias = [{ id: 1, nombre: 'Matemáticas' }];
+
+      service.getMateriasFiltro().subscribe((result) => {
+        expect(result).toEqual(materias);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/materias-filtro`);
+      expect(req.request.method).toBe('GET');
+      req.flush(materias);
+    });
+  });
+
+  describe('Consultas adicionales', () => {
+    it('debe obtener todas las materias', (done) => {
+      const materias = [{ id_materia: 1, nombre: 'Matemáticas' }];
+
+      service.getTodasLasMaterias().subscribe((result) => {
+        expect(result).toEqual(materias);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/materias`);
+      expect(req.request.method).toBe('GET');
+      req.flush(materias);
+    });
+
+    it('debe obtener todos los docentes', (done) => {
+      const docentes = [{ id_usuario: 1, nombre_usuario: 'Juan Pérez' }];
+
+      service.getTodosLosDocentes().subscribe((result) => {
+        expect(result).toBeTruthy();
+        expect(Array.isArray(result)).toBe(true);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/docentes`);
+      expect(req.request.method).toBe('GET');
+      req.flush(docentes);
+    });
+
+    it('debe consultar permisos por estado y rol', (done) => {
+      const permisos = ['ver', 'editar', 'eliminar'];
+
+      service.getPermisosEstado('Publicado', 'FUNCIONARIO').subscribe((result) => {
+        expect(result).toEqual(permisos);
+        done();
+      });
+
+      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/permisos-estado?estado=Publicado&rol=FUNCIONARIO`);
+      expect(req.request.method).toBe('GET');
+      req.flush(permisos);
+    });
+  });
 });
 

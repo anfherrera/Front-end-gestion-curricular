@@ -208,5 +208,100 @@ describe('PazSalvoComponent', () => {
     expect(component.tieneComentarios(1)).toBeTrue();
     expect(component.tieneComentarios(2)).toBeFalse();
   });
+
+  describe('Usabilidad y funcionalidad adicional', () => {
+    it('PS-011: Debe obtener solicitud completa por ID', () => {
+      component.solicitudesCompletas = [
+        { id_solicitud: 1, nombre_solicitud: 'Solicitud 1' },
+        { id_solicitud: 2, nombre_solicitud: 'Solicitud 2' }
+      ] as any;
+
+      expect(component['obtenerSolicitudCompleta'](1)?.id_solicitud).toBe(1);
+      expect(component['obtenerSolicitudCompleta'](3)).toBeUndefined();
+    });
+
+    it('PS-012: Debe obtener comentario de rechazo correctamente', () => {
+      component.solicitudesCompletas = [{
+        id_solicitud: 1,
+        estadosSolicitud: [
+          { estado_actual: 'PENDIENTE', comentario: null },
+          { estado_actual: 'RECHAZADA', comentario: 'Documentos incompletos' }
+        ]
+      }] as any;
+
+      const comentario = component['obtenerComentarioRechazo'](component.solicitudesCompletas[0]);
+      expect(comentario).toBe('Documentos incompletos');
+    });
+
+    it('PS-013: Debe manejar solicitud sin estados correctamente', () => {
+      component.solicitudesCompletas = [{
+        id_solicitud: 1,
+        estadosSolicitud: []
+      }] as any;
+
+      const comentario = component['obtenerComentarioRechazo'](component.solicitudesCompletas[0]);
+      expect(comentario).toBeNull();
+    });
+
+    it('PS-014: Debe obtener estado actual de una solicitud', () => {
+      const solicitud = {
+        estadosSolicitud: [
+          { estado_actual: 'PENDIENTE' },
+          { estado_actual: 'APROBADA' }
+        ]
+      };
+
+      expect(component['obtenerEstadoActual'](solicitud)).toBe('APROBADA');
+    });
+
+    it('PS-015: Debe manejar solicitud sin estados en obtenerEstadoActual', () => {
+      const solicitud = { estadosSolicitud: [] };
+      expect(component['obtenerEstadoActual'](solicitud)).toBe('Pendiente');
+    });
+
+    it('PS-016: Debe verificar funcionalidad de comentarios sin errores', fakeAsync(() => {
+      spyOn(console, 'log');
+      
+      component.solicitudes = [];
+      component.solicitudesCompletas = [];
+      
+      expect(() => {
+        component['verificarFuncionalidadComentarios']();
+      }).not.toThrow();
+    }));
+
+    it('PS-017: Debe manejar listarSolicitudes sin usuario', () => {
+      component.usuario = null;
+      
+      expect(() => {
+        component.listarSolicitudes();
+      }).not.toThrow();
+      
+      expect(pazSalvoService.listarSolicitudesPorRol).not.toHaveBeenCalled();
+    });
+
+    it('PS-018: onArchivosChange debe actualizar archivos correctamente', () => {
+      const nuevosArchivos = [{ nombre: 'test1.pdf' }, { nombre: 'test2.pdf' }] as any;
+      
+      component.onArchivosChange(nuevosArchivos);
+      
+      expect(component.archivosActuales).toEqual(nuevosArchivos);
+      expect(component.archivosActuales.length).toBe(2);
+    });
+
+    it('PS-019: puedeEnviar debe retornar false cuando no hay usuario', () => {
+      component.archivosActuales = [{ nombre: 'test.pdf' }] as any;
+      component.usuario = null;
+      
+      expect(component.puedeEnviar()).toBeFalse();
+    });
+
+    it('PS-020: puedeEnviar debe retornar false cuando no hay archivos', () => {
+      component.archivosActuales = [];
+      component.usuario = mockUsuario;
+      
+      expect(component.puedeEnviar()).toBeFalse();
+    });
+  });
 });
 

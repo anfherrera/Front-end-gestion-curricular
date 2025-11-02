@@ -271,5 +271,42 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       tick();
     }));
   });
+
+  /**
+   * HISTORIA DE USUARIO 8:
+   * Como estudiante,
+   * Quiero ver el seguimiento de mis solicitudes de cursos,
+   * Para conocer el progreso y acciones disponibles.
+   */
+  describe('HU-08: Seguimiento de Solicitudes', () => {
+    it('ACEP-CI-008: DADO que tengo solicitudes activas, CUANDO consulto seguimiento, ENTONCES veo progreso y acciones', fakeAsync(() => {
+      // GIVEN: Estudiante con solicitudes activas
+      const idSolicitud = 1;
+      const mockSeguimiento: any = {
+        id_solicitud: 1,
+        nombre_solicitud: 'Preinscripción Cálculo',
+        estado: 'PENDIENTE',
+        objCursoOfertadoVerano: {
+          nombre_curso: 'Cálculo Diferencial',
+          estado: 'Preinscripción'
+        },
+        accionesDisponibles: ['ver_detalle', 'cancelar']
+      };
+
+      // WHEN: Consulto seguimiento de solicitud
+      service.getSeguimientoSolicitud(idSolicitud).subscribe((seguimiento) => {
+        // THEN: Veo progreso y acciones disponibles
+        expect(seguimiento).toBeTruthy();
+        expect(seguimiento.objCursoOfertadoVerano).toBeTruthy();
+        expect(seguimiento.estado).toBeDefined();
+      });
+      tick();
+
+      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/seguimiento/${idSolicitud}`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockSeguimiento);
+      tick();
+    }));
+  });
 });
 

@@ -11,7 +11,7 @@
 npm run test:usabilidad
 start coverage\front-end-gestion-curricular\index.html
 ```
-- **Resultado**: 505 pruebas, reporte HTML con cobertura
+- **Resultado**: ~580 pruebas, reporte HTML con cobertura
 
 ---
 

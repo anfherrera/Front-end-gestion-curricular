@@ -419,5 +419,77 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       req.flush(mockEstadisticas);
     });
   });
+
+  describe('14. Estadísticas por Período', () => {
+    it('EST-027: Debe obtener estadísticas por período académico', (done) => {
+      const periodo = '2025-1';
+      const mockEstadisticas = { totalCursos: 50, totalEstudiantes: 500 };
+
+      service.getEstadisticasPorPeriodo(periodo).subscribe((result) => {
+        expect(result).toEqual(mockEstadisticas);
+        done();
+      });
+
+      const req = httpMock.expectOne(`/api/modulo-estadistico/periodo/${periodo}`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockEstadisticas);
+    });
+  });
+
+  describe('15. Estadísticas por Solicitud Completa', () => {
+    it('EST-028: Debe obtener estadísticas por solicitud, período, estado y programa', (done) => {
+      const mockEstadisticas = { totalSolicitudes: 30 };
+
+      service.getEstadisticasPorSolicitudPeriodoEstadoPrograma(
+        1, 'paz-salvo', '2025-01-01', '2025-12-31', 'APROBADA', 1
+      ).subscribe((result) => {
+        expect(result).toEqual(mockEstadisticas);
+        done();
+      });
+
+      const req = httpMock.expectOne((request) =>
+        request.url.includes('/por-solicitud-periodo-estado-programa')
+      );
+      expect(req.request.method).toBe('GET');
+      expect(req.request.params.get('idEstadistica')).toBe('1');
+      req.flush(mockEstadisticas);
+    });
+  });
+
+  describe('16. Estadísticas por Tipo de Proceso', () => {
+    it('EST-029: Debe obtener estadísticas por tipo de proceso', (done) => {
+      const tipoProceso = 'Solicitud de Reingreso';
+      const mockEstadisticas = { proceso: tipoProceso, totalSolicitudes: 45 };
+
+      service.getEstadisticasPorProceso(tipoProceso).subscribe((result) => {
+        expect(result).toEqual(mockEstadisticas);
+        done();
+      });
+
+      const req = httpMock.expectOne((request) =>
+        request.url.includes('/por-proceso') && 
+        request.params.has('tipoProceso')
+      );
+      expect(req.request.params.get('tipoProceso')).toBe(tipoProceso);
+      req.flush(mockEstadisticas);
+    });
+  });
+
+  describe('17. Estadísticas Globales Legacy', () => {
+    it('EST-030: Debe obtener estadísticas globales legacy', (done) => {
+      const mockEstadisticas = { totalSolicitudes: 100 };
+
+      service.getEstadisticasGlobalesLegacy().subscribe((result) => {
+        expect(result).toEqual(mockEstadisticas);
+        done();
+      });
+
+      const req = httpMock.expectOne((request) =>
+        request.url.includes('/estadisticas/globales')
+      );
+      expect(req.request.method).toBe('GET');
+      req.flush(mockEstadisticas);
+    });
+  });
 });
 

@@ -225,5 +225,39 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       tick();
     }));
   });
+
+  /**
+   * HISTORIA DE USUARIO 7:
+   * Como estudiante,
+   * Quiero ver el seguimiento de mi solicitud de paz y salvo,
+   * Para conocer su estado actual y próximos pasos.
+   */
+  describe('HU-07: Seguimiento de Solicitud', () => {
+    it('ACEP-PS-007: DADO que soy estudiante con solicitud en proceso, CUANDO consulto seguimiento, ENTONCES veo estados y documento descargable', fakeAsync(() => {
+      // GIVEN: Estudiante con solicitud activa
+      const mockSolicitud = {
+        id_solicitud: 1,
+        estadosSolicitud: [
+          { estado_actual: 'ENVIADA', fecha_registro_estado: '2025-01-10' },
+          { estado_actual: 'APROBADA_COORDINADOR', fecha_registro_estado: '2025-01-15' }
+        ],
+        documentos: [{ nombre: 'oficio_paz_salvo_1.pdf' }]
+      };
+
+      // WHEN: Estudiante consulta seguimiento
+      service.obtenerSolicitudCompleta(1).subscribe((solicitud) => {
+        // THEN: Ve estados y puede descargar documento
+        expect(solicitud).toBeTruthy();
+        expect(solicitud.estadosSolicitud.length).toBeGreaterThan(0);
+        expect(solicitud.documentos.length).toBeGreaterThan(0);
+      });
+      tick();
+
+      const req = httpMock.expectOne((r) => r.url.includes('/obtenerSolicitud/1'));
+      expect(req.request.method).toBe('GET');
+      req.flush(mockSolicitud);
+      tick();
+    }));
+  });
 });
 

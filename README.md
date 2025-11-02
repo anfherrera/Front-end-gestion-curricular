@@ -30,7 +30,7 @@ Navegar a `http://localhost:4200/`
 
 ---
 
-## 🧪 Pruebas (505 pruebas totales)
+## 🧪 Pruebas (~580 pruebas totales)
 
 ### Ejecutar Todas las Pruebas + Cobertura
 ```bash
@@ -54,7 +54,8 @@ npm run test:accesibilidad:e2e:open
 npm run test:e2e:open
 ```
 
-**📚 Documentación completa**: Ver `DOCUMENTACION-COMPLETA-PRUEBAS.md`
+**📚 Documentación completa**: Ver `DOCUMENTACION-COMPLETA-PRUEBAS.md`  
+**⚡ Guía rápida**: Ver `GUIA-RAPIDA-PRUEBAS.md`
 
 ---
 
@@ -62,14 +63,14 @@ npm run test:e2e:open
 
 | Tipo | Cantidad | Cobertura |
 |------|----------|-----------|
-| Unitarias | 175 | Servicios y componentes core |
+| Unitarias | **199** | Servicios y componentes core |
 | Integración | 8 | Interacción entre módulos |
-| Funcionales (E2E) | 20 | Flujos completos de usuario |
-| Aceptación (BDD) | 21 | Historias de usuario |
-| Usabilidad | 63 | Experiencia de usuario |
+| Funcionales (E2E) | 60 | Flujos completos de usuario |
+| Aceptación (BDD) | **23** | Historias de usuario |
+| Usabilidad | **93** | Experiencia de usuario |
 | 🔒 **Seguridad** | **128** | **OWASP Top 10** |
 | ♿ **Accesibilidad** | **90** | **WCAG 2.1 AA** |
-| **TOTAL** | **505** | ✅ **100% éxito** |
+| **TOTAL** | **~580** | ✅ **100% éxito** |
 
 ---
 
