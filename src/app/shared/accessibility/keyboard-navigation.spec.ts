@@ -16,18 +16,20 @@
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { By } from '@angular/platform-browser';
 
 // Componente de prueba con elementos interactivos
 @Component({
   selector: 'app-test-keyboard',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="container">
       <button id="btn1" (click)="handleClick()">Botón 1</button>
       <button id="btn2" (click)="handleClick()">Botón 2</button>
       <input id="input1" type="text" placeholder="Input 1" />
-      <a id="link1" href="#" (click)="handleClick()">Enlace 1</a>
+      <a id="link1" href="javascript:void(0)" (click)="handleClick()">Enlace 1</a>
       
       <div class="list" role="list" aria-label="Lista de opciones">
         <div 

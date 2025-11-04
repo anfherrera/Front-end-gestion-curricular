@@ -30,7 +30,10 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
         RouterTestingModule.withRoutes([
           { path: 'estudiante/cursos-intersemestrales', component: CursosIntersemestralesComponent },
           { path: 'estudiante/cursos-intersemestrales/solicitudes', component: CursosIntersemestralesComponent },
-          { path: 'estudiante/cursos-intersemestrales/cursos-ofertados', component: CursosIntersemestralesComponent }
+          { path: 'estudiante/cursos-intersemestrales/cursos-ofertados', component: CursosIntersemestralesComponent },
+          // Rutas adicionales usadas en pruebas
+          { path: 'estudiante/cursos-intersemestrales/cursos-preinscripcion', component: CursosIntersemestralesComponent },
+          { path: 'estudiante/cursos-intersemestrales/ver-solicitud', component: CursosIntersemestralesComponent }
         ]),
         BrowserAnimationsModule
       ]
@@ -69,9 +72,12 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
       metricasUsabilidad.elementosVisibles += iconosEsperados.length;
     });
 
-    it('CI-004: Debe renderizar botones o tarjetas de navegación en el DOM', () => {
+    it('CI-004: Debe renderizar botones o tarjetas de navegación en el DOM', async () => {
+      await fixture.whenStable();
       fixture.detectChanges();
-      const elementosNavegacion = compiled.querySelectorAll('mat-card, .opcion-card, button');
+      
+      // Buscar elementos de navegación (enlaces del menú, botones, tarjetas, etc.)
+      const elementosNavegacion = compiled.querySelectorAll('a.menu-item, mat-card, .opcion-card, button, .menu-item');
       expect(elementosNavegacion.length).toBeGreaterThan(0);
       metricasUsabilidad.elementosVisibles++;
     });
@@ -116,14 +122,15 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     }));
 
     it('CI-009: Debe detectar si hay una ruta activa', () => {
+      const urlSpy = spyOnProperty(router as any, 'url', 'get');
       // Ruta base
-      spyOnProperty(router, 'url').and.returnValue('/estudiante/cursos-intersemestrales');
+      urlSpy.and.returnValue('/estudiante/cursos-intersemestrales');
       expect(component.hasActiveRoute()).toBe(false);
-      
+
       // Ruta con hijo
-      spyOnProperty(router, 'url').and.returnValue('/estudiante/cursos-intersemestrales/solicitudes');
+      urlSpy.and.returnValue('/estudiante/cursos-intersemestrales/solicitudes');
       expect(component.hasActiveRoute()).toBe(true);
-      
+
       metricasUsabilidad.validacionesCorrectas += 2;
     });
   });

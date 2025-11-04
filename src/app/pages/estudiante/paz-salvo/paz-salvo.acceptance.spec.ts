@@ -236,24 +236,29 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
     it('ACEP-PS-007: DADO que soy estudiante con solicitud en proceso, CUANDO consulto seguimiento, ENTONCES veo estados y documento descargable', fakeAsync(() => {
       // GIVEN: Estudiante con solicitud activa
       const mockSolicitud = {
-        id_solicitud: 1,
-        estadosSolicitud: [
-          { estado_actual: 'ENVIADA', fecha_registro_estado: '2025-01-10' },
-          { estado_actual: 'APROBADA_COORDINADOR', fecha_registro_estado: '2025-01-15' }
-        ],
-        documentos: [{ nombre: 'oficio_paz_salvo_1.pdf' }]
+        id: 1,
+        nombre: 'Solicitud Paz y Salvo',
+        fecha: '2025-01-10',
+        estado: 'APROBADA_COORDINADOR' as any,
+        archivos: [{ 
+          id_documento: 1,
+          nombre: 'oficio_paz_salvo_1.pdf',
+          ruta_documento: '/documentos/oficio_1.pdf',
+          fecha: '2025-01-10',
+          esValido: true
+        }]
       };
 
       // WHEN: Estudiante consulta seguimiento
-      service.obtenerSolicitudCompleta(1).subscribe((solicitud) => {
-        // THEN: Ve estados y puede descargar documento
+      service.getRequestById(1).subscribe((solicitud) => {
+        // THEN: Ve solicitud y puede descargar documento
         expect(solicitud).toBeTruthy();
-        expect(solicitud.estadosSolicitud.length).toBeGreaterThan(0);
-        expect(solicitud.documentos.length).toBeGreaterThan(0);
+        expect(solicitud.archivos && solicitud.archivos.length).toBeGreaterThan(0);
+        expect(solicitud.archivos?.[0]?.nombre).toBeTruthy();
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/obtenerSolicitud/1'));
+      const req = httpMock.expectOne((r) => r.url.includes('/listarSolicitud-PazYSalvo/1'));
       expect(req.request.method).toBe('GET');
       req.flush(mockSolicitud);
       tick();

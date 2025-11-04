@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { of, throwError } from 'rxjs';
+import { of, throwError, delay } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 import { AuthService } from '../../core/services/auth.service';
@@ -51,10 +51,11 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
         { provide: ApiService, useValue: apiServiceSpy },
-        { provide: Router, useValue: routerSpy },
-        { provide: MatSnackBar, useValue: snackBarSpy }
+        { provide: Router, useValue: routerSpy }
       ]
-    }).compileComponents();
+    })
+    .overrideProvider(MatSnackBar, { useValue: snackBarSpy })
+    .compileComponents();
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     apiService = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
@@ -274,7 +275,8 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       apiService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
-      tick();
+      tick(100); // Dar tiempo para que se complete el observable
+      fixture.detectChanges();
       
       expect(snackBar.open).toHaveBeenCalledWith(
         '¡Bienvenido, Test User!',
@@ -295,14 +297,17 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     }));
 
     it('LOG-029: Debe cambiar el estado de cargando durante el proceso', fakeAsync(() => {
-      apiService.login.and.returnValue(of(mockLoginResponse).pipe());
+      // Usar delay para simular mejor el comportamiento asíncrono
+      apiService.login.and.returnValue(of(mockLoginResponse).pipe(delay(50)));
       
       expect(component.cargando).toBe(false);
       
       component.onLogin();
+      // Verificar que cargando se establece en true inmediatamente
       expect(component.cargando).toBe(true);
       
-      tick();
+      tick(50); // Permitir que el observable se complete
+      fixture.detectChanges();
       expect(component.cargando).toBe(false);
     }));
   });
@@ -320,7 +325,8 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       apiService.login.and.returnValue(throwError(() => error));
       
       component.onLogin();
-      tick();
+      tick(100); // Dar tiempo para que se maneje el error
+      fixture.detectChanges();
       
       expect(component.errorMensaje).toContain('Credenciales incorrectas');
       expect(snackBar.open).toHaveBeenCalled();
@@ -396,8 +402,10 @@ describe('LoginComponent - Pruebas Unitarias', () => {
         correo: '',
         password: ''
       });
+      fixture.detectChanges();
       
       component.onLogin();
+      fixture.detectChanges();
       
       expect(snackBar.open).toHaveBeenCalledWith(
         'Por favor, completa todos los campos correctamente',

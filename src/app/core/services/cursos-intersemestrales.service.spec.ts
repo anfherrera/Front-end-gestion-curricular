@@ -553,14 +553,14 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener estudiantes elegibles para inscripción', (done) => {
-      const estudiantesElegibles = [{ nombre_completo: 'Juan Pérez', codigo: '123' }];
+      const estudiantesElegibles = [{ nombre_completo: 'Juan Pérez', codigo: '123' }] as any;
 
       service.getEstudiantesElegibles(10).subscribe((result) => {
         expect(result).toEqual(estudiantesElegibles);
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/10/estudiantes-elegibles`);
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_ELEGIBLES(10));
       expect(req.request.method).toBe('GET');
       req.flush(estudiantesElegibles);
     });
@@ -568,7 +568,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
 
   describe('Notificaciones', () => {
     it('debe obtener notificaciones de usuario', (done) => {
-      const notificaciones = [{ id_notificacion: 1, tipoSolicitud: 'Preinscripción' }];
+      const notificaciones = [{ id_notificacion: 1, tipoSolicitud: 'Preinscripción' }] as any;
 
       service.getNotificacionesUsuario(1).subscribe((result) => {
         expect(result).toEqual(notificaciones);
@@ -581,7 +581,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener notificaciones no leídas', (done) => {
-      const notificaciones = [{ id_notificacion: 1, leida: false }];
+      const notificaciones = [{ id_notificacion: 1, leida: false }] as any;
 
       service.getNotificacionesNoLeidas(1).subscribe((result) => {
         expect(result).toEqual(notificaciones);
@@ -594,7 +594,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener dashboard de notificaciones', (done) => {
-      const notificaciones = [{ id_notificacion: 1 }];
+      const notificaciones = [{ id_notificacion: 1 }] as any;
 
       service.getDashboardNotificaciones(1).subscribe((result) => {
         expect(result).toEqual(notificaciones);
@@ -619,7 +619,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
 
   describe('Solicitudes de curso nuevo', () => {
     it('debe obtener materias disponibles', (done) => {
-      const materias = [{ id_materia: 1, nombre: 'Matemáticas', codigo: 'MAT-101' }];
+      const materias = [{ id_materia: 1, nombre: 'Matemáticas', codigo: 'MAT-101' }] as any;
 
       service.getMateriasDisponibles().subscribe((result) => {
         expect(result).toEqual(materias);
@@ -632,7 +632,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener condiciones de solicitud', (done) => {
-      const condiciones = ['Primera_Vez', 'Habilitación', 'Repetición'];
+      const condiciones = ['Primera_Vez', 'Habilitación', 'Repetición'] as any;
 
       service.getCondicionesSolicitud().subscribe((result) => {
         expect(result).toEqual(condiciones);
@@ -686,7 +686,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
 
   describe('Consultas adicionales', () => {
     it('debe obtener todas las materias', (done) => {
-      const materias = [{ id_materia: 1, nombre: 'Matemáticas' }];
+      const materias = [{ id_materia: 1, nombre: 'Matemáticas' }] as any;
 
       service.getTodasLasMaterias().subscribe((result) => {
         expect(result).toEqual(materias);
@@ -720,7 +720,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/permisos-estado?estado=Publicado&rol=FUNCIONARIO`);
+      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO('Publicado','FUNCIONARIO'));
       expect(req.request.method).toBe('GET');
       req.flush(permisos);
     });

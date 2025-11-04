@@ -271,6 +271,9 @@ describe('PazSalvoComponent', () => {
     }));
 
     it('PS-017: Debe manejar listarSolicitudes sin usuario', () => {
+      // Resetear el spy para limpiar llamadas anteriores
+      pazSalvoService.listarSolicitudesPorRol.calls.reset();
+      
       component.usuario = null;
       
       expect(() => {
