@@ -71,10 +71,13 @@
       <ng-container matColumnDef="objDocente">
         <th mat-header-cell *matHeaderCellDef>Docente</th>
         <td mat-cell *matCellDef="let curso">
-          <div class="docente-info">
-            <strong>{{ curso.objDocente.nombre }} {{ curso.objDocente.apellido }}</strong>
-            <small>{{ curso.objDocente.email }}</small>
+          <div class="docente-info" *ngIf="curso.objDocente; else sinDocente">
+            {{ obtenerNombreDocente(curso) }}
+            <small *ngIf="curso.objDocente?.codigo_docente">({{ curso.objDocente.codigo_docente }})</small>
           </div>
+          <ng-template #sinDocente>
+            <span class="texto-sin-asignar">Sin asignar</span>
+          </ng-template>
         </td>
       </ng-container>
 

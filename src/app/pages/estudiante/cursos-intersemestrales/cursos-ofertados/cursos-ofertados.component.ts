@@ -175,7 +175,7 @@ export class CursosOfertadosComponent implements OnInit {
     return cursosVerano.map(curso => ({
       codigo: curso.codigo_curso || curso.id_curso.toString(),
       nombre: curso.nombre_curso,
-      docente: `${curso.objDocente.nombre} ${curso.objDocente.apellido}`,
+      docente: this.obtenerNombreDocente(curso),
       cupos: curso.cupo_estimado || curso.cupo_disponible,
       creditos: curso.objMateria.creditos,
       espacio: curso.espacio_asignado || 'Por asignar',
@@ -185,6 +185,29 @@ export class CursosOfertadosComponent implements OnInit {
       fecha_inicio: curso.fecha_inicio,
       fecha_fin: curso.fecha_fin
     }));
+  }
+
+  // Obtener nombre del docente de forma segura
+  private obtenerNombreDocente(curso: CursoOfertadoVerano): string {
+    if (!curso.objDocente) {
+      return 'Sin asignar';
+    }
+    
+    // Priorizar nombre_docente (estructura del backend)
+    if ((curso.objDocente as any).nombre_docente) {
+      return (curso.objDocente as any).nombre_docente;
+    }
+    
+    // Fallback a nombre y apellido (estructura legacy)
+    if (curso.objDocente.nombre && curso.objDocente.apellido) {
+      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
+    }
+    
+    if (curso.objDocente.nombre) {
+      return curso.objDocente.nombre;
+    }
+    
+    return 'Sin nombre';
   }
 
   private mapEstadoCurso(estado: string): 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Publicado' | 'Abierto' | 'Borrador' {

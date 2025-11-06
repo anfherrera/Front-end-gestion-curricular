@@ -481,6 +481,29 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     return new Date(fecha).toLocaleDateString('es-ES');
   }
 
+  // Obtener nombre del docente de forma segura
+  obtenerNombreDocente(curso: CursoOfertadoVerano): string {
+    if (!curso.objDocente) {
+      return 'Sin asignar';
+    }
+    
+    // Priorizar nombre_docente (estructura del backend)
+    if ((curso.objDocente as any).nombre_docente) {
+      return (curso.objDocente as any).nombre_docente;
+    }
+    
+    // Fallback a nombre y apellido (estructura legacy)
+    if (curso.objDocente.nombre && curso.objDocente.apellido) {
+      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
+    }
+    
+    if (curso.objDocente.nombre) {
+      return curso.objDocente.nombre;
+    }
+    
+    return 'Sin nombre';
+  }
+
   // Obtener color del estado
   getEstadoColor(estado: string): string {
     return this.cursoEstadosService.getColorEstado(estado);

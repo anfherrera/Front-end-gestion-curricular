@@ -77,7 +77,7 @@
           <div *ngFor="let curso of cursosActivos.slice(0, 5); trackBy: trackByCursoId" class="curso-item">
             <div class="curso-info">
               <h4>{{ curso.nombre_curso }}</h4>
-              <p>{{ curso.objMateria.nombre }} - {{ curso.objDocente.nombre }} {{ curso.objDocente.apellido }}</p>
+              <p>{{ curso.objMateria.nombre }} - {{ obtenerNombreDocente(curso) }}</p>
               <small>{{ formatearFecha(curso.fecha_inicio) }} - {{ formatearFecha(curso.fecha_fin) }}</small>
             </div>
             <div class="curso-status">
@@ -109,39 +109,6 @@
           </div>
         </ng-template>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-button routerLink="../gestionar">Gestionar Todos</button>
-      </mat-card-actions>
     </mat-card>
   </div>
-
-  <!-- Acciones rápidas -->
-  <mat-card class="actions-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>flash_on</mat-icon>
-        Acciones Rápidas
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="actions-grid">
-        <button mat-raised-button routerLink="../preinscribir">
-          <mat-icon>person_add</mat-icon>
-          Preinscribir Estudiantes
-        </button>
-        <button mat-raised-button routerLink="../inscribir">
-          <mat-icon>how_to_reg</mat-icon>
-          Inscribir Estudiantes
-        </button>
-        <button mat-raised-button routerLink="../solicitudes">
-          <mat-icon>list_alt</mat-icon>
-          Ver Solicitudes
-        </button>
-        <button mat-raised-button routerLink="../gestionar">
-          <mat-icon>settings</mat-icon>
-          Gestionar Cursos
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
 </div>
