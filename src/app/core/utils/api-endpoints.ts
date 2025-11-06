@@ -85,7 +85,10 @@ export class ApiEndpoints {
       DEBUG_INSCRIPCION: (idPreinscripcion: number) => `${this.BASE_URL}/cursos-intersemestrales/debug/inscripcion/${idPreinscripcion}`,
       
       // Nuevos endpoints de permisos
-      PERMISOS_ESTADO: (estado: string, rol: string) => `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`
+      PERMISOS_ESTADO: (estado: string, rol: string) => `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,
+      
+      // Endpoint de exportación a Excel
+      EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`
     }
   };
 

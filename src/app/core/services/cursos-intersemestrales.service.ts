@@ -1254,6 +1254,62 @@ export class CursosIntersemestralesService {
       formData
     );
   }
+
+  /**
+   * Exporta las solicitudes de cursos intersemestrales a Excel
+   * @returns Observable con el blob del archivo Excel y el nombre del archivo
+   */
+  exportarSolicitudesExcel(): Observable<{ blob: Blob; filename?: string }> {
+    console.log('📊 Exportando solicitudes a Excel...');
+    console.log('🔗 URL:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL);
+    
+    return this.http.get(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL, {
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        // Verificar que la respuesta sea un blob válido
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && (
+          contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') ||
+          contentType.includes('application/vnd.ms-excel') ||
+          contentType.includes('application/octet-stream')
+        )) {
+          console.log('✅ Content-Type válido para Excel:', contentType);
+          
+          // Extraer el nombre del archivo del header Content-Disposition
+          const contentDisposition = response.headers.get('Content-Disposition');
+          let filename: string | undefined;
+          
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1].replace(/['"]/g, '');
+              // Decodificar si está codificado en UTF-8
+              try {
+                filename = decodeURIComponent(filename);
+              } catch {
+                // Si falla la decodificación, usar el nombre tal cual
+              }
+              console.log('📄 Nombre del archivo extraído:', filename);
+            }
+          }
+          
+          return {
+            blob: response.body as Blob,
+            filename
+          };
+        } else {
+          console.error('❌ Content-Type inválido:', contentType);
+          throw new Error(`El servidor no devolvió un Excel válido. Content-Type: ${contentType}`);
+        }
+      }),
+      catchError(error => {
+        console.error('❌ Error al exportar solicitudes a Excel:', error);
+        throw error;
+      })
+    );
+  }
 }
 
 // ====== DTOs PARA GESTIÓN DE CURSOS ======

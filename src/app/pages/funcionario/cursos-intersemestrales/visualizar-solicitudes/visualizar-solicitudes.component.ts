@@ -5,6 +5,8 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
 import { CursosIntersemestralesService, SolicitudCursoVerano, Materia, UsuarioSolicitud } from '../../../../core/services/cursos-intersemestrales.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { descargarBlob } from '../../../../core/utils/download.util';
 
 @Component({
   selector: 'app-visualizar-solicitudes',
@@ -14,6 +16,7 @@ import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
     ReactiveFormsModule,
     CardContainerComponent,
     ...MATERIAL_IMPORTS,
+    MatSnackBarModule,
     UtfFixPipe
   ],
   templateUrl: './visualizar-solicitudes.component.html',
@@ -24,12 +27,14 @@ export class VisualizarSolicitudesComponent implements OnInit {
   solicitudesFiltradas: any[] = [];
   materias: Materia[] = [];
   cargando = true;
+  exportando = false;
   
   filtroForm: FormGroup;
 
   constructor(
     private cursosService: CursosIntersemestralesService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar
   ) {
     console.log('📋 VISUALIZAR SOLICITUDES COMPONENT CARGADO');
     
@@ -335,5 +340,58 @@ export class VisualizarSolicitudesComponent implements OnInit {
       default:
         return 'estado-default';
     }
+  }
+
+  /**
+   * Exporta las solicitudes a Excel
+   */
+  exportarSolicitudesExcel(): void {
+    this.exportando = true;
+    
+    this.cursosService.exportarSolicitudesExcel().subscribe({
+      next: (response: { blob: Blob; filename?: string }) => {
+        // Obtener el nombre del archivo de la respuesta o usar uno por defecto
+        const fecha = new Date().toISOString().split('T')[0];
+        const nombreArchivo = response.filename || `solicitudes_cursos_intersemestrales_${fecha}.xlsx`;
+        
+        // Descargar el archivo
+        descargarBlob(response.blob, nombreArchivo);
+        
+        this.snackBar.open('✅ Excel descargado exitosamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        
+        this.exportando = false;
+      },
+      error: (error: any) => {
+        console.error('❌ Error al exportar solicitudes a Excel:', error);
+        
+        let mensajeError = 'Error al exportar las solicitudes. Por favor, intente nuevamente.';
+        if (error.error instanceof Blob) {
+          // Si el error es un blob, intentar leerlo como texto
+          error.error.text().then((text: string) => {
+            try {
+              const errorJson = JSON.parse(text);
+              mensajeError = errorJson.message || mensajeError;
+            } catch {
+              // Si no se puede parsear, usar el mensaje por defecto
+            }
+            this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          });
+        } else {
+          mensajeError = error.message || mensajeError;
+          this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+        
+        this.exportando = false;
+      }
+    });
   }
 }

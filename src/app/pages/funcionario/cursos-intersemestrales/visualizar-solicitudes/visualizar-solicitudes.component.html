@@ -18,6 +18,15 @@
       <mat-icon>refresh</mat-icon>
       Actualizar
     </button>
+    
+    <button mat-raised-button 
+            color="accent"
+            (click)="exportarSolicitudesExcel()"
+            [disabled]="cargando || exportando"
+            style="background-color: #28a745; color: white; margin-left: 8px;">
+      <mat-icon>{{ exportando ? 'hourglass_empty' : 'download' }}</mat-icon>
+      {{ exportando ? 'Exportando...' : 'Exportar a Excel' }}
+    </button>
   </div>
 
   <!-- Loading -->
