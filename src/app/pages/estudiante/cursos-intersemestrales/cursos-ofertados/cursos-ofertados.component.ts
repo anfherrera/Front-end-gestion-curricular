@@ -116,7 +116,7 @@ export class CursosOfertadosComponent implements OnInit {
     } else {
       // Filtrar por período
       this.cursosVerano = this.cursosVeranoOriginales.filter(
-        curso => curso.periodoAcademico === this.periodoSeleccionado
+        curso => this.obtenerPeriodoCurso(curso) === this.periodoSeleccionado
       );
     }
     this.cursos = this.mapCursosToLegacy(this.cursosVerano);
@@ -181,7 +181,8 @@ export class CursosOfertadosComponent implements OnInit {
       espacio: curso.espacio_asignado || 'Por asignar',
       estado: this.mapEstadoCurso(curso.estado || 'Borrador'),
       // ✨ NUEVO: Mapear período y fechas
-      periodoAcademico: curso.periodoAcademico,
+      periodo: this.obtenerPeriodoCurso(curso),
+      periodoAcademico: this.obtenerPeriodoCurso(curso),
       fecha_inicio: curso.fecha_inicio,
       fecha_fin: curso.fecha_fin
     }));
@@ -208,6 +209,10 @@ export class CursosOfertadosComponent implements OnInit {
     }
     
     return 'Sin nombre';
+  }
+
+  private obtenerPeriodoCurso(curso: CursoOfertadoVerano): string | undefined {
+    return curso.periodo || curso.periodoAcademico;
   }
 
   private mapEstadoCurso(estado: string): 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Publicado' | 'Abierto' | 'Borrador' {

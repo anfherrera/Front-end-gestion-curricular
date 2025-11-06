@@ -14,6 +14,7 @@ export interface Curso {
   espacio?: string;
   estado: 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Abierto' | 'Publicado' | 'Borrador';
   // ✨ NUEVO: Campos de período y fechas
+  periodo?: string;
   periodoAcademico?: string;
   fecha_inicio?: Date | string;
   fecha_fin?: Date | string;
@@ -109,8 +110,19 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
     return `${semanas} ${semanas === 1 ? 'semana' : 'semanas'}`;
   }
 
-  getColorPeriodo(periodo: string | undefined): string {
-    if (!periodo) return '#9e9e9e';
+  obtenerPeriodoValor(curso: Curso): string | undefined {
+    return curso.periodo || curso.periodoAcademico;
+  }
+
+  obtenerPeriodoDisplay(curso: Curso): string {
+    return this.obtenerPeriodoValor(curso) || 'N/A';
+  }
+
+  getColorPeriodoBadge(curso: Curso): string {
+    const periodo = this.obtenerPeriodoValor(curso);
+    if (!periodo) {
+      return '#9e9e9e';
+    }
     return getColorPeriodo(periodo);
   }
 }

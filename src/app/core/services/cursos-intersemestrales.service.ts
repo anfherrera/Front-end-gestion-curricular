@@ -79,6 +79,7 @@ export interface CursoOfertadoVerano {
   descripcion: string;
   fecha_inicio: Date;
   fecha_fin: Date;
+  periodo?: string; // Nuevo campo del backend (formato "YYYY-P")
   // ✨ NUEVO: Período académico
   periodoAcademico?: string; // Ejemplo: "2025-1", "2025-2"
   cupo_maximo: number;
@@ -327,6 +328,24 @@ export interface CreateInscripcionLegacyDTO {
 // ================== SERVICIO ==================
 @Injectable({ providedIn: 'root' })
 export class CursosIntersemestralesService {
+  private normalizarCurso(curso: CursoOfertadoVerano): CursoOfertadoVerano {
+    if (!curso) {
+      return curso;
+    }
+
+    const periodo = curso.periodo ?? curso.periodoAcademico;
+
+    if (curso.periodo === periodo && curso.periodoAcademico === periodo) {
+      return curso;
+    }
+
+    return {
+      ...curso,
+      periodo,
+      periodoAcademico: periodo
+    };
+  }
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   // ====== PERÍODOS ACADÉMICOS ======
@@ -467,19 +486,25 @@ export class CursosIntersemestralesService {
   // Obtener cursos disponibles para verano (para estudiantes - datos reales de la BD)
   getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
     console.log('🌐 Llamando a API (estudiantes):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
-    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES).pipe(
+      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+    );
   }
 
   // Obtener cursos filtrados por período académico
   getCursosPorPeriodo(periodo: string): Observable<CursoOfertadoVerano[]> {
     console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano/periodo/${periodo}`);
-    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/periodo/${periodo}`);
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/periodo/${periodo}`).pipe(
+      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+    );
   }
 
   // Obtener cursos activos en una fecha específica
   getCursosActivos(fecha: string): Observable<CursoOfertadoVerano[]> {
     console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-activos/${fecha}`);
-    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-activos/${fecha}`);
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-activos/${fecha}`).pipe(
+      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+    );
   }
 
   // Obtener estadísticas por período
@@ -489,9 +514,11 @@ export class CursosIntersemestralesService {
   }
 
   // Obtener todos los cursos para funcionarios (incluye todos los estados)
-  getTodosLosCursosParaFuncionarios(): Observable<any> {
+  getTodosLosCursosParaFuncionarios(): Observable<CursoOfertadoVerano[]> {
     console.log('🌐 Llamando a API (funcionarios):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
-    return this.http.get<any>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS).pipe(
+      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+    );
   }
 
   // Obtener cursos por estado específico
@@ -501,17 +528,22 @@ export class CursosIntersemestralesService {
     // Para funcionarios, usar endpoint /todos y filtrar localmente
     if (estado === 'Preinscripción') {
       console.log(`🌐 Llamando a endpoint específico para Preinscripción:`, ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION);
-      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION);
+      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION).pipe(
+        map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+      );
     } else if (estado === 'Inscripción') {
       console.log(`🌐 Llamando a endpoint específico para Inscripción:`, ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION);
-      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION);
+      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION).pipe(
+        map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+      );
     } else {
       // Para otros estados, obtener todos los cursos y filtrar localmente
       console.log(`🌐 Obteniendo todos los cursos para filtrar por estado "${estado}":`, ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
       return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS)
         .pipe(
           map(cursos => {
-            const cursosFiltrados = cursos.filter(curso => {
+            const cursosNormalizados = cursos.map(curso => this.normalizarCurso(curso));
+            const cursosFiltrados = cursosNormalizados.filter(curso => {
               const estadoActual = this.obtenerEstadoActual(curso);
               return estadoActual === estado;
             });

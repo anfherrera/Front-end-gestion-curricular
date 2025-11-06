@@ -59,6 +59,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     'nombre_curso', 
     'codigo_curso', 
     'objMateria', 
+    'periodo',
     'objDocente', 
     'fecha_inicio', 
     'fecha_fin', 
@@ -479,6 +480,32 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   // Formatear fecha para mostrar
   formatearFecha(fecha: Date): string {
     return new Date(fecha).toLocaleDateString('es-ES');
+  }
+
+  obtenerPeriodoCodigo(curso: CursoOfertadoVerano): string {
+    return curso.periodo || curso.periodoAcademico || 'N/A';
+  }
+
+  obtenerPeriodoDescripcion(curso: CursoOfertadoVerano): string | null {
+    const periodo = curso.periodo || curso.periodoAcademico;
+    if (!periodo) {
+      return null;
+    }
+
+    const [anio, numero] = periodo.split('-');
+    if (!anio || !numero) {
+      return null;
+    }
+
+    if (numero === '1') {
+      return `Primer Período ${anio}`;
+    }
+
+    if (numero === '2') {
+      return `Segundo Período ${anio}`;
+    }
+
+    return `Período ${numero} ${anio}`;
   }
 
   // Obtener nombre del docente de forma segura
