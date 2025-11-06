@@ -8,9 +8,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { CursosIntersemestralesService, SolicitudCursoVerano, CursoOfertadoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, SolicitudCursoVerano, CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
-import { NotificacionesService, Notificacion } from '../../../../core/services/notificaciones.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -35,20 +34,21 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   usuario: any = null;
   solicitudesPendientes: SolicitudCursoVerano[] = [];
   cursosActivos: CursoOfertadoVerano[] = [];
-  notificaciones: Notificacion[] = [];
   
-  // Estadísticas para funcionarios
+  // Estadísticas del backend
+  estadisticas: DashboardEstadisticas | null = null;
+  
+  // Variables para el template (se actualizan desde el backend)
   totalSolicitudesPendientes = 0;
   totalCursosActivos = 0;
   preinscripcionesPendientes = 0;
   inscripcionesPendientes = 0;
-  notificacionesNoLeidas = 0;
-  notificacionesUrgentes = 0;
+  
+  cargandoEstadisticas = false;
 
   constructor(
     private cursosService: CursosIntersemestralesService,
     private cursoEstadosService: CursoEstadosService,
-    private notificacionesService: NotificacionesService,
     private authService: AuthService
   ) {}
 
@@ -67,8 +67,41 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   }
 
   private cargarDatos(): void {
+    this.cargarEstadisticas();
     this.cargarCursosActivos();
-    this.cargarNotificaciones();
+  }
+
+  private cargarEstadisticas(): void {
+    this.cargandoEstadisticas = true;
+    console.log('📊 Cargando estadísticas del dashboard desde el backend...');
+    
+    this.cursosService.getDashboardEstadisticas()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (estadisticas: DashboardEstadisticas) => {
+          console.log('✅ Estadísticas recibidas del backend:', estadisticas);
+          this.estadisticas = estadisticas;
+          
+          // Actualizar variables para el template desde el backend
+          this.totalCursosActivos = estadisticas.cursosActivos || 0;
+          this.preinscripcionesPendientes = estadisticas.totalPreinscripciones || 0;
+          this.inscripcionesPendientes = estadisticas.totalInscripciones || 0;
+          
+          console.log('📊 Variables actualizadas:', {
+            totalCursosActivos: this.totalCursosActivos,
+            preinscripcionesPendientes: this.preinscripcionesPendientes,
+            inscripcionesPendientes: this.inscripcionesPendientes,
+            porcentajeProgreso: estadisticas.porcentajeProgreso
+          });
+          
+          this.cargandoEstadisticas = false;
+        },
+        error: (error: any) => {
+          console.error('❌ Error cargando estadísticas del dashboard:', error);
+          // Mantener valores por defecto (ya inicializados en 0)
+          this.cargandoEstadisticas = false;
+        }
+      });
   }
 
   private cargarCursosActivos(): void {
@@ -146,25 +179,15 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return curso.estado || 'Borrador';
   }
 
-  private cargarNotificaciones(): void {
-    this.notificacionesService.getDashboardNotificaciones(this.usuario.id_usuario)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (dashboard: any) => {
-          this.notificaciones = dashboard.notificaciones || [];
-          this.notificacionesNoLeidas = dashboard.totalNoLeidas || 0;
-          this.notificacionesUrgentes = dashboard.notificaciones?.filter((n: any) => n.esUrgente)?.length || 0;
-        },
-        error: (error: any) => {
-          console.error('Error cargando notificaciones:', error);
-        }
-      });
-  }
-
   getProgresoGestion(): number {
+    // Priorizar el porcentaje del backend si está disponible
+    if (this.estadisticas && this.estadisticas.porcentajeProgreso >= 0) {
+      return this.estadisticas.porcentajeProgreso;
+    }
+    // Fallback al cálculo local si no hay datos del backend
     if (this.totalCursosActivos === 0) return 0;
     const cursosGestionados = this.totalCursosActivos - this.preinscripcionesPendientes - this.inscripcionesPendientes;
-    return (cursosGestionados / this.totalCursosActivos) * 100;
+    return Math.round((cursosGestionados / this.totalCursosActivos) * 100);
   }
 
   getTipoSolicitudColor(tipo: string): string {
@@ -187,23 +210,6 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return this.fechasFormateadas.get(key)!;
   }
 
-  marcarNotificacionLeida(notificacion: Notificacion): void {
-    this.notificacionesService.marcarNotificacionLeida(notificacion.id || notificacion.id_notificacion || 0)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        notificacion.leida = true;
-        this.notificacionesNoLeidas--;
-      });
-  }
-
-  getIconoTipo(tipoNotificacion: string): string {
-    return this.notificacionesService.getIconoTipo(tipoNotificacion);
-  }
-
-  getColorTipo(tipoNotificacion: string): string {
-    return this.notificacionesService.getColorTipo(tipoNotificacion);
-  }
-
   getEstadoColor(estado: string | undefined): string {
     return this.cursoEstadosService.getColorEstado(estado || 'Borrador');
   }
@@ -215,9 +221,5 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   // ✅ TrackBy functions para optimizar ngFor
   trackByCursoId(index: number, curso: CursoOfertadoVerano): number {
     return curso.id_curso;
-  }
-
-  trackByNotificacionId(index: number, notificacion: Notificacion): number {
-    return notificacion.id || notificacion.id_notificacion || index;
   }
 }

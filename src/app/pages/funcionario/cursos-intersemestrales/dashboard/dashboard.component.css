@@ -102,7 +102,7 @@
 
 .content-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 30px;
   margin-bottom: 30px;
 }
@@ -319,76 +319,6 @@ mat-chip * {
   color: #666;
   font-size: 0.8rem;
   font-weight: 500;
-}
-
-.notificaciones-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.notificacion-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
-  padding: 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  border-left: 4px solid transparent;
-}
-
-.notificacion-item:hover {
-  background: #f5f5f5;
-}
-
-.notificacion-item.no-leida {
-  background: #e3f2fd;
-  border-left-color: #00138C;
-}
-
-.notificacion-icon {
-  flex-shrink: 0;
-  background: #f5f5f5;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.notificacion-icon mat-icon {
-  font-size: 1.2rem;
-  width: 1.2rem;
-  height: 1.2rem;
-  color: #00138C;
-}
-
-.notificacion-content {
-  flex: 1;
-}
-
-.notificacion-content h5 {
-  margin: 0 0 5px 0;
-  font-size: 0.9rem;
-  color: #333;
-}
-
-.notificacion-content p {
-  margin: 0 0 5px 0;
-  font-size: 0.8rem;
-  color: #666;
-  line-height: 1.4;
-}
-
-.notificacion-content small {
-  color: #999;
-  font-size: 0.7rem;
-}
-
-.notificacion-urgente {
-  flex-shrink: 0;
 }
 
 .empty-state {

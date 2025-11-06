@@ -88,7 +88,10 @@ export class ApiEndpoints {
       PERMISOS_ESTADO: (estado: string, rol: string) => `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,
       
       // Endpoint de exportación a Excel
-      EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`
+      EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`,
+      
+      // Endpoint de estadísticas del dashboard
+      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-intersemestrales/dashboard/estadisticas`
     }
   };
 

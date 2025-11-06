@@ -42,18 +42,6 @@
         </div>
       </mat-card-content>
     </mat-card>
-
-    <mat-card class="stat-card">
-      <mat-card-content>
-        <div class="stat-content">
-          <mat-icon class="stat-icon">notifications</mat-icon>
-          <div class="stat-info">
-            <h3>{{ notificacionesNoLeidas }}</h3>
-            <p>Notificaciones</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
   </div>
 
   <!-- Progreso de gestión -->
@@ -124,46 +112,6 @@
       <mat-card-actions>
         <button mat-button routerLink="../gestionar">Gestionar Todos</button>
       </mat-card-actions>
-    </mat-card>
-
-    <!-- Notificaciones -->
-    <mat-card class="content-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>notifications</mat-icon>
-          Notificaciones
-          <span *ngIf="notificacionesNoLeidas > 0" class="badge">{{ notificacionesNoLeidas }}</span>
-        </mat-card-title>
-        <mat-card-subtitle>Últimas notificaciones del sistema</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="notificaciones-list" *ngIf="notificaciones.length > 0; else noNotificaciones">
-          <div *ngFor="let notificacion of notificaciones; trackBy: trackByNotificacionId" 
-               class="notificacion-item"
-               [class.no-leida]="!notificacion.leida"
-               (click)="marcarNotificacionLeida(notificacion)">
-            <div class="notificacion-icon">
-              <mat-icon [style.color]="getColorTipo(notificacion.tipoNotificacion)">
-                {{ getIconoTipo(notificacion.tipoNotificacion) }}
-              </mat-icon>
-            </div>
-            <div class="notificacion-content">
-              <h5>{{ notificacion.titulo }}</h5>
-              <p>{{ notificacion.mensaje }}</p>
-              <small>{{ formatearFecha(notificacion.fechaCreacion) }}</small>
-            </div>
-            <div class="notificacion-urgente" *ngIf="notificacion.esUrgente">
-              <mat-icon color="warn">priority_high</mat-icon>
-            </div>
-          </div>
-        </div>
-        <ng-template #noNotificaciones>
-          <div class="empty-state">
-            <mat-icon>notifications_none</mat-icon>
-            <p>No tienes notificaciones</p>
-          </div>
-        </ng-template>
-      </mat-card-content>
     </mat-card>
   </div>
 

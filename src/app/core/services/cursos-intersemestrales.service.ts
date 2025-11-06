@@ -291,6 +291,18 @@ export interface DebugInscripcionResponse {
   };
 }
 
+// Interfaz para las estadísticas del dashboard
+export interface DashboardEstadisticas {
+  totalPreinscripciones: number;
+  totalInscripciones: number;
+  totalSolicitudesCursoNuevo: number;
+  cursosActivos: number;
+  totalCursos: number;
+  cursosGestionados: number;
+  porcentajeProgreso: number;
+  fechaConsulta: string;
+}
+
 export interface CreateSolicitudCursoNuevoDTO {
   nombreCompleto: string;
   codigo: string;
@@ -1252,6 +1264,34 @@ export class CursosIntersemestralesService {
     return this.http.post<any>(
       ApiEndpoints.CURSOS_INTERSEMESTRALES.UPLOAD_DOCUMENT(solicitudId.toString()),
       formData
+    );
+  }
+
+  /**
+   * Obtiene las estadísticas del dashboard de cursos intersemestrales
+   * @returns Observable con las estadísticas del dashboard
+   */
+  getDashboardEstadisticas(): Observable<DashboardEstadisticas> {
+    console.log('📊 Obteniendo estadísticas del dashboard...');
+    console.log('🔗 URL:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DASHBOARD_ESTADISTICAS);
+    
+    return this.http.get<DashboardEstadisticas>(
+      ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DASHBOARD_ESTADISTICAS
+    ).pipe(
+      catchError(error => {
+        console.error('❌ Error al obtener estadísticas del dashboard:', error);
+        // Retornar valores por defecto en caso de error
+        return of({
+          totalPreinscripciones: 0,
+          totalInscripciones: 0,
+          totalSolicitudesCursoNuevo: 0,
+          cursosActivos: 0,
+          totalCursos: 0,
+          cursosGestionados: 0,
+          porcentajeProgreso: 0,
+          fechaConsulta: new Date().toISOString()
+        });
+      })
     );
   }
 
