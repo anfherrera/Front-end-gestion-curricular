@@ -1,7 +1,7 @@
 <div class="dashboard-container">
   <!-- Header con saludo -->
   <div class="welcome-header">
-    <h1>¡Bienvenido, {{ usuario?.nombre }}!</h1>
+    <h1>¡Bienvenido{{ usuario?.nombre ? ', ' + usuario.nombre : '' }}!</h1>
     <p>Panel de gestión de cursos intersemestrales de verano</p>
   </div>
 
