@@ -10,5 +10,10 @@ export const CommonRoutes: Routes = [
     path: 'ajustes',
     loadComponent: () =>
       import('./ajustes/ajustes.component').then(m => m.AjustesComponent)
+  },
+  {
+    path: 'perfil',
+    loadComponent: () =>
+      import('./perfil/perfil.component').then(m => m.PerfilComponent)
   }
 ];

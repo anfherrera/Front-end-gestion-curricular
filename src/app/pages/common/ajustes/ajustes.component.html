@@ -1,1 +1,158 @@
-<p>ajustes works!</p>
+<app-card-container title="Ajustes">
+  <div class="ajustes-container">
+    <!-- Notificaciones -->
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>notifications</mat-icon>
+          Notificaciones
+        </mat-card-title>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <form [formGroup]="ajustesForm" class="settings-form">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Notificaciones por Email</h3>
+              <p>Recibir notificaciones importantes por correo electrónico</p>
+            </div>
+            <mat-slide-toggle formControlName="notificacionesEmail"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Notificaciones del Sistema</h3>
+              <p>Mostrar notificaciones dentro de la aplicación</p>
+            </div>
+            <mat-slide-toggle formControlName="notificacionesSistema"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Notificaciones Urgentes</h3>
+              <p>Recibir alertas para notificaciones urgentes incluso si las notificaciones están desactivadas</p>
+            </div>
+            <mat-slide-toggle formControlName="notificacionesUrgentes"></mat-slide-toggle>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Preferencias de Visualización -->
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>visibility</mat-icon>
+          Preferencias de Visualización
+        </mat-card-title>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <form [formGroup]="ajustesForm" class="settings-form">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Elementos por Página</h3>
+              <p>Número de elementos a mostrar por página en las tablas</p>
+            </div>
+            <mat-form-field appearance="outline" class="setting-control">
+              <mat-select formControlName="itemsPorPagina">
+                <mat-option [value]="5">5</mat-option>
+                <mat-option [value]="10">10</mat-option>
+                <mat-option [value]="25">25</mat-option>
+                <mat-option [value]="50">50</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Tema Oscuro</h3>
+              <p>Activar el modo oscuro (próximamente)</p>
+            </div>
+            <mat-slide-toggle formControlName="temaOscuro" [disabled]="true"></mat-slide-toggle>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Privacidad -->
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>lock</mat-icon>
+          Privacidad
+        </mat-card-title>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <form [formGroup]="ajustesForm" class="settings-form">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Mostrar Email</h3>
+              <p>Permitir que otros usuarios vean tu correo electrónico</p>
+            </div>
+            <mat-slide-toggle formControlName="mostrarEmail"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Mostrar Teléfono</h3>
+              <p>Permitir que otros usuarios vean tu número de teléfono</p>
+            </div>
+            <mat-slide-toggle formControlName="mostrarTelefono"></mat-slide-toggle>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Seguridad -->
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>security</mat-icon>
+          Seguridad
+        </mat-card-title>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <div class="security-actions">
+          <button mat-raised-button color="primary" (click)="cambiarContrasena()">
+            <mat-icon>lock_reset</mat-icon>
+            Cambiar Contraseña
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Datos -->
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>download</mat-icon>
+          Datos
+        </mat-card-title>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <div class="data-actions">
+          <button mat-raised-button color="accent" (click)="exportarDatos()">
+            <mat-icon>file_download</mat-icon>
+            Exportar Mis Datos
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Acciones -->
+    <div class="actions-section">
+      <button mat-raised-button color="primary" (click)="guardarAjustes()">
+        <mat-icon>save</mat-icon>
+        Guardar Ajustes
+      </button>
+      <button mat-stroked-button (click)="resetearAjustes()">
+        <mat-icon>restore</mat-icon>
+        Restaurar Valores por Defecto
+      </button>
+    </div>
+  </div>
+</app-card-container>
