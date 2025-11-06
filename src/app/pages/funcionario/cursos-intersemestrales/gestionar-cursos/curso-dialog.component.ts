@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -9,7 +9,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 import { CursosIntersemestralesService, CreateCursoDTO, UpdateCursoDTO } from '../../../../core/services/cursos-intersemestrales.service';
+import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos } from '../../../../core/utils/periodo.utils';
 
 export interface CursoDialogData {
   form: FormGroup;
@@ -34,7 +36,8 @@ export interface CursoDialogData {
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule
   ],
   template: `
     <h2 mat-dialog-title>{{ data.titulo }}</h2>
@@ -119,11 +122,24 @@ export interface CursoDialogData {
 
         <!-- Fechas y cupos (solo para crear) -->
         <div class="form-section" *ngIf="!data.soloEdicion">
-          <h3>Fechas y Cupos</h3>
+          <h3>Período y Fechas</h3>
           
+          <!-- ✨ NUEVO: Período Académico -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Período Académico</mat-label>
+            <mat-select formControlName="periodoAcademico">
+              <mat-option *ngFor="let periodo of periodos" [value]="periodo">
+                {{ formatearPeriodo(periodo) }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="data.form.get('periodoAcademico')?.hasError('required')">
+              El período académico es requerido
+            </mat-error>
+          </mat-form-field>
+
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Fecha de Inicio</mat-label>
-            <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio" placeholder="Selecciona la fecha de inicio">
+            <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio" placeholder="Selecciona la fecha de inicio" (dateChange)="onFechaChange()">
             <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
             <mat-datepicker #pickerInicio></mat-datepicker>
             <mat-error *ngIf="data.form.get('fecha_inicio')?.hasError('required')">
@@ -133,13 +149,22 @@ export interface CursoDialogData {
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Fecha de Fin</mat-label>
-            <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin" placeholder="Selecciona la fecha de fin">
+            <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin" placeholder="Selecciona la fecha de fin" (dateChange)="onFechaChange()">
             <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
             <mat-datepicker #pickerFin></mat-datepicker>
             <mat-error *ngIf="data.form.get('fecha_fin')?.hasError('required')">
               La fecha de fin es requerida
             </mat-error>
+            <mat-error *ngIf="errorFechas">
+              {{ errorFechas }}
+            </mat-error>
           </mat-form-field>
+
+          <!-- ✨ NUEVO: Información de duración -->
+          <div class="duracion-info" *ngIf="mostrarDuracion">
+            <mat-icon>schedule</mat-icon>
+            <span>Duración: <strong>{{ duracionSemanas }} {{ duracionSemanas === 1 ? 'semana' : 'semanas' }}</strong></span>
+          </div>
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Cupo Máximo</mat-label>
@@ -627,15 +652,144 @@ export interface CursoDialogData {
       margin-right: 16px;
       font-weight: 600;
     }
+
+    /* ✨ NUEVO: Estilos para información de duración */
+    .duracion-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border-left: 4px solid #00138C;
+      border-radius: 8px;
+      margin: 16px 0;
+      box-shadow: 0 2px 4px rgba(0, 19, 140, 0.1);
+    }
+
+    .duracion-info mat-icon {
+      color: #00138C;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .duracion-info span {
+      color: #00138C;
+      font-size: 14px;
+    }
+
+    .duracion-info strong {
+      font-size: 16px;
+      font-weight: 700;
+    }
   `]
 })
-export class CursoDialogComponent {
+export class CursoDialogComponent implements OnInit {
+  // ✨ NUEVO: Propiedades para períodos y validación de fechas
+  periodos: string[] = [];
+  errorFechas: string | null = null;
+  duracionSemanas: number = 0;
+  mostrarDuracion: boolean = false;
+
   constructor(
     public dialogRef: MatDialogRef<CursoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CursoDialogData,
     private cursosService: CursosIntersemestralesService,
     private snackBar: MatSnackBar
   ) {}
+
+  ngOnInit(): void {
+    this.cargarPeriodos();
+    
+    // Suscribirse a cambios en las fechas para validar
+    if (!this.data.soloEdicion) {
+      this.data.form.get('fecha_inicio')?.valueChanges.subscribe(() => this.onFechaChange());
+      this.data.form.get('fecha_fin')?.valueChanges.subscribe(() => this.onFechaChange());
+    }
+  }
+
+  // ✨ NUEVO: Cargar períodos académicos (solo futuros para crear cursos)
+  private cargarPeriodos(): void {
+    console.log('🔄 Cargando períodos académicos...');
+    
+    // Usar períodos futuros para crear cursos nuevos (recomendado)
+    this.cursosService.getPeriodosFuturos().subscribe({
+      next: (periodos) => {
+        this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
+        console.log('✅ Períodos futuros cargados:', this.periodos);
+        console.log('📊 Total de períodos:', this.periodos.length);
+        
+        // Si hay períodos disponibles, pre-seleccionar el primer período futuro
+        if (this.periodos.length > 0 && !this.data.editando) {
+          const primerPeriodo = this.periodos[0];
+          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+          console.log('✨ Período pre-seleccionado:', primerPeriodo);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error cargando períodos futuros:', error);
+        console.error('🔍 Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          message: error.message
+        });
+        
+        // Si falla, intentar con todos los períodos como fallback
+        console.warn('⚠️ Intentando cargar TODOS los períodos como fallback...');
+        this.cargarTodosLosPeriodos();
+      }
+    });
+  }
+
+  // Método de fallback para cargar todos los períodos
+  private cargarTodosLosPeriodos(): void {
+    this.cursosService.getPeriodosAcademicos().subscribe({
+      next: (periodos) => {
+        this.periodos = ordenarPeriodos(periodos, 'desc'); // Más recientes primero
+        console.log('✅ Todos los períodos cargados (fallback):', this.periodos);
+        
+        if (this.periodos.length > 0 && !this.data.editando) {
+          const primerPeriodo = this.periodos[0];
+          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error crítico cargando períodos:', error);
+        this.snackBar.open('⚠️ No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  // ✨ NUEVO: Formatear período para visualización
+  formatearPeriodo(periodo: string): string {
+    return formatearPeriodo(periodo);
+  }
+
+  // ✨ NUEVO: Validar fechas al cambiar
+  onFechaChange(): void {
+    const fechaInicio = this.data.form.get('fecha_inicio')?.value;
+    const fechaFin = this.data.form.get('fecha_fin')?.value;
+
+    if (fechaInicio && fechaFin) {
+      // Validar fechas
+      this.errorFechas = validarFechasCurso(fechaInicio, fechaFin);
+      
+      // Calcular duración
+      if (!this.errorFechas) {
+        this.duracionSemanas = calcularDuracionSemanas(fechaInicio, fechaFin);
+        this.mostrarDuracion = true;
+      } else {
+        this.mostrarDuracion = false;
+      }
+    } else {
+      this.errorFechas = null;
+      this.mostrarDuracion = false;
+    }
+  }
 
   guardarCurso() {
     if (this.data.form.valid) {

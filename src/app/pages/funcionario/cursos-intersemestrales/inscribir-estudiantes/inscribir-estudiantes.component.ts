@@ -18,6 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
 import { CursosIntersemestralesService, CursoOfertadoVerano, Inscripcion, EstudianteElegible, AceptarInscripcionResponse, RechazarInscripcionResponse, DebugInscripcionResponse } from '../../../../core/services/cursos-intersemestrales.service';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
+import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -37,7 +38,8 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
     MatChipsModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    CardContainerComponent
+    CardContainerComponent,
+    UtfFixPipe
   ],
   templateUrl: './inscribir-estudiantes.component.html',
   styleUrls: ['./inscribir-estudiantes.component.css']
@@ -195,12 +197,19 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           console.log('🔍 Tiene inscripción formal:', estudiantes[0].tiene_inscripcion_formal);
         }
         
-        this.estudiantesElegibles = estudiantes;
-        this.estudiantesFiltrados = this.estudiantesElegibles;
+        // Normalizar estado: usar estado_inscripcion o, si no viene, estado_actual
+        const normalizados = estudiantes.map((e: any) => ({
+          ...e,
+          estado_inscripcion: e.estado_inscripcion || e.estado_actual || null
+        }));
+        
+        this.estudiantesElegibles = normalizados;
+        // Mostrar como elegibles únicamente los que no están rechazados
+        this.estudiantesFiltrados = this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado');
         console.log('✅ Estudiantes elegibles cargados para curso', cursoId, ':', this.estudiantesElegibles);
         
         // Si no hay estudiantes elegibles, mostrar mensaje informativo
-        if (this.estudiantesElegibles.length === 0) {
+        if (this.estudiantesFiltrados.length === 0) {
           console.log('⚠️ No hay estudiantes elegibles - todos deben tener preinscripción aprobada y pago validado');
           this.estudiantesFiltrados = [];
           
@@ -332,215 +341,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private intentarAceptarInscripcion(estudiante: EstudianteElegible): void {
-    console.log(`🔄 Intentando aceptar inscripción para estudiante: ${estudiante.nombre_completo}`);
-    console.log('🔍 Datos disponibles:', {
-      id_solicitud: estudiante.id_solicitud,
-      id_preinscripcion: estudiante.id_preinscripcion,
-      nombre: estudiante.nombre_completo,
-      codigo: estudiante.codigo
-    });
-
-    // Método 1: Intentar con id_preinscripcion si existe
-    if (estudiante.id_preinscripcion) {
-      console.log('🔄 Método 1: Usando id_preinscripcion');
-      this.aceptarConIdPreinscripcion(estudiante);
-      return;
-    }
-
-    // Método 2: Intentar con id_solicitud
-    if (estudiante.id_solicitud) {
-      console.log('🔄 Método 2: Usando id_solicitud');
-      this.aceptarConIdSolicitud(estudiante);
-      return;
-    }
-
-    // Si no hay ningún ID disponible
-    console.error('❌ No se encontró ID de preinscripción ni de solicitud');
-    this.snackBar.open('Error: No se encontró ID válido para procesar la inscripción', 'Cerrar', { 
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
-  }
-
-  private aceptarConIdPreinscripcion(estudiante: EstudianteElegible): void {
-    // Verificar que id_preinscripcion existe antes de usarlo
-    if (!estudiante.id_preinscripcion) {
-      console.error('❌ Error: id_preinscripcion es undefined');
-      this.procesarError({ status: 400, error: { message: 'ID de preinscripción no disponible' } });
-      return;
-    }
-    
-    console.log(`🔄 Aceptando con ID preinscripción: ${estudiante.id_preinscripcion}`);
-    
-    this.cursosService.aceptarInscripcion(estudiante.id_preinscripcion, 'Inscripción aceptada por funcionario').subscribe({
-      next: (response: any) => {
-        console.log('✅ Inscripción aceptada con id_preinscripcion:', response);
-        this.procesarRespuestaExitosa(estudiante, response);
-      },
-      error: (err: any) => {
-        console.error('❌ Error con id_preinscripcion, intentando con id_solicitud:', err);
-        // Si falla con id_preinscripcion, intentar con id_solicitud
-        if (estudiante.id_solicitud) {
-          this.aceptarConIdSolicitud(estudiante);
-        } else {
-          this.procesarError(err);
-        }
-      }
-    });
-  }
-
-  private aceptarConIdSolicitud(estudiante: EstudianteElegible): void {
-    console.log(`🔄 Aceptando con ID solicitud: ${estudiante.id_solicitud}`);
-    
-    // Probar diferentes endpoints posibles
-    const endpoints = [
-      `http://localhost:5000/api/cursos-intersemestrales/cursos-verano/inscripciones/${estudiante.id_solicitud}/aceptar`,
-      `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${estudiante.id_solicitud}/aceptar`,
-      `http://localhost:5000/api/cursos-intersemestrales/cursos-verano/inscripciones/${estudiante.id_solicitud}/completar`
-    ];
-
-    this.probarEndpoints(endpoints, estudiante, 0);
-  }
-
-  private probarEndpoints(endpoints: string[], estudiante: EstudianteElegible, index: number): void {
-    if (index >= endpoints.length) {
-      console.error('❌ Todos los endpoints fallaron');
-      this.snackBar.open('Error: No se pudo procesar la inscripción con ningún endpoint disponible', 'Cerrar', { 
-        duration: 5000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
-
-    const endpoint = endpoints[index];
-    const body = { observaciones: 'Inscripción aceptada por funcionario' };
-    
-    console.log(`🔄 Probando endpoint ${index + 1}/${endpoints.length}:`, endpoint);
-    
-    this.http.put<any>(endpoint, body).subscribe({
-      next: (response: any) => {
-        console.log(`✅ Éxito con endpoint ${index + 1}:`, response);
-        this.procesarRespuestaExitosa(estudiante, response);
-      },
-      error: (err) => {
-        console.error(`❌ Error con endpoint ${index + 1}:`, err.status, err.statusText);
-        // Intentar con el siguiente endpoint
-        this.probarEndpoints(endpoints, estudiante, index + 1);
-      }
-    });
-  }
-
-  private procesarRespuestaExitosa(estudiante: EstudianteElegible, response: any): void {
-    // Actualizar estado localmente
-    const index = this.estudiantesFiltrados.findIndex(e => e.id_solicitud === estudiante.id_solicitud);
-    if (index !== -1) {
-      this.estudiantesFiltrados[index].estado_inscripcion = 'Inscripcion_Completada';
-    }
-    
-    this.snackBar.open(
-      `✅ Inscripción aceptada exitosamente\nEstudiante: ${estudiante.nombre_completo}\nCurso: ${this.cursoSeleccionado?.nombre_curso || 'Curso seleccionado'}`, 
-      'Cerrar', 
-      { 
-        duration: 5000,
-        panelClass: ['success-snackbar']
-      }
-    );
-    
-    // Recargar la lista para obtener datos actualizados
-    if (this.cursoSeleccionado) {
-      this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-    }
-  }
-
-  private procesarError(err: any): void {
-    console.error('❌ Error final al aceptar inscripción:', err);
-    
-    let mensajeError = 'Error al aceptar la inscripción';
-    if (err.status === 404) {
-      mensajeError = 'No se encontró la solicitud especificada';
-    } else if (err.status === 400) {
-      mensajeError = `Error en la solicitud: ${err.error?.message || 'La inscripción no puede ser aceptada en su estado actual'}`;
-    } else if (err.status === 500) {
-      mensajeError = `Error interno del servidor: ${err.error?.message || 'Contacte al administrador'}`;
-    }
-    
-    this.snackBar.open(mensajeError, 'Cerrar', { 
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
-  }
-
-  private procesarAceptacionConIdSolicitud(estudiante: EstudianteElegible): void {
-    // Usar el endpoint correcto para aceptar inscripción
-    console.log(`🔄 Aceptando inscripción con ID solicitud: ${estudiante.id_solicitud}`);
-    console.log('🔍 Datos del estudiante:', {
-      id_solicitud: estudiante.id_solicitud,
-      id_preinscripcion: estudiante.id_preinscripcion,
-      nombre: estudiante.nombre_completo,
-      codigo: estudiante.codigo
-    });
-    
-    // Intentar con el endpoint correcto del backend
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/cursos-verano/inscripciones/${estudiante.id_solicitud}/aceptar`;
-    const body = {
-      observaciones: 'Inscripción aceptada por funcionario'
-    };
-    
-    console.log('🔍 Endpoint:', endpoint);
-    console.log('🔍 Body:', body);
-    
-    this.http.put<any>(endpoint, body).subscribe({
-      next: (response: any) => {
-        console.log('✅ Respuesta del servidor:', response);
-        
-        // Actualizar estado localmente
-        const index = this.estudiantesFiltrados.findIndex(e => e.id_solicitud === estudiante.id_solicitud);
-        if (index !== -1) {
-          this.estudiantesFiltrados[index].estado_inscripcion = 'Inscripcion_Completada';
-        }
-        
-        this.snackBar.open(
-          `✅ Inscripción aceptada exitosamente\nEstudiante: ${estudiante.nombre_completo}\nCurso: ${this.cursoSeleccionado?.nombre_curso || 'Curso seleccionado'}`, 
-          'Cerrar', 
-          { 
-            duration: 5000,
-            panelClass: ['success-snackbar']
-          }
-        );
-        
-        // Recargar la lista para obtener datos actualizados
-        if (this.cursoSeleccionado) {
-          this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-        }
-      },
-      error: (err) => {
-        console.error('❌ Error aceptando inscripción:', err);
-        console.error('❌ Detalles del error:', {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          url: err.url,
-          error: err.error
-        });
-        
-        let mensajeError = 'Error al aceptar la inscripción';
-        if (err.status === 404) {
-          mensajeError = 'No se encontró la solicitud especificada';
-        } else if (err.status === 400) {
-          mensajeError = `Error en la solicitud: ${err.error?.message || 'La inscripción no puede ser aceptada en su estado actual'}`;
-        } else if (err.status === 500) {
-          mensajeError = `Error interno del servidor: ${err.error?.message || 'Contacte al administrador'}`;
-        }
-        
-        this.snackBar.open(mensajeError, 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
-
   rechazarInscripcion(estudiante: EstudianteElegible): void {
     console.log(`❌ Rechazando inscripción ${estudiante.id_solicitud} para estudiante ${estudiante.nombre_completo}`);
     
@@ -556,8 +356,10 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       next: (response) => {
         console.log('❌ Inscripción rechazada:', response);
         alert('Inscripción rechazada exitosamente');
-        // Recargar la lista de estudiantes y estadísticas
+        
+        // 🔄 REFRESCAR LA LISTA DESPUÉS DEL RECHAZO EXITOSO
         if (this.cursoSeleccionado) {
+          console.log('🔄 Refrescando lista de estudiantes después del rechazo...');
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
           this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
@@ -608,79 +410,28 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     alert(mensaje);
   }
 
-  private procesarRechazo(estudiante: EstudianteElegible, motivoRechazo: string): void {
-    // Verificar que id_preinscripcion existe
-    if (!estudiante.id_preinscripcion) {
-      console.error('❌ Error: No se encontró ID de preinscripción para el estudiante');
-      this.snackBar.open('Error: No se encontró ID de preinscripción para el estudiante', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
+  // Obtener nombre del docente de forma segura
+  obtenerNombreDocente(curso: CursoOfertadoVerano | null): string {
+    if (!curso || !curso.objDocente) {
+      return 'Sin asignar';
     }
     
-    console.log(`🔄 Procesando rechazo con motivo: ${motivoRechazo}`);
+    // Priorizar nombre_docente (estructura del backend)
+    if ((curso.objDocente as any).nombre_docente) {
+      return (curso.objDocente as any).nombre_docente;
+    }
     
-    // Llamar al servicio para rechazar la inscripción
-    this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivoRechazo).subscribe({
-      next: (response: RechazarInscripcionResponse) => {
-        console.log('✅ Inscripción rechazada:', response);
-        
-        if (response.success) {
-          // Actualizar estado localmente
-          const index = this.estudiantesFiltrados.findIndex(e => e.id_preinscripcion === estudiante.id_preinscripcion);
-          if (index !== -1) {
-            this.estudiantesFiltrados[index].estado_inscripcion = 'Rechazado';
-          }
-          
-          this.snackBar.open(
-            `❌ ${response.message}\nEstudiante: ${estudiante.objUsuario?.nombre_completo || estudiante.nombre_completo}\nMotivo: ${motivoRechazo}`, 
-            'Cerrar', 
-            { 
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            }
-          );
-          
-          // Recargar la lista para obtener datos actualizados
-          if (this.cursoSeleccionado) {
-            this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-          }
-        } else {
-          this.snackBar.open('Error: La respuesta del servidor indica fallo', 'Cerrar', { 
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-        }
-      },
-      error: (err) => {
-        console.error('❌ Error rechazando inscripción:', err);
-        console.error('❌ Detalles del error:', {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          url: err.url
-        });
-        
-        let mensajeError = 'Error al rechazar la inscripción';
-        if (err.status === 404) {
-          mensajeError = 'No se encontró la preinscripción especificada';
-        } else if (err.status === 400) {
-          mensajeError = 'La inscripción no puede ser rechazada en su estado actual';
-        } else if (err.status === 500) {
-          mensajeError = 'Error interno del servidor. Contacte al administrador';
-        }
-        
-        this.snackBar.open(mensajeError, 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
+    // Fallback a nombre y apellido (estructura legacy)
+    if (curso.objDocente.nombre && curso.objDocente.apellido) {
+      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
+    }
+    
+    if (curso.objDocente.nombre) {
+      return curso.objDocente.nombre;
+    }
+    
+    return 'Sin nombre';
   }
-
-
-
 }
 
 // Componente del dialog para ver detalles de inscripción
@@ -695,7 +446,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
-    MatIconModule
+    MatIconModule,
+    UtfFixPipe
   ],
   template: `
     <!-- Dialog simplificado - Solo solicitud y comprobante -->
@@ -707,7 +459,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         <h3>👤 Información del Estudiante</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Nombre Completo:</strong> {{ data.estudiante.nombre_completo }}
+            <strong>Nombre Completo:</strong> {{ data.estudiante.nombre_completo | utfFix }}
           </div>
           <div class="info-item">
             <strong>Código:</strong> {{ data.estudiante.codigo }}
@@ -723,7 +475,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           </div>
         </div>
       </div>
-
 
       <!-- Información de la solicitud -->
       <div class="form-section">
@@ -948,39 +699,73 @@ export class DetallesInscripcionDialogComponent {
     }
   }
 
-  descargarComprobante(): void {
+  async descargarComprobante(): Promise<void> {
     console.log('📥 Descargando comprobante para estudiante:', this.data.estudiante.nombre_completo);
     console.log('🔍 ID de solicitud:', this.data.estudiante.id_solicitud);
+    console.log('🔍 ID de inscripción:', this.data.estudiante.id_inscripcion);
+    console.log('📁 Archivo de pago:', this.data.estudiante.archivoPago);
     
-    if (!this.data.estudiante.id_solicitud) {
-      console.error('❌ Error: No se encontró ID de solicitud para descargar comprobante');
-      alert('Error: No se encontró ID de solicitud para descargar comprobante');
-      return;
-    }
-    
-    // Usar el servicio para descargar comprobante
-    this.cursosService.descargarComprobantePago(this.data.estudiante.id_solicitud).subscribe({
-      next: (blob: Blob) => {
-        console.log('📄 Descargando comprobante de pago');
-        
-        // Crear enlace de descarga
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `comprobante_pago_${this.data.estudiante.nombre_completo}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        
-        console.log('✅ Descarga completada exitosamente');
-        alert('Comprobante descargado exitosamente');
-      },
-      error: (error: any) => {
-        console.error('❌ Error descargando comprobante:', error);
-        alert('Error al descargar el comprobante de pago');
+    try {
+      // Verificar si hay archivo de pago disponible en los datos del estudiante
+      if (!this.data.estudiante.archivoPago || !this.data.estudiante.archivoPago.nombre) {
+        console.error('❌ Error: No se encontró archivo de pago en los datos del estudiante');
+        alert('No se encontró el archivo de comprobante');
+        return;
       }
-    });
+      
+      const nombreArchivo = this.data.estudiante.archivoPago.nombre;
+      console.log('📥 Descargando archivo:', nombreArchivo);
+      
+      // Usar el servicio de cursos intersemestrales para descargar
+      console.log('🔗 Usando servicio de cursos intersemestrales para descargar');
+      
+      // Usar id_inscripcion si está disponible, sino usar id_solicitud
+      const idParaDescarga = this.data.estudiante.id_inscripcion || this.data.estudiante.id_solicitud;
+      
+      if (!idParaDescarga) {
+        console.error('❌ Error: No se encontró ID para descargar comprobante');
+        alert('Error: No se encontró ID para descargar comprobante');
+        return;
+      }
+      
+      console.log('🔍 Usando ID para descarga:', idParaDescarga);
+      
+      // Usar el servicio de cursos intersemestrales
+      this.cursosService.descargarComprobantePago(idParaDescarga).subscribe({
+        next: (blob: Blob) => {
+          console.log('📄 Descargando comprobante de pago usando servicio de cursos intersemestrales');
+          console.log('📊 Tamaño del archivo:', blob.size, 'bytes');
+          
+          // Verificar que el blob no esté vacío
+          if (blob && blob.size > 0) {
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = nombreArchivo;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            document.body.removeChild(a);
+            
+            console.log('✅ Archivo descargado exitosamente');
+            alert('Comprobante descargado exitosamente');
+          } else {
+            console.error('❌ El archivo PDF está vacío o corrupto');
+            alert('Error: El archivo PDF está vacío o corrupto');
+          }
+        },
+        error: (error: any) => {
+          console.error('❌ Error descargando comprobante:', error);
+          alert('Error al descargar el comprobante de pago: ' + (error.error?.message || error.message || 'Error desconocido'));
+        }
+      });
+      
+      return; // Salir del método ya que usamos subscribe
+    } catch (error) {
+      console.error('❌ Error:', error);
+      alert('Error de conexión');
+    }
   }
-
 
   confirmarInscripcion(): void {
     // Lógica para confirmar la inscripción
@@ -988,7 +773,7 @@ export class DetallesInscripcionDialogComponent {
   }
 }
 
-// 🆕 Componente del modal de confirmación de inscripción
+// Componente del modal de confirmación de inscripción
 @Component({
   selector: 'app-confirmacion-inscripcion-dialog',
   standalone: true,
@@ -997,7 +782,8 @@ export class DetallesInscripcionDialogComponent {
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    UtfFixPipe
   ],
   template: `
     <div class="confirmacion-dialog">
@@ -1012,7 +798,7 @@ export class DetallesInscripcionDialogComponent {
             <mat-icon class="info-icon">person</mat-icon>
             <div class="info-text">
               <strong>Estudiante:</strong>
-              <span>{{ data.estudiante.nombre_completo }}</span>
+              <span>{{ data.estudiante.nombre_completo | utfFix }}</span>
             </div>
           </div>
           
@@ -1025,26 +811,10 @@ export class DetallesInscripcionDialogComponent {
           </div>
           
           <div class="info-item">
-            <mat-icon class="info-icon">check_circle</mat-icon>
-            <div class="info-text">
-              <strong>Estado:</strong>
-              <span class="estado-positivo">Completó todos los requisitos</span>
-            </div>
-          </div>
-          
-          <div class="info-item">
-            <mat-icon class="info-icon">payment</mat-icon>
-            <div class="info-text">
-              <strong>Pago:</strong>
-              <span class="estado-positivo">Validado</span>
-            </div>
-          </div>
-          
-          <div class="info-item" *ngIf="data.curso">
             <mat-icon class="info-icon">book</mat-icon>
             <div class="info-text">
               <strong>Curso:</strong>
-              <span>{{ data.curso.nombre_curso }}</span>
+              <span>{{ data.curso.nombre | utfFix }}</span>
             </div>
           </div>
         </div>
@@ -1097,63 +867,55 @@ export class DetallesInscripcionDialogComponent {
 
     .dialog-content {
       padding: 24px;
-      max-height: 400px;
-      overflow-y: auto;
+      background: #f8f9fa;
     }
 
     .estudiante-info {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
       margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .info-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-      border-radius: 8px;
-      border-left: 4px solid #00138C;
-      box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+      margin-bottom: 16px;
+    }
+
+    .info-item:last-child {
+      margin-bottom: 0;
     }
 
     .info-icon {
+      color: #00138C;
       font-size: 20px;
       width: 20px;
       height: 20px;
-      color: #00138C;
-      flex-shrink: 0;
     }
 
     .info-text {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
     }
 
     .info-text strong {
-      font-size: 12px;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: #00138C;
+      font-size: 14px;
+      font-weight: 600;
     }
 
     .info-text span {
-      font-size: 14px;
       color: #333;
-      font-weight: 500;
-    }
-
-    .estado-positivo {
-      color: #2e7d32 !important;
-      font-weight: 600 !important;
+      font-size: 16px;
     }
 
     .confirmacion-mensaje {
-      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-      border: 1px solid #90caf9;
+      background: #e3f2fd;
+      border: 1px solid #2196f3;
       border-radius: 8px;
       padding: 16px;
       text-align: center;
@@ -1162,77 +924,45 @@ export class DetallesInscripcionDialogComponent {
     .confirmacion-mensaje p {
       margin: 0;
       color: #1976d2;
-      font-weight: 500;
       font-size: 14px;
+      font-weight: 500;
     }
 
     .dialog-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      padding: 16px 24px;
-      background: #f8f9fa;
+      padding: 20px 24px;
+      background: white;
       border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
     }
 
     .btn-cancelar {
       color: #666;
       border: 1px solid #ddd;
-      background: white;
-      border-radius: 6px;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-      transition: all 0.3s ease;
     }
 
     .btn-cancelar:hover {
       background: #f5f5f5;
-      border-color: #bbb;
     }
 
     .btn-confirmar {
-      background: #00138C !important;
-      color: white !important;
-      border-radius: 6px;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-      transition: all 0.3s ease;
+      background: #00138C;
+      color: white;
     }
 
     .btn-confirmar:hover {
-      background: #001a99 !important;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
+      background: #0024CC;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .dialog-header {
-        padding: 16px;
-      }
+    .btn-cancelar mat-icon,
+    .btn-confirmar mat-icon {
+      margin-right: 8px;
+    }
 
-      .dialog-header h2 {
-        font-size: 18px;
-      }
-
-      .dialog-content {
-        padding: 20px;
-      }
-
-      .info-item {
-        padding: 10px;
-      }
-
+    @media (max-width: 480px) {
       .dialog-actions {
         flex-direction: column;
-        gap: 8px;
-        padding: 16px 20px;
       }
 
       .btn-cancelar,
@@ -1251,112 +981,5 @@ export class ConfirmacionInscripcionDialogComponent {
 
   confirmar(): void {
     this.dialogRef.close('confirmar');
-  }
-}
-
-// Componente del dialog para pedir motivo de rechazo
-@Component({
-  selector: 'app-motivo-rechazo-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule
-  ],
-  template: `
-    <h2 mat-dialog-title>{{ data.titulo }}</h2>
-    
-    <div mat-dialog-content class="dialog-content">
-      <p class="mensaje">{{ data.mensaje }}</p>
-      
-      <form [formGroup]="motivoForm">
-        <mat-form-field appearance="outline" class="motivo-field">
-          <mat-label>Motivo del rechazo *</mat-label>
-          <textarea matInput 
-                    formControlName="motivo"
-                    placeholder="Explique el motivo del rechazo..."
-                    rows="4"
-                    maxlength="500"></textarea>
-          <mat-hint align="end">{{ motivoForm.get('motivo')?.value?.length || 0 }}/500</mat-hint>
-          <mat-error *ngIf="motivoForm.get('motivo')?.hasError('required')">
-            El motivo es requerido
-          </mat-error>
-          <mat-error *ngIf="motivoForm.get('motivo')?.hasError('minlength')">
-            El motivo debe tener al menos 10 caracteres
-          </mat-error>
-        </mat-form-field>
-      </form>
-    </div>
-
-    <div mat-dialog-actions class="dialog-actions">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-raised-button 
-              color="warn" 
-              [disabled]="!motivoForm.valid"
-              (click)="confirmarRechazo()">
-        <mat-icon>cancel</mat-icon>
-        Rechazar Inscripción
-      </button>
-    </div>
-  `,
-  styles: [`
-    .dialog-content {
-      padding: 20px;
-      min-width: 400px;
-    }
-
-    .mensaje {
-      margin-bottom: 20px;
-      color: #333;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .motivo-field {
-      width: 100%;
-    }
-
-    .dialog-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      padding: 16px 20px;
-      border-top: 1px solid #e0e0e0;
-      background: #f8f9fa;
-    }
-
-    ::ng-deep .mat-mdc-form-field {
-      .mat-mdc-text-field-wrapper {
-        background-color: white;
-      }
-    }
-  `]
-})
-export class MotivoRechazoDialogComponent {
-  motivoForm: FormGroup;
-
-  constructor(
-    public dialogRef: MatDialogRef<MotivoRechazoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { 
-      estudiante: EstudianteElegible;
-      titulo: string;
-      mensaje: string;
-    },
-    private fb: FormBuilder
-  ) {
-    this.motivoForm = this.fb.group({
-      motivo: ['', [Validators.required, Validators.minLength(10)]]
-    });
-  }
-
-  confirmarRechazo(): void {
-    if (this.motivoForm.valid) {
-      const motivo = this.motivoForm.get('motivo')?.value;
-      this.dialogRef.close({ motivo: motivo });
-    }
   }
 }

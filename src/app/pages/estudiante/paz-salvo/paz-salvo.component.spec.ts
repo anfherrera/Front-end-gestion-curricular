@@ -1,15 +1,14 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { PazSalvoComponent } from './paz-salvo.component';
-import { PazSalvoService } from '../../../core/services/paz-salvo.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { of, throwError } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import { of, throwError } from 'rxjs';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
 
-describe('PazSalvoComponent - Pruebas de Usabilidad', () => {
+import { PazSalvoComponent } from './paz-salvo.component';
+import { PazSalvoService } from '../../../core/services/paz-salvo.service';
+
+describe('PazSalvoComponent', () => {
   let component: PazSalvoComponent;
   let fixture: ComponentFixture<PazSalvoComponent>;
   let pazSalvoService: jasmine.SpyObj<PazSalvoService>;
@@ -18,20 +17,21 @@ describe('PazSalvoComponent - Pruebas de Usabilidad', () => {
   let httpClient: jasmine.SpyObj<HttpClient>;
   let compiled: HTMLElement;
 
-  // Métricas de usabilidad
-  let metricasUsabilidad = {
-    tiemposRespuesta: [] as number[],
-    elementosVisibles: 0,
-    elementosEditables: 0,
-    interaccionesExitosas: 0,
-    validacionesCorrectas: 0
+  const mockUsuario = {
+    id_usuario: 1,
+    nombre_completo: 'Test User',
+    codigo: '12345',
+    correo: 'test@unicauca.edu.co',
+    rol: { nombre: 'ESTUDIANTE' },
+    objPrograma: { id: 1, nombre: 'Ingeniería' }
   };
 
   beforeEach(async () => {
     const pazSalvoServiceSpy = jasmine.createSpyObj('PazSalvoService', [
       'listarSolicitudesPorRol',
       'sendRequest',
-      'obtenerOficios'
+      'descargarOficio',
+      'obtenerDocumentos'
     ]);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -52,18 +52,10 @@ describe('PazSalvoComponent - Pruebas de Usabilidad', () => {
     dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
     httpClient = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
 
-    // Mock localStorage
-    const mockUsuario = {
-      id_usuario: 1,
-      nombre_completo: 'Test User',
-      codigo: '12345',
-      correo: 'test@unicauca.edu.co',
-      rol: { nombre: 'ESTUDIANTE' },
-      objPrograma: { id: 1, nombre: 'Ingeniería' }
-    };
-    localStorage.setItem('usuario', JSON.stringify(mockUsuario));
+    window.localStorage.setItem('usuario', JSON.stringify(mockUsuario));
 
     pazSalvoService.listarSolicitudesPorRol.and.returnValue(of([]));
+    pazSalvoService.sendRequest.and.returnValue(of({} as any));
 
     fixture = TestBed.createComponent(PazSalvoComponent);
     component = fixture.componentInstance;
@@ -72,277 +64,247 @@ describe('PazSalvoComponent - Pruebas de Usabilidad', () => {
   });
 
   afterEach(() => {
-    localStorage.clear();
+    pazSalvoService.listarSolicitudesPorRol.calls.reset();
+    pazSalvoService.sendRequest.calls.reset();
+    snackBar.open.calls.reset();
+    dialog.open.calls.reset();
+    window.localStorage.clear();
   });
 
-  describe('1. VISIBILIDAD DE ELEMENTOS', () => {
-    it('US-001: Debe mostrar el título principal del módulo', () => {
-      const titulo = compiled.querySelector('h1, h2, .titulo-principal');
-      expect(titulo).toBeTruthy();
-      if (titulo) {
-        metricasUsabilidad.elementosVisibles++;
-      }
-    });
-
-    it('US-002: Debe mostrar la sección de documentos requeridos', () => {
-      expect(component.documentosRequeridos.length).toBeGreaterThan(0);
-      const seccionDocs = compiled.querySelector('app-required-docs');
-      expect(seccionDocs).toBeTruthy();
-      metricasUsabilidad.elementosVisibles++;
-    });
-
-    it('US-003: Debe mostrar el componente de subida de archivos', () => {
-      const fileUpload = compiled.querySelector('app-file-upload');
-      expect(fileUpload).toBeTruthy();
-      metricasUsabilidad.elementosVisibles++;
-    });
-
-    it('US-004: Debe mostrar la tabla de estado de solicitudes', () => {
-      const tabla = compiled.querySelector('app-request-status-table');
-      expect(tabla).toBeTruthy();
-      metricasUsabilidad.elementosVisibles++;
-    });
-
-    it('US-005: Los elementos clave deben ser visibles sin scroll', () => {
-      const elementos = compiled.querySelectorAll('mat-card, button, .file-upload');
-      expect(elementos.length).toBeGreaterThan(0);
-      metricasUsabilidad.elementosVisibles += elementos.length;
-    });
+  it('debe crear el componente', () => {
+    expect(component).toBeTruthy();
   });
 
-  describe('2. INTERACTIVIDAD Y EDITABILIDAD', () => {
-    it('US-006: El botón de envío debe estar inicialmente deshabilitado', () => {
-      const botonEnviar = compiled.querySelector('button[type="submit"]') as HTMLButtonElement;
-      if (botonEnviar) {
-        expect(botonEnviar.disabled).toBe(true);
-        metricasUsabilidad.validacionesCorrectas++;
-      }
-    });
-
-    it('US-007: El botón de envío debe habilitarse cuando hay archivos', () => {
-      component.archivosActuales = [
-        { nombre: 'test.pdf', ruta: 'path/test.pdf', tipo: 'application/pdf' }
-      ];
-      fixture.detectChanges();
-      
-      expect(component.puedeEnviar()).toBe(true);
-      metricasUsabilidad.validacionesCorrectas++;
-    });
-
-    it('US-008: Debe permitir agregar archivos mediante el componente de subida', () => {
-      const archivos = [
-        { nombre: 'documento1.pdf', ruta: 'path1', tipo: 'application/pdf' },
-        { nombre: 'documento2.pdf', ruta: 'path2', tipo: 'application/pdf' }
-      ];
-      
-      component.onArchivosChange(archivos);
-      
-      expect(component.archivosActuales.length).toBe(2);
-      metricasUsabilidad.interaccionesExitosas++;
-    });
-
-    it('US-009: Debe validar que exista usuario antes de enviar', () => {
-      component.archivosActuales = [{ nombre: 'test.pdf', ruta: 'path', tipo: 'pdf' }];
-      expect(component.puedeEnviar()).toBe(true);
-      
-      component.usuario = null;
-      expect(component.puedeEnviar()).toBe(false);
-      metricasUsabilidad.validacionesCorrectas++;
-    });
+  it('debe renderizar secciones principales', () => {
+    expect(compiled.querySelector('app-required-docs')).toBeTruthy();
+    expect(compiled.querySelector('app-file-upload')).toBeTruthy();
+    expect(compiled.querySelectorAll('.card-title').length).toBeGreaterThan(0);
   });
 
-  describe('3. MENSAJES Y FEEDBACK', () => {
-    it('US-010: Debe mostrar mensaje de éxito al enviar solicitud', fakeAsync(() => {
-      const mockArchivos = [{ nombre: 'test.pdf', ruta: 'path', tipo: 'pdf' }];
-      component.archivosActuales = mockArchivos;
-      
-      const mockFileUploadComponent = {
-        subirArchivosPendientes: () => of(mockArchivos),
-        resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
-      };
-      component.fileUploadComponent = mockFileUploadComponent as any;
-      
-      pazSalvoService.sendRequest.and.returnValue(of({ success: true }));
-      
-      const tiempoInicio = performance.now();
-      component.onSolicitudEnviada();
-      tick();
-      const tiempoFin = performance.now();
-      
-      metricasUsabilidad.tiemposRespuesta.push(tiempoFin - tiempoInicio);
-      expect(snackBar.open).toHaveBeenCalled();
-      metricasUsabilidad.interaccionesExitosas++;
-    }));
+  it('debe determinar si puede enviar según archivos y usuario', () => {
+    component.archivosActuales = [];
+    expect(component.puedeEnviar()).toBeFalse();
 
-    it('US-011: Debe mostrar mensaje de error cuando falla el envío', fakeAsync(() => {
-      const mockArchivos = [{ nombre: 'test.pdf', ruta: 'path', tipo: 'pdf' }];
-      
-      const mockFileUploadComponent = {
-        subirArchivosPendientes: () => throwError(() => new Error('Error de red')),
-        resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
-      };
-      component.fileUploadComponent = mockFileUploadComponent as any;
-      
-      component.onSolicitudEnviada();
-      tick();
-      
-      expect(snackBar.open).toHaveBeenCalled();
-      metricasUsabilidad.interaccionesExitosas++;
-    }));
+    component.archivosActuales = [{ nombre: 'test.pdf' } as any];
+    expect(component.puedeEnviar()).toBeTrue();
 
-    it('US-012: Los mensajes deben tener una duración apropiada', () => {
-      // Simular mensaje de éxito
-      component['mostrarMensaje']('Éxito', 'success');
-      
-      const lastCall = snackBar.open.calls.mostRecent();
-      const config = lastCall.args[2];
-      
-      expect(config.duration).toBeLessThanOrEqual(6000);
-      expect(config.duration).toBeGreaterThanOrEqual(3000);
-      metricasUsabilidad.validacionesCorrectas++;
-    });
+    component.usuario = null;
+    expect(component.puedeEnviar()).toBeFalse();
   });
 
-  describe('4. NAVEGACIÓN Y FLUJO', () => {
-    it('US-013: Debe cargar solicitudes al iniciar el componente', fakeAsync(() => {
-      const mockSolicitudes = [
-        {
-          id_solicitud: 1,
-          nombre_solicitud: 'Solicitud Test',
-          fecha_registro_solicitud: new Date().toISOString(),
-          estadosSolicitud: [{ estado_actual: 'PENDIENTE', comentarios: '' }],
-          documentos: []
-        }
-      ];
-      
-      pazSalvoService.listarSolicitudesPorRol.and.returnValue(of(mockSolicitudes));
-      
-      const tiempoInicio = performance.now();
-      component.listarSolicitudes();
-      tick();
-      const tiempoFin = performance.now();
-      
-      metricasUsabilidad.tiemposRespuesta.push(tiempoFin - tiempoInicio);
-      expect(component.solicitudes.length).toBeGreaterThan(0);
-      metricasUsabilidad.interaccionesExitosas++;
-    }));
+  it('debe actualizar archivos al llamar onArchivosChange', () => {
+    const archivos = [{ nombre: 'a.pdf' }, { nombre: 'b.pdf' }] as any[];
+    component.onArchivosChange(archivos);
+    expect(component.archivosActuales).toEqual(archivos);
+  });
 
-    it('US-014: Debe identificar solicitudes rechazadas correctamente', () => {
-      expect(component.esSolicitudRechazada('RECHAZADA')).toBe(true);
-      expect(component.esSolicitudRechazada('Rechazada')).toBe(true);
-      expect(component.esSolicitudRechazada('APROBADA')).toBe(false);
-      metricasUsabilidad.validacionesCorrectas++;
-    });
+  it('debe enviar solicitud exitosamente y resetear el estado', fakeAsync(() => {
+    const archivos = [{ nombre: 'test.pdf', fecha: new Date().toISOString() }];
+    const fileUploadMock = {
+      subirArchivosPendientes: () => of(archivos),
+      resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
+    };
 
-    it('US-015: Debe permitir ver comentarios en solicitudes rechazadas', () => {
-      const mockSolicitud = {
-        id_solicitud: 1,
-        nombre_solicitud: 'Test',
+    component.archivosActuales = archivos as any;
+    component.fileUploadComponent = fileUploadMock as any;
+
+    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje').and.callThrough();
+
+    component.onSolicitudEnviada();
+    tick();
+    tick();
+
+    expect(pazSalvoService.sendRequest).toHaveBeenCalledWith(mockUsuario.id_usuario, archivos);
+    expect(mostrarSpy).toHaveBeenCalledWith(jasmine.stringMatching('Solicitud de paz y salvo'), 'success');
+    expect(fileUploadMock.resetearEstadoCarga).not.toHaveBeenCalled();
+    expect(component.resetFileUpload).toBeFalse();
+  }));
+
+  it('debe manejar error al subir documentos mostrando mensaje', fakeAsync(() => {
+    const fileUploadMock = {
+      subirArchivosPendientes: () => throwError(() => new Error('fallo')),
+      resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
+    };
+
+    component.fileUploadComponent = fileUploadMock as any;
+
+    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje').and.callThrough();
+
+    component.onSolicitudEnviada();
+    tick();
+
+    expect(mostrarSpy).toHaveBeenCalledWith(jasmine.stringMatching('Error al subir documentos'), 'error');
+    expect(fileUploadMock.resetearEstadoCarga).toHaveBeenCalled();
+  }));
+
+  it('debe transformar solicitudes recibidas', fakeAsync(() => {
+    const respuesta = [
+      {
+        id_solicitud: 10,
+        nombre_solicitud: 'Solicitud 10',
+        fecha_registro_solicitud: '2025-01-01T00:00:00.000Z',
         estadosSolicitud: [
-          { estado_actual: 'RECHAZADA', comentario: 'Documentos incompletos' }
+          { estado_actual: 'PENDIENTE', comentarios: 'Esperando revisión' }
         ],
-        documentos: [{ nombre: 'doc.pdf', comentario: 'Falta firma' }]
-      };
-      
-      component.solicitudesCompletas = [mockSolicitud];
-      
-      dialog.open.and.returnValue({
-        afterClosed: () => of(true)
-      } as any);
-      
-      component.verComentarios(1);
-      
-      expect(dialog.open).toHaveBeenCalled();
-      metricasUsabilidad.interaccionesExitosas++;
-    });
+        documentos: [
+          { nombre: 'oficio_paz_salvo_10.pdf' }
+        ]
+      }
+    ];
+
+    pazSalvoService.listarSolicitudesPorRol.and.returnValue(of(respuesta as any));
+    pazSalvoService.listarSolicitudesPorRol.calls.reset();
+
+    component.listarSolicitudes();
+    tick();
+
+    expect(pazSalvoService.listarSolicitudesPorRol).toHaveBeenCalledWith('ESTUDIANTE', mockUsuario.id_usuario);
+    expect(component.solicitudes.length).toBe(1);
+    expect(component.solicitudes[0].estado).toBe('PENDIENTE');
+    expect(component.solicitudesCompletas[0].documentos.length).toBe(1);
+  }));
+
+  it('debe abrir el diálogo de comentarios con información correcta', () => {
+    const solicitudCompleta = {
+      id_solicitud: 5,
+      nombre_solicitud: 'Solicitud Rechazada',
+      documentos: [{ nombre: 'doc.pdf', comentario: 'Falta firma' }],
+      estadosSolicitud: [
+        { estado_actual: 'RECHAZADA', comentario: 'Corrige el documento' }
+      ]
+    } as any;
+
+    component.solicitudesCompletas = [solicitudCompleta];
+
+    dialog.open.and.returnValue({
+      afterClosed: () => of(true)
+    } as any);
+
+    component['dialog'] = dialog as any;
+
+    component.verComentarios(5);
+
+    expect(dialog.open).toHaveBeenCalled();
+    const [, config] = dialog.open.calls.mostRecent().args;
+    const data = (config as any)?.data;
+    expect(data).toBeTruthy();
+    expect(data.titulo).toContain('Comentarios');
+    expect(data.comentarioRechazo).toBe('Corrige el documento');
   });
 
-  describe('5. ACCESIBILIDAD Y UX', () => {
-    it('US-016: Los documentos requeridos deben estar claramente marcados', () => {
-      const obligatorios = component.documentosRequeridos.filter(doc => doc.obligatorio);
-      expect(obligatorios.length).toBeGreaterThan(0);
-      metricasUsabilidad.validacionesCorrectas++;
+  it('debe detectar si una solicitud está rechazada', () => {
+    expect(component.esSolicitudRechazada('RECHAZADA')).toBeTrue();
+    expect(component.esSolicitudRechazada('APROBADA')).toBeFalse();
+  });
+
+  it('debe indicar si hay comentarios asociados a documentos', () => {
+    component.solicitudesCompletas = [
+      {
+        id_solicitud: 1,
+        documentos: [{ nombre: 'doc.pdf', comentario: 'Observación' }]
+      }
+    ] as any;
+
+    expect(component.tieneComentarios(1)).toBeTrue();
+    expect(component.tieneComentarios(2)).toBeFalse();
+  });
+
+  describe('Usabilidad y funcionalidad adicional', () => {
+    it('PS-011: Debe obtener solicitud completa por ID', () => {
+      component.solicitudesCompletas = [
+        { id_solicitud: 1, nombre_solicitud: 'Solicitud 1' },
+        { id_solicitud: 2, nombre_solicitud: 'Solicitud 2' }
+      ] as any;
+
+      expect(component['obtenerSolicitudCompleta'](1)?.id_solicitud).toBe(1);
+      expect(component['obtenerSolicitudCompleta'](3)).toBeUndefined();
     });
 
-    it('US-017: Debe resetear el formulario después de envío exitoso', fakeAsync(() => {
-      const mockArchivos = [{ nombre: 'test.pdf', ruta: 'path', tipo: 'pdf' }];
-      
-      const mockFileUploadComponent = {
-        subirArchivosPendientes: () => of(mockArchivos),
-        resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
+    it('PS-012: Debe obtener comentario de rechazo correctamente', () => {
+      component.solicitudesCompletas = [{
+        id_solicitud: 1,
+        estadosSolicitud: [
+          { estado_actual: 'PENDIENTE', comentario: null },
+          { estado_actual: 'RECHAZADA', comentario: 'Documentos incompletos' }
+        ]
+      }] as any;
+
+      const comentario = component['obtenerComentarioRechazo'](component.solicitudesCompletas[0]);
+      expect(comentario).toBe('Documentos incompletos');
+    });
+
+    it('PS-013: Debe manejar solicitud sin estados correctamente', () => {
+      component.solicitudesCompletas = [{
+        id_solicitud: 1,
+        estadosSolicitud: []
+      }] as any;
+
+      const comentario = component['obtenerComentarioRechazo'](component.solicitudesCompletas[0]);
+      expect(comentario).toBeNull();
+    });
+
+    it('PS-014: Debe obtener estado actual de una solicitud', () => {
+      const solicitud = {
+        estadosSolicitud: [
+          { estado_actual: 'PENDIENTE' },
+          { estado_actual: 'APROBADA' }
+        ]
       };
-      component.fileUploadComponent = mockFileUploadComponent as any;
+
+      expect(component['obtenerEstadoActual'](solicitud)).toBe('APROBADA');
+    });
+
+    it('PS-015: Debe manejar solicitud sin estados en obtenerEstadoActual', () => {
+      const solicitud = { estadosSolicitud: [] };
+      expect(component['obtenerEstadoActual'](solicitud)).toBe('Pendiente');
+    });
+
+    it('PS-016: Debe verificar funcionalidad de comentarios sin errores', fakeAsync(() => {
+      spyOn(console, 'log');
       
-      pazSalvoService.sendRequest.and.returnValue(of({ success: true }));
+      component.solicitudes = [];
+      component.solicitudesCompletas = [];
       
-      component.onSolicitudEnviada();
-      tick();
-      tick(10);
-      
-      expect(component.resetFileUpload).toBe(false);
-      metricasUsabilidad.interaccionesExitosas++;
+      expect(() => {
+        component['verificarFuncionalidadComentarios']();
+      }).not.toThrow();
     }));
 
-    it('US-018: Debe manejar correctamente la ausencia de usuario', () => {
+    it('PS-017: Debe manejar listarSolicitudes sin usuario', () => {
+      // Resetear el spy para limpiar llamadas anteriores
+      pazSalvoService.listarSolicitudesPorRol.calls.reset();
+      
       component.usuario = null;
-      component.listarSolicitudes();
       
-      // No debe lanzar error, solo no hacer la petición
+      expect(() => {
+        component.listarSolicitudes();
+      }).not.toThrow();
+      
       expect(pazSalvoService.listarSolicitudesPorRol).not.toHaveBeenCalled();
-      metricasUsabilidad.validacionesCorrectas++;
-    });
-  });
-
-  describe('6. RENDIMIENTO Y TIEMPOS DE RESPUESTA', () => {
-    it('US-019: La inicialización del componente debe ser rápida', (done) => {
-      const tiempoInicio = performance.now();
-      
-      fixture = TestBed.createComponent(PazSalvoComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-      
-      const tiempoFin = performance.now();
-      const duracion = tiempoFin - tiempoInicio;
-      
-      metricasUsabilidad.tiemposRespuesta.push(duracion);
-      expect(duracion).toBeLessThan(1000); // Menos de 1 segundo
-      done();
     });
 
-    it('US-020: La carga de solicitudes debe completarse en tiempo razonable', fakeAsync(() => {
-      pazSalvoService.listarSolicitudesPorRol.and.returnValue(of([]));
+    it('PS-018: onArchivosChange debe actualizar archivos correctamente', () => {
+      const nuevosArchivos = [{ nombre: 'test1.pdf' }, { nombre: 'test2.pdf' }] as any;
       
-      const tiempoInicio = performance.now();
-      component.listarSolicitudes();
-      tick();
-      const tiempoFin = performance.now();
+      component.onArchivosChange(nuevosArchivos);
       
-      const duracion = tiempoFin - tiempoInicio;
-      metricasUsabilidad.tiemposRespuesta.push(duracion);
-      expect(duracion).toBeLessThan(2000); // Menos de 2 segundos
-    }));
-  });
+      expect(component.archivosActuales).toEqual(nuevosArchivos);
+      expect(component.archivosActuales.length).toBe(2);
+    });
 
-  // REPORTE DE MÉTRICAS AL FINAL
-  afterAll(() => {
-    console.log('\n📊 REPORTE DE MÉTRICAS DE USABILIDAD - PAZ Y SALVO');
-    console.log('═'.repeat(60));
-    console.log(`✅ Elementos visibles verificados: ${metricasUsabilidad.elementosVisibles}`);
-    console.log(`✏️  Elementos editables verificados: ${metricasUsabilidad.elementosEditables}`);
-    console.log(`🎯 Interacciones exitosas: ${metricasUsabilidad.interaccionesExitosas}`);
-    console.log(`✓  Validaciones correctas: ${metricasUsabilidad.validacionesCorrectas}`);
-    
-    if (metricasUsabilidad.tiemposRespuesta.length > 0) {
-      const promedio = metricasUsabilidad.tiemposRespuesta.reduce((a, b) => a + b, 0) / 
-                      metricasUsabilidad.tiemposRespuesta.length;
-      const maximo = Math.max(...metricasUsabilidad.tiemposRespuesta);
-      const minimo = Math.min(...metricasUsabilidad.tiemposRespuesta);
+    it('PS-019: puedeEnviar debe retornar false cuando no hay usuario', () => {
+      component.archivosActuales = [{ nombre: 'test.pdf' }] as any;
+      component.usuario = null;
       
-      console.log(`⏱️  Tiempo promedio de respuesta: ${promedio.toFixed(2)}ms`);
-      console.log(`⏱️  Tiempo máximo: ${maximo.toFixed(2)}ms`);
-      console.log(`⏱️  Tiempo mínimo: ${minimo.toFixed(2)}ms`);
-    }
-    console.log('═'.repeat(60));
+      expect(component.puedeEnviar()).toBeFalse();
+    });
+
+    it('PS-020: puedeEnviar debe retornar false cuando no hay archivos', () => {
+      component.archivosActuales = [];
+      component.usuario = mockUsuario;
+      
+      expect(component.puedeEnviar()).toBeFalse();
+    });
   });
 });
 

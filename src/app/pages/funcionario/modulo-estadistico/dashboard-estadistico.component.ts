@@ -25,6 +25,7 @@ import { EstudiantesPorProgramaComponent } from '../../../shared/components/estu
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
 import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
+import { PeriodoSelectorComponent } from '../../../shared/components/periodo-selector/periodo-selector.component'; // ✨ NUEVO
 import { 
   ResumenCompleto, 
   EstadisticasProceso, 
@@ -56,7 +57,8 @@ Chart.register(...registerables);
     EstudiantesPorProgramaComponent,
     EstadisticasPorProcesoComponent,
     EstadisticasPorEstadoComponent,
-    TendenciasComparativasComponent
+    TendenciasComparativasComponent,
+    PeriodoSelectorComponent // ✨ NUEVO
   ],
   templateUrl: './dashboard-estadistico.component.html',
   styleUrls: ['./dashboard-estadistico.component.css']
@@ -106,7 +108,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       proceso: [''],
       programa: [''],
       fechaInicio: [''],
-      fechaFin: ['']
+      fechaFin: [''],
+      periodoAcademico: [''] // ✨ NUEVO: Campo para período académico
     });
     
     this.inicializarDatos();
@@ -176,8 +179,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // Cargar total de estudiantes desde el endpoint específico
     this.cargarTotalEstudiantes();
     
-    // Cargar datos de estado de solicitudes para KPIs correctos
-    this.cargarDatosEstadoSolicitudes();
+    // ❌ DESHABILITADO: No usar endpoint separado de estado de solicitudes
+    // Los datos ya vienen correctos desde /api/estadisticas/globales
+    // this.cargarDatosEstadoSolicitudes();
 
     // Comentamos la llamada real al backend por ahora
     /*
@@ -249,12 +253,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           // ✅ FALLBACK: Usar valores reales si el endpoint falla
           console.log('🔄 Usando valores de fallback del backend...');
           const datosFallback = {
-            totalSolicitudes: 46,
+            totalSolicitudes: 50,
             estados: {
-              Aprobada: { cantidad: 21, porcentaje: 45.65 },
-              Enviada: { cantidad: 9, porcentaje: 19.57 },
-              "En Proceso": { cantidad: 11, porcentaje: 23.91 },
-              Rechazada: { cantidad: 5, porcentaje: 10.87 }
+              APROBADA: { cantidad: 32, porcentaje: 64.0 },
+              ENVIADA: { cantidad: 9, porcentaje: 18.0 },
+              APROBADA_FUNCIONARIO: { cantidad: 15, porcentaje: 30.0 },
+              RECHAZADA: { cantidad: 5, porcentaje: 10.0 }
             }
           };
           
@@ -279,23 +283,24 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     // 🔧 Verificar cada estado individualmente
     const estados = data.estados;
-    console.log('🔍 APROBADA:', estados.Aprobada);
-    console.log('🔍 ENVIADA:', estados.Enviada);
-    console.log('🔍 EN PROCESO:', estados["En Proceso"]);
-    console.log('🔍 RECHAZADA:', estados.Rechazada);
+    console.log('🔍 APROBADA:', estados.APROBADA);
+    console.log('🔍 ENVIADA:', estados.ENVIADA);
+    console.log('🔍 APROBADA_FUNCIONARIO:', estados.APROBADA_FUNCIONARIO);
+    console.log('🔍 RECHAZADA:', estados.RECHAZADA);
 
     // 🔧 VERIFICACIÓN DETALLADA DEL ESTADO "ENVIADA"
     console.log('🔍 VERIFICACIÓN DETALLADA ENVIADA:');
-    console.log('  - estados.Enviada existe?', !!estados.Enviada);
-    console.log('  - estados.Enviada:', estados.Enviada);
-    console.log('  - estados.Enviada.cantidad:', estados.Enviada?.cantidad);
-    console.log('  - tipo de cantidad:', typeof estados.Enviada?.cantidad);
+    console.log('  - estados.ENVIADA existe?', !!estados.ENVIADA);
+    console.log('  - estados.ENVIADA:', estados.ENVIADA);
+    console.log('  - estados.ENVIADA.cantidad:', estados.ENVIADA?.cantidad);
+    console.log('  - tipo de cantidad:', typeof estados.ENVIADA?.cantidad);
 
     // ✅ CALCULAR totalSolicitudes sumando todos los estados
-    const aprobadas = estados.Aprobada?.cantidad || 0;
-    const enviadas = estados.Enviada?.cantidad || 0;
-    const enProceso = estados["En Proceso"]?.cantidad || 0;
-    const rechazadas = estados.Rechazada?.cantidad || 0;
+    // El backend envía: APROBADA, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA
+    const aprobadas = (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0);
+    const enviadas = estados.ENVIADA?.cantidad || 0;
+    const enProceso = estados.APROBADA_FUNCIONARIO?.cantidad || 0; // Las aprobadas por funcionario están "en proceso"
+    const rechazadas = estados.RECHAZADA?.cantidad || 0;
     
     const totalCalculado = aprobadas + enviadas + enProceso + rechazadas;
 
@@ -535,7 +540,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       },
       {
         titulo: 'Estudiantes',
-        valor: estadisticas?.totalEstudiantes || 0,
+        valor: this.totalEstudiantes || 0, // ✅ Usar el valor real si ya está disponible
         icono: 'people',
         color: 'info',
         descripcion: 'Total de estudiantes registrados'
@@ -1225,50 +1230,92 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Aplica filtros y actualiza los datos usando el endpoint actualizado del backend
+   * ✨ NUEVO: Maneja el cambio de período académico
+   */
+  onPeriodoChange(periodo: string): void {
+    if (this.filtrosForm) {
+      this.filtrosForm.patchValue({ periodoAcademico: periodo });
+      console.log('📅 Período seleccionado:', periodo);
+    }
+  }
+
+  /**
+   * Aplica los filtros seleccionados y recarga los datos
+   * ✅ ACTUALIZADO: Envía los filtros en el formato correcto al backend
    */
   aplicarFiltros(): void {
     if (this.filtrosForm && this.filtrosForm.valid) {
       const formValue = this.filtrosForm.value;
       
-      // Convertir filtros al formato correcto
-      const filtros: FiltroEstadisticas = {};
-      if (formValue.proceso) filtros.proceso = formValue.proceso;
-      if (formValue.programa) filtros.programa = formValue.programa;
-      if (formValue.fechaInicio) filtros.fechaInicio = formValue.fechaInicio?.toISOString().split('T')[0];
-      if (formValue.fechaFin) filtros.fechaFin = formValue.fechaFin?.toISOString().split('T')[0];
+      // Validar que fechaFin no sea menor que fechaInicio
+      if (formValue.fechaInicio && formValue.fechaFin) {
+        const inicio = new Date(formValue.fechaInicio);
+        const fin = new Date(formValue.fechaFin);
+        if (fin < inicio) {
+          this.mostrarError('La fecha de fin no puede ser anterior a la fecha de inicio');
+          return;
+        }
+      }
       
-      console.log('🔍 Aplicando filtros:', filtros);
+      // Convertir filtros al formato correcto (formato yyyy-MM-dd para fechas)
+      const filtros: FiltroEstadisticas = {};
+      
+      // Proceso: enviar solo si no es "Todos los procesos"
+      if (formValue.proceso && formValue.proceso !== '' && formValue.proceso !== 'Todos los procesos') {
+        filtros.proceso = formValue.proceso;
+      }
+      
+      // Programa: enviar como número (idPrograma)
+      if (formValue.programa && formValue.programa !== '' && formValue.programa !== 'Todos los programas') {
+        filtros.programa = Number(formValue.programa);
+      }
+      
+      // Fechas: convertir a formato yyyy-MM-dd
+      if (formValue.fechaInicio) {
+        const fecha = new Date(formValue.fechaInicio);
+        filtros.fechaInicio = fecha.toISOString().split('T')[0];
+      }
+      
+      if (formValue.fechaFin) {
+        const fecha = new Date(formValue.fechaFin);
+        filtros.fechaFin = fecha.toISOString().split('T')[0];
+      }
+      
+      if (formValue.periodoAcademico) {
+        filtros.periodoAcademico = formValue.periodoAcademico;
+      }
+      
+      console.log('🔍 Aplicando filtros al backend:', filtros);
+      console.log('📋 Detalle de filtros:');
+      console.log('  - Proceso:', filtros.proceso || 'Todos');
+      console.log('  - Programa (ID):', filtros.programa || 'Todos');
+      console.log('  - Fecha Inicio:', filtros.fechaInicio || 'Sin filtro');
+      console.log('  - Fecha Fin:', filtros.fechaFin || 'Sin filtro');
       
       // Usar el método de carga de datos con filtros
       this.cargarDatos(filtros);
+      
+      this.mostrarExito('Filtros aplicados correctamente');
     }
   }
 
   /**
-   * Mapea el proceso interno al formato esperado por el backend
-   */
-  private mapearProcesoAFiltro(proceso: string): string {
-    const mapeo: { [key: string]: string } = {
-      'reingreso': 'Solicitud de Reingreso',
-      'homologacion': 'Solicitud de Homologacion',
-      'cursos-intersemestrales': 'Solicitud Curso Verano',
-      'pruebas-ecaes': 'Solicitud ECAES',
-      'paz-salvo': 'Solicitud Paz y Salvo'
-    };
-    
-    return mapeo[proceso] || proceso;
-  }
-
-  /**
-   * Limpia todos los filtros
+   * Limpia todos los filtros y recarga los datos completos
+   * ✅ ACTUALIZADO: Resetea el formulario a valores vacíos
    */
   limpiarFiltros(): void {
     console.log('🧹 Limpiando filtros...');
     if (this.filtrosForm) {
-      this.filtrosForm.reset();
+      this.filtrosForm.reset({
+        proceso: '',
+        programa: '',
+        fechaInicio: '',
+        fechaFin: '',
+        periodoAcademico: ''
+      });
     }
-    this.cargarDatos(); // Volver a cargar datos globales
+    // Volver a cargar datos sin filtros
+    this.cargarDatos();
     this.mostrarExito('Filtros limpiados correctamente');
   }
 
@@ -1296,18 +1343,22 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Formatea el nombre del proceso para mostrar
+   * Formatea el nombre del proceso para mostrarlo en la UI
+   * ✅ ACTUALIZADO: Los nombres ya vienen en el formato correcto del backend
    */
   formatearNombreProceso(proceso: string): string {
-    const nombres: { [key: string]: string } = {
+    // Los nombres ahora vienen directamente del backend en el formato correcto
+    // Si por alguna razón viene un nombre antiguo, lo mapeamos
+    const nombresLegacy: { [key: string]: string } = {
       'paz-salvo': 'Paz y Salvo',
       'reingreso-estudiante': 'Reingreso',
       'homologacion-asignaturas': 'Homologación',
       'cursos-de-verano': 'Cursos de Verano',
+      'cursos-intersemestrales': 'Cursos de Verano',
       'pruebas-ecaes': 'ECAES'
     };
     
-    return nombres[proceso] || proceso;
+    return nombresLegacy[proceso] || proceso;
   }
 
   /**

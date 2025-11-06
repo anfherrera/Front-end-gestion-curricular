@@ -1,5 +1,78 @@
 /* Estilos para el componente de inscribir estudiantes */
 
+/* Estilos para los estados de inscripción */
+.estado-badge {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: transparent !important;
+  border: 1px solid currentColor;
+}
+
+.estado-aprobada {
+  color: #2e7d32 !important; /* verde institucional oscuro */
+}
+
+.estado-enviada {
+  color: #ef6c00 !important; /* naranja */
+}
+
+.estado-pago-validado {
+  color: #1565c0 !important; /* azul */
+}
+
+.estado-pago-rechazado {
+  color: #c62828 !important; /* rojo */
+}
+
+.estado-default {
+  color: #2e7d32 !important;
+}
+
+/* Estilos para el estado del proceso */
+.estado-rechazado {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #c62828;
+  font-weight: 500;
+}
+
+.estado-validado {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #1565c0; /* azul validado */
+  font-weight: 500;
+}
+
+.estado-aprobada {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.estado-enviada {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ff9800;
+  font-weight: 500;
+}
+
+.estado-default {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
 .filtro-section {
   margin-bottom: 24px;
   padding: 20px;

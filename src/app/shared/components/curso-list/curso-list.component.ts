@@ -3,6 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MATERIAL_IMPORTS } from '../material.imports';
+import { formatearFechaCorta, calcularDuracionSemanas, getColorPeriodo } from '../../../core/utils/periodo.utils';
 
 export interface Curso {
   codigo: string;
@@ -12,6 +13,10 @@ export interface Curso {
   creditos?: number;
   espacio?: string;
   estado: 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Abierto' | 'Publicado' | 'Borrador';
+  // ✨ NUEVO: Campos de período y fechas
+  periodoAcademico?: string;
+  fecha_inicio?: Date | string;
+  fecha_fin?: Date | string;
 }
 
 @Component({
@@ -90,5 +95,22 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
       default:
         return 'default-icon';
     }
+  }
+
+  // ✨ NUEVO: Métodos para formatear fechas y períodos
+  formatearFecha(fecha: Date | string | undefined): string {
+    if (!fecha) return 'N/A';
+    return formatearFechaCorta(fecha);
+  }
+
+  calcularDuracion(fechaInicio: Date | string | undefined, fechaFin: Date | string | undefined): string {
+    if (!fechaInicio || !fechaFin) return 'N/A';
+    const semanas = calcularDuracionSemanas(fechaInicio, fechaFin);
+    return `${semanas} ${semanas === 1 ? 'semana' : 'semanas'}`;
+  }
+
+  getColorPeriodo(periodo: string | undefined): string {
+    if (!periodo) return '#9e9e9e';
+    return getColorPeriodo(periodo);
   }
 }

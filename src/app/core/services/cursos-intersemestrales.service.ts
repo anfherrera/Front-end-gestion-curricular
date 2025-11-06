@@ -79,6 +79,8 @@ export interface CursoOfertadoVerano {
   descripcion: string;
   fecha_inicio: Date;
   fecha_fin: Date;
+  // ✨ NUEVO: Período académico
+  periodoAcademico?: string; // Ejemplo: "2025-1", "2025-2"
   cupo_maximo: number;
   cupo_disponible: number;
   cupo_estimado: number;
@@ -289,6 +291,18 @@ export interface DebugInscripcionResponse {
   };
 }
 
+// Interfaz para las estadísticas del dashboard
+export interface DashboardEstadisticas {
+  totalPreinscripciones: number;
+  totalInscripciones: number;
+  totalSolicitudesCursoNuevo: number;
+  cursosActivos: number;
+  totalCursos: number;
+  cursosGestionados: number;
+  porcentajeProgreso: number;
+  fechaConsulta: string;
+}
+
 export interface CreateSolicitudCursoNuevoDTO {
   nombreCompleto: string;
   codigo: string;
@@ -315,12 +329,163 @@ export interface CreateInscripcionLegacyDTO {
 export class CursosIntersemestralesService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  // ====== PERÍODOS ACADÉMICOS ======
+
+  // Interfaz para la respuesta de períodos del backend
+  private mapPeriodosResponse(response: any): string[] {
+    if (!response) return [];
+    
+    const data = response.success ? response.data : response;
+    
+    // Si el backend devuelve array de objetos con { valor, descripcion }
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && 'valor' in data[0]) {
+      return data.map((p: any) => p.valor);
+    }
+    
+    // Si el backend devuelve array de strings directamente
+    if (Array.isArray(data)) {
+      return data;
+    }
+    
+    return [];
+  }
+
+  // Obtener todos los períodos académicos disponibles (2020-1 a 2030-2)
+  getPeriodosAcademicos(): Observable<string[]> {
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.TODOS;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend:', response);
+        const periodos = this.mapPeriodosResponse(response);
+        console.log('✅ [PERIODOS] Períodos mapeados:', periodos);
+        return periodos;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo períodos académicos:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of([]);
+      })
+    );
+  }
+
+  // ✨ NUEVO: Obtener solo períodos futuros (recomendado para crear cursos)
+  getPeriodosFuturos(): Observable<string[]> {
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.FUTUROS;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend (futuros):', response);
+        const periodos = this.mapPeriodosResponse(response);
+        console.log('✅ [PERIODOS] Períodos futuros mapeados:', periodos);
+        return periodos;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo períodos futuros:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of([]);
+      })
+    );
+  }
+
+  // ✨ NUEVO: Obtener períodos recientes (últimos 5 años)
+  getPeriodosRecientes(): Observable<string[]> {
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend (recientes):', response);
+        const periodos = this.mapPeriodosResponse(response);
+        console.log('✅ [PERIODOS] Períodos recientes mapeados:', periodos);
+        return periodos;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo períodos recientes:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of([]);
+      })
+    );
+  }
+
+  // Obtener período académico actual
+  getPeriodoActual(): Observable<string> {
+    const url = ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL;
+    console.log('🌐 [PERIODOS] Llamando a API:', url);
+    
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        console.log('📥 [PERIODOS] Respuesta del backend (actual):', response);
+        if (!response) return '';
+        const data = response.success ? response.data : response;
+        const periodo = data?.valor || data || '';
+        console.log('✅ [PERIODOS] Período actual mapeado:', periodo);
+        return periodo;
+      }),
+      catchError(error => {
+        console.error('❌ [PERIODOS] Error obteniendo período actual:', error);
+        console.error('🔍 [PERIODOS] URL que falló:', url);
+        console.error('🔍 [PERIODOS] Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+        return of('');
+      })
+    );
+  }
+
+  // Obtener períodos que tienen cursos registrados
+  getPeriodosRegistrados(): Observable<string[]> {
+    console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/periodos-registrados');
+    return this.http.get<string[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/periodos-registrados`);
+  }
+
   // ====== CURSOS DE VERANO - NUEVAS APIs ======
   
   // Obtener cursos disponibles para verano (para estudiantes - datos reales de la BD)
   getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
     console.log('🌐 Llamando a API (estudiantes):', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
     return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+  }
+
+  // Obtener cursos filtrados por período académico
+  getCursosPorPeriodo(periodo: string): Observable<CursoOfertadoVerano[]> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-verano/periodo/${periodo}`);
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/periodo/${periodo}`);
+  }
+
+  // Obtener cursos activos en una fecha específica
+  getCursosActivos(fecha: string): Observable<CursoOfertadoVerano[]> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/cursos-activos/${fecha}`);
+    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-activos/${fecha}`);
+  }
+
+  // Obtener estadísticas por período
+  getEstadisticasPorPeriodo(periodo: string): Observable<any> {
+    console.log(`🌐 Llamando a API: GET /api/cursos-intersemestrales/estadisticas/periodo/${periodo}`);
+    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/estadisticas/periodo/${periodo}`);
   }
 
   // Obtener todos los cursos para funcionarios (incluye todos los estados)
@@ -901,7 +1066,12 @@ export class CursosIntersemestralesService {
     console.log(`🌐 Llamando a API: GET ${endpoint}`);
     console.log(`🔍 ID de inscripción: ${idInscripcion}`);
     
-    return this.http.get(endpoint, { responseType: 'blob' });
+    return this.http.get(endpoint, { 
+      responseType: 'blob',
+      headers: {
+        'Accept': 'application/pdf'
+      }
+    });
   }
 
   // 🆕 NUEVO: Obtener estadísticas del curso
@@ -1096,6 +1266,90 @@ export class CursosIntersemestralesService {
       formData
     );
   }
+
+  /**
+   * Obtiene las estadísticas del dashboard de cursos intersemestrales
+   * @returns Observable con las estadísticas del dashboard
+   */
+  getDashboardEstadisticas(): Observable<DashboardEstadisticas> {
+    console.log('📊 Obteniendo estadísticas del dashboard...');
+    console.log('🔗 URL:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DASHBOARD_ESTADISTICAS);
+    
+    return this.http.get<DashboardEstadisticas>(
+      ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DASHBOARD_ESTADISTICAS
+    ).pipe(
+      catchError(error => {
+        console.error('❌ Error al obtener estadísticas del dashboard:', error);
+        // Retornar valores por defecto en caso de error
+        return of({
+          totalPreinscripciones: 0,
+          totalInscripciones: 0,
+          totalSolicitudesCursoNuevo: 0,
+          cursosActivos: 0,
+          totalCursos: 0,
+          cursosGestionados: 0,
+          porcentajeProgreso: 0,
+          fechaConsulta: new Date().toISOString()
+        });
+      })
+    );
+  }
+
+  /**
+   * Exporta las solicitudes de cursos intersemestrales a Excel
+   * @returns Observable con el blob del archivo Excel y el nombre del archivo
+   */
+  exportarSolicitudesExcel(): Observable<{ blob: Blob; filename?: string }> {
+    console.log('📊 Exportando solicitudes a Excel...');
+    console.log('🔗 URL:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL);
+    
+    return this.http.get(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL, {
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        // Verificar que la respuesta sea un blob válido
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && (
+          contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') ||
+          contentType.includes('application/vnd.ms-excel') ||
+          contentType.includes('application/octet-stream')
+        )) {
+          console.log('✅ Content-Type válido para Excel:', contentType);
+          
+          // Extraer el nombre del archivo del header Content-Disposition
+          const contentDisposition = response.headers.get('Content-Disposition');
+          let filename: string | undefined;
+          
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1].replace(/['"]/g, '');
+              // Decodificar si está codificado en UTF-8
+              try {
+                filename = decodeURIComponent(filename);
+              } catch {
+                // Si falla la decodificación, usar el nombre tal cual
+              }
+              console.log('📄 Nombre del archivo extraído:', filename);
+            }
+          }
+          
+          return {
+            blob: response.body as Blob,
+            filename
+          };
+        } else {
+          console.error('❌ Content-Type inválido:', contentType);
+          throw new Error(`El servidor no devolvió un Excel válido. Content-Type: ${contentType}`);
+        }
+      }),
+      catchError(error => {
+        console.error('❌ Error al exportar solicitudes a Excel:', error);
+        throw error;
+      })
+    );
+  }
 }
 
 // ====== DTOs PARA GESTIÓN DE CURSOS ======
@@ -1106,6 +1360,8 @@ export interface CreateCursoDTO {
   descripcion: string;
   fecha_inicio: string; // ISO string
   fecha_fin: string; // ISO string
+  // ✨ NUEVO: Período académico
+  periodoAcademico?: string; // Ejemplo: "2025-1", "2025-2"
   cupo_maximo: number;
   cupo_estimado: number;
   espacio_asignado: string;

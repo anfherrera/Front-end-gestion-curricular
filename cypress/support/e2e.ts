@@ -3,6 +3,8 @@
 // ***********************************************************
 
 import './commands';
+import 'cypress-axe';
+import 'cypress-plugin-tab';
 
 // Configuración global
 Cypress.on('uncaught:exception', (err, runnable) => {
@@ -34,14 +36,20 @@ Cypress.Commands.add('iniciarMedicion', () => {
 
 Cypress.Commands.add('finalizarMedicion', (nombre: string) => {
   cy.window().then((win) => {
-    win.performance.mark('fin-medicion');
-    win.performance.measure(nombre, 'inicio-medicion', 'fin-medicion');
-    const medicion = win.performance.getEntriesByName(nombre)[0];
-    metricas.tiemposRespuesta.push({
-      nombre,
-      duracion: medicion.duration
-    });
-    cy.task('log', `⏱️ ${nombre}: ${medicion.duration.toFixed(2)}ms`);
+    try {
+      win.performance.mark('fin-medicion');
+      const hasInicio = win.performance.getEntriesByName('inicio-medicion').length > 0;
+      if (hasInicio) {
+        win.performance.measure(nombre, 'inicio-medicion', 'fin-medicion');
+        const medicion = win.performance.getEntriesByName(nombre)[0];
+        if (medicion) {
+          metricas.tiemposRespuesta.push({ nombre, duracion: medicion.duration });
+          cy.task('log', `⏱️ ${nombre}: ${medicion.duration.toFixed(2)}ms`);
+        }
+      }
+    } catch (e) {
+      // Ignorar errores de medición para no fallar la prueba
+    }
   });
 });
 

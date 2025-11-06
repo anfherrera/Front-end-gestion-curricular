@@ -422,31 +422,113 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = false;
 
-    const sub = this.estadisticasService.getEstadoSolicitudesMejorado()
+    // ✅ CORRECCIÓN: Usar el endpoint correcto /api/estadisticas/globales
+    const sub = this.estadisticasService.getEstadisticasGlobales()
       .subscribe({
-        next: (response: EstadoSolicitudesResponse) => {
-          console.log('✅ Estado de solicitudes mejorado obtenido:', response);
+        next: (response: any) => {
+          console.log('✅ Estadísticas globales obtenidas:', response);
           
-          this.data = response;
-          this.fechaConsulta = response.fechaConsulta;
-          this.totalSolicitudes = response.totalSolicitudes;
+          // Calcular el total desde porEstado
+          const estados = response.porEstado || {};
+          this.totalSolicitudes = response.totalSolicitudes || 0;
+          this.fechaConsulta = response.fechaConsulta || new Date().toISOString();
           
-          // Convertir el objeto de estados a array para el template
-          this.estadosData = Object.entries(response.estados).map(([nombre, info]) => ({
+          // 🔍 DEBUG - Verificar valores individuales
+          console.log('🔍 DEBUG - porEstado completo:', response.porEstado);
+          console.log('🔍 DEBUG - ENVIADA:', estados.ENVIADA);
+          console.log('🔍 DEBUG - RECHAZADA:', estados.RECHAZADA);
+          console.log('🔍 DEBUG - APROBADA_COORDINADOR:', estados.APROBADA_COORDINADOR);
+          console.log('🔍 DEBUG - APROBADA:', estados.APROBADA);
+          console.log('🔍 DEBUG - APROBADA_FUNCIONARIO:', estados.APROBADA_FUNCIONARIO);
+          
+          // Calcular total para verificación
+          const totalCalculado = (estados.ENVIADA || 0) + (estados.RECHAZADA || 0) + 
+                                 (estados.APROBADA_COORDINADOR || 0) + (estados.APROBADA || 0) + 
+                                 (estados.APROBADA_FUNCIONARIO || 0);
+          console.log('🔍 DEBUG - Total calculado:', totalCalculado, '(debe ser 50)');
+          
+          // ✅ Mapeo correcto desde porEstado del backend
+          const estadosMap: { [key: string]: { cantidad: number; porcentaje: number; icono: string; color: string; descripcion: string } } = {
+            'ENVIADA': {
+              cantidad: estados.ENVIADA || 0,
+              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.ENVIADA || 0) / this.totalSolicitudes) * 100) : 0,
+              icono: 'fas fa-paper-plane',
+              color: '#2196F3',
+              descripcion: 'Solicitudes enviadas pendientes de revisión'
+            },
+            'RECHAZADA': {
+              cantidad: estados.RECHAZADA || 0,
+              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.RECHAZADA || 0) / this.totalSolicitudes) * 100) : 0,
+              icono: 'fas fa-times-circle',
+              color: '#F44336',
+              descripcion: 'Solicitudes rechazadas'
+            },
+            'APROBADA_COORDINADOR': {
+              cantidad: estados.APROBADA_COORDINADOR || 0,
+              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.APROBADA_COORDINADOR || 0) / this.totalSolicitudes) * 100) : 0,
+              icono: 'fas fa-check-circle',
+              color: '#9C27B0',
+              descripcion: 'Aprobadas por coordinador'
+            },
+            'APROBADA': {
+              cantidad: estados.APROBADA || 0,
+              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.APROBADA || 0) / this.totalSolicitudes) * 100) : 0,
+              icono: 'fas fa-check-circle',
+              color: '#4CAF50',
+              descripcion: 'Solicitudes completamente aprobadas'
+            },
+            'APROBADA_FUNCIONARIO': {
+              cantidad: estados.APROBADA_FUNCIONARIO || 0,
+              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.APROBADA_FUNCIONARIO || 0) / this.totalSolicitudes) * 100) : 0,
+              icono: 'fas fa-clock',
+              color: '#FF9800',
+              descripcion: 'Aprobadas por funcionario (en proceso)'
+            }
+          };
+          
+          // Convertir a array para el template
+          this.estadosData = Object.entries(estadosMap).map(([nombre, info]) => ({
             nombre,
             ...info
           }));
           
+          // Crear datos de análisis
+          this.data = {
+            totalSolicitudes: this.totalSolicitudes,
+            fechaConsulta: this.fechaConsulta,
+            estados: estadosMap,
+            analisis: {
+              solicitudesPendientes: (estados.ENVIADA || 0) + (estados.APROBADA_FUNCIONARIO || 0),
+              solicitudesCompletadas: (estados.APROBADA || 0) + (estados.APROBADA_COORDINADOR || 0),
+              tasaResolucion: this.totalSolicitudes > 0 ? (((estados.APROBADA || 0) + (estados.APROBADA_COORDINADOR || 0)) / this.totalSolicitudes) * 100 : 0,
+              estadoMasComun: this.obtenerEstadoMasComun(estadosMap)
+            }
+          } as any;
+          
           this.loading = false;
         },
         error: (err) => {
-          console.error('❌ Error al obtener estado de solicitudes:', err);
+          console.error('❌ Error al obtener estadísticas globales:', err);
           this.error = true;
           this.loading = false;
         }
       });
 
     this.subscription.add(sub);
+  }
+
+  private obtenerEstadoMasComun(estados: any): string {
+    let maxCantidad = 0;
+    let estadoMasComun = 'N/A';
+    
+    Object.entries(estados).forEach(([nombre, info]: [string, any]) => {
+      if (info.cantidad > maxCantidad) {
+        maxCantidad = info.cantidad;
+        estadoMasComun = nombre.replace(/_/g, ' ');
+      }
+    });
+    
+    return estadoMasComun;
   }
 
   actualizarDatos(): void {

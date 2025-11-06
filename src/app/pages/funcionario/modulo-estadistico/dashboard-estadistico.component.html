@@ -80,6 +80,16 @@
               <mat-datepicker #pickerFin></mat-datepicker>
             </mat-form-field>
           </div>
+
+          <!-- ✨ NUEVO: Filtro por Período Académico -->
+          <div class="filter-item">
+            <app-periodo-selector
+              *ngIf="filtrosForm?.get('periodoAcademico')"
+              [mostrarTodos]="true"
+              [soloRegistrados]="false"
+              (periodoChange)="onPeriodoChange($event)">
+            </app-periodo-selector>
+          </div>
         </div>
 
         <div class="filter-actions">

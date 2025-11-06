@@ -266,7 +266,7 @@
                   <mat-icon>check_circle</mat-icon>
                   <span class="estado-nombre">Aprobada</span>
                 </div>
-                <div class="estado-valor">{{ data.estadosSolicitudes.Aprobada }}</div>
+                <div class="estado-valor">{{ data.estadosSolicitudes.APROBADA || 0 }}</div>
               </mat-card-content>
             </mat-card>
 
@@ -276,7 +276,7 @@
                   <mat-icon>send</mat-icon>
                   <span class="estado-nombre">Enviada</span>
                 </div>
-                <div class="estado-valor">{{ data.estadosSolicitudes.Enviada }}</div>
+                <div class="estado-valor">{{ data.estadosSolicitudes.ENVIADA || 0 }}</div>
               </mat-card-content>
             </mat-card>
 
@@ -286,7 +286,7 @@
                   <mat-icon>hourglass_empty</mat-icon>
                   <span class="estado-nombre">En Proceso</span>
                 </div>
-                <div class="estado-valor">{{ data.estadosSolicitudes['En Proceso'] }}</div>
+                <div class="estado-valor">{{ (data.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) + (data.estadosSolicitudes.APROBADA_COORDINADOR || 0) }}</div>
               </mat-card-content>
             </mat-card>
 
@@ -296,7 +296,7 @@
                   <mat-icon>cancel</mat-icon>
                   <span class="estado-nombre">Rechazada</span>
                 </div>
-                <div class="estado-valor">{{ data.estadosSolicitudes.Rechazada }}</div>
+                <div class="estado-valor">{{ data.estadosSolicitudes.RECHAZADA || 0 }}</div>
               </mat-card-content>
             </mat-card>
           </div>
@@ -376,16 +376,16 @@
               </mat-card-header>
               <mat-card-content>
                 <!-- ELIMINAR el área blanca vacía y mostrar directamente las tarjetas -->
-                <div *ngIf="data && data.predicciones && data.predicciones.programasConTendenciaCreciente && data.predicciones.programasConTendenciaCreciente.length > 0" class="predicciones-programas">
-                  <div *ngFor="let programa of data.predicciones.programasConTendenciaCreciente" class="prediccion-programa-card">
+                <div *ngIf="data && data.predicciones && data.predicciones.todasLasPrediccionesPorPrograma && data.predicciones.todasLasPrediccionesPorPrograma.length > 0" class="predicciones-programas">
+                  <div *ngFor="let programa of data.predicciones.todasLasPrediccionesPorPrograma" class="prediccion-programa-card">
                     <div class="programa-nombre">{{ programa.nombre }}</div>
                     <div class="demanda-actual">Actual: {{ programa.demandaActual }}</div>
                     <div class="demanda-estimada">Estimada: {{ programa.demandaEstimada }}</div>
                     <div class="variacion">Variación: {{ programa.variacion }}</div>
-                    <div class="tendencia creciente">CRECIENTE</div>
+                    <div class="tendencia" [ngClass]="'tendencia-' + programa.tendencia.toLowerCase()">{{ programa.tendencia }}</div>
                   </div>
                 </div>
-                <div *ngIf="!data || !data.predicciones || !data.predicciones.programasConTendenciaCreciente || data.predicciones.programasConTendenciaCreciente.length === 0" class="no-data">
+                <div *ngIf="!data || !data.predicciones || !data.predicciones.todasLasPrediccionesPorPrograma || data.predicciones.todasLasPrediccionesPorPrograma.length === 0" class="no-data">
                   No hay datos de predicciones disponibles
                 </div>
               </mat-card-content>

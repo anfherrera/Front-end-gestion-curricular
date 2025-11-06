@@ -1,0 +1,89 @@
+<app-card-container title="Mi Perfil">
+  <div class="perfil-container">
+    <!-- Información Principal -->
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <div class="avatar-section">
+          <div class="user-avatar-large">
+            <span class="user-initials-large">{{ getUserInitials() }}</span>
+          </div>
+          <div class="user-info-header">
+            <h2>{{ getNombreCompleto() }}</h2>
+            <mat-chip class="role-chip">{{ userRole }}</mat-chip>
+          </div>
+        </div>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <mat-icon class="info-icon">email</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Correo Electrónico</span>
+              <span class="info-value">{{ getEmail() }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon class="info-icon">badge</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Código</span>
+              <span class="info-value">{{ getCodigo() }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon class="info-icon">phone</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Teléfono</span>
+              <span class="info-value">{{ getTelefono() }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon class="info-icon">school</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Programa</span>
+              <span class="info-value">{{ getPrograma() }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Información Adicional según Rol -->
+    <mat-card class="additional-info-card" *ngIf="usuario?.rol">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Información Adicional
+        </mat-card-title>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <mat-icon class="info-icon">admin_panel_settings</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Rol en el Sistema</span>
+              <span class="info-value">{{ usuario.rol.nombre || usuario.rol.nombre_rol || userRole }}</span>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="usuario?.estado_usuario !== undefined">
+            <mat-icon class="info-icon">check_circle</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Estado</span>
+              <span class="info-value">
+                <mat-chip [class]="usuario.estado_usuario ? 'status-active' : 'status-inactive'">
+                  {{ usuario.estado_usuario ? 'Activo' : 'Inactivo' }}
+                </mat-chip>
+              </span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</app-card-container>
+

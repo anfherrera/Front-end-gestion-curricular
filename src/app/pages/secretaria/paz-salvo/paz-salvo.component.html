@@ -15,20 +15,7 @@
 
   </app-card-container>
 
-      <!-- Documentación adjunta de la solicitud seleccionada -->
-      <app-card-container
-        *ngIf="selectedSolicitud"
-        title="Documentación Adjunta"
-        icon="folder_open">
-
-        <app-documentation-viewer
-          [documentos]="selectedSolicitud.documentos || []"
-          [solicitudId]="selectedSolicitud.id_solicitud"
-          [proceso]="'paz-salvo'"
-          [servicio]="pazSalvoService">
-        </app-documentation-viewer>
-
-      </app-card-container>
+      
 
       <!-- Contenedor para generar documento usando componente genérico -->
       <app-card-container
@@ -86,18 +73,17 @@
             </span>
           </div>
 
-          <!-- Botón unificado (igual que Homologación) -->
+          <!-- Botón único: Subir y Enviar al Estudiante -->
           <div class="action-buttons">
             <button
               mat-raised-button
               color="primary"
               [disabled]="!archivoPDF || subiendoPDF || enviandoPDF"
               (click)="enviarDocumento()"
-              class="send-document-btn">
-              <mat-icon>send</mat-icon>
-              <span *ngIf="subiendoPDF">Subiendo PDF...</span>
-              <span *ngIf="enviandoPDF">Enviando al Estudiante...</span>
-              <span *ngIf="!subiendoPDF && !enviandoPDF">Enviar Documento</span>
+              class="upload-send-btn">
+              <mat-icon>publish</mat-icon>
+              <span *ngIf="subiendoPDF || enviandoPDF">Procesando...</span>
+              <span *ngIf="!subiendoPDF && !enviandoPDF">Subir y Enviar</span>
             </button>
           </div>
 

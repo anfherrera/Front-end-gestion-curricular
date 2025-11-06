@@ -31,6 +31,16 @@ export class ApiEndpoints {
     DELETE: (id: string) => `${this.BASE_URL}/procesos/${id}`
   };
 
+  // ===== PERÍODOS ACADÉMICOS =====
+  static readonly PERIODOS_ACADEMICOS = {
+    BASE: `${this.BASE_URL}/periodos-academicos`,
+    TODOS: `${this.BASE_URL}/periodos-academicos/todos`,
+    FUTUROS: `${this.BASE_URL}/periodos-academicos/futuros`,
+    RECIENTES: `${this.BASE_URL}/periodos-academicos/recientes`,
+    ACTUAL: `${this.BASE_URL}/periodos-academicos/actual`,
+    VALIDAR: (periodo: string) => `${this.BASE_URL}/periodos-academicos/validar/${periodo}`
+  };
+
   // ===== CURSOS INTERSEMESTRALES =====
   static readonly CURSOS_INTERSEMESTRALES = {
     BASE: `${this.BASE_URL}/cursos-intersemestrales`,
@@ -75,7 +85,13 @@ export class ApiEndpoints {
       DEBUG_INSCRIPCION: (idPreinscripcion: number) => `${this.BASE_URL}/cursos-intersemestrales/debug/inscripcion/${idPreinscripcion}`,
       
       // Nuevos endpoints de permisos
-      PERMISOS_ESTADO: (estado: string, rol: string) => `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`
+      PERMISOS_ESTADO: (estado: string, rol: string) => `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,
+      
+      // Endpoint de exportación a Excel
+      EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`,
+      
+      // Endpoint de estadísticas del dashboard
+      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-intersemestrales/dashboard/estadisticas`
     }
   };
 
@@ -186,6 +202,14 @@ export class ApiEndpoints {
     DOWNLOAD: (id: string) => `${this.BASE_URL}/documentos/${id}/download`,
     DELETE: (id: string) => `${this.BASE_URL}/documentos/${id}`,
     UPLOAD: `${this.BASE_URL}/documentos/upload`
+  };
+
+  // ===== ARCHIVOS =====
+  static readonly ARCHIVOS = {
+    BASE: `${this.BASE_URL}/archivos`,
+    SUBIR_PDF: `${this.BASE_URL}/archivos/subir/pdf`,
+    DESCARGAR_PDF: (filename: string) => `${this.BASE_URL}/archivos/descargar/pdf?filename=${encodeURIComponent(filename)}`,
+    DESCARGAR_PDF_POR_INSCRIPCION: (inscripcionId: number) => `${this.BASE_URL}/archivos/descargar/pdf/inscripcion/${inscripcionId}`
   };
 
   // ===== ROLES =====

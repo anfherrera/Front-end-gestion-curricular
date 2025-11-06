@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { descargarBlob } from '../../../core/utils/download.util';
 import { Subject, takeUntil } from 'rxjs'; // ✅ Agregar para limpieza de suscripciones
 
 import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
@@ -427,7 +428,7 @@ descargarOficio(idOficio: number, nombreArchivo: string): void {
 }
 
 /**
- * Obtener oficios y descargar (igual que homologación)
+ * Obtener oficios y descargar
  */
 private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
   this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
@@ -441,7 +442,7 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
       
       // Tomar el primer oficio disponible
       const oficio = oficios[0];
-      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_paz_salvo_${idSolicitud}.pdf`;
+      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`;
       
       // Intentar descargar usando el endpoint de archivos
       this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
@@ -461,114 +462,35 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
 private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
   console.log('📁 Descargando archivo por nombre:', nombreArchivo);
   
-  // Usar el endpoint específico de paz-salvo
-  if (idSolicitud) {
-    const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargarOficio/${idSolicitud}`;
-    
-    // Crear headers con autorización
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    
-    this.http.get(url, {
-      headers: headers,
-      responseType: 'blob',
-      observe: 'response'
-    }).subscribe({
-    next: (response) => {
-      console.log('✅ Archivo descargado exitosamente');
-      
-      // Obtener el nombre del archivo desde los headers de la respuesta
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let nombreArchivoDescarga = nombreDescarga || nombreArchivo;
-      
-      console.log('🔍 Content-Disposition header:', contentDisposition);
-      
-      if (contentDisposition) {
-        // Intentar diferentes patrones para extraer el nombre del archivo
-        let matches = contentDisposition.match(/filename="(.+)"/);
-        if (!matches) {
-          matches = contentDisposition.match(/filename=([^;]+)/);
-        }
-        if (!matches) {
-          matches = contentDisposition.match(/filename\*=UTF-8''(.+)/);
-        }
-        
-        if (matches && matches[1]) {
-          nombreArchivoDescarga = decodeURIComponent(matches[1]);
-          console.log('📁 Nombre del archivo desde headers:', nombreArchivoDescarga);
-        } else {
-          console.log('⚠️ No se pudo extraer el nombre del archivo del header Content-Disposition');
-        }
+  const solicitudId = idSolicitud || 1;
+  this.pazSalvoService.descargarOficioPorSolicitud(solicitudId).subscribe({
+    next: (blob: any) => {
+      // Si el backend no envía nombre por headers, intentar obtenerlo desde la lista de oficios
+      if (!blob?.filename) {
+        this.pazSalvoService.obtenerOficios(solicitudId).subscribe({
+          next: (oficios) => {
+            const nombreLista = oficios?.[0]?.nombreArchivo || oficios?.[0]?.nombre;
+            const nombreArchivoDescarga = nombreLista || nombreDescarga || nombreArchivo || `oficio_${solicitudId}.pdf`;
+            descargarBlob(blob, nombreArchivoDescarga);
+            this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+          },
+          error: () => {
+            const nombreArchivoDescarga = nombreDescarga || nombreArchivo || `oficio_${solicitudId}.pdf`;
+            descargarBlob(blob, nombreArchivoDescarga);
+            this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+          }
+        });
       } else {
-        console.log('⚠️ No se encontró el header Content-Disposition');
-        // Usar el nombre del archivo que viene del método obtenerOficios
-        nombreArchivoDescarga = nombreArchivo;
-        console.log('📁 Usando nombre del archivo del método obtenerOficios:', nombreArchivoDescarga);
+        const nombreArchivoDescarga = blob.filename as string;
+        descargarBlob(blob, nombreArchivoDescarga);
+        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
       }
-      
-      // Crear URL temporal y descargar
-      const blob = response.body!;
-      
-      // Logging para diagnosticar el problema
-      console.log('📊 Tipo de contenido:', response.headers.get('Content-Type'));
-      console.log('📊 Tamaño del blob:', blob.size);
-      console.log('📊 Tipo del blob:', blob.type);
-      console.log('📊 Nombre de descarga:', nombreArchivoDescarga);
-      
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = nombreArchivoDescarga;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      this.mostrarMensaje('Oficio descargado exitosamente', 'success');
     },
     error: (err) => {
       console.error('❌ Error al descargar archivo:', err);
       this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
     }
   });
-  } else {
-    // Fallback: usar endpoint genérico si no hay idSolicitud
-    console.log('⚠️ No hay idSolicitud, usando endpoint genérico');
-    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    
-    this.http.get(url, {
-      headers: headers,
-      responseType: 'blob',
-      observe: 'response'
-    }).subscribe({
-      next: (response) => {
-        console.log('✅ Archivo descargado exitosamente (endpoint genérico)');
-        
-        const blob = response.body!;
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = nombreDescarga || nombreArchivo;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        this.mostrarMensaje('Archivo descargado exitosamente', 'success');
-      },
-      error: (err) => {
-        console.error('❌ Error al descargar archivo (endpoint genérico):', err);
-        this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
-      }
-    });
-  }
 }
 
 /**

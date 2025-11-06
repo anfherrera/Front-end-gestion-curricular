@@ -5,6 +5,7 @@ import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { PreinscripcionDialogComponent } from './shared/components/preinscripcion-dialog/preinscripcion-dialog.component';
 
 export const appConfig: ApplicationConfig = {
@@ -12,7 +13,12 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([JwtInterceptor]), withFetch()),
+    // ✅ INTERCEPTORES: JWT primero (agrega token), luego Error (maneja 401/403)
+    // El orden es importante: los interceptores se ejecutan en el orden especificado
+    provideHttpClient(
+      withInterceptors([JwtInterceptor, errorInterceptor]), 
+      withFetch()
+    ),
     importProvidersFrom(BrowserAnimationsModule),
     PreinscripcionDialogComponent
   ]

@@ -71,7 +71,7 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/secretaria/homologacion-asignaturas', roles: [UserRole.SECRETARIA] },
 
   // Módulo Estadístico
-  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/funcionario/modulo-estadistico', roles: [UserRole.FUNCIONARIO, UserRole.COORDINADOR] },
+  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/funcionario/modulo-estadistico', roles: [UserRole.FUNCIONARIO] },
   { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/coordinador/modulo-estadistico', roles: [UserRole.COORDINADOR] },
 
   // Ajustes

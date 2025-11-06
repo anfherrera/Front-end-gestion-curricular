@@ -2,8 +2,8 @@ export interface EstadisticasGlobales {
   totalSolicitudes: number;
   solicitudesAprobadas: number;
   solicitudesRechazadas: number;
+  solicitudesEnviadas: number; // ✅ Campo obligatorio del backend
   solicitudesEnProceso: number;
-  solicitudesEnviadas?: number;
   totalEstudiantes: number;
   totalProgramas: number;
   predicciones?: PrediccionesGlobales;
@@ -60,6 +60,7 @@ export interface FiltroEstadisticas {
   programa?: number;
   fechaInicio?: string;
   fechaFin?: string;
+  periodoAcademico?: string; // ✨ NUEVO: Filtro por período académico (ej: "2025-1")
 }
 
 export interface KPIData {
@@ -89,6 +90,7 @@ export interface EstadisticasGlobalesAPI {
   fechaConsulta: string;
   totalSolicitudes: number;
   totalAprobadas: number;
+  totalEnviadas: number; // ✅ Campo del backend
   totalEnProceso: number;
   totalRechazadas: number;
   porcentajeAprobacion: number;
@@ -324,6 +326,7 @@ export interface PrediccionesCursosVerano {
   materiasConTendenciaDecreciente: MateriaPrediccion[];
   materiasEstables: MateriaPrediccion[];
   programasConTendenciaCreciente: ProgramaPrediccion[];
+  todasLasPrediccionesPorPrograma: ProgramaPrediccion[]; // ✅ NUEVO: Lista completa de todos los programas
   programasConTendenciaDecreciente: ProgramaPrediccion[];
   prediccionesTemporales: PrediccionesTemporales;
   // ❌ ELIMINADO: recomendacionesFuturas (ahora está en el nivel superior como 'recomendaciones')
@@ -360,10 +363,11 @@ export interface TendenciaTemporal {
 }
 
 export interface EstadosSolicitudes {
-  Aprobada: number;
-  Enviada: number;
-  "En Proceso": number;
-  Rechazada: number;
+  APROBADA: number;
+  ENVIADA: number;
+  APROBADA_FUNCIONARIO: number;
+  APROBADA_COORDINADOR: number;
+  RECHAZADA: number;
 }
 
 export interface Recomendacion {

@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PerfilComponent } from './perfil.component';
 
-import { PruebasEcaesComponent } from './pruebas-ecaes.component';
-
-describe('PruebasEcaesComponent', () => {
-  let component: PruebasEcaesComponent;
-  let fixture: ComponentFixture<PruebasEcaesComponent>;
+describe('PerfilComponent', () => {
+  let component: PerfilComponent;
+  let fixture: ComponentFixture<PerfilComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PruebasEcaesComponent]
+      imports: [PerfilComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PruebasEcaesComponent);
+    fixture = TestBed.createComponent(PerfilComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,3 +20,4 @@ describe('PruebasEcaesComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

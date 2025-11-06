@@ -504,6 +504,29 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     return this.puedeGestionarPreinscripciones();
   }
 
+  // Obtener nombre del docente de forma segura
+  obtenerNombreDocente(curso: CursoOfertadoVerano | null): string {
+    if (!curso || !curso.objDocente) {
+      return 'Sin asignar';
+    }
+    
+    // Priorizar nombre_docente (estructura del backend)
+    if ((curso.objDocente as any).nombre_docente) {
+      return (curso.objDocente as any).nombre_docente;
+    }
+    
+    // Fallback a nombre y apellido (estructura legacy)
+    if (curso.objDocente.nombre && curso.objDocente.apellido) {
+      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
+    }
+    
+    if (curso.objDocente.nombre) {
+      return curso.objDocente.nombre;
+    }
+    
+    return 'Sin nombre';
+  }
+
 }
 
 // Componente del dialog para ver detalles de preinscripción

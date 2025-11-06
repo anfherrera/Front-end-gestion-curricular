@@ -11,7 +11,7 @@
       <div class="curso-details">
         <p><strong>Código:</strong> {{ data.curso.codigo_curso || data.curso.id_curso }}</p>
         <p><strong>Créditos:</strong> {{ data.curso.objMateria.creditos }}</p>
-        <p><strong>Docente:</strong> {{ data.curso.objDocente.nombre }} {{ data.curso.objDocente.apellido }}</p>
+        <p><strong>Docente:</strong> {{ obtenerNombreDocente(data.curso) }}</p>
         <p><strong>Cupo Estimado:</strong> {{ data.curso.cupo_estimado || data.curso.cupo_disponible }}</p>
         <p><strong>Espacio:</strong> {{ data.curso.espacio_asignado || 'Por asignar' }}</p>
       </div>

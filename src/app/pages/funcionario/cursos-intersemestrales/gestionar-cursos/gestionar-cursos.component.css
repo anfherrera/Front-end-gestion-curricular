@@ -129,6 +129,12 @@ table {
 }
 
 /* Información del docente */
+.texto-sin-asignar {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
 .docente-info {
   display: flex;
   flex-direction: column;

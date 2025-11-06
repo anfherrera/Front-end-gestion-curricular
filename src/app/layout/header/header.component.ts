@@ -56,11 +56,11 @@ export class HeaderComponent implements OnInit {
   }
 
   goToProfile(): void {
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/perfil']);
   }
 
   goToSettings(): void {
-    this.router.navigate(['/settings']);
+    this.router.navigate(['/ajustes']);
   }
 
   logout(): void {

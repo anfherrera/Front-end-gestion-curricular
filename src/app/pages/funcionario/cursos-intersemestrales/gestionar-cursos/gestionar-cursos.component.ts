@@ -80,6 +80,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       nombre_curso: ['', [Validators.required, Validators.minLength(3)]],
       codigo_curso: ['', [Validators.required, Validators.minLength(3)]],
       descripcion: ['', [Validators.required, Validators.minLength(10)]],
+      periodoAcademico: ['', Validators.required], // ✨ NUEVO: Período académico
       fecha_inicio: ['', Validators.required],
       fecha_fin: ['', Validators.required],
       cupo_maximo: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
@@ -100,8 +101,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarDatos();
-    this.materias = this.getMateriasPrueba();
-    this.cargarDocentes(); // Cargar docentes reales del backend
+    // ✅ Cargar materias y docentes reales del backend (sin datos de prueba)
+    this.cargarMateriasYDocentes();
   }
 
   ngOnDestroy(): void {
@@ -113,18 +114,19 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cargando = true;
     console.log('🔄 Cargando datos para gestión de cursos...');
     
-    // Cargar cursos, materias y docentes en paralelo
+    // Cargar cursos del backend
     this.cursosService.getTodosLosCursosParaFuncionarios().subscribe({
       next: (cursos) => {
         this.cursos = cursos;
         this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
-        console.log('✅ Cursos cargados:', cursos);
-        this.cargarMateriasYDocentes();
+        console.log('✅ Cursos cargados del backend:', cursos);
+        this.cargando = false;
       },
       error: (err) => {
         this.errorHandler.handleCargaError('cursos');
+        console.error('❌ Error cargando cursos del backend:', err);
         this.cargando = false;
-        // Datos de prueba si falla el backend
+        // Mostrar mensaje de error sin datos de prueba
         this.cursos = this.getCursosPrueba();
         this.cargarMateriasYDocentes();
       }
@@ -132,36 +134,41 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   }
 
   cargarMateriasYDocentes() {
-    // Cargar materias
+    // ✅ Cargar materias reales del backend
     this.cursosService.getTodasLasMaterias().subscribe({
       next: (materias) => {
         this.materias = materias;
-        console.log('✅ Materias cargadas:', materias);
+        console.log('✅ Materias cargadas del backend:', materias);
       },
       error: (err) => {
-        console.error('❌ Error cargando materias:', err);
-        // Datos de prueba si falla el backend
-        this.materias = this.getMateriasPrueba();
+        console.error('❌ Error cargando materias del backend:', err);
+        this.materias = []; // Array vacío en lugar de datos de prueba
+        this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
 
-    // Cargar docentes
+    // ✅ Cargar docentes reales del backend
     this.cursosService.getTodosLosDocentes().subscribe({
       next: (docentes) => {
         this.docentes = docentes;
-        console.log('✅ Docentes cargados:', docentes);
-        this.cargando = false;
+        console.log('✅ Docentes cargados del backend:', docentes);
       },
       error: (err) => {
-        console.error('❌ Error cargando docentes:', err);
-        // Datos de prueba si falla el backend
-        this.docentes = this.getDocentesPrueba();
-        this.cargando = false;
+        console.error('❌ Error cargando docentes del backend:', err);
+        this.docentes = []; // Array vacío en lugar de datos de prueba
+        this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', { 
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
 
-  // Datos de prueba para desarrollo
+  // ⚠️ DATOS DE PRUEBA - SOLO PARA DESARROLLO/EMERGENCIA
+  // Estos métodos YA NO SE USAN - Se cargan datos reales del backend
   private getCursosPrueba(): CursoOfertadoVerano[] {
     return [
       {
@@ -223,7 +230,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // Datos de prueba para materias
+  // ⚠️ YA NO SE USA - Solo para emergencia si el backend falla
   private getMateriasPrueba(): Materia[] {
     return [
       {
@@ -264,26 +271,9 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // Cargar docentes reales del backend
-  private cargarDocentes() {
-    console.log('👨‍🏫 Cargando docentes reales del backend...');
-    this.cursosService.getTodosLosDocentes()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (docentes) => {
-          console.log('✅ Docentes cargados:', docentes);
-          this.docentes = docentes;
-        },
-        error: (err) => {
-          console.error('❌ Error cargando docentes:', err);
-          this.snackBar.open('Error al cargar docentes', 'Cerrar', { duration: 3000 });
-          // Fallback a datos de prueba si falla la carga
-          this.docentes = this.getDocentesPrueba();
-        }
-      });
-  }
+  // ❌ ELIMINADO: Método duplicado - ahora se usa cargarMateriasYDocentes()
 
-  // Datos de prueba para docentes (fallback)
+  // ⚠️ YA NO SE USA - Solo para emergencia si el backend falla
   private getDocentesPrueba(): Usuario[] {
     return [
       {
@@ -489,6 +479,29 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   // Formatear fecha para mostrar
   formatearFecha(fecha: Date): string {
     return new Date(fecha).toLocaleDateString('es-ES');
+  }
+
+  // Obtener nombre del docente de forma segura
+  obtenerNombreDocente(curso: CursoOfertadoVerano): string {
+    if (!curso.objDocente) {
+      return 'Sin asignar';
+    }
+    
+    // Priorizar nombre_docente (estructura del backend)
+    if ((curso.objDocente as any).nombre_docente) {
+      return (curso.objDocente as any).nombre_docente;
+    }
+    
+    // Fallback a nombre y apellido (estructura legacy)
+    if (curso.objDocente.nombre && curso.objDocente.apellido) {
+      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
+    }
+    
+    if (curso.objDocente.nombre) {
+      return curso.objDocente.nombre;
+    }
+    
+    return 'Sin nombre';
   }
 
   // Obtener color del estado

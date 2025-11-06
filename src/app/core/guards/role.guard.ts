@@ -32,7 +32,9 @@ export class RoleGuard implements CanActivate {
     return true;
   }
 
-  private normalizeRole(role: string): string {
+  private normalizeRole(role: string | undefined | null): string {
+    if (!role) return '';
+    
     const normalized = role.toLowerCase().trim();
     
     // Mapear sinónimos

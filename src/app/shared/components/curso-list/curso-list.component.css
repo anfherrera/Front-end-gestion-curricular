@@ -30,6 +30,18 @@ span.en-espera {
   font-weight: bold;
 }
 
+/* ✨ NUEVO: Estilos para badge de período */
+.periodo-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-align: center;
+  min-width: 60px;
+}
+
 button {
   margin-right: 8px;
   margin-bottom: 4px;

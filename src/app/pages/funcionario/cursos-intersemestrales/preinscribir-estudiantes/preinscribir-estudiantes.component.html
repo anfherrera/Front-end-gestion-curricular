@@ -8,7 +8,7 @@
         <mat-label>Selecciona un curso</mat-label>
         <mat-select formControlName="curso" placeholder="Elige un curso para ver las preinscripciones">
           <mat-option *ngFor="let curso of cursos" [value]="curso.id_curso">
-            {{ curso.nombre_curso || 'Sin nombre' }} ({{ curso.codigo_curso || 'Sin código' }}) - {{ curso.objDocente.nombre || 'Sin' }} {{ curso.objDocente.apellido || 'docente' }}
+            {{ curso.nombre_curso || 'Sin nombre' }} ({{ curso.codigo_curso || 'Sin código' }}) - {{ obtenerNombreDocente(curso) }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -126,7 +126,7 @@
     <h4>📋 Información del Curso</h4>
     <div class="info-grid">
       <div class="info-item">
-        <strong>Docente:</strong> {{ cursoSeleccionado.objDocente.nombre || 'Sin asignar' }} {{ cursoSeleccionado.objDocente.apellido || '' }}
+        <strong>Docente:</strong> {{ obtenerNombreDocente(cursoSeleccionado) }}
       </div>
       <div class="info-item">
         <strong>Cupo Estimado:</strong> {{ cursoSeleccionado.cupo_estimado || 0 }} estudiantes

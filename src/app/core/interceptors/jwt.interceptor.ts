@@ -5,21 +5,28 @@ import { Router } from '@angular/router';
 
 export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const router = inject(Router);
 
   const token = authService.getToken();
 
   if (token) {
     // Decodificar token para validar expiración
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const exp = payload.exp * 1000; // Convertir a milisegundos
-    const now = Date.now();
-
-    if (exp < now) {
-      console.warn('⏳ Token expirado. Cerrando sesión...');
-      authService.logout();
-      router.navigate(['/login']);
-      return next(req); // No se envía token porque está expirado
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000; // Convertir a milisegundos
+      const now = Date.now();
+      
+      // Solo verificar expiración, pero NO hacer logout aquí
+      // El logout se manejará en el error interceptor cuando el backend responda con 401
+      // Esto evita redirecciones inesperadas cuando el usuario está activo
+      if (exp < now) {
+        console.warn('⏳ Token expirado detectado, pero permitiendo la petición para que el backend lo valide');
+        // No hacer logout aquí, dejar que el backend responda y el error interceptor lo maneje
+        // Esto permite que el usuario continúe usando la app hasta que el backend rechace la petición
+      }
+    } catch (e) {
+      console.error('❌ Error decodificando token:', e);
+      // Token malformado, pero no hacer logout aquí
+      // Dejar que el error interceptor lo maneje cuando el backend responda
     }
 
     // Detectar si la petición es multipart/form-data (subida de archivos)
