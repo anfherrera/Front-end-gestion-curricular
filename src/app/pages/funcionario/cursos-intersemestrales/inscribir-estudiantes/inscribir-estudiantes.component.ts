@@ -355,7 +355,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo).subscribe({
       next: (response) => {
         console.log('❌ Inscripción rechazada:', response);
-        alert('Inscripción rechazada exitosamente');
+        const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
+        alert(`Inscripción rechazada exitosamente.\nMotivo: ${motivoRespuesta}`);
         
         // 🔄 REFRESCAR LA LISTA DESPUÉS DEL RECHAZO EXITOSO
         if (this.cursoSeleccionado) {

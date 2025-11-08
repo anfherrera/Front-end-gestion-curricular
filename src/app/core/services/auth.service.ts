@@ -179,9 +179,9 @@ export class AuthService {
     const timeLeft = expirationTime - now;
     if (this.logoutTimer) clearTimeout(this.logoutTimer);
     if (timeLeft > 0) {
-      this.logoutTimer = setTimeout(() => this.logout(), timeLeft);
+      this.logoutTimer = setTimeout(() => this.logout(true), timeLeft);
     } else {
-      this.logout();
+      this.logout(true);
     }
   }
 

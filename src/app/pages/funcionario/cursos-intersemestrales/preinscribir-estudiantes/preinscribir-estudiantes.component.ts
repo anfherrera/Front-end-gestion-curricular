@@ -14,7 +14,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService, CursoOfertadoVerano, Preinscripcion, SolicitudCursoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, CursoOfertadoVerano, Preinscripcion, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
@@ -422,12 +422,17 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].estado = 'Rechazado';
         }
         
-        this.snackBar.open(`Preinscripción rechazada exitosamente. Motivo: ${motivo}`, 'Cerrar', { 
+        const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
+        this.snackBar.open(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['success-snackbar']
         });
         
         this.cancelarRechazo();
+
+        if (this.cursoSeleccionado?.id_curso) {
+          this.cargarSolicitudesPorCurso(this.cursoSeleccionado.id_curso);
+        }
       },
       error: (err) => {
         console.error('❌ Error rechazando preinscripción:', err);
@@ -577,6 +582,27 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           </mat-form-field>
         </form>
       </div>
+
+      <!-- Historial de estados -->
+      <div class="form-section historial" *ngIf="tieneHistorial">
+        <h3>📜 Historial de estados</h3>
+        <div class="timeline">
+          <div 
+            *ngFor="let estado of estadosOrdenados"
+            class="timeline-item"
+            [ngClass]="{ 'timeline-item--rechazo': esRechazo(estado.estado) }">
+            <div class="timeline-dot"></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="timeline-estado">{{ estado.estado }}</span>
+                <span *ngIf="estado.fecha" class="timeline-fecha">{{ estado.fecha }}</span>
+              </div>
+              <p *ngIf="estado.comentario" class="timeline-comentario">{{ estado.comentario }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div mat-dialog-actions class="dialog-actions">
@@ -611,11 +637,19 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       border-left: 4px solid #00138C;
     }
 
+    .form-section.historial {
+      border-left-color: #607d8b;
+    }
+
     .form-section h3 {
       margin: 0 0 16px 0;
       color: #00138C;
       font-size: 16px;
       font-weight: 600;
+    }
+
+    .form-section.historial h3 {
+      color: #37474f;
     }
 
     .info-grid {
@@ -647,6 +681,90 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       border-top: 1px solid #e0e0e0;
     }
 
+    .timeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding-left: 12px;
+    }
+
+    .timeline-item {
+      position: relative;
+      display: flex;
+      gap: 12px;
+      padding-left: 12px;
+    }
+
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #1e88e5;
+      box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.15);
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .timeline-item--rechazo .timeline-dot {
+      background: #e53935;
+      box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.15);
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 16px;
+      left: 17px;
+      width: 2px;
+      height: calc(100% + 18px);
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .timeline-item:last-child .timeline-line {
+      display: none;
+    }
+
+    .timeline-content {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 12px 16px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      flex: 1;
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .timeline-estado {
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #37474f;
+    }
+
+    .timeline-item--rechazo .timeline-estado {
+      color: #c62828;
+    }
+
+    .timeline-fecha {
+      font-size: 12px;
+      color: #607d8b;
+    }
+
+    .timeline-comentario {
+      margin: 0;
+      font-size: 13px;
+      color: #455a64;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
     ::ng-deep .mat-mdc-form-field {
       .mat-mdc-text-field-wrapper {
         background-color: white;
@@ -656,6 +774,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 })
 export class DetallesPreinscripcionDialogComponent {
   observacionesForm: FormGroup;
+  estadosOrdenados: EstadoSolicitudDetalle[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<DetallesPreinscripcionDialogComponent>,
@@ -665,6 +784,7 @@ export class DetallesPreinscripcionDialogComponent {
     this.observacionesForm = this.fb.group({
       observaciones: [data.solicitud.observaciones || '']
     });
+    this.estadosOrdenados = this.obtenerEstadosOrdenados(data.solicitud.estadoSolicitud);
   }
 
   guardarObservaciones(): void {
@@ -673,6 +793,27 @@ export class DetallesPreinscripcionDialogComponent {
         observaciones: this.observacionesForm.value.observaciones
       });
     }
+  }
+
+  get tieneHistorial(): boolean {
+    return this.estadosOrdenados.length > 0;
+  }
+
+  esRechazo(estado: string | undefined): boolean {
+    const valor = (estado || '').toUpperCase();
+    return valor.includes('RECHAZ');
+  }
+
+  private obtenerEstadosOrdenados(estados?: EstadoSolicitudDetalle[] | null): EstadoSolicitudDetalle[] {
+    if (!estados || estados.length === 0) {
+      return [];
+    }
+
+    return [...estados].sort((a, b) => {
+      const fechaA = a.fecha ? new Date(a.fecha).getTime() : 0;
+      const fechaB = b.fecha ? new Date(b.fecha).getTime() : 0;
+      return fechaB - fechaA;
+    });
   }
 }
 
