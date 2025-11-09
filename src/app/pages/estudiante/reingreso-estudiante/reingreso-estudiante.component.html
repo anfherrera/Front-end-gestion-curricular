@@ -19,34 +19,31 @@
     </mat-card-header>
     <mat-card-content>
       <app-required-docs
-        [requiredFiles]="documentosRequeridos">
+        [requiredFiles]="documentosRequeridos"
+        [archivos]="archivosActuales">
       </app-required-docs>
     </mat-card-content>
   </mat-card>
 
   <!-- Sección de carga de archivos -->
-  <mat-card class="upload-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>cloud_upload</mat-icon>
-        Cargar Documentos
-      </mat-card-title>
-    </mat-card-header>
+  <mat-card class="card-section upload-card">
+    <mat-card-title class="card-title">
+      Cargar Documentos
+    </mat-card-title>
     <mat-card-content>
       <app-file-upload
-        #fileUploadComponent
         [archivos]="archivosActuales"
         [reset]="resetFileUpload"
         (archivosChange)="onArchivosChange($event)">
       </app-file-upload>
 
-      <div class="upload-actions">
+      <div class="enviar-solicitud">
         <button
           mat-raised-button
           color="primary"
           [disabled]="!puedeEnviar()"
           (click)="onSolicitudEnviada()"
-          class="send-button">
+          class="btn-enviar">
           <mat-icon>send</mat-icon>
           Enviar Solicitud
         </button>
