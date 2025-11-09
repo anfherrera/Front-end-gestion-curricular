@@ -41,6 +41,7 @@
           [template]="template"
           [proceso]="'homologacion'"
           [loading]="loading"
+          [mostrarObservaciones]="false"
           (generarDocumento)="onGenerarDocumento($event)"
           (cancelar)="onCancelarGeneracion()"
           (tengoDocumento)="onTengoDocumento()">
