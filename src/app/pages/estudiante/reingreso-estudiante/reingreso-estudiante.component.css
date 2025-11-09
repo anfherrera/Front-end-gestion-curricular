@@ -40,12 +40,39 @@ mat-card {
   border-radius: 8px;
 }
 
+.card-section {
+  border-radius: 12px;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #00138C;
+  color: #fff;
+  padding: 14px 16px;
+  display: block;
+  border-bottom: 3px solid #001060;
+}
+
+.card-section mat-card-content {
+  padding: 16px;
+}
+
 .docs-card {
   background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
 }
 
 .upload-card {
-  background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e8 100%);
+  background: #fff;
 }
 
 .requests-card {
@@ -74,32 +101,51 @@ mat-card-title mat-icon {
   color: #1976d2;
 }
 
-/* Upload actions */
-.upload-actions {
+mat-card-title.card-title {
+  display: block;
+  align-items: initial;
+  gap: 0;
+  color: #fff;
+}
+
+.enviar-solicitud {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  justify-content: flex-start;
+  margin-top: 16px;
 }
 
-.send-button {
-  padding: 12px 30px;
-  font-size: 1.1rem;
+.btn-enviar {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
   font-weight: 500;
-  border-radius: 25px;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.send-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+.btn-enviar:hover:not(:disabled) {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.send-button:disabled {
-  opacity: 0.6;
+.btn-enviar:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-enviar:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
   cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Empty state */
@@ -147,7 +193,7 @@ mat-card-title mat-icon {
     font-size: 1rem;
   }
 
-  .send-button {
+  .btn-enviar {
     width: 100%;
     padding: 15px;
   }

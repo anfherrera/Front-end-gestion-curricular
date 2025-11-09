@@ -39,13 +39,13 @@ export class ReingresoEstudianteComponent implements OnInit {
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
   documentosRequeridos = [
-    { label: 'Solicitud de reingreso', obligatorio: true },
+    { label: 'PM-FO-4-FOR-17 Solicitud de Reingreso V2', obligatorio: true },
     { label: 'Certificado de notas', obligatorio: true },
     { label: 'Documento de identidad', obligatorio: true },
     { label: 'Carta de motivación', obligatorio: false }
   ];
 
-  archivosExclusivos: string[] = ['Documento A', 'Documento B'];
+  private readonly nombresDocumentosRequeridos = this.documentosRequeridos.map(doc => doc.label.toLowerCase().trim());
 
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
@@ -304,6 +304,13 @@ export class ReingresoEstudianteComponent implements OnInit {
   descargarOficio(idOficio: number, nombreArchivo: string): void {
     console.log('📥 Descargando oficio:', idOficio);
 
+    const documentoResolucion = this.encontrarDocumentoResolucion(idOficio);
+
+    if (documentoResolucion) {
+      this.descargarDocumentoResolucion(documentoResolucion, idOficio);
+      return;
+    }
+
     // Primero intentar obtener los oficios disponibles para esta solicitud
     this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
   }
@@ -321,12 +328,25 @@ export class ReingresoEstudianteComponent implements OnInit {
           return;
         }
 
-        // Tomar el primer oficio disponible
-        const oficio = oficios[0];
-        const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`;
+        const oficioSeleccionado = this.seleccionarOficioReciente(oficios, idSolicitud);
+        const candidatos = this.construirCandidatosDescarga(oficioSeleccionado, idSolicitud);
 
-        // Intentar descargar usando el endpoint de archivos
-        this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
+        if (candidatos.length === 0) {
+          console.warn('⚠️ No se encontraron nombres válidos para el oficio, se usará el flujo antiguo.');
+          this.descargarArchivoPorNombre(nombreArchivo, nombreArchivo, idSolicitud);
+          return;
+        }
+
+        const nombrePreferido = oficioSeleccionado?.nombre || oficioSeleccionado?.nombreArchivo || nombreArchivo || candidatos[0];
+        const idOficio = this.obtenerIdOficio(oficioSeleccionado);
+
+        if (idOficio) {
+          this.descargarOficioPorId(idOficio, nombrePreferido, () => {
+            this.descargarOficioPorCandidatos(candidatos, nombrePreferido, idSolicitud);
+          });
+        } else {
+          this.descargarOficioPorCandidatos(candidatos, nombrePreferido, idSolicitud);
+        }
       },
       error: (err) => {
         console.error('❌ Error al obtener oficios:', err);
@@ -414,6 +434,238 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
       }
     });
+  }
+
+  private seleccionarOficioReciente(oficios: any[], idSolicitud: number): any {
+    if (!oficios || oficios.length === 0) {
+      return null;
+    }
+
+    const ordenados = [...oficios].sort((a, b) => {
+      const fechaA = this.parsearFechaDocumento(a?.fecha_documento);
+      const fechaB = this.parsearFechaDocumento(b?.fecha_documento);
+      return fechaB - fechaA;
+    });
+
+    const prioritario = ordenados.find(oficio => this.esOficioGenerado(oficio, idSolicitud));
+    return prioritario || ordenados[0];
+  }
+
+  private parsearFechaDocumento(fecha: any): number {
+    if (!fecha) {
+      return 0;
+    }
+
+    if (fecha instanceof Date) {
+      return fecha.getTime();
+    }
+
+    const parsed = Date.parse(fecha);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
+  private construirCandidatosDescarga(oficio: any, idSolicitud: number): string[] {
+    const candidatos = new Set<string>();
+
+    if (!oficio || typeof oficio !== 'object') {
+      return [];
+    }
+
+    if (typeof oficio?.id === 'number') {
+      candidatos.add(`oficio_${oficio.id}.pdf`);
+    }
+
+    if (typeof idSolicitud === 'number') {
+      candidatos.add(`oficio_${idSolicitud}.pdf`);
+      candidatos.add(`resolucion_${idSolicitud}.pdf`);
+      candidatos.add(`resolucion_reingreso_${idSolicitud}.pdf`);
+    }
+
+    [
+      oficio.ruta_documento,
+      oficio.ruta,
+      oficio.path,
+      oficio.nombreArchivo,
+      oficio.nombre
+    ].forEach(valor => {
+      if (typeof valor === 'string' && valor.trim().length > 0) {
+        candidatos.add(valor.trim());
+      }
+    });
+
+    return Array.from(candidatos);
+  }
+
+  private encontrarDocumentoResolucion(idSolicitud: number): DocumentosDTORespuesta | undefined {
+    const solicitud = this.obtenerSolicitudCompleta(idSolicitud);
+    if (!solicitud || !solicitud.documentos || solicitud.documentos.length === 0) {
+      return undefined;
+    }
+
+    const esDocumentoResolucion = (nombre: string, ruta?: string): boolean => {
+      if (!nombre) {
+        return false;
+      }
+
+      const nombreNormalizado = nombre.toLowerCase();
+      const nombreSinExtension = nombreNormalizado.replace(/\.[^/.]+$/, '').trim();
+
+      if (this.nombresDocumentosRequeridos.includes(nombreNormalizado) || this.nombresDocumentosRequeridos.includes(nombreSinExtension)) {
+        return false;
+      }
+
+      const patronesResolucion = /(resoluci[oó]n|oficio|respuesta)/i;
+      if (patronesResolucion.test(nombre)) {
+        return true;
+      }
+
+      if (ruta && patronesResolucion.test(ruta)) {
+        return true;
+      }
+
+      if (ruta && patronesResolucion.test(ruta)) {
+        return true;
+      }
+
+      return nombreNormalizado.endsWith('.pdf') && !this.nombresDocumentosRequeridos.includes(nombreSinExtension);
+    };
+
+    const documentosResolucion = solicitud.documentos
+      .filter(doc => esDocumentoResolucion(doc.nombre, doc.ruta_documento))
+      .sort((a, b) => {
+        const fechaA = this.parsearFechaDocumento(a?.fecha_documento);
+        const fechaB = this.parsearFechaDocumento(b?.fecha_documento);
+        return fechaB - fechaA;
+      });
+
+    return documentosResolucion.length > 0 ? documentosResolucion[0] : undefined;
+  }
+
+  private descargarDocumentoResolucion(documento: DocumentosDTORespuesta, idSolicitud: number): void {
+    const nombreDescarga = this.extraerNombreDesdeRuta(documento.nombre || documento.ruta_documento) || 'oficio_reingreso.pdf';
+    console.log('📄 Descargando documento de resolución:', documento);
+
+    this.reingresoService.descargarArchivo(documento.nombre).subscribe({
+      next: (blob: Blob) => {
+        this.descargarBlob(blob, nombreDescarga);
+        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+      },
+      error: (err) => {
+        console.error('❌ Error al descargar documento de resolución por nombre:', err);
+        this.obtenerOficiosYDescargar(idSolicitud, nombreDescarga);
+      }
+    });
+  }
+
+  private esOficioGenerado(oficio: any, idSolicitud: number): boolean {
+    if (!oficio || typeof oficio !== 'object') {
+      return false;
+    }
+
+    const patrones = /(resoluci[oó]n|oficio)/i;
+    const camposTexto = [
+      oficio.nombre,
+      oficio.nombreArchivo,
+      oficio.ruta_documento,
+      oficio.ruta,
+      oficio.path,
+      oficio.tipo,
+      oficio.tipoDocumento,
+      oficio.tipoDocumentoSolicitud,
+      oficio.tipoDocumentoSolicitudReingreso,
+      oficio.id,
+      oficio.id_documento,
+      oficio.idDocumento
+    ];
+
+    return camposTexto.some(valor => {
+      if (typeof valor === 'string') {
+        if (patrones.test(valor)) {
+          return true;
+        }
+        return valor.includes(`${idSolicitud}`);
+      }
+      if (typeof valor === 'number') {
+        return valor === idSolicitud;
+      }
+      return false;
+    });
+  }
+
+  private obtenerIdOficio(oficio: any): number | null {
+    if (!oficio || typeof oficio !== 'object') {
+      return null;
+    }
+
+    const posiblesClaves = ['id', 'id_documento', 'idDocumento', 'idOficio'];
+    for (const clave of posiblesClaves) {
+      const valor = oficio[clave];
+      if (typeof valor === 'number' && !isNaN(valor)) {
+        return valor;
+      }
+      if (typeof valor === 'string' && valor.trim() !== '' && !isNaN(Number(valor))) {
+        return Number(valor);
+      }
+    }
+
+    return null;
+  }
+
+  private descargarOficioPorId(idOficio: number, nombreArchivo: string, onError: () => void): void {
+    console.log('📥 Intentando descargar oficio por ID:', idOficio);
+    this.reingresoService.descargarOficio(idOficio).subscribe({
+      next: (blob: Blob) => {
+        const nombreFinal = nombreArchivo || `oficio_reingreso_${idOficio}.pdf`;
+        this.descargarBlob(blob, nombreFinal);
+        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+      },
+      error: (err) => {
+        console.error(`❌ Error al descargar oficio por ID ${idOficio}:`, err);
+        onError();
+      }
+    });
+  }
+
+  private descargarOficioPorCandidatos(candidatos: string[], nombreDescarga: string, idSolicitud: number, indice: number = 0): void {
+    if (indice >= candidatos.length) {
+      console.warn('⚠️ Ninguno de los nombres candidatos funcionó, usando flujo alternativo.');
+      this.descargarArchivoPorNombre(nombreDescarga, nombreDescarga, idSolicitud);
+      return;
+    }
+
+    const nombreActual = candidatos[indice];
+    console.log(`📥 Intentando descargar oficio usando nombre: ${nombreActual}`);
+
+    this.reingresoService.descargarArchivo(nombreActual).subscribe({
+      next: (blob: Blob) => {
+        const nombreFinal = nombreDescarga || this.extraerNombreDesdeRuta(nombreActual) || `oficio_${idSolicitud}.pdf`;
+        this.descargarBlob(blob, nombreFinal);
+        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+      },
+      error: (err) => {
+        console.error(`❌ Error al descargar usando "${nombreActual}". Probando siguiente opción...`, err);
+        this.descargarOficioPorCandidatos(candidatos, nombreDescarga, idSolicitud, indice + 1);
+      }
+    });
+  }
+
+  private extraerNombreDesdeRuta(ruta: string | undefined): string {
+    if (!ruta) {
+      return '';
+    }
+    const partes = ruta.split(/[\\/]/);
+    return partes[partes.length - 1] || ruta;
+  }
+
+  private descargarBlob(blob: Blob, nombreArchivo: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nombreArchivo;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   }
 
   /**
