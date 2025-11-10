@@ -1,0 +1,39 @@
+<app-card-container
+  [title]="title"
+  [icon]="icon">
+
+  <div class="approved-section-controls" *ngIf="allowToggle">
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="toggleSection()">
+      <mat-icon>{{ showContent ? 'expand_less' : 'expand_more' }}</mat-icon>
+      {{ showContent ? 'Ocultar listado' : 'Mostrar listado' }}
+    </button>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="loading"
+    mode="indeterminate">
+  </mat-progress-bar>
+
+  <div *ngIf="showContent">
+    <ng-container *ngIf="hasSolicitudes; else emptyState">
+      <app-request-status-table
+        [solicitudes]="solicitudes"
+        [showOficio]="false"
+        [showComentarios]="false"
+        [showSeleccionar]="false">
+      </app-request-status-table>
+    </ng-container>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="approved-empty-state">
+      <mat-icon>inbox</mat-icon>
+      <p>{{ emptyMessage }}</p>
+    </div>
+  </ng-template>
+
+</app-card-container>
+
