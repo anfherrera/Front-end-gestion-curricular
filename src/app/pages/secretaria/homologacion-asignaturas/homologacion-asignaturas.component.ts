@@ -12,6 +12,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
+import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -25,16 +26,19 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
     CardContainerComponent,
     RequestStatusTableComponent,
     DocumentGeneratorComponent,
-    DocumentationViewerComponent
+    DocumentationViewerComponent,
+    ApprovedRequestsSectionComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit {
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
+  solicitudesAprobadas: any[] = [];
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
   template!: DocumentTemplate;
   loading: boolean = false;
+  cargandoSolicitudesAprobadas: boolean = false;
 
   // Nuevas propiedades para el flujo de PDF
   documentoGenerado: boolean = false;
@@ -62,6 +66,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarSolicitudes();
+    this.cargarSolicitudesAprobadas();
   }
 
   /**
@@ -97,6 +102,34 @@ export class HomologacionAsignaturasComponent implements OnInit {
       return ultimoEstado.estado_actual;
     }
     return 'Pendiente';
+  }
+
+  /**
+   * Cargar solicitudes de reingreso aprobadas
+   */
+  cargarSolicitudesAprobadas(): void {
+    this.cargandoSolicitudesAprobadas = true;
+
+    this.homologacionService.getSecretariaApprovedRequests().subscribe({
+      next: (solicitudes) => {
+        this.solicitudesAprobadas = solicitudes.map((solicitud) => ({
+          id: solicitud.id_solicitud,
+          nombre: solicitud.nombre_solicitud,
+          fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
+          estado: this.getEstadoActual(solicitud) || 'Aprobada',
+          rutaArchivo: '',
+          comentarios: solicitud.estadosSolicitud?.slice(-1)[0]?.comentario ?? ''
+        }));
+
+        this.cargandoSolicitudesAprobadas = false;
+        console.log('✅ Solicitudes de homologación aprobadas:', this.solicitudesAprobadas);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes aprobadas de homologación:', err);
+        this.snackBar.open('Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
+        this.cargandoSolicitudesAprobadas = false;
+      }
+    });
   }
 
   /**

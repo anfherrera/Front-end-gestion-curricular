@@ -133,6 +133,20 @@ export class HomologacionAsignaturasService {
   }
 
   /**
+   * Obtener solicitudes aprobadas para secretaría
+   * Endpoint: /listarSolicitud-Homologacion/Secretaria/Aprobadas
+   */
+  getSecretariaApprovedRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    const url = `${this.apiUrl}/listarSolicitud-Homologacion/Secretaria/Aprobadas`;
+
+    console.log('🌐 URL solicitudes homologación aprobadas secretaría:', url);
+
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(url, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
    * Aprobar solicitud de homologación como funcionario
    */
   approveRequest(requestId: number): Observable<any> {

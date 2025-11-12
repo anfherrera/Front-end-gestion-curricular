@@ -1,0 +1,40 @@
+.approved-section-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.approved-section-controls button {
+  gap: 8px;
+}
+
+.approved-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: #6c757d;
+  text-align: center;
+}
+
+.approved-empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  color: #cfd8dc;
+}
+
+@media (max-width: 768px) {
+  .approved-section-controls {
+    justify-content: flex-start;
+  }
+
+  .approved-section-controls button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

@@ -18,6 +18,7 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
+import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
 
 @Component({
@@ -35,7 +36,8 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
     CardContainerComponent,
     RequestStatusTableComponent,
     DocumentGeneratorComponent,
-    DocumentationViewerComponent
+    DocumentationViewerComponent,
+    ApprovedRequestsSectionComponent
   ],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']
@@ -44,9 +46,11 @@ export class ReingresoEstudianteComponent implements OnInit {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
 
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
+  solicitudesAprobadas: any[] = [];
   selectedSolicitud?: SolicitudReingresoDTORespuesta;
   template!: DocumentTemplate;
   loading: boolean = false;
+  cargandoSolicitudesAprobadas: boolean = false;
 
   // Nuevas propiedades para el flujo de PDF
   documentoGenerado: boolean = false;
@@ -88,6 +92,7 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarSolicitudes();
+    this.cargarSolicitudesAprobadas();
   }
 
   cargarSolicitudes(): void {
@@ -114,6 +119,30 @@ export class ReingresoEstudianteComponent implements OnInit {
       return ultimoEstado.estado_actual;
     }
     return 'Pendiente';
+  }
+
+  cargarSolicitudesAprobadas(): void {
+    this.cargandoSolicitudesAprobadas = true;
+
+    this.reingresoService.getSecretariaApprovedRequests().subscribe({
+      next: (solicitudes) => {
+        this.solicitudesAprobadas = solicitudes.map((solicitud) => ({
+          id: solicitud.id_solicitud,
+          nombre: solicitud.nombre_solicitud,
+          fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
+          estado: this.getEstadoActual(solicitud),
+          rutaArchivo: '',
+          comentarios: solicitud.estadosSolicitud?.slice(-1)[0]?.comentario ?? ''
+        }));
+
+        this.cargandoSolicitudesAprobadas = false;
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes de reingreso aprobadas:', err);
+        this.snackBar.open('Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
+        this.cargandoSolicitudesAprobadas = false;
+      }
+    });
   }
 
   onSolicitudSeleccionada(solicitudId: number | null): void {
