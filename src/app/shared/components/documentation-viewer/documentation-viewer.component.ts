@@ -30,8 +30,7 @@ interface DocumentoGenerico {
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    MatDialogModule,
-    ComentarioDialogComponent
+    MatDialogModule
   ],
   templateUrl: './documentation-viewer.component.html',
   styleUrls: ['./documentation-viewer.component.css']
