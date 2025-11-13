@@ -121,7 +121,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
       const result = roleGuard.canActivate(route, state);
 
       expect(result).toBeFalse();
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
     it('SEC-011-C: Debe permitir acceso de COORDINADOR a su ruta', () => {
@@ -140,7 +140,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
       const result = roleGuard.canActivate(route, state);
 
       expect(result).toBeFalse();
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
     it('SEC-011-E: Debe permitir acceso de SECRETARIA a su ruta', () => {
@@ -174,7 +174,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
       const result = roleGuard.canActivate(route, state);
 
       expect(result).toBeFalse();
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
     it('SEC-012-B: FUNCIONARIO NO puede acceder a panel de admin', () => {
@@ -354,7 +354,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
             const result = roleGuard.canActivate(route, state);
 
             expect(result).toBeFalse();
-            expect(router.navigate).toHaveBeenCalledWith(['/home']);
+          expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
           });
         });
       });

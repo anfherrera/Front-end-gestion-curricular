@@ -26,7 +26,7 @@ const ADMIN_FUNC_COORD_SEC: UserRole[] = [
 ];
 
 export const SIDEBAR_ITEMS: SidebarItem[] = [
-  { label: 'Inicio', icon: 'home', route: '/home', roles: ALL_ROLES },
+  { label: 'Inicio', icon: 'home', route: '/welcome', roles: ALL_ROLES },
 
   // ========================================
   // PANEL DE ADMINISTRACIÓN (Solo ADMIN)

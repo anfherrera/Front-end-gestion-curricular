@@ -24,8 +24,8 @@ export class RoleGuard implements CanActivate {
     const normalizedExpectedRole = this.normalizeRole(expectedRole);
 
     if (normalizedUserRole !== normalizedExpectedRole) {
-      // Rol no coincide, manda a home
-      this.router.navigate(['/home']);
+      // Rol no coincide, dirige a página de bienvenida
+      this.router.navigate(['/welcome']);
       return false;
     }
 
