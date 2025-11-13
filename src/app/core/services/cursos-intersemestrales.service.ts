@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
+import { environment } from '../../../environments/environment';
 import { Curso as CursoList } from '../../shared/components/curso-list/curso-list.component';
 import { AuthService } from './auth.service';
 
@@ -1070,7 +1071,7 @@ export class CursosIntersemestralesService {
 
   // 🆕 NUEVO: Aceptar inscripción usando el endpoint correcto del backend
   aceptarInscripcion(idInscripcion: number, observaciones: string = "Inscripción aceptada"): Observable<any> {
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${idInscripcion}/aceptar`;
+    const endpoint = `${environment.apiUrl}/cursos-intersemestrales/inscripciones/${idInscripcion}/aceptar`;
     console.log(`🌐 Llamando a API: PUT ${endpoint}`);
     console.log(`🔍 ID de inscripción: ${idInscripcion}`);
     console.log(`🔍 Observaciones: ${observaciones}`);
@@ -1082,7 +1083,7 @@ export class CursosIntersemestralesService {
 
   // 🆕 NUEVO: Rechazar inscripción usando el endpoint correcto del backend
   rechazarInscripcion(idInscripcion: number, motivo: string): Observable<any> {
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${idInscripcion}/rechazar`;
+    const endpoint = `${environment.apiUrl}/cursos-intersemestrales/inscripciones/${idInscripcion}/rechazar`;
     console.log(`🌐 Llamando a API: PUT ${endpoint}`);
     console.log(`🔍 ID de inscripción: ${idInscripcion}`);
     console.log(`🔍 Motivo: ${motivo}`);
@@ -1094,7 +1095,7 @@ export class CursosIntersemestralesService {
 
   // 🆕 NUEVO: Descargar comprobante de pago
   descargarComprobantePago(idInscripcion: number): Observable<Blob> {
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${idInscripcion}/comprobante`;
+    const endpoint = `${environment.apiUrl}/cursos-intersemestrales/inscripciones/${idInscripcion}/comprobante`;
     console.log(`🌐 Llamando a API: GET ${endpoint}`);
     console.log(`🔍 ID de inscripción: ${idInscripcion}`);
     
@@ -1108,7 +1109,7 @@ export class CursosIntersemestralesService {
 
   // 🆕 NUEVO: Obtener estadísticas del curso
   obtenerEstadisticasCurso(idCurso: number): Observable<any> {
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/curso/${idCurso}/estadisticas`;
+    const endpoint = `${environment.apiUrl}/cursos-intersemestrales/inscripciones/curso/${idCurso}/estadisticas`;
     console.log(`🌐 Llamando a API: GET ${endpoint}`);
     console.log(`🔍 ID del curso: ${idCurso}`);
     

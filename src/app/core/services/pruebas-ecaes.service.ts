@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface FechaEcaes {
   idFechaEcaes: number;
@@ -80,7 +81,7 @@ export interface SolicitudEcaesResponse {
   providedIn: 'root'
 })
 export class PruebasEcaesService {
-  private apiUrl = 'http://localhost:5000/api/solicitudes-ecaes';
+  private apiUrl = `${environment.apiUrl}/solicitudes-ecaes`;
 
   constructor(private http: HttpClient) {}
 
@@ -211,7 +212,7 @@ export class PruebasEcaesService {
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
-    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
     console.log('🔗 URL de descarga ECAES:', url);
     console.log('📁 Nombre del archivo:', nombreArchivo);
 
@@ -225,7 +226,7 @@ export class PruebasEcaesService {
    * Añadir comentario a un documento
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
-    const url = `http://localhost:5000/api/documentos/añadirComentario`;
+    const url = `${environment.apiUrl}/documentos/añadirComentario`;
     const body = {
       idDocumento: idDocumento,
       comentario: comentario

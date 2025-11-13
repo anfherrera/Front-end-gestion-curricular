@@ -3,11 +3,12 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, catchError, map, switchMap } from 'rxjs';
 import { Solicitud, Archivo, Usuario, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class PazSalvoService {
-  private apiUrl = 'http://localhost:5000/api/solicitudes-pazysalvo';
+  private apiUrl = `${environment.apiUrl}/solicitudes-pazysalvo`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -282,7 +283,7 @@ export class PazSalvoService {
    * Los documentos se suben ANTES de crear la solicitud
    */
   subirDocumento(archivo: File): Observable<any> {
-    const url = `http://localhost:5000/api/solicitudes-pazysalvo/subir-documento`;
+    const url = `${this.apiUrl}/subir-documento`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -319,7 +320,7 @@ export class PazSalvoService {
    * ✅ IGUAL QUE HOMOLOGACIÓN: Subir archivo PDF usando endpoint genérico
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    const url = `http://localhost:5000/api/archivos/subir/pdf`;
+    const url = `${environment.apiUrl}/archivos/subir/pdf`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -423,7 +424,7 @@ export class PazSalvoService {
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // ✅ USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
-    const url = `http://localhost:5000/api/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
+    const url = `${this.apiUrl}/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
     console.log('🔗 URL de descarga (endpoint Paz y Salvo):', url);
     console.log('📁 Nombre del archivo:', nombreArchivo);
     
@@ -467,7 +468,7 @@ export class PazSalvoService {
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
     // ✅ USAR ENDPOINT GENÉRICO CORRECTO
-    const url = `http://localhost:5000/api/documentos/añadirComentario`;
+    const url = `${environment.apiUrl}/documentos/añadirComentario`;
     const body = {
       idDocumento: idDocumento,
       comentario: comentario
@@ -483,7 +484,7 @@ export class PazSalvoService {
    * 🆕 Generar documento de Paz y Salvo usando endpoint específico (para secretaría)
    */
   generarDocumento(idSolicitud: number, numeroDocumento: string, fechaDocumento: string, observaciones?: string): Observable<{blob: Blob, filename: string}> {
-    const url = `http://localhost:5000/api/solicitudes-pazysalvo/generar-documento/${idSolicitud}`;
+    const url = `${this.apiUrl}/generar-documento/${idSolicitud}`;
     
     console.log('📄 Generando documento de Paz y Salvo usando endpoint específico:', {
       idSolicitud,

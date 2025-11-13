@@ -22,12 +22,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Archivo } from '../models/procesos.model';
 import { ApiEndpoints } from '../utils/api-endpoints';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArchivosService {
-  private apiUrl = 'http://localhost:5000/api/archivos';
+  private apiUrl = `${environment.apiUrl}/archivos`;
 
   constructor(private http: HttpClient) {}
 

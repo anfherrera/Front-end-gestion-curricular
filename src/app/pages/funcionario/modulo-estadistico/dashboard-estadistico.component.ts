@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
+import { environment } from '../../../../environments/environment';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { ApiEndpoints } from '../../../core/utils/api-endpoints';
@@ -353,11 +354,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   verificarEndpoint(): void {
     console.log('🔍 Verificando conexión del endpoint...');
-    console.log('📍 URL del endpoint:', 'http://localhost:5000/api/estadisticas/estado-solicitudes');
-    console.log('🔍 BASE_URL configurado:', 'http://localhost:5000/api');
+    console.log('📍 URL del endpoint:', `${environment.apiUrl}/estadisticas/estado-solicitudes`);
+    console.log('🔍 BASE_URL configurado:', environment.apiUrl);
     
     // Hacer una llamada directa para verificar
-    fetch('http://localhost:5000/api/estadisticas/estado-solicitudes')
+    fetch(`${environment.apiUrl}/estadisticas/estado-solicitudes`)
       .then(response => {
         console.log('✅ Respuesta del servidor:', response.status, response.statusText);
         return response.json();
@@ -622,7 +623,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private async cargarDatosRealesTendencia(): Promise<any> {
     try {
       console.log('🔄 Cargando datos reales de tendencia desde el backend...');
-      const response = await fetch('http://localhost:5000/api/estadisticas/por-periodo');
+      const response = await fetch(`${environment.apiUrl}/estadisticas/por-periodo`);
       const data = await response.json();
       console.log('✅ Datos reales de tendencia obtenidos:', data);
       return data;

@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5000/api', // Backend Node.js
+  apiUrl: 'https://back-end-gestion-curricular.onrender.com/api',
   // Configuración para desarrollo
   debug: true,
   logLevel: 'debug',

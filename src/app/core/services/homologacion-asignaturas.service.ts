@@ -39,12 +39,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Solicitud, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomologacionAsignaturasService {
-  private apiUrl = 'http://localhost:5000/api/solicitudes-homologacion';
+  private apiUrl = `${environment.apiUrl}/solicitudes-homologacion`;
 
   constructor(private http: HttpClient) {}
 
@@ -203,7 +204,7 @@ export class HomologacionAsignaturasService {
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
-    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
     console.log('🔗 URL de descarga:', url);
     console.log('📁 Nombre del archivo:', nombreArchivo);
     
@@ -217,7 +218,7 @@ export class HomologacionAsignaturasService {
    * Añadir comentario a un documento
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
-    const url = `http://localhost:5000/api/documentos/añadirComentario`;
+    const url = `${environment.apiUrl}/documentos/añadirComentario`;
     const body = {
       idDocumento: idDocumento,
       comentario: comentario
@@ -234,7 +235,7 @@ export class HomologacionAsignaturasService {
    * Obtener comentarios de un documento
    */
   obtenerComentariosDocumento(idDocumento: number): Observable<any> {
-    const url = `http://localhost:5000/api/documentos/${idDocumento}/comentarios`;
+    const url = `${environment.apiUrl}/documentos/${idDocumento}/comentarios`;
     
     return this.http.get(url, {
       headers: this.getAuthHeaders()
@@ -341,7 +342,7 @@ export class HomologacionAsignaturasService {
    * Subir archivo PDF
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    const url = `http://localhost:5000/api/archivos/subir/pdf`;
+    const url = `${environment.apiUrl}/archivos/subir/pdf`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -385,7 +386,7 @@ export class HomologacionAsignaturasService {
    * Validar documentos requeridos para homologación
    */
   validarDocumentosRequeridos(idSolicitud: number): Observable<any> {
-    const url = `http://localhost:5000/api/solicitudes-homologacion/validarDocumentosRequeridos/${idSolicitud}`;
+    const url = `${this.apiUrl}/validarDocumentosRequeridos/${idSolicitud}`;
     
     console.log('🔗 URL para validar documentos requeridos:', url);
     

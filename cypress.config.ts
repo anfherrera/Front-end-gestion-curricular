@@ -36,7 +36,7 @@ export default defineConfig({
     specPattern: '**/*.cy.ts'
   },
   env: {
-    apiUrl: 'http://localhost:5000/api'
+    apiUrl: 'https://back-end-gestion-curricular.onrender.com/api'
   },
   retries: {
     runMode: 2,

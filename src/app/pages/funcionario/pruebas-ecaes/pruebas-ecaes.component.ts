@@ -17,6 +17,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
@@ -106,7 +107,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
    */
   private cargarPeriodosAcademicos(): void {
     // Cargar todos los períodos académicos disponibles
-    this.http.get<any>('http://localhost:5000/api/periodos-academicos/todos').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/todos`).subscribe({
       next: (response) => {
         if (response.success && response.data && response.data.length > 0) {
           this.periodosAcademicos = response.data;
@@ -128,7 +129,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
    * Carga los períodos académicos recientes como fallback
    */
   private cargarPeriodosRecientes(): void {
-    this.http.get<any>('http://localhost:5000/api/periodos-academicos/recientes').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/recientes`).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.periodosAcademicos = response.data;

@@ -11,6 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { CursosIntersemestralesService, SolicitudCursoVerano, CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard-funcionario',
@@ -106,7 +107,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
 
   private cargarCursosActivos(): void {
     console.log('🔄 Intentando cargar cursos activos...');
-    console.log('🌐 URL del backend:', 'http://localhost:5000/api/cursos-intersemestrales/cursos-verano/todos');
+    console.log('🌐 URL del backend:', `${environment.apiUrl}/cursos-intersemestrales/cursos-verano/todos`);
     
     this.cursosService.getTodosLosCursosParaFuncionarios()
       .pipe(takeUntil(this.destroy$))

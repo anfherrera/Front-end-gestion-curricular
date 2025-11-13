@@ -5,13 +5,14 @@ import { Observable } from 'rxjs';
 import { PazSalvoService } from './paz-salvo.service';
 import { AuthService } from './auth.service';
 import { SolicitudHomologacionDTORespuesta, Archivo } from '../models/procesos.model';
+import { environment } from '../../../environments/environment';
 
 describe('PazSalvoService - Pruebas Unitarias', () => {
   let service: PazSalvoService;
   let httpMock: HttpTestingController;
   let authService: jasmine.SpyObj<AuthService>;
   
-  const apiUrl = 'http://localhost:5000/api/solicitudes-pazysalvo';
+  const apiUrl = `${environment.apiUrl}/solicitudes-pazysalvo`;
   
   const mockUsuario = {
     id_usuario: 1,
@@ -335,7 +336,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
       
-      const req = httpMock.expectOne('http://localhost:5000/api/archivos/subir/pdf');
+      const req = httpMock.expectOne(`${environment.apiUrl}/archivos/subir/pdf`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body instanceof FormData).toBe(true);
       
@@ -435,7 +436,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
       
-      const req = httpMock.expectOne('http://localhost:5000/api/solicitudes-pazysalvo/generar-documento/1');
+      const req = httpMock.expectOne(`${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/1`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body instanceof FormData).toBe(true);
       
@@ -455,7 +456,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       
       service.agregarComentario(1, comentario).subscribe(() => done());
       
-      const req = httpMock.expectOne('http://localhost:5000/api/documentos/añadirComentario');
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/añadirComentario`);
       expect(req.request.method).toBe('PUT');
       expect(req.request.body.idDocumento).toBe(1);
       expect(req.request.body.comentario).toBe(comentario);

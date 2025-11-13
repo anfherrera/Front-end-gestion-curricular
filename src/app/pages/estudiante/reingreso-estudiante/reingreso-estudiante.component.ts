@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion, UsuarioDTOPeticion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -344,7 +345,7 @@ export class ReingresoEstudianteComponent implements OnInit {
     console.log('📁 Descargando archivo por nombre:', nombreArchivo);
 
     // Usar el endpoint de solicitudes de reingreso
-    const url = `http://localhost:5000/api/solicitudes-reingreso/descargarOficio/${idSolicitud || 1}`;
+    const url = `${environment.apiUrl}/solicitudes-reingreso/descargarOficio/${idSolicitud || 1}`;
 
     // Crear headers con autorización
     const token = localStorage.getItem('token');

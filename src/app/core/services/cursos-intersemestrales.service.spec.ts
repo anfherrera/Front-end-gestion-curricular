@@ -9,13 +9,14 @@ import {
 } from './cursos-intersemestrales.service';
 import { AuthService } from './auth.service';
 import { ApiEndpoints } from '../utils/api-endpoints';
+import { environment } from '../../../environments/environment';
 
 describe('CursosIntersemestralesService - Cursos de Verano', () => {
   let service: CursosIntersemestralesService;
   let httpMock: HttpTestingController;
   let authService: jasmine.SpyObj<AuthService>;
 
-  const BASE_URL = 'http://localhost:5000/api/cursos-intersemestrales';
+  const BASE_URL = `${environment.apiUrl}/cursos-intersemestrales`;
 
   const mockUsuario = {
     id_usuario: 1,
@@ -412,7 +413,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/todos');
+      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/todos`);
       expect(req.request.method).toBe('GET');
       req.flush(periodos);
     });
@@ -425,7 +426,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/futuros');
+      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/futuros`);
       expect(req.request.method).toBe('GET');
       req.flush(periodosFuturos);
     });
@@ -438,7 +439,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/recientes');
+      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/recientes`);
       expect(req.request.method).toBe('GET');
       req.flush(periodosRecientes);
     });
@@ -451,7 +452,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne('http://localhost:5000/api/periodos-academicos/actual');
+      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/actual`);
       expect(req.request.method).toBe('GET');
       req.flush(periodoActual);
     });

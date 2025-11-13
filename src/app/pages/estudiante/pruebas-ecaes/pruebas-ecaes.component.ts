@@ -12,6 +12,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
 import { ArchivosService } from '../../../core/services/archivos.service';
@@ -112,7 +113,7 @@ export class PruebasEcaesComponent implements OnInit {
    * Carga los tipos de documento disponibles desde el backend
    */
   cargarTiposDocumento(): void {
-    this.http.get<any>('http://localhost:5000/api/tipos-documento/todos').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/tipos-documento/todos`).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.tiposDocumento = response.data.map((tipo: any) => ({
