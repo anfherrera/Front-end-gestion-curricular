@@ -122,7 +122,7 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
       cy.wait('@loginRequest');
       cy.finalizarMedicion('Login exitoso');
 
-      // Asegurar sesión simulada y navegar a /home
+      // Asegurar sesión simulada y navegar a /welcome
       const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQwNzA5MDg4MDB9.signature';
       const mockUsuario = {
         id_usuario: 1,
@@ -135,8 +135,8 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
         win.localStorage.setItem('token', mockToken);
         win.localStorage.setItem('usuario', JSON.stringify(mockUsuario));
       });
-      cy.visit('/home');
-      cy.url().should('include', '/home', { timeout: 10000 });
+      cy.visit('/welcome');
+      cy.url().should('include', '/welcome', { timeout: 10000 });
       
       cy.registrarInteraccionExitosa();
     });

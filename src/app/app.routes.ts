@@ -21,14 +21,6 @@ export const routes: Routes = [
       import('./pages/login/login.component').then(m => m.LoginComponent),
   },
 
-  // Welcome page (después del login)
-  {
-    path: 'welcome',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/welcome/welcome.component').then(m => m.WelcomeComponent),
-  },
-
   // Layout protegido por authGuard
   {
     path: '',
@@ -36,7 +28,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./layout/layout/layout.component').then(m => m.LayoutComponent),
     children: [
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+
+      // Página de bienvenida
+      { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.component').then(m => m.WelcomeComponent) },
 
       // ==========================
       // Rutas comunes (home, ajustes)
