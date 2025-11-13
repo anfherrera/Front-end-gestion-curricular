@@ -287,13 +287,13 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       );
     }));
 
-    it('LOG-028: Debe navegar a /home después del login', fakeAsync(() => {
+    it('LOG-028: Debe navegar a /welcome después del login', fakeAsync(() => {
       apiService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       tick();
       
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     }));
 
     it('LOG-029: Debe cambiar el estado de cargando durante el proceso', fakeAsync(() => {
@@ -426,12 +426,12 @@ describe('LoginComponent - Pruebas Unitarias', () => {
   });
 
   describe('9. Redirección si Ya Está Autenticado', () => {
-    it('LOG-039: Debe redirigir a /home si ya está autenticado', () => {
+    it('LOG-039: Debe redirigir a /welcome si ya está autenticado', () => {
       authService.isAuthenticated.and.returnValue(true);
       
       component.ngOnInit();
       
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
     it('LOG-040: No debe redirigir si no está autenticado', () => {

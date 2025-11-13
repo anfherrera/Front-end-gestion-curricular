@@ -10,7 +10,7 @@ Cypress.Commands.add('login', (correo: string, password: string) => {
   cy.get('input[formControlName="correo"]').clear().type(correo);
   cy.get('input[formControlName="password"]').clear().type(password);
   cy.get('button[type="submit"]').click();
-  cy.url().should('include', '/home');
+  cy.url().should('include', '/welcome');
 });
 
 /**

@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     // Verificar si ya está autenticado
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/welcome']);
     }
 
   }
@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit {
             });
 
             // Redirigir a la página de home
-            this.router.navigate(['/home']);
+            this.router.navigate(['/welcome']);
           } else {
             console.error('❌ Respuesta inválida:', response);
             this.errorMensaje = 'Error: respuesta del servidor inválida.';
