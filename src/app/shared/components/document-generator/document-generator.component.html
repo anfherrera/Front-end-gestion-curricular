@@ -78,7 +78,7 @@
         </mat-form-field>
 
         <!-- Observaciones -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field *ngIf="mostrarObservaciones" appearance="outline" class="full-width">
           <mat-label>Observaciones</mat-label>
           <textarea matInput
                     formControlName="observaciones"

@@ -7,6 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { ComentarioDialogComponent, ComentarioDialogData } from '../comentario-dialog/comentario-dialog.component';
 
 // Interfaz genérica para documentos
 interface DocumentoGenerico {
@@ -29,7 +30,7 @@ interface DocumentoGenerico {
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    MatDialogModule,
+    MatDialogModule
   ],
   templateUrl: './documentation-viewer.component.html',
   styleUrls: ['./documentation-viewer.component.css']
@@ -172,7 +173,18 @@ export class DocumentationViewerComponent implements OnInit {
     
     // ✅ CORREGIDO: Mostrar comentarios en un diálogo
     const comentario = documento.comentario.trim();
-    alert(`Comentarios del documento "${documento.nombre}":\n\n${comentario}`);
+
+    this.dialog.open(ComentarioDialogComponent, {
+      width: '520px',
+      data: <ComentarioDialogData>{
+        titulo: 'Comentario registrado',
+        descripcion: 'Este es el comentario asociado al documento seleccionado.',
+        placeholder: '',
+        nombreDocumento: documento.nombre,
+        comentarioInicial: comentario,
+        soloLectura: true
+      }
+    });
   }
 
   /**
@@ -220,45 +232,55 @@ export class DocumentationViewerComponent implements OnInit {
 
     console.log('📝 ID del documento:', documento.id_documento);
     
-    // Solicitar comentario al usuario
-    const comentario = prompt(`Agregar comentario para el documento "${documento.nombre}":`);
-    
-    if (comentario === null) {
-      console.log('❌ Usuario canceló el comentario');
-      return;
-    }
+    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
+      width: '520px',
+      data: <ComentarioDialogData>{
+        titulo: 'Agregar comentario',
+        descripcion: 'Escribe las observaciones para el documento seleccionado.',
+        placeholder: 'Describe tu comentario',
+        nombreDocumento: documento.nombre,
+        textoConfirmacion: 'Guardar comentario'
+      }
+    });
 
-    if (!comentario.trim()) {
-      this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', { duration: 3000 });
-      return;
-    }
+    dialogRef.afterClosed().subscribe((comentario: string | undefined) => {
+      if (comentario === undefined) {
+        console.log('❌ Usuario canceló el comentario');
+        return;
+      }
 
-    console.log('💬 Comentario a agregar usando endpoint genérico:', comentario.trim());
+      if (!comentario.trim()) {
+        this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', { duration: 3000 });
+        return;
+      }
 
-    // Mostrar mensaje de carga
-    this.snackBar.open('Agregando comentario...', 'Cerrar', { duration: 2000 });
+      console.log('💬 Comentario a agregar usando endpoint genérico:', comentario.trim());
 
-    // ✅ CORREGIDO: Usar el servicio con endpoint genérico
-    if (this.servicio && this.servicio.agregarComentario) {
-      this.servicio.agregarComentario(documento.id_documento, comentario.trim()).subscribe({
-        next: (result: any) => {
-          console.log('✅ Comentario agregado exitosamente:', result);
-          this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', { duration: 3000 });
-          // Emitir evento para que el componente padre actualice la vista
-          this.comentarioAgregado.emit({
-            documento: documento,
-            comentario: comentario.trim()
-          });
-        },
-        error: (error: any) => {
-          console.error('❌ Error al agregar comentario:', error);
-          this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
-        }
-      });
-    } else {
-      console.error('❌ Servicio no disponible o método agregarComentario no existe');
-      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
-    }
+      // Mostrar mensaje de carga
+      this.snackBar.open('Agregando comentario...', 'Cerrar', { duration: 2000 });
+
+      // ✅ CORREGIDO: Usar el servicio con endpoint genérico
+      if (this.servicio && this.servicio.agregarComentario) {
+        this.servicio.agregarComentario(documento.id_documento, comentario.trim()).subscribe({
+          next: (result: any) => {
+            console.log('✅ Comentario agregado exitosamente:', result);
+            this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', { duration: 3000 });
+            // Emitir evento para que el componente padre actualice la vista
+            this.comentarioAgregado.emit({
+              documento: documento,
+              comentario: comentario.trim()
+            });
+          },
+          error: (error: any) => {
+            console.error('❌ Error al agregar comentario:', error);
+            this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+          }
+        });
+      } else {
+        console.error('❌ Servicio no disponible o método agregarComentario no existe');
+        this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 
 }

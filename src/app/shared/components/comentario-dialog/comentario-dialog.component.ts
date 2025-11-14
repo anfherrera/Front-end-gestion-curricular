@@ -12,6 +12,9 @@ export interface ComentarioDialogData {
   descripcion: string;
   placeholder: string;
   nombreDocumento: string;
+  comentarioInicial?: string;
+  soloLectura?: boolean;
+  textoConfirmacion?: string;
 }
 
 @Component({
@@ -49,12 +52,13 @@ export interface ComentarioDialogData {
           matInput 
           [(ngModel)]="comentario"
           [placeholder]="data.placeholder"
+          [readonly]="soloLectura"
           rows="5"
           maxlength="500"
           #comentarioInput
           class="comment-textarea">
         </textarea>
-        <mat-hint align="end" [class.warning]="comentario.length > 450">
+        <mat-hint *ngIf="!soloLectura" align="end" [class.warning]="comentario.length > 450">
           {{ comentario.length }}/500
         </mat-hint>
       </mat-form-field>
@@ -63,16 +67,17 @@ export interface ComentarioDialogData {
     <mat-dialog-actions align="end" class="dialog-actions animate-fade-in-up">
       <button mat-button (click)="onCancel()" class="cancel-btn btn-animated">
         <mat-icon class="icon-bounce">close</mat-icon>
-        Cancelar
+        {{ soloLectura ? 'Cerrar' : 'Cancelar' }}
       </button>
       <button 
+        *ngIf="!soloLectura"
         mat-raised-button 
         color="primary" 
         (click)="onConfirm()"
         [disabled]="!comentario.trim()"
         class="confirm-btn btn-animated hover-glow">
         <mat-icon class="icon-bounce">add_comment</mat-icon>
-        Añadir Comentario
+        {{ textoConfirmacion }}
       </button>
     </mat-dialog-actions>
   `,
@@ -171,6 +176,11 @@ export interface ComentarioDialogData {
     
     .comment-textarea:focus {
       outline: none;
+    }
+
+    .comment-textarea[readonly] {
+      background-color: #f5f5f5;
+      cursor: default;
     }
     
     mat-hint.warning {
@@ -279,17 +289,28 @@ export interface ComentarioDialogData {
 })
 export class ComentarioDialogComponent {
   comentario: string = '';
+  soloLectura: boolean = false;
+  textoConfirmacion: string = 'Añadir Comentario';
 
   constructor(
     public dialogRef: MatDialogRef<ComentarioDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ComentarioDialogData
-  ) {}
+  ) {
+    this.comentario = data.comentarioInicial || '';
+    this.soloLectura = !!data.soloLectura;
+    this.textoConfirmacion = data.textoConfirmacion || 'Añadir Comentario';
+  }
 
   onCancel(): void {
     this.dialogRef.close();
   }
 
   onConfirm(): void {
+    if (this.soloLectura) {
+      this.dialogRef.close();
+      return;
+    }
+
     if (this.comentario.trim()) {
       this.dialogRef.close(this.comentario.trim());
     }

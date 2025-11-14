@@ -188,6 +188,20 @@ export class ReingresoEstudianteService {
     return this.listarSolicitudesPorRol('secretaria');
   }
 
+  /**
+   * Obtener solicitudes aprobadas para secretaría
+   * Endpoint: /listarSolicitud-Reingreso/Secretaria/Aprobadas
+   */
+  getSecretariaApprovedRequests(): Observable<SolicitudReingresoDTORespuesta[]> {
+    const url = `${this.apiUrl}/listarSolicitud-Reingreso/Secretaria/Aprobadas`;
+
+    console.log('🌐 URL solicitudes aprobadas secretaría:', url);
+
+    return this.http.get<SolicitudReingresoDTORespuesta[]>(url, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
   // ================================
   // Métodos para archivos y documentos
   // ================================

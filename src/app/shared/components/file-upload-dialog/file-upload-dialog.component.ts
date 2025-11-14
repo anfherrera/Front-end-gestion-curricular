@@ -134,11 +134,23 @@ export class FileUploadComponent implements OnChanges {
           // Actualizar el archivo local con la información del backend
           const index = this.archivos.findIndex(a => a.file === archivo.file);
           if (index !== -1) {
+            const nombreArchivo = archivoSubido?.nombre
+              || archivoSubido?.nombreArchivo
+              || archivoSubido?.titulo
+              || archivo.nombre;
+            const urlArchivo = archivoSubido?.ruta_documento
+              || archivoSubido?.ruta
+              || archivoSubido?.url
+              || archivo.url;
+
             this.archivos[index] = {
+              ...this.archivos[index],
               ...archivoSubido,
+              nombre: nombreArchivo,
               file: archivo.file, // mantener referencia local
               estado: 'aprobado',
-              url: archivoSubido.ruta_documento || archivoSubido.nombre
+              esValido: true,
+              url: urlArchivo
             };
           }
           return this.archivos[index];

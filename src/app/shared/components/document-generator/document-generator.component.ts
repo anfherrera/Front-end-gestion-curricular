@@ -55,6 +55,7 @@ export class DocumentGeneratorComponent implements OnInit {
   @Input() template!: DocumentTemplate; // Plantilla del documento
   @Input() proceso!: string; // Tipo de proceso (homologacion, paz-salvo, etc.)
   @Input() loading: boolean = false;
+  @Input() mostrarObservaciones: boolean = true;
 
   @Output() generarDocumento = new EventEmitter<DocumentRequest>();
   @Output() cancelar = new EventEmitter<void>();
@@ -79,6 +80,9 @@ export class DocumentGeneratorComponent implements OnInit {
     // Agregar campos opcionales si existen
     if (this.template.camposOpcionales) {
       this.template.camposOpcionales.forEach(campo => {
+        if (campo === 'observaciones' && !this.mostrarObservaciones) {
+          return;
+        }
         formControls[campo] = [''];
       });
     }
@@ -123,7 +127,7 @@ export class DocumentGeneratorComponent implements OnInit {
         datosDocumento: {
           numeroDocumento: formData.numeroDocumento,
           fechaDocumento: formData.fechaDocumento,
-          observaciones: formData.observaciones || '',
+          ...(this.mostrarObservaciones ? { observaciones: formData.observaciones || '' } : {}),
           // Agregar campos adicionales específicos del proceso
           ...this.getAdditionalFields(formData)
         },
@@ -156,6 +160,9 @@ export class DocumentGeneratorComponent implements OnInit {
     // Agregar campos opcionales del formulario
     if (this.template.camposOpcionales) {
       this.template.camposOpcionales.forEach(campo => {
+        if (campo === 'observaciones' && !this.mostrarObservaciones) {
+          return;
+        }
         if (formData[campo]) {
           additionalFields[campo] = formData[campo];
         }

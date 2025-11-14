@@ -33,21 +33,39 @@ export class RequiredDocsComponent {
   /** Archivos ya subidos */
   @Input() archivos: Archivo[] = [];
 
+  private normalizarTexto(texto: string): string {
+    return texto
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\.[^/.]+$/, '') // eliminar extensión
+      .replace(/[^a-z0-9]/g, ''); // eliminar caracteres no alfanuméricos
+  }
+
   /** Verifica si un archivo obligatorio está subido */
   isUploaded(file: string): boolean {
-    return this.archivos.some(a => a.nombre.includes(file));
+    const target = this.normalizarTexto(file);
+    return this.archivos.some(a =>
+      this.normalizarTexto(a.nombre).includes(target)
+    );
   }
 
   /** Verifica si algún archivo exclusivo está subido */
   exclusiveUploaded(): string | null {
+    const exclusivosNormalizados = this.exclusiveFiles.map(nombre => this.normalizarTexto(nombre));
     const encontrados = this.archivos.filter(a =>
-      this.exclusiveFiles.includes(a.nombre)
+      exclusivosNormalizados.some(exclusivo =>
+        this.normalizarTexto(a.nombre).includes(exclusivo)
+      )
     );
     return encontrados.length ? encontrados[0].nombre : null;
   }
 
   /** Verifica si un archivo opcional está subido */
   optionalUploaded(file: string): boolean {
-    return this.archivos.some(a => a.nombre.includes(file));
+    const target = this.normalizarTexto(file);
+    return this.archivos.some(a =>
+      this.normalizarTexto(a.nombre).includes(target)
+    );
   }
 }

@@ -113,6 +113,14 @@ export interface UsuarioSolicitud {
   };
 }
 
+export interface EstadoSolicitudDetalle {
+  idEstado?: number;
+  estado: string;
+  fecha?: string;
+  comentario?: string | null;
+  registradoPor?: string;
+}
+
 export interface SolicitudCursoVerano {
   id_solicitud: number;
   id_preinscripcion?: number; // ✅ Campo adicional para compatibilidad
@@ -127,6 +135,8 @@ export interface SolicitudCursoVerano {
   // 🆕 Nuevos campos para el seguimiento mejorado
   estadoCurso?: string;           // Estado actual del curso
   accionesDisponibles?: string[]; // Acciones que puede realizar el estudiante
+  comentarioEstado?: string | null; // Motivo asociado al estado actual
+  estadoSolicitud?: EstadoSolicitudDetalle[]; // Historial de estados con comentarios
 }
 
 export interface Notificacion {
@@ -220,6 +230,8 @@ export interface PreinscripcionSeguimiento {
   cursoId: number;
   estadoCurso?: string;           // 🆕 NUEVO: Estado del curso
   accionesDisponibles?: string[]; // 🆕 NUEVO: Acciones que puede realizar
+  comentarioEstado?: string | null; // 🆕 NUEVO: Comentario o motivo asociado al estado actual
+  estadoSolicitud?: EstadoSolicitudDetalle[]; // 🆕 NUEVO: Historial de estados
 }
 
 export interface InscripcionSeguimiento {
@@ -232,6 +244,8 @@ export interface InscripcionSeguimiento {
   cursoId: number;
   estadoCurso?: string;           // 🆕 NUEVO: Estado del curso
   accionesDisponibles?: string[]; // 🆕 NUEVO: Acciones que puede realizar
+  comentarioEstado?: string | null; // 🆕 NUEVO: Comentario o motivo asociado al estado actual
+  estadoSolicitud?: EstadoSolicitudDetalle[]; // 🆕 NUEVO: Historial de estados
 }
 
 export interface SeguimientoActividades {

@@ -52,6 +52,15 @@
           <span class="estado-badge">
             {{ preinscripcion.estado }}
           </span>
+          <ng-container *ngIf="getComentarioEstadoActual(preinscripcion) as comentario">
+            <div class="motivo-container" [ngClass]="getMotivoClass(preinscripcion)">
+              <mat-icon class="motivo-icon">{{ esEstadoRechazado(preinscripcion.estado) ? 'error_outline' : 'info' }}</mat-icon>
+              <div class="motivo-texto">
+                <span class="motivo-label">{{ getMotivoLabel(preinscripcion) }}</span>
+                <span class="motivo-mensaje">{{ comentario }}</span>
+              </div>
+            </div>
+          </ng-container>
         </td>
       </ng-container>
 
@@ -108,7 +117,7 @@
             <mat-icon class="icono-rechazado">cancel</mat-icon>
             <span>Preinscripción rechazada</span>
           </div>
-          
+
           <!-- Mensaje cuando el curso no está en inscripción -->
           <div 
             *ngIf="preinscripcion.estado?.toUpperCase() === 'APROBADO' && 
@@ -160,6 +169,15 @@
           <span class="estado-badge">
             {{ inscripcion.estado }}
           </span>
+          <ng-container *ngIf="getComentarioEstadoActual(inscripcion) as comentario">
+            <div class="motivo-container" [ngClass]="getMotivoClass(inscripcion)">
+              <mat-icon class="motivo-icon">{{ esEstadoRechazado(inscripcion.estado) ? 'error_outline' : 'info' }}</mat-icon>
+              <div class="motivo-texto">
+                <span class="motivo-label">{{ getMotivoLabel(inscripcion) }}</span>
+                <span class="motivo-mensaje">{{ comentario }}</span>
+              </div>
+            </div>
+          </ng-container>
         </td>
       </ng-container>
 

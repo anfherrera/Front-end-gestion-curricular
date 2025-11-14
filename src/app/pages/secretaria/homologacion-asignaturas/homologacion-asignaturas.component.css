@@ -153,56 +153,17 @@
 
 .action-buttons {
   display: flex;
-  gap: 16px;
   margin-bottom: 16px;
 }
 
 /* Estilo para botón de subir PDF */
-.upload-btn {
-  min-width: 180px;
-  background-color: #00138C !important;
-  color: white !important;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.upload-btn:hover:not(:disabled) {
-  background-color: #001a99 !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.upload-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
 /* Estilo para botón de enviar al estudiante */
 .send-btn {
   min-width: 180px;
-  background-color: #00138C !important;
-  color: white !important;
-  border: none;
-  border-radius: 4px;
   padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.send-btn:hover:not(:disabled) {
-  background-color: #001a99 !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.send-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .progress-bar {
@@ -210,7 +171,7 @@
 }
 
 /* Estados de los botones */
-.upload-btn:disabled, .send-btn:disabled {
+.send-btn:disabled {
   background-color: #d3d3d3 !important;
   color: #888888 !important;
   cursor: not-allowed;
@@ -229,10 +190,9 @@
 
   .action-buttons {
     flex-direction: column;
-    gap: 12px;
   }
 
-  .upload-btn, .send-btn {
+  .send-btn {
     width: 100%;
   }
 }
@@ -327,7 +287,7 @@
 }
 
 /* Estilo específico para botón "Enviar al Estudiante" (color="accent") */
-::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:not(:disabled) {
+:ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:not(:disabled) {
   background-color: #28a745 !important;
   color: white !important;
   border: none !important;
@@ -338,13 +298,13 @@
   box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
 }
 
-::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:hover:not(:disabled) {
+:ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:hover:not(:disabled) {
   background-color: #218838 !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4) !important;
 }
 
-::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:active:not(:disabled) {
+:ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:active:not(:disabled) {
   transform: translateY(0) !important;
   box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
 }

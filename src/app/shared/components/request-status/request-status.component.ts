@@ -90,7 +90,7 @@ export class RequestStatusTableComponent implements OnInit {
 
   puedeDescargarOficio(estado: string): boolean {
     const estadoUpper = estado.toUpperCase();
-    return estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_COORDINADOR';
+    return estadoUpper === 'APROBADA';
   }
 
   esEstadoPreregistrado(estado: string): boolean {
