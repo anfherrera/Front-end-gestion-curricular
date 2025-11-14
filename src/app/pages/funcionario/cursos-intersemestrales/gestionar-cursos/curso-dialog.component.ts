@@ -92,7 +92,7 @@ export interface CursoDialogData {
               <strong>Materia:</strong> {{ data.cursoEditando.objMateria?.nombre }} ({{ data.cursoEditando.objMateria?.codigo }})
             </div>
             <div class="info-item">
-              <strong>Docente:</strong> {{ data.cursoEditando.objDocente?.nombre }} {{ data.cursoEditando.objDocente?.apellido }}
+              <strong>Docente:</strong> {{ obtenerNombreDocente(data.cursoEditando) }}
             </div>
           </div>
         </div>
@@ -696,6 +696,36 @@ export class CursoDialogComponent implements OnInit {
     } else {
       console.warn('⚠️ Docente no encontrado en la lista con ID:', selectedId);
     }
+  }
+
+  // ✨ NUEVO: Obtener nombre del docente de forma segura (maneja diferentes estructuras del backend)
+  obtenerNombreDocente(curso: any): string {
+    if (!curso || !curso.objDocente) {
+      return 'Sin asignar';
+    }
+    
+    const docente = curso.objDocente;
+    
+    // Priorizar nombre_docente (estructura del backend)
+    if ((docente as any).nombre_docente) {
+      return (docente as any).nombre_docente;
+    }
+    
+    // Fallback a nombre y apellido (estructura legacy)
+    if (docente.nombre && docente.apellido) {
+      return `${docente.nombre} ${docente.apellido}`;
+    }
+    
+    if (docente.nombre) {
+      return docente.nombre;
+    }
+    
+    // Si tiene nombre_completo
+    if ((docente as any).nombre_completo) {
+      return (docente as any).nombre_completo;
+    }
+    
+    return 'Sin nombre';
   }
 
   // ✨ NUEVO: Cargar períodos académicos (solo futuros para crear cursos)
