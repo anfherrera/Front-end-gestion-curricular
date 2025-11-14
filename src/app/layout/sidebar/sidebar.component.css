@@ -65,6 +65,7 @@
   transition: all 0.2s ease;
   position: relative;
   margin: 1px 0;
+  text-decoration: none; /* Quitar subrayado de los enlaces */
 }
 
 .sidebar-link:hover {
@@ -74,6 +75,14 @@
 
 .sidebar-link:active {
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* Estado activo cuando la ruta está seleccionada */
+.sidebar-link.active {
+  background: rgba(255, 255, 255, 0.15);
+  font-weight: 600;
+  border-left: 3px solid white;
+  padding-left: 13px; /* Ajustar padding para compensar el borde */
 }
 
 .sidebar mat-icon {

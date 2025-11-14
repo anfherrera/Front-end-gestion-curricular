@@ -8,13 +8,21 @@
       </div>
       
       <!-- Items normales -->
-      <button *ngIf="item.action !== 'separator'" 
+      <button *ngIf="item.action !== 'separator' && !item.route" 
               class="sidebar-link" 
               (click)="onItemClick(item)"
               [class.logout-item]="item.action === 'logout'">
         <mat-icon>{{ item.icon }}</mat-icon>
         <span>{{ item.label }}</span>
       </button>
+      <a *ngIf="item.action !== 'separator' && item.route" 
+         class="sidebar-link" 
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         [class.logout-item]="item.action === 'logout'">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
     </li>
   </ul>
 </nav>

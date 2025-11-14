@@ -44,24 +44,6 @@
     </mat-card>
   </div>
 
-  <!-- Progreso de gestión -->
-  <mat-card class="progress-card">
-    <mat-card-header>
-      <mat-card-title>Progreso de Gestión</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="progress-info">
-        <span>{{ totalCursosActivos - preinscripcionesPendientes - inscripcionesPendientes }} de {{ totalCursosActivos }} cursos gestionados</span>
-        <span>{{ getProgresoGestion() | number:'1.0-0' }}%</span>
-      </div>
-      <mat-progress-bar 
-        mode="determinate" 
-        [value]="getProgresoGestion()"
-        class="progress-bar">
-      </mat-progress-bar>
-    </mat-card-content>
-  </mat-card>
-
   <div class="content-grid">
     <!-- Cursos activos -->
 

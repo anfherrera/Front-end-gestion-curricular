@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
@@ -20,7 +19,6 @@ import { AuthService } from '../../../../core/services/auth.service';
     MatCardModule,
     MatIconModule,
     MatButtonModule,
-    MatProgressBarModule,
     MatChipsModule,
     MatDividerModule,
     RouterModule
@@ -179,16 +177,6 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return curso.estado || 'Borrador';
   }
 
-  getProgresoGestion(): number {
-    // Priorizar el porcentaje del backend si está disponible
-    if (this.estadisticas && this.estadisticas.porcentajeProgreso >= 0) {
-      return this.estadisticas.porcentajeProgreso;
-    }
-    // Fallback al cálculo local si no hay datos del backend
-    if (this.totalCursosActivos === 0) return 0;
-    const cursosGestionados = this.totalCursosActivos - this.preinscripcionesPendientes - this.inscripcionesPendientes;
-    return Math.round((cursosGestionados / this.totalCursosActivos) * 100);
-  }
 
   getTipoSolicitudColor(tipo: string): string {
     // Todos los tipos usan el azul principal de la app

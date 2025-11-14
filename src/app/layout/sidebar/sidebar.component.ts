@@ -3,6 +3,7 @@ import { Component, EventEmitter, Output, Input, OnChanges, ChangeDetectionStrat
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { SIDEBAR_ITEMS, SidebarItem as ConfigSidebarItem } from './sidebar.config';
 import { UserRole } from '../../core/enums/roles.enum';
@@ -16,7 +17,7 @@ import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-sa
   styleUrls: ['./sidebar.component.css'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush, // ✅ OnPush - menu items estáticos
-  imports: [CommonModule, MatIconModule, MatButtonModule]
+  imports: [CommonModule, MatIconModule, MatButtonModule, RouterModule]
 })
 export class SidebarComponent implements OnChanges {
   @Input() isOpen = true;
