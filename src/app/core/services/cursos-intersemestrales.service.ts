@@ -744,14 +744,25 @@ export class CursosIntersemestralesService {
   crearCurso(payload: CreateCursoDTO): Observable<CursoOfertadoVerano> {
     console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
     
+    // ✅ Logs de depuración detallados
+    console.log('📤 Payload original recibido:', payload);
+    console.log('🔍 ID DOCENTE EN PAYLOAD:', payload.id_docente);
+    console.log('🔍 TIPO DE ID_DOCENTE:', typeof payload.id_docente);
+    
     // Mapear el estado para el backend
     const payloadParaBackend = {
       ...payload,
       estado: payload.estado ? this.mapEstadoParaBackend(payload.estado) : payload.estado
     };
     
-    console.log('📤 Payload original:', payload);
+    // ✅ Asegurar que id_docente sea un número
+    if (payloadParaBackend.id_docente) {
+      payloadParaBackend.id_docente = Number(payloadParaBackend.id_docente);
+      console.log('🔍 ID DOCENTE convertido a número:', payloadParaBackend.id_docente);
+    }
+    
     console.log('📤 Payload para backend:', payloadParaBackend);
+    console.log('🔍 ID DOCENTE FINAL EN PAYLOAD:', payloadParaBackend.id_docente);
     
     return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION, payloadParaBackend);
   }
@@ -808,7 +819,9 @@ export class CursosIntersemestralesService {
     console.log('🌐 Llamando a API: GET /api/cursos-intersemestrales/docentes');
     return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/docentes`).pipe(
       map(docentes => docentes.map(docente => {
-        console.log('🔍 Docente del backend:', docente);
+        console.log('🔍 Docente del backend (raw):', docente);
+        console.log('🔍 id_usuario:', docente.id_usuario);
+        console.log('🔍 id_docente:', docente.id_docente);
         
         // Separar nombre completo en nombre y apellido
         const nombreCompleto = this.corregirEncoding(docente.nombre_usuario || '');
@@ -816,8 +829,9 @@ export class CursosIntersemestralesService {
         const nombre = partesNombre[0] || 'Sin nombre';
         const apellido = partesNombre.slice(1).join(' ') || 'Sin apellido';
         
-        return {
+        const docenteMapeado = {
           id_usuario: docente.id_usuario,
+          id_docente: docente.id_docente || docente.id_usuario, // ✅ Incluir id_docente si está disponible
           nombre: nombre,
           apellido: apellido,
           email: this.corregirEncoding(docente.correo || 'Sin email'),
@@ -828,6 +842,11 @@ export class CursosIntersemestralesService {
             nombre_rol: this.corregirEncoding(docente.objRol?.nombre || 'Docente')
           }
         };
+        
+        console.log('🔍 Docente mapeado:', docenteMapeado);
+        console.log('🔍 ID que se usará (id_docente o id_usuario):', docenteMapeado.id_docente);
+        
+        return docenteMapeado;
       }))
     );
   }

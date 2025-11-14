@@ -90,8 +90,8 @@ export interface CursoDialogData {
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Docente</mat-label>
-            <mat-select formControlName="id_docente">
-              <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_usuario">
+            <mat-select formControlName="id_docente" (selectionChange)="onDocenteSelected($event)">
+              <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_docente || docente.id_usuario">
                 {{ docente.nombre }} {{ docente.apellido }} ({{ docente.codigo_usuario }})
               </mat-option>
             </mat-select>
@@ -708,6 +708,35 @@ export class CursoDialogComponent implements OnInit {
     }
   }
 
+  // ✨ NUEVO: Método para manejar la selección del docente
+  onDocenteSelected(event: any): void {
+    const selectedId = event.value;
+    console.log('🔍 Docente seleccionado - ID:', selectedId);
+    console.log('🔍 Tipo de ID:', typeof selectedId);
+    
+    // Buscar el docente seleccionado en la lista
+    const docenteSeleccionado = this.data.docentes?.find(d => 
+      (d.id_docente && d.id_docente === selectedId) || 
+      (d.id_usuario && d.id_usuario === selectedId)
+    );
+    
+    if (docenteSeleccionado) {
+      console.log('🔍 Docente encontrado:', docenteSeleccionado);
+      console.log('🔍 id_docente del docente:', docenteSeleccionado.id_docente);
+      console.log('🔍 id_usuario del docente:', docenteSeleccionado.id_usuario);
+      
+      // Asegurarse de que se use id_docente si está disponible
+      const idFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
+      console.log('🔍 ID final que se usará:', idFinal);
+      
+      // Actualizar el valor del formulario con el ID correcto
+      this.data.form.patchValue({ id_docente: idFinal }, { emitEvent: false });
+      console.log('✅ Valor actualizado en formulario:', this.data.form.get('id_docente')?.value);
+    } else {
+      console.warn('⚠️ Docente no encontrado en la lista con ID:', selectedId);
+    }
+  }
+
   // ✨ NUEVO: Cargar períodos académicos (solo futuros para crear cursos)
   private cargarPeriodos(): void {
     console.log('🔄 Cargando períodos académicos...');
@@ -874,11 +903,38 @@ export class CursoDialogComponent implements OnInit {
           });
       } else {
         // Crear nuevo curso
+        const formValue = this.data.form.value;
+        
+        // ✅ Verificar y corregir el id_docente antes de enviar
+        let idDocenteFinal = formValue.id_docente;
+        
+        // Si el id_docente es un número pero parece ser un índice, buscar el docente correcto
+        if (idDocenteFinal && this.data.docentes) {
+          const docenteSeleccionado = this.data.docentes.find(d => 
+            (d.id_docente && d.id_docente === idDocenteFinal) || 
+            (d.id_usuario && d.id_usuario === idDocenteFinal)
+          );
+          
+          if (docenteSeleccionado) {
+            // Usar id_docente si está disponible, sino id_usuario
+            idDocenteFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
+            console.log('🔍 ID docente corregido:', idDocenteFinal);
+          }
+        }
+        
         const createData: CreateCursoDTO = {
-          ...formData,
-          fecha_inicio: formData.fecha_inicio ? new Date(formData.fecha_inicio).toISOString() : '',
-          fecha_fin: formData.fecha_fin ? new Date(formData.fecha_fin).toISOString() : ''
+          ...formValue,
+          id_docente: idDocenteFinal, // ✅ Asegurar que se use el ID correcto
+          fecha_inicio: formValue.fecha_inicio ? new Date(formValue.fecha_inicio).toISOString() : '',
+          fecha_fin: formValue.fecha_fin ? new Date(formValue.fecha_fin).toISOString() : ''
         };
+        
+        // ✅ Logs de depuración antes de enviar
+        console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
+        console.log('📤 FormValue completo:', formValue);
+        console.log('📤 createData completo:', createData);
+        console.log('🔍 ID DOCENTE EN createData:', createData.id_docente);
+        console.log('🔍 TIPO DE ID_DOCENTE:', typeof createData.id_docente);
         
         this.cursosService.crearCurso(createData)
           .subscribe({
@@ -889,6 +945,7 @@ export class CursoDialogComponent implements OnInit {
             },
             error: (err) => {
               console.error('❌ Error creando curso:', err);
+              console.error('🔍 Payload enviado:', createData);
               this.snackBar.open('Error al crear el curso', 'Cerrar', { duration: 3000 });
               // Cerrar dialog incluso si hay error para que se actualice la lista
               this.dialogRef.close('guardado');
