@@ -5,6 +5,8 @@
   padding: 16px;
   background-color: #f5f5f5;
   border-radius: 8px;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .filtro {
@@ -13,6 +15,52 @@
 
 table {
   width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+}
+
+/* Controlar desbordamiento en celdas */
+th, td {
+  padding: 8px 12px !important;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  vertical-align: top;
+  box-sizing: border-box;
+}
+
+/* Columnas específicas con anchos máximos */
+.col-nombre {
+  max-width: 200px !important;
+  min-width: 150px;
+}
+
+.col-docente {
+  max-width: 180px !important;
+  min-width: 150px;
+  line-height: 1.4;
+}
+
+.col-estado {
+  max-width: 120px !important;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Asegurar que el texto largo se ajuste */
+td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Para columnas con texto largo, permitir múltiples líneas */
+.col-nombre,
+.col-docente {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.4;
 }
 
 span.disponible {
@@ -94,11 +142,18 @@ button {
   color: #999 !important;
 }
 
+/* Wrapper para la tabla que permite scroll horizontal */
+.tabla-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .tabla-container {
     padding: 8px;
-    overflow-x: auto;
   }
   
   .filtro {
@@ -107,7 +162,7 @@ button {
   }
   
   table {
-    min-width: 600px;
+    min-width: 800px;
   }
   
   .action-icon-button {
