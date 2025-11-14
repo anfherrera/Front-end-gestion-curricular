@@ -11,7 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CursosIntersemestralesService, CreateCursoDTO, UpdateCursoDTO } from '../../../../core/services/cursos-intersemestrales.service';
-import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos } from '../../../../core/utils/periodo.utils';
+import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '../../../../core/utils/periodo.utils';
 
 export interface CursoDialogData {
   form: FormGroup;
@@ -53,7 +53,7 @@ export interface CursoDialogData {
           <!-- ❌ Estos campos NO se muestran porque el backend los genera automáticamente -->
           
           <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Materia *</mat-label>
+            <mat-label>Materia</mat-label>
             <mat-select formControlName="id_materia">
               <mat-option *ngFor="let materia of data.materias" [value]="materia.id_materia">
                 {{ materia.nombre || materia.nombre_materia }} ({{ materia.codigo || materia.codigo_materia }}) - {{ materia.creditos }} créditos
@@ -66,7 +66,7 @@ export interface CursoDialogData {
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Docente *</mat-label>
+            <mat-label>Docente</mat-label>
             <mat-select formControlName="id_docente" (selectionChange)="onDocenteSelected($event)">
               <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_docente || docente.id_usuario">
                 {{ docente.nombre }} {{ docente.apellido }} ({{ docente.codigo_usuario }})
@@ -112,6 +112,7 @@ export interface CursoDialogData {
             <mat-error *ngIf="data.form.get('periodoAcademico')?.hasError('required')">
               El período académico es requerido
             </mat-error>
+            <mat-hint>Selecciona un período académico válido del listado</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -147,7 +148,7 @@ export interface CursoDialogData {
           <!-- ❌ Este campo NO se muestra porque el backend lo calcula automáticamente -->
 
           <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Cupo Estimado *</mat-label>
+            <mat-label>Cupo Estimado</mat-label>
             <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
             <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('required')">
               El cupo estimado es requerido
@@ -728,15 +729,15 @@ export class CursoDialogComponent implements OnInit {
     return 'Sin nombre';
   }
 
-  // ✨ NUEVO: Cargar períodos académicos (solo futuros para crear cursos)
+  // ✨ NUEVO: Cargar períodos académicos (recientes para crear cursos)
   private cargarPeriodos(): void {
-    console.log('🔄 Cargando períodos académicos...');
+    console.log('🔄 Cargando períodos académicos recientes...');
     
-    // Usar períodos futuros para crear cursos nuevos (recomendado)
-    this.cursosService.getPeriodosFuturos().subscribe({
+    // Usar períodos recientes para crear cursos nuevos (recomendado según especificación)
+    this.cursosService.getPeriodosRecientes().subscribe({
       next: (periodos) => {
         this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
-        console.log('✅ Períodos futuros cargados:', this.periodos);
+        console.log('✅ Períodos recientes cargados:', this.periodos);
         console.log('📊 Total de períodos:', this.periodos.length);
         
         // Si hay períodos disponibles, pre-seleccionar el primer período futuro
@@ -747,7 +748,7 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('❌ Error cargando períodos futuros:', error);
+        console.error('❌ Error cargando períodos recientes:', error);
         console.error('🔍 Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
@@ -755,8 +756,29 @@ export class CursoDialogComponent implements OnInit {
           message: error.message
         });
         
-        // Si falla, intentar con todos los períodos como fallback
-        console.warn('⚠️ Intentando cargar TODOS los períodos como fallback...');
+        // Si falla, intentar con períodos futuros como fallback
+        console.warn('⚠️ Intentando cargar períodos futuros como fallback...');
+        this.cargarPeriodosFuturosFallback();
+      }
+    });
+  }
+
+  // Método de fallback para cargar períodos futuros
+  private cargarPeriodosFuturosFallback(): void {
+    this.cursosService.getPeriodosFuturos().subscribe({
+      next: (periodos) => {
+        this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
+        console.log('✅ Períodos futuros cargados (fallback):', this.periodos);
+        
+        if (this.periodos.length > 0 && !this.data.editando) {
+          const primerPeriodo = this.periodos[0];
+          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error cargando períodos futuros (fallback):', error);
+        // Si falla, intentar con todos los períodos como último recurso
+        console.warn('⚠️ Intentando cargar TODOS los períodos como último recurso...');
         this.cargarTodosLosPeriodos();
       }
     });
@@ -913,6 +935,16 @@ export class CursoDialogComponent implements OnInit {
           }
         }
         
+        // ✅ Validar formato del período académico antes de enviar
+        const periodoAcademico = formValue.periodoAcademico || '';
+        if (!validarPeriodo(periodoAcademico)) {
+          this.snackBar.open('❌ El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', { 
+            duration: 5000, 
+            panelClass: ['error-snackbar'] 
+          });
+          return;
+        }
+        
         // ✅ Construir payload SOLO con los campos que el backend espera
         // El backend NO espera: nombre_curso, codigo_curso, descripcion, cupo_maximo
         const createData: CreateCursoDTO = {
@@ -921,7 +953,7 @@ export class CursoDialogComponent implements OnInit {
           cupo_estimado: Number(formValue.cupo_estimado),
           fecha_inicio: formValue.fecha_inicio ? new Date(formValue.fecha_inicio).toISOString() : '',
           fecha_fin: formValue.fecha_fin ? new Date(formValue.fecha_fin).toISOString() : '',
-          periodoAcademico: formValue.periodoAcademico || ''
+          periodoAcademico: periodoAcademico
         };
         
         // ✅ Campos opcionales (solo incluir si tienen valor)
@@ -952,9 +984,41 @@ export class CursoDialogComponent implements OnInit {
             error: (err) => {
               console.error('❌ Error creando curso:', err);
               console.error('🔍 Payload enviado:', createData);
-              this.snackBar.open('Error al crear el curso', 'Cerrar', { duration: 3000 });
-              // Cerrar dialog incluso si hay error para que se actualice la lista
-              this.dialogRef.close('guardado');
+              
+              // ✅ Manejo específico de errores de período académico inválido
+              let errorMessage = 'Error al crear el curso';
+              
+              if (err.status === 400 && err.error) {
+                // Error de validación del backend
+                if (err.error.message && err.error.message.includes('período académico')) {
+                  // Error específico de período académico inválido
+                  errorMessage = err.error.message;
+                  
+                  // Si el backend proporciona la lista de períodos válidos, mostrarla
+                  if (err.error.periodosValidos && Array.isArray(err.error.periodosValidos)) {
+                    const periodosValidos = err.error.periodosValidos.join(', ');
+                    errorMessage += `\n\nPeríodos válidos: ${periodosValidos}`;
+                  }
+                  
+                  // Recargar períodos en caso de error
+                  this.cargarPeriodos();
+                } else if (err.error.message) {
+                  errorMessage = err.error.message;
+                } else if (typeof err.error === 'string') {
+                  errorMessage = err.error;
+                } else if (err.error.error) {
+                  errorMessage = err.error.error;
+                }
+              } else if (err.status === 400) {
+                errorMessage = 'Datos inválidos enviados al servidor. Verifica que todos los campos sean correctos.';
+              }
+              
+              this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+                duration: 7000, 
+                panelClass: ['error-snackbar'] 
+              });
+              
+              // NO cerrar el dialog si hay error, para que el usuario pueda corregir
             }
           });
       }

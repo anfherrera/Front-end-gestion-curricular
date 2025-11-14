@@ -1142,7 +1142,8 @@ export class CursosIntersemestralesService {
 
   // 🆕 NUEVO: Descargar comprobante de pago
   descargarComprobantePago(idInscripcion: number): Observable<Blob> {
-    const endpoint = `http://localhost:5000/api/cursos-intersemestrales/inscripciones/${idInscripcion}/comprobante`;
+    // ✅ Usar el endpoint correcto de archivos
+    const endpoint = ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION(idInscripcion);
     console.log(`🌐 Llamando a API: GET ${endpoint}`);
     console.log(`🔍 ID de inscripción: ${idInscripcion}`);
     
@@ -1271,6 +1272,9 @@ export class CursosIntersemestralesService {
     const docente = docenteNombre && docenteApellido ? `${docenteNombre} ${docenteApellido}`.trim() : 'Sin asignar';
     const espacio = this.corregirEncoding(c.espacio_asignado) || c.espacio_asignado || 'Por asignar';
     
+    // ✅ Obtener período académico (puede venir como 'periodo' o 'periodoAcademico')
+    const periodo = c.periodo || c.periodoAcademico || undefined;
+    
     const cursoMapeado = {
       codigo: c.codigo_curso || c.id_curso?.toString() || 'N/A',
       nombre: nombre,
@@ -1278,10 +1282,16 @@ export class CursosIntersemestralesService {
       cupos: c.cupo_disponible || c.cupo_estimado || 0,
       creditos: c.objMateria?.creditos || 0,
       espacio: espacio,
-      estado
+      estado,
+      // ✅ Campos de período y fechas
+      periodo: periodo,
+      periodoAcademico: periodo,
+      fecha_inicio: c.fecha_inicio,
+      fecha_fin: c.fecha_fin
     };
     
     console.log('✅ Curso mapeado:', cursoMapeado);
+    console.log('🔍 Período académico mapeado:', periodo);
     return cursoMapeado;
   }
 

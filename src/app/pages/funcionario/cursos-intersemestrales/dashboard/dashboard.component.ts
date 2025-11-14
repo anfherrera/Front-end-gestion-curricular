@@ -122,8 +122,39 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
             console.warn('📖 Sigue la guía: ARREGLAR-CONEXION-BACKEND-FRONTEND.md');
           } else {
             console.log('✅ Primer curso:', cursos[0]);
+            
+            // ✅ Verificar cursos con campos null (para diagnóstico)
+            cursos.forEach((curso, index) => {
+              const tieneFechaInicio = curso.fecha_inicio != null;
+              const tieneFechaFin = curso.fecha_fin != null;
+              const tienePeriodo = (curso.periodo || curso.periodoAcademico) != null;
+              const tieneMateria = curso.objMateria != null;
+              const tieneDocente = curso.objDocente != null;
+              
+              if (!tieneFechaInicio || !tieneFechaFin || !tienePeriodo) {
+                console.warn(`⚠️ Curso ${index + 1} (ID: ${curso.id_curso}) tiene campos null:`, {
+                  nombre: curso.nombre_curso,
+                  fecha_inicio: curso.fecha_inicio,
+                  fecha_fin: curso.fecha_fin,
+                  periodo: curso.periodo || curso.periodoAcademico,
+                  tieneFechaInicio,
+                  tieneFechaFin,
+                  tienePeriodo
+                });
+              }
+              
+              if (!tieneMateria || !tieneDocente) {
+                console.warn(`⚠️ Curso ${index + 1} (ID: ${curso.id_curso}) tiene relaciones null:`, {
+                  nombre: curso.nombre_curso,
+                  tieneMateria,
+                  tieneDocente
+                });
+              }
+            });
           }
           
+          // ✅ NO filtrar cursos, mostrar todos (incluso con campos null)
+          // El backend calcula valores por defecto, pero si aún hay null, los manejamos en el template
           this.cursosActivos = cursos;
           this.totalCursosActivos = cursos.length;
           this.calcularEstadisticasCursos(cursos);
@@ -158,25 +189,6 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     }).length;
   }
 
-  // Método para obtener el estado actual del curso
-  private obtenerEstadoActual(curso: CursoOfertadoVerano): string {
-    // Si hay estado_actual, usarlo
-    if (curso.estado_actual) {
-      return curso.estado_actual;
-    }
-    
-    // Si hay estados y hay al menos uno, tomar el más reciente
-    if (curso.estados && curso.estados.length > 0) {
-      // Ordenar por fecha_registro_estado descendente y tomar el más reciente
-      const estadoMasReciente = curso.estados
-        .sort((a, b) => new Date(b.fecha_registro_estado).getTime() - new Date(a.fecha_registro_estado).getTime())[0];
-      return estadoMasReciente.estado_actual;
-    }
-    
-    // Fallback al campo estado legacy
-    return curso.estado || 'Borrador';
-  }
-
 
   getTipoSolicitudColor(tipo: string): string {
     // Todos los tipos usan el azul principal de la app
@@ -186,16 +198,51 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   // ✅ Cachear para no recalcular en cada detección de cambios
   private fechasFormateadas = new Map<string, string>();
 
-  formatearFecha(fecha: Date | string): string {
-    const key = fecha.toString();
-    if (!this.fechasFormateadas.has(key)) {
-      this.fechasFormateadas.set(key, new Date(fecha).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }));
+  formatearFecha(fecha: Date | string | null | undefined): string {
+    // ✅ Manejar casos null/undefined
+    if (!fecha) {
+      return 'N/A';
     }
-    return this.fechasFormateadas.get(key)!;
+    
+    try {
+      const key = fecha.toString();
+      if (!this.fechasFormateadas.has(key)) {
+        const fechaObj = new Date(fecha);
+        
+        // ✅ Validar que la fecha sea válida
+        if (isNaN(fechaObj.getTime())) {
+          return 'Fecha inválida';
+        }
+        
+        this.fechasFormateadas.set(key, fechaObj.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        }));
+      }
+      return this.fechasFormateadas.get(key)!;
+    } catch (error) {
+      console.warn('⚠️ Error formateando fecha:', fecha, error);
+      return 'N/A';
+    }
+  }
+
+  // ✅ Formatear rango de fechas de forma segura
+  formatearRangoFechas(fechaInicio: Date | string | null | undefined, fechaFin: Date | string | null | undefined): string {
+    const inicio = this.formatearFecha(fechaInicio);
+    const fin = this.formatearFecha(fechaFin);
+    
+    if (inicio === 'N/A' && fin === 'N/A') {
+      return 'Fechas no definidas';
+    }
+    
+    return `${inicio} - ${fin}`;
+  }
+
+  // ✅ Obtener período académico de forma segura
+  obtenerPeriodo(curso: CursoOfertadoVerano): string {
+    // El backend calcula valores por defecto, pero por si acaso manejamos null
+    return curso.periodo || curso.periodoAcademico || 'N/A';
   }
 
   getEstadoColor(estado: string | undefined): string {
@@ -232,5 +279,48 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     }
     
     return 'Sin nombre';
+  }
+
+  // Obtener nombre de la materia de forma segura
+  obtenerNombreMateria(curso: CursoOfertadoVerano): string {
+    if (!curso.objMateria) {
+      return 'Sin materia';
+    }
+    
+    // Intentar diferentes estructuras posibles
+    const materia = curso.objMateria as any;
+    
+    if (materia.nombre) {
+      return materia.nombre;
+    }
+    
+    if (materia.nombre_materia) {
+      return materia.nombre_materia;
+    }
+    
+    if (materia.codigo) {
+      return materia.codigo;
+    }
+    
+    return 'Sin nombre';
+  }
+
+  // Obtener estado actual del curso (método público para el template)
+  obtenerEstadoActual(curso: CursoOfertadoVerano): string {
+    // Si hay estado_actual, usarlo
+    if (curso.estado_actual) {
+      return curso.estado_actual;
+    }
+    
+    // Si hay estados y hay al menos uno, tomar el más reciente
+    if (curso.estados && curso.estados.length > 0) {
+      // Ordenar por fecha_registro_estado descendente y tomar el más reciente
+      const estadoMasReciente = curso.estados
+        .sort((a, b) => new Date(b.fecha_registro_estado).getTime() - new Date(a.fecha_registro_estado).getTime())[0];
+      return estadoMasReciente.estado_actual;
+    }
+    
+    // Fallback al campo estado legacy
+    return curso.estado || 'Borrador';
   }
 }

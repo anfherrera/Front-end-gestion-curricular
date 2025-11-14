@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ActivityMonitorService implements OnDestroy {
-  private readonly INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutos en milisegundos
+  private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutos en milisegundos
   private readonly WARNING_TIME = 1 * 60 * 1000; // 1 minuto antes del logout
   private readonly THROTTLE_DELAY = 2000; // ✅ Throttle de 2 segundos para evitar exceso de eventos
   
