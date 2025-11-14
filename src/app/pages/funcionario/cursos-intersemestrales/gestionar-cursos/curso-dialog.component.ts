@@ -49,47 +49,24 @@ export interface CursoDialogData {
         <div class="form-section" *ngIf="!data.soloEdicion">
           <h3>Información Básica</h3>
           
+          <!-- ✅ NOTA: nombre_curso, codigo_curso y descripcion se obtienen automáticamente de la materia seleccionada -->
+          <!-- ❌ Estos campos NO se muestran porque el backend los genera automáticamente -->
+          
           <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Nombre del Curso</mat-label>
-            <input matInput formControlName="nombre_curso" placeholder="Ej: Programación Avanzada">
-            <mat-error *ngIf="data.form.get('nombre_curso')?.hasError('required')">
-              El nombre del curso es requerido
-            </mat-error>
-            <mat-error *ngIf="data.form.get('nombre_curso')?.hasError('minlength')">
-              El nombre debe tener al menos 3 caracteres
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Código del Curso</mat-label>
-            <input matInput formControlName="codigo_curso" placeholder="Ej: PROG-301">
-            <mat-error *ngIf="data.form.get('codigo_curso')?.hasError('required')">
-              El código del curso es requerido
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field full-width">
-            <mat-label>Descripción</mat-label>
-            <textarea matInput formControlName="descripcion" rows="3" placeholder="Describe el contenido del curso"></textarea>
-            <mat-error *ngIf="data.form.get('descripcion')?.hasError('required')">
-              La descripción es requerida
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Materia</mat-label>
+            <mat-label>Materia *</mat-label>
             <mat-select formControlName="id_materia">
               <mat-option *ngFor="let materia of data.materias" [value]="materia.id_materia">
-                {{ materia.nombre_materia }} ({{ materia.codigo_materia }}) - {{ materia.creditos }} créditos
+                {{ materia.nombre || materia.nombre_materia }} ({{ materia.codigo || materia.codigo_materia }}) - {{ materia.creditos }} créditos
               </mat-option>
             </mat-select>
             <mat-error *ngIf="data.form.get('id_materia')?.hasError('required')">
               La materia es requerida
             </mat-error>
+            <mat-hint>El nombre y código del curso se obtendrán automáticamente de la materia seleccionada</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Docente</mat-label>
+            <mat-label>Docente *</mat-label>
             <mat-select formControlName="id_docente" (selectionChange)="onDocenteSelected($event)">
               <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_docente || docente.id_usuario">
                 {{ docente.nombre }} {{ docente.apellido }} ({{ docente.codigo_usuario }})
@@ -166,29 +143,11 @@ export interface CursoDialogData {
             <span>Duración: <strong>{{ duracionSemanas }} {{ duracionSemanas === 1 ? 'semana' : 'semanas' }}</strong></span>
           </div>
 
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Cupo Máximo</mat-label>
-            <input matInput type="number" formControlName="cupo_maximo" min="1" max="100">
-            <mat-error *ngIf="data.form.get('cupo_maximo')?.hasError('required')">
-              El cupo máximo es requerido
-            </mat-error>
-          </mat-form-field>
+          <!-- ✅ NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
+          <!-- ❌ Este campo NO se muestra porque el backend lo calcula automáticamente -->
 
           <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Cupo Estimado</mat-label>
-            <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
-            <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('required')">
-              El cupo estimado es requerido
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <!-- Configuración editable -->
-        <div class="form-section">
-          <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
-          
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Cupo Estimado</mat-label>
+            <mat-label>Cupo Estimado *</mat-label>
             <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
             <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('required')">
               El cupo estimado es requerido
@@ -199,17 +158,21 @@ export interface CursoDialogData {
             <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('max')">
               El cupo no puede ser mayor a 100
             </mat-error>
+            <mat-hint>El cupo máximo será igual al cupo estimado</mat-hint>
           </mat-form-field>
+        </div>
 
+        <!-- Configuración editable -->
+        <div class="form-section">
+          <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
+          
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Espacio Asignado</mat-label>
             <input matInput formControlName="espacio_asignado" placeholder="Ej: Lab 301, Aula 205">
-            <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('required')">
-              El espacio asignado es requerido
-            </mat-error>
             <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('minlength')">
               El espacio debe tener al menos 3 caracteres
             </mat-error>
+            <mat-hint>Opcional. Si no se especifica, se asignará "Aula 101" por defecto</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -222,9 +185,7 @@ export interface CursoDialogData {
               <mat-option value="Inscripción">Inscripción</mat-option>
               <mat-option value="Cerrado">Cerrado</mat-option>
             </mat-select>
-            <mat-error *ngIf="data.form.get('estado')?.hasError('required')">
-              El estado es requerido
-            </mat-error>
+            <mat-hint>Opcional. Si no se selecciona, se asignará "Abierto" por defecto</mat-hint>
           </mat-form-field>
         </div>
 
@@ -922,19 +883,34 @@ export class CursoDialogComponent implements OnInit {
           }
         }
         
+        // ✅ Construir payload SOLO con los campos que el backend espera
+        // El backend NO espera: nombre_curso, codigo_curso, descripcion, cupo_maximo
         const createData: CreateCursoDTO = {
-          ...formValue,
-          id_docente: idDocenteFinal, // ✅ Asegurar que se use el ID correcto
+          id_materia: Number(formValue.id_materia),
+          id_docente: Number(idDocenteFinal), // ✅ Asegurar que se use el ID correcto y sea número
+          cupo_estimado: Number(formValue.cupo_estimado),
           fecha_inicio: formValue.fecha_inicio ? new Date(formValue.fecha_inicio).toISOString() : '',
-          fecha_fin: formValue.fecha_fin ? new Date(formValue.fecha_fin).toISOString() : ''
+          fecha_fin: formValue.fecha_fin ? new Date(formValue.fecha_fin).toISOString() : '',
+          periodoAcademico: formValue.periodoAcademico || ''
         };
+        
+        // ✅ Campos opcionales (solo incluir si tienen valor)
+        if (formValue.espacio_asignado) {
+          createData.espacio_asignado = formValue.espacio_asignado;
+        }
+        
+        if (formValue.estado) {
+          createData.estado = formValue.estado;
+        }
         
         // ✅ Logs de depuración antes de enviar
         console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
         console.log('📤 FormValue completo:', formValue);
-        console.log('📤 createData completo:', createData);
+        console.log('📤 createData (solo campos requeridos):', createData);
         console.log('🔍 ID DOCENTE EN createData:', createData.id_docente);
         console.log('🔍 TIPO DE ID_DOCENTE:', typeof createData.id_docente);
+        console.log('🔍 ID MATERIA EN createData:', createData.id_materia);
+        console.log('🔍 PERÍODO ACADÉMICO EN createData:', createData.periodoAcademico);
         
         this.cursosService.crearCurso(createData)
           .subscribe({
@@ -960,7 +936,6 @@ export class CursoDialogComponent implements OnInit {
   limpiarFormulario() {
     this.data.form.reset({
       estado: 'Abierto',
-      cupo_maximo: 25,
       cupo_estimado: 25
     });
   }

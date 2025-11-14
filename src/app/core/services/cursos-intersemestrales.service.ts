@@ -749,20 +749,35 @@ export class CursosIntersemestralesService {
     console.log('🔍 ID DOCENTE EN PAYLOAD:', payload.id_docente);
     console.log('🔍 TIPO DE ID_DOCENTE:', typeof payload.id_docente);
     
-    // Mapear el estado para el backend
-    const payloadParaBackend = {
-      ...payload,
-      estado: payload.estado ? this.mapEstadoParaBackend(payload.estado) : payload.estado
+    // ✅ Construir payload SOLO con los campos que el backend espera
+    // El backend NO espera: nombre_curso, codigo_curso, descripcion, cupo_maximo
+    const payloadParaBackend: any = {
+      id_materia: Number(payload.id_materia),
+      id_docente: Number(payload.id_docente), // ✅ Asegurar que sea número
+      cupo_estimado: Number(payload.cupo_estimado),
+      fecha_inicio: payload.fecha_inicio,
+      fecha_fin: payload.fecha_fin,
+      periodoAcademico: payload.periodoAcademico
     };
     
-    // ✅ Asegurar que id_docente sea un número
-    if (payloadParaBackend.id_docente) {
-      payloadParaBackend.id_docente = Number(payloadParaBackend.id_docente);
-      console.log('🔍 ID DOCENTE convertido a número:', payloadParaBackend.id_docente);
+    // ✅ Campos opcionales (solo incluir si tienen valor)
+    if (payload.espacio_asignado) {
+      payloadParaBackend.espacio_asignado = payload.espacio_asignado;
     }
     
-    console.log('📤 Payload para backend:', payloadParaBackend);
+    if (payload.estado) {
+      // Mapear el estado para el backend (sin tildes)
+      payloadParaBackend.estado = this.mapEstadoParaBackend(payload.estado);
+    }
+    
+    // ✅ Asegurar que id_docente sea un número
+    payloadParaBackend.id_docente = Number(payloadParaBackend.id_docente);
+    console.log('🔍 ID DOCENTE convertido a número:', payloadParaBackend.id_docente);
+    
+    console.log('📤 Payload para backend (solo campos requeridos):', payloadParaBackend);
     console.log('🔍 ID DOCENTE FINAL EN PAYLOAD:', payloadParaBackend.id_docente);
+    console.log('🔍 ID MATERIA EN PAYLOAD:', payloadParaBackend.id_materia);
+    console.log('🔍 PERÍODO ACADÉMICO EN PAYLOAD:', payloadParaBackend.periodoAcademico);
     
     return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION, payloadParaBackend);
   }
@@ -1420,19 +1435,24 @@ export class CursosIntersemestralesService {
 // ====== DTOs PARA GESTIÓN DE CURSOS ======
 
 export interface CreateCursoDTO {
-  nombre_curso: string;
-  codigo_curso: string;
-  descripcion: string;
-  fecha_inicio: string; // ISO string
-  fecha_fin: string; // ISO string
-  // ✨ NUEVO: Período académico
-  periodoAcademico?: string; // Ejemplo: "2025-1", "2025-2"
-  cupo_maximo: number;
-  cupo_estimado: number;
-  espacio_asignado: string;
-  estado: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
-  id_materia: number;
-  id_docente: number;
+  // ✅ Campos OBLIGATORIOS según especificación del backend
+  id_materia: number;              // Long - ID de la materia seleccionada
+  id_docente: number;              // Long - ID del docente seleccionado (usar id_docente, NO id_usuario)
+  cupo_estimado: number;           // Integer - Entre 1 y 100
+  fecha_inicio: string;            // String - Formato ISO 8601 o fecha simple
+  fecha_fin: string;               // String - Formato ISO 8601 o fecha simple
+  periodoAcademico: string;        // String - Formato "YYYY-P" (ej: "2025-1", "2025-2")
+  
+  // ✅ Campos OPCIONALES
+  espacio_asignado?: string;       // String - Si no se envía, se asigna "Aula 101" por defecto
+  estado?: string;                 // String - Valores: "Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"
+                                   // Si no se envía, se asigna "Abierto" por defecto
+  
+  // ❌ Campos que NO se deben enviar (se obtienen automáticamente del backend):
+  // - nombre_curso: Se obtiene de la materia seleccionada
+  // - codigo_curso: Se obtiene de la materia seleccionada
+  // - descripcion: Se genera automáticamente como "Curso de [nombre_materia]"
+  // - cupo_maximo: Es igual a cupo_estimado (se calcula automáticamente)
 }
 
 export interface UpdateCursoDTO {
