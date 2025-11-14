@@ -2,7 +2,7 @@
   margin-bottom: 20px;
   border-radius: 8px;
   background-color: #ffffff;
-  overflow: hidden;
+  overflow: visible; /* Cambiado de hidden a visible para permitir scroll horizontal */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.2s ease;
 }
@@ -31,4 +31,6 @@ mat-card-title {
 
 mat-card-content {
   padding: 20px;
+  overflow-x: auto; /* Permitir scroll horizontal si es necesario */
+  overflow-y: visible;
 }

@@ -6,7 +6,8 @@
   </mat-form-field>
 
   <!-- Tabla de cursos -->
-  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
     <!-- Código -->
     <ng-container matColumnDef="codigo">
@@ -98,7 +99,8 @@
     <!-- Filas -->
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+    </table>
+  </div>
 
   <!-- Paginador -->
   <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
