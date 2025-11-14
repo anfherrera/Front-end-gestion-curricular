@@ -14,7 +14,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error instanceof HttpErrorResponse) {
         // Si es un error 401 (Unauthorized), el token puede estar expirado o inválido
         if (error.status === 401) {
-          console.warn('🔐 Error 401: Token inválido o expirado');
+          console.warn('🔐 Error 401 recibido del backend');
           
           // Verificar si realmente el token está expirado
           const token = authService.getToken();
@@ -24,22 +24,32 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               const exp = payload.exp * 1000;
               const now = Date.now();
               
-              // Si el token está expirado, hacer logout
+              // ✅ SOLO hacer logout si el token REALMENTE está expirado
               if (exp < now) {
-                console.warn('⏳ Token expirado detectado en error 401');
-                // Solo hacer logout si el token realmente expiró
-                // Esto evita logouts inesperados cuando el usuario está activo
-                authService.logout(false); // No mostrar mensaje, ya que puede ser por otra razón
+                console.warn('⏳ Token expirado detectado - haciendo logout');
+                authService.logout(true); // Mostrar mensaje de expiración
               } else {
-                // Token no expirado pero backend rechazó (puede ser token inválido o revocado)
-                console.warn('⚠️ Token rechazado por el backend (puede estar revocado)');
-                // Solo hacer logout si el backend rechazó explícitamente
-                authService.logout(false);
+                // ⚠️ Token NO expirado pero backend rechazó
+                // Esto puede ser un error temporal del backend, problema de red, o token revocado
+                // NO hacer logout automáticamente - dejar que el componente maneje el error
+                console.warn('⚠️ Token válido pero backend rechazó (puede ser error temporal)');
+                console.warn('⚠️ NO se hará logout automático - el componente puede manejar el error');
+                // El error se propagará y el componente puede decidir qué hacer
+                // Esto evita logouts inesperados cuando el usuario está activo
               }
             } catch (e) {
-              // Token malformado
-              console.error('❌ Token malformado');
-              authService.logout(false);
+              // Token malformado - solo hacer logout si realmente está malformado
+              console.error('❌ Error decodificando token:', e);
+              // Verificar si el token existe pero está malformado
+              if (token && token.length > 0) {
+                console.error('❌ Token malformado - haciendo logout');
+                authService.logout(false);
+              } else {
+                // Token vacío o null - no hacer logout, solo redirigir si no estamos en login
+                if (!router.url.includes('/login')) {
+                  router.navigate(['/login']);
+                }
+              }
             }
           } else {
             // No hay token, redirigir al login solo si no estamos ya en login
