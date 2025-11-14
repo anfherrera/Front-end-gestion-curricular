@@ -2,11 +2,13 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ActivityMonitorService } from '../services/activity-monitor.service';
 import { catchError, throwError } from 'rxjs';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
+  const activityMonitor = inject(ActivityMonitorService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -23,16 +25,30 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               const payload = JSON.parse(atob(token.split('.')[1]));
               const exp = payload.exp * 1000;
               const now = Date.now();
+              const timeUntilExpiry = exp - now;
               
-              // ✅ SOLO hacer logout si el token REALMENTE está expirado
-              if (exp < now) {
+              // ✅ Verificar si el usuario está activo
+              const isUserActive = activityMonitor.isActive();
+              
+              // ✅ SOLO hacer logout si:
+              // 1. El token REALMENTE está expirado (con margen de 30 segundos para evitar problemas de sincronización)
+              // 2. Y el usuario NO está activo (para evitar logouts cuando el usuario está usando la app)
+              const EXPIRY_MARGIN = 30 * 1000; // 30 segundos de margen
+              
+              if (timeUntilExpiry < -EXPIRY_MARGIN) {
+                // Token realmente expirado (con margen)
                 console.warn('⏳ Token expirado detectado - haciendo logout');
                 authService.logout(true); // Mostrar mensaje de expiración
+              } else if (timeUntilExpiry < EXPIRY_MARGIN && !isUserActive) {
+                // Token a punto de expirar Y usuario inactivo
+                console.warn('⏳ Token a punto de expirar y usuario inactivo - haciendo logout');
+                authService.logout(true);
               } else {
                 // ⚠️ Token NO expirado pero backend rechazó
                 // Esto puede ser un error temporal del backend, problema de red, o token revocado
-                // NO hacer logout automáticamente - dejar que el componente maneje el error
+                // NO hacer logout automáticamente si el usuario está activo
                 console.warn('⚠️ Token válido pero backend rechazó (puede ser error temporal)');
+                console.warn(`⚠️ Usuario activo: ${isUserActive}, Tiempo hasta expiración: ${Math.round(timeUntilExpiry / 1000)}s`);
                 console.warn('⚠️ NO se hará logout automático - el componente puede manejar el error');
                 // El error se propagará y el componente puede decidir qué hacer
                 // Esto evita logouts inesperados cuando el usuario está activo
