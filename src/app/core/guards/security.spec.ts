@@ -122,6 +122,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
 
       expect(result).toBeFalse();
       expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
     it('SEC-011-C: Debe permitir acceso de COORDINADOR a su ruta', () => {
@@ -140,6 +141,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
       const result = roleGuard.canActivate(route, state);
 
       expect(result).toBeFalse();
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
       expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
@@ -174,6 +176,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
       const result = roleGuard.canActivate(route, state);
 
       expect(result).toBeFalse();
+      expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
       expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
