@@ -59,11 +59,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   cursoSeleccionado: CursoOfertadoVerano | null = null;
   solicitudSeleccionada: SolicitudCursoVerano | null = null;
   
-  // Variables para el modal de rechazo
-  motivoRechazo: string = '';
-  motivoRechazoError: string = '';
-  solicitudParaRechazo: SolicitudCursoVerano | null = null;
-  
   // Columnas de la tabla
   displayedColumns: string[] = [
     'estudiante', 
@@ -350,53 +345,28 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   abrirModalRechazo(solicitud: SolicitudCursoVerano): void {
-    this.solicitudParaRechazo = solicitud;
-    this.motivoRechazo = '';
-    this.motivoRechazoError = '';
+    console.log('❌ Abriendo diálogo de rechazo para preinscripción:', solicitud);
     
-    // Mostrar modal Bootstrap
-    const modal = document.getElementById('modalRechazo');
-    if (modal) {
-      (modal as any).style.display = 'block';
-      modal.classList.add('show');
-      modal.setAttribute('aria-modal', 'true');
-    }
+    // Abrir diálogo de Angular Material
+    const dialogRef = this.dialog.open(RechazoPreinscripcionDialogComponent, {
+      width: '600px',
+      data: { solicitud: solicitud },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.motivo) {
+        this.procesarRechazo(solicitud, result.motivo);
+      }
+    });
   }
 
   cancelarRechazo(): void {
-    this.solicitudParaRechazo = null;
-    this.motivoRechazo = '';
-    this.motivoRechazoError = '';
-    
-    // Ocultar modal Bootstrap
-    const modal = document.getElementById('modalRechazo');
-    if (modal) {
-      (modal as any).style.display = 'none';
-      modal.classList.remove('show');
-      modal.removeAttribute('aria-modal');
-    }
+    // Ya no se necesita, el diálogo maneja su propio cierre
   }
 
-  confirmarRechazo(): void {
-    // Validar motivo
-    if (!this.motivoRechazo || !this.motivoRechazo.trim()) {
-      this.motivoRechazoError = 'El motivo del rechazo es obligatorio';
-      return;
-    }
-
-    if (!this.solicitudParaRechazo) {
-      this.snackBar.open('Error: No se encontró la solicitud para rechazar', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
-
-    const idSolicitud = (this.solicitudParaRechazo as any).id_solicitud || (this.solicitudParaRechazo as any).id_preinscripcion;
-    const motivo = this.motivoRechazo.trim();
-    console.log('🔍 DEBUG - ID de solicitud para rechazo:', idSolicitud);
-    console.log('🔍 DEBUG - Tipo de ID:', typeof idSolicitud);
-    console.log('🔍 DEBUG - Motivo:', motivo);
+  procesarRechazo(solicitud: SolicitudCursoVerano, motivo: string): void {
+    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
     
     if (!idSolicitud) {
       console.error('❌ ERROR: ID de solicitud es undefined o null para rechazo');
@@ -427,8 +397,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           duration: 5000,
           panelClass: ['success-snackbar']
         });
-        
-        this.cancelarRechazo();
 
         if (this.cursoSeleccionado?.id_curso) {
           this.cargarSolicitudesPorCurso(this.cursoSeleccionado.id_curso);
@@ -841,7 +809,7 @@ export class DetallesPreinscripcionDialogComponent {
         <div class="info-section">
           <h3>📝 Información del Estudiante</h3>
           <div class="student-info">
-            <p><strong>Nombre:</strong> {{ data.solicitud.objUsuario.nombre_completo }}</p>
+            <p><strong>Nombre:</strong> {{ data.solicitud.objUsuario.nombre_completo || 'N/A' }}</p>
             <p><strong>Código:</strong> {{ data.solicitud.objUsuario.codigo || 'N/A' }}</p>
             <p><strong>Curso:</strong> {{ data.solicitud.objCursoOfertadoVerano.nombre_curso || 'N/A' }}</p>
           </div>
