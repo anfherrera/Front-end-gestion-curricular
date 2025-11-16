@@ -44,9 +44,10 @@
 
         <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
 
-        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando">
+        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando || loginDisabled">
           <mat-spinner *ngIf="cargando" diameter="20" class="login-spinner"></mat-spinner>
-          <span *ngIf="!cargando">Ingresar</span>
+          <span *ngIf="!cargando && !loginDisabled">Ingresar</span>
+          <span *ngIf="!cargando && loginDisabled">Espera {{ rateRemaining }}s</span>
           <span *ngIf="cargando">Ingresando...</span>
         </button>
 

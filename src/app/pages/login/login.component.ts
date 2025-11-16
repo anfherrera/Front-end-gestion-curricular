@@ -13,6 +13,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { LoggerService } from '../../core/services/logger.service';
+import { interval, Subscription } from 'rxjs';
+import { getLoginCooldownRemainingSeconds } from '../../core/interceptors/login-rate-limit.interceptor';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +38,10 @@ export class LoginComponent implements OnInit {
   hide = true;
   errorMensaje = '';
   cargando = false;
+  // Rate limit
+  rateRemaining = 0;
+  loginDisabled = false;
+  private rateSub?: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -58,6 +64,18 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/welcome']);
     }
 
+    // Iniciar contador de cooldown si aplica
+    this.tickRate();
+    this.rateSub = interval(1000).subscribe(() => this.tickRate());
+  }
+
+  ngOnDestroy(): void {
+    this.rateSub?.unsubscribe();
+  }
+
+  private tickRate(): void {
+    this.rateRemaining = getLoginCooldownRemainingSeconds();
+    this.loginDisabled = this.rateRemaining > 0;
   }
 
   // Validador personalizado para correos de Unicauca
@@ -71,6 +89,11 @@ export class LoginComponent implements OnInit {
 
 
   onLogin(): void {
+    if (this.loginDisabled) {
+      // Si está en cooldown, no permitir login
+      return;
+    }
+
     if (this.loginForm.valid) {
       const { correo, password, remember } = this.loginForm.value;
       this.cargando = true;
@@ -116,6 +139,11 @@ export class LoginComponent implements OnInit {
           // Manejo específico de errores según la guía del backend
           let errorMessage = 'Error al iniciar sesión';
           
+          // 429 Too Many Requests (rate limit de login)
+          if ((err as any)?.rateLimited && (err as any)?.retryAfterSeconds) {
+            errorMessage = (err as any).message || 'Demasiados intentos. Intenta más tarde.';
+            this.tickRate(); // actualizar contador
+          } else
           if (err.status === 401) {
             // 401: Credenciales incorrectas
             errorMessage = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
