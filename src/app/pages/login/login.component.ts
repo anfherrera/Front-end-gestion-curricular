@@ -12,6 +12,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
+import { LoggerService } from '../../core/services/logger.service';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +42,8 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private apiService: ApiService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private logger: LoggerService
   ) {
     this.loginForm = this.fb.group({
       correo: ['', [Validators.required, Validators.email, this.unicaucaEmailValidator]],
@@ -76,14 +78,18 @@ export class LoginComponent implements OnInit {
 
       this.apiService.login(correo, password).subscribe({
         next: (response: any) => {
-          console.log('✅ Respuesta del backend:', response);
+          this.logger.log('✅ Respuesta del backend recibida');
 
           if (response.token && response.usuario) {
-            // Guardar en AuthService (esto ya maneja localStorage internamente)
+            // ✅ Guardar token JWT después del login exitoso
+            // El token se guarda en localStorage y se usará automáticamente
+            // en todas las peticiones gracias al JwtInterceptor
             this.authService.setToken(response.token);
             this.authService.setUsuario(response.usuario);
             this.authService.setRole(response.usuario.rol?.nombre || 'Usuario');
             this.authService.restoreSession();
+
+            this.logger.log('✅ Token guardado correctamente');
 
             // Mostrar mensaje de éxito
             this.snackBar.open(`¡Bienvenido, ${response.usuario.nombre_completo}!`, 'Cerrar', {
@@ -94,7 +100,7 @@ export class LoginComponent implements OnInit {
             // Redirigir a la página de home
             this.router.navigate(['/welcome']);
           } else {
-            console.error('❌ Respuesta inválida:', response);
+            this.logger.error('❌ Respuesta inválida del servidor:', response);
             this.errorMensaje = 'Error: respuesta del servidor inválida.';
             this.snackBar.open('Error en la respuesta del servidor', 'Cerrar', {
               duration: 5000,
@@ -105,18 +111,22 @@ export class LoginComponent implements OnInit {
           this.cargando = false;
         },
         error: (err) => {
-          console.error('❌ Error en la autenticación', err);
+          this.logger.error('❌ Error en la autenticación', err);
           
-          // Manejo específico de errores
+          // Manejo específico de errores según la guía del backend
           let errorMessage = 'Error al iniciar sesión';
           
           if (err.status === 401) {
+            // 401: Credenciales incorrectas
             errorMessage = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
           } else if (err.status === 403) {
+            // 403: Cuenta deshabilitada o sin permisos
             errorMessage = 'Tu cuenta está deshabilitada. Contacta al administrador.';
           } else if (err.status === 0) {
+            // Error de conexión
             errorMessage = 'No se puede conectar al servidor. Verifica tu conexión.';
           } else if (err.status >= 500) {
+            // Error del servidor
             errorMessage = 'Error interno del servidor. Intenta más tarde.';
           }
 
