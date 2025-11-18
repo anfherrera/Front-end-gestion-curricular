@@ -338,14 +338,20 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     if (estadoSolicitudes && estadoSolicitudes.estados) {
       console.log('✅ Usando datos de estadoSolicitudes');
       const estados = estadoSolicitudes.estados;
-      totalSolicitudes = estadoSolicitudes.totalSolicitudes || 0;
       aprobadas = (estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_FUNCIONARIO']?.cantidad || 0);
       rechazadas = estados['RECHAZADA']?.cantidad || 0;
       enviadas = estados['ENVIADA']?.cantidad || 0;
       enProceso = estados['APROBADA_FUNCIONARIO']?.cantidad || 0;
       
+      // Calcular totalSolicitudes sumando todos los estados si el valor del backend es 0 o no está disponible
+      const totalDesdeBackend = estadoSolicitudes.totalSolicitudes || 0;
+      const totalCalculado = aprobadas + rechazadas + enviadas + enProceso;
+      totalSolicitudes = totalDesdeBackend > 0 ? totalDesdeBackend : totalCalculado;
+      
       console.log('🔍 [DEBUG] Valores calculados desde estadoSolicitudes:');
-      console.log('  - totalSolicitudes:', totalSolicitudes);
+      console.log('  - totalSolicitudes (backend):', totalDesdeBackend);
+      console.log('  - totalSolicitudes (calculado):', totalCalculado);
+      console.log('  - totalSolicitudes (usado):', totalSolicitudes);
       console.log('  - aprobadas:', aprobadas);
       console.log('  - rechazadas:', rechazadas);
       console.log('  - enviadas:', enviadas);
