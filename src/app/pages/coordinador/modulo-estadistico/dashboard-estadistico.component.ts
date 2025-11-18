@@ -20,6 +20,7 @@ import * as XLSX from 'xlsx';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { ApiEndpoints } from '../../../core/utils/api-endpoints';
+import { environment } from '../../../../environments/environment';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { EstudiantesPorProgramaComponent } from '../../../shared/components/estudiantes-por-programa/estudiantes-por-programa.component';
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
@@ -310,7 +311,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   verificarEndpoint(): void {
     // Hacer una llamada directa para verificar
-    fetch('http://localhost:5000/api/estadisticas/estado-solicitudes')
+    fetch(`${environment.apiUrl}/estadisticas/estado-solicitudes`)
       .then(response => {
         return response.json();
       })
@@ -542,7 +543,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   private async cargarDatosRealesTendencia(): Promise<any> {
     try {
-      const response = await fetch('http://localhost:5000/api/estadisticas/por-periodo');
+      const response = await fetch(`${environment.apiUrl}/estadisticas/por-periodo`);
       const data = await response.json();
       return data;
     } catch (error) {

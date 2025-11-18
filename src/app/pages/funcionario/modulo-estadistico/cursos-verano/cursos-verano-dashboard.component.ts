@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { Chart, ChartConfiguration, ChartData, ChartOptions, registerables } from 'chart.js';
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
+import { environment } from '../../../../../environments/environment';
 import { 
   CursosVeranoResponse, 
   ResumenCursosVerano, 
@@ -188,7 +189,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('❌ [DEBUG] Error al conectar con el backend:', error);
-        console.error('❌ [DEBUG] URL del endpoint:', 'http://localhost:5000/api/estadisticas/cursos-verano');
+        console.error('❌ [DEBUG] URL del endpoint:', `${environment.apiUrl}/estadisticas/cursos-verano`);
         this.error = 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.';
         this.loading = false;
       }
@@ -380,7 +381,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   verificarConexionBackend(): void {
     // Hacer una llamada directa para verificar la conexión
-    fetch('http://localhost:5000/api/estadisticas/cursos-verano')
+    fetch(`${environment.apiUrl}/estadisticas/cursos-verano`)
       .then(response => {
         if (response.ok) {
           return response.json();
@@ -392,7 +393,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       })
       .catch(error => {
         console.error('❌ [DEBUG] Error de conexión:', error);
-        console.error('❌ [DEBUG] Verifique que el servidor backend esté ejecutándose en http://localhost:5000');
+        console.error('❌ [DEBUG] Verifique que el servidor backend esté ejecutándose');
       });
   }
 
