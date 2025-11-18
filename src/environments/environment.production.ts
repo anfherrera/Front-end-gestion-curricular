@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://back-end-gestion-curricular.onrender.com/api', // URL de producción
+  apiUrl: 'https://tu-dominio.com/api', // URL de producción
   // Configuración para producción
   debug: false,
   logLevel: 'error',

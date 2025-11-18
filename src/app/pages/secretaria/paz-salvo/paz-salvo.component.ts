@@ -4,6 +4,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
@@ -21,6 +22,7 @@ import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '.
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
+    MatTabsModule,
     CardContainerComponent,
     RequestStatusTableComponent,
     DocumentGeneratorComponent
@@ -29,7 +31,8 @@ import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '.
   styleUrls: ['./paz-salvo.component.css']
 })
 export class SecretariaPazSalvoComponent implements OnInit {
-  solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
+  solicitudes: any[] = []; // Transformado para RequestStatusTableComponent - Pendientes
+  solicitudesProcesadas: any[] = []; // Transformado para RequestStatusTableComponent - Procesadas
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
   template!: DocumentTemplate;
   loading: boolean = false;
@@ -60,13 +63,14 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cargarSolicitudes();
+    this.cargarSolicitudesPendientes();
+    this.cargarSolicitudesProcesadas();
   }
 
   /**
-   * Cargar solicitudes pendientes para secretaría
+   * Cargar solicitudes pendientes para secretaría (estado APROBADA_COORDINADOR)
    */
-  cargarSolicitudes(): void {
+  cargarSolicitudesPendientes(): void {
     // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getSecretariaRequests()
     console.log('📡 Llamando a getSecretariaRequests (endpoint directo /Secretaria)');
     
@@ -98,6 +102,56 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
+  }
+
+  /**
+   * Cargar solicitudes procesadas (historial) - Estado APROBADA
+   */
+  cargarSolicitudesProcesadas(): void {
+    console.log('📡 Llamando a getSolicitudesProcesadasSecretaria (endpoint /Secretaria/Aprobadas)');
+    
+    this.pazSalvoService.getSolicitudesProcesadasSecretaria().subscribe({
+      next: (sols) => {
+        console.log('📡 Respuesta del backend para solicitudes procesadas:', sols);
+        
+        // Transformar datos para RequestStatusTableComponent
+        this.solicitudesProcesadas = sols.map(sol => ({
+          id: sol.id_solicitud,
+          nombre: sol.nombre_solicitud,
+          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          estado: this.getEstadoActual(sol),
+          fechaProcesamiento: this.getFechaProcesamiento(sol),
+          rutaArchivo: '',
+          comentarios: ''
+        }));
+        
+        console.log('📋 Solicitudes procesadas cargadas:', this.solicitudesProcesadas);
+        console.log('📋 Total solicitudes procesadas:', sols.length);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes procesadas:', err);
+        this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  /**
+   * Obtener fecha de procesamiento (último estado APROBADA)
+   */
+  getFechaProcesamiento(solicitud: SolicitudHomologacionDTORespuesta): string {
+    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+      if (ultimoEstado.fecha_registro_estado) {
+        return new Date(ultimoEstado.fecha_registro_estado).toLocaleString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    }
+    return '';
   }
 
   /**
@@ -331,8 +385,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.archivoPDF = null;
         this.selectedSolicitud = undefined;
 
-        // Recargar solicitudes
-        this.cargarSolicitudes();
+        // Recargar ambas listas
+        this.cargarSolicitudesPendientes();
+        this.cargarSolicitudesProcesadas();
       },
       error: (err: any) => {
         console.error('❌ Error al actualizar estado de solicitud:', err);
@@ -389,8 +444,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
             this.archivoPDF = null;
             this.selectedSolicitud = undefined;
 
-            // Recargar solicitudes para mostrar el cambio de estado
-            this.cargarSolicitudes();
+        // Recargar ambas listas para mostrar el cambio de estado
+        this.cargarSolicitudesPendientes();
+        this.cargarSolicitudesProcesadas();
           },
           error: (err: any) => {
             console.error('❌ Error al actualizar estado de solicitud:', err);

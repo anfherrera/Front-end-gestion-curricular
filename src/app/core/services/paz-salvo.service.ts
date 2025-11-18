@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map, switchMap } from 'rxjs';
+import { Observable, catchError, map, switchMap, of } from 'rxjs';
 import { Solicitud, Archivo, Usuario, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 @Injectable({
@@ -104,11 +104,28 @@ export class PazSalvoService {
   /**
    * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
    * Igual que Homologación: usa endpoint directo /Secretaria
+   * Estado: APROBADA_COORDINADOR (pendientes de procesar)
    */
   getSecretariaRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria`, 
       { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /**
+   * Obtener solicitudes ya procesadas por secretaría (historial)
+   * Estado: APROBADA (ya enviadas al estudiante)
+   */
+  getSolicitudesProcesadasSecretaria(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria/Aprobadas`, 
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(error => {
+        console.error('Error obteniendo solicitudes procesadas:', error);
+        return of([]); // Retornar array vacío en caso de error
+      })
     );
   }
 
