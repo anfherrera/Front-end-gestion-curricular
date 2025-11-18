@@ -82,7 +82,7 @@ import { Subscription } from 'rxjs';
         <div *ngIf="!loading && !error && data?.analisis" class="analisis-section">
           <h4 class="analisis-title">
             <mat-icon>analytics</mat-icon>
-            📊 Análisis de Rendimiento
+            Análisis de Rendimiento
           </h4>
           
           <div class="analisis-grid">
