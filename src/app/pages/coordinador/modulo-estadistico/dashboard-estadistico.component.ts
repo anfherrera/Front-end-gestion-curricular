@@ -141,31 +141,59 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   cargarDatos(filtros: FiltroEstadisticas = {}): void {
     this.loading = true;
     this.error = false;
+    
+    console.log('📊 Cargando datos del dashboard con filtros:', filtros);
+    console.log('🔗 Endpoint:', `${environment.apiUrl}/estadisticas/globales`);
+    
     const subscription = this.estadisticasService.getEstadisticasGlobales(filtros)
       .subscribe({
         next: (datosAPI) => {
-          // Convertir datos del API al formato del dashboard
-          this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
+          console.log('✅ Datos recibidos del backend:', datosAPI);
           
-          // ❌ ELIMINADO: Predicciones (ya no están disponibles en /api/estadisticas/globales)
-          
-          this.generarKPIs();
-          this.crearCharts();
-          this.loading = false;
-          
-          this.mostrarExito('Datos cargados correctamente desde el backend');
+          try {
+            // Convertir datos del API al formato del dashboard
+            this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
+            
+            this.generarKPIs();
+            this.crearCharts();
+            this.loading = false;
+            this.error = false;
+            
+            this.mostrarExito('Datos cargados correctamente desde el backend');
+          } catch (conversionError) {
+            console.error('❌ Error al convertir datos del API:', conversionError);
+            this.loading = false;
+            this.error = true;
+            this.mostrarError('Error al procesar los datos del servidor. Por favor, contacta al administrador.');
+          }
         },
         error: (error) => {
-          console.error('❌ Error al cargar datos del API:', error);
+          console.error('❌ Error completo al cargar datos del API:', error);
+          console.error('❌ Status:', error.status);
+          console.error('❌ Status Text:', error.statusText);
+          console.error('❌ Error Message:', error.message);
+          console.error('❌ Error Details:', error.error);
           
-          // Fallback a datos de prueba si hay error
-          this.resumenCompleto = this.generarDatosDePrueba();
-          this.generarKPIs();
-          this.crearCharts();
           this.loading = false;
           this.error = true;
           
-          this.mostrarError('Error al conectar con el backend. Mostrando datos de prueba.');
+          // Mostrar mensaje de error más descriptivo
+          let mensajeError = 'Error al conectar con el backend. ';
+          if (error.status === 0) {
+            mensajeError += 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
+          } else if (error.status === 401) {
+            mensajeError += 'No autorizado. Por favor, inicia sesión nuevamente.';
+          } else if (error.status === 403) {
+            mensajeError += 'Acceso denegado. No tienes permisos para ver estas estadísticas.';
+          } else if (error.status === 404) {
+            mensajeError += 'El endpoint no fue encontrado. Contacta al administrador.';
+          } else if (error.status >= 500) {
+            mensajeError += 'Error del servidor. Por favor, intenta más tarde.';
+          } else {
+            mensajeError += `Error ${error.status}: ${error.statusText || error.message}`;
+          }
+          
+          this.mostrarError(mensajeError);
         }
       });
 

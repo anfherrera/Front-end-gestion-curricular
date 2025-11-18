@@ -50,8 +50,16 @@ export class EstadisticasService {
     if (filtros.fechaFin) {
       params = params.set('fechaFin', filtros.fechaFin);
     }
+    
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    }
 
-    return this.http.get<EstadisticasGlobalesAPI>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES, { params });
+    const url = ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES;
+    console.log('🌐 Llamando a:', url);
+    console.log('📋 Parámetros:', params.toString());
+
+    return this.http.get<EstadisticasGlobalesAPI>(url, { params });
   }
 
   /**
@@ -928,11 +936,17 @@ export class EstadisticasService {
   convertirDatosAPI(datosAPI: EstadisticasGlobalesAPI): ResumenCompleto {
     console.log('🔄 Convirtiendo datos del API:', datosAPI);
     
+    // Validar que los datos existan
+    if (!datosAPI) {
+      throw new Error('Los datos del API están vacíos o son inválidos');
+    }
+    
     // Agrupar datos por tipo de proceso para evitar duplicados
     const procesosAgrupados: { [key: string]: { total: number, aprobadas: number, rechazadas: number, enProceso: number } } = {};
     
     // Procesar porTipoProceso y agrupar por tipo de proceso
-    Object.keys(datosAPI.porTipoProceso).forEach(tipoProceso => {
+    const porTipoProceso = datosAPI.porTipoProceso || {};
+    Object.keys(porTipoProceso).forEach(tipoProceso => {
       // Extraer el tipo de proceso del nombre completo
       let nombreProceso = '';
       if (tipoProceso.includes('Reingreso')) {
@@ -948,7 +962,7 @@ export class EstadisticasService {
       }
 
       if (nombreProceso) {
-        const cantidad = datosAPI.porTipoProceso[tipoProceso];
+        const cantidad = porTipoProceso[tipoProceso] || 0;
         
         // Si ya existe el proceso, sumar las cantidades
         if (procesosAgrupados[nombreProceso]) {
@@ -991,27 +1005,28 @@ export class EstadisticasService {
     console.log('✅ Procesos agrupados:', estadisticasPorProceso);
 
     // Convertir porPrograma a estadísticas por programa
-    const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(datosAPI.porPrograma).map((nombrePrograma, index) => ({
+    const porPrograma = datosAPI.porPrograma || {};
+    const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(porPrograma).map((nombrePrograma, index) => ({
       idPrograma: index + 1,
       nombrePrograma,
-      totalSolicitudes: datosAPI.porPrograma[nombrePrograma] || 0,
+      totalSolicitudes: porPrograma[nombrePrograma] || 0,
       distribucionPorProceso: [],
       tendenciaAnual: []
     }));
 
     return {
       estadisticasGlobales: {
-        totalSolicitudes: datosAPI.totalSolicitudes,
-        solicitudesAprobadas: datosAPI.totalAprobadas,
-        solicitudesRechazadas: datosAPI.totalRechazadas,
-        solicitudesEnviadas: datosAPI.totalEnviadas, // ✅ Mapeo correcto del backend
-        solicitudesEnProceso: datosAPI.totalEnProceso,
+        totalSolicitudes: datosAPI.totalSolicitudes || 0,
+        solicitudesAprobadas: datosAPI.totalAprobadas || 0,
+        solicitudesRechazadas: datosAPI.totalRechazadas || 0,
+        solicitudesEnviadas: datosAPI.totalEnviadas || 0, // ✅ Mapeo correcto del backend
+        solicitudesEnProceso: datosAPI.totalEnProceso || 0,
         totalEstudiantes: 0, // Se actualizará con el valor real del endpoint /api/estadisticas/total-estudiantes
-        totalProgramas: Object.keys(datosAPI.porPrograma).length
+        totalProgramas: Object.keys(porPrograma).length
       },
       estadisticasPorProceso,
       estadisticasPorPrograma,
-      ultimaActualizacion: datosAPI.fechaConsulta
+      ultimaActualizacion: datosAPI.fechaConsulta || new Date().toISOString()
     };
   }
 }
