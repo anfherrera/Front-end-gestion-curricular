@@ -683,21 +683,24 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos reales del backend para el gráfico de procesos
-   * ✅ CORREGIDO: Usa el endpoint correcto /api/estadisticas/globales
+   * ✅ CORREGIDO: Usa el endpoint que funciona /api/estadisticas/estadisticas-por-proceso
    */
   private async cargarDatosRealesProcesos(): Promise<any> {
     try {
-      // ✅ Usar el endpoint correcto que SÍ existe
-      const data: any = await this.estadisticasService.getEstadisticasGlobales({}).toPromise();
+      // ✅ Usar el endpoint que funciona correctamente
+      const data: any = await this.estadisticasService.getEstadisticasDetalladasPorProceso().toPromise();
       
-      // Convertir el objeto porTipoProceso a la estructura esperada
-      if (data && data.porTipoProceso) {
+      // Convertir la estructura del endpoint a la esperada
+      if (data && data.estadisticasPorProceso) {
         const estadisticasPorProceso: any = {};
         
-        Object.entries(data.porTipoProceso).forEach(([nombre, cantidad]) => {
+        Object.entries(data.estadisticasPorProceso).forEach(([nombre, proceso]: [string, any]) => {
           estadisticasPorProceso[nombre] = {
-            totalSolicitudes: cantidad as number
-            // ❌ ELIMINADO: prediccionDemanda (ya no disponible)
+            totalSolicitudes: proceso.totalSolicitudes || 0,
+            aprobadas: proceso.aprobadas || 0,
+            rechazadas: proceso.rechazadas || 0,
+            enProceso: proceso.enProceso || 0,
+            enviadas: proceso.enviadas || 0
           };
         });
         return {
