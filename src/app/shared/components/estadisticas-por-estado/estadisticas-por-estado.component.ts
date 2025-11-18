@@ -436,36 +436,36 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           // ✅ Mapeo correcto desde estados del backend
           const estadosMap: { [key: string]: { cantidad: number; porcentaje: number; icono: string; color: string; descripcion: string } } = {
             'ENVIADA': {
-              cantidad: estados.ENVIADA?.cantidad || 0,
-              porcentaje: estados.ENVIADA?.porcentaje || 0,
+              cantidad: estados['ENVIADA']?.cantidad || 0,
+              porcentaje: estados['ENVIADA']?.porcentaje || 0,
               icono: 'fas fa-paper-plane',
               color: '#2196F3',
               descripcion: 'Solicitudes enviadas pendientes de revisión'
             },
             'RECHAZADA': {
-              cantidad: estados.RECHAZADA?.cantidad || 0,
-              porcentaje: estados.RECHAZADA?.porcentaje || 0,
+              cantidad: estados['RECHAZADA']?.cantidad || 0,
+              porcentaje: estados['RECHAZADA']?.porcentaje || 0,
               icono: 'fas fa-times-circle',
               color: '#F44336',
               descripcion: 'Solicitudes rechazadas'
             },
             'APROBADA_COORDINADOR': {
-              cantidad: estados.APROBADA_COORDINADOR?.cantidad || 0,
-              porcentaje: estados.APROBADA_COORDINADOR?.porcentaje || 0,
+              cantidad: estados['APROBADA_COORDINADOR']?.cantidad || 0,
+              porcentaje: estados['APROBADA_COORDINADOR']?.porcentaje || 0,
               icono: 'fas fa-check-circle',
               color: '#9C27B0',
               descripcion: 'Aprobadas por coordinador'
             },
             'APROBADA': {
-              cantidad: estados.APROBADA?.cantidad || 0,
-              porcentaje: estados.APROBADA?.porcentaje || 0,
+              cantidad: estados['APROBADA']?.cantidad || 0,
+              porcentaje: estados['APROBADA']?.porcentaje || 0,
               icono: 'fas fa-check-circle',
               color: '#4CAF50',
               descripcion: 'Solicitudes completamente aprobadas'
             },
             'APROBADA_FUNCIONARIO': {
-              cantidad: estados.APROBADA_FUNCIONARIO?.cantidad || 0,
-              porcentaje: estados.APROBADA_FUNCIONARIO?.porcentaje || 0,
+              cantidad: estados['APROBADA_FUNCIONARIO']?.cantidad || 0,
+              porcentaje: estados['APROBADA_FUNCIONARIO']?.porcentaje || 0,
               icono: 'fas fa-clock',
               color: '#FF9800',
               descripcion: 'Aprobadas por funcionario (en proceso)'
@@ -486,9 +486,9 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
             fechaConsulta: this.fechaConsulta,
             estados: estadosMap,
             analisis: {
-              solicitudesPendientes: (estados.ENVIADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0),
-              solicitudesCompletadas: (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_COORDINADOR?.cantidad || 0),
-              tasaResolucion: this.totalSolicitudes > 0 ? (((estados.APROBADA?.cantidad || 0) + (estados.APROBADA_COORDINADOR?.cantidad || 0)) / this.totalSolicitudes) * 100 : 0,
+              solicitudesPendientes: (estados['ENVIADA']?.cantidad || 0) + (estados['APROBADA_FUNCIONARIO']?.cantidad || 0),
+              solicitudesCompletadas: (estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_COORDINADOR']?.cantidad || 0),
+              tasaResolucion: this.totalSolicitudes > 0 ? (((estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_COORDINADOR']?.cantidad || 0)) / this.totalSolicitudes) * 100 : 0,
               estadoMasComun: this.obtenerEstadoMasComun(estadosMap)
             }
           } as any;
