@@ -992,9 +992,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     if (datosReales.mesesOrdenados && datosReales.mesesOrdenados.length > 0) {
       // Usar mesesOrdenados del backend (preferido)
-      mesesOrden = datosReales.mesesOrdenados.map(item => item.mes);
-      solicitudesMensual = datosReales.mesesOrdenados.map(item => item.total || 0);
-      aprobadasMensual = datosReales.mesesOrdenados.map(item => item.aprobadas || 0);
+      mesesOrden = datosReales.mesesOrdenados.map((item: { mes: string; total: number; aprobadas: number }) => item.mes);
+      solicitudesMensual = datosReales.mesesOrdenados.map((item: { mes: string; total: number; aprobadas: number }) => item.total || 0);
+      aprobadasMensual = datosReales.mesesOrdenados.map((item: { mes: string; total: number; aprobadas: number }) => item.aprobadas || 0);
     } else if (datosReales.todosLosMeses && datosReales.todosLosMeses.length > 0) {
       // Usar todosLosMeses del backend
       mesesOrden = datosReales.todosLosMeses;
