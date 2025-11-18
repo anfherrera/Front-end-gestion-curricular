@@ -422,64 +422,50 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = false;
 
-    // ✅ CORRECCIÓN: Usar el endpoint correcto /api/estadisticas/globales
-    const sub = this.estadisticasService.getEstadisticasGlobales()
+    // ✅ Usar el endpoint específico de estado de solicitudes que funciona
+    const sub = this.estadisticasService.getEstadoSolicitudes()
       .subscribe({
-        next: (response: any) => {
-          console.log('✅ Estadísticas globales obtenidas:', response);
+        next: (response: EstadoSolicitudesResponse) => {
+          console.log('✅ Estado de solicitudes obtenido:', response);
           
-          // Calcular el total desde porEstado
-          const estados = response.porEstado || {};
+          // Procesar datos desde el endpoint de estado de solicitudes
+          const estados = response.estados || {};
           this.totalSolicitudes = response.totalSolicitudes || 0;
           this.fechaConsulta = response.fechaConsulta || new Date().toISOString();
           
-          // 🔍 DEBUG - Verificar valores individuales
-          console.log('🔍 DEBUG - porEstado completo:', response.porEstado);
-          console.log('🔍 DEBUG - ENVIADA:', estados.ENVIADA);
-          console.log('🔍 DEBUG - RECHAZADA:', estados.RECHAZADA);
-          console.log('🔍 DEBUG - APROBADA_COORDINADOR:', estados.APROBADA_COORDINADOR);
-          console.log('🔍 DEBUG - APROBADA:', estados.APROBADA);
-          console.log('🔍 DEBUG - APROBADA_FUNCIONARIO:', estados.APROBADA_FUNCIONARIO);
-          
-          // Calcular total para verificación
-          const totalCalculado = (estados.ENVIADA || 0) + (estados.RECHAZADA || 0) + 
-                                 (estados.APROBADA_COORDINADOR || 0) + (estados.APROBADA || 0) + 
-                                 (estados.APROBADA_FUNCIONARIO || 0);
-          console.log('🔍 DEBUG - Total calculado:', totalCalculado, '(debe ser 50)');
-          
-          // ✅ Mapeo correcto desde porEstado del backend
+          // ✅ Mapeo correcto desde estados del backend
           const estadosMap: { [key: string]: { cantidad: number; porcentaje: number; icono: string; color: string; descripcion: string } } = {
             'ENVIADA': {
-              cantidad: estados.ENVIADA || 0,
-              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.ENVIADA || 0) / this.totalSolicitudes) * 100) : 0,
+              cantidad: estados.ENVIADA?.cantidad || 0,
+              porcentaje: estados.ENVIADA?.porcentaje || 0,
               icono: 'fas fa-paper-plane',
               color: '#2196F3',
               descripcion: 'Solicitudes enviadas pendientes de revisión'
             },
             'RECHAZADA': {
-              cantidad: estados.RECHAZADA || 0,
-              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.RECHAZADA || 0) / this.totalSolicitudes) * 100) : 0,
+              cantidad: estados.RECHAZADA?.cantidad || 0,
+              porcentaje: estados.RECHAZADA?.porcentaje || 0,
               icono: 'fas fa-times-circle',
               color: '#F44336',
               descripcion: 'Solicitudes rechazadas'
             },
             'APROBADA_COORDINADOR': {
-              cantidad: estados.APROBADA_COORDINADOR || 0,
-              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.APROBADA_COORDINADOR || 0) / this.totalSolicitudes) * 100) : 0,
+              cantidad: estados.APROBADA_COORDINADOR?.cantidad || 0,
+              porcentaje: estados.APROBADA_COORDINADOR?.porcentaje || 0,
               icono: 'fas fa-check-circle',
               color: '#9C27B0',
               descripcion: 'Aprobadas por coordinador'
             },
             'APROBADA': {
-              cantidad: estados.APROBADA || 0,
-              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.APROBADA || 0) / this.totalSolicitudes) * 100) : 0,
+              cantidad: estados.APROBADA?.cantidad || 0,
+              porcentaje: estados.APROBADA?.porcentaje || 0,
               icono: 'fas fa-check-circle',
               color: '#4CAF50',
               descripcion: 'Solicitudes completamente aprobadas'
             },
             'APROBADA_FUNCIONARIO': {
-              cantidad: estados.APROBADA_FUNCIONARIO || 0,
-              porcentaje: this.totalSolicitudes > 0 ? Math.round(((estados.APROBADA_FUNCIONARIO || 0) / this.totalSolicitudes) * 100) : 0,
+              cantidad: estados.APROBADA_FUNCIONARIO?.cantidad || 0,
+              porcentaje: estados.APROBADA_FUNCIONARIO?.porcentaje || 0,
               icono: 'fas fa-clock',
               color: '#FF9800',
               descripcion: 'Aprobadas por funcionario (en proceso)'
@@ -487,10 +473,12 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           };
           
           // Convertir a array para el template
-          this.estadosData = Object.entries(estadosMap).map(([nombre, info]) => ({
-            nombre,
-            ...info
-          }));
+          this.estadosData = Object.entries(estadosMap)
+            .filter(([_, info]) => info.cantidad > 0) // Solo mostrar estados con solicitudes
+            .map(([nombre, info]) => ({
+              nombre,
+              ...info
+            }));
           
           // Crear datos de análisis
           this.data = {
@@ -498,9 +486,9 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
             fechaConsulta: this.fechaConsulta,
             estados: estadosMap,
             analisis: {
-              solicitudesPendientes: (estados.ENVIADA || 0) + (estados.APROBADA_FUNCIONARIO || 0),
-              solicitudesCompletadas: (estados.APROBADA || 0) + (estados.APROBADA_COORDINADOR || 0),
-              tasaResolucion: this.totalSolicitudes > 0 ? (((estados.APROBADA || 0) + (estados.APROBADA_COORDINADOR || 0)) / this.totalSolicitudes) * 100 : 0,
+              solicitudesPendientes: (estados.ENVIADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0),
+              solicitudesCompletadas: (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_COORDINADOR?.cantidad || 0),
+              tasaResolucion: this.totalSolicitudes > 0 ? (((estados.APROBADA?.cantidad || 0) + (estados.APROBADA_COORDINADOR?.cantidad || 0)) / this.totalSolicitudes) * 100 : 0,
               estadoMasComun: this.obtenerEstadoMasComun(estadosMap)
             }
           } as any;
@@ -508,7 +496,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           this.loading = false;
         },
         error: (err) => {
-          console.error('❌ Error al obtener estadísticas globales:', err);
+          console.error('❌ Error al obtener estado de solicitudes:', err);
           this.error = true;
           this.loading = false;
         }
