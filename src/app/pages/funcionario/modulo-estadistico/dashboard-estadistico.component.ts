@@ -725,7 +725,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     requestAnimationFrame(async () => {
       await this.crearChartProcesos();
       await this.crearChartTendencia();
-      this.crearChartDistribucion();
+      await this.crearChartDistribucion();
     });
   }
 
@@ -985,25 +985,32 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       this.crearChartTendenciaFallback();
       return;
     }
-    // ✅ Verificar el mapeo de datos de tendencia
-    // Mapear datos según la estructura del backend
-    const datosLineas = {
-      solicitudes: [
-        { mes: 'Julio', valor: datosReales.porMes.Julio?.total || 0 },     // 11
-        { mes: 'Agosto', valor: datosReales.porMes.Agosto?.total || 0 },   // 30
-        { mes: 'Septiembre', valor: datosReales.porMes.Septiembre?.total || 0 } // 5
-      ],
-      aprobadas: [
-        { mes: 'Julio', valor: datosReales.porMes.Julio?.aprobadas || 0 },     // 7
-        { mes: 'Agosto', valor: datosReales.porMes.Agosto?.aprobadas || 0 },   // 14
-        { mes: 'Septiembre', valor: datosReales.porMes.Septiembre?.aprobadas || 0 } // 0
-      ]
-    };
-    const meses = datosLineas.solicitudes.map(d => d.mes);
-    const solicitudesMensual = datosLineas.solicitudes.map(d => d.valor);
-    const aprobadasMensual = datosLineas.aprobadas.map(d => d.valor);
+    // ✅ ACTUALIZADO: Usar mesesOrdenados o todosLosMeses del backend según la guía actualizada
+    // El endpoint /por-periodo devuelve todos los meses (Enero-Diciembre), incluso con 0
+    // Preferir usar mesesOrdenados o todosLosMeses del backend en lugar de hardcodear
+    let mesesOrden: string[];
+    let solicitudesMensual: number[];
+    let aprobadasMensual: number[];
+    
+    if (datosReales.mesesOrdenados && datosReales.mesesOrdenados.length > 0) {
+      // Usar mesesOrdenados del backend (preferido)
+      mesesOrden = datosReales.mesesOrdenados.map(item => item.mes);
+      solicitudesMensual = datosReales.mesesOrdenados.map(item => item.total || 0);
+      aprobadasMensual = datosReales.mesesOrdenados.map(item => item.aprobadas || 0);
+    } else if (datosReales.todosLosMeses && datosReales.todosLosMeses.length > 0) {
+      // Usar todosLosMeses del backend
+      mesesOrden = datosReales.todosLosMeses;
+      solicitudesMensual = mesesOrden.map(mes => datosReales.porMes[mes]?.total || 0);
+      aprobadasMensual = mesesOrden.map(mes => datosReales.porMes[mes]?.aprobadas || 0);
+    } else {
+      // Fallback: usar porMes directamente (orden por defecto)
+      mesesOrden = Object.keys(datosReales.porMes);
+      solicitudesMensual = mesesOrden.map(mes => datosReales.porMes[mes]?.total || 0);
+      aprobadasMensual = mesesOrden.map(mes => datosReales.porMes[mes]?.aprobadas || 0);
+    }
+    
     const data: ChartData<'line'> = {
-      labels: meses,
+      labels: mesesOrden,
       datasets: [
         {
           label: 'Solicitudes',
@@ -1233,7 +1240,123 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   /**
    * Crea el gráfico de distribución por programa
    */
-  private crearChartDistribucion(): void {
+  private async crearChartDistribucion(): Promise<void> {
+    const ctx = document.getElementById('chartDistribucion') as HTMLCanvasElement;
+    if (!ctx) {
+      return;
+    }
+
+    this.destruirChart('chartDistribucion');
+
+    // ✅ ACTUALIZADO: Cargar datos desde el endpoint /por-programa según la guía
+    try {
+      const response = await this.estadisticasService.getEstadisticasPorProgramaMejoradas().toPromise();
+      
+      if (!response || !response.solicitudesPorPrograma) {
+        // Fallback: usar datos del resumen si están disponibles
+        if (this.resumenCompleto && this.resumenCompleto.estadisticasPorPrograma.length > 0) {
+          this.crearChartDistribucionFallback();
+        }
+        return;
+      }
+
+      // Extraer datos de solicitudesPorPrograma según la guía
+      const solicitudesPorPrograma = response.solicitudesPorPrograma || {};
+      const programas = Object.keys(solicitudesPorPrograma);
+      const valores = programas.map(programa => solicitudesPorPrograma[programa] || 0);
+
+      const data: ChartData<'bar'> = {
+        labels: programas,
+        datasets: [{
+          label: 'Solicitudes',
+          data: valores,
+        backgroundColor: [
+          '#2196f3', // Azul - Sistemas
+          '#ff9800', // Naranja - Electrónica
+          '#4caf50', // Verde - Automática
+          '#9c27b0'  // Púrpura - Telemática
+        ],
+        borderColor: [
+          '#1976d2',
+          '#f57c00', 
+          '#388e3c',
+          '#7b1fa2'
+        ],
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false
+      }]
+    };
+
+    const config: ChartConfiguration<'bar'> = {
+      type: 'bar',
+      data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#fff',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed?.y || 0;
+                const dataArray = context.dataset.data as number[];
+                const total = dataArray.reduce((a: number, b: number) => a + b, 0);
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                return `${label}: ${value} solicitudes (${percentage}%)`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 45
+            }
+          },
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            },
+            ticks: {
+              precision: 0
+            }
+          }
+        },
+        animation: {
+          duration: 0, // ✅ Sin animación para mejor rendimiento
+          easing: 'linear'
+        }
+      }
+    };
+
+      this.chartDistribucion = new Chart(ctx, config);
+    } catch (error) {
+      console.error('❌ Error al crear gráfico de distribución:', error);
+      // Fallback: usar datos del resumen si están disponibles
+      if (this.resumenCompleto && this.resumenCompleto.estadisticasPorPrograma.length > 0) {
+        this.crearChartDistribucionFallback();
+      }
+    }
+  }
+
+  /**
+   * Crea el gráfico de distribución con datos de fallback
+   */
+  private crearChartDistribucionFallback(): void {
     const ctx = document.getElementById('chartDistribucion') as HTMLCanvasElement;
     if (!ctx) {
       return;
@@ -1316,16 +1439,16 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         animation: {
-          duration: 0, // ✅ Sin animación para mejor rendimiento
+          duration: 0,
           easing: 'linear'
         }
       }
     };
 
     try {
-    this.chartDistribucion = new Chart(ctx, config);
+      this.chartDistribucion = new Chart(ctx, config);
     } catch (error) {
-      console.error('❌ Error al crear gráfico de distribución:', error);
+      console.error('❌ Error al crear gráfico de distribución (fallback):', error);
     }
   }
 

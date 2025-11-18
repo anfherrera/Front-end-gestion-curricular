@@ -189,6 +189,8 @@ export interface ProgramaEstadisticasMejoradas {
 
 export interface EstadisticasPorProgramaMejoradasResponse {
   porPrograma: { [programa: string]: ProgramaEstadisticasMejoradas };
+  solicitudesPorPrograma?: { [programa: string]: number };  // ⭐ Mapa directo de programa -> cantidad
+  estudiantesPorPrograma?: { [programa: string]: number };  // ⭐ Mapa directo de programa -> cantidad
   analisis: {                     // NUEVO: Sección de análisis
     programaMasActivo: string;
     programaMasEficiente: string;
@@ -215,6 +217,8 @@ export interface PeriodoEstadisticasMejoradas {
 
 export interface EstadisticasPorPeriodoMejoradasResponse {
   porMes: { [mes: string]: PeriodoEstadisticasMejoradas };
+  mesesOrdenados?: Array<{ mes: string; total: number; aprobadas: number; [key: string]: any }>;  // ⭐ Array ordenado de todos los meses
+  todosLosMeses?: string[];  // ⭐ Array con nombres de todos los meses (Enero a Diciembre)
   tendencias: {                   // NUEVO: Sección de tendencias
     tendenciaGeneral: string;
     crecimientoPromedio: number;
