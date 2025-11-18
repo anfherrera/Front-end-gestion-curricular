@@ -1358,6 +1358,51 @@ export class CursosIntersemestralesService {
   }
 
   /**
+   * Subir comprobante de pago para inscripción a curso de verano
+   * RECOMENDADO: Usar después de crear la inscripción
+   * @param archivo - Archivo PDF del comprobante de pago
+   * @param inscripcionId - ID de la inscripción (obtenido después de crear la inscripción)
+   * @returns Observable con la respuesta del servidor
+   */
+  subirComprobantePago(archivo: File, inscripcionId: number): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', archivo);
+    formData.append('inscripcionId', inscripcionId.toString());
+    // También enviar como alias para compatibilidad
+    formData.append('solicitudId', inscripcionId.toString());
+    formData.append('idSolicitud', inscripcionId.toString());
+    // Opcional: Ser explícito sobre el tipo (también funciona sin esto)
+    formData.append('tipoSolicitud', 'curso-verano');
+
+    console.log('📤 Subiendo comprobante de pago para inscripción ID:', inscripcionId);
+    console.log('📄 Archivo:', archivo.name, `(${(archivo.size / 1024).toFixed(2)} KB)`);
+
+    return this.http.post<any>(
+      ApiEndpoints.ARCHIVOS.SUBIR_PDF,
+      formData
+    );
+  }
+
+  /**
+   * Subir comprobante ANTES de crear inscripción (también funciona)
+   * El archivo se moverá automáticamente cuando se cree la inscripción
+   * @param archivo - Archivo PDF del comprobante de pago
+   * @returns Observable con la respuesta del servidor
+   */
+  subirComprobanteSinInscripcion(archivo: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', archivo);
+
+    console.log('📤 Subiendo comprobante de pago sin inscripción (se organizará después)');
+    console.log('📄 Archivo:', archivo.name, `(${(archivo.size / 1024).toFixed(2)} KB)`);
+
+    return this.http.post<any>(
+      ApiEndpoints.ARCHIVOS.SUBIR_PDF,
+      formData
+    );
+  }
+
+  /**
    * Obtiene las estadísticas del dashboard de cursos intersemestrales
    * @returns Observable con las estadísticas del dashboard
    */

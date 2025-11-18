@@ -31,12 +31,26 @@ export class ArchivosService {
 
   constructor(private http: HttpClient) {}
 
-  subirPDF(file: File, inscripcionId?: number): Observable<Archivo> {
+  /**
+   * Subir archivo PDF
+   * @param file - Archivo PDF a subir
+   * @param inscripcionId - ID de la inscripción (opcional pero recomendado para organización)
+   * @param tipoSolicitud - Tipo de solicitud (opcional, se infiere de inscripcionId si no se proporciona)
+   */
+  subirPDF(file: File, inscripcionId?: number, tipoSolicitud?: string): Observable<Archivo> {
     const formData = new FormData();
     formData.append('file', file); // 👈 debe coincidir con @RequestParam("file")
     
     if (inscripcionId) {
       formData.append('inscripcionId', inscripcionId.toString());
+      // También enviar como alias para compatibilidad
+      formData.append('solicitudId', inscripcionId.toString());
+      formData.append('idSolicitud', inscripcionId.toString());
+    }
+
+    // Opcional: Ser explícito sobre el tipo de solicitud
+    if (tipoSolicitud) {
+      formData.append('tipoSolicitud', tipoSolicitud);
     }
 
     // El JWT interceptor agrega automáticamente el token Authorization

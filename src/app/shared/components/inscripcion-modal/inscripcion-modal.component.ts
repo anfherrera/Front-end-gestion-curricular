@@ -384,12 +384,14 @@ export class InscripcionModalComponent implements OnInit {
   private subirArchivo(inscripcionId: number) {
     if (!this.archivoSeleccionado) return;
 
-    console.log('📤 Subiendo archivo para inscripción ID:', inscripcionId);
+    console.log('📤 Subiendo comprobante de pago para inscripción ID:', inscripcionId);
     console.log('🔍 Archivo a subir:', this.archivoSeleccionado.name, this.archivoSeleccionado.size, 'bytes');
 
-    this.archivosService.subirPDF(this.archivoSeleccionado, inscripcionId).subscribe({
-      next: (archivo) => {
-        console.log('✅ Archivo subido exitosamente:', archivo);
+    // Usar el método específico del servicio de cursos para subir comprobante de pago
+    this.cursosService.subirComprobantePago(this.archivoSeleccionado, inscripcionId).subscribe({
+      next: (resultado) => {
+        console.log('✅ Comprobante de pago subido exitosamente:', resultado);
+        console.log('📁 Archivo organizado en:', resultado.rutaArchivo || resultado.nombreArchivo);
         this.cargando = false;
         this.snackBar.open(
           `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 
@@ -399,7 +401,7 @@ export class InscripcionModalComponent implements OnInit {
         this.dialogRef.close(true); // Cerrar modal con éxito
       },
       error: (error) => {
-        console.error('❌ Error subiendo archivo:', error);
+        console.error('❌ Error subiendo comprobante de pago:', error);
         this.cargando = false;
         this.snackBar.open('Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.', 'Cerrar', { duration: 8000 });
         this.dialogRef.close(true); // Aún cerrar el modal ya que la inscripción se creó

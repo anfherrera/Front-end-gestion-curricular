@@ -49,9 +49,7 @@
     <ng-container matColumnDef="periodo">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Período</th>
       <td mat-cell *matCellDef="let curso">
-        <span class="periodo-badge" [style.background-color]="getColorPeriodoBadge(curso)">
-          {{ obtenerPeriodoDisplay(curso) }}
-        </span>
+        {{ obtenerPeriodoDisplay(curso) }}
       </td>
     </ng-container>
 

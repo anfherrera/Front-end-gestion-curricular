@@ -114,6 +114,38 @@ export class PazSalvoService {
   }
 
   /**
+   * Obtener solicitudes ya procesadas por funcionario (historial)
+   * Estado: APROBADA_FUNCIONARIO (ya aprobadas por funcionario)
+   */
+  getSolicitudesProcesadasFuncionario(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Funcionario/Aprobadas`, 
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(error => {
+        console.error('Error obteniendo solicitudes procesadas (funcionario):', error);
+        return of([]); // Retornar array vacío en caso de error
+      })
+    );
+  }
+
+  /**
+   * Obtener solicitudes ya procesadas por coordinador (historial)
+   * Estado: APROBADA_COORDINADOR (ya aprobadas por coordinador)
+   */
+  getSolicitudesProcesadasCoordinador(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Coordinador/Aprobadas`, 
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(error => {
+        console.error('Error obteniendo solicitudes procesadas (coordinador):', error);
+        return of([]); // Retornar array vacío en caso de error
+      })
+    );
+  }
+
+  /**
    * Obtener solicitudes ya procesadas por secretaría (historial)
    * Estado: APROBADA (ya enviadas al estudiante)
    */
@@ -123,7 +155,7 @@ export class PazSalvoService {
       { headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
-        console.error('Error obteniendo solicitudes procesadas:', error);
+        console.error('Error obteniendo solicitudes procesadas (secretaria):', error);
         return of([]); // Retornar array vacío en caso de error
       })
     );
