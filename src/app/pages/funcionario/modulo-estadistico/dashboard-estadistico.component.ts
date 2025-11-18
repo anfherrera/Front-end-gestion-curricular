@@ -29,7 +29,8 @@ import { TendenciasComparativasComponent } from '../../../shared/components/tend
 import { PeriodoSelectorComponent } from '../../../shared/components/periodo-selector/periodo-selector.component'; // ✨ NUEVO
 import { 
   ResumenCompleto, 
-  EstadisticasProceso, 
+  EstadisticasProceso,
+  EstadisticasPrograma,
   FiltroEstadisticas,
   FiltrosDashboard,
   KPIData 
