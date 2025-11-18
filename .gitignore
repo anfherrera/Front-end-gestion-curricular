@@ -40,3 +40,13 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Documentation files (not needed for deployment)
+GUIA-RAPIDA-PRUEBAS.md
+DOCUMENTACION-COMPLETA-PRUEBAS.md
+
+# Development-only configuration files
+proxy.conf.json
+
+# Test configuration (not needed for production build)
+tsconfig.spec.json

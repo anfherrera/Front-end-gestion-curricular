@@ -72,17 +72,11 @@ export class SecretariaPazSalvoComponent implements OnInit {
    */
   cargarSolicitudesPendientes(): void {
     // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getSecretariaRequests()
-    console.log('📡 Llamando a getSecretariaRequests (endpoint directo /Secretaria)');
-    
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        console.log('📡 Respuesta del backend para secretaria:', sols);
-        
         // ✅ CORREGIDO: Filtrar solicitudes con estado APROBADA_COORDINADOR (igual que Homologación)
         // El backend YA filtra por estado, así que mostramos TODAS las que llegan
         const solicitudesFiltradas = sols;
-        
-        console.log('📋 Estados de las solicitudes:', sols.map(s => this.getEstadoActual(s)));
 
         // Transformar datos para RequestStatusTableComponent
         this.solicitudes = solicitudesFiltradas.map(sol => ({
@@ -93,9 +87,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
           rutaArchivo: '', // Para oficios
           comentarios: ''
         }));
-        console.log('📋 Solicitudes cargadas para secretaría:', this.solicitudes);
-        console.log('📋 Total solicitudes recibidas:', sols.length);
-        console.log('📋 Solicitudes filtradas (APROBADA sin oficios):', solicitudesFiltradas.length);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes (secretaria):', err);
@@ -108,12 +99,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
    * Cargar solicitudes procesadas (historial) - Estado APROBADA
    */
   cargarSolicitudesProcesadas(): void {
-    console.log('📡 Llamando a getSolicitudesProcesadasSecretaria (endpoint /Secretaria/Aprobadas)');
-    
     this.pazSalvoService.getSolicitudesProcesadasSecretaria().subscribe({
       next: (sols) => {
-        console.log('📡 Respuesta del backend para solicitudes procesadas:', sols);
-        
         // Transformar datos para RequestStatusTableComponent
         this.solicitudesProcesadas = sols.map(sol => ({
           id: sol.id_solicitud,
@@ -124,9 +111,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
           rutaArchivo: '',
           comentarios: ''
         }));
-        
-        console.log('📋 Solicitudes procesadas cargadas:', this.solicitudesProcesadas);
-        console.log('📋 Total solicitudes procesadas:', sols.length);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes procesadas:', err);
@@ -209,9 +193,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
       next: (sols) => {
         // ✅ El backend YA filtra, solo buscamos la solicitud por ID
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
-        console.log('✅ Solicitud seleccionada (secretaria):', this.selectedSolicitud);
-        console.log('🧹 Estado limpiado para nueva solicitud');
-        
         // Cargar documentos usando el nuevo endpoint
         if (this.selectedSolicitud) {
           this.cargarDocumentos(this.selectedSolicitud.id_solicitud);
@@ -227,16 +208,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
    * 🆕 Cargar documentos usando el nuevo endpoint para secretaria
    */
   cargarDocumentos(idSolicitud: number): void {
-    console.log('🔍 [DEBUG] Iniciando carga de documentos para solicitud (secretaria):', idSolicitud);
-    
     const endpoint = `/api/solicitudes-pazysalvo/obtenerOficios/${idSolicitud}`;
-    console.log('🔍 [DEBUG] Endpoint para secretaria:', endpoint);
-    
     this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
       next: (documentos: any[]) => {
-        console.log('✅ [DEBUG] Documentos recibidos del backend (secretaria):', documentos);
-        console.log('✅ [DEBUG] Cantidad de documentos:', documentos.length);
-        
         // Actualizar los documentos de la solicitud seleccionada
         if (this.selectedSolicitud) {
           this.selectedSolicitud.documentos = documentos.map(doc => ({
@@ -247,9 +221,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
             esValido: doc.esValido,
             comentario: doc.comentario
           }));
-          
-          console.log('✅ [DEBUG] Documentos asignados al componente (secretaria):', this.selectedSolicitud.documentos);
-          console.log('✅ [DEBUG] Cantidad de documentos en solicitud:', this.selectedSolicitud.documentos.length);
           
           // Forzar detección de cambios para solucionar el error de Angular
           this.cdr.detectChanges();
@@ -282,15 +253,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
     if (!this.selectedSolicitud) return;
 
     this.loading = true;
-    console.log('📄 Generando documento:', request);
-    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
-    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
-    console.log('👤 Datos del estudiante en request:', request.datosSolicitud);
-
     this.documentGeneratorService.generarDocumento(request).subscribe({
       next: (blob) => {
-        console.log('✅ Documento generado exitosamente');
-
         // Generar nombre de archivo
         const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
 
@@ -317,7 +281,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
   onCancelarGeneracion(): void {
     this.limpiarEstado();
     this.selectedSolicitud = undefined;
-    console.log('❌ Generación de documento cancelada');
   }
 
   /**
@@ -343,12 +306,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
     }
 
     this.subiendoPDF = true;
-    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
-
     // Usar el endpoint específico de Paz y Salvo para subir el oficio PDF
     this.pazSalvoService.subirOficioPdf(this.selectedSolicitud.id_solicitud, this.archivoPDF).subscribe({
       next: (response) => {
-        console.log('✅ Archivo PDF subido exitosamente:', response);
         this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
         this.subiendoPDF = false;
       },
@@ -370,13 +330,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
     }
 
     this.enviandoPDF = true;
-    console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
-
     // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
     this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        console.log('✅ Estado de solicitud actualizado a APROBADA');
-        console.log('✅ PDF enviado al estudiante exitosamente');
         this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
 
@@ -409,20 +365,13 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
     // Paso 1: Subir PDF
     this.subiendoPDF = true;
-    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
-    console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
-    console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
-
     // Usar el endpoint específico de Paz y Salvo para subir el oficio PDF
     this.pazSalvoService.subirOficioPdf(this.selectedSolicitud.id_solicitud, this.archivoPDF).subscribe({
       next: (response) => {
-        console.log('✅ Archivo PDF subido exitosamente:', response);
         this.subiendoPDF = false;
 
         // Paso 2: Enviar al estudiante (cambiar estado)
         this.enviandoPDF = true;
-        console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud?.id_solicitud);
-
         // Verificar que la solicitud sigue seleccionada
         if (!this.selectedSolicitud) {
           console.error('❌ selectedSolicitud es undefined');
@@ -434,8 +383,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
         this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
           next: () => {
-            console.log('✅ Estado de solicitud actualizado a APROBADA');
-            console.log('✅ PDF enviado al estudiante exitosamente');
             this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
 
@@ -480,6 +427,5 @@ export class SecretariaPazSalvoComponent implements OnInit {
     this.enviandoPDF = false;
     this.documentoHabilitado = false;
     this.loading = false;
-    console.log('🧹 Estado del componente limpiado');
   }
 }

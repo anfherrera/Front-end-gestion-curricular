@@ -60,11 +60,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   // 📌 Cargar solicitudes pendientes según el rol del usuario actual
   cargarSolicitudesPendientes(): void {
     // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getCoordinatorRequests()
-    console.log('📡 Llamando a getCoordinatorRequests (endpoint directo /Coordinador)');
-    
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (data) => {
-        console.log('📡 Solicitudes recibidas del backend (coordinador):', data);
 
         // Mapear a formato de solicitudes para la tabla
         this.solicitudes = data.map(solicitud => ({
@@ -83,7 +80,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
           })) || []
         }));
 
-        console.log('✅ Solicitudes mapeadas (coordinador):', this.solicitudes);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes (coordinador):', err);
@@ -103,7 +99,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
-        console.log('📋 Solicitud seleccionada (coordinador):', this.selectedSolicitud);
         
         // Cargar documentos usando el nuevo endpoint
         if (this.selectedSolicitud) {
@@ -117,16 +112,9 @@ export class PazSalvoCoordinadorComponent implements OnInit {
    * 🆕 Cargar documentos usando el nuevo endpoint para coordinadores
    */
   cargarDocumentos(idSolicitud: number): void {
-    console.log('🔍 [DEBUG] Iniciando carga de documentos para solicitud (coordinador):', idSolicitud);
-    
     const endpoint = `/api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/${idSolicitud}`;
-    console.log('🔍 [DEBUG] Endpoint para coordinador:', endpoint);
-    
     this.pazSalvoService.obtenerDocumentosCoordinador(idSolicitud).subscribe({
       next: (documentos: any[]) => {
-        console.log('✅ [DEBUG] Documentos recibidos del backend (coordinador):', documentos);
-        console.log('✅ [DEBUG] Cantidad de documentos:', documentos.length);
-        
         // Actualizar los documentos de la solicitud seleccionada
         if (this.selectedSolicitud) {
           this.selectedSolicitud.documentos = documentos.map(doc => ({
@@ -137,9 +125,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
             esValido: doc.esValido,
             comentario: doc.comentario
           }));
-          
-          console.log('✅ [DEBUG] Documentos asignados al componente (coordinador):', this.selectedSolicitud.documentos);
-          console.log('✅ [DEBUG] Cantidad de documentos en solicitud:', this.selectedSolicitud.documentos.length);
           
           // Forzar detección de cambios para solucionar el error de Angular
           this.cdr.detectChanges();
@@ -163,11 +148,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
    * Cargar solicitudes procesadas (historial) - Estado APROBADA_COORDINADOR
    */
   cargarSolicitudesProcesadas(): void {
-    console.log('📡 Llamando a getSolicitudesProcesadasCoordinador (endpoint /Coordinador/Aprobadas)');
-    
     this.pazSalvoService.getSolicitudesProcesadasCoordinador().subscribe({
       next: (sols) => {
-        console.log('📡 Respuesta del backend para solicitudes procesadas (coordinador):', sols);
         
         // Mapear a formato de solicitudes para la tabla
         this.solicitudesProcesadas = sols.map(solicitud => ({
@@ -187,8 +169,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
           })) || []
         }));
         
-        console.log('📋 Solicitudes procesadas cargadas (coordinador):', this.solicitudesProcesadas);
-        console.log('📋 Total solicitudes procesadas:', sols.length);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes procesadas (coordinador):', err);
@@ -219,11 +199,9 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   // 📌 Obtener documentos de la solicitud seleccionada (igual que homologación)
   get documentosDelEstudiante(): DocumentoHomologacion[] {
     if (!this.selectedSolicitud?.documentos) {
-      console.log('🔍 [DEBUG] No hay documentos en la solicitud seleccionada (coordinador)');
       return [];
     }
 
-    console.log('🔍 [DEBUG] Documentos en solicitud (coordinador):', this.selectedSolicitud.documentos);
     return this.selectedSolicitud.documentos;
   }
 

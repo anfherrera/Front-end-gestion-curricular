@@ -1,71 +1,23 @@
-// import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
-// import { Observable } from 'rxjs';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class HomologacionAsignaturasService {
-
-//   private apiUrl = 'http://localhost:5000/api/solicitudes-homologacion';
-
-//   constructor(private http: HttpClient) {}
-
-//   // 🔹 Crear solicitud dinámicamente pasando el usuario
-//   crearSolicitudHomologacion(usuario: any): Observable<any> {
-//     const solicitud = {
-//       nombre_solicitud: 'Solicitud Homologacion',
-//       fecha_registro_solicitud: new Date().toISOString(),
-//       esSeleccionado: true,
-//       estado_actual: {
-//         id_estado: 1,
-//         estado_actual: 'Pendiente',
-//         fecha_registro_estado: new Date().toISOString()
-//       },
-//       objUsuario: usuario,   // 👈 Se pasa dinámicamente el usuario
-//       documentos: []
-//     };
-
-//     return this.http.post(`${this.apiUrl}/crearSolicitud-Homologacion`, solicitud);
-//   }
-
-//   // 🔹 Listar solicitudes de homologación
-//   listarSolicitudesHomologacion(): Observable<any[]> {
-//     return this.http.get<any[]>(`${this.apiUrl}/listarSolicitud-Homologacion`);
-//   }
-// }
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Solicitud, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomologacionAsignaturasService {
-  private apiUrl = 'http://localhost:5000/api/solicitudes-homologacion';
+  private apiUrl = `${environment.apiUrl}/solicitudes-homologacion`;
 
   constructor(private http: HttpClient) {}
 
-  // private getAuthHeaders(): HttpHeaders {
-  //   const token = localStorage.getItem('token');
-  //   return new HttpHeaders({
-  //     Authorization: token ? `Bearer ${token}` : ''
-  //   });
-  // }
   private getAuthHeaders(isFile: boolean = false): HttpHeaders {
     const token = localStorage.getItem('token');
-    console.log('🔑 Token encontrado:', token ? 'Sí' : 'No');
-    console.log('🔑 Token completo:', token);
-
-    const headers = new HttpHeaders({
+    return new HttpHeaders({
       ...(isFile ? {} : { 'Content-Type': 'application/json' }),
       Authorization: token ? `Bearer ${token}` : ''
     });
-
-    console.log('🔑 Headers creados:', headers);
-    return headers;
   }
 
   crearSolicitud(solicitud: any): Observable<any> {
@@ -217,7 +169,7 @@ export class HomologacionAsignaturasService {
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
-    const url = `http://localhost:5000/api/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
     console.log('🔗 URL de descarga:', url);
     console.log('📁 Nombre del archivo:', nombreArchivo);
     
@@ -231,7 +183,7 @@ export class HomologacionAsignaturasService {
    * Añadir comentario a un documento
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
-    const url = `http://localhost:5000/api/documentos/añadirComentario`;
+    const url = `${environment.apiUrl}/documentos/añadirComentario`;
     const body = {
       idDocumento: idDocumento,
       comentario: comentario
@@ -248,7 +200,7 @@ export class HomologacionAsignaturasService {
    * Obtener comentarios de un documento
    */
   obtenerComentariosDocumento(idDocumento: number): Observable<any> {
-    const url = `http://localhost:5000/api/documentos/${idDocumento}/comentarios`;
+    const url = `${environment.apiUrl}/documentos/${idDocumento}/comentarios`;
     
     return this.http.get(url, {
       headers: this.getAuthHeaders()
@@ -355,7 +307,7 @@ export class HomologacionAsignaturasService {
    * Subir archivo PDF
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    const url = `http://localhost:5000/api/archivos/subir/pdf`;
+    const url = `${environment.apiUrl}/archivos/subir/pdf`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -399,7 +351,7 @@ export class HomologacionAsignaturasService {
    * Validar documentos requeridos para homologación
    */
   validarDocumentosRequeridos(idSolicitud: number): Observable<any> {
-    const url = `http://localhost:5000/api/solicitudes-homologacion/validarDocumentosRequeridos/${idSolicitud}`;
+    const url = `${environment.apiUrl}/solicitudes-homologacion/validarDocumentosRequeridos/${idSolicitud}`;
     
     console.log('🔗 URL para validar documentos requeridos:', url);
     

@@ -4,12 +4,13 @@ import { Observable, of } from 'rxjs';
 import { DocumentRequest, DocumentTemplate } from '../../shared/components/document-generator/document-generator.component';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentGeneratorService {
-  private apiUrl = 'http://localhost:5000/api/documentos';
+  private apiUrl = `${environment.apiUrl}/documentos`;
 
   constructor(private http: HttpClient) {}
 
@@ -61,7 +62,7 @@ export class DocumentGeneratorService {
         formData.append('observaciones', request.datosDocumento.observaciones);
       }
       
-      const url = `http://localhost:5000/api/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`;
+      const url = `${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`;
       console.log('🔗 URL para generar Paz y Salvo:', url);
       
       // Para FormData, no usar Content-Type (el navegador lo establece automáticamente)
@@ -189,7 +190,7 @@ export class DocumentGeneratorService {
     console.log('📤 Enviando FormData al backend...');
 
     // Solo para homologación (aunque no tiene endpoint)
-    const endpoint = 'http://localhost:5000/api/solicitudes-homologacion/guardarOficio';
+    const endpoint = `${environment.apiUrl}/solicitudes-homologacion/guardarOficio`;
     console.log('🔗 Usando endpoint:', endpoint);
 
     return this.http.post(endpoint, formData, {

@@ -57,12 +57,8 @@ export class PazSalvoComponent implements OnInit {
    */
   cargarSolicitudesPendientes(): void {
     // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getPendingRequests()
-    console.log('📡 Llamando a getPendingRequests (endpoint directo /Funcionario)');
-    
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
-        console.log('📡 Respuesta del backend para funcionario:', sols);
-        
         // Transformar datos para RequestStatusTableComponent (igual que homologación)
         this.solicitudes = sols.map(sol => ({
           id: sol.id_solicitud,
@@ -72,8 +68,6 @@ export class PazSalvoComponent implements OnInit {
           rutaArchivo: '',
           comentarios: ''
         }));
-        
-        console.log('✅ Solicitudes cargadas para funcionario:', this.solicitudes);
         // ✅ CORREGIDO: No seleccionar automáticamente la primera solicitud
         // Los documentos solo se mostrarán cuando el usuario seleccione manualmente
       },
@@ -104,7 +98,6 @@ export class PazSalvoComponent implements OnInit {
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId) || null;
-        console.log('📋 Solicitud seleccionada (funcionario):', this.selectedSolicitud);
       }
     });
   }
@@ -113,11 +106,8 @@ export class PazSalvoComponent implements OnInit {
    * Cargar solicitudes procesadas (historial) - Estado APROBADA_FUNCIONARIO
    */
   cargarSolicitudesProcesadas(): void {
-    console.log('📡 Llamando a getSolicitudesProcesadasFuncionario (endpoint /Funcionario/Aprobadas)');
-    
     this.pazSalvoService.getSolicitudesProcesadasFuncionario().subscribe({
       next: (sols) => {
-        console.log('📡 Respuesta del backend para solicitudes procesadas (funcionario):', sols);
         
         // Transformar datos para RequestStatusTableComponent
         this.solicitudesProcesadas = sols.map(sol => ({
@@ -130,8 +120,6 @@ export class PazSalvoComponent implements OnInit {
           comentarios: ''
         }));
         
-        console.log('📋 Solicitudes procesadas cargadas (funcionario):', this.solicitudesProcesadas);
-        console.log('📋 Total solicitudes procesadas:', sols.length);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes procesadas (funcionario):', err);
@@ -184,20 +172,12 @@ export class PazSalvoComponent implements OnInit {
 
 
   aprobarSolicitudSeleccionada(): void {
-    console.log('🚀 Iniciando aprobación de solicitud de Paz y Salvo');
-    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
-    
     if (!this.selectedSolicitud) {
-      console.log('❌ No hay solicitud seleccionada');
       return;
     }
-
-    console.log('🔢 ID de solicitud a aprobar:', this.selectedSolicitud.id_solicitud);
-
     // Actualizar estado de la solicitud (igual que homologación)
     this.pazSalvoService.approveRequest(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        console.log('✅ Solicitud aprobada exitosamente');
         // Actualizar estado de los documentos
         const documentosActualizados = this.documentosDelEstudiante.map(doc => ({
           id_documento: doc.id_documento,
@@ -207,7 +187,6 @@ export class PazSalvoComponent implements OnInit {
         // Intentar actualizar documentos, pero no bloquear si falla
         this.pazSalvoService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).subscribe({
           next: () => {
-            console.log('✅ Documentos actualizados exitosamente');
             this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudesPendientes();
             this.cargarSolicitudesProcesadas();
@@ -229,19 +208,13 @@ export class PazSalvoComponent implements OnInit {
       },
       error: (err) => {
         console.error('❌ Error al aprobar solicitud:', err);
-        console.log('📊 Detalles del error:', err);
-        
         // Intentar leer el contenido del error si es un Blob
         if (err.error instanceof Blob) {
-          console.log('📄 Error es un Blob, leyendo contenido...');
           err.error.text().then((text: string) => {
-            console.log('📄 Contenido del error (Blob):', text);
             try {
               const errorData = JSON.parse(text);
-              console.log('📄 Error parseado:', errorData);
               this.snackBar.open('Error del servidor: ' + (errorData.message || errorData.error || 'Error desconocido'), 'Cerrar', { duration: 5000 });
             } catch (e) {
-              console.log('📄 Error no es JSON válido:', text);
               this.snackBar.open('Error del servidor: ' + text, 'Cerrar', { duration: 5000 });
             }
           });

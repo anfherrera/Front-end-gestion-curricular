@@ -73,9 +73,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
-      console.log('👤 Usuario cargado desde localStorage:', this.usuario);
     } else {
-      console.warn('⚠️ No se encontró usuario en localStorage');
     }
 
     // Listar solicitudes existentes al cargar el componente
@@ -120,28 +118,14 @@ listarSolicitudes() {
     console.error("❌ Usuario no encontrado en localStorage.");
     return;
   }
-
-  console.log('🔍 Usuario encontrado:', this.usuario);
-  console.log('🔍 Rol:', this.usuario.rol?.nombre || 'ESTUDIANTE');
-  console.log('🔍 ID Usuario:', this.usuario.id_usuario);
-
   // ✅ CORREGIDO: Usar el nuevo método con rol e idUsuario
   const rol = 'ESTUDIANTE';
   const idUsuario = this.usuario.id_usuario;
-  
-  console.log('📡 Llamando a listarSolicitudesPorRol con:', { rol, idUsuario });
-
   this.pazSalvoService.listarSolicitudesPorRol(rol, idUsuario)
     .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
     .subscribe({
     next: (data) => {
-      console.log('📡 Respuesta del backend (raw):', data);
-      console.log('📡 Tipo de respuesta:', typeof data);
-      console.log('📡 Es array:', Array.isArray(data));
-      console.log('📡 Longitud:', data?.length);
-
       if (!data || !Array.isArray(data)) {
-        console.warn('⚠️ La respuesta no es un array válido');
         this.solicitudes = [];
         this.solicitudesCompletas = [];
         return;
@@ -151,20 +135,14 @@ listarSolicitudes() {
       this.solicitudesCompletas = data;
 
       // Log para debugging - verificar estructura de datos
-      console.log('🔍 Estructura de datos del backend:');
       if (data.length > 0) {
-        console.log('📋 Primera solicitud completa:', data[0]);
         if (data[0].estadosSolicitud) {
-          console.log('📋 Estados de la primera solicitud:', data[0].estadosSolicitud);
           data[0].estadosSolicitud.forEach((estado: any, index: number) => {
-            console.log(`📋 Estado ${index}:`, estado);
           });
         }
       }
 
       this.solicitudes = data.map((sol: any) => {
-        console.log('🔍 Procesando solicitud:', sol);
-
         const estados = sol.estado_actual || sol.estadosSolicitud || [];
         const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
@@ -182,11 +160,6 @@ listarSolicitudes() {
         }) || [];
         
         const rutaArchivo = oficiosPDF.length > 0 ? oficiosPDF[0].nombre : '';
-        
-        console.log('📄 Documentos de la solicitud:', sol.documentos);
-        console.log('📄 Oficios PDF encontrados:', oficiosPDF);
-        console.log('📄 Ruta archivo seleccionada:', rutaArchivo);
-
         const solicitudTransformada = {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
@@ -196,13 +169,9 @@ listarSolicitudes() {
           comentarios: ultimoEstado?.comentarios || '',
           esSeleccionado: sol.esSeleccionado || false // Usar el campo esSeleccionado
         };
-
-        console.log('✅ Solicitud transformada:', solicitudTransformada);
         return solicitudTransformada;
       });
 
-      console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
-      console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
     },
     error: (err) => {
       console.error('❌ Error al listar solicitudes', err);
@@ -226,15 +195,11 @@ listarSolicitudes() {
       console.error('❌ No se puede acceder al componente de archivos.');
       return;
     }
-
-    console.log('📤 Iniciando proceso de envío de solicitud con NUEVO FLUJO...');
-
     // 🆕 NUEVO FLUJO: Paso 1: Subir documentos SIN asociar a solicitud
     this.fileUploadComponent.subirArchivosPendientes()
       .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
       .subscribe({
       next: (archivosSubidos) => {
-        console.log('✅ Documentos subidos correctamente (sin asociar):', archivosSubidos);
 
         // 🆕 NUEVO FLUJO: Paso 2: Crear la solicitud (los documentos se asocian automáticamente)
         const solicitud = {
@@ -250,13 +215,11 @@ listarSolicitudes() {
           archivos: archivosSubidos // Los documentos se asociarán automáticamente
         };
 
-        console.log('📋 Creando solicitud (documentos se asocian automáticamente):', solicitud);
 
         this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos)
           .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
           .subscribe({
           next: (resp) => {
-            console.log('✅ Solicitud creada en backend:', resp);
             this.listarSolicitudes();
 
             // ✅ FIX: Resetear el file upload en el siguiente ciclo de detección para evitar NG0100
@@ -312,11 +275,7 @@ obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta
  * Obtener el comentario de rechazo del último estado
  */
 obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
-  console.log('🔍 Obteniendo comentario de rechazo para solicitud:', solicitud.id_solicitud);
-  console.log('📋 Estados de la solicitud:', solicitud.estadosSolicitud);
-  
   if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
-    console.log('❌ No hay estados en la solicitud');
     return null;
   }
 
@@ -324,20 +283,12 @@ obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string |
   const estadosRechazados = solicitud.estadosSolicitud.filter(estado => 
     estado.estado_actual === 'RECHAZADA' || estado.estado_actual === 'Rechazada'
   );
-
-  console.log('🔍 Estados rechazados encontrados:', estadosRechazados);
-
   if (estadosRechazados.length === 0) {
-    console.log('❌ No se encontraron estados de rechazo');
     return null;
   }
 
   // Obtener el último estado de rechazo
   const ultimoEstadoRechazo = estadosRechazados[estadosRechazados.length - 1];
-  
-  console.log('📝 Último estado de rechazo:', ultimoEstadoRechazo);
-  console.log('💬 Comentario encontrado:', ultimoEstadoRechazo.comentario);
-  
   return ultimoEstadoRechazo.comentario || null;
 }
 
@@ -359,12 +310,6 @@ verComentarios(solicitudId: number): void {
 
   // Obtener el comentario de rechazo del último estado
   const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
-
-  console.log('📋 Datos que se envían al diálogo:');
-  console.log('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
-  console.log('  - Documentos:', solicitudCompleta.documentos);
-  console.log('  - Comentario de rechazo:', comentarioRechazo);
-
   const dialogRef = this.dialog.open(ComentariosDialogComponent, {
     width: '700px',
     data: <ComentariosDialogData>{
@@ -375,7 +320,6 @@ verComentarios(solicitudId: number): void {
   });
 
   dialogRef.afterClosed().subscribe(() => {
-    console.log('Diálogo de comentarios cerrado');
   });
 }
 
@@ -398,20 +342,12 @@ tieneComentarios(solicitudId: number): boolean {
  * Método de prueba para verificar el funcionamiento
  */
 verificarFuncionalidadComentarios(): void {
-  console.log('🔍 Verificando funcionalidad de comentarios...');
-  console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
-  console.log('📋 Solicitudes transformadas:', this.solicitudes);
-  
   // Buscar solicitudes rechazadas
   const solicitudesRechazadas = this.solicitudes.filter(sol => 
     this.esSolicitudRechazada(sol.estado)
   );
-  
-  console.log('❌ Solicitudes rechazadas encontradas:', solicitudesRechazadas);
-  
   solicitudesRechazadas.forEach(sol => {
     const tieneComentarios = this.tieneComentarios(sol.id);
-    console.log(`📝 Solicitud ${sol.id} (${sol.nombre}): ${tieneComentarios ? 'Tiene comentarios' : 'Sin comentarios'}`);
   });
 }
 
@@ -420,9 +356,6 @@ verificarFuncionalidadComentarios(): void {
  * Descargar oficio
  */
 descargarOficio(idOficio: number, nombreArchivo: string): void {
-  console.log('📥 Descargando oficio:', idOficio);
-  console.log('📥 Nombre archivo recibido:', nombreArchivo);
-  
   // Usar el mismo flujo que homologación: obtener oficios primero
   this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
 }
@@ -433,8 +366,6 @@ descargarOficio(idOficio: number, nombreArchivo: string): void {
 private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
   this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
     next: (oficios) => {
-      console.log('📄 Oficios obtenidos:', oficios);
-      
       if (!oficios || oficios.length === 0) {
         this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
         return;
@@ -460,8 +391,6 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
  * Descargar archivo por nombre usando el endpoint de archivos
  */
 private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
-  console.log('📁 Descargando archivo por nombre:', nombreArchivo);
-  
   const solicitudId = idSolicitud || 1;
   this.pazSalvoService.descargarOficioPorSolicitud(solicitudId).subscribe({
     next: (blob: any) => {
@@ -497,8 +426,6 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
  * Intentar descarga con nombres comunes
  */
 private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: string): void {
-  console.log('🔄 Intentando descarga con nombres comunes...');
-  
   // Obtener información del usuario para generar nombres
   const usuario = this.usuario;
   const codigoUsuario = usuario?.codigo || usuario?.codigo_estudiante || 'SIN_CODIGO';
@@ -527,8 +454,6 @@ private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga
   }
   
   const nombre = nombres[index];
-  console.log(`🧪 Probando nombre ${index + 1}/${nombres.length}: "${nombre}"`);
-  
   this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
 }
 
@@ -548,8 +473,6 @@ obtenerEstadoActual(solicitud: any): string {
  * Mostrar oficios en la UI
  */
 private mostrarOficiosEnUI(oficios: any[]): void {
-  console.log('📄 Mostrando oficios en UI:', oficios);
-  
   if (!oficios || oficios.length === 0) {
     this.mostrarMensaje('No hay oficios disponibles', 'info');
     return;
