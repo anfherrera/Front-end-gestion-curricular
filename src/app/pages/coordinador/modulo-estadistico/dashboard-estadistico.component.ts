@@ -143,7 +143,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     this.error = false;
     
     console.log('📊 Cargando datos del dashboard con filtros:', filtros);
-    console.log('🔗 Endpoint:', `${environment.apiUrl}/estadisticas/globales`);
+    console.log('🔗 Endpoint principal:', `${environment.apiUrl}/estadisticas/globales`);
     
     const subscription = this.estadisticasService.getEstadisticasGlobales(filtros)
       .subscribe({
@@ -168,40 +168,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('❌ Error completo al cargar datos del API:', error);
-          console.error('❌ Status:', error.status);
-          console.error('❌ Status Text:', error.statusText);
-          console.error('❌ Error Message:', error.message);
-          console.error('❌ Error Details:', error.error);
-          console.error('❌ Error completo objeto:', JSON.stringify(error, null, 2));
+          console.error('❌ Error al cargar /estadisticas/globales:', error);
+          console.warn('⚠️ Intentando cargar datos usando endpoints alternativos...');
           
-          this.loading = false;
-          this.error = true;
-          
-          // Mostrar mensaje de error más descriptivo
-          let mensajeError = '';
-          if (error.status === 0) {
-            mensajeError = 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
-          } else if (error.status === 401) {
-            mensajeError = 'No autorizado. Por favor, inicia sesión nuevamente.';
-          } else if (error.status === 403) {
-            mensajeError = 'Acceso denegado. No tienes permisos para ver estas estadísticas.';
-          } else if (error.status === 404) {
-            mensajeError = 'El endpoint no fue encontrado. Contacta al administrador del sistema.';
-          } else if (error.status === 500) {
-            const errorDetail = error.error?.message || error.error?.error || error.message;
-            mensajeError = `Error del servidor (500). El backend no pudo procesar la solicitud.`;
-            if (errorDetail) {
-              mensajeError += ` Detalle: ${errorDetail}`;
-            }
-            mensajeError += ' Por favor, contacta al administrador o intenta más tarde.';
-          } else if (error.status >= 500) {
-            mensajeError = `Error del servidor (${error.status}). Por favor, intenta más tarde o contacta al administrador.`;
-          } else {
-            mensajeError = `Error ${error.status}: ${error.statusText || error.message}`;
-          }
-          
-          this.mostrarError(mensajeError);
+          // Si el endpoint principal falla, usar endpoints alternativos que funcionan
+          this.cargarDatosConEndpointsAlternativos(filtros);
         }
       });
 
@@ -233,6 +204,175 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(subscription);
     */
+  }
+
+  /**
+   * Carga datos usando endpoints alternativos cuando /estadisticas/globales falla
+   */
+  private cargarDatosConEndpointsAlternativos(filtros: FiltroEstadisticas = {}): void {
+    console.log('🔄 Cargando datos usando endpoints alternativos...');
+    
+    // Combinar datos de múltiples endpoints que funcionan
+    const estadoSolicitudes$ = this.estadisticasService.getEstadoSolicitudes();
+    const estadisticasPorProceso$ = this.estadisticasService.getEstadisticasDetalladasPorProceso();
+    const estudiantesPorPrograma$ = this.estadisticasService.getEstudiantesPorPrograma();
+    const porPeriodo$ = this.estadisticasService.getEstadisticasPorPeriodoMejoradas();
+    
+    // Combinar todas las respuestas
+    let estadoSolicitudes: any = null;
+    let estadisticasPorProceso: any = null;
+    let estudiantesPorPrograma: any = null;
+    let porPeriodo: any = null;
+    let errores: string[] = [];
+    let completados = 0;
+    const total = 4;
+    
+    const checkComplete = () => {
+      completados++;
+      if (completados === total) {
+        // Construir resumenCompleto con los datos obtenidos
+        try {
+          this.construirResumenDesdeEndpointsAlternativos(
+            estadoSolicitudes,
+            estadisticasPorProceso,
+            estudiantesPorPrograma,
+            porPeriodo
+          );
+          
+          this.generarKPIs();
+          this.crearCharts();
+          this.loading = false;
+          this.error = false;
+          
+          if (errores.length > 0) {
+            this.mostrarError(`Datos cargados parcialmente. Algunos endpoints fallaron: ${errores.join(', ')}`);
+          } else {
+            this.mostrarExito('Datos cargados usando endpoints alternativos');
+          }
+        } catch (error) {
+          console.error('❌ Error al construir resumen desde endpoints alternativos:', error);
+          this.loading = false;
+          this.error = true;
+          this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
+        }
+      }
+    };
+    
+    estadoSolicitudes$.subscribe({
+      next: (data) => {
+        console.log('✅ Estado de solicitudes cargado:', data);
+        estadoSolicitudes = data;
+        checkComplete();
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar estado de solicitudes:', error);
+        errores.push('estado-solicitudes');
+        checkComplete();
+      }
+    });
+    
+    estadisticasPorProceso$.subscribe({
+      next: (data) => {
+        console.log('✅ Estadísticas por proceso cargadas:', data);
+        estadisticasPorProceso = data;
+        checkComplete();
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar estadísticas por proceso:', error);
+        errores.push('estadisticas-por-proceso');
+        checkComplete();
+      }
+    });
+    
+    estudiantesPorPrograma$.subscribe({
+      next: (data) => {
+        console.log('✅ Estudiantes por programa cargados:', data);
+        estudiantesPorPrograma = data;
+        checkComplete();
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar estudiantes por programa:', error);
+        errores.push('estudiantes-por-programa');
+        checkComplete();
+      }
+    });
+    
+    porPeriodo$.subscribe({
+      next: (data) => {
+        console.log('✅ Estadísticas por período cargadas:', data);
+        porPeriodo = data;
+        checkComplete();
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar estadísticas por período:', error);
+        errores.push('por-periodo');
+        checkComplete();
+      }
+    });
+  }
+  
+  /**
+   * Construye el resumen completo desde los endpoints alternativos
+   */
+  private construirResumenDesdeEndpointsAlternativos(
+    estadoSolicitudes: any,
+    estadisticasPorProceso: any,
+    estudiantesPorPrograma: any,
+    porPeriodo: any
+  ): void {
+    // Calcular totales desde estado de solicitudes
+    const estados = estadoSolicitudes?.estados || {};
+    const totalSolicitudes = estadoSolicitudes?.totalSolicitudes || 0;
+    const aprobadas = (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0);
+    const rechazadas = estados.RECHAZADA?.cantidad || 0;
+    const enviadas = estados.ENVIADA?.cantidad || 0;
+    const enProceso = estados.APROBADA_FUNCIONARIO?.cantidad || 0;
+    
+    // Construir estadísticas por proceso desde estadisticasPorProceso
+    const procesosData = estadisticasPorProceso?.estadisticasPorProceso || {};
+    const estadisticasPorProcesoArray: EstadisticasProceso[] = Object.keys(procesosData).map((nombreProceso, index) => {
+      const proceso = procesosData[nombreProceso];
+      return {
+        nombreProceso: nombreProceso.toLowerCase().replace(/\s+/g, '-'),
+        totalSolicitudes: proceso.totalSolicitudes || 0,
+        aprobadas: proceso.aprobadas || 0,
+        rechazadas: proceso.rechazadas || 0,
+        enProceso: proceso.enProceso || 0,
+        enviadas: proceso.enviadas || 0,
+        pendientes: 0,
+        porcentajeAprobacion: proceso.totalSolicitudes > 0 ? ((proceso.aprobadas || 0) / proceso.totalSolicitudes) * 100 : 0,
+        tendenciaMensual: [],
+        distribucionPorPrograma: []
+      };
+    });
+    
+    // Construir estadísticas por programa desde estudiantesPorPrograma
+    const programasData = estudiantesPorPrograma?.estudiantesPorPrograma || {};
+    const estadisticasPorProgramaArray: EstadisticasPrograma[] = Object.keys(programasData).map((nombrePrograma, index) => ({
+      idPrograma: index + 1,
+      nombrePrograma,
+      totalSolicitudes: 0, // No disponible desde este endpoint
+      distribucionPorProceso: [],
+      tendenciaAnual: []
+    }));
+    
+    // Construir el resumen completo
+    this.resumenCompleto = {
+      estadisticasGlobales: {
+        totalSolicitudes,
+        solicitudesAprobadas: aprobadas,
+        solicitudesRechazadas: rechazadas,
+        solicitudesEnviadas: enviadas,
+        solicitudesEnProceso: enProceso,
+        totalEstudiantes: this.totalEstudiantes || 0,
+        totalProgramas: Object.keys(programasData).length
+      },
+      estadisticasPorProceso: estadisticasPorProcesoArray,
+      estadisticasPorPrograma: estadisticasPorProgramaArray,
+      ultimaActualizacion: new Date().toISOString()
+    };
+    
+    console.log('✅ Resumen construido desde endpoints alternativos:', this.resumenCompleto);
   }
 
   /**
