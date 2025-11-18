@@ -58,8 +58,20 @@ export class EstadisticasService {
     const url = ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES;
     console.log('🌐 Llamando a:', url);
     console.log('📋 Parámetros:', params.toString());
+    console.log('🔑 URL completa:', `${url}?${params.toString()}`);
 
-    return this.http.get<EstadisticasGlobalesAPI>(url, { params });
+    return this.http.get<EstadisticasGlobalesAPI>(url, { 
+      params,
+      observe: 'response' // Observar la respuesta completa para mejor debugging
+    }).pipe(
+      map(response => {
+        console.log('✅ Respuesta completa recibida:', response);
+        console.log('✅ Status:', response.status);
+        console.log('✅ Headers:', response.headers);
+        console.log('✅ Body:', response.body);
+        return response.body!;
+      })
+    );
   }
 
   /**

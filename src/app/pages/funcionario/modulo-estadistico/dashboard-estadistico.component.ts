@@ -173,24 +173,32 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           console.error('❌ Status Text:', error.statusText);
           console.error('❌ Error Message:', error.message);
           console.error('❌ Error Details:', error.error);
+          console.error('❌ Error completo objeto:', JSON.stringify(error, null, 2));
           
           this.loading = false;
           this.error = true;
           
           // Mostrar mensaje de error más descriptivo
-          let mensajeError = 'Error al conectar con el backend. ';
+          let mensajeError = '';
           if (error.status === 0) {
-            mensajeError += 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
+            mensajeError = 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
           } else if (error.status === 401) {
-            mensajeError += 'No autorizado. Por favor, inicia sesión nuevamente.';
+            mensajeError = 'No autorizado. Por favor, inicia sesión nuevamente.';
           } else if (error.status === 403) {
-            mensajeError += 'Acceso denegado. No tienes permisos para ver estas estadísticas.';
+            mensajeError = 'Acceso denegado. No tienes permisos para ver estas estadísticas.';
           } else if (error.status === 404) {
-            mensajeError += 'El endpoint no fue encontrado. Contacta al administrador.';
+            mensajeError = 'El endpoint no fue encontrado. Contacta al administrador del sistema.';
+          } else if (error.status === 500) {
+            const errorDetail = error.error?.message || error.error?.error || error.message;
+            mensajeError = `Error del servidor (500). El backend no pudo procesar la solicitud.`;
+            if (errorDetail) {
+              mensajeError += ` Detalle: ${errorDetail}`;
+            }
+            mensajeError += ' Por favor, contacta al administrador o intenta más tarde.';
           } else if (error.status >= 500) {
-            mensajeError += 'Error del servidor. Por favor, intenta más tarde.';
+            mensajeError = `Error del servidor (${error.status}). Por favor, intenta más tarde o contacta al administrador.`;
           } else {
-            mensajeError += `Error ${error.status}: ${error.statusText || error.message}`;
+            mensajeError = `Error ${error.status}: ${error.statusText || error.message}`;
           }
           
           this.mostrarError(mensajeError);
