@@ -5,62 +5,61 @@
   padding: 16px;
   background-color: #f5f5f5;
   border-radius: 8px;
-  overflow-x: auto;
-  max-width: 100%;
+  width: 100%;
+  overflow: visible;
 }
 
 .filtro {
   width: 300px;
 }
 
+/* Contenedor para la tabla con scroll horizontal */
 table {
   width: 100%;
-  table-layout: auto;
-  border-collapse: collapse;
+  min-width: 100%;
 }
 
-/* Controlar desbordamiento en celdas */
-th, td {
-  padding: 8px 12px !important;
-  word-wrap: break-word;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  vertical-align: top;
-  box-sizing: border-box;
+/* Contenedor wrapper para la tabla con scroll horizontal */
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
 }
 
-/* Columnas específicas con anchos máximos */
-.col-nombre {
-  max-width: 200px !important;
-  min-width: 150px;
+/* Asegurar que la tabla no se corte */
+.mat-elevation-z8 {
+  display: table;
+  width: 100%;
+  min-width: 1200px; /* Ancho mínimo para todas las columnas */
 }
 
-.col-docente {
-  max-width: 180px !important;
-  min-width: 150px;
-  line-height: 1.4;
+/* Asegurar que las celdas muestren todo el contenido */
+.mat-mdc-table {
+  width: 100%;
+  min-width: 1200px; /* Ancho mínimo para todas las columnas */
 }
 
-.col-estado {
-  max-width: 120px !important;
-  min-width: 100px;
-  text-align: center;
-}
-
-/* Asegurar que el texto largo se ajuste */
-td {
-  overflow: hidden;
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+  white-space: nowrap;
+  overflow: visible;
   text-overflow: ellipsis;
+  padding: 8px 16px;
 }
 
-/* Para columnas con texto largo, permitir múltiples líneas */
-.col-nombre,
-.col-docente {
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  line-height: 1.4;
+/* Permitir que el texto largo se muestre en múltiples líneas si es necesario */
+.mat-mdc-cell {
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 200px; /* Ancho máximo por celda */
+}
+
+/* Asegurar que el contenedor de la tabla tenga scroll horizontal */
+.tabla-container table {
+  display: table;
+  width: 100%;
+  min-width: 1200px;
 }
 
 span.disponible {
@@ -142,18 +141,12 @@ button {
   color: #999 !important;
 }
 
-/* Wrapper para la tabla que permite scroll horizontal */
-.tabla-wrapper {
-  overflow-x: auto;
-  width: 100%;
-  max-width: 100%;
-  -webkit-overflow-scrolling: touch;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .tabla-container {
     padding: 8px;
+    overflow-x: auto;
+    overflow-y: visible;
   }
   
   .filtro {
@@ -161,8 +154,17 @@ button {
     max-width: 300px;
   }
   
+  .mat-elevation-z8 {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+  
+  .mat-mdc-table {
+    min-width: 1200px; /* Mantener ancho mínimo para todas las columnas */
+  }
+  
   table {
-    min-width: 800px;
+    min-width: 1200px;
   }
   
   .action-icon-button {

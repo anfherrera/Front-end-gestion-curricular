@@ -15,7 +15,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Subscription } from 'rxjs';
 import { Chart, ChartConfiguration, ChartData, ChartOptions, registerables } from 'chart.js';
-import { environment } from '../../../../../environments/environment';
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
 import { 
@@ -134,13 +133,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    * Carga solo las tendencias temporales de forma optimizada (MÁS RÁPIDO)
    */
   cargarTendenciasTemporalesOptimizadas(): void {
-    console.log('📈 [OPTIMIZADO] Cargando tendencias temporales de forma optimizada...');
-    
     this.estadisticasService.getCursosVeranoTendenciasTemporales().subscribe({
       next: (response) => {
-        console.log('✅ [OPTIMIZADO] Tendencias temporales recibidas:', response);
-        console.log('📊 [OPTIMIZADO] Datos:', response.tendenciasTemporales);
-        
         // Asignar solo los datos de tendencias temporales
         this.tendenciasTemporalesData = response.tendenciasTemporales || [];
         
@@ -148,8 +142,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         if (this.tendenciasTemporalesData.length > 0) {
           this.crearGraficaTendencias();
         }
-        
-        console.log('✅ [OPTIMIZADO] Tendencias temporales cargadas y gráfica actualizada');
       },
       error: (error) => {
         console.error('❌ [OPTIMIZADO] Error al cargar tendencias temporales:', error);
@@ -162,40 +154,13 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   cargarDatos(): void {
     this.loading = true;
     this.error = null;
-
-    console.log('🔄 [DEBUG] Iniciando carga de datos...');
-    console.log('🔄 [DEBUG] Pestaña activa actual:', this.activeTab);
-    console.log('🏖️ [DEBUG] Llamando al endpoint...');
-    console.log('🏖️ [DEBUG] URL del endpoint:', `${environment.apiUrl}/estadisticas/cursos-verano`);
-    
     const subscription = this.estadisticasService.getCursosVeranoEstadisticas().subscribe({
       next: (response) => {
-        console.log('✅ [DEBUG] Datos recibidos:', response);
-        console.log('🔍 [DEBUG] Top materias:', response.topMaterias);
-        console.log('🔍 [DEBUG] Análisis por programa:', response.analisisPorPrograma);
-        console.log('🔍 [DEBUG] Tendencias temporales:', response.tendenciasTemporales);
-        console.log('🔍 [DEBUG] Predicciones:', response.predicciones);
-        console.log('🔍 [DEBUG] Predicciones temporales:', response.predicciones?.prediccionesTemporales);
-        console.log('🔍 [DEBUG] Predicciones materias:', response.predicciones?.materiasConTendenciaCreciente);
-        console.log('🔍 [DEBUG] Predicciones programas (TODOS):', response.predicciones?.todasLasPrediccionesPorPrograma);
-        console.log('🔍 Demanda estimada del backend:', response.predicciones?.demandaEstimadaProximoPeriodo);
-        console.log('🔍 [DEBUG] Demanda estimada próximo período:', response.predicciones?.demandaEstimadaProximoPeriodo);
-        console.log('🔍 [DEBUG] Demanda estimada mes pico:', response.predicciones?.prediccionesTemporales?.demandaEstimadaMesPico);
-        console.log('🔍 [DEBUG] Tendencias temporales detalladas:', response.tendenciasTemporales);
-        
         // Verificar que los datos se asignen correctamente
         if (response.predicciones?.demandaEstimadaProximoPeriodo) {
-          console.log('🔍 [DEBUG] Demanda estimada asignada:', response.predicciones.demandaEstimadaProximoPeriodo);
         }
         
         // Verificar mapeo completo
-        console.log('🔍 Datos completos:', {
-          topMaterias: response.topMaterias,
-          analisisPorPrograma: response.analisisPorPrograma,
-          tendenciasTemporales: response.tendenciasTemporales,
-          predicciones: response.predicciones
-        });
-        
         // Asignar datos reales del backend
         this.data = response;
         this.tendenciasTemporalesData = response.tendenciasTemporales || [];
@@ -213,14 +178,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         
         // Ordenar recomendaciones por prioridad
         this.ordenarPorPrioridad();
-        
-        console.log('✅ [DEBUG] Pestaña activa después de recibir datos:', this.activeTab);
-        console.log('✅ [DEBUG] Datos mapeados:', {
-          tendenciasTemporalesData: this.tendenciasTemporalesData,
-          topMateriasData: this.topMateriasData,
-          analisisProgramaData: this.analisisProgramaData
-        });
-        
         this.ultimaActualizacion = new Date(); // Actualizar timestamp
         this.loading = false;
         
@@ -231,7 +188,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('❌ [DEBUG] Error al conectar con el backend:', error);
-        console.error('❌ [DEBUG] URL del endpoint:', `${environment.apiUrl}/estadisticas/cursos-verano`);
+        console.error('❌ [DEBUG] URL del endpoint:', 'http://localhost:5000/api/estadisticas/cursos-verano');
         this.error = 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.';
         this.loading = false;
       }
@@ -241,8 +198,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   public cargarDatosDePrueba(): void {
-    console.log('🧪 Cargando datos de prueba para cursos de verano');
-    
     this.data = {
       fechaConsulta: new Date().toISOString(),
       descripcion: 'Datos de prueba para cursos de verano',
@@ -399,22 +354,18 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   refrescarDatos(): void {
-    console.log('🔄 Refrescando datos de cursos de verano...');
     this.cargarDatos();
   }
 
   // Método para cambiar de pestaña
   cambiarTab(tab: string): void {
     this.activeTab = tab;
-    console.log('🔄 [DEBUG] Cambiando a pestaña:', tab);
-    
     // Solo cargar gráficas si NO es recomendaciones
     if (tab !== 'recomendaciones') {
       setTimeout(() => {
         this.cargarGraficasAsync();
       }, 100);
     } else {
-      console.log('ℹ️ Pestaña de recomendaciones, no se cargan gráficos');
     }
   }
 
@@ -428,13 +379,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   verificarConexionBackend(): void {
-    console.log('🔍 [DEBUG] Verificando conexión con el backend...');
-    console.log('🔍 [DEBUG] URL del endpoint:', `${environment.apiUrl}/estadisticas/cursos-verano`);
-    
     // Hacer una llamada directa para verificar la conexión
-    fetch(`${environment.apiUrl}/estadisticas/cursos-verano`)
+    fetch('http://localhost:5000/api/estadisticas/cursos-verano')
       .then(response => {
-        console.log('🔍 [DEBUG] Respuesta del servidor:', response.status, response.statusText);
         if (response.ok) {
           return response.json();
         } else {
@@ -442,17 +389,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       })
       .then(data => {
-        console.log('✅ [DEBUG] Datos recibidos del backend:', data);
-        console.log('✅ [DEBUG] Estructura de datos:', {
-          topMaterias: data.topMaterias,
-          analisisPorPrograma: data.analisisPorPrograma,
-          tendenciasTemporales: data.tendenciasTemporales,
-          predicciones: data.predicciones
-        });
       })
       .catch(error => {
         console.error('❌ [DEBUG] Error de conexión:', error);
-        console.error(`❌ [DEBUG] Verifique que el servidor backend esté ejecutándose en ${environment.apiUrl}`);
+        console.error('❌ [DEBUG] Verifique que el servidor backend esté ejecutándose en http://localhost:5000');
       });
   }
 
@@ -460,8 +400,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    * Prueba la diferencia de velocidad entre carga completa y optimizada
    */
   probarVelocidadCarga(): void {
-    console.log('⚡ [PRUEBA DE VELOCIDAD] Iniciando comparación de velocidad...');
-    
     // Prueba 1: Carga completa
     console.time('🔄 Carga Completa');
     const inicioCompleta = performance.now();
@@ -471,7 +409,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         const finCompleta = performance.now();
         const tiempoCompleta = finCompleta - inicioCompleta;
         console.timeEnd('🔄 Carga Completa');
-        console.log(`🔄 [PRUEBA] Carga completa: ${tiempoCompleta.toFixed(2)}ms`);
         
         // Prueba 2: Carga optimizada
         console.time('⚡ Carga Optimizada');
@@ -482,11 +419,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
             const finOptimizada = performance.now();
             const tiempoOptimizada = finOptimizada - inicioOptimizada;
             console.timeEnd('⚡ Carga Optimizada');
-            console.log(`⚡ [PRUEBA] Carga optimizada: ${tiempoOptimizada.toFixed(2)}ms`);
             
             // Comparación
             const mejora = ((tiempoCompleta - tiempoOptimizada) / tiempoCompleta) * 100;
-            console.log(`🚀 [RESULTADO] Mejora de velocidad: ${mejora.toFixed(1)}% más rápido`);
             
             this.snackBar.open(
               `⚡ Carga optimizada ${mejora.toFixed(1)}% más rápida (${tiempoOptimizada.toFixed(0)}ms vs ${tiempoCompleta.toFixed(0)}ms)`, 
@@ -509,9 +444,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   // Método para cargar gráficas de forma asíncrona
   cargarGraficasAsync(): void {
-    console.log('📊 Cargando gráficas de forma asíncrona...');
-    console.log('📊 Pestaña activa:', this.activeTab);
-    
     // Cargar gráficas después de que los datos estén listos
     setTimeout(() => {
       this.inicializarGraficas();
@@ -519,9 +451,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   inicializarGraficas(): void {
-    console.log('📊 Inicializando gráficas...');
-    console.log('📊 Pestaña activa:', this.activeTab);
-    
     // Solo crear gráficos si NO estamos en recomendaciones
     if (this.activeTab !== 'recomendaciones') {
       // Inicializar gráfica de tendencias temporales
@@ -539,13 +468,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         this.crearGraficaAnalisisPrograma();
       }
     } else {
-      console.log('ℹ️ Pestaña de recomendaciones, saltando creación de gráficos');
     }
   }
 
   actualizarGraficas(): void {
-    console.log('📊 Actualizando gráficas con datos del backend...');
-    
     // Actualizar gráfica de tendencias temporales
     if (this.tendenciasTemporalesData && this.tendenciasTemporalesData.length > 0) {
       this.actualizarGraficaTendencias();
@@ -566,15 +492,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   actualizarGraficaTendencias(): void {
-    console.log('📈 Actualizando gráfica de tendencias temporales con datos:', this.tendenciasTemporalesData);
-    
     // Mapear datos del backend a la estructura de la gráfica
     const labels = this.tendenciasTemporalesData.map(t => t.mes);
     const data = this.tendenciasTemporalesData.map(t => t.solicitudes);
-    
-    console.log('📈 Labels:', labels);
-    console.log('📈 Data:', data);
-    
     // Si existe la gráfica, actualizarla
     if (this.chartTendencias) {
       this.chartTendencias.data.labels = labels;
@@ -584,14 +504,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   actualizarGraficaTopMaterias(): void {
-    console.log('🍩 Actualizando gráfica de top materias con datos:', this.topMateriasData);
-    
     const labels = this.topMateriasData.map(m => m.nombre);
     const data = this.topMateriasData.map(m => m.solicitudes);
-    
-    console.log('🍩 Labels:', labels);
-    console.log('🍩 Data:', data);
-    
     // Si existe la gráfica, actualizarla
     if (this.chartMaterias) {
       this.chartMaterias.data.labels = labels;
@@ -601,14 +515,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   actualizarGraficaAnalisisPrograma(): void {
-    console.log('📊 Actualizando gráfica de análisis por programa con datos:', this.analisisProgramaData);
-    
     const labels = this.analisisProgramaData.map(p => p.nombre);
     const data = this.analisisProgramaData.map(p => p.solicitudes);
-    
-    console.log('📊 Labels:', labels);
-    console.log('📊 Data:', data);
-    
     // Si existe la gráfica, actualizarla
     if (this.chartProgramas) {
       this.chartProgramas.data.labels = labels;
@@ -620,11 +528,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   // ===== MÉTODOS PARA CREAR GRÁFICAS =====
 
   crearGraficaTendencias(): void {
-    console.log('📈 Creando gráfica de tendencias temporales...');
-    
     const ctx = document.getElementById('tendenciasChart') as HTMLCanvasElement;
     if (!ctx) {
-      console.log('❌ No se encontró el canvas tendenciasChart');
       return;
     }
     
@@ -660,16 +565,11 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       }
     });
-    
-    console.log('✅ Gráfica de tendencias creada exitosamente');
   }
 
   crearGraficaTopMaterias(): void {
-    console.log('🍩 Creando gráfica de top materias...');
-    
     const ctx = document.getElementById('materiasChart') as HTMLCanvasElement;
     if (!ctx) {
-      console.log('❌ No se encontró el canvas materiasChart');
       return;
     }
     
@@ -702,16 +602,11 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       }
     });
-    
-    console.log('✅ Gráfica de materias creada exitosamente');
   }
 
   crearGraficaAnalisisPrograma(): void {
-    console.log('📊 Creando gráfica de análisis por programa...');
-    
     const ctx = document.getElementById('programasChart') as HTMLCanvasElement;
     if (!ctx) {
-      console.log('❌ No se encontró el canvas programasChart');
       return;
     }
     
@@ -744,20 +639,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       }
     });
-    
-    console.log('✅ Gráfica de programas creada exitosamente');
   }
 
   // ===== MÉTODOS DE GRÁFICOS =====
 
   crearGraficos(): void {
     if (!this.data) {
-      console.log('❌ No hay datos para crear gráficos');
       return;
     }
-
-    console.log('📊 Creando gráficos con datos:', this.data);
-    
     try {
       this.crearGraficoMaterias();
       this.crearGraficoProgramas();
@@ -765,7 +654,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       this.crearGraficoPrediccionesMaterias();
       this.crearGraficoPrediccionesProgramas();
       this.crearGraficoPrediccionesTemporales();
-      console.log('✅ Gráficos creados exitosamente');
     } catch (error) {
       console.error('❌ Error creando gráficos:', error);
     }
@@ -773,17 +661,13 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   crearGraficoMaterias(): void {
     if (!this.data?.topMaterias || this.data.topMaterias.length === 0) {
-      console.log('❌ No hay datos de materias para crear gráfico');
       return;
     }
 
     const ctx = document.getElementById('chartMaterias') as HTMLCanvasElement;
     if (!ctx) {
-      console.log('❌ No se encontró el canvas chartMaterias');
       return;
     }
-
-    console.log('📊 Creando gráfico de materias con datos:', this.data.topMaterias);
     this.destruirGrafico('chartMaterias');
 
     const data: ChartData<'doughnut'> = {
@@ -1231,7 +1115,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     } else {
       this.expandidas.add(id);
     }
-    console.log('🔄 Toggle expandir:', id, 'Expandida:', this.expandidas.has(id));
   }
 
   /**
@@ -1270,18 +1153,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   // ===== MÉTODOS DE EXPORTACIÓN =====
 
   exportarPDF(): void {
-    console.log('📄 [DEBUG] Iniciando exportación a PDF de Cursos de Verano...');
-    
     this.estadisticasService.exportarReporteCursosVerano().subscribe({
       next: (blob: Blob) => {
-        console.log('✅ [DEBUG] PDF recibido del backend:', blob);
-        console.log('📊 [DEBUG] Tipo de archivo:', blob.type);
-        console.log('📊 [DEBUG] Tamaño del archivo:', blob.size, 'bytes');
-        
         // ✅ Verificar que sea un blob válido
         if (blob && blob.size > 0) {
-          console.log('✅ [DEBUG] Blob válido para PDF');
-          
           // Crear URL del blob
           const url = window.URL.createObjectURL(blob);
           
@@ -1322,18 +1197,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   exportarExcel(): void {
-    console.log('📊 [DEBUG] Iniciando exportación a Excel de Cursos de Verano...');
-    
     this.estadisticasService.exportarExcelCursosVerano().subscribe({
       next: (blob: Blob) => {
-        console.log('✅ [DEBUG] Excel recibido del backend:', blob);
-        console.log('📊 [DEBUG] Tipo de archivo:', blob.type);
-        console.log('📊 [DEBUG] Tamaño del archivo:', blob.size, 'bytes');
-        
         // ✅ Verificar que sea un blob válido
         if (blob && blob.size > 0) {
-          console.log('✅ [DEBUG] Blob válido para Excel');
-          
           // Crear URL del blob
           const url = window.URL.createObjectURL(blob);
           

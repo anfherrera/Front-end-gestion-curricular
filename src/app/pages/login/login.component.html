@@ -9,13 +9,14 @@
 
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
         <mat-form-field appearance="outline" class="login-input">
-          <mat-label>Correo</mat-label>
+          <mat-label>Correo<span class="required-asterisk">*</span></mat-label>
           <input matInput 
                  type="email" 
                  formControlName="correo" 
                  placeholder="correo@unicauca.edu.co"
                  (focus)="clearError()"
-                 autocomplete="email">
+                 autocomplete="email"
+                 required>
           <mat-icon matPrefix>mail</mat-icon>
           <mat-error *ngIf="loginForm.controls['correo'].invalid && loginForm.controls['correo'].touched">
             {{ getEmailErrorMessage() }}
@@ -23,13 +24,14 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="login-input">
-          <mat-label>Contraseña</mat-label>
+          <mat-label>Contraseña<span class="required-asterisk">*</span></mat-label>
           <input matInput 
                  [type]="hide ? 'password' : 'text'" 
                  formControlName="password" 
                  placeholder="Min. 8 caracteres"
                  (focus)="clearError()"
-                 autocomplete="current-password">
+                 autocomplete="current-password"
+                 required>
           <mat-icon matPrefix>lock</mat-icon>
           <button mat-icon-button matSuffix type="button" (click)="hide = !hide" [attr.aria-label]="hide ? 'Mostrar contraseña' : 'Ocultar contraseña'">
             <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -42,9 +44,10 @@
 
         <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
 
-        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando">
+        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando || loginDisabled">
           <mat-spinner *ngIf="cargando" diameter="20" class="login-spinner"></mat-spinner>
-          <span *ngIf="!cargando">Ingresar</span>
+          <span *ngIf="!cargando && !loginDisabled">Ingresar</span>
+          <span *ngIf="!cargando && loginDisabled">Espera {{ rateRemaining }}s</span>
           <span *ngIf="cargando">Ingresando...</span>
         </button>
 

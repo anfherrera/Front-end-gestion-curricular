@@ -3,7 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MATERIAL_IMPORTS } from '../material.imports';
-import { formatearFechaCorta, calcularDuracionSemanas, getColorPeriodo } from '../../../core/utils/periodo.utils';
+import { formatearFechaCorta, calcularDuracionSemanas, getColorPeriodo, formatearPeriodo } from '../../../core/utils/periodo.utils';
 
 export interface Curso {
   codigo: string;
@@ -115,7 +115,10 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
   }
 
   obtenerPeriodoDisplay(curso: Curso): string {
-    return this.obtenerPeriodoValor(curso) || 'N/A';
+    const periodo = this.obtenerPeriodoValor(curso);
+    if (!periodo) return 'N/A';
+    // Formatear el período para visualización (ej: "2025-1" -> "2025 - Primer Semestre")
+    return formatearPeriodo(periodo);
   }
 
   getColorPeriodoBadge(curso: Curso): string {

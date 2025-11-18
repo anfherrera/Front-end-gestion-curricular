@@ -90,7 +90,8 @@
 .comments-info {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  min-height: 40px;
 }
 
 .comments-button {
@@ -154,8 +155,11 @@
 
 .actions-container {
   display: flex;
+  flex-direction: row;
   gap: 8px;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 40px;
 }
 
 .action-button {

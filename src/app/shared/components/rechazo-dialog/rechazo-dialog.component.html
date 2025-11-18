@@ -16,7 +16,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="cerrar()">Cancelar</button>
-  <button mat-raised-button color="warn" (click)="confirmar()" [disabled]="!motivo.trim()">
+  <button mat-raised-button class="btn-rechazar" (click)="confirmar()" [disabled]="!motivo.trim()">
     Rechazar
   </button>
 </mat-dialog-actions>

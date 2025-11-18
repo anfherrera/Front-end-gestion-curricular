@@ -20,7 +20,7 @@
           
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Código *</mat-label>
+              <mat-label>Código</mat-label>
               <input 
                 matInput 
                 formControlName="codigo"
@@ -43,7 +43,7 @@
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nombre Completo *</mat-label>
+              <mat-label>Nombre Completo</mat-label>
               <input 
                 matInput 
                 formControlName="nombre_completo"
@@ -61,7 +61,7 @@
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Correo Institucional *</mat-label>
+              <mat-label>Correo Institucional</mat-label>
               <input 
                 matInput 
                 type="email"
@@ -81,7 +81,7 @@
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>
-                Contraseña {{ isEditMode ? '(dejar vacío para no cambiar)' : '*' }}
+                Contraseña {{ isEditMode ? '(dejar vacío para no cambiar)' : '' }}
               </mat-label>
               <input 
                 matInput 
@@ -104,7 +104,7 @@
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Rol *</mat-label>
+              <mat-label>Rol</mat-label>
               <mat-select formControlName="id_rol">
                 <mat-option value="">Seleccione un rol</mat-option>
                 <mat-option *ngFor="let rol of roles" [value]="rol.id_rol">
@@ -120,7 +120,7 @@
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Programa Académico *</mat-label>
+              <mat-label>Programa Académico</mat-label>
               <mat-select formControlName="id_programa">
                 <mat-option value="">Seleccione un programa</mat-option>
                 <mat-option *ngFor="let programa of programas" [value]="programa.id_programa">
@@ -136,7 +136,7 @@
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Estado *</mat-label>
+              <mat-label>Estado</mat-label>
               <mat-select formControlName="estado_usuario">
                 <mat-option [value]="1">Activo</mat-option>
                 <mat-option [value]="0">Inactivo</mat-option>

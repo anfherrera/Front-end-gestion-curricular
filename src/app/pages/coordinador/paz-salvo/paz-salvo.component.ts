@@ -8,6 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
@@ -29,6 +30,7 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
     MatSnackBarModule,
     MatTableModule,
     MatTooltipModule,
+    MatTabsModule,
     RequestStatusTableComponent,
     DocumentationViewerComponent,
     CardContainerComponent
@@ -39,7 +41,8 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
 export class PazSalvoCoordinadorComponent implements OnInit {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
 
-  solicitudes: Solicitud[] = [];
+  solicitudes: Solicitud[] = []; // Pendientes
+  solicitudesProcesadas: Solicitud[] = []; // Procesadas
   selectedSolicitud: SolicitudHomologacionDTORespuesta | undefined;
 
   constructor(
@@ -50,17 +53,15 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cargarSolicitudes();
+    this.cargarSolicitudesPendientes();
+    this.cargarSolicitudesProcesadas();
   }
 
   // 📌 Cargar solicitudes pendientes según el rol del usuario actual
-  cargarSolicitudes(): void {
+  cargarSolicitudesPendientes(): void {
     // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getCoordinatorRequests()
-    console.log('📡 Llamando a getCoordinatorRequests (endpoint directo /Coordinador)');
-    
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (data) => {
-        console.log('📡 Solicitudes recibidas del backend (coordinador):', data);
 
         // Mapear a formato de solicitudes para la tabla
         this.solicitudes = data.map(solicitud => ({
@@ -79,7 +80,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
           })) || []
         }));
 
-        console.log('✅ Solicitudes mapeadas (coordinador):', this.solicitudes);
       },
       error: (err) => {
         console.error('❌ Error al cargar solicitudes (coordinador):', err);
@@ -99,7 +99,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
-        console.log('📋 Solicitud seleccionada (coordinador):', this.selectedSolicitud);
         
         // Cargar documentos usando el nuevo endpoint
         if (this.selectedSolicitud) {
@@ -113,16 +112,9 @@ export class PazSalvoCoordinadorComponent implements OnInit {
    * 🆕 Cargar documentos usando el nuevo endpoint para coordinadores
    */
   cargarDocumentos(idSolicitud: number): void {
-    console.log('🔍 [DEBUG] Iniciando carga de documentos para solicitud (coordinador):', idSolicitud);
-    
     const endpoint = `/api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/${idSolicitud}`;
-    console.log('🔍 [DEBUG] Endpoint para coordinador:', endpoint);
-    
     this.pazSalvoService.obtenerDocumentosCoordinador(idSolicitud).subscribe({
       next: (documentos: any[]) => {
-        console.log('✅ [DEBUG] Documentos recibidos del backend (coordinador):', documentos);
-        console.log('✅ [DEBUG] Cantidad de documentos:', documentos.length);
-        
         // Actualizar los documentos de la solicitud seleccionada
         if (this.selectedSolicitud) {
           this.selectedSolicitud.documentos = documentos.map(doc => ({
@@ -133,9 +125,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
             esValido: doc.esValido,
             comentario: doc.comentario
           }));
-          
-          console.log('✅ [DEBUG] Documentos asignados al componente (coordinador):', this.selectedSolicitud.documentos);
-          console.log('✅ [DEBUG] Cantidad de documentos en solicitud:', this.selectedSolicitud.documentos.length);
           
           // Forzar detección de cambios para solucionar el error de Angular
           this.cdr.detectChanges();
@@ -155,14 +144,64 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     });
   }
 
+  /**
+   * Cargar solicitudes procesadas (historial) - Estado APROBADA_COORDINADOR
+   */
+  cargarSolicitudesProcesadas(): void {
+    this.pazSalvoService.getSolicitudesProcesadasCoordinador().subscribe({
+      next: (sols) => {
+        
+        // Mapear a formato de solicitudes para la tabla
+        this.solicitudesProcesadas = sols.map(solicitud => ({
+          id: solicitud.id_solicitud,
+          nombre: solicitud.nombre_solicitud,
+          fecha: solicitud.fecha_registro_solicitud,
+          estado: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.estado_actual as SolicitudStatusEnum || SolicitudStatusEnum.ENVIADA,
+          comentarios: solicitud.estadosSolicitud?.[solicitud.estadosSolicitud.length - 1]?.comentario || '',
+          fechaProcesamiento: this.getFechaProcesamiento(solicitud),
+          archivos: solicitud.documentos?.map((doc: DocumentoHomologacion) => ({
+            id_documento: doc.id_documento,
+            nombre: doc.nombre,
+            ruta_documento: doc.ruta_documento,
+            fecha: doc.fecha_documento,
+            esValido: doc.esValido,
+            comentario: doc.comentario
+          })) || []
+        }));
+        
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar solicitudes procesadas (coordinador):', err);
+        this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  /**
+   * Obtener fecha de procesamiento (último estado APROBADA_COORDINADOR)
+   */
+  getFechaProcesamiento(solicitud: SolicitudHomologacionDTORespuesta): string {
+    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+      if (ultimoEstado.fecha_registro_estado) {
+        return new Date(ultimoEstado.fecha_registro_estado).toLocaleString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    }
+    return '';
+  }
+
   // 📌 Obtener documentos de la solicitud seleccionada (igual que homologación)
   get documentosDelEstudiante(): DocumentoHomologacion[] {
     if (!this.selectedSolicitud?.documentos) {
-      console.log('🔍 [DEBUG] No hay documentos en la solicitud seleccionada (coordinador)');
       return [];
     }
 
-    console.log('🔍 [DEBUG] Documentos en solicitud (coordinador):', this.selectedSolicitud.documentos);
     return this.selectedSolicitud.documentos;
   }
 
@@ -175,7 +214,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
         next: () => {
           this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
           // Recargar la solicitud para actualizar los comentarios
-          this.cargarSolicitudes();
+          this.cargarSolicitudesPendientes();
         },
         error: (error) => {
           console.error('Error al añadir comentario:', error);
@@ -195,7 +234,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     this.pazSalvoService.approveAsCoordinador(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
         this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
-        this.cargarSolicitudes();
+        this.cargarSolicitudesPendientes();
+        this.cargarSolicitudesProcesadas();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
       },
@@ -221,7 +261,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
         this.pazSalvoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
           next: () => {
             this.snackBar.open('Paz y Salvo rechazado', 'Cerrar', { duration: 3000 });
-            this.cargarSolicitudes();
+            this.cargarSolicitudesPendientes();
+            this.cargarSolicitudesProcesadas();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
           },

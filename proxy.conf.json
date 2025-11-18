@@ -1,8 +1,0 @@
-{
-  "/api/*": {
-    "target": "https://back-end-gestion-curricular.onrender.com",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  }
-}

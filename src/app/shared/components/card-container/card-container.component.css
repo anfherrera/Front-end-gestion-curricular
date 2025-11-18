@@ -2,11 +2,9 @@
   margin-bottom: 20px;
   border-radius: 8px;
   background-color: #ffffff;
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: visible; /* Cambiado de hidden a visible para permitir scroll horizontal */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.2s ease;
-  max-width: 100%;
 }
 
 .card-container:hover {
@@ -33,7 +31,6 @@ mat-card-title {
 
 mat-card-content {
   padding: 20px;
-  overflow-x: auto;
-  max-width: 100%;
-  box-sizing: border-box;
+  overflow-x: auto; /* Permitir scroll horizontal si es necesario */
+  overflow-y: visible;
 }

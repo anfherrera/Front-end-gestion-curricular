@@ -127,6 +127,12 @@ export class HomeComponent implements OnInit {
     return;
   }
 
+  // Caso especial: Ajustes es una ruta común, no tiene prefijo de rol
+  if (process.route === 'ajustes') {
+    this.router.navigate(['/ajustes']);
+    return;
+  }
+
   // Rutas base por rol para procesos generales
   const roleRoutes: Record<string, string> = {
     estudiante: '/estudiante',

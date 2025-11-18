@@ -15,29 +15,6 @@
     </form>
   </div>
 
-  <!-- Panel de Estadísticas -->
-  <div *ngIf="estadisticas && cursoSeleccionado" class="estadisticas-panel">
-    <h3>📊 Estadísticas del Curso</h3>
-    <div class="stats-grid">
-      <div class="stat-item total">
-        <span class="stat-number">{{ estadisticas.total_inscripciones || 0 }}</span>
-        <span class="stat-label">Total Inscripciones</span>
-      </div>
-      <div class="stat-item pending">
-        <span class="stat-number">{{ estadisticas.pendientes_revision || 0 }}</span>
-        <span class="stat-label">Pendientes</span>
-      </div>
-      <div class="stat-item accepted">
-        <span class="stat-number">{{ estadisticas.aceptadas || 0 }}</span>
-        <span class="stat-label">Aceptadas</span>
-      </div>
-      <div class="stat-item rejected">
-        <span class="stat-number">{{ estadisticas.rechazadas || 0 }}</span>
-        <span class="stat-label">Rechazadas</span>
-      </div>
-    </div>
-  </div>
-
   <!-- Loading spinner -->
   <div *ngIf="cargando" class="loading-container">
     <mat-spinner diameter="50"></mat-spinner>
@@ -84,15 +61,7 @@
         <ng-container matColumnDef="estado_inscripcion">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let estudiante">
-            <span [ngClass]="{
-              'estado-aprobada': estudiante.estado_inscripcion === 'APROBADA',
-              'estado-enviada': estudiante.estado_inscripcion === 'Enviada',
-              'estado-pago-validado': estudiante.estado_inscripcion === 'Pago_Validado',
-              'estado-pago-rechazado': estudiante.estado_inscripcion === 'Pago_Rechazado',
-              'estado-default': !estudiante.estado_inscripcion
-            }" class="estado-badge">
-              {{ estudiante.estado_inscripcion || estudiante.tipo_solicitud }}
-            </span>
+            {{ estudiante.estado_inscripcion || estudiante.tipo_solicitud }}
           </td>
         </ng-container>
 
@@ -100,28 +69,21 @@
         <ng-container matColumnDef="comprobante_pago">
           <th mat-header-cell *matHeaderCellDef>Estado del Proceso</th>
           <td mat-cell *matCellDef="let estudiante">
-            <div class="comprobante-cell">
-              <span *ngIf="estudiante.estado_inscripcion === 'Pago_Rechazado'" class="estado-rechazado">
-                <mat-icon style="color: #f44336 !important;">cancel</mat-icon>
-                <span>Inscripción rechazada</span>
-              </span>
-              <span *ngIf="estudiante.estado_inscripcion === 'Pago_Validado'" class="estado-validado">
-                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
-                <span>Pago validado</span>
-              </span>
-              <span *ngIf="estudiante.estado_inscripcion === 'APROBADA'" class="estado-aprobada">
-                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
-                <span>Inscripción aprobada</span>
-              </span>
-              <span *ngIf="estudiante.estado_inscripcion === 'Enviada'" class="estado-enviada">
-                <mat-icon style="color: #ff9800 !important;">schedule</mat-icon>
-                <span>Pendiente de revisión</span>
-              </span>
-              <span *ngIf="!estudiante.estado_inscripcion" class="estado-default">
-                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
-                <span>Listo para inscripción</span>
-              </span>
-            </div>
+            <span *ngIf="estudiante.estado_inscripcion === 'Pago_Rechazado'">
+              Inscripción rechazada
+            </span>
+            <span *ngIf="estudiante.estado_inscripcion === 'Pago_Validado'">
+              Pago validado
+            </span>
+            <span *ngIf="estudiante.estado_inscripcion === 'APROBADA'">
+              Inscripción aprobada
+            </span>
+            <span *ngIf="estudiante.estado_inscripcion === 'Enviada'">
+              Pendiente de revisión
+            </span>
+            <span *ngIf="!estudiante.estado_inscripcion">
+              Listo para inscripción
+            </span>
           </td>
         </ng-container>
 

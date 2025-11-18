@@ -76,20 +76,20 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    // Formulario completo para crear cursos
+    // ✅ Formulario completo para crear cursos - Solo campos que el backend espera
+    // ❌ NO incluir: nombre_curso, codigo_curso, descripcion, cupo_maximo (se obtienen automáticamente)
     this.cursoForm = this.fb.group({
-      nombre_curso: ['', [Validators.required, Validators.minLength(3)]],
-      codigo_curso: ['', [Validators.required, Validators.minLength(3)]],
-      descripcion: ['', [Validators.required, Validators.minLength(10)]],
-      periodoAcademico: ['', Validators.required], // ✨ NUEVO: Período académico
+      // Campos OBLIGATORIOS
+      id_materia: ['', Validators.required],
+      id_docente: ['', Validators.required],
+      cupo_estimado: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
       fecha_inicio: ['', Validators.required],
       fecha_fin: ['', Validators.required],
-      cupo_maximo: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
-      cupo_estimado: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
-      espacio_asignado: ['', [Validators.required, Validators.minLength(3)]],
-      estado: ['Borrador', Validators.required],
-      id_materia: ['', Validators.required],
-      id_docente: ['', Validators.required]
+      periodoAcademico: ['', Validators.required],
+      
+      // Campos OPCIONALES
+      espacio_asignado: [''], // Opcional - sin validación requerida
+      estado: ['Abierto'] // Opcional - valor por defecto "Abierto"
     });
 
     // Formulario específico para edición (solo campos editables)
@@ -318,7 +318,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cursoEditando = null;
     this.cursoForm.reset({
       estado: 'Abierto',
-      cupo_maximo: 25,
       cupo_estimado: 25
     });
 

@@ -59,11 +59,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   cursoSeleccionado: CursoOfertadoVerano | null = null;
   solicitudSeleccionada: SolicitudCursoVerano | null = null;
   
-  // Variables para el modal de rechazo
-  motivoRechazo: string = '';
-  motivoRechazoError: string = '';
-  solicitudParaRechazo: SolicitudCursoVerano | null = null;
-  
   // Columnas de la tabla
   displayedColumns: string[] = [
     'estudiante', 
@@ -350,53 +345,32 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   abrirModalRechazo(solicitud: SolicitudCursoVerano): void {
-    this.solicitudParaRechazo = solicitud;
-    this.motivoRechazo = '';
-    this.motivoRechazoError = '';
+    console.log('❌ Abriendo diálogo de rechazo para preinscripción:', solicitud);
+    console.log('🔍 Curso seleccionado:', this.cursoSeleccionado);
     
-    // Mostrar modal Bootstrap
-    const modal = document.getElementById('modalRechazo');
-    if (modal) {
-      (modal as any).style.display = 'block';
-      modal.classList.add('show');
-      modal.setAttribute('aria-modal', 'true');
-    }
+    // Abrir diálogo de Angular Material
+    const dialogRef = this.dialog.open(RechazoPreinscripcionDialogComponent, {
+      width: '600px',
+      data: { 
+        solicitud: solicitud,
+        curso: this.cursoSeleccionado || solicitud.objCursoOfertadoVerano
+      },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.motivo) {
+        this.procesarRechazo(solicitud, result.motivo);
+      }
+    });
   }
 
   cancelarRechazo(): void {
-    this.solicitudParaRechazo = null;
-    this.motivoRechazo = '';
-    this.motivoRechazoError = '';
-    
-    // Ocultar modal Bootstrap
-    const modal = document.getElementById('modalRechazo');
-    if (modal) {
-      (modal as any).style.display = 'none';
-      modal.classList.remove('show');
-      modal.removeAttribute('aria-modal');
-    }
+    // Ya no se necesita, el diálogo maneja su propio cierre
   }
 
-  confirmarRechazo(): void {
-    // Validar motivo
-    if (!this.motivoRechazo || !this.motivoRechazo.trim()) {
-      this.motivoRechazoError = 'El motivo del rechazo es obligatorio';
-      return;
-    }
-
-    if (!this.solicitudParaRechazo) {
-      this.snackBar.open('Error: No se encontró la solicitud para rechazar', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
-
-    const idSolicitud = (this.solicitudParaRechazo as any).id_solicitud || (this.solicitudParaRechazo as any).id_preinscripcion;
-    const motivo = this.motivoRechazo.trim();
-    console.log('🔍 DEBUG - ID de solicitud para rechazo:', idSolicitud);
-    console.log('🔍 DEBUG - Tipo de ID:', typeof idSolicitud);
-    console.log('🔍 DEBUG - Motivo:', motivo);
+  procesarRechazo(solicitud: SolicitudCursoVerano, motivo: string): void {
+    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
     
     if (!idSolicitud) {
       console.error('❌ ERROR: ID de solicitud es undefined o null para rechazo');
@@ -427,8 +401,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           duration: 5000,
           panelClass: ['success-snackbar']
         });
-        
-        this.cancelarRechazo();
 
         if (this.cursoSeleccionado?.id_curso) {
           this.cargarSolicitudesPorCurso(this.cursoSeleccionado.id_curso);
@@ -832,23 +804,38 @@ export class DetallesPreinscripcionDialogComponent {
   ],
   template: `
     <div class="rechazo-dialog">
-      <h2 mat-dialog-title>
-        <mat-icon style="color: #f44336;">cancel</mat-icon>
+      <h2 mat-dialog-title class="dialog-title">
+        <mat-icon class="title-icon">cancel</mat-icon>
         Rechazar Preinscripción
       </h2>
       
       <div mat-dialog-content class="dialog-content">
         <div class="info-section">
-          <h3>📝 Información del Estudiante</h3>
+          <h3 class="section-title">
+            <mat-icon class="section-icon">person</mat-icon>
+            Información del Estudiante
+          </h3>
           <div class="student-info">
-            <p><strong>Nombre:</strong> {{ data.solicitud.objUsuario.nombre_completo }}</p>
-            <p><strong>Código:</strong> {{ data.solicitud.objUsuario.codigo || 'N/A' }}</p>
-            <p><strong>Curso:</strong> {{ data.solicitud.objCursoOfertadoVerano.nombre_curso || 'N/A' }}</p>
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ data.solicitud.objUsuario.nombre_completo || 'N/A' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Código:</span>
+              <span class="info-value">{{ data.solicitud.objUsuario.codigo || 'N/A' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Curso:</span>
+              <span class="info-value">{{ getNombreCurso() }}</span>
+            </div>
           </div>
         </div>
 
         <div class="form-section">
-          <h3>⚠️ Motivo del Rechazo</h3>
+          <h3 class="section-title warning">
+            <mat-icon class="section-icon">warning</mat-icon>
+            Motivo del Rechazo
+          </h3>
           <p class="required-note">El motivo del rechazo es obligatorio para proceder.</p>
           <form [formGroup]="rechazoForm">
             <mat-form-field appearance="outline" class="full-width">
@@ -888,52 +875,113 @@ export class DetallesPreinscripcionDialogComponent {
   `,
   styles: [`
     .rechazo-dialog {
-      max-width: 500px;
+      max-width: 600px;
+    }
+
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #00138C;
+      font-weight: 600;
+      padding: 20px 24px;
+      border-bottom: 2px solid #00138C;
+      margin: 0;
+    }
+
+    .title-icon {
+      color: #f44336;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
     }
 
     .dialog-content {
-      padding: 20px;
+      padding: 24px;
     }
 
     .info-section {
       background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-      border-left: 4px solid #17a2b8;
+      padding: 20px;
+      margin-bottom: 24px;
+      border-left: 4px solid #00138C;
+      box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
     }
 
-    .info-section h3 {
-      margin: 0 0 12px 0;
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px 0;
       color: #00138C;
       font-size: 16px;
       font-weight: 600;
     }
 
-    .student-info p {
-      margin: 4px 0;
+    .section-title.warning {
+      color: #f44336;
+    }
+
+    .section-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #00138C;
+    }
+
+    .section-title.warning .section-icon {
+      color: #f44336;
+    }
+
+    .student-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #00138C;
+      min-width: 80px;
+      font-size: 14px;
+    }
+
+    .info-value {
       color: #333;
+      font-size: 14px;
+      flex: 1;
     }
 
     .form-section {
       background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
       border-radius: 8px;
-      padding: 16px;
+      padding: 20px;
       border-left: 4px solid #f44336;
-    }
-
-    .form-section h3 {
-      margin: 0 0 8px 0;
-      color: #f44336;
-      font-size: 16px;
-      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
     }
 
     .required-note {
       color: #f44336;
-      font-size: 14px;
+      font-size: 13px;
       margin: 0 0 16px 0;
       font-weight: 500;
+      padding: 8px 12px;
+      background: rgba(244, 67, 54, 0.1);
+      border-radius: 4px;
+      border-left: 3px solid #f44336;
     }
 
     .full-width {
@@ -944,28 +992,54 @@ export class DetallesPreinscripcionDialogComponent {
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      padding: 16px 20px;
+      padding: 20px 24px;
       border-top: 1px solid #e0e0e0;
+      background: #f8f9fa;
     }
 
     .btn-cancel {
       color: #666;
+      border: 1px solid #ddd;
+    }
+
+    .btn-cancel:hover {
+      background: #f5f5f5;
     }
 
     .btn-reject {
-      background-color: #f44336;
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
       color: white;
+      border: none;
+      box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+    }
+
+    .btn-reject:hover:not(:disabled) {
+      background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+      transform: translateY(-1px);
     }
 
     .btn-reject:disabled {
-      background-color: #ccc;
+      background: #ccc;
       color: #666;
+      box-shadow: none;
     }
 
     ::ng-deep .mat-mdc-form-field {
       .mat-mdc-text-field-wrapper {
         background-color: white;
       }
+      .mat-mdc-form-field-subscript-wrapper {
+        margin-top: 4px;
+      }
+    }
+
+    ::ng-deep .mat-mdc-dialog-container {
+      padding: 0 !important;
+    }
+
+    ::ng-deep .mat-mdc-dialog-title {
+      margin: 0 !important;
     }
   `]
 })
@@ -974,12 +1048,29 @@ export class RechazoPreinscripcionDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<RechazoPreinscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { solicitud: SolicitudCursoVerano },
+    @Inject(MAT_DIALOG_DATA) public data: { 
+      solicitud: SolicitudCursoVerano,
+      curso?: CursoOfertadoVerano | null
+    },
     private fb: FormBuilder
   ) {
     this.rechazoForm = this.fb.group({
       motivo: ['', [Validators.required, Validators.minLength(10)]]
     });
+  }
+
+  getNombreCurso(): string {
+    // Intentar obtener el nombre del curso de diferentes fuentes
+    if (this.data.curso?.nombre_curso) {
+      return this.data.curso.nombre_curso;
+    }
+    if (this.data.solicitud.objCursoOfertadoVerano?.nombre_curso) {
+      return this.data.solicitud.objCursoOfertadoVerano.nombre_curso;
+    }
+    if ((this.data.solicitud as any).nombre_curso) {
+      return (this.data.solicitud as any).nombre_curso;
+    }
+    return 'N/A';
   }
 
   confirmarRechazo(): void {

@@ -8,6 +8,36 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* Estilos para las pestañas */
+::ng-deep .mat-mdc-tab-group {
+  background-color: transparent;
+  margin-bottom: 24px;
+}
+
+::ng-deep .mat-mdc-tab-header {
+  background-color: #fff;
+  border-radius: 8px 8px 0 0;
+  padding: 0 16px;
+}
+
+::ng-deep .mat-mdc-tab-body-wrapper {
+  background-color: transparent;
+}
+
+.tab-content {
+  padding: 16px 0;
+}
+
+.no-solicitudes {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-style: italic;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
 /* Tarjetas (mat-card) */
 .coordinador-container mat-card {
   border-radius: 12px;

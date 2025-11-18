@@ -95,6 +95,16 @@ export class DocumentGeneratorComponent implements OnInit {
   private prepareSolicitudData(): void {
     console.log('🔍 Solicitud recibida:', this.solicitud);
 
+    // Obtener el estado actual de la solicitud
+    let estadoActual = this.solicitud.estado;
+    
+    // Si no hay estado directo, intentar obtenerlo de estadosSolicitud (para Paz y Salvo)
+    if (!estadoActual && this.solicitud.estadosSolicitud && this.solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = this.solicitud.estadosSolicitud[this.solicitud.estadosSolicitud.length - 1];
+      estadoActual = ultimoEstado.estado_actual;
+      console.log('🔍 Estado obtenido de estadosSolicitud:', estadoActual);
+    }
+
     // Extraer datos relevantes de la solicitud según el proceso
     this.datosSolicitud = {
       idSolicitud: this.solicitud.id || this.solicitud.id_solicitud,
@@ -102,12 +112,13 @@ export class DocumentGeneratorComponent implements OnInit {
       codigoEstudiante: this.solicitud.usuario?.codigo || this.solicitud.objUsuario?.codigo,
       programa: this.solicitud.usuario?.objPrograma?.nombre_programa || this.solicitud.objUsuario?.objPrograma?.nombre_programa,
       fechaSolicitud: this.solicitud.fecha || this.solicitud.fecha_registro_solicitud,
-      estado: this.solicitud.estado
+      estado: estadoActual || 'Pendiente'
     };
 
     console.log('🔍 Datos de solicitud preparados:', this.datosSolicitud);
     console.log('🔍 Usuario extraído:', this.solicitud.objUsuario);
     console.log('🔍 Programa extraído:', this.solicitud.objUsuario?.objPrograma);
+    console.log('🔍 Estado final:', this.datosSolicitud.estado);
   }
 
   onSubmit(): void {

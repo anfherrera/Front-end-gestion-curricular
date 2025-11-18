@@ -175,6 +175,19 @@
 .curso-info small {
   color: #999;
   font-size: 0.8rem;
+  display: block;
+  margin-top: 4px;
+}
+
+.curso-info .text-muted {
+  color: #999;
+  font-style: italic;
+}
+
+.curso-info .periodo-info {
+  color: #00138C;
+  font-weight: 500;
+  margin-top: 4px;
 }
 
 .curso-status {

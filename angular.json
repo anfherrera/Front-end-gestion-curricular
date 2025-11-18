@@ -43,7 +43,18 @@
                 { "type": "initial", "maximumWarning": "4MB", "maximumError": "5MB" },
                 { "type": "anyComponentStyle", "maximumWarning": "200kB", "maximumError": "300kB" }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": true,
+                "fonts": true
+              },
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
             },
             "development": {
               "optimization": false,

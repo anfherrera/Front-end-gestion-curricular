@@ -1,26 +1,56 @@
 <div class="funcionario-container">
 
-  <!-- 📌 Contenedor de solicitudes usando componente genérico -->
-  <app-card-container
-    title="Solicitudes de Paz y Salvo Pendientes"
-    icon="assignment">
+  <!-- Pestañas para Pendientes y Procesadas -->
+  <mat-tab-group>
+    
+    <!-- Pestaña 1: Pendientes de Procesar -->
+    <mat-tab label="Pendientes de Procesar">
+      <div class="tab-content">
+        <app-card-container
+          title="Solicitudes Pendientes de Procesar">
+          
+          <app-request-status-table
+            #requestStatusTable
+            [solicitudes]="solicitudes"
+            [showOficio]="false"
+            [showComentarios]="false"
+            [showSeleccionar]="true"
+            (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+          </app-request-status-table>
+          
+          <p *ngIf="solicitudes.length === 0" class="no-solicitudes">
+            No hay solicitudes pendientes de procesar
+          </p>
+        </app-card-container>
+      </div>
+    </mat-tab>
 
-    <app-request-status-table
-      #requestStatusTable
-      [solicitudes]="solicitudes"
-      [showOficio]="false"
-      [showComentarios]="false"
-      [showSeleccionar]="true"
-      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
-    </app-request-status-table>
+    <!-- Pestaña 2: Historial - Ya Procesadas -->
+    <mat-tab label="Historial - Ya Procesadas">
+      <div class="tab-content">
+        <app-card-container
+          title="Solicitudes Procesadas">
+          
+          <app-request-status-table
+            [solicitudes]="solicitudesProcesadas"
+            [showOficio]="false"
+            [showComentarios]="false"
+            [showSeleccionar]="false">
+          </app-request-status-table>
+          
+          <p *ngIf="solicitudesProcesadas.length === 0" class="no-solicitudes">
+            No hay solicitudes procesadas todavía
+          </p>
+        </app-card-container>
+      </div>
+    </mat-tab>
 
-  </app-card-container>
+  </mat-tab-group>
 
   <!-- 📌 Documentación de la solicitud seleccionada -->
   <app-card-container
     *ngIf="selectedSolicitud"
-    title="Documentación Adjunta"
-    icon="description">
+    title="Documentación Adjunta">
 
     <app-documentation-viewer
       [documentos]="documentosDelEstudiante"

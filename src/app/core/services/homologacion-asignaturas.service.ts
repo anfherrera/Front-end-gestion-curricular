@@ -1,40 +1,3 @@
-// import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
-// import { Observable } from 'rxjs';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class HomologacionAsignaturasService {
-
-//   private apiUrl = 'http://localhost:5000/api/solicitudes-homologacion';
-
-//   constructor(private http: HttpClient) {}
-
-//   // 🔹 Crear solicitud dinámicamente pasando el usuario
-//   crearSolicitudHomologacion(usuario: any): Observable<any> {
-//     const solicitud = {
-//       nombre_solicitud: 'Solicitud Homologacion',
-//       fecha_registro_solicitud: new Date().toISOString(),
-//       esSeleccionado: true,
-//       estado_actual: {
-//         id_estado: 1,
-//         estado_actual: 'Pendiente',
-//         fecha_registro_estado: new Date().toISOString()
-//       },
-//       objUsuario: usuario,   // 👈 Se pasa dinámicamente el usuario
-//       documentos: []
-//     };
-
-//     return this.http.post(`${this.apiUrl}/crearSolicitud-Homologacion`, solicitud);
-//   }
-
-//   // 🔹 Listar solicitudes de homologación
-//   listarSolicitudesHomologacion(): Observable<any[]> {
-//     return this.http.get<any[]>(`${this.apiUrl}/listarSolicitud-Homologacion`);
-//   }
-// }
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -49,24 +12,12 @@ export class HomologacionAsignaturasService {
 
   constructor(private http: HttpClient) {}
 
-  // private getAuthHeaders(): HttpHeaders {
-  //   const token = localStorage.getItem('token');
-  //   return new HttpHeaders({
-  //     Authorization: token ? `Bearer ${token}` : ''
-  //   });
-  // }
   private getAuthHeaders(isFile: boolean = false): HttpHeaders {
     const token = localStorage.getItem('token');
-    console.log('🔑 Token encontrado:', token ? 'Sí' : 'No');
-    console.log('🔑 Token completo:', token);
-
-    const headers = new HttpHeaders({
+    return new HttpHeaders({
       ...(isFile ? {} : { 'Content-Type': 'application/json' }),
       Authorization: token ? `Bearer ${token}` : ''
     });
-
-    console.log('🔑 Headers creados:', headers);
-    return headers;
   }
 
   crearSolicitud(solicitud: any): Observable<any> {
@@ -400,7 +351,7 @@ export class HomologacionAsignaturasService {
    * Validar documentos requeridos para homologación
    */
   validarDocumentosRequeridos(idSolicitud: number): Observable<any> {
-    const url = `${this.apiUrl}/validarDocumentosRequeridos/${idSolicitud}`;
+    const url = `${environment.apiUrl}/solicitudes-homologacion/validarDocumentosRequeridos/${idSolicitud}`;
     
     console.log('🔗 URL para validar documentos requeridos:', url);
     

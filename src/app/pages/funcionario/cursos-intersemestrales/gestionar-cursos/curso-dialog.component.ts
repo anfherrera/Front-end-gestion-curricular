@@ -11,7 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CursosIntersemestralesService, CreateCursoDTO, UpdateCursoDTO } from '../../../../core/services/cursos-intersemestrales.service';
-import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos } from '../../../../core/utils/periodo.utils';
+import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '../../../../core/utils/periodo.utils';
 
 export interface CursoDialogData {
   form: FormGroup;
@@ -49,49 +49,26 @@ export interface CursoDialogData {
         <div class="form-section" *ngIf="!data.soloEdicion">
           <h3>Información Básica</h3>
           
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Nombre del Curso</mat-label>
-            <input matInput formControlName="nombre_curso" placeholder="Ej: Programación Avanzada">
-            <mat-error *ngIf="data.form.get('nombre_curso')?.hasError('required')">
-              El nombre del curso es requerido
-            </mat-error>
-            <mat-error *ngIf="data.form.get('nombre_curso')?.hasError('minlength')">
-              El nombre debe tener al menos 3 caracteres
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Código del Curso</mat-label>
-            <input matInput formControlName="codigo_curso" placeholder="Ej: PROG-301">
-            <mat-error *ngIf="data.form.get('codigo_curso')?.hasError('required')">
-              El código del curso es requerido
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field full-width">
-            <mat-label>Descripción</mat-label>
-            <textarea matInput formControlName="descripcion" rows="3" placeholder="Describe el contenido del curso"></textarea>
-            <mat-error *ngIf="data.form.get('descripcion')?.hasError('required')">
-              La descripción es requerida
-            </mat-error>
-          </mat-form-field>
-
+          <!-- ✅ NOTA: nombre_curso, codigo_curso y descripcion se obtienen automáticamente de la materia seleccionada -->
+          <!-- ❌ Estos campos NO se muestran porque el backend los genera automáticamente -->
+          
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Materia</mat-label>
             <mat-select formControlName="id_materia">
               <mat-option *ngFor="let materia of data.materias" [value]="materia.id_materia">
-                {{ materia.nombre_materia }} ({{ materia.codigo_materia }}) - {{ materia.creditos }} créditos
+                {{ materia.nombre || materia.nombre_materia }} ({{ materia.codigo || materia.codigo_materia }}) - {{ materia.creditos }} créditos
               </mat-option>
             </mat-select>
             <mat-error *ngIf="data.form.get('id_materia')?.hasError('required')">
               La materia es requerida
             </mat-error>
+            <mat-hint>El nombre y código del curso se obtendrán automáticamente de la materia seleccionada</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Docente</mat-label>
-            <mat-select formControlName="id_docente">
-              <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_usuario">
+            <mat-select formControlName="id_docente" (selectionChange)="onDocenteSelected($event)">
+              <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_docente || docente.id_usuario">
                 {{ docente.nombre }} {{ docente.apellido }} ({{ docente.codigo_usuario }})
               </mat-option>
             </mat-select>
@@ -115,7 +92,7 @@ export interface CursoDialogData {
               <strong>Materia:</strong> {{ data.cursoEditando.objMateria?.nombre }} ({{ data.cursoEditando.objMateria?.codigo }})
             </div>
             <div class="info-item">
-              <strong>Docente:</strong> {{ data.cursoEditando.objDocente?.nombre }} {{ data.cursoEditando.objDocente?.apellido }}
+              <strong>Docente:</strong> {{ obtenerNombreDocente(data.cursoEditando) }}
             </div>
           </div>
         </div>
@@ -135,6 +112,7 @@ export interface CursoDialogData {
             <mat-error *ngIf="data.form.get('periodoAcademico')?.hasError('required')">
               El período académico es requerido
             </mat-error>
+            <mat-hint>Selecciona un período académico válido del listado</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -166,27 +144,9 @@ export interface CursoDialogData {
             <span>Duración: <strong>{{ duracionSemanas }} {{ duracionSemanas === 1 ? 'semana' : 'semanas' }}</strong></span>
           </div>
 
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Cupo Máximo</mat-label>
-            <input matInput type="number" formControlName="cupo_maximo" min="1" max="100">
-            <mat-error *ngIf="data.form.get('cupo_maximo')?.hasError('required')">
-              El cupo máximo es requerido
-            </mat-error>
-          </mat-form-field>
+          <!-- ✅ NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
+          <!-- ❌ Este campo NO se muestra porque el backend lo calcula automáticamente -->
 
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Cupo Estimado</mat-label>
-            <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
-            <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('required')">
-              El cupo estimado es requerido
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <!-- Configuración editable -->
-        <div class="form-section">
-          <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
-          
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Cupo Estimado</mat-label>
             <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
@@ -199,17 +159,21 @@ export interface CursoDialogData {
             <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('max')">
               El cupo no puede ser mayor a 100
             </mat-error>
+            <mat-hint>El cupo máximo será igual al cupo estimado</mat-hint>
           </mat-form-field>
+        </div>
 
+        <!-- Configuración editable -->
+        <div class="form-section">
+          <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
+          
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Espacio Asignado</mat-label>
             <input matInput formControlName="espacio_asignado" placeholder="Ej: Lab 301, Aula 205">
-            <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('required')">
-              El espacio asignado es requerido
-            </mat-error>
             <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('minlength')">
               El espacio debe tener al menos 3 caracteres
             </mat-error>
+            <mat-hint>Opcional. Si no se especifica, se asignará "Aula 101" por defecto</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -222,9 +186,7 @@ export interface CursoDialogData {
               <mat-option value="Inscripción">Inscripción</mat-option>
               <mat-option value="Cerrado">Cerrado</mat-option>
             </mat-select>
-            <mat-error *ngIf="data.form.get('estado')?.hasError('required')">
-              El estado es requerido
-            </mat-error>
+            <mat-hint>Opcional. Si no se selecciona, se asignará "Abierto" por defecto</mat-hint>
           </mat-form-field>
         </div>
 
@@ -708,15 +670,74 @@ export class CursoDialogComponent implements OnInit {
     }
   }
 
-  // ✨ NUEVO: Cargar períodos académicos (solo futuros para crear cursos)
-  private cargarPeriodos(): void {
-    console.log('🔄 Cargando períodos académicos...');
+  // ✨ NUEVO: Método para manejar la selección del docente
+  onDocenteSelected(event: any): void {
+    const selectedId = event.value;
+    console.log('🔍 Docente seleccionado - ID:', selectedId);
+    console.log('🔍 Tipo de ID:', typeof selectedId);
     
-    // Usar períodos futuros para crear cursos nuevos (recomendado)
-    this.cursosService.getPeriodosFuturos().subscribe({
+    // Buscar el docente seleccionado en la lista
+    const docenteSeleccionado = this.data.docentes?.find(d => 
+      (d.id_docente && d.id_docente === selectedId) || 
+      (d.id_usuario && d.id_usuario === selectedId)
+    );
+    
+    if (docenteSeleccionado) {
+      console.log('🔍 Docente encontrado:', docenteSeleccionado);
+      console.log('🔍 id_docente del docente:', docenteSeleccionado.id_docente);
+      console.log('🔍 id_usuario del docente:', docenteSeleccionado.id_usuario);
+      
+      // Asegurarse de que se use id_docente si está disponible
+      const idFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
+      console.log('🔍 ID final que se usará:', idFinal);
+      
+      // Actualizar el valor del formulario con el ID correcto
+      this.data.form.patchValue({ id_docente: idFinal }, { emitEvent: false });
+      console.log('✅ Valor actualizado en formulario:', this.data.form.get('id_docente')?.value);
+    } else {
+      console.warn('⚠️ Docente no encontrado en la lista con ID:', selectedId);
+    }
+  }
+
+  // ✨ NUEVO: Obtener nombre del docente de forma segura (maneja diferentes estructuras del backend)
+  obtenerNombreDocente(curso: any): string {
+    if (!curso || !curso.objDocente) {
+      return 'Sin asignar';
+    }
+    
+    const docente = curso.objDocente;
+    
+    // Priorizar nombre_docente (estructura del backend)
+    if ((docente as any).nombre_docente) {
+      return (docente as any).nombre_docente;
+    }
+    
+    // Fallback a nombre y apellido (estructura legacy)
+    if (docente.nombre && docente.apellido) {
+      return `${docente.nombre} ${docente.apellido}`;
+    }
+    
+    if (docente.nombre) {
+      return docente.nombre;
+    }
+    
+    // Si tiene nombre_completo
+    if ((docente as any).nombre_completo) {
+      return (docente as any).nombre_completo;
+    }
+    
+    return 'Sin nombre';
+  }
+
+  // ✨ NUEVO: Cargar períodos académicos (recientes para crear cursos)
+  private cargarPeriodos(): void {
+    console.log('🔄 Cargando períodos académicos recientes...');
+    
+    // Usar períodos recientes para crear cursos nuevos (recomendado según especificación)
+    this.cursosService.getPeriodosRecientes().subscribe({
       next: (periodos) => {
         this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
-        console.log('✅ Períodos futuros cargados:', this.periodos);
+        console.log('✅ Períodos recientes cargados:', this.periodos);
         console.log('📊 Total de períodos:', this.periodos.length);
         
         // Si hay períodos disponibles, pre-seleccionar el primer período futuro
@@ -727,7 +748,7 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('❌ Error cargando períodos futuros:', error);
+        console.error('❌ Error cargando períodos recientes:', error);
         console.error('🔍 Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
@@ -735,8 +756,29 @@ export class CursoDialogComponent implements OnInit {
           message: error.message
         });
         
-        // Si falla, intentar con todos los períodos como fallback
-        console.warn('⚠️ Intentando cargar TODOS los períodos como fallback...');
+        // Si falla, intentar con períodos futuros como fallback
+        console.warn('⚠️ Intentando cargar períodos futuros como fallback...');
+        this.cargarPeriodosFuturosFallback();
+      }
+    });
+  }
+
+  // Método de fallback para cargar períodos futuros
+  private cargarPeriodosFuturosFallback(): void {
+    this.cursosService.getPeriodosFuturos().subscribe({
+      next: (periodos) => {
+        this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
+        console.log('✅ Períodos futuros cargados (fallback):', this.periodos);
+        
+        if (this.periodos.length > 0 && !this.data.editando) {
+          const primerPeriodo = this.periodos[0];
+          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error cargando períodos futuros (fallback):', error);
+        // Si falla, intentar con todos los períodos como último recurso
+        console.warn('⚠️ Intentando cargar TODOS los períodos como último recurso...');
         this.cargarTodosLosPeriodos();
       }
     });
@@ -874,11 +916,63 @@ export class CursoDialogComponent implements OnInit {
           });
       } else {
         // Crear nuevo curso
+        const formValue = this.data.form.value;
+        
+        // ✅ Verificar y corregir el id_docente antes de enviar
+        let idDocenteFinal = formValue.id_docente;
+        
+        // Si el id_docente es un número pero parece ser un índice, buscar el docente correcto
+        if (idDocenteFinal && this.data.docentes) {
+          const docenteSeleccionado = this.data.docentes.find(d => 
+            (d.id_docente && d.id_docente === idDocenteFinal) || 
+            (d.id_usuario && d.id_usuario === idDocenteFinal)
+          );
+          
+          if (docenteSeleccionado) {
+            // Usar id_docente si está disponible, sino id_usuario
+            idDocenteFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
+            console.log('🔍 ID docente corregido:', idDocenteFinal);
+          }
+        }
+        
+        // ✅ Validar formato del período académico antes de enviar
+        const periodoAcademico = formValue.periodoAcademico || '';
+        if (!validarPeriodo(periodoAcademico)) {
+          this.snackBar.open('❌ El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', { 
+            duration: 5000, 
+            panelClass: ['error-snackbar'] 
+          });
+          return;
+        }
+        
+        // ✅ Construir payload SOLO con los campos que el backend espera
+        // El backend NO espera: nombre_curso, codigo_curso, descripcion, cupo_maximo
         const createData: CreateCursoDTO = {
-          ...formData,
-          fecha_inicio: formData.fecha_inicio ? new Date(formData.fecha_inicio).toISOString() : '',
-          fecha_fin: formData.fecha_fin ? new Date(formData.fecha_fin).toISOString() : ''
+          id_materia: Number(formValue.id_materia),
+          id_docente: Number(idDocenteFinal), // ✅ Asegurar que se use el ID correcto y sea número
+          cupo_estimado: Number(formValue.cupo_estimado),
+          fecha_inicio: formValue.fecha_inicio ? new Date(formValue.fecha_inicio).toISOString() : '',
+          fecha_fin: formValue.fecha_fin ? new Date(formValue.fecha_fin).toISOString() : '',
+          periodoAcademico: periodoAcademico
         };
+        
+        // ✅ Campos opcionales (solo incluir si tienen valor)
+        if (formValue.espacio_asignado) {
+          createData.espacio_asignado = formValue.espacio_asignado;
+        }
+        
+        if (formValue.estado) {
+          createData.estado = formValue.estado;
+        }
+        
+        // ✅ Logs de depuración antes de enviar
+        console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
+        console.log('📤 FormValue completo:', formValue);
+        console.log('📤 createData (solo campos requeridos):', createData);
+        console.log('🔍 ID DOCENTE EN createData:', createData.id_docente);
+        console.log('🔍 TIPO DE ID_DOCENTE:', typeof createData.id_docente);
+        console.log('🔍 ID MATERIA EN createData:', createData.id_materia);
+        console.log('🔍 PERÍODO ACADÉMICO EN createData:', createData.periodoAcademico);
         
         this.cursosService.crearCurso(createData)
           .subscribe({
@@ -889,9 +983,42 @@ export class CursoDialogComponent implements OnInit {
             },
             error: (err) => {
               console.error('❌ Error creando curso:', err);
-              this.snackBar.open('Error al crear el curso', 'Cerrar', { duration: 3000 });
-              // Cerrar dialog incluso si hay error para que se actualice la lista
-              this.dialogRef.close('guardado');
+              console.error('🔍 Payload enviado:', createData);
+              
+              // ✅ Manejo específico de errores de período académico inválido
+              let errorMessage = 'Error al crear el curso';
+              
+              if (err.status === 400 && err.error) {
+                // Error de validación del backend
+                if (err.error.message && err.error.message.includes('período académico')) {
+                  // Error específico de período académico inválido
+                  errorMessage = err.error.message;
+                  
+                  // Si el backend proporciona la lista de períodos válidos, mostrarla
+                  if (err.error.periodosValidos && Array.isArray(err.error.periodosValidos)) {
+                    const periodosValidos = err.error.periodosValidos.join(', ');
+                    errorMessage += `\n\nPeríodos válidos: ${periodosValidos}`;
+                  }
+                  
+                  // Recargar períodos en caso de error
+                  this.cargarPeriodos();
+                } else if (err.error.message) {
+                  errorMessage = err.error.message;
+                } else if (typeof err.error === 'string') {
+                  errorMessage = err.error;
+                } else if (err.error.error) {
+                  errorMessage = err.error.error;
+                }
+              } else if (err.status === 400) {
+                errorMessage = 'Datos inválidos enviados al servidor. Verifica que todos los campos sean correctos.';
+              }
+              
+              this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+                duration: 7000, 
+                panelClass: ['error-snackbar'] 
+              });
+              
+              // NO cerrar el dialog si hay error, para que el usuario pueda corregir
             }
           });
       }
@@ -903,7 +1030,6 @@ export class CursoDialogComponent implements OnInit {
   limpiarFormulario() {
     this.data.form.reset({
       estado: 'Abierto',
-      cupo_maximo: 25,
       cupo_estimado: 25
     });
   }

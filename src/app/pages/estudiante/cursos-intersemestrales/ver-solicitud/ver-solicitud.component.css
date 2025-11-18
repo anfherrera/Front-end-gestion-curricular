@@ -125,10 +125,25 @@ th.mat-header-cell {
 }
 
 td.mat-cell {
-  vertical-align: middle;
+  vertical-align: top;
   padding: 16px 12px;
   border-bottom: 1px solid #f0f0f0;
   font-size: 14px;
+}
+
+/* Celda de comentario */
+.comentario-cell {
+  padding: 16px 12px !important;
+  min-width: 280px;
+  max-width: 450px;
+  vertical-align: top;
+}
+
+.comentario-cell .text-muted {
+  color: #9e9e9e;
+  font-style: italic;
+  font-size: 13px;
+  padding: 8px 0;
 }
 
 td.mat-cell:last-child {
@@ -142,6 +157,8 @@ td.mat-cell:last-child {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: inline-block;
+  line-height: 1.5;
 }
 
 /* 🆕 Nuevos estilos para estados del curso y acciones */
@@ -343,55 +360,76 @@ td.mat-cell:last-child {
 }
 
 .motivo-container {
-  margin-top: 12px;
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 16px;
-  border-radius: 12px;
+  margin-top: 0;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-radius: 8px;
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.5;
   border: 1px solid transparent;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  max-width: 420px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.motivo-container:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
 }
 
 .motivo-rechazo {
-  background: #fdecea;
-  border-color: #f8b4b4;
-  color: #b71c1c;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border: 1px solid #ef5350;
+  color: #c62828;
+}
+
+.motivo-rechazo .motivo-icon {
+  color: #d32f2f;
 }
 
 .motivo-informativo {
-  background: #e8f4fd;
-  border-color: #90caf9;
-  color: #0d47a1;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: 1px solid #64b5f6;
+  color: #1565c0;
+}
+
+.motivo-informativo .motivo-icon {
+  color: #1976d2;
 }
 
 .motivo-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .motivo-texto {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   word-break: break-word;
+  flex: 1;
 }
 
 .motivo-label {
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
+  opacity: 0.9;
 }
 
 .motivo-mensaje {
   font-size: 13px;
   color: inherit;
+  line-height: 1.6;
+  font-weight: 400;
 }
 
 /* Responsive */
@@ -445,10 +483,36 @@ td.mat-cell:last-child {
     padding: 3px 6px;
   }
 
-  .motivo-container {
-    flex-direction: column;
-    align-items: stretch;
+  .comentario-cell {
+    min-width: 200px;
     max-width: 100%;
+    padding: 12px 8px !important;
+  }
+  
+  .motivo-container {
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: 100%;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  
+  .motivo-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .motivo-texto {
+    gap: 4px;
+  }
+  
+  .motivo-label {
+    font-size: 10px;
+  }
+  
+  .motivo-mensaje {
+    font-size: 12px;
   }
 }
 

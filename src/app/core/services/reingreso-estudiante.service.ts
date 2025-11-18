@@ -14,16 +14,10 @@ export class ReingresoEstudianteService {
 
   private getAuthHeaders(isFile: boolean = false): HttpHeaders {
     const token = localStorage.getItem('token');
-    console.log('🔑 Token encontrado:', token ? 'Sí' : 'No');
-    console.log('🔑 Token completo:', token);
-
-    const headers = new HttpHeaders({
+    return new HttpHeaders({
       ...(isFile ? {} : { 'Content-Type': 'application/json' }),
       Authorization: token ? `Bearer ${token}` : ''
     });
-
-    console.log('🔑 Headers creados:', headers);
-    return headers;
   }
 
   // ================================
@@ -357,7 +351,7 @@ export class ReingresoEstudianteService {
    * Validar documentos requeridos para reingreso
    */
   validarDocumentosRequeridos(idSolicitud: number): Observable<any> {
-    const url = `${this.apiUrl}/validarDocumentosRequeridos/${idSolicitud}`;
+    const url = `${environment.apiUrl}/solicitudes-reingreso/validarDocumentosRequeridos/${idSolicitud}`;
 
     console.log('🔗 URL para validar documentos requeridos:', url);
 

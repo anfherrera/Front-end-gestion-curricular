@@ -68,6 +68,50 @@ mat-form-field mat-icon {
   color: #002776;
 }
 
+/* Estilos para asteriscos requeridos */
+.required-asterisk {
+  color: #f44336;
+  margin-left: 2px;
+  font-weight: normal;
+  display: inline-block;
+}
+
+/* Desactivar asteriscos automáticos de Material Design */
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-required-marker {
+  display: none !important;
+}
+
+/* Asegurar que los asteriscos no se superpongan */
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0.5em;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  padding-bottom: 0;
+}
+
+/* Ajustar el label para que el asterisco no se superponga con el icono */
+::ng-deep .login-input .mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+  left: 40px !important;
+}
+
+::ng-deep .login-input .mat-mdc-form-field-label-wrapper {
+  padding-left: 0;
+  overflow: visible;
+}
+
+/* Asegurar espacio adecuado para el asterisco en el label */
+::ng-deep .login-input .mat-mdc-form-field .mat-mdc-floating-label {
+  width: auto !important;
+  max-width: calc(100% - 50px);
+}
+
+/* Asegurar que el label tenga suficiente espacio para el asterisco */
+::ng-deep .login-input .mat-mdc-form-field-label {
+  white-space: nowrap;
+  overflow: visible;
+}
+
 /* Botón */
 .login-button {
   background: linear-gradient(135deg, #002776, #0051b3) !important;

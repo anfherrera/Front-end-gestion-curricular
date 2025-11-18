@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map, switchMap } from 'rxjs';
+import { Observable, catchError, map, switchMap, of } from 'rxjs';
 import { Solicitud, Archivo, Usuario, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -44,9 +45,6 @@ export class PazSalvoService {
         .set('rol', 'ESTUDIANTE')
         .set('idUsuario', idUsuario?.toString() || '');
       
-      console.log(`📋 [ESTUDIANTE] Usando endpoint /porRol`);
-      console.log(`📋 URL: ${this.apiUrl}/listarSolicitud-PazYSalvo/porRol?${params.toString()}`);
-      
       return this.http.get<SolicitudHomologacionDTORespuesta[]>(
         `${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`,
         { params, headers: this.getAuthHeaders() }
@@ -62,9 +60,6 @@ export class PazSalvoService {
     } else if (rolUpper === 'SECRETARIA' || rolUpper === 'SECRETARIO') {
       endpoint = 'Secretaria';
     }
-    
-    console.log(`📋 [${rol}] Usando endpoint específico: /${endpoint}`);
-    console.log(`📋 URL: ${this.apiUrl}/listarSolicitud-PazYSalvo/${endpoint}`);
     
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/${endpoint}`,
@@ -105,11 +100,60 @@ export class PazSalvoService {
   /**
    * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
    * Igual que Homologación: usa endpoint directo /Secretaria
+   * Estado: APROBADA_COORDINADOR (pendientes de procesar)
    */
   getSecretariaRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria`, 
       { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /**
+   * Obtener solicitudes ya procesadas por funcionario (historial)
+   * Estado: APROBADA_FUNCIONARIO (ya aprobadas por funcionario)
+   */
+  getSolicitudesProcesadasFuncionario(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Funcionario/Aprobadas`, 
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(error => {
+        console.error('Error obteniendo solicitudes procesadas (funcionario):', error);
+        return of([]); // Retornar array vacío en caso de error
+      })
+    );
+  }
+
+  /**
+   * Obtener solicitudes ya procesadas por coordinador (historial)
+   * Estado: APROBADA_COORDINADOR (ya aprobadas por coordinador)
+   */
+  getSolicitudesProcesadasCoordinador(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Coordinador/Aprobadas`, 
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(error => {
+        console.error('Error obteniendo solicitudes procesadas (coordinador):', error);
+        return of([]); // Retornar array vacío en caso de error
+      })
+    );
+  }
+
+  /**
+   * Obtener solicitudes ya procesadas por secretaría (historial)
+   * Estado: APROBADA (ya enviadas al estudiante)
+   */
+  getSolicitudesProcesadasSecretaria(): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria/Aprobadas`, 
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(error => {
+        console.error('Error obteniendo solicitudes procesadas (secretaria):', error);
+        return of([]); // Retornar array vacío en caso de error
+      })
     );
   }
 
@@ -140,11 +184,6 @@ export class PazSalvoService {
       archivos: archivos
     };
 
-    console.log('📤 Enviando solicitud de paz y salvo:', body);
-    console.log('📤 Usuario completo:', usuario);
-    console.log('📤 Headers:', this.getAuthHeaders());
-    console.log('📤 URL:', `${this.apiUrl}/crearSolicitud-PazYSalvo`);
-    
     return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
       .pipe(
         catchError(error => {
@@ -164,12 +203,6 @@ export class PazSalvoService {
       nuevoEstado: 'APROBADA_FUNCIONARIO'
     };
     
-    console.log('✅ Aprobando solicitud de Paz y Salvo:', {
-      url: url,
-      requestId: requestId,
-      body: body
-    });
-    
     return this.http.put(url, body, { headers: this.getAuthHeaders() });
   }
 
@@ -180,12 +213,6 @@ export class PazSalvoService {
       nuevoEstado: 'RECHAZADA',
       comentario: reason
     };
-    
-    console.log('❌ Rechazando solicitud de Paz y Salvo:', {
-      url: url,
-      requestId: requestId,
-      body: body
-    });
     
     return this.http.put(url, body, { headers: this.getAuthHeaders() });
   }
@@ -283,7 +310,7 @@ export class PazSalvoService {
    * Los documentos se suben ANTES de crear la solicitud
    */
   subirDocumento(archivo: File): Observable<any> {
-    const url = `${this.apiUrl}/subir-documento`;
+    const url = `${environment.apiUrl}/solicitudes-pazysalvo/subir-documento`;
     
     // Validaciones del frontend
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -307,10 +334,6 @@ export class PazSalvoService {
     
     const formData = new FormData();
     formData.append('file', archivo);
-    
-    console.log('🔗 URL para subir documento (nuevo flujo):', url);
-    console.log('📁 Archivo a subir:', archivo.name);
-    console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
     // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
     return this.http.post(url, formData);
@@ -348,12 +371,7 @@ export class PazSalvoService {
     // Agregar idSolicitud si se proporciona
     if (idSolicitud) {
       formData.append('idSolicitud', idSolicitud.toString());
-      console.log('📎 Asociando archivo a solicitud ID:', idSolicitud);
     }
-    
-    console.log('🔗 URL para subir archivo PDF:', url);
-    console.log('📁 Archivo a subir:', archivo.name);
-    console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
     
     // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
     return this.http.post(url, formData);
@@ -376,12 +394,6 @@ export class PazSalvoService {
   // ================================
   actualizarEstadoDocumentos(idSolicitud: number, documentos: any[]): Observable<any> {
     const url = `${this.apiUrl}/actualizarEstadoDocumentos`;
-    
-    console.log('📄 Actualizando estado de documentos de Paz y Salvo:', {
-      url: url,
-      idSolicitud: idSolicitud,
-      documentos: documentos
-    });
     
     return this.http.put(url, {
       idSolicitud: idSolicitud,
@@ -424,9 +436,7 @@ export class PazSalvoService {
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // ✅ USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
-    const url = `${this.apiUrl}/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
-    console.log('🔗 URL de descarga (endpoint Paz y Salvo):', url);
-    console.log('📁 Nombre del archivo:', nombreArchivo);
+    const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -474,9 +484,6 @@ export class PazSalvoService {
       comentario: comentario
     };
     
-    console.log('💬 Añadiendo comentario (endpoint genérico):', body);
-    console.log('🔗 URL:', url);
-    
     return this.http.put(url, body, { headers: this.getAuthHeaders() });
   }
 
@@ -484,15 +491,7 @@ export class PazSalvoService {
    * 🆕 Generar documento de Paz y Salvo usando endpoint específico (para secretaría)
    */
   generarDocumento(idSolicitud: number, numeroDocumento: string, fechaDocumento: string, observaciones?: string): Observable<{blob: Blob, filename: string}> {
-    const url = `${this.apiUrl}/generar-documento/${idSolicitud}`;
-    
-    console.log('📄 Generando documento de Paz y Salvo usando endpoint específico:', {
-      idSolicitud,
-      numeroDocumento,
-      fechaDocumento,
-      observaciones
-    });
-    console.log('🔗 URL:', url);
+    const url = `${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/${idSolicitud}`;
 
     // Crear FormData con los parámetros como indica el usuario
     const formData = new FormData();
@@ -501,12 +500,6 @@ export class PazSalvoService {
     if (observaciones) {
       formData.append('observaciones', observaciones);
     }
-
-    console.log('📋 FormData creado:', {
-      numeroDocumento,
-      fechaDocumento,
-      observaciones: observaciones || 'Sin observaciones'
-    });
 
     // Llamar al endpoint específico de Paz y Salvo
     return this.http.post(url, formData, {
@@ -525,11 +518,9 @@ export class PazSalvoService {
           const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
           if (filenameMatch) {
             filename = filenameMatch[1];
-            console.log('📁 Nombre del archivo desde header:', filename);
           }
         }
         
-        console.log('✅ Documento generado exitosamente:', filename);
         return { blob, filename };
       })
     );
@@ -540,7 +531,6 @@ export class PazSalvoService {
    * Para funcionarios
    */
   obtenerDocumentos(idSolicitud: number): Observable<any[]> {
-    console.log('🌐 Llamando a API: GET /api/solicitudes-pazysalvo/obtenerDocumentos/' + idSolicitud);
     return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/${idSolicitud}`, {
       headers: this.getAuthHeaders()
     });
@@ -551,7 +541,6 @@ export class PazSalvoService {
    * Para coordinadores
    */
   obtenerDocumentosCoordinador(idSolicitud: number): Observable<any[]> {
-    console.log('🌐 Llamando a API: GET /api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/' + idSolicitud);
     return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`, {
       headers: this.getAuthHeaders()
     });
@@ -563,7 +552,6 @@ export class PazSalvoService {
    */
   asociarDocumentosHuerfanos(idSolicitud: number): Observable<any> {
     const url = `${this.apiUrl}/asociar-documentos-huerfanos/${idSolicitud}`;
-    console.log('🔗 Asociando documentos huérfanos a solicitud:', idSolicitud);
     
     return this.http.post(url, {}, {
       headers: this.getAuthHeaders()

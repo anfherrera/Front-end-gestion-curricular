@@ -113,8 +113,8 @@ export function getColorPeriodo(periodo: string): string {
   if (partes.length !== 2) return '#9e9e9e';
   
   const numero = partes[1];
-  // Período 1 (primer semestre) = Azul, Período 2 (segundo semestre) = Naranja
-  return numero === '1' ? '#3498db' : '#e67e22';
+  // Período 1 (primer semestre) = Azul, Período 2 (segundo semestre) = Azul oscuro
+  return numero === '1' ? '#3498db' : '#2980b9';
 }
 
 /**
