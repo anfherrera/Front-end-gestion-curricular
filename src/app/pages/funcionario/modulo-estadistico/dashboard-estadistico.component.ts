@@ -321,16 +321,33 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     estudiantesPorPrograma: any,
     porPeriodo: any
   ): void {
-    // Calcular totales desde estado de solicitudes
-    const estados = estadoSolicitudes?.estados || {};
-    const totalSolicitudes = estadoSolicitudes?.totalSolicitudes || 0;
-    const aprobadas = (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0);
-    const rechazadas = estados.RECHAZADA?.cantidad || 0;
-    const enviadas = estados.ENVIADA?.cantidad || 0;
-    const enProceso = estados.APROBADA_FUNCIONARIO?.cantidad || 0;
-    
     // Construir estadísticas por proceso desde estadisticasPorProceso
     const procesosData = estadisticasPorProceso?.estadisticasPorProceso || {};
+    
+    // Calcular totales desde estado de solicitudes (si está disponible)
+    let totalSolicitudes = 0;
+    let aprobadas = 0;
+    let rechazadas = 0;
+    let enviadas = 0;
+    let enProceso = 0;
+    
+    if (estadoSolicitudes && estadoSolicitudes.estados) {
+      const estados = estadoSolicitudes.estados;
+      totalSolicitudes = estadoSolicitudes.totalSolicitudes || 0;
+      aprobadas = (estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_FUNCIONARIO']?.cantidad || 0);
+      rechazadas = estados['RECHAZADA']?.cantidad || 0;
+      enviadas = estados['ENVIADA']?.cantidad || 0;
+      enProceso = estados['APROBADA_FUNCIONARIO']?.cantidad || 0;
+    } else {
+      // Si no hay estadoSolicitudes, calcular desde estadisticasPorProceso
+      Object.values(procesosData).forEach((proceso: any) => {
+        totalSolicitudes += proceso.totalSolicitudes || 0;
+        aprobadas += proceso.aprobadas || 0;
+        rechazadas += proceso.rechazadas || 0;
+        enviadas += proceso.enviadas || 0;
+        enProceso += proceso.enProceso || 0;
+      });
+    }
     const estadisticasPorProcesoArray: EstadisticasProceso[] = Object.keys(procesosData).map((nombreProceso, index) => {
       const proceso = procesosData[nombreProceso];
       return {
