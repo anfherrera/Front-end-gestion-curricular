@@ -321,6 +321,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     estudiantesPorPrograma: any,
     porPeriodo: any
   ): void {
+    console.log('🔍 [DEBUG] Construyendo resumen desde endpoints alternativos...');
+    console.log('🔍 [DEBUG] estadoSolicitudes:', estadoSolicitudes);
+    console.log('🔍 [DEBUG] estadisticasPorProceso:', estadisticasPorProceso);
+    
     // Construir estadísticas por proceso desde estadisticasPorProceso
     const procesosData = estadisticasPorProceso?.estadisticasPorProceso || {};
     
@@ -332,13 +336,22 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     let enProceso = 0;
     
     if (estadoSolicitudes && estadoSolicitudes.estados) {
+      console.log('✅ Usando datos de estadoSolicitudes');
       const estados = estadoSolicitudes.estados;
       totalSolicitudes = estadoSolicitudes.totalSolicitudes || 0;
       aprobadas = (estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_FUNCIONARIO']?.cantidad || 0);
       rechazadas = estados['RECHAZADA']?.cantidad || 0;
       enviadas = estados['ENVIADA']?.cantidad || 0;
       enProceso = estados['APROBADA_FUNCIONARIO']?.cantidad || 0;
+      
+      console.log('🔍 [DEBUG] Valores calculados desde estadoSolicitudes:');
+      console.log('  - totalSolicitudes:', totalSolicitudes);
+      console.log('  - aprobadas:', aprobadas);
+      console.log('  - rechazadas:', rechazadas);
+      console.log('  - enviadas:', enviadas);
+      console.log('  - enProceso:', enProceso);
     } else {
+      console.log('⚠️ estadoSolicitudes no disponible, calculando desde estadisticasPorProceso');
       // Si no hay estadoSolicitudes, calcular desde estadisticasPorProceso
       Object.values(procesosData).forEach((proceso: any) => {
         totalSolicitudes += proceso.totalSolicitudes || 0;
@@ -347,6 +360,13 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         enviadas += proceso.enviadas || 0;
         enProceso += proceso.enProceso || 0;
       });
+      
+      console.log('🔍 [DEBUG] Valores calculados desde estadisticasPorProceso:');
+      console.log('  - totalSolicitudes:', totalSolicitudes);
+      console.log('  - aprobadas:', aprobadas);
+      console.log('  - rechazadas:', rechazadas);
+      console.log('  - enviadas:', enviadas);
+      console.log('  - enProceso:', enProceso);
     }
     const estadisticasPorProcesoArray: EstadisticasProceso[] = Object.keys(procesosData).map((nombreProceso, index) => {
       const proceso = procesosData[nombreProceso];
@@ -391,6 +411,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     };
     
     console.log('✅ Resumen construido desde endpoints alternativos:', this.resumenCompleto);
+    console.log('🔍 [DEBUG] estadisticasGlobales:', this.resumenCompleto.estadisticasGlobales);
   }
 
   /**
@@ -629,6 +650,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private generarKPIs(): void {
     // ✅ CORREGIDO: Leer valores de resumenCompleto.estadisticasGlobales
     const estadisticas = this.resumenCompleto?.estadisticasGlobales;
+    
+    console.log('🔍 [DEBUG] Generando KPIs desde:', estadisticas);
     
     this.kpis = [
       {
