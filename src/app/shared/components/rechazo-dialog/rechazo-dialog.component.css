@@ -12,3 +12,17 @@ textarea {
 mat-dialog-actions {
   margin-top: 12px;
 }
+
+.btn-rechazar {
+  background-color: #00138C !important;
+  color: white !important;
+}
+
+.btn-rechazar:hover:not(:disabled) {
+  background-color: #0024b3 !important;
+}
+
+.btn-rechazar:disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+}
