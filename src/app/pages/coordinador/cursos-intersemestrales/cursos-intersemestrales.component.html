@@ -1,0 +1,24 @@
+<div class="cursos-intersemestrales-container">
+  <header class="header">
+    <h1>Gestión de Cursos Intersemestrales</h1>
+  </header>
+
+  <nav class="menu" role="navigation">
+    <a *ngFor="let opcion of opciones"
+       [routerLink]="opcion.ruta"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
+       class="menu-item">
+      
+      <div class="menu-content">
+        <mat-icon class="menu-icon">{{ opcion.icon }}</mat-icon>
+        <span class="menu-text">{{ opcion.titulo }}</span>
+        
+      </div>
+    </a>
+  </nav>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

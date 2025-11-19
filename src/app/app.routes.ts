@@ -79,6 +79,13 @@ export const routes: Routes = [
       { path: 'coordinador/reingreso-estudiante', loadComponent: () => import('./pages/coordinador/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
       { path: 'coordinador/homologacion-asignaturas', loadComponent: () => import('./pages/coordinador/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
       { path: 'coordinador/modulo-estadistico', loadComponent: () => import('./pages/coordinador/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
+      {
+        path: 'coordinador/cursos-intersemestrales',
+        loadChildren: () =>
+          import('./pages/coordinador/cursos-intersemestrales/cursos-intersemestrales.routes')
+            .then(m => m.CursosIntersemestralesCoordinadorRoutes),
+        canActivate: [authGuard]
+      },
 
       // ==========================
       // Secretaria

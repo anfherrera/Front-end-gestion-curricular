@@ -1,0 +1,1333 @@
+/* Estilos para el componente de preinscribir estudiantes */
+
+.filtro-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #e3f2fd;
+}
+
+.filtro-section h3 {
+  color: #00138C;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.curso-selector {
+  width: 100%;
+  max-width: 500px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #666;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.preinscripciones-section {
+  margin-bottom: 24px;
+}
+
+.preinscripciones-section h3 {
+  color: #00138C;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid #00138C;
+  padding-bottom: 8px;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+}
+
+.no-data mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: #00138C;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+}
+
+.preinscripciones-table {
+  width: 100%;
+  background: white;
+}
+
+.preinscripciones-table th {
+  background: #00138C !important;
+  color: white !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.preinscripciones-table th * {
+  color: white !important;
+}
+
+.preinscripciones-table td {
+  border-bottom: 1px solid #e0e0e0;
+  color: #333 !important;
+}
+
+.preinscripciones-table td * {
+  color: #333 !important;
+}
+
+.estudiante-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.estudiante-info strong {
+  color: #333 !important;
+  font-size: 14px;
+}
+
+.estudiante-info small {
+  color: #666 !important;
+  font-size: 12px;
+}
+
+.observaciones-cell {
+  max-width: 200px;
+  word-wrap: break-word;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 6px;
+  border-left: 3px solid #00138C;
+  margin: 4px 0;
+}
+
+.observaciones-cell span {
+  color: #333 !important;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.sin-observaciones {
+  color: #999 !important;
+  font-style: italic;
+  font-size: 12px;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 2px solid #ddd;
+}
+
+/* Estilos para el badge de estado */
+.estado-badge {
+  display: inline-block;
+  background-color: #00138C;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Estilos para el botón de acción */
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.action-button:hover {
+  background-color: rgba(0, 19, 140, 0.1);
+}
+
+.action-icon {
+  font-size: 18px;
+  color: #00138C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenedor de acciones */
+.acciones-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.curso-info {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #e3f2fd;
+}
+
+.curso-info h4 {
+  color: #00138C;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  border-left: 3px solid #00138C;
+}
+
+.info-item strong {
+  color: #00138C;
+  min-width: 120px;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .info-item strong {
+    min-width: auto;
+  }
+  
+  .table-container {
+    font-size: 12px;
+  }
+  
+  .preinscripciones-table th,
+  .preinscripciones-table td {
+    padding: 8px 4px;
+  }
+}
+
+/* Estilos para mat-form-field */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+  color: #e3f2fd;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  color: #00138C;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: #6c757d;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: #00138C;
+}
+
+/* Estilos para mat-chip - FORZAR ESTILOS */
+::ng-deep .mat-mdc-chip {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .mat-mdc-chip .mat-mdc-chip-text {
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-chip .mat-mdc-chip-text-wrapper {
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-chip * {
+  color: white !important;
+}
+
+/* Forzar estilos en TODOS los chips */
+::ng-deep mat-chip {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep mat-chip * {
+  color: white !important;
+}
+
+/* Estilos específicos para chips de estado en la tabla */
+::ng-deep .preinscripciones-table .mat-mdc-chip {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Eliminar todos los bordes del chip */
+::ng-deep .preinscripciones-table .mat-mdc-chip,
+::ng-deep .preinscripciones-table .mat-mdc-chip * {
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-chip .mat-mdc-chip-text {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-chip .mat-mdc-chip-text-wrapper {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-chip * {
+  color: white !important;
+}
+
+/* Forzar color del texto en toda la tabla */
+::ng-deep .preinscripciones-table {
+  color: #333 !important;
+}
+
+::ng-deep .preinscripciones-table th {
+  background: #00138C !important;
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table th * {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table th .mat-sort-header-content {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table th .mat-sort-header-arrow {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table td {
+  color: #333 !important;
+}
+
+::ng-deep .preinscripciones-table td * {
+  color: #333 !important;
+}
+
+::ng-deep .preinscripciones-table .estudiante-info {
+  color: #333 !important;
+}
+
+::ng-deep .preinscripciones-table .estudiante-info strong {
+  color: #333 !important;
+}
+
+::ng-deep .preinscripciones-table .estudiante-info small {
+  color: #666 !important;
+}
+
+::ng-deep .preinscripciones-table .observaciones-cell {
+  color: #333 !important;
+}
+
+::ng-deep .preinscripciones-table .observaciones-cell {
+  color: #333 !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+  border-left: 3px solid #00138C !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+}
+
+::ng-deep .preinscripciones-table .observaciones-cell span {
+  color: #333 !important;
+}
+
+::ng-deep .preinscripciones-table .sin-observaciones {
+  color: #999 !important;
+  background: #f5f5f5 !important;
+  border-left: 2px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+}
+
+/* Estilos adicionales para chips de estado */
+::ng-deep .preinscripciones-table mat-chip {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+}
+
+::ng-deep .preinscripciones-table mat-chip .mat-chip-text {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table mat-chip .mat-chip-text-wrapper {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table mat-chip * {
+  color: white !important;
+}
+
+/* Forzar estilos en todos los elementos del chip */
+::ng-deep .preinscripciones-table [style*="background-color"] {
+  background-color: #00138C !important;
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table [style*="color"] {
+  color: white !important;
+}
+
+/* Estilos para el icono del ojo en acciones - FORZAR */
+::ng-deep .preinscripciones-table .mat-mdc-icon-button {
+  color: #00138C !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-icon-button .mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover {
+  background-color: rgba(0, 19, 140, 0.1) !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover .mat-icon {
+  color: #001a99 !important;
+}
+
+/* Forzar color en TODOS los iconos de la tabla */
+::ng-deep .preinscripciones-table mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .preinscripciones-table button mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .preinscripciones-table .mat-icon {
+  color: #00138C !important;
+}
+
+/* Estilos específicos para botones de acción */
+::ng-deep .preinscripciones-table button[mat-icon-button] {
+  color: #00138C !important;
+}
+
+::ng-deep .preinscripciones-table button[mat-icon-button] .mat-icon {
+  color: #00138C !important;
+}
+
+::ng-deep .preinscripciones-table button[mat-icon-button]:hover {
+  background-color: rgba(0, 19, 140, 0.1) !important;
+}
+
+::ng-deep .preinscripciones-table button[mat-icon-button]:hover .mat-icon {
+  color: #001a99 !important;
+}
+
+/* ===== ESTILOS PARA LOS BOTONES DE ACCIÓN ===== */
+
+/* Contenedor de acciones mejorado */
+.acciones-container {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Botón Ver - Azul sólido consistente con la aplicación */
+.btn-ver {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  min-width: 80px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  text-transform: none !important;
+  line-height: 1 !important;
+}
+
+.btn-ver span,
+.btn-ver .mat-button-wrapper,
+.btn-ver .mdc-button__label {
+  color: white !important;
+}
+
+.btn-ver:hover:not(:disabled) {
+  background-color: #001a99 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+}
+
+.btn-ver:active:not(:disabled) {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+}
+
+.btn-ver:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-ver .mat-icon {
+  color: white !important;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+}
+
+.btn-ver mat-icon,
+.btn-ver .mat-icon,
+.btn-ver .material-icons {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* Botón Aprobar - Verde consistente */
+.btn-aprobar {
+  background-color: #4caf50 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  min-width: 90px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+  text-transform: none !important;
+  line-height: 1 !important;
+}
+
+.btn-aprobar span,
+.btn-aprobar .mat-button-wrapper,
+.btn-aprobar .mdc-button__label {
+  color: white !important;
+}
+
+.btn-aprobar:hover:not(:disabled) {
+  background-color: #45a049 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3) !important;
+}
+
+.btn-aprobar:active:not(:disabled) {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+}
+
+.btn-aprobar:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-aprobar .mat-icon {
+  color: white !important;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+}
+
+.btn-aprobar mat-icon,
+.btn-aprobar .mat-icon,
+.btn-aprobar .material-icons {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* Botón Rechazar - Rojo consistente */
+.btn-rechazar {
+  background-color: #f44336 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  min-width: 90px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2) !important;
+  text-transform: none !important;
+  line-height: 1 !important;
+}
+
+.btn-rechazar span,
+.btn-rechazar .mat-button-wrapper,
+.btn-rechazar .mdc-button__label {
+  color: white !important;
+}
+
+.btn-rechazar:hover:not(:disabled) {
+  background-color: #e53935 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3) !important;
+}
+
+.btn-rechazar:active:not(:disabled) {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2) !important;
+}
+
+.btn-rechazar:disabled {
+  background-color: #d3d3d3 !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-rechazar .mat-icon {
+  color: white !important;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+}
+
+.btn-rechazar mat-icon,
+.btn-rechazar .mat-icon,
+.btn-rechazar .material-icons {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* Forzar estilos en todos los botones de la tabla usando ::ng-deep */
+::ng-deep .preinscripciones-table .btn-ver {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+}
+
+::ng-deep .preinscripciones-table .btn-ver:hover {
+  background-color: #001a99 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+}
+
+::ng-deep .preinscripciones-table .btn-aprobar {
+  background-color: #4caf50 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+}
+
+::ng-deep .preinscripciones-table .btn-aprobar:hover {
+  background-color: #45a049 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3) !important;
+}
+
+::ng-deep .preinscripciones-table .btn-rechazar {
+  background-color: #f44336 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2) !important;
+}
+
+::ng-deep .preinscripciones-table .btn-rechazar:hover {
+  background-color: #e53935 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3) !important;
+}
+
+::ng-deep .preinscripciones-table .btn-ver .mat-icon,
+::ng-deep .preinscripciones-table .btn-aprobar .mat-icon,
+::ng-deep .preinscripciones-table .btn-rechazar .mat-icon {
+  color: white !important;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Forzar estilos en todos los botones mat-raised-button */
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-ver {
+  background-color: #00138C !important;
+  color: white !important;
+  border: none !important;
+}
+
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-aprobar {
+  background-color: #4caf50 !important;
+  color: white !important;
+  border: none !important;
+}
+
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar {
+  background-color: #f44336 !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* Forzar estilos en el contenido de los botones */
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-ver .mat-button-wrapper,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-aprobar .mat-button-wrapper,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar .mat-button-wrapper {
+  color: white !important;
+}
+
+/* Forzar estilos en los iconos dentro de los botones */
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-ver mat-icon,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-aprobar mat-icon,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar mat-icon {
+  color: white !important;
+}
+
+/* Forzar estilos para Material Design button states */
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver {
+  --mdc-filled-button-container-color: #00138C !important;
+  --mdc-filled-button-label-text-color: white !important;
+  background-color: #00138C !important;
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar {
+  --mdc-filled-button-container-color: #4caf50 !important;
+  --mdc-filled-button-label-text-color: white !important;
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar {
+  --mdc-filled-button-container-color: #f44336 !important;
+  --mdc-filled-button-label-text-color: white !important;
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+/* Forzar estilos para hover states de Material Design */
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver:hover {
+  --mdc-filled-button-hover-state-layer-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #001a99 !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar:hover {
+  --mdc-filled-button-hover-state-layer-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #45a049 !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar:hover {
+  --mdc-filled-button-hover-state-layer-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #e53935 !important;
+}
+
+/* Forzar estilos para el contenido de los botones Material Design */
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver .mdc-button__label,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar .mdc-button__label,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mdc-button__label {
+  color: white !important;
+}
+
+/* Forzar texto blanco en todos los elementos de texto de los botones */
+::ng-deep .preinscripciones-table .btn-ver *,
+::ng-deep .preinscripciones-table .btn-aprobar *,
+::ng-deep .preinscripciones-table .btn-rechazar * {
+  color: white !important;
+}
+
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver *,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar *,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar * {
+  color: white !important;
+}
+
+/* Forzar texto blanco en elementos específicos de Material Design */
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver span,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar span,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar span,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver .mat-button-wrapper,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar .mat-button-wrapper,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mat-button-wrapper,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver .mdc-button__label,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar .mdc-button__label,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mdc-button__label {
+  color: white !important;
+}
+
+/* Forzar estilos para iconos en botones Material Design */
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver .mat-icon,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar .mat-icon,
+::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mat-icon {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* Forzar iconos blancos en todos los botones de la tabla */
+::ng-deep .preinscripciones-table .btn-ver mat-icon,
+::ng-deep .preinscripciones-table .btn-aprobar mat-icon,
+::ng-deep .preinscripciones-table .btn-rechazar mat-icon,
+::ng-deep .preinscripciones-table .btn-ver .mat-icon,
+::ng-deep .preinscripciones-table .btn-aprobar .mat-icon,
+::ng-deep .preinscripciones-table .btn-rechazar .mat-icon,
+::ng-deep .preinscripciones-table .btn-ver .material-icons,
+::ng-deep .preinscripciones-table .btn-aprobar .material-icons,
+::ng-deep .preinscripciones-table .btn-rechazar .material-icons {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* Forzar iconos blancos en botones mat-raised-button */
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-ver mat-icon,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-aprobar mat-icon,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar mat-icon,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-ver .mat-icon,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-aprobar .mat-icon,
+::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar .mat-icon {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* Responsive para botones */
+@media (max-width: 768px) {
+  .acciones-container {
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+  }
+  
+  .btn-ver,
+  .btn-aprobar,
+  .btn-rechazar {
+    min-width: 70px !important;
+    height: 32px !important;
+    font-size: 11px !important;
+    padding: 6px 12px !important;
+    width: 100% !important;
+  }
+  
+  .btn-ver .mat-icon,
+  .btn-aprobar .mat-icon,
+  .btn-rechazar .mat-icon {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .acciones-container {
+    gap: 2px;
+  }
+  
+  .btn-ver,
+  .btn-aprobar,
+  .btn-rechazar {
+    min-width: 60px !important;
+    height: 30px !important;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+}
+
+/* ===== ESTILOS PARA EL MODAL DE RECHAZO ===== */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  display: none;
+}
+
+.modal.show {
+  display: block !important;
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  max-width: 500px;
+  margin: 1.75rem auto;
+  pointer-events: none;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: calc(0.3rem - 1px);
+  border-top-right-radius: calc(0.3rem - 1px);
+}
+
+.modal-title {
+  margin-bottom: 0;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #dc3545;
+}
+
+.modal-title mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.close {
+  padding: 1rem 1rem;
+  margin: -1rem -1rem -1rem auto;
+  background: transparent;
+  border: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.close:hover {
+  opacity: 0.75;
+}
+
+.modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  padding: 1rem;
+}
+
+.modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.75rem;
+  border-top: 1px solid #dee2e6;
+  border-bottom-right-radius: calc(0.3rem - 1px);
+  border-bottom-left-radius: calc(0.3rem - 1px);
+  gap: 8px;
+}
+
+.alert {
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  display: block;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
+}
+
+.form-control-plaintext {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+  color: #495057;
+  background-color: transparent;
+  border: solid transparent;
+  border-width: 1px 0;
+  font-weight: 500;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 500;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  text-transform: none;
+  min-height: 36px;
+}
+
+.btn:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-secondary {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  color: #fff;
+  background-color: #545b62;
+  border-color: #4e555b;
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+}
+
+.btn-danger {
+  color: #fff;
+  background-color: #f44336;
+  border-color: #f44336;
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
+}
+
+.btn-danger:hover:not(:disabled) {
+  color: #fff;
+  background-color: #e53935;
+  border-color: #e53935;
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
+
+.btn-danger:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
+}
+
+.btn-danger:disabled {
+  color: #888888;
+  background-color: #d3d3d3;
+  border-color: #d3d3d3;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.btn .mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+/* Forzar iconos blancos en botones del modal */
+.btn-secondary .mat-icon,
+.btn-secondary mat-icon,
+.btn-secondary .material-icons {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+.btn-danger .mat-icon,
+.btn-danger mat-icon,
+.btn-danger .material-icons {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* Forzar texto blanco en botones del modal */
+.btn-secondary span,
+.btn-secondary .mat-button-wrapper,
+.btn-secondary .mdc-button__label {
+  color: white !important;
+}
+
+.btn-danger span,
+.btn-danger .mat-button-wrapper,
+.btn-danger .mdc-button__label {
+  color: white !important;
+}
+
+/* Forzar texto blanco en todos los elementos de los botones del modal */
+.btn-secondary *,
+.btn-danger * {
+  color: white !important;
+}
+
+/* ESTILO UNIVERSAL: Forzar todos los iconos blancos en todos los botones */
+.btn-ver *,
+.btn-aprobar *,
+.btn-rechazar *,
+.btn-secondary *,
+.btn-danger *,
+button[mat-raised-button].btn-ver *,
+button[mat-raised-button].btn-aprobar *,
+button[mat-raised-button].btn-rechazar * {
+  color: white !important;
+}
+
+/* Forzar específicamente iconos en todos los botones */
+.btn-ver mat-icon,
+.btn-ver .mat-icon,
+.btn-ver .material-icons,
+.btn-aprobar mat-icon,
+.btn-aprobar .mat-icon,
+.btn-aprobar .material-icons,
+.btn-rechazar mat-icon,
+.btn-rechazar .mat-icon,
+.btn-rechazar .material-icons,
+.btn-secondary mat-icon,
+.btn-secondary .mat-icon,
+.btn-secondary .material-icons,
+.btn-danger mat-icon,
+.btn-danger .mat-icon,
+.btn-danger .material-icons {
+  color: white !important;
+  --mdc-icon-color: white !important;
+}
+
+/* ===== ESTILOS PARA BOTONES DE ICONOS CIRCULARES ===== */
+
+/* Botones de iconos circulares - estilo consistente */
+.acciones-container button[mat-icon-button] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  padding: 0 !important;
+}
+
+.acciones-container button[mat-icon-button]:hover {
+  transform: scale(1.1) !important;
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.acciones-container button[mat-icon-button] mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin: 0 !important;
+}
+
+/* Botón Ver - Azul */
+.acciones-container button[mat-icon-button][style*="00138C"] {
+  color: #00138C !important;
+}
+
+.acciones-container button[mat-icon-button][style*="00138C"]:hover {
+  background-color: rgba(0, 19, 140, 0.1) !important;
+  color: #001a99 !important;
+}
+
+.acciones-container button[mat-icon-button][style*="00138C"] mat-icon {
+  color: #00138C !important;
+}
+
+.acciones-container button[mat-icon-button][style*="00138C"]:hover mat-icon {
+  color: #001a99 !important;
+}
+
+/* Botón Aprobar - Verde */
+.acciones-container button[mat-icon-button][style*="4CAF50"] {
+  color: #4CAF50 !important;
+}
+
+.acciones-container button[mat-icon-button][style*="4CAF50"]:hover {
+  background-color: rgba(76, 175, 80, 0.1) !important;
+  color: #45a049 !important;
+}
+
+.acciones-container button[mat-icon-button][style*="4CAF50"] mat-icon {
+  color: #4CAF50 !important;
+}
+
+.acciones-container button[mat-icon-button][style*="4CAF50"]:hover mat-icon {
+  color: #45a049 !important;
+}
+
+/* Botón Rechazar - Rojo */
+.acciones-container button[mat-icon-button][style*="f44336"] {
+  color: #f44336 !important;
+}
+
+.acciones-container button[mat-icon-button][style*="f44336"]:hover {
+  background-color: rgba(244, 67, 54, 0.1) !important;
+  color: #e53935 !important;
+}
+
+.acciones-container button[mat-icon-button][style*="f44336"] mat-icon {
+  color: #f44336 !important;
+}
+
+.acciones-container button[mat-icon-button][style*="f44336"]:hover mat-icon {
+  color: #e53935 !important;
+}

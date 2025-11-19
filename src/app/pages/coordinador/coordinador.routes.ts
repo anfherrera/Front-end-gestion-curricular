@@ -17,5 +17,11 @@ export const CoordinadorRoutes: Routes = [
     path: 'modulo-estadistico',
     loadComponent: () => import('./modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent)
   },
+  {
+    path: 'cursos-intersemestrales',
+    loadChildren: () =>
+      import('./cursos-intersemestrales/cursos-intersemestrales.routes')
+        .then(m => m.CursosIntersemestralesCoordinadorRoutes),
+  },
   { path: '', redirectTo: 'paz-salvo', pathMatch: 'full' }
 ];

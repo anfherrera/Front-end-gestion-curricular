@@ -1,0 +1,153 @@
+<app-card-container title="Preinscribir Estudiantes">
+  
+  <!-- Filtro por curso -->
+  <div class="filtro-section">
+    <h3>Seleccionar Curso</h3>
+    <form [formGroup]="filtroForm">
+      <mat-form-field appearance="outline" class="curso-selector">
+        <mat-label>Selecciona un curso</mat-label>
+        <mat-select formControlName="curso" placeholder="Elige un curso para ver las preinscripciones">
+          <mat-option *ngFor="let curso of cursos" [value]="curso.id_curso">
+            {{ curso.nombre_curso || 'Sin nombre' }} ({{ curso.codigo_curso || 'Sin código' }}) - {{ obtenerNombreDocente(curso) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando datos...</p>
+  </div>
+
+  <!-- Lista de preinscripciones -->
+  <div *ngIf="cursoSeleccionado && !cargando" class="preinscripciones-section">
+    <h3>👥 Preinscripciones para {{ cursoSeleccionado.nombre_curso }}</h3>
+    
+    <div *ngIf="solicitudesFiltradas.length === 0" class="no-data">
+      <mat-icon>info</mat-icon>
+      <p>No hay preinscripciones para este curso.</p>
+    </div>
+
+    <div *ngIf="solicitudesFiltradas.length > 0" class="table-container">
+      <table mat-table [dataSource]="solicitudesFiltradas" class="preinscripciones-table">
+        
+        <!-- Columna Estudiante -->
+        <ng-container matColumnDef="estudiante">
+          <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <div class="estudiante-info">
+              <strong>{{ solicitud.objUsuario.nombre_completo || 'Sin nombre' }}</strong>
+              <small>{{ solicitud.objUsuario.correo || 'Sin email' }}</small>
+              <small>Código: {{ solicitud.objUsuario.codigo || 'Sin código' }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna Fecha -->
+        <ng-container matColumnDef="fecha_solicitud">
+          <th mat-header-cell *matHeaderCellDef>Fecha de Solicitud</th>
+          <td mat-cell *matCellDef="let solicitud">
+            {{ solicitud.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <!-- Columna Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <span style="background: #00138C !important; color: white !important; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: none !important;">
+              {{ solicitud.estado }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Columna Observaciones -->
+        <ng-container matColumnDef="observaciones">
+          <th mat-header-cell *matHeaderCellDef>Observaciones</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <div class="observaciones-cell">
+              <span *ngIf="solicitud.observaciones; else sinObservaciones">
+                {{ solicitud.observaciones }}
+              </span>
+              <ng-template #sinObservaciones>
+                <em class="sin-observaciones">Sin observaciones</em>
+              </ng-template>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <div class="acciones-container">
+              
+              <!-- Botón Ver (solo si tiene permisos) -->
+              <button mat-icon-button 
+                      *ngIf="puedeVerDetalles(solicitud)"
+                      (click)="verDetalles(solicitud)"
+                      matTooltip="Ver detalles y agregar observaciones"
+                      style="color: #00138C !important;">
+                <mat-icon style="color: #00138C !important;">visibility</mat-icon>
+              </button>
+              
+              <!-- Botón Aprobar (solo si tiene permisos y estado válido) -->
+              <button mat-icon-button 
+                      *ngIf="puedeAprobar(solicitud)"
+                      (click)="aprobarSolicitud(solicitud)"
+                      matTooltip="Aprobar preinscripción y pasar a inscripción"
+                      style="color: #4CAF50 !important;">
+                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
+              </button>
+              
+              <!-- Botón Rechazar (solo si tiene permisos y estado válido) -->
+              <button mat-icon-button 
+                      *ngIf="puedeRechazar(solicitud)"
+                      (click)="rechazarSolicitud(solicitud)"
+                      matTooltip="Rechazar preinscripción"
+                      style="color: #f44336 !important;">
+                <mat-icon style="color: #f44336 !important;">cancel</mat-icon>
+              </button>
+              
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Información del curso seleccionado -->
+  <div *ngIf="cursoSeleccionado && !cargando" class="curso-info">
+    <h4>📋 Información del Curso</h4>
+    <div class="info-grid">
+      <div class="info-item">
+        <strong>Docente:</strong> {{ obtenerNombreDocente(cursoSeleccionado) }}
+      </div>
+      <div class="info-item">
+        <strong>Cupo Estimado:</strong> {{ cursoSeleccionado.cupo_estimado || 0 }} estudiantes
+      </div>
+      <div class="info-item">
+        <strong>Espacio:</strong> {{ cursoSeleccionado.espacio_asignado || 'Por asignar' }}
+      </div>
+      <div class="info-item">
+        <strong>Preinscripciones:</strong> {{ solicitudesFiltradas.length }} estudiantes
+      </div>
+      <div class="info-item">
+        <strong>Estado:</strong> {{ cursoSeleccionado.estado || 'Sin estado' }}
+      </div>
+      <div class="info-item">
+        <strong>Fecha Inicio:</strong> {{ cursoSeleccionado.fecha_inicio | date:'dd/MM/yyyy' }}
+      </div>
+      <div class="info-item">
+        <strong>Fecha Fin:</strong> {{ cursoSeleccionado.fecha_fin | date:'dd/MM/yyyy' }}
+      </div>
+    </div>
+  </div>
+
+</app-card-container>
+

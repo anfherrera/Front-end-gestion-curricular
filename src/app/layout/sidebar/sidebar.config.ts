@@ -57,6 +57,7 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   // Cursos Intersemestrales
   { label: 'Cursos Intersemestrales', icon: 'school', route: '/estudiante/cursos-intersemestrales', roles: [UserRole.ESTUDIANTE] },
   { label: 'Cursos Intersemestrales', icon: 'school', route: '/funcionario/cursos-intersemestrales', roles: [UserRole.FUNCIONARIO] },
+  { label: 'Cursos Intersemestrales', icon: 'school', route: '/coordinador/cursos-intersemestrales', roles: [UserRole.COORDINADOR] },
 
   // Reingreso Estudiante
   { label: 'Reingreso Estudiante', icon: 'person_add', route: '/estudiante/reingreso-estudiante', roles: [UserRole.ESTUDIANTE] },

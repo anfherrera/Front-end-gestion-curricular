@@ -1,0 +1,180 @@
+<app-card-container title="Gestión de Cursos">
+  
+  <!-- Botón para crear nuevo curso -->
+  <div class="acciones-header">
+    <button mat-raised-button 
+            color="primary" 
+            (click)="abrirDialogCrear()"
+            class="btn-crear">
+      <mat-icon>add</mat-icon>
+      Crear Nuevo Curso
+    </button>
+    
+    <button mat-stroked-button 
+            (click)="cargarDatos()"
+            [disabled]="cargando"
+            class="btn-actualizar">
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargando" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando cursos...</p>
+  </div>
+
+  <!-- Filtros por estado -->
+  <app-estado-filters
+    *ngIf="!cargando"
+    [cursos]="cursos"
+    (cursosFiltradosChange)="onCursosFiltradosChange($event)"
+    (estadoSeleccionadoChange)="onEstadoSeleccionadoChange($event)">
+  </app-estado-filters>
+
+  <!-- Tabla de cursos -->
+  <div *ngIf="!cargando" class="cursos-container">
+    <table mat-table [dataSource]="cursosFiltrados" class="mat-elevation-z8">
+      
+      <!-- Nombre del Curso -->
+      <ng-container matColumnDef="nombre_curso">
+        <th mat-header-cell *matHeaderCellDef>Nombre del Curso</th>
+        <td mat-cell *matCellDef="let curso">
+          <div class="curso-info">
+            <strong>{{ curso.nombre_curso }}</strong>
+            <small>{{ curso.descripcion }}</small>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Código del Curso -->
+      <ng-container matColumnDef="codigo_curso">
+        <th mat-header-cell *matHeaderCellDef>Código</th>
+        <td mat-cell *matCellDef="let curso">
+          <span class="codigo-curso">{{ curso.codigo_curso }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Materia -->
+      <ng-container matColumnDef="objMateria">
+        <th mat-header-cell *matHeaderCellDef>Materia</th>
+        <td mat-cell *matCellDef="let curso">
+          <div class="materia-info">
+            <strong>{{ curso.objMateria.nombre_materia }}</strong>
+            <small>{{ curso.objMateria.codigo_materia }} - {{ curso.objMateria.creditos }} créditos</small>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Período -->
+      <ng-container matColumnDef="periodo">
+        <th mat-header-cell *matHeaderCellDef>Período</th>
+        <td mat-cell *matCellDef="let curso">
+          <div class="periodo-info">
+            <span class="periodo-badge">{{ obtenerPeriodoCodigo(curso) }}</span>
+            <small class="periodo-descripcion" *ngIf="obtenerPeriodoDescripcion(curso) as descripcion">
+              {{ descripcion }}
+            </small>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Docente -->
+      <ng-container matColumnDef="objDocente">
+        <th mat-header-cell *matHeaderCellDef>Docente</th>
+        <td mat-cell *matCellDef="let curso">
+          <div class="docente-info" *ngIf="curso.objDocente; else sinDocente">
+            {{ obtenerNombreDocente(curso) }}
+            <small *ngIf="curso.objDocente?.codigo_docente">({{ curso.objDocente.codigo_docente }})</small>
+          </div>
+          <ng-template #sinDocente>
+            <span class="texto-sin-asignar">Sin asignar</span>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- Fecha Inicio -->
+      <ng-container matColumnDef="fecha_inicio">
+        <th mat-header-cell *matHeaderCellDef>Fecha Inicio</th>
+        <td mat-cell *matCellDef="let curso">
+          {{ formatearFecha(curso.fecha_inicio) }}
+        </td>
+      </ng-container>
+
+      <!-- Fecha Fin -->
+      <ng-container matColumnDef="fecha_fin">
+        <th mat-header-cell *matHeaderCellDef>Fecha Fin</th>
+        <td mat-cell *matCellDef="let curso">
+          {{ formatearFecha(curso.fecha_fin) }}
+        </td>
+      </ng-container>
+
+      <!-- Cupo Máximo -->
+      <ng-container matColumnDef="cupo_maximo">
+        <th mat-header-cell *matHeaderCellDef>Cupo</th>
+        <td mat-cell *matCellDef="let curso">
+          <div class="cupo-info">
+            <strong>{{ curso.cupo_disponible }} / {{ curso.cupo_maximo }}</strong>
+            <small>Estimado: {{ curso.cupo_estimado }}</small>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let curso">
+          <mat-chip 
+            [style.background-color]="getEstadoColor(curso.estado)"
+            [style.color]="'white'"
+            [style.border]="'none'"
+            [style.outline]="'none'"
+            [style.--mdc-chip-label-text-color]="'white'"
+            [style.--mdc-chip-container-color]="getEstadoColor(curso.estado)"
+            [style.--mdc-chip-outline-color]="'transparent'"
+            [style.--mdc-chip-outline-width]="'0'"
+            class="estado-chip">
+            <span [style.color]="'white'">{{ curso.estado }}</span>
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let curso">
+          <div class="acciones-container">
+            <button mat-icon-button 
+                    *ngIf="puedeEditar(curso)"
+                    (click)="abrirDialogEditar(curso)"
+                    matTooltip="Editar curso"
+                    class="btn-editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            
+            <button mat-icon-button 
+                    *ngIf="puedeEliminar(curso)"
+                    (click)="eliminarCurso(curso)"
+                    matTooltip="Eliminar curso"
+                    class="btn-eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Mensaje cuando no hay cursos -->
+    <div *ngIf="cursos.length === 0" class="sin-datos">
+      <mat-icon>school</mat-icon>
+      <p>No hay cursos registrados</p>
+      <p>Haz clic en "Crear Nuevo Curso" para agregar el primer curso</p>
+    </div>
+  </div>
+
+</app-card-container>
+
