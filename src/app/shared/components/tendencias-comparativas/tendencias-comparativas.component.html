@@ -66,7 +66,12 @@
                 </div>
                 
                 <div class="analisis-info">
-                  Analizado en {{ data.crecimientoTemporal.mesesAnalizados }} meses
+                  <span *ngIf="data.crecimientoTemporal.mesesAnalizados === 1">
+                    Analizado en 1 mes. Se necesita más tiempo para calcular tendencias.
+                  </span>
+                  <span *ngIf="data.crecimientoTemporal.mesesAnalizados > 1">
+                    Analizado en {{ data.crecimientoTemporal.mesesAnalizados }} meses
+                  </span>
                 </div>
               </mat-card-content>
             </mat-card>

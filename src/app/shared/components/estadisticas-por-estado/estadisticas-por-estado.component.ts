@@ -430,66 +430,53 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           
           // Procesar datos desde el endpoint de estado de solicitudes
           const estados = response.estados || {};
-          this.totalSolicitudes = response.totalSolicitudes || 0;
+          // ✅ ACTUALIZADO: Usar totalSolicitudes del nivel raíz según la guía actualizada
+          this.totalSolicitudes = response.totalSolicitudes || response.analisis?.totalSolicitudes || 0;
           this.fechaConsulta = response.fechaConsulta || new Date().toISOString();
           
-          // ✅ Mapeo correcto desde estados del backend
-          const estadosMap: { [key: string]: { cantidad: number; porcentaje: number; icono: string; color: string; descripcion: string } } = {
-            'ENVIADA': {
-              cantidad: estados['ENVIADA']?.cantidad || 0,
-              porcentaje: estados['ENVIADA']?.porcentaje || 0,
-              icono: 'fas fa-paper-plane',
-              color: '#2196F3',
-              descripcion: 'Solicitudes enviadas pendientes de revisión'
-            },
-            'RECHAZADA': {
-              cantidad: estados['RECHAZADA']?.cantidad || 0,
-              porcentaje: estados['RECHAZADA']?.porcentaje || 0,
-              icono: 'fas fa-times-circle',
-              color: '#F44336',
-              descripcion: 'Solicitudes rechazadas'
-            },
-            'APROBADA_COORDINADOR': {
-              cantidad: estados['APROBADA_COORDINADOR']?.cantidad || 0,
-              porcentaje: estados['APROBADA_COORDINADOR']?.porcentaje || 0,
-              icono: 'fas fa-check-circle',
-              color: '#9C27B0',
-              descripcion: 'Aprobadas por coordinador'
-            },
-            'APROBADA': {
-              cantidad: estados['APROBADA']?.cantidad || 0,
-              porcentaje: estados['APROBADA']?.porcentaje || 0,
-              icono: 'fas fa-check-circle',
-              color: '#4CAF50',
-              descripcion: 'Solicitudes completamente aprobadas'
-            },
-            'APROBADA_FUNCIONARIO': {
-              cantidad: estados['APROBADA_FUNCIONARIO']?.cantidad || 0,
-              porcentaje: estados['APROBADA_FUNCIONARIO']?.porcentaje || 0,
-              icono: 'fas fa-clock',
-              color: '#FF9800',
-              descripcion: 'Aprobadas por funcionario (en proceso)'
+          // ✅ ACTUALIZADO: Siempre mostrar los 4 estados principales, incluso con cantidad 0
+          // El backend ahora siempre devuelve: APROBADA, ENVIADA, EN_PROCESO, RECHAZADA
+          const estadosPrincipales = ['APROBADA', 'ENVIADA', 'EN_PROCESO', 'RECHAZADA'];
+          
+          // ✅ ACTUALIZADO: Usar el nuevo estado EN_PROCESO (combinado) en lugar de APROBADA_FUNCIONARIO y APROBADA_COORDINADOR
+          this.estadosData = estadosPrincipales.map(estadoKey => {
+            const estado = estados[estadoKey];
+            
+            // Si el estado existe en la respuesta, usar sus datos
+            if (estado) {
+              return {
+                nombre: estado.estado || estadoKey,
+                cantidad: estado.cantidad || 0,
+                porcentaje: estado.porcentaje || 0.0,
+                icono: estado.icono || this.getDefaultIcon(estadoKey),
+                color: estado.color || this.getDefaultColor(estadoKey),
+                descripcion: estado.descripcion || this.getDefaultDescription(estadoKey)
+              };
             }
-          };
+            
+            // Si no existe, crear un estado por defecto con cantidad 0
+            return {
+              nombre: estadoKey,
+              cantidad: 0,
+              porcentaje: 0.0,
+              icono: this.getDefaultIcon(estadoKey),
+              color: this.getDefaultColor(estadoKey),
+              descripcion: this.getDefaultDescription(estadoKey)
+            };
+          });
           
-          // Convertir a array para el template
-          this.estadosData = Object.entries(estadosMap)
-            .filter(([_, info]) => info.cantidad > 0) // Solo mostrar estados con solicitudes
-            .map(([nombre, info]) => ({
-              nombre,
-              ...info
-            }));
-          
-          // Crear datos de análisis
+          // ✅ ACTUALIZADO: Crear datos de análisis usando los estados principales
+          // Usar analisis del backend si está disponible, sino calcular
+          const analisis = response.analisis || {};
           this.data = {
             totalSolicitudes: this.totalSolicitudes,
             fechaConsulta: this.fechaConsulta,
-            estados: estadosMap,
+            estados: estados,
             analisis: {
-              solicitudesPendientes: (estados['ENVIADA']?.cantidad || 0) + (estados['APROBADA_FUNCIONARIO']?.cantidad || 0),
-              solicitudesCompletadas: (estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_COORDINADOR']?.cantidad || 0),
-              tasaResolucion: this.totalSolicitudes > 0 ? (((estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_COORDINADOR']?.cantidad || 0)) / this.totalSolicitudes) * 100 : 0,
-              estadoMasComun: this.obtenerEstadoMasComun(estadosMap)
+              solicitudesPendientes: analisis.solicitudesPendientes || (estados['ENVIADA']?.cantidad || 0) + (estados['EN_PROCESO']?.cantidad || 0),
+              solicitudesCompletadas: analisis.solicitudesCompletadas || (estados['APROBADA']?.cantidad || 0),
+              tasaResolucion: analisis.tasaResolucion || (this.totalSolicitudes > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes) * 100 : 0),
+              estadoMasComun: analisis.estadoMasComun || this.obtenerEstadoMasComun(estados)
             }
           } as any;
           
@@ -510,13 +497,53 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
     let estadoMasComun = 'N/A';
     
     Object.entries(estados).forEach(([nombre, info]: [string, any]) => {
-      if (info.cantidad > maxCantidad) {
-        maxCantidad = info.cantidad;
+      const cantidad = info?.cantidad || 0;
+      if (cantidad > maxCantidad) {
+        maxCantidad = cantidad;
         estadoMasComun = nombre.replace(/_/g, ' ');
       }
     });
     
     return estadoMasComun;
+  }
+
+  /**
+   * Obtiene el icono por defecto según el estado
+   */
+  private getDefaultIcon(estadoKey: string): string {
+    const iconMap: { [key: string]: string } = {
+      'APROBADA': 'fas fa-check-circle',
+      'ENVIADA': 'fas fa-paper-plane',
+      'EN_PROCESO': 'fas fa-clock',
+      'RECHAZADA': 'fas fa-times-circle'
+    };
+    return iconMap[estadoKey] || 'fas fa-info-circle';
+  }
+
+  /**
+   * Obtiene el color por defecto según el estado
+   */
+  private getDefaultColor(estadoKey: string): string {
+    const colorMap: { [key: string]: string } = {
+      'APROBADA': '#4CAF50',
+      'ENVIADA': '#2196F3',
+      'EN_PROCESO': '#17a2b8',
+      'RECHAZADA': '#F44336'
+    };
+    return colorMap[estadoKey] || '#6c757d';
+  }
+
+  /**
+   * Obtiene la descripción por defecto según el estado
+   */
+  private getDefaultDescription(estadoKey: string): string {
+    const descMap: { [key: string]: string } = {
+      'APROBADA': 'Solicitudes completamente aprobadas',
+      'ENVIADA': 'Solicitudes enviadas pendientes de revisión',
+      'EN_PROCESO': 'Solicitudes en proceso de revisión',
+      'RECHAZADA': 'Solicitudes rechazadas'
+    };
+    return descMap[estadoKey] || 'Estado de solicitud';
   }
 
   actualizarDatos(): void {

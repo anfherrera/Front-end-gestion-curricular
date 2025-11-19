@@ -545,6 +545,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       this.chartTendencias.destroy();
     }
     
+    // ✅ ACTUALIZADO: El backend ahora devuelve TODOS los meses (Enero-Diciembre), incluso con solicitudes: 0
+    // NO filtrar meses con solicitudes 0 - mostrar todos los meses del array tendenciasTemporales
     // Crear nueva gráfica
     this.chartTendencias = new Chart(ctx, {
       type: 'line',
