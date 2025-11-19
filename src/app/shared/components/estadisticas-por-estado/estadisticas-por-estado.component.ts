@@ -431,7 +431,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           // Procesar datos desde el endpoint de estado de solicitudes
           const estados = response.estados || {};
           // ✅ ACTUALIZADO: Usar totalSolicitudes del nivel raíz según la guía actualizada
-          this.totalSolicitudes = response.totalSolicitudes || response.analisis?.totalSolicitudes || 0;
+          this.totalSolicitudes = response.totalSolicitudes || 0;
           this.fechaConsulta = response.fechaConsulta || new Date().toISOString();
           
           // ✅ ACTUALIZADO: Siempre mostrar los 4 estados principales, incluso con cantidad 0
@@ -445,7 +445,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
             // Si el estado existe en la respuesta, usar sus datos
             if (estado) {
               return {
-                nombre: estado.estado || estadoKey,
+                nombre: estadoKey, // Usar estadoKey directamente ya que EstadoInfo no tiene propiedad 'estado'
                 cantidad: estado.cantidad || 0,
                 porcentaje: estado.porcentaje || 0.0,
                 icono: estado.icono || this.getDefaultIcon(estadoKey),
@@ -467,16 +467,16 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           
           // ✅ ACTUALIZADO: Crear datos de análisis usando los estados principales
           // Usar analisis del backend si está disponible, sino calcular
-          const analisis = response.analisis || {};
+          const analisis = response.analisis;
           this.data = {
             totalSolicitudes: this.totalSolicitudes,
             fechaConsulta: this.fechaConsulta,
             estados: estados,
             analisis: {
-              solicitudesPendientes: analisis.solicitudesPendientes || (estados['ENVIADA']?.cantidad || 0) + (estados['EN_PROCESO']?.cantidad || 0),
-              solicitudesCompletadas: analisis.solicitudesCompletadas || (estados['APROBADA']?.cantidad || 0),
-              tasaResolucion: analisis.tasaResolucion || (this.totalSolicitudes > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes) * 100 : 0),
-              estadoMasComun: analisis.estadoMasComun || this.obtenerEstadoMasComun(estados)
+              solicitudesPendientes: analisis?.solicitudesPendientes ?? ((estados['ENVIADA']?.cantidad || 0) + (estados['EN_PROCESO']?.cantidad || 0)),
+              solicitudesCompletadas: analisis?.solicitudesCompletadas ?? (estados['APROBADA']?.cantidad || 0),
+              tasaResolucion: analisis?.tasaResolucion ?? (this.totalSolicitudes > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes) * 100 : 0),
+              estadoMasComun: analisis?.estadoMasComun || this.obtenerEstadoMasComun(estados)
             }
           } as any;
           
