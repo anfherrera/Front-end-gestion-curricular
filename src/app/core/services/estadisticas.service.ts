@@ -421,7 +421,8 @@ export class EstadisticasService {
 
         estadoSolicitudes$.subscribe({
           next: (response) => {
-            estadoSolicitudes = response.estados;
+            // ✅ ACTUALIZADO: Usar resumenPorEstado con fallback a estados, asegurando que nunca sea undefined
+            estadoSolicitudes = response.resumenPorEstado || response.estados || {};
             completed++;
             if (completed === total) {
               subscriber.next(true);
