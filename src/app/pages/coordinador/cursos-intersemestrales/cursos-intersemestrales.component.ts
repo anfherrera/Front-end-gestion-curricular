@@ -21,7 +21,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['./cursos-intersemestrales.component.css']
 })
-export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
+export class CursosIntersemestralesCoordinadorComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   opciones = [
