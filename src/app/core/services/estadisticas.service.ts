@@ -61,17 +61,17 @@ export class EstadisticasService {
     console.log('📋 Parámetros:', params.toString());
     console.log('🔑 URL completa:', `${url}${params.toString() ? '?' + params.toString() : ''}`);
 
-    // ✅ ACTUALIZADO: Manejar código 500 como respuesta válida
-    // El backend ahora devuelve un JSON válido incluso con código 500
-    return this.http.get<EstadisticasGlobalesAPI>(url, { 
+    // ✅ ACTUALIZADO: Detectar cuando el endpoint devuelve 500 con valores en 0 o bandera usarEndpointsAlternativos
+    // En ese caso, lanzar error para que el componente use endpoints alternativos
+    return this.http.get<EstadisticasGlobalesAPI & { usarEndpointsAlternativos?: boolean; error?: boolean; mensaje?: string }>(url, { 
       params,
       observe: 'response' 
     }).pipe(
       map(response => {
-        // Si el status es 200 o 500, usar el body como datos válidos
-        if (response.status === 200 || response.status === 500) {
-          const data = response.body || {} as EstadisticasGlobalesAPI;
-          // Asegurar que todos los campos tengan valores por defecto si vienen vacíos
+        const data = response.body || {} as EstadisticasGlobalesAPI;
+        
+        // Si el status es 200, usar los datos directamente
+        if (response.status === 200) {
           return {
             fechaConsulta: data.fechaConsulta || new Date().toISOString(),
             totalSolicitudes: data.totalSolicitudes || 0,
@@ -86,25 +86,56 @@ export class EstadisticasService {
             predicciones: data.predicciones
           } as EstadisticasGlobalesAPI;
         }
+        
+        // Si el status es 500, verificar si debe usar endpoints alternativos
+        if (response.status === 500) {
+          const dataWithFlags = data as any;
+          
+          // Verificar bandera usarEndpointsAlternativos
+          if (dataWithFlags.usarEndpointsAlternativos === true || dataWithFlags.error === true) {
+            console.warn('⚠️ Endpoint principal falló con bandera usarEndpointsAlternativos:', dataWithFlags.mensaje);
+            throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
+          }
+          
+          // Verificar si todos los valores son 0 (indicando que no hay datos reales)
+          const tieneDatos = (data.totalSolicitudes || 0) > 0 || 
+                            Object.keys(data.porTipoProceso || {}).length > 0 ||
+                            Object.keys(data.porPrograma || {}).length > 0 ||
+                            Object.keys(data.porEstado || {}).length > 0;
+          
+          if (!tieneDatos) {
+            console.warn('⚠️ Endpoint principal devolvió solo ceros, usando endpoints alternativos...');
+            throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
+          }
+          
+          // Si tiene datos reales, usar los datos incluso con status 500
+          return {
+            fechaConsulta: data.fechaConsulta || new Date().toISOString(),
+            totalSolicitudes: data.totalSolicitudes || 0,
+            totalAprobadas: data.totalAprobadas || 0,
+            totalRechazadas: data.totalRechazadas || 0,
+            totalEnviadas: data.totalEnviadas || 0,
+            totalEnProceso: data.totalEnProceso || 0,
+            porcentajeAprobacion: data.porcentajeAprobacion || 0.0,
+            porTipoProceso: data.porTipoProceso || {},
+            porPrograma: data.porPrograma || {},
+            porEstado: data.porEstado || {},
+            predicciones: data.predicciones
+          } as EstadisticasGlobalesAPI;
+        }
+        
         // Para otros códigos de error, lanzar error
         throw new Error(`HTTP ${response.status}`);
       }),
       catchError(error => {
+        // Si es el error especial para usar endpoints alternativos, propagarlo
+        if (error.message === 'USAR_ENDPOINTS_ALTERNATIVOS') {
+          throw error;
+        }
+        
         console.error('❌ Error al obtener estadísticas globales:', error);
-        // Retornar valores por defecto solo si la petición falló completamente
-        return of({
-          fechaConsulta: new Date().toISOString(),
-          totalSolicitudes: 0,
-          totalAprobadas: 0,
-          totalRechazadas: 0,
-          totalEnviadas: 0,
-          totalEnProceso: 0,
-          porcentajeAprobacion: 0.0,
-          porTipoProceso: {},
-          porPrograma: {},
-          porEstado: {},
-          predicciones: undefined
-        } as EstadisticasGlobalesAPI);
+        // Para otros errores, también usar endpoints alternativos
+        throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
       })
     );
   }

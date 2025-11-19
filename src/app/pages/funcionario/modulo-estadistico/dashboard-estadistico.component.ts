@@ -151,6 +151,19 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         next: (datosAPI) => {
           console.log('✅ Datos recibidos del backend:', datosAPI);
           
+          // ✅ ACTUALIZADO: Verificar que los datos sean válidos antes de mostrarlos
+          // Si todos los valores son 0, usar endpoints alternativos en lugar de mostrar ceros
+          const tieneDatos = (datosAPI.totalSolicitudes || 0) > 0 || 
+                            Object.keys(datosAPI.porTipoProceso || {}).length > 0 ||
+                            Object.keys(datosAPI.porPrograma || {}).length > 0 ||
+                            Object.keys(datosAPI.porEstado || {}).length > 0;
+          
+          if (!tieneDatos) {
+            console.warn('⚠️ Endpoint principal devolvió solo ceros, usando endpoints alternativos...');
+            this.cargarDatosConEndpointsAlternativos(filtros);
+            return;
+          }
+          
           try {
             // Convertir datos del API al formato del dashboard
             this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
@@ -163,9 +176,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             this.mostrarExito('Datos cargados correctamente desde el backend');
           } catch (conversionError) {
             console.error('❌ Error al convertir datos del API:', conversionError);
-            this.loading = false;
-            this.error = true;
-            this.mostrarError('Error al procesar los datos del servidor. Por favor, contacta al administrador.');
+            // Si falla la conversión, intentar con endpoints alternativos
+            this.cargarDatosConEndpointsAlternativos(filtros);
           }
         },
         error: (error) => {
@@ -173,6 +185,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           console.warn('⚠️ Intentando cargar datos usando endpoints alternativos...');
           
           // Si el endpoint principal falla, usar endpoints alternativos que funcionan
+          // NO mostrar valores en 0, esperar a que los endpoints alternativos terminen
           this.cargarDatosConEndpointsAlternativos(filtros);
         }
       });
@@ -335,13 +348,16 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     let enviadas = 0;
     let enProceso = 0;
     
-    if (estadoSolicitudes && estadoSolicitudes.estados) {
+    // ✅ ACTUALIZADO: Usar resumenPorEstado con fallback a estados para compatibilidad
+    const estados = estadoSolicitudes?.resumenPorEstado || estadoSolicitudes?.estados;
+    
+    if (estadoSolicitudes && estados) {
       console.log('✅ Usando datos de estadoSolicitudes');
-      const estados = estadoSolicitudes.estados;
-      aprobadas = (estados['APROBADA']?.cantidad || 0) + (estados['APROBADA_FUNCIONARIO']?.cantidad || 0);
+      // ✅ ACTUALIZADO: Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO
+      aprobadas = estados['APROBADA']?.cantidad || 0;
       rechazadas = estados['RECHAZADA']?.cantidad || 0;
       enviadas = estados['ENVIADA']?.cantidad || 0;
-      enProceso = estados['APROBADA_FUNCIONARIO']?.cantidad || 0;
+      enProceso = estados['EN_PROCESO']?.cantidad || 0;
       
       // Calcular totalSolicitudes sumando todos los estados si el valor del backend es 0 o no está disponible
       const totalDesdeBackend = estadoSolicitudes.totalSolicitudes || 0;
