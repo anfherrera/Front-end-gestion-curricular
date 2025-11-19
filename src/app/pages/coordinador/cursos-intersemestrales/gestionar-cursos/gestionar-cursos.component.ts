@@ -60,6 +60,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     'codigo_curso', 
     'objMateria', 
     'periodo',
+    'grupo',
     'objDocente', 
     'fecha_inicio', 
     'fecha_fin', 
@@ -89,7 +90,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       
       // Campos OPCIONALES
       espacio_asignado: [''], // Opcional - sin validación requerida
-      estado: ['Abierto'] // Opcional - valor por defecto "Abierto"
+      estado: ['Abierto'], // Opcional - valor por defecto "Abierto"
+      grupo: ['A'] // Opcional - valor por defecto "A" (A, B, C, D)
     });
 
     // Formulario específico para edición (solo campos editables)
@@ -318,7 +320,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cursoEditando = null;
     this.cursoForm.reset({
       estado: 'Abierto',
-      cupo_estimado: 25
+      cupo_estimado: 25,
+      grupo: 'A'
     });
 
     // Abrir dialog

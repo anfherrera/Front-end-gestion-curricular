@@ -28,7 +28,12 @@ export class ErrorHandlerService {
     let mensaje = 'Ha ocurrido un error inesperado';
     let tipoError: 'error' | 'warning' = 'error';
 
-    if (error.error?.message) {
+    // ✅ Manejar error CURSO_DUPLICADO específicamente
+    if (error.error?.codigo === 'CURSO_DUPLICADO' || error.error?.error === 'Curso duplicado') {
+      mensaje = error.error?.message || 'Ya existe un curso con la misma materia, docente, período académico y grupo.';
+      mensaje += '\n\n💡 Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
+      tipoError = 'warning';
+    } else if (error.error?.message) {
       mensaje = this.procesarMensajeEspecifico(error.error.message, error.error);
     } else if (error.message) {
       mensaje = this.procesarMensajeEspecifico(error.message, error);
@@ -84,8 +89,13 @@ export class ErrorHandlerService {
     }
 
     // Errores de duplicación
-    if (mensaje.includes('ya existe') || mensaje.includes('duplicado')) {
-      return `🔄 ${mensaje}`;
+    if (mensaje.includes('ya existe') || mensaje.includes('duplicado') || mensaje.includes('CURSO_DUPLICADO')) {
+      let mensajeCompleto = `🔄 ${mensaje}`;
+      // Si es error de curso duplicado, agregar sugerencia de grupos
+      if (mensaje.includes('misma materia') && mensaje.includes('mismo docente')) {
+        mensajeCompleto += '\n\n💡 Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
+      }
+      return mensajeCompleto;
     }
 
     // Errores de integridad referencial

@@ -60,6 +60,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     'codigo_curso', 
     'objMateria', 
     'periodo',
+    'grupo',
     'objDocente', 
     'fecha_inicio', 
     'fecha_fin', 
@@ -89,7 +90,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       
       // Campos OPCIONALES
       espacio_asignado: [''], // Opcional - sin validación requerida
-      estado: ['Abierto'] // Opcional - valor por defecto "Abierto"
+      estado: ['Abierto'], // Opcional - valor por defecto "Abierto"
+      grupo: ['A'] // Opcional - valor por defecto "A" (A, B, C, D)
     });
 
     // Formulario específico para edición (solo campos editables)
@@ -318,7 +320,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cursoEditando = null;
     this.cursoForm.reset({
       estado: 'Abierto',
-      cupo_estimado: 25
+      cupo_estimado: 25,
+      grupo: 'A'
     });
 
     // Abrir dialog
@@ -415,6 +418,17 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           fecha_inicio: new Date(formData.fecha_inicio).toISOString(),
           fecha_fin: new Date(formData.fecha_fin).toISOString()
         };
+        
+        // ✅ Validar y normalizar el grupo si está presente
+        if (createData.grupo) {
+          const grupoUpper = String(createData.grupo).toUpperCase();
+          if (['A', 'B', 'C', 'D'].includes(grupoUpper)) {
+            createData.grupo = grupoUpper;
+          } else {
+            // Si no es válido, eliminar para que el backend use "A" por defecto
+            delete createData.grupo;
+          }
+        }
         
         this.cursosService.crearCurso(createData)
           .pipe(takeUntil(this.destroy$))

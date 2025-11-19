@@ -1370,6 +1370,8 @@ export interface CreateCursoDTO {
   espacio_asignado?: string;       // String - Si no se envía, se asigna "Aula 101" por defecto
   estado?: string;                 // String - Valores: "Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"
                                    // Si no se envía, se asigna "Abierto" por defecto
+  grupo?: string;                  // String - Valores: "A", "B", "C", "D" (case-insensitive)
+                                   // Si no se envía o es inválido, se asigna "A" por defecto
   
   // ❌ Campos que NO se deben enviar (se obtienen automáticamente del backend):
   // - nombre_curso: Se obtiene de la materia seleccionada

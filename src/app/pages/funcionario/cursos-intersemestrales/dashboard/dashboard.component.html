@@ -71,6 +71,9 @@
               <small *ngIf="obtenerPeriodo(curso) !== 'N/A'" class="periodo-info">
                 • Período: {{ obtenerPeriodo(curso) }}
               </small>
+              <small *ngIf="curso.grupo" class="grupo-info">
+                • Grupo: {{ curso.grupo }}
+              </small>
             </div>
             <div class="curso-status">
               <mat-chip 

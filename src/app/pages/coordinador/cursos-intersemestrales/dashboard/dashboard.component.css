@@ -190,6 +190,12 @@
   margin-top: 4px;
 }
 
+.curso-info .grupo-info {
+  color: #00138C;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
 .curso-status {
   display: flex;
   flex-direction: column;

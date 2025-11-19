@@ -94,6 +94,9 @@ export interface CursoDialogData {
             <div class="info-item">
               <strong>Docente:</strong> {{ obtenerNombreDocente(data.cursoEditando) }}
             </div>
+            <div class="info-item" *ngIf="data.cursoEditando.grupo">
+              <strong>Grupo:</strong> {{ data.cursoEditando.grupo }}
+            </div>
           </div>
         </div>
 
@@ -113,6 +116,18 @@ export interface CursoDialogData {
               El período académico es requerido
             </mat-error>
             <mat-hint>Selecciona un período académico válido del listado</mat-hint>
+          </mat-form-field>
+
+          <!-- ✨ NUEVO: Grupo -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Grupo</mat-label>
+            <mat-select formControlName="grupo">
+              <mat-option value="A">Grupo A</mat-option>
+              <mat-option value="B">Grupo B</mat-option>
+              <mat-option value="C">Grupo C</mat-option>
+              <mat-option value="D">Grupo D</mat-option>
+            </mat-select>
+            <mat-hint>Opcional. Puedes crear múltiples grupos (A, B, C, D) de la misma materia. Si no se selecciona, se asignará "A" por defecto.</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -965,6 +980,16 @@ export class CursoDialogComponent implements OnInit {
           createData.estado = formValue.estado;
         }
         
+        // ✅ Campo grupo (opcional, se valida en el backend)
+        if (formValue.grupo) {
+          // Validar que sea A, B, C o D (case-insensitive)
+          const grupoUpper = String(formValue.grupo).toUpperCase();
+          if (['A', 'B', 'C', 'D'].includes(grupoUpper)) {
+            createData.grupo = grupoUpper;
+          }
+          // Si no es válido, el backend usará "A" por defecto
+        }
+        
         // ✅ Logs de depuración antes de enviar
         console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
         console.log('📤 FormValue completo:', formValue);
@@ -985,12 +1010,16 @@ export class CursoDialogComponent implements OnInit {
               console.error('❌ Error creando curso:', err);
               console.error('🔍 Payload enviado:', createData);
               
-              // ✅ Manejo específico de errores de período académico inválido
+              // ✅ Manejo específico de errores
               let errorMessage = 'Error al crear el curso';
               
               if (err.status === 400 && err.error) {
                 // Error de validación del backend
-                if (err.error.message && err.error.message.includes('período académico')) {
+                if (err.error.codigo === 'CURSO_DUPLICADO' || (err.error.message && err.error.message.includes('duplicado'))) {
+                  // Error específico de curso duplicado
+                  errorMessage = err.error.message || 'Ya existe un curso con la misma materia, docente, período académico y grupo.';
+                  errorMessage += '\n\n💡 Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
+                } else if (err.error.message && err.error.message.includes('período académico')) {
                   // Error específico de período académico inválido
                   errorMessage = err.error.message;
                   
@@ -1030,7 +1059,8 @@ export class CursoDialogComponent implements OnInit {
   limpiarFormulario() {
     this.data.form.reset({
       estado: 'Abierto',
-      cupo_estimado: 25
+      cupo_estimado: 25,
+      grupo: 'A'
     });
   }
 
