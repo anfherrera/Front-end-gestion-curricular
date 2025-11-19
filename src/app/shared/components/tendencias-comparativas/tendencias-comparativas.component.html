@@ -44,9 +44,9 @@
                 <div class="tendencias-grid">
                   <div class="tendencia-item">
                     <h4>Solicitudes</h4>
-                    <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaSolicitudes)">
-                      <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaSolicitudes) }}</mat-icon>
-                      {{ data.crecimientoTemporal.tendenciaSolicitudes }}
+                    <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva')">
+                      <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
+                      {{ data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva' }}
                     </div>
                     <div class="tendencia-porcentaje">
                       {{ formatPorcentaje(data.crecimientoTemporal.crecimientoSolicitudes) }} vs mes anterior
@@ -55,9 +55,9 @@
                   
                   <div class="tendencia-item">
                     <h4>Estudiantes</h4>
-                    <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaEstudiantes)">
-                      <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaEstudiantes) }}</mat-icon>
-                      {{ data.crecimientoTemporal.tendenciaEstudiantes }}
+                    <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva')">
+                      <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
+                      {{ data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva' }}
                     </div>
                     <div class="tendencia-porcentaje">
                       {{ formatPorcentaje(data.crecimientoTemporal.crecimientoEstudiantes) }} vs mes anterior

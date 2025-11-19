@@ -157,13 +157,17 @@ export interface EstadoInfo {
 
 /**
  * Interfaz para la respuesta del endpoint de estado de solicitudes
+ * ✅ ACTUALIZADO: Ahora usa resumenPorEstado en lugar de estados
  */
 export interface EstadoSolicitudesResponse {
   totalSolicitudes: number;
-  estados: { [estado: string]: EstadoInfo };
+  resumenPorEstado?: { [estado: string]: EstadoInfo };  // ⭐ NUEVO: Campo actualizado del backend
+  estados?: { [estado: string]: EstadoInfo };           // ⚠️ Legacy: Mantener para compatibilidad
+  tasaResolucion?: number;                               // ⭐ NUEVO: Tasa de resolución en nivel raíz
+  analisisComparativo?: any;                             // ⭐ NUEVO: Análisis comparativo
   fechaConsulta: string;
-  descripcion: string;
-  analisis?: {                    // NUEVO: Sección de análisis
+  descripcion?: string;
+  analisis?: {                    // NUEVO: Sección de análisis (legacy)
     solicitudesPendientes: number;
     solicitudesCompletadas: number;
     tasaResolucion: number;
@@ -232,11 +236,16 @@ export interface EstadisticasPorPeriodoMejoradasResponse {
 // ===== INTERFACES PARA TENDENCIAS Y COMPARATIVAS =====
 
 export interface CrecimientoTemporal {
-  tendenciaSolicitudes: string;
+  tendenciaSolicitudes?: string;  // ⚠️ Legacy: Mantener para compatibilidad
+  tendenciaEstudiantes?: string;  // ⚠️ Legacy: Mantener para compatibilidad
+  tendencia?: string;              // ⭐ NUEVO: Campo unificado según guía actualizada
   crecimientoSolicitudes: number;
-  tendenciaEstudiantes: string;
   crecimientoEstudiantes: number;
   mesesAnalizados: number;
+  solicitudesPorMes?: { [mes: string]: number };  // ⭐ NUEVO: Solicitudes por mes
+  estudiantesPorMes?: { [mes: string]: number };  // ⭐ NUEVO: Estudiantes por mes
+  totalSolicitudes?: number;                       // ⭐ NUEVO: Total de solicitudes
+  totalEstudiantes?: number;                       // ⭐ NUEVO: Total de estudiantes
 }
 
 export interface ComparativaProcesos {

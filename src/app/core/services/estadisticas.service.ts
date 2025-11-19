@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, delay, map } from 'rxjs';
+import { Observable, of, delay, map, catchError } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { 
   EstadisticasGlobales, 
@@ -31,6 +31,7 @@ export class EstadisticasService {
 
   /**
    * Obtiene estadísticas globales del API real con filtros opcionales
+   * ✅ ACTUALIZADO: Maneja código 500 como respuesta válida con valores en 0
    */
   getEstadisticasGlobales(filtros: FiltroEstadisticas = {}): Observable<EstadisticasGlobalesAPI> {
     let params = new HttpParams();
@@ -60,7 +61,52 @@ export class EstadisticasService {
     console.log('📋 Parámetros:', params.toString());
     console.log('🔑 URL completa:', `${url}${params.toString() ? '?' + params.toString() : ''}`);
 
-    return this.http.get<EstadisticasGlobalesAPI>(url, { params });
+    // ✅ ACTUALIZADO: Manejar código 500 como respuesta válida
+    // El backend ahora devuelve un JSON válido incluso con código 500
+    return this.http.get<EstadisticasGlobalesAPI>(url, { 
+      params,
+      observe: 'response' 
+    }).pipe(
+      map(response => {
+        // Si el status es 200 o 500, usar el body como datos válidos
+        if (response.status === 200 || response.status === 500) {
+          const data = response.body || {} as EstadisticasGlobalesAPI;
+          // Asegurar que todos los campos tengan valores por defecto si vienen vacíos
+          return {
+            fechaConsulta: data.fechaConsulta || new Date().toISOString(),
+            totalSolicitudes: data.totalSolicitudes || 0,
+            totalAprobadas: data.totalAprobadas || 0,
+            totalRechazadas: data.totalRechazadas || 0,
+            totalEnviadas: data.totalEnviadas || 0,
+            totalEnProceso: data.totalEnProceso || 0,
+            porcentajeAprobacion: data.porcentajeAprobacion || 0.0,
+            porTipoProceso: data.porTipoProceso || {},
+            porPrograma: data.porPrograma || {},
+            porEstado: data.porEstado || {},
+            predicciones: data.predicciones
+          } as EstadisticasGlobalesAPI;
+        }
+        // Para otros códigos de error, lanzar error
+        throw new Error(`HTTP ${response.status}`);
+      }),
+      catchError(error => {
+        console.error('❌ Error al obtener estadísticas globales:', error);
+        // Retornar valores por defecto solo si la petición falló completamente
+        return of({
+          fechaConsulta: new Date().toISOString(),
+          totalSolicitudes: 0,
+          totalAprobadas: 0,
+          totalRechazadas: 0,
+          totalEnviadas: 0,
+          totalEnProceso: 0,
+          porcentajeAprobacion: 0.0,
+          porTipoProceso: {},
+          porPrograma: {},
+          porEstado: {},
+          predicciones: undefined
+        } as EstadisticasGlobalesAPI);
+      })
+    );
   }
 
   /**

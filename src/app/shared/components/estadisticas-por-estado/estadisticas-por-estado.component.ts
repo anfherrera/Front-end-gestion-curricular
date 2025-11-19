@@ -429,7 +429,8 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           console.log('✅ Estado de solicitudes obtenido:', response);
           
           // Procesar datos desde el endpoint de estado de solicitudes
-          const estados = response.estados || {};
+          // ✅ ACTUALIZADO: El backend ahora usa resumenPorEstado en lugar de estados
+          const estados = response.resumenPorEstado || response.estados || {};
           // ✅ ACTUALIZADO: Usar totalSolicitudes del nivel raíz según la guía actualizada
           this.totalSolicitudes = response.totalSolicitudes || 0;
           this.fechaConsulta = response.fechaConsulta || new Date().toISOString();
@@ -466,7 +467,8 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
           });
           
           // ✅ ACTUALIZADO: Crear datos de análisis usando los estados principales
-          // Usar analisis del backend si está disponible, sino calcular
+          // Usar tasaResolucion del nivel raíz si está disponible, sino calcular
+          const tasaResolucion = response.tasaResolucion ?? (response.analisis?.tasaResolucion ?? (this.totalSolicitudes > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes) * 100 : 0));
           const analisis = response.analisis;
           this.data = {
             totalSolicitudes: this.totalSolicitudes,
@@ -475,7 +477,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
             analisis: {
               solicitudesPendientes: analisis?.solicitudesPendientes ?? ((estados['ENVIADA']?.cantidad || 0) + (estados['EN_PROCESO']?.cantidad || 0)),
               solicitudesCompletadas: analisis?.solicitudesCompletadas ?? (estados['APROBADA']?.cantidad || 0),
-              tasaResolucion: analisis?.tasaResolucion ?? (this.totalSolicitudes > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes) * 100 : 0),
+              tasaResolucion: tasaResolucion,
               estadoMasComun: analisis?.estadoMasComun || this.obtenerEstadoMasComun(estados)
             }
           } as any;
