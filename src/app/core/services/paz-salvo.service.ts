@@ -459,6 +459,56 @@ export class PazSalvoService {
     return this.descargarArchivo(filename);
   }
 
+  /**
+   * ✅ NUEVO: Descargar archivo PDF por ID de documento
+   * Este método es más confiable que usar el nombre del archivo
+   */
+  descargarArchivoPorId(idDocumento: number): Observable<Blob> {
+    const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
+    console.log('🔗 URL de descarga por ID (Paz y Salvo):', url);
+    console.log('📁 ID del documento:', idDocumento);
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map((resp: any) => {
+        const filename = this.parseFilenameFromHeaders(resp) || 'documento.pdf';
+        const blob: Blob = resp.body as Blob;
+        (blob as any).filename = filename;
+        return blob;
+      })
+    );
+  }
+
+  /**
+   * ✅ NUEVO: Descargar archivo PDF por ruta del documento
+   * Usa la ruta almacenada en la base de datos
+   */
+  descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
+    // Extraer el nombre del archivo de la ruta si es necesario
+    const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
+    // ✅ USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
+    const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
+    console.log('🔗 URL de descarga por ruta (Paz y Salvo):', url);
+    console.log('📁 Ruta del documento:', rutaDocumento);
+    console.log('📁 Nombre extraído:', nombreArchivo);
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map((resp: any) => {
+        const filename = this.parseFilenameFromHeaders(resp) || nombreArchivo || 'documento.pdf';
+        const blob: Blob = resp.body as Blob;
+        (blob as any).filename = filename;
+        return blob;
+      })
+    );
+  }
+
   private parseFilenameFromHeaders(resp: any): string | null {
     try {
       const h = resp?.headers;
