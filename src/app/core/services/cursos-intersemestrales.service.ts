@@ -93,6 +93,7 @@ export interface CursoOfertadoVerano {
   // Nuevo campo para manejar los estados desde la tabla separada
   estados?: EstadoCurso[];
   estado_actual?: string; // Estado actual del curso
+  grupo?: string; // Grupo del curso (A, B, C, D)
 }
 
 // Interfaz específica para usuarios en solicitudes (estructura del backend)
