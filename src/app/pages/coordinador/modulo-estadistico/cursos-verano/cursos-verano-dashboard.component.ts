@@ -233,8 +233,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       estadosSolicitudes: {
         APROBADA: 4,
         ENVIADA: 2,
-        APROBADA_FUNCIONARIO: 2,
-        APROBADA_COORDINADOR: 0,
+        EN_PROCESO: 2,  // ✅ ACTUALIZADO: Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO + APROBADA_COORDINADOR
         RECHAZADA: 1
       },
       recomendaciones: [
@@ -1203,6 +1202,15 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  /**
+   * ✅ NUEVO: Calcula el porcentaje de un estado respecto al total de solicitudes
+   */
+  calcularPorcentajeEstado(cantidad: number, total: number): number {
+    if (total === 0) return 0;
+    // Redondear a 2 decimales
+    return Math.round((cantidad / total) * 100 * 100) / 100;
   }
 
   exportarExcel(): void {

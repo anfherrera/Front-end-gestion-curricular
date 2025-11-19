@@ -378,9 +378,27 @@ export interface TendenciaTemporal {
 export interface EstadosSolicitudes {
   APROBADA: number;
   ENVIADA: number;
-  APROBADA_FUNCIONARIO: number;
-  APROBADA_COORDINADOR: number;
+  EN_PROCESO: number;  // ⭐ NUEVO: Estado combinado (reemplaza APROBADA_FUNCIONARIO + APROBADA_COORDINADOR)
   RECHAZADA: number;
+  // ⚠️ Legacy: Mantener para compatibilidad con versiones anteriores
+  APROBADA_FUNCIONARIO?: number;
+  APROBADA_COORDINADOR?: number;
+}
+
+/**
+ * ⭐ NUEVO: Interfaz para estados estructurados con información completa
+ */
+export interface EstadoSolicitudEstructurado {
+  estado: string;
+  cantidad: number;
+  porcentaje: number;
+}
+
+export interface EstadosSolicitudesEstructurados {
+  APROBADA: EstadoSolicitudEstructurado;
+  ENVIADA: EstadoSolicitudEstructurado;
+  EN_PROCESO: EstadoSolicitudEstructurado;
+  RECHAZADA: EstadoSolicitudEstructurado;
 }
 
 export interface Recomendacion {
@@ -405,9 +423,11 @@ export interface CursosVeranoResponse {
   topMaterias: TopMateria[];
   analisisPorPrograma: AnalisisPrograma[];
   tendenciasTemporales: TendenciaTemporal[];
-  estadosSolicitudes: EstadosSolicitudes;
+  estadosSolicitudes: EstadosSolicitudes;  // ⚠️ Mapa simple: { APROBADA: 0, ENVIADA: 9, ... }
+  estadosSolicitudesEstructurados?: EstadosSolicitudesEstructurados;  // ⭐ NUEVO: Mapa estructurado con porcentajes
   recomendaciones: Recomendacion[];
   predicciones: PrediccionesCursosVerano;
+  todosLosMeses?: string[];  // ⭐ NUEVO: Array con todos los meses (Enero-Diciembre)
 }
 
 // ===== INTERFACES PARA PREDICCIONES GLOBALES (DASHBOARD GENERAL) =====
