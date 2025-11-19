@@ -77,38 +77,112 @@ export class DocumentationViewerComponent implements OnInit {
 
   /**
    * ✅ CORREGIDO: Ver documento usando endpoint genérico (igual que homologación)
+   * Ahora intenta usar ID del documento primero, luego ruta, y finalmente nombre como fallback
    */
   verDocumento(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
     console.log('🔍 verDocumento() llamado con:', documento);
     console.log('🔍 verDocumento() - Evento de clic detectado correctamente');
     
-    if (!documento.nombre) {
-      console.error('❌ No hay nombre de archivo disponible');
-      this.snackBar.open('No hay nombre de archivo disponible para el documento', 'Cerrar', { duration: 3000 });
-      return;
-    }
-
-    console.log('📁 Descargando documento usando endpoint específico de Paz y Salvo:', documento.nombre);
-    
     // Mostrar mensaje de carga
     this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
 
-    // ✅ CORREGIDO: Usar el servicio con endpoint específico de Paz y Salvo
-    if (this.servicio && this.servicio.descargarArchivo) {
-      this.servicio.descargarArchivo(documento.nombre).subscribe({
+    if (!this.servicio) {
+      console.error('❌ Servicio no disponible');
+      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    // ✅ PRIORIDAD 1: Intentar descargar por ID del documento (más confiable)
+    const docHomologacion = documento as DocumentoHomologacion;
+    if (docHomologacion.id_documento && this.servicio.descargarArchivoPorId) {
+      console.log('📁 Intentando descargar por ID del documento:', docHomologacion.id_documento);
+      this.servicio.descargarArchivoPorId(docHomologacion.id_documento).subscribe({
         next: (blob: Blob) => {
-          console.log('✅ Documento descargado exitosamente:', documento.nombre);
-          this.mostrarDocumentoEnVentana(blob, documento.nombre);
+          console.log('✅ Documento descargado exitosamente por ID:', docHomologacion.id_documento);
+          this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
         },
         error: (error: any) => {
-          console.error('❌ Error al descargar documento:', error);
-          this.snackBar.open('Error al descargar documento: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+          console.warn('⚠️ Error al descargar por ID, intentando por ruta...', error);
+          // Intentar por ruta como fallback
+          this.intentarDescargaPorRuta(documento);
         }
       });
-    } else {
-      console.error('❌ Servicio no disponible o método descargarArchivo no existe');
-      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
+      return;
     }
+
+    // ✅ PRIORIDAD 2: Intentar descargar por ruta del documento
+    if (docHomologacion.ruta_documento && this.servicio.descargarArchivoPorRuta) {
+      console.log('📁 Intentando descargar por ruta del documento:', docHomologacion.ruta_documento);
+      this.servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).subscribe({
+        next: (blob: Blob) => {
+          console.log('✅ Documento descargado exitosamente por ruta:', docHomologacion.ruta_documento);
+          this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+        },
+        error: (error: any) => {
+          console.warn('⚠️ Error al descargar por ruta, intentando por nombre...', error);
+          // Intentar por nombre como último recurso
+          this.intentarDescargaPorNombre(documento);
+        }
+      });
+      return;
+    }
+
+    // ✅ PRIORIDAD 3: Intentar descargar por nombre (fallback)
+    this.intentarDescargaPorNombre(documento);
+  }
+
+  /**
+   * ✅ NUEVO: Método helper para intentar descarga por ruta
+   */
+  private intentarDescargaPorRuta(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+    const docHomologacion = documento as DocumentoHomologacion;
+    if (!docHomologacion.ruta_documento || !this.servicio?.descargarArchivoPorRuta) {
+      this.intentarDescargaPorNombre(documento);
+      return;
+    }
+
+    this.servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).subscribe({
+      next: (blob: Blob) => {
+        console.log('✅ Documento descargado exitosamente por ruta:', docHomologacion.ruta_documento);
+        this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+      },
+      error: (error: any) => {
+        console.error('❌ Error al descargar por ruta:', error);
+        this.intentarDescargaPorNombre(documento);
+      }
+    });
+  }
+
+  /**
+   * ✅ NUEVO: Método helper para intentar descarga por nombre (último recurso)
+   */
+  private intentarDescargaPorNombre(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+    if (!documento.nombre) {
+      console.error('❌ No hay nombre de archivo disponible');
+      this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    if (!this.servicio?.descargarArchivo) {
+      console.error('❌ Método descargarArchivo no disponible');
+      this.snackBar.open('Error: Método de descarga no disponible', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    console.log('📁 Intentando descargar por nombre del archivo:', documento.nombre);
+    this.servicio.descargarArchivo(documento.nombre).subscribe({
+      next: (blob: Blob) => {
+        console.log('✅ Documento descargado exitosamente por nombre:', documento.nombre);
+        this.mostrarDocumentoEnVentana(blob, documento.nombre);
+      },
+      error: (error: any) => {
+        console.error('❌ Error al descargar documento por nombre:', error);
+        const errorMessage = error.status === 404 
+          ? 'El archivo no se encontró en el servidor. Verifique que el documento existe.'
+          : (error.error?.message || error.message || 'Error desconocido');
+        this.snackBar.open('Error al descargar documento: ' + errorMessage, 'Cerrar', { duration: 5000 });
+      }
+    });
   }
 
 

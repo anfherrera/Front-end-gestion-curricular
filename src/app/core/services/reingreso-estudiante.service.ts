@@ -216,6 +216,39 @@ export class ReingresoEstudianteService {
   }
 
   /**
+   * ✅ NUEVO: Descargar archivo PDF por ID de documento
+   * Este método es más confiable que usar el nombre del archivo
+   */
+  descargarArchivoPorId(idDocumento: number): Observable<Blob> {
+    const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
+    console.log('🔗 URL de descarga por ID:', url);
+    console.log('📁 ID del documento:', idDocumento);
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * ✅ NUEVO: Descargar archivo PDF por ruta del documento
+   * Usa la ruta almacenada en la base de datos
+   */
+  descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
+    // Extraer el nombre del archivo de la ruta si es necesario
+    const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
+    const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
+    console.log('🔗 URL de descarga por ruta:', url);
+    console.log('📁 Ruta del documento:', rutaDocumento);
+    console.log('📁 Nombre extraído:', nombreArchivo);
+    
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
+
+  /**
    * Añadir comentario a un documento
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {

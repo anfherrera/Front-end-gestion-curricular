@@ -391,57 +391,85 @@ export class ReingresoEstudianteComponent implements OnInit {
   }
 
   verDocumento(documento: DocumentosDTORespuesta): void {
-    if (!documento.nombre) {
-      this.snackBar.open(`No hay nombre de archivo disponible para el documento`, 'Cerrar', { duration: 3000 });
-      return;
-    }
-
     // Mostrar mensaje de carga
     this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
 
+    // ✅ PRIORIDAD 1: Intentar descargar por ID del documento (más confiable)
+    if (documento.id_documento && this.reingresoService.descargarArchivoPorId) {
+      console.log('📁 Intentando descargar por ID del documento:', documento.id_documento);
+      this.reingresoService.descargarArchivoPorId(documento.id_documento).subscribe({
+        next: (blob: Blob) => {
+          console.log('✅ Documento descargado exitosamente por ID:', documento.id_documento);
+          this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+        },
+        error: (error: any) => {
+          console.warn('⚠️ Error al descargar por ID, intentando por ruta...', error);
+          // Intentar por ruta como fallback
+          this.intentarDescargaPorRuta(documento);
+        }
+      });
+      return;
+    }
+
+    // ✅ PRIORIDAD 2: Intentar descargar por ruta del documento
+    if (documento.ruta_documento && this.reingresoService.descargarArchivoPorRuta) {
+      console.log('📁 Intentando descargar por ruta del documento:', documento.ruta_documento);
+      this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).subscribe({
+        next: (blob: Blob) => {
+          console.log('✅ Documento descargado exitosamente por ruta:', documento.ruta_documento);
+          this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+        },
+        error: (error: any) => {
+          console.warn('⚠️ Error al descargar por ruta, intentando por nombre...', error);
+          // Intentar por nombre como último recurso
+          this.intentarDescargaPorNombre(documento);
+        }
+      });
+      return;
+    }
+
+    // ✅ PRIORIDAD 3: Intentar descargar por nombre (fallback)
+    this.intentarDescargaPorNombre(documento);
+  }
+
+  /**
+   * ✅ NUEVO: Método helper para intentar descarga por ruta
+   */
+  private intentarDescargaPorRuta(documento: DocumentosDTORespuesta): void {
+    if (!documento.ruta_documento || !this.reingresoService.descargarArchivoPorRuta) {
+      this.intentarDescargaPorNombre(documento);
+      return;
+    }
+
+    this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).subscribe({
+      next: (blob: Blob) => {
+        console.log('✅ Documento descargado exitosamente por ruta:', documento.ruta_documento);
+        this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+      },
+      error: (error: any) => {
+        console.error('❌ Error al descargar por ruta:', error);
+        this.intentarDescargaPorNombre(documento);
+      }
+    });
+  }
+
+  /**
+   * ✅ NUEVO: Método helper para intentar descarga por nombre (último recurso)
+   */
+  private intentarDescargaPorNombre(documento: DocumentosDTORespuesta): void {
+    if (!documento.nombre) {
+      console.error('❌ No hay nombre de archivo disponible');
+      this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    console.log('📁 Intentando descargar por nombre del archivo:', documento.nombre);
     this.reingresoService.descargarArchivo(documento.nombre).subscribe({
       next: (blob: Blob) => {
-        // Crear URL única del blob para evitar cache
-        const url = window.URL.createObjectURL(blob);
-
-        // Crear un iframe temporal para mostrar el PDF
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.style.width = '100%';
-        iframe.style.height = '600px';
-        iframe.style.border = 'none';
-
-        // Crear ventana emergente
-        const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>${documento.nombre}</title>
-                <style>
-                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                  .header { margin-bottom: 20px; }
-                  .filename { font-size: 18px; font-weight: bold; color: #333; }
-                </style>
-              </head>
-              <body>
-                <div class="header">
-                  <div class="filename">${documento.nombre}</div>
-                </div>
-              </body>
-            </html>
-          `);
-          newWindow.document.body.appendChild(iframe);
-        }
-
-        // Limpiar la URL después de un tiempo
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 5000);
-
-        this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
+        console.log('✅ Documento descargado exitosamente por nombre:', documento.nombre);
+        this.mostrarDocumentoEnVentana(blob, documento.nombre);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error al descargar el documento:', error);
 
         let mensajeError = `Error al descargar el documento: ${documento.nombre}`;
@@ -457,6 +485,51 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
       }
     });
+  }
+
+  /**
+   * ✅ NUEVO: Método helper para mostrar documento en ventana
+   */
+  private mostrarDocumentoEnVentana(blob: Blob, nombreDocumento: string): void {
+    // Crear URL única del blob para evitar cache
+    const url = window.URL.createObjectURL(blob);
+
+    // Crear un iframe temporal para mostrar el PDF
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.style.width = '100%';
+    iframe.style.height = '600px';
+    iframe.style.border = 'none';
+
+    // Crear ventana emergente
+    const newWindow = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>${nombreDocumento}</title>
+            <style>
+              body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+              .header { margin-bottom: 20px; }
+              .filename { font-size: 18px; font-weight: bold; color: #333; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div class="filename">${nombreDocumento}</div>
+            </div>
+          </body>
+        </html>
+      `);
+      newWindow.document.body.appendChild(iframe);
+    }
+
+    // Limpiar la URL después de un tiempo
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 5000);
+
+    this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
   }
 
   generarOficio(): void {
