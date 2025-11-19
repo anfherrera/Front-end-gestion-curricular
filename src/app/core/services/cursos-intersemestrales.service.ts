@@ -350,15 +350,26 @@ export class CursosIntersemestralesService {
 
     const periodo = curso.periodo ?? curso.periodoAcademico;
 
-    if (curso.periodo === periodo && curso.periodoAcademico === periodo) {
+    // Preservar el campo grupo si existe, o usar 'A' por defecto
+    const grupo = curso.grupo || 'A';
+
+    // Log para depuración (solo en desarrollo)
+    if (curso.grupo) {
+      console.log(`🔍 [normalizarCurso] Curso ID ${curso.id_curso}: grupo original = "${curso.grupo}", grupo normalizado = "${grupo}"`);
+    }
+
+    if (curso.periodo === periodo && curso.periodoAcademico === periodo && curso.grupo === grupo) {
       return curso;
     }
 
-    return {
+    const cursoNormalizado = {
       ...curso,
       periodo,
-      periodoAcademico: periodo
+      periodoAcademico: periodo,
+      grupo: grupo // Asegurar que el grupo se preserve
     };
+
+    return cursoNormalizado;
   }
 
   constructor(private http: HttpClient, private authService: AuthService) {}
@@ -714,10 +725,37 @@ export class CursosIntersemestralesService {
       payloadParaBackend.estado = this.mapEstadoParaBackend(payload.estado);
     }
     
+    // ✅ Campo grupo (opcional, se valida en el backend)
+    if (payload.grupo) {
+      const grupoUpper = String(payload.grupo).toUpperCase().trim();
+      if (['A', 'B', 'C', 'D'].includes(grupoUpper)) {
+        payloadParaBackend.grupo = grupoUpper;
+      } else {
+        // Si no es válido, usar "A" por defecto
+        payloadParaBackend.grupo = 'A';
+      }
+    } else {
+      // Si no se proporciona, usar "A" por defecto
+      payloadParaBackend.grupo = 'A';
+    }
+    
     // ✅ Asegurar que id_docente sea un número
     payloadParaBackend.id_docente = Number(payloadParaBackend.id_docente);
     
-    return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION, payloadParaBackend);
+    // ✅ Log para depuración
+    console.log('📤 [crearCurso] Payload enviado al backend:', payloadParaBackend);
+    console.log('🔍 [crearCurso] Grupo en payload:', payloadParaBackend.grupo);
+    
+    return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION, payloadParaBackend)
+      .pipe(
+        map(curso => {
+          // Normalizar el curso retornado para asegurar que el grupo se preserve
+          const cursoNormalizado = this.normalizarCurso(curso);
+          console.log('📥 [crearCurso] Curso recibido del backend:', cursoNormalizado);
+          console.log('🔍 [crearCurso] Grupo en curso recibido:', cursoNormalizado.grupo);
+          return cursoNormalizado;
+        })
+      );
   }
 
   // Mapear estados del frontend al backend (para envío)

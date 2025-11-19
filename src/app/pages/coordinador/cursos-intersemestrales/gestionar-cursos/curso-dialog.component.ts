@@ -981,13 +981,14 @@ export class CursoDialogComponent implements OnInit {
         }
         
         // ✅ Campo grupo (opcional, se valida en el backend)
-        if (formValue.grupo) {
-          // Validar que sea A, B, C o D (case-insensitive)
-          const grupoUpper = String(formValue.grupo).toUpperCase();
-          if (['A', 'B', 'C', 'D'].includes(grupoUpper)) {
-            createData.grupo = grupoUpper;
-          }
-          // Si no es válido, el backend usará "A" por defecto
+        // Siempre incluir el grupo, incluso si es "A" (valor por defecto)
+        const grupoValue = formValue.grupo || 'A';
+        const grupoUpper = String(grupoValue).toUpperCase().trim();
+        if (['A', 'B', 'C', 'D'].includes(grupoUpper)) {
+          createData.grupo = grupoUpper;
+        } else {
+          // Si no es válido, usar "A" por defecto
+          createData.grupo = 'A';
         }
         
         // ✅ Logs de depuración antes de enviar
@@ -998,6 +999,8 @@ export class CursoDialogComponent implements OnInit {
         console.log('🔍 TIPO DE ID_DOCENTE:', typeof createData.id_docente);
         console.log('🔍 ID MATERIA EN createData:', createData.id_materia);
         console.log('🔍 PERÍODO ACADÉMICO EN createData:', createData.periodoAcademico);
+        console.log('🔍 GRUPO EN createData:', createData.grupo);
+        console.log('🔍 GRUPO EN formValue:', formValue.grupo);
         
         this.cursosService.crearCurso(createData)
           .subscribe({
