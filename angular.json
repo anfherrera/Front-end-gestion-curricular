@@ -20,6 +20,11 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
+                "glob": "favicon.ico",
+                "input": "src",
+                "output": "/"
+              },
+              {
                 "glob": "**/*",
                 "input": "public"
               },
