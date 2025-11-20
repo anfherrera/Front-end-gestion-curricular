@@ -43,9 +43,7 @@ export class HomologacionAsignaturasService {
     }
 
     const url = `${this.apiUrl}/listarSolicitud-Homologacion/porRol`;
-    console.log('🌐 URL del endpoint:', url);
-    console.log('📤 Parámetros enviados:', params);
-    console.log('🔑 Headers:', this.getAuthHeaders());
+    // Log de depuración (comentado para producción)
 
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(url, {
       params: params,
@@ -91,7 +89,7 @@ export class HomologacionAsignaturasService {
   getSecretariaApprovedRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
     const url = `${this.apiUrl}/listarSolicitud-Homologacion/Secretaria/Aprobadas`;
 
-    console.log('🌐 URL solicitudes homologación aprobadas secretaría:', url);
+    // URL solicitudes homologación aprobadas secretaría
 
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(url, {
       headers: this.getAuthHeaders()
@@ -170,7 +168,7 @@ export class HomologacionAsignaturasService {
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    console.log('🔗 URL de descarga:', url);
+    // URL de descarga
     console.log('📁 Nombre del archivo:', nombreArchivo);
     
     return this.http.get(url, {
@@ -180,12 +178,12 @@ export class HomologacionAsignaturasService {
   }
 
   /**
-   * ✅ NUEVO: Descargar archivo PDF por ID de documento
+   * NUEVO: Descargar archivo PDF por ID de documento
    * Este método es más confiable que usar el nombre del archivo
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    console.log('🔗 URL de descarga por ID:', url);
+    // URL de descarga por ID
     console.log('📁 ID del documento:', idDocumento);
     
     return this.http.get(url, {
@@ -195,14 +193,14 @@ export class HomologacionAsignaturasService {
   }
 
   /**
-   * ✅ NUEVO: Descargar archivo PDF por ruta del documento
+   * NUEVO: Descargar archivo PDF por ruta del documento
    * Usa la ruta almacenada en la base de datos
    */
   descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
     // Extraer el nombre del archivo de la ruta si es necesario
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    console.log('🔗 URL de descarga por ruta:', url);
+    // URL de descarga por ruta
     console.log('📁 Ruta del documento:', rutaDocumento);
     console.log('📁 Nombre extraído:', nombreArchivo);
     
@@ -368,12 +366,12 @@ export class HomologacionAsignaturasService {
     // Agregar idSolicitud si se proporciona
     if (idSolicitud) {
       formData.append('idSolicitud', idSolicitud.toString());
-      console.log('📎 Asociando archivo a solicitud ID:', idSolicitud);
+      // Asociando archivo a solicitud
     }
     
-    console.log('🔗 URL para subir archivo PDF:', url);
-    console.log('📁 Archivo a subir:', archivo.name);
-    console.log('📊 Tamaño del archivo:', (archivo.size / (1024 * 1024)).toFixed(2) + 'MB');
+    // URL para subir archivo PDF
+    // Archivo a subir
+    // Tamaño del archivo
     
     // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
     // Esto permite que el navegador establezca el Content-Type correcto: multipart/form-data
@@ -386,7 +384,7 @@ export class HomologacionAsignaturasService {
   validarDocumentosRequeridos(idSolicitud: number): Observable<any> {
     const url = `${environment.apiUrl}/solicitudes-homologacion/validarDocumentosRequeridos/${idSolicitud}`;
     
-    console.log('🔗 URL para validar documentos requeridos:', url);
+    // URL para validar documentos requeridos
     
     return this.http.get(url, {
       headers: this.getAuthHeaders()

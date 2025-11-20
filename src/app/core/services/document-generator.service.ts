@@ -35,12 +35,11 @@ export class DocumentGeneratorService {
    * Generar documento usando plantilla
    */
   generarDocumento(request: DocumentRequest): Observable<Blob> {
-    console.log('📄 Generando documento Word...', request);
-    console.log('🔍 Tipo de documento:', request.tipoDocumento);
+    // Generando documento Word
 
-    // ✅ Para PAZ Y SALVO, usar endpoint específico
+    // Para PAZ Y SALVO, usar endpoint específico
     if (request.tipoDocumento === 'OFICIO_PAZ_SALVO') {
-      console.log('📄 Usando endpoint específico de Paz y Salvo');
+      // Usando endpoint específico de Paz y Salvo
       
       const formData = new FormData();
       
@@ -63,7 +62,7 @@ export class DocumentGeneratorService {
       }
       
       const url = `${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`;
-      console.log('🔗 URL para generar Paz y Salvo:', url);
+      // URL para generar Paz y Salvo
       
       // Para FormData, no usar Content-Type (el navegador lo establece automáticamente)
       const headers = new HttpHeaders({
@@ -78,7 +77,7 @@ export class DocumentGeneratorService {
 
     // Para homologación y reingreso, usar el backend genérico
     if (request.tipoDocumento === 'OFICIO_HOMOLOGACION' || request.tipoDocumento === 'RESOLUCION_REINGRESO') {
-      console.log('📄 Usando backend para generar documento:', request.tipoDocumento);
+      // Usando backend para generar documento
       return this.http.post(`${this.apiUrl}/generar`, request, {
         headers: this.getAuthHeaders(),
         responseType: 'blob'
@@ -86,7 +85,7 @@ export class DocumentGeneratorService {
     }
 
     // Para otros tipos, usar el generador del frontend
-    console.log('📄 Usando generador del frontend para:', request.tipoDocumento);
+    // Usando generador del frontend
     return new Observable(observer => {
       try {
         // Crear documento Word
@@ -99,17 +98,17 @@ export class DocumentGeneratorService {
 
         // Generar el archivo Word
         Packer.toBlob(doc).then(blob => {
-          console.log('✅ Documento Word generado exitosamente');
+          // Documento Word generado exitosamente
 
           // Guardar en la base de datos
           this.guardarDocumentoEnBD(request, blob).subscribe({
             next: (response) => {
-              console.log('💾 Documento guardado en BD:', response);
+              // Documento guardado en BD
               observer.next(blob);
               observer.complete();
             },
             error: (error) => {
-              console.error('❌ Error al guardar en BD:', error);
+              console.error('Error al guardar en BD:', error);
               // Aún así devolver el blob para descarga
               observer.next(blob);
               observer.complete();
@@ -117,12 +116,12 @@ export class DocumentGeneratorService {
           });
 
         }).catch(error => {
-          console.error('❌ Error al generar documento Word:', error);
+          console.error('Error al generar documento Word:', error);
           observer.error(error);
         });
 
       } catch (error) {
-        console.error('❌ Error al crear documento:', error);
+        console.error('Error al crear documento:', error);
         observer.error(error);
       }
     });
@@ -132,12 +131,11 @@ export class DocumentGeneratorService {
    * Guardar documento en la base de datos
    */
   private guardarDocumentoEnBD(request: DocumentRequest, blob: Blob): Observable<any> {
-    console.log('🔍 Debug - Request completo:', request);
-    console.log('🔍 Debug - tipoDocumento:', request.tipoDocumento);
+    // Debug - Request completo
 
     // Para paz-salvo y reingreso, NO guardamos en el backend (solo descargamos)
     if (request.tipoDocumento === 'OFICIO_PAZ_SALVO' || request.tipoDocumento === 'RESOLUCION_REINGRESO') {
-      console.log('📄 ' + request.tipoDocumento + ': No guardando en backend, solo descargando archivo');
+      // No guardando en backend, solo descargando archivo
       // Retornar un observable que simula éxito
       return new Observable(observer => {
         observer.next({ success: true, message: 'Documento generado para descarga' });
@@ -146,7 +144,7 @@ export class DocumentGeneratorService {
     }
 
     // Solo para homologación (aunque tampoco tiene endpoint, pero por si acaso)
-    console.log('📄 Homologación: Intentando guardar en backend...');
+    // Homologación: Intentando guardar en backend
 
     const formData = new FormData();
 
@@ -161,7 +159,7 @@ export class DocumentGeneratorService {
     if (request.idSolicitud) {
       formData.append('idSolicitud', request.idSolicitud.toString());
     } else {
-      console.warn('⚠️ idSolicitud es undefined, usando valor por defecto');
+      console.warn('idSolicitud es undefined, usando valor por defecto');
       formData.append('idSolicitud', '1'); // Valor por defecto
     }
 
@@ -171,7 +169,7 @@ export class DocumentGeneratorService {
     if (request.datosDocumento?.numeroDocumento) {
       formData.append('numeroDocumento', request.datosDocumento.numeroDocumento);
     } else {
-      console.warn('⚠️ numeroDocumento es undefined, usando valor por defecto');
+      console.warn('numeroDocumento es undefined, usando valor por defecto');
       formData.append('numeroDocumento', '001-2024');
     }
 
@@ -179,7 +177,7 @@ export class DocumentGeneratorService {
     if (request.datosDocumento?.fechaDocumento) {
       formData.append('fechaDocumento', request.datosDocumento.fechaDocumento.toString());
     } else {
-      console.warn('⚠️ fechaDocumento es undefined, usando fecha actual');
+      console.warn('fechaDocumento es undefined, usando fecha actual');
       formData.append('fechaDocumento', new Date().toISOString().split('T')[0]);
     }
 
@@ -187,11 +185,11 @@ export class DocumentGeneratorService {
       formData.append('observaciones', request.datosDocumento.observaciones);
     }
 
-    console.log('📤 Enviando FormData al backend...');
+    // Enviando FormData al backend
 
     // Solo para homologación (aunque no tiene endpoint)
     const endpoint = `${environment.apiUrl}/solicitudes-homologacion/guardarOficio`;
-    console.log('🔗 Usando endpoint:', endpoint);
+    // Usando endpoint
 
     return this.http.post(endpoint, formData, {
       headers: this.getAuthHeaders()

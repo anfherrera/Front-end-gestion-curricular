@@ -158,7 +158,7 @@ export class AuthService {
   // ===== LOGOUT =====
   logout(showMessage: boolean = false): void {
     if (showMessage) {
-      alert('⚠️ Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
     }
     const storage = this.safeLocalStorage();
     if (storage) {

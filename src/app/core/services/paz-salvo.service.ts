@@ -465,7 +465,7 @@ export class PazSalvoService {
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    console.log('🔗 URL de descarga por ID (Paz y Salvo):', url);
+    // URL de descarga por ID
     console.log('📁 ID del documento:', idDocumento);
     
     return this.http.get(url, {
@@ -491,7 +491,7 @@ export class PazSalvoService {
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     // USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
     const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
-    console.log('🔗 URL de descarga por ruta (Paz y Salvo):', url);
+    // URL de descarga por ruta
     console.log('📁 Ruta del documento:', rutaDocumento);
     console.log('📁 Nombre extraído:', nombreArchivo);
     

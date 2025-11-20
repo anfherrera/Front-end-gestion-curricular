@@ -8,12 +8,12 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class ActivityMonitorService implements OnDestroy {
   private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutos en milisegundos
   private readonly WARNING_TIME = 1 * 60 * 1000; // 1 minuto antes del logout
-  private readonly THROTTLE_DELAY = 2000; // ✅ Throttle de 2 segundos para evitar exceso de eventos
+  private readonly THROTTLE_DELAY = 2000; // Throttle de 2 segundos para evitar exceso de eventos
   
   private inactivityTimer: any;
   private warningTimer: any;
   private isWarningShown = false;
-  private throttleTimer: any = null; // ✅ Timer para throttle
+  private throttleTimer: any = null; // Timer para throttle
   
   private activitySubject = new BehaviorSubject<boolean>(true);
   public activity$ = this.activitySubject.asObservable();
@@ -96,7 +96,7 @@ export class ActivityMonitorService implements OnDestroy {
       
       // Mostrar alerta al usuario
       const userConfirmed = confirm(
-        '⚠️ Tu sesión expirará en 1 minuto por inactividad.\n\n' +
+        'Tu sesión expirará en 1 minuto por inactividad.\n\n' +
         '¿Deseas continuar con la sesión?\n\n' +
         'Haz clic en "Aceptar" para mantener la sesión activa.'
       );
@@ -160,7 +160,7 @@ export class ActivityMonitorService implements OnDestroy {
 
   /**
    * Se ejecuta cuando detecta actividad del usuario
-   * ✅ OPTIMIZADO: Con throttle para evitar llamadas excesivas
+   * OPTIMIZADO: Con throttle para evitar llamadas excesivas
    */
   private onUserActivity(): void {
     // Si ya hay un throttle activo, ignorar el evento
@@ -189,7 +189,7 @@ export class ActivityMonitorService implements OnDestroy {
       clearTimeout(this.warningTimer);
       this.warningTimer = null;
     }
-    // ✅ Limpiar throttle timer también
+    // Limpiar throttle timer también
     if (this.throttleTimer) {
       clearTimeout(this.throttleTimer);
       this.throttleTimer = null;

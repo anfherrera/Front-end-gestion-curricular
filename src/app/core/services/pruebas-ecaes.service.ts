@@ -160,9 +160,7 @@ export class PruebasEcaesService {
     }
 
     const url = `${this.apiUrl}/listarSolicitud-ecaes/porRol`;
-    console.log('🌐 URL del endpoint ECAES:', url);
-    console.log('📤 Parámetros enviados:', params);
-    console.log('🔑 Headers:', this.getAuthHeaders());
+    // Log de depuración (comentado para producción)
 
     return this.http.get<SolicitudEcaesResponse[]>(url, {
       params: params,
@@ -213,7 +211,7 @@ export class PruebasEcaesService {
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    console.log('🔗 URL de descarga ECAES:', url);
+    // URL de descarga ECAES
     console.log('📁 Nombre del archivo:', nombreArchivo);
 
     return this.http.get(url, {
@@ -223,12 +221,12 @@ export class PruebasEcaesService {
   }
 
   /**
-   * ✅ NUEVO: Descargar archivo PDF por ID de documento
+   * NUEVO: Descargar archivo PDF por ID de documento
    * Este método es más confiable que usar el nombre del archivo
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    console.log('🔗 URL de descarga por ID (ECAES):', url);
+    // URL de descarga por ID
     console.log('📁 ID del documento:', idDocumento);
     
     return this.http.get(url, {
@@ -238,14 +236,14 @@ export class PruebasEcaesService {
   }
 
   /**
-   * ✅ NUEVO: Descargar archivo PDF por ruta del documento
+   * NUEVO: Descargar archivo PDF por ruta del documento
    * Usa la ruta almacenada en la base de datos
    */
   descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
     // Extraer el nombre del archivo de la ruta si es necesario
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    console.log('🔗 URL de descarga por ruta (ECAES):', url);
+    // URL de descarga por ruta
     console.log('📁 Ruta del documento:', rutaDocumento);
     console.log('📁 Nombre extraído:', nombreArchivo);
     
