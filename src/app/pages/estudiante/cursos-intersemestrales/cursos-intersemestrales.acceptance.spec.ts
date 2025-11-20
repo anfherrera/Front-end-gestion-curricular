@@ -262,12 +262,22 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       service.crearCurso(nuevoCurso).subscribe((response) => {
         // THEN: Curso creado exitosamente
         expect(response).toBeTruthy();
+        expect(response.id_curso).toBe(5);
       });
       tick();
 
       const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION);
-      expect(req.request.body.nombre_curso).toBe('Algoritmos Avanzados');
-      req.flush({ id_curso: 5, mensaje: 'Curso creado' });
+      // El backend no espera nombre_curso, solo id_materia, id_docente, etc.
+      expect(req.request.body.id_materia).toBe(3);
+      expect(req.request.body.id_docente).toBe(10);
+      req.flush({ 
+        id_curso: 5, 
+        mensaje: 'Curso creado',
+        nombre_curso: 'Algoritmos Avanzados',
+        codigo_curso: 'ALG-401',
+        periodo: '2025-1',
+        grupo: 'A'
+      });
       tick();
     }));
   });

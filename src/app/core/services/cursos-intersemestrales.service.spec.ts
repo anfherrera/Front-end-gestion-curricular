@@ -85,7 +85,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const respuesta = [buildCurso()];
 
       service.getCursosDisponibles().subscribe((cursos) => {
-        expect(cursos).toEqual(respuesta);
+        expect(cursos.length).toBe(1);
+        expect(cursos[0].id_curso).toBe(respuesta[0].id_curso);
+        expect(cursos[0].nombre_curso).toBe(respuesta[0].nombre_curso);
+        // El servicio normaliza y agrega periodo y grupo
         done();
       });
 
@@ -98,7 +101,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const respuesta = [buildCurso({ estado_actual: 'Preinscripción' })];
 
       service.getCursosPorEstado('Preinscripción').subscribe((cursos) => {
-        expect(cursos).toEqual(respuesta);
+        expect(cursos.length).toBe(1);
+        expect(cursos[0].id_curso).toBe(respuesta[0].id_curso);
+        expect(cursos[0].estado_actual).toBe(respuesta[0].estado_actual);
+        // El servicio normaliza y agrega periodo y grupo
         done();
       });
 
@@ -280,7 +286,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/inscripciones/30/comprobante`);
+      // El endpoint cambió a usar ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION
+      const req = httpMock.expectOne((request) => 
+        request.url.includes('/archivos/descargar/pdf/inscripcion/30')
+      );
       expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(mockBlob);
@@ -476,7 +485,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const cursos = [buildCurso({ periodoAcademico: '2025-1' })];
 
       service.getCursosPorPeriodo('2025-1').subscribe((result) => {
-        expect(result).toEqual(cursos);
+        expect(result.length).toBe(1);
+        expect(result[0].id_curso).toBe(cursos[0].id_curso);
+        expect(result[0].periodoAcademico).toBe(cursos[0].periodoAcademico);
+        // El servicio normaliza y agrega periodo y grupo
         done();
       });
 
@@ -490,7 +502,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const cursos = [buildCurso()];
 
       service.getCursosActivos(fecha).subscribe((result) => {
-        expect(result).toEqual(cursos);
+        expect(result.length).toBe(1);
+        expect(result[0].id_curso).toBe(cursos[0].id_curso);
+        expect(result[0].nombre_curso).toBe(cursos[0].nombre_curso);
+        // El servicio normaliza y agrega periodo y grupo
         done();
       });
 
@@ -518,7 +533,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const cursos = [buildCurso()];
 
       service.getTodosLosCursosParaFuncionarios().subscribe((result) => {
-        expect(result).toEqual(cursos);
+        expect(result.length).toBe(1);
+        expect(result[0].id_curso).toBe(cursos[0].id_curso);
+        expect(result[0].nombre_curso).toBe(cursos[0].nombre_curso);
+        // El servicio normaliza y agrega periodo y grupo
         done();
       });
 

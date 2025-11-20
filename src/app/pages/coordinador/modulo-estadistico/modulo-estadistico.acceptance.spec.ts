@@ -248,7 +248,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       service.getEstadoSolicitudes().subscribe((estados) => {
         // THEN: Veo distribución por estado
         expect(estados.totalSolicitudes).toBe(150);
-        expect(estados.estados['APROBADA'].cantidad).toBeGreaterThan(estados.estados['RECHAZADA'].cantidad);
+        expect(estados.estados?.['APROBADA']?.cantidad).toBeGreaterThan(estados.estados?.['RECHAZADA']?.cantidad || 0);
       });
       tick();
 
