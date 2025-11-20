@@ -89,11 +89,11 @@ export class DocumentGeneratorComponent implements OnInit {
 
     this.documentForm = this.fb.group(formControls);
 
-    console.log('🔍 Formulario inicializado:', this.documentForm.value);
+    // Formulario inicializado
   }
 
   private prepareSolicitudData(): void {
-    console.log('🔍 Solicitud recibida:', this.solicitud);
+    // Solicitud recibida
 
     // Obtener el estado actual de la solicitud
     let estadoActual = this.solicitud.estado;
@@ -102,7 +102,7 @@ export class DocumentGeneratorComponent implements OnInit {
     if (!estadoActual && this.solicitud.estadosSolicitud && this.solicitud.estadosSolicitud.length > 0) {
       const ultimoEstado = this.solicitud.estadosSolicitud[this.solicitud.estadosSolicitud.length - 1];
       estadoActual = ultimoEstado.estado_actual;
-      console.log('🔍 Estado obtenido de estadosSolicitud:', estadoActual);
+      // Estado obtenido de estadosSolicitud
     }
 
     // Extraer datos relevantes de la solicitud según el proceso
@@ -115,22 +115,16 @@ export class DocumentGeneratorComponent implements OnInit {
       estado: estadoActual || 'Pendiente'
     };
 
-    console.log('🔍 Datos de solicitud preparados:', this.datosSolicitud);
-    console.log('🔍 Usuario extraído:', this.solicitud.objUsuario);
-    console.log('🔍 Programa extraído:', this.solicitud.objUsuario?.objPrograma);
-    console.log('🔍 Estado final:', this.datosSolicitud.estado);
+    // Datos de solicitud preparados
   }
 
   onSubmit(): void {
-    console.log('🔍 Formulario válido:', this.documentForm.valid);
-    console.log('🔍 Valores del formulario:', this.documentForm.value);
-    console.log('🔍 Errores del formulario:', this.documentForm.errors);
+    // Formulario válido
 
     if (this.documentForm.valid) {
       const formData = this.documentForm.value;
 
-      console.log('🔍 FormData extraído:', formData);
-      console.log('🔍 datosSolicitud:', this.datosSolicitud);
+      // FormData extraído
 
       const documentRequest: DocumentRequest = {
         idSolicitud: this.datosSolicitud.idSolicitud,
@@ -145,10 +139,10 @@ export class DocumentGeneratorComponent implements OnInit {
         datosSolicitud: this.datosSolicitud
       };
 
-      console.log('🔍 DocumentRequest creado:', documentRequest);
+      // DocumentRequest creado
       this.generarDocumento.emit(documentRequest);
     } else {
-      console.log('❌ Formulario inválido, marcando campos como tocados');
+      // Formulario inválido, marcando campos como tocados
       this.markFormGroupTouched();
     }
   }

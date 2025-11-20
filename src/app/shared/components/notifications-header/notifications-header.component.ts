@@ -66,10 +66,10 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     // Si no tenemos userId, esperar a que el usuario esté disponible
     const usuario = this.authService.getUsuario();
     if (usuario?.id) {
-      console.log('✅ [NOTIFICACIONES] Usuario encontrado, cargando notificaciones');
+      // Usuario encontrado, cargando notificaciones
       this.cargarNotificaciones();
     } else {
-      console.log('⏳ [NOTIFICACIONES] Esperando a que el usuario esté disponible...');
+      // Esperando a que el usuario esté disponible
       // Intentar nuevamente después de un breve delay
       setTimeout(() => {
         this.esperarUsuarioYcargarNotificaciones();
@@ -80,12 +80,12 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   cargarNotificaciones(): void {
     const userId = this.userId || this.authService.getUsuario()?.id;
     if (!userId) {
-      console.warn('⚠️ [NOTIFICACIONES] No hay ID de usuario disponible');
+      console.warn('[NOTIFICACIONES] No hay ID de usuario disponible');
       return;
     }
 
     this.isLoading = true;
-    console.log('🔄 [NOTIFICACIONES] Cargando notificaciones para usuario:', userId);
+    // Cargando notificaciones para usuario
 
     this.notificacionesService.obtenerNotificacionesHeader(userId).subscribe({
       next: (response: NotificacionesResponse) => {
@@ -93,12 +93,10 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
         this.totalNoLeidas = response.totalNoLeidas;
         this.isLoading = false;
         
-        console.log('✅ [NOTIFICACIONES] Notificaciones cargadas exitosamente');
-        console.log('📊 [NOTIFICACIONES] Total no leídas:', this.totalNoLeidas);
-        console.log('📋 [NOTIFICACIONES] Cantidad de notificaciones:', this.notificaciones.length);
+        // Notificaciones cargadas exitosamente
       },
       error: (error) => {
-        console.error('❌ [NOTIFICACIONES] Error al cargar notificaciones:', error);
+        console.error('[NOTIFICACIONES] Error al cargar notificaciones:', error);
         this.isLoading = false;
         this.snackBar.open('Error al cargar notificaciones', 'Cerrar', { duration: 3000 });
       }
@@ -108,39 +106,39 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   marcarTodasComoLeidas(): void {
     const userId = this.userId || this.authService.getUsuario()?.id;
     if (!userId) {
-      console.warn('⚠️ [NOTIFICACIONES] No hay ID de usuario disponible para marcar como leídas');
+      console.warn('[NOTIFICACIONES] No hay ID de usuario disponible para marcar como leídas');
       return;
     }
 
-    console.log('✅ [NOTIFICACIONES] Marcando todas las notificaciones como leídas');
+    // Marcando todas las notificaciones como leídas
     
     this.notificacionesService.marcarNotificacionesComoLeidas(userId).subscribe({
       next: (response) => {
-        console.log('✅ [NOTIFICACIONES] Notificaciones marcadas como leídas:', response);
+        // Notificaciones marcadas como leídas
         this.totalNoLeidas = 0;
         this.snackBar.open('Notificaciones marcadas como leídas', 'Cerrar', { duration: 2000 });
       },
       error: (error) => {
-        console.error('❌ [NOTIFICACIONES] Error al marcar como leídas:', error);
+        console.error('[NOTIFICACIONES] Error al marcar como leídas:', error);
         this.snackBar.open('Error al marcar notificaciones como leídas', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
   navegarANotificacion(notificacion: Notificacion): void {
-    console.log('🧭 [NOTIFICACIONES] Navegando a notificación:', notificacion.titulo);
-    console.log('🔗 [NOTIFICACIONES] URL de acción:', notificacion.urlAccion);
+    // Navegando a notificación
+    // URL de acción
     
     if (notificacion.urlAccion) {
       this.router.navigate([notificacion.urlAccion]);
     } else {
-      console.warn('⚠️ [NOTIFICACIONES] No hay URL de acción disponible');
+      console.warn('[NOTIFICACIONES] No hay URL de acción disponible');
       this.snackBar.open('No hay acción disponible para esta notificación', 'Cerrar', { duration: 2000 });
     }
   }
 
   actualizarManual(): void {
-    console.log('🔄 [NOTIFICACIONES] Actualización manual solicitada');
+    // Actualización manual solicitada
     this.cargarNotificaciones();
   }
 
@@ -189,7 +187,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   verTodasLasNotificaciones(): void {
-    console.log('📋 [NOTIFICACIONES] Navegando a vista completa de notificaciones');
+    // Navegando a vista completa de notificaciones
     // Aquí podrías navegar a una página dedicada de notificaciones
     this.router.navigate(['/notificaciones']);
   }
@@ -205,21 +203,21 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   crearNotificacionPrueba(): void {
     const userId = this.userId || this.authService.getUsuario()?.id;
     if (!userId) {
-      console.warn('⚠️ [NOTIFICACIONES] No hay ID de usuario disponible para crear notificación de prueba');
+      console.warn('[NOTIFICACIONES] No hay ID de usuario disponible para crear notificación de prueba');
       this.snackBar.open('No hay usuario disponible para crear notificación de prueba', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    console.log('🧪 [NOTIFICACIONES] Creando notificación de prueba para usuario:', userId);
+    // Creando notificación de prueba para usuario
     
     this.notificacionesService.crearNotificacionPrueba(userId).subscribe({
       next: (response) => {
-        console.log('✅ [NOTIFICACIONES] Notificación de prueba creada:', response);
+        // Notificación de prueba creada
         this.snackBar.open('Notificación de prueba creada exitosamente', 'Cerrar', { duration: 2000 });
         // Las notificaciones se actualizarán automáticamente
       },
       error: (error) => {
-        console.error('❌ [NOTIFICACIONES] Error al crear notificación de prueba:', error);
+        console.error('[NOTIFICACIONES] Error al crear notificación de prueba:', error);
         this.snackBar.open('Error al crear notificación de prueba', 'Cerrar', { duration: 3000 });
       }
     });

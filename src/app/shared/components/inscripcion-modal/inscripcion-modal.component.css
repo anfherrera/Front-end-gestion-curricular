@@ -130,7 +130,7 @@
 }
 
 .form-section h3::before {
-  content: "📝";
+  content: "";
   font-size: 18px;
 }
 

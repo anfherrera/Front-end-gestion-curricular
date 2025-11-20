@@ -23,7 +23,7 @@ import { Subject, takeUntil } from 'rxjs';
   template: `
     <div class="filters-container">
       <div class="filters-header">
-        <h3>🔍 Filtros por Estado</h3>
+        <h3>Filtros por Estado</h3>
         <p>Selecciona un estado para ver solo los cursos en esa fase</p>
       </div>
       
@@ -368,7 +368,7 @@ export class EstadoFiltersComponent implements OnInit {
   }
 
   onEstadoChange(estado: string): void {
-    console.log(`🔄 Cambiando filtro a estado: "${estado}"`);
+    // Cambiando filtro a estado
     this.estadoSeleccionado = estado;
     this.estadoInfo = estado ? this.cursoEstadosService.getEstadoPorValor(estado) : undefined;
     this.cargandoFiltro = true;
@@ -379,22 +379,22 @@ export class EstadoFiltersComponent implements OnInit {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (cursos) => {
-            console.log(`✅ Cursos obtenidos para estado "${estado}":`, cursos);
+            // Cursos obtenidos para estado
             this.cursosFiltrados = cursos;
             this.cursosFiltradosChange.emit(this.cursosFiltrados);
             this.cargandoFiltro = false;
           },
           error: (error) => {
-            console.error(`❌ Error obteniendo cursos para estado "${estado}":`, error);
+            console.error(`Error obteniendo cursos para estado "${estado}":`, error);
             // Fallback: filtrar localmente
-            console.log(`🔄 Usando filtro local como fallback para "${estado}"`);
+            // Usando filtro local como fallback
             this.aplicarFiltro();
             this.cargandoFiltro = false;
           }
         });
     } else {
       // Si no hay estado seleccionado, mostrar todos los cursos
-      console.log(`🔄 Mostrando todos los cursos (sin filtro)`);
+      // Mostrando todos los cursos (sin filtro)
       this.aplicarFiltro();
       this.cargandoFiltro = false;
     }
@@ -426,7 +426,7 @@ export class EstadoFiltersComponent implements OnInit {
       }).length;
     });
     
-    console.log('📊 Conteos locales calculados:', this.conteosEstados);
+    // Conteos locales calculados
     
     // Actualizar conteos desde el backend para cada estado
     this.estadosDisponibles.forEach(estado => {
@@ -435,10 +435,10 @@ export class EstadoFiltersComponent implements OnInit {
         .subscribe({
           next: (cursos) => {
             this.conteosEstados[estado.value] = cursos.length;
-            console.log(`📊 Conteo actualizado para "${estado.value}":`, cursos.length);
+            // Conteo actualizado para estado
           },
           error: (error) => {
-            console.warn(`⚠️ No se pudo obtener conteo para estado "${estado.value}":`, error);
+            console.warn(`No se pudo obtener conteo para estado "${estado.value}":`, error);
             // Mantener el conteo local
           }
         });
@@ -483,7 +483,7 @@ export class EstadoFiltersComponent implements OnInit {
 
   // Método para actualizar conteos cuando cambien los cursos
   actualizarConteos(): void {
-    console.log('📊 Actualizando conteos...');
+    // Actualizando conteos
     this.calcularConteos();
   }
 }

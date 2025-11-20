@@ -37,7 +37,7 @@ export class PreinscripcionDialogComponent implements OnInit {
     private authService: AuthService,
     private snackBar: MatSnackBar
   ) {
-    console.log('📝 PREINSCRIPCION DIALOG CARGADO para curso:', data.curso.nombre_curso);
+    // PREINSCRIPCION DIALOG CARGADO para curso
   }
 
   ngOnInit(): void {
@@ -61,14 +61,14 @@ export class PreinscripcionDialogComponent implements OnInit {
       // Usar los campos correctos del usuario
       const nombreCompleto = this.usuario.nombre_completo || `${this.usuario.nombre || ''} ${this.usuario.apellido || ''}`.trim();
       const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || '';
-      console.log('📝 Datos del usuario - Nombre:', nombreCompleto, 'Código:', codigo);
+      // Datos del usuario
       this.preinscripcionForm.patchValue({
         nombreCompleto: nombreCompleto,
         codigo: codigo
       });
-      console.log('✅ Formulario de preinscripción actualizado con datos del usuario');
+      // Formulario de preinscripción actualizado con datos del usuario
     } else {
-      console.log('❌ No se encontró usuario logueado');
+      // No se encontró usuario logueado
     }
   }
 
@@ -76,7 +76,7 @@ export class PreinscripcionDialogComponent implements OnInit {
     this.cursosService.getCondicionesSolicitud().subscribe({
       next: (condiciones) => {
         this.condiciones = condiciones;
-        console.log('📋 Condiciones cargadas:', condiciones);
+        // Condiciones cargadas
       },
       error: (error) => {
         console.error('Error cargando condiciones:', error);
@@ -109,7 +109,7 @@ export class PreinscripcionDialogComponent implements OnInit {
             duration: 5000,
             panelClass: ['success-snackbar']
           });
-          console.log('✅ Preinscripción creada:', response);
+          // Preinscripción creada
           this.dialogRef.close(true); // Cerrar con éxito
         },
         error: (error) => {

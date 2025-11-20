@@ -43,21 +43,21 @@ export class FileUploadComponent implements OnChanges {
     Array.from(input.files).forEach(file => {
       // Validaciones
       if (file.type !== 'application/pdf') {
-        alert('⚠️ Solo se permiten archivos PDF');
+        alert('Solo se permiten archivos PDF');
         return;
       }
 
       // Validar tamaño máximo (10MB)
       const maxFileSize = 10 * 1024 * 1024; // 10MB
       if (file.size > maxFileSize) {
-        alert(`⚠️ El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        alert(`El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
         return;
       }
 
       // Validar archivos duplicados
       const archivoDuplicado = this.archivos.find(archivo => archivo.nombre === file.name);
       if (archivoDuplicado) {
-        alert(`⚠️ El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`);
+        alert(`El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`);
         return;
       }
 
@@ -76,7 +76,7 @@ export class FileUploadComponent implements OnChanges {
           );
           
           if (archivoExclusivoExistente) {
-            alert(`⚠️ Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${this.archivosExclusivos.join(' o ')}`);
+            alert(`Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${this.archivosExclusivos.join(' o ')}`);
             return;
           }
         }
@@ -122,10 +122,10 @@ export class FileUploadComponent implements OnChanges {
       
       // Usar el servicio correcto según el proceso
       if (this.proceso === 'paz-salvo') {
-        console.log('🔄 Usando servicio Paz y Salvo para subir:', archivo.nombre);
+        // Usando servicio Paz y Salvo para subir
         subida$ = this.pazSalvoService.subirDocumento(archivo.file!);
       } else {
-        console.log('🔄 Usando servicio genérico para subir:', archivo.nombre);
+        // Usando servicio genérico para subir
         subida$ = this.archivosService.subirPDF(archivo.file!);
       }
 
@@ -157,7 +157,7 @@ export class FileUploadComponent implements OnChanges {
         }),
         tap({
           error: (error) => {
-            console.error(`❌ Error al subir archivo ${archivo.nombre}:`, error);
+            console.error(`Error al subir archivo ${archivo.nombre}:`, error);
             // Marcar el archivo como con error
             const index = this.archivos.findIndex(a => a.file === archivo.file);
             if (index !== -1) {
@@ -176,7 +176,7 @@ export class FileUploadComponent implements OnChanges {
           this.notificarCambio();
         },
         error: (error) => {
-          console.error('❌ Error al subir archivos:', error);
+          console.error('Error al subir archivos:', error);
           this.cargando = false;
           this.notificarCambio();
         }

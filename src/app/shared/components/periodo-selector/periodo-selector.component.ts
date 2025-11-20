@@ -90,10 +90,10 @@ export class PeriodoSelectorComponent implements OnInit {
         next: (periodos) => {
           this.periodos = periodos;
           this.cargando = false;
-          console.log('✅ Períodos registrados cargados:', periodos);
+          // Períodos registrados cargados
         },
         error: (error) => {
-          console.error('❌ Error cargando períodos registrados:', error);
+          console.error('Error cargando períodos registrados:', error);
           this.cargando = false;
           // Fallback: cargar todos los períodos
           this.cargarTodosLosPeriodos();
@@ -110,10 +110,10 @@ export class PeriodoSelectorComponent implements OnInit {
       next: (periodos) => {
         this.periodos = periodos;
         this.cargando = false;
-        console.log('✅ Todos los períodos cargados:', periodos);
+        // Todos los períodos cargados
       },
       error: (error) => {
-        console.error('❌ Error cargando todos los períodos:', error);
+        console.error('Error cargando todos los períodos:', error);
         this.cargando = false;
       }
     });

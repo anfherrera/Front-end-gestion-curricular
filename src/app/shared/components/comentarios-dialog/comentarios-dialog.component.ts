@@ -214,7 +214,7 @@ export class ComentariosDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: ComentariosDialogData
   ) {
     // Log para debugging
-    console.log('🔍 Datos recibidos en el diálogo:');
+    // Datos recibidos en el diálogo
     console.log('  - Título:', this.data.titulo);
     console.log('  - Documentos:', this.data.documentos);
     console.log('  - Comentario de rechazo:', this.data.comentarioRechazo);

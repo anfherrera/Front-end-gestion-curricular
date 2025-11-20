@@ -324,7 +324,7 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy {
     const sub = this.estadisticasService.getEstudiantesPorPrograma()
       .subscribe({
         next: (response: EstudiantesPorProgramaResponse) => {
-          console.log('✅ Estudiantes por programa obtenidos:', response);
+          // Estudiantes por programa obtenidos
           
           this.fechaConsulta = response.fechaConsulta;
           this.programasData = this.procesarDatos(response.estudiantesPorPrograma);
@@ -332,7 +332,7 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy {
           this.loading = false;
         },
         error: (error) => {
-          console.error('❌ Error al obtener estudiantes por programa:', error);
+          console.error('Error al obtener estudiantes por programa:', error);
           this.loading = false;
           this.error = 'Error al cargar datos de estudiantes por programa';
         }

@@ -184,13 +184,13 @@ export class EstudiantesKpiComponent implements OnInit, OnDestroy {
     const sub = this.estadisticasService.getTotalEstudiantes()
       .subscribe({
         next: (response: TotalEstudiantesResponse) => {
-          console.log('✅ Total de estudiantes obtenido:', response);
+          // Total de estudiantes obtenido
           this.totalEstudiantes = response.totalEstudiantes;
           this.fechaConsulta = response.fechaConsulta;
           this.loading = false;
         },
         error: (error) => {
-          console.error('❌ Error al obtener total de estudiantes:', error);
+          console.error('Error al obtener total de estudiantes:', error);
           this.loading = false;
           this.error = true;
           this.totalEstudiantes = 0;
