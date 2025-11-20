@@ -110,7 +110,7 @@ export class ManageUsersComponent implements OnInit {
         usuario.estado_usuario = response.estado_usuario;
         
         // Mostrar mensaje de éxito
-        this.snackBar.open(`✅ Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', { 
+        this.snackBar.open(`Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', { 
           duration: 3000,
           panelClass: ['snackbar-success']
         });
@@ -120,7 +120,7 @@ export class ManageUsersComponent implements OnInit {
         console.error('Error al cambiar el estado:', error);
         
         // Mostrar mensaje de error
-        this.snackBar.open('❌ Error al cambiar el estado del usuario', 'Cerrar', { 
+        this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', { 
           duration: 3000,
           panelClass: ['snackbar-error']
         });
@@ -138,7 +138,7 @@ export class ManageUsersComponent implements OnInit {
     this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
       next: () => {
         this.loading = false;
-        this.snackBar.open('✅ Usuario eliminado exitosamente', 'Cerrar', { 
+        this.snackBar.open('Usuario eliminado exitosamente', 'Cerrar', { 
           duration: 3000,
           panelClass: ['snackbar-success']
         });
@@ -154,19 +154,19 @@ export class ManageUsersComponent implements OnInit {
         // Determinar el tipo de error para mostrar el color correcto
         if (this.errorHandler.esErrorDependencias(error)) {
           // Error de dependencias (400) - Naranja/Advertencia
-          this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
+          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
             duration: 6000,
             panelClass: ['snackbar-warning']
           });
         } else if (error.status === 404) {
           // No encontrado
-          this.snackBar.open('❌ Usuario no encontrado', 'Cerrar', { 
+          this.snackBar.open('Usuario no encontrado', 'Cerrar', { 
             duration: 3000,
             panelClass: ['snackbar-error']
           });
         } else {
           // Otros errores
-          this.snackBar.open(`❌ ${mensaje}`, 'Cerrar', { 
+          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
             duration: 4000,
             panelClass: ['snackbar-error']
           });

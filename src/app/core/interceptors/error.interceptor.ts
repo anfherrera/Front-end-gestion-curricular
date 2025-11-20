@@ -26,7 +26,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         // ===== 401 UNAUTHORIZED =====
         // Token ausente, inválido o expirado
         if (error.status === 401) {
-          logger.warn('🔐 Error 401 recibido del backend - Token inválido o expirado');
+          logger.warn('Error 401 recibido del backend - Token inválido o expirado');
           
           const token = authService.getToken();
           
@@ -49,27 +49,27 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               
               if (timeUntilExpiry < -EXPIRY_MARGIN) {
                 // Token realmente expirado
-                logger.warn('⏳ Token expirado - haciendo logout');
+                logger.warn('Token expirado - haciendo logout');
                 authService.logout(true); // Mostrar mensaje de expiración
               } else if (timeUntilExpiry < EXPIRY_MARGIN && !isUserActive) {
                 // Token a punto de expirar y usuario inactivo
-                logger.warn('⏳ Token a punto de expirar y usuario inactivo - haciendo logout');
+                logger.warn('Token a punto de expirar y usuario inactivo - haciendo logout');
                 authService.logout(true);
               } else {
                 // Token válido pero backend rechazó (puede ser revocado o error temporal)
-                logger.warn('⚠️ Token válido pero backend rechazó - puede ser error temporal');
+                logger.warn('Token válido pero backend rechazó - puede ser error temporal');
                 // No hacer logout automático si el usuario está activo
                 // El error se propagará para que el componente lo maneje
               }
             } catch (e) {
               // Token malformado
-              logger.error('❌ Token malformado - haciendo logout', e);
+              logger.error('Token malformado - haciendo logout', e);
               authService.logout(false);
             }
           } else {
             // No hay token - redirigir al login
             if (!router.url.includes('/login')) {
-              logger.warn('⚠️ No hay token - redirigiendo a login');
+              logger.warn('No hay token - redirigiendo a login');
               router.navigate(['/login']);
             }
           }

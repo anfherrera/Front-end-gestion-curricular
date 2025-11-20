@@ -73,12 +73,12 @@ export class NotificacionesService {
    * Marca todas las notificaciones como leídas para un usuario
    */
   marcarNotificacionesComoLeidas(idUsuario: number): Observable<any> {
-    console.log('✅ [NOTIFICACIONES] Marcando notificaciones como leídas para usuario:', idUsuario);
+    // Marcando notificaciones como leídas
     
     return this.http.put(`${this.apiUrl}/header/${idUsuario}/marcar-leidas`, {})
       .pipe(
         tap(response => {
-          console.log('✅ [NOTIFICACIONES] Notificaciones marcadas como leídas:', response);
+          // Notificaciones marcadas como leídas
           // Actualizar el estado local
           const currentNotificaciones = this.notificacionesSubject.value;
           if (currentNotificaciones) {
@@ -105,10 +105,10 @@ export class NotificacionesService {
   actualizarNotificaciones(idUsuario: number): void {
     this.obtenerNotificacionesHeader(idUsuario).subscribe({
       next: () => {
-        console.log('🔄 [NOTIFICACIONES] Notificaciones actualizadas manualmente');
+        // Notificaciones actualizadas manualmente
       },
       error: (error) => {
-        console.error('❌ [NOTIFICACIONES] Error al actualizar notificaciones:', error);
+        console.error('[NOTIFICACIONES] Error al actualizar notificaciones:', error);
       }
     });
   }
@@ -117,7 +117,7 @@ export class NotificacionesService {
    * Obtiene notificaciones del dashboard (compatible con código existente)
    */
   getDashboardNotificaciones(idUsuario: number): Observable<any> {
-    console.log('📊 [NOTIFICACIONES] Obteniendo notificaciones del dashboard para usuario:', idUsuario);
+    // Obteniendo notificaciones del dashboard
     return this.obtenerNotificacionesHeader(idUsuario);
   }
 
@@ -141,7 +141,7 @@ export class NotificacionesService {
    * Inicia el polling de notificaciones (compatible con código existente)
    */
   iniciarPolling(idUsuario: number, intervalo: number = 30000): void {
-    console.log('🔄 [NOTIFICACIONES] Iniciando polling cada', intervalo, 'ms para usuario:', idUsuario);
+    // Iniciando polling de notificaciones
     
     // Cargar notificaciones inmediatamente
     this.actualizarNotificaciones(idUsuario);
@@ -162,7 +162,7 @@ export class NotificacionesService {
     if ((this as any).pollingInterval) {
       clearInterval((this as any).pollingInterval);
       (this as any).pollingInterval = null;
-      console.log('⏹️ [NOTIFICACIONES] Polling detenido');
+      // Polling detenido
     }
   }
 
@@ -177,7 +177,7 @@ export class NotificacionesService {
    * Marca una notificación individual como leída
    */
   marcarNotificacionLeida(idNotificacion: number): Observable<any> {
-    console.log('✅ [NOTIFICACIONES] Marcando notificación como leída:', idNotificacion);
+    // Marcando notificación como leída
     return this.http.put(`${this.apiUrl}/notificaciones/${idNotificacion}/marcar-leida`, {});
   }
 
@@ -213,12 +213,12 @@ export class NotificacionesService {
    * Crea una notificación de prueba para un usuario
    */
   crearNotificacionPrueba(idUsuario: number): Observable<any> {
-    console.log('🧪 [NOTIFICACIONES] Creando notificación de prueba para usuario:', idUsuario);
+    // Creando notificación de prueba
     
     return this.http.post(`${this.apiUrl}/prueba/${idUsuario}`, {})
       .pipe(
         tap(response => {
-          console.log('✅ [NOTIFICACIONES] Notificación de prueba creada:', response);
+          // Notificación de prueba creada
           // Actualizar las notificaciones después de crear la de prueba
           this.actualizarNotificaciones(idUsuario);
         })

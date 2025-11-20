@@ -23,15 +23,15 @@ export class ErrorHandlerService {
    * Maneja errores específicos del backend de cursos intersemestrales
    */
   handleCursoError(error: any, operacion: string = 'operación'): void {
-    console.error('❌ Error en cursos intersemestrales:', error);
+    console.error('Error en cursos intersemestrales:', error);
 
     let mensaje = 'Ha ocurrido un error inesperado';
     let tipoError: 'error' | 'warning' = 'error';
 
-    // ✅ Manejar error CURSO_DUPLICADO específicamente
+    // Manejar error CURSO_DUPLICADO específicamente
     if (error.error?.codigo === 'CURSO_DUPLICADO' || error.error?.error === 'Curso duplicado') {
       mensaje = error.error?.message || 'Ya existe un curso con la misma materia, docente, período académico y grupo.';
-      mensaje += '\n\n💡 Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
+      mensaje += '\n\nPuedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
       tipoError = 'warning';
     } else if (error.error?.message) {
       mensaje = this.procesarMensajeEspecifico(error.error.message, error.error);
@@ -55,67 +55,67 @@ export class ErrorHandlerService {
   private procesarMensajeEspecifico(mensaje: string, error: any): string {
     // Errores de transición de estado
     if (mensaje.includes('Desde') && mensaje.includes('solo se puede cambiar a')) {
-      return `⚠️ ${mensaje}`;
+      return `${mensaje}`;
     }
 
     if (mensaje.includes('debe tener') && mensaje.includes('para pasar a')) {
-      return `⚠️ ${mensaje}`;
+      return `${mensaje}`;
     }
 
     if (mensaje.includes('Debe haber al menos') && mensaje.includes('para abrir')) {
-      return `⚠️ ${mensaje}`;
+      return `${mensaje}`;
     }
 
     if (mensaje.includes('está cerrado y no se puede cambiar')) {
-      return `❌ ${mensaje}`;
+      return `${mensaje}`;
     }
 
     // Errores de permisos
     if (mensaje.includes('no puede realizar la operación')) {
-      return `🚫 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     if (mensaje.includes('no tiene permisos para realizar operaciones')) {
-      return `🚫 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     // Errores de validación de datos
     if (mensaje.includes('es requerido') || mensaje.includes('es obligatorio')) {
-      return `📝 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     if (mensaje.includes('debe ser mayor a') || mensaje.includes('debe ser menor a')) {
-      return `📝 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     // Errores de duplicación
     if (mensaje.includes('ya existe') || mensaje.includes('duplicado') || mensaje.includes('CURSO_DUPLICADO')) {
-      let mensajeCompleto = `🔄 ${mensaje}`;
+      let mensajeCompleto = `${mensaje}`;
       // Si es error de curso duplicado, agregar sugerencia de grupos
       if (mensaje.includes('misma materia') && mensaje.includes('mismo docente')) {
-        mensajeCompleto += '\n\n💡 Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
+        mensajeCompleto += '\n\nPuedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
       }
       return mensajeCompleto;
     }
 
     // Errores de integridad referencial
     if (mensaje.includes('no se puede eliminar porque tiene')) {
-      return `🔗 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     // Errores de estado del curso
     if (mensaje.includes('no está en estado') || mensaje.includes('estado inválido')) {
-      return `📊 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     // Errores de fechas
     if (mensaje.includes('fecha') && (mensaje.includes('anterior') || mensaje.includes('posterior'))) {
-      return `📅 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     // Errores de cupos
     if (mensaje.includes('cupo') && (mensaje.includes('lleno') || mensaje.includes('excedido'))) {
-      return `👥 ${mensaje}`;
+      return `${mensaje}`;
     }
 
     // Mensaje genérico con contexto
@@ -128,23 +128,23 @@ export class ErrorHandlerService {
   private procesarErrorPorStatus(status: number): string {
     switch (status) {
       case 400:
-        return '❌ Datos inválidos enviados al servidor';
+        return 'Datos inválidos enviados al servidor';
       case 401:
-        return '🔐 No tienes autorización para realizar esta acción';
+        return 'No tienes autorización para realizar esta acción';
       case 403:
-        return '🚫 Acceso denegado - No tienes permisos suficientes';
+        return 'Acceso denegado - No tienes permisos suficientes';
       case 404:
-        return '🔍 Recurso no encontrado';
+        return 'Recurso no encontrado';
       case 409:
-        return '🔄 Conflicto - El recurso ya existe o está en uso';
+        return 'Conflicto - El recurso ya existe o está en uso';
       case 422:
-        return '📝 Error de validación - Verifica los datos ingresados';
+        return 'Error de validación - Verifica los datos ingresados';
       case 500:
-        return '⚠️ Error interno del servidor - Intenta más tarde';
+        return 'Error interno del servidor - Intenta más tarde';
       case 503:
-        return '🔧 Servicio no disponible temporalmente';
+        return 'Servicio no disponible temporalmente';
       default:
-        return '❌ Error inesperado del servidor';
+        return 'Error inesperado del servidor';
     }
   }
 
@@ -184,7 +184,7 @@ export class ErrorHandlerService {
    * Maneja errores de cambio de estado con validaciones específicas
    */
   handleCambioEstadoError(error: any, estadoActual: string, nuevoEstado: string): void {
-    console.error('❌ Error cambiando estado:', error);
+    console.error('Error cambiando estado:', error);
 
     let mensaje = 'No se pudo cambiar el estado del curso';
 
@@ -208,7 +208,7 @@ export class ErrorHandlerService {
    * Maneja errores de permisos
    */
   handlePermisoError(error: any, estado: string, rol: string, operacion: string): void {
-    console.error('❌ Error de permisos:', error);
+    console.error('Error de permisos:', error);
 
     let mensaje = 'No tienes permisos para realizar esta acción';
 
@@ -225,7 +225,7 @@ export class ErrorHandlerService {
    * Maneja errores de conexión
    */
   handleConexionError(): void {
-    const mensaje = '🌐 Error de conexión - Verifica tu internet y vuelve a intentar';
+    const mensaje = 'Error de conexión - Verifica tu internet y vuelve a intentar';
     this.mostrarMensaje(mensaje, 'error');
   }
 
@@ -233,7 +233,7 @@ export class ErrorHandlerService {
    * Maneja errores de carga de datos
    */
   handleCargaError(entidad: string): void {
-    const mensaje = `📊 No se pudieron cargar los ${entidad} - Intenta recargar la página`;
+    const mensaje = `No se pudieron cargar los ${entidad} - Intenta recargar la página`;
     this.mostrarMensaje(mensaje, 'warning');
   }
 
@@ -248,7 +248,7 @@ export class ErrorHandlerService {
       verticalPosition: 'top' as const
     };
 
-    this.snackBar.open(`✅ ${mensaje}`, 'Cerrar', config);
+    this.snackBar.open(`${mensaje}`, 'Cerrar', config);
   }
 
   /**
@@ -262,6 +262,6 @@ export class ErrorHandlerService {
       verticalPosition: 'top' as const
     };
 
-    this.snackBar.open(`ℹ️ ${mensaje}`, 'Cerrar', config);
+    this.snackBar.open(`${mensaje}`, 'Cerrar', config);
   }
 }

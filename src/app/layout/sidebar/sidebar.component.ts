@@ -16,7 +16,7 @@ import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-sa
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush, // ✅ OnPush - menu items estáticos
+  changeDetection: ChangeDetectionStrategy.OnPush, // OnPush - menu items estáticos
   imports: [CommonModule, MatIconModule, MatButtonModule, RouterModule]
 })
 export class SidebarComponent implements OnChanges {
@@ -54,7 +54,7 @@ export class SidebarComponent implements OnChanges {
     this.isSidebarOpen = this.isOpen;
   }
 
-  // ✅ TrackBy para optimizar ngFor
+  // TrackBy para optimizar ngFor
   trackByLabel(index: number, item: ConfigSidebarItem): string {
     return item.label;
   }

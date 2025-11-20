@@ -12,6 +12,7 @@
         <p><strong>Código:</strong> {{ data.curso.codigo_curso || data.curso.id_curso }}</p>
         <p><strong>Créditos:</strong> {{ data.curso.objMateria.creditos }}</p>
         <p><strong>Docente:</strong> {{ obtenerNombreDocente(data.curso) }}</p>
+        <p *ngIf="data.curso.grupo"><strong>Grupo:</strong> {{ data.curso.grupo }}</p>
         <p><strong>Cupo Estimado:</strong> {{ data.curso.cupo_estimado || data.curso.cupo_disponible }}</p>
         <p><strong>Espacio:</strong> {{ data.curso.espacio_asignado || 'Por asignar' }}</p>
       </div>

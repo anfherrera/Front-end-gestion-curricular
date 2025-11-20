@@ -123,7 +123,7 @@ export class FormUsuarioComponent implements OnInit {
       next: (data: any) => {
         console.log('Usuario cargado (original):', data);
         
-        // ✅ Corregir encoding de tildes y caracteres especiales
+        // Corregir encoding de tildes y caracteres especiales
         const usuarioCorregido = corregirEncodingObjeto(data);
         console.log('Usuario cargado (corregido):', usuarioCorregido);
         
@@ -164,7 +164,7 @@ export class FormUsuarioComponent implements OnInit {
     this.loading = true;
     const formValue = this.usuarioForm.value;
     
-    // ✅ FORMATO SIMPLE - SOLO IDs (backend actualizado)
+    // FORMATO SIMPLE - SOLO IDs (backend actualizado)
     const usuarioData: any = {
       codigo: formValue.codigo,
       nombre_completo: formValue.nombre_completo,
@@ -184,7 +184,7 @@ export class FormUsuarioComponent implements OnInit {
       usuarioData.id_usuario = this.usuarioId;
     }
 
-    console.log('📤 JSON enviado:', JSON.stringify(usuarioData, null, 2));
+    // JSON enviado
 
     if (this.isEditMode && this.usuarioId) {
       this.actualizarUsuario(usuarioData);
@@ -202,14 +202,14 @@ export class FormUsuarioComponent implements OnInit {
   private crearUsuario(data: any): void {
     this.usuariosService.crearUsuario(data).subscribe({
       next: (response) => {
-        console.log('✅ Usuario creado:', response);
-        this.snackBar.open('✅ Usuario creado exitosamente', 'Cerrar', { duration: 3000 });
+        // Usuario creado
+        this.snackBar.open('Usuario creado exitosamente', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
-        console.error('❌ Error:', err);
+        console.error('Error:', err);
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
-        this.snackBar.open('❌ Error: ' + mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Error: ' + mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;
       }
     });
@@ -218,14 +218,14 @@ export class FormUsuarioComponent implements OnInit {
   private actualizarUsuario(data: any): void {
     this.usuariosService.actualizarUsuario(data).subscribe({
       next: (response) => {
-        console.log('✅ Usuario actualizado:', response);
-        this.snackBar.open('✅ Usuario actualizado exitosamente', 'Cerrar', { duration: 3000 });
+        // Usuario actualizado
+        this.snackBar.open('Usuario actualizado exitosamente', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
-        console.error('❌ Error:', err);
+        console.error('Error:', err);
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
-        this.snackBar.open('❌ Error: ' + mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Error: ' + mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;
       }
     });

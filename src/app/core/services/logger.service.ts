@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 /**
- * 🔧 Servicio de Logger Condicional
+ * Servicio de Logger Condicional
  * Solo muestra logs en desarrollo, no en producción
  * Esto mejora el rendimiento significativamente
  */
@@ -26,7 +26,7 @@ export class LoggerService {
   }
 
   error(message: string, ...args: any[]): void {
-    // ✅ Errores siempre se muestran (incluso en producción)
+    // Errores siempre se muestran (incluso en producción)
     console.error(message, ...args);
   }
 
@@ -42,7 +42,7 @@ export class LoggerService {
     }
   }
 
-  // ✅ Método para habilitar/deshabilitar logs manualmente
+  // Método para habilitar/deshabilitar logs manualmente
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
   }

@@ -1208,7 +1208,9 @@ export class CursosIntersemestralesService {
       periodo: periodo,
       periodoAcademico: periodo,
       fecha_inicio: c.fecha_inicio,
-      fecha_fin: c.fecha_fin
+      fecha_fin: c.fecha_fin,
+      // Campo grupo (A, B, C, D)
+      grupo: c.grupo || 'A'
     };
     
     return cursoMapeado;

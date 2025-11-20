@@ -9,7 +9,7 @@ export class authGuard implements CanActivate{
   // const authService = inject(AuthService);
 
   // if (!authService.isAuthenticated()) {
-  //   authService.router.navigate(['/login']); // 🚀 funciona porque router es público
+  //   authService.router.navigate(['/login']); // funciona porque router es público
   //   return false;
   // }
 

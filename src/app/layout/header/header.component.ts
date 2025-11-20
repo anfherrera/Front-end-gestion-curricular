@@ -14,7 +14,7 @@ import { ActivityIndicatorComponent } from '../../shared/components/activity-ind
   standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush, // ✅ OnPush - datos no cambian constantemente
+  changeDetection: ChangeDetectionStrategy.OnPush, // OnPush - datos no cambian constantemente
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -31,8 +31,8 @@ export class HeaderComponent implements OnInit {
   isSidebarOpen = true;
   userName: string = '';
   userEmail: string = '';
-  userInitials: string = 'U'; // ✅ CACHEAR para evitar recalcular en cada ciclo
-  userRole: string = 'Usuario'; // ✅ CACHEAR
+  userInitials: string = 'U'; // CACHEAR para evitar recalcular en cada ciclo
+  userRole: string = 'Usuario'; // CACHEAR
 
   constructor(
     private authService: AuthService,
@@ -44,7 +44,7 @@ export class HeaderComponent implements OnInit {
     if (usuario) {
       this.userName = usuario.nombre_completo;
       this.userEmail = usuario.correo;
-      // ✅ Calcular UNA VEZ en ngOnInit
+      // Calcular UNA VEZ en ngOnInit
       this.userInitials = this.calculateUserInitials();
       this.userRole = this.calculateUserRole();
     }
@@ -68,7 +68,7 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  // ✅ Métodos privados para calcular UNA VEZ
+  // Métodos privados para calcular UNA VEZ
   private calculateUserInitials(): string {
     if (!this.userName) return 'U';
 
@@ -92,7 +92,7 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  // ✅ Getters públicos que devuelven propiedades cacheadas (no recalculan)
+  // Getters públicos que devuelven propiedades cacheadas (no recalculan)
   getUserInitials(): string {
     return this.userInitials;
   }

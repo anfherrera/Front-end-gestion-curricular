@@ -49,8 +49,8 @@ export interface CursoDialogData {
         <div class="form-section" *ngIf="!data.soloEdicion">
           <h3>Información Básica</h3>
           
-          <!-- ✅ NOTA: nombre_curso, codigo_curso y descripcion se obtienen automáticamente de la materia seleccionada -->
-          <!-- ❌ Estos campos NO se muestran porque el backend los genera automáticamente -->
+          <!-- NOTA: nombre_curso, codigo_curso y descripcion se obtienen automáticamente de la materia seleccionada -->
+          <!-- Estos campos NO se muestran porque el backend los genera automáticamente -->
           
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Materia</mat-label>
@@ -104,7 +104,7 @@ export interface CursoDialogData {
         <div class="form-section" *ngIf="!data.soloEdicion">
           <h3>Período y Fechas</h3>
           
-          <!-- ✨ NUEVO: Período Académico -->
+          <!-- Período Académico -->
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Período Académico</mat-label>
             <mat-select formControlName="periodoAcademico">
@@ -118,7 +118,7 @@ export interface CursoDialogData {
             <mat-hint>Selecciona un período académico válido del listado</mat-hint>
           </mat-form-field>
 
-          <!-- ✨ NUEVO: Grupo -->
+          <!-- Grupo -->
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Grupo</mat-label>
             <mat-select formControlName="grupo">
@@ -153,14 +153,14 @@ export interface CursoDialogData {
             </mat-error>
           </mat-form-field>
 
-          <!-- ✨ NUEVO: Información de duración -->
+          <!-- Información de duración -->
           <div class="duracion-info" *ngIf="mostrarDuracion">
             <mat-icon>schedule</mat-icon>
             <span>Duración: <strong>{{ duracionSemanas }} {{ duracionSemanas === 1 ? 'semana' : 'semanas' }}</strong></span>
           </div>
 
-          <!-- ✅ NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
-          <!-- ❌ Este campo NO se muestra porque el backend lo calcula automáticamente -->
+          <!-- NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
+          <!-- Este campo NO se muestra porque el backend lo calcula automáticamente -->
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Cupo Estimado</mat-label>
@@ -261,7 +261,7 @@ export interface CursoDialogData {
     }
 
     .form-section h3::before {
-      content: "📋";
+      content: "";
       font-size: 20px;
       flex-shrink: 0;
     }
@@ -271,7 +271,7 @@ export interface CursoDialogData {
     }
 
     .form-section:nth-child(3) h3::before {
-      content: "⚙️";
+      content: "";
     }
 
     /* Campos del formulario */
@@ -630,7 +630,7 @@ export interface CursoDialogData {
       font-weight: 600;
     }
 
-    /* ✨ NUEVO: Estilos para información de duración */
+    /* Estilos para información de duración */
     .duracion-info {
       display: flex;
       align-items: center;
@@ -662,7 +662,7 @@ export interface CursoDialogData {
   `]
 })
 export class CursoDialogComponent implements OnInit {
-  // ✨ NUEVO: Propiedades para períodos y validación de fechas
+  // Propiedades para períodos y validación de fechas
   periodos: string[] = [];
   errorFechas: string | null = null;
   duracionSemanas: number = 0;
@@ -685,11 +685,10 @@ export class CursoDialogComponent implements OnInit {
     }
   }
 
-  // ✨ NUEVO: Método para manejar la selección del docente
+  // Método para manejar la selección del docente
   onDocenteSelected(event: any): void {
     const selectedId = event.value;
-    console.log('🔍 Docente seleccionado - ID:', selectedId);
-    console.log('🔍 Tipo de ID:', typeof selectedId);
+    // Log de depuración (comentado para producción)
     
     // Buscar el docente seleccionado en la lista
     const docenteSeleccionado = this.data.docentes?.find(d => 
@@ -698,23 +697,19 @@ export class CursoDialogComponent implements OnInit {
     );
     
     if (docenteSeleccionado) {
-      console.log('🔍 Docente encontrado:', docenteSeleccionado);
-      console.log('🔍 id_docente del docente:', docenteSeleccionado.id_docente);
-      console.log('🔍 id_usuario del docente:', docenteSeleccionado.id_usuario);
+      // Log de depuración (comentado para producción)
       
       // Asegurarse de que se use id_docente si está disponible
       const idFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
-      console.log('🔍 ID final que se usará:', idFinal);
       
       // Actualizar el valor del formulario con el ID correcto
       this.data.form.patchValue({ id_docente: idFinal }, { emitEvent: false });
-      console.log('✅ Valor actualizado en formulario:', this.data.form.get('id_docente')?.value);
     } else {
-      console.warn('⚠️ Docente no encontrado en la lista con ID:', selectedId);
+      console.warn('Docente no encontrado en la lista con ID:', selectedId);
     }
   }
 
-  // ✨ NUEVO: Obtener nombre del docente de forma segura (maneja diferentes estructuras del backend)
+  // Obtener nombre del docente de forma segura (maneja diferentes estructuras del backend)
   obtenerNombreDocente(curso: any): string {
     if (!curso || !curso.objDocente) {
       return 'Sin asignar';
@@ -744,7 +739,7 @@ export class CursoDialogComponent implements OnInit {
     return 'Sin nombre';
   }
 
-  // ✨ NUEVO: Cargar períodos académicos (recientes para crear cursos)
+  // Cargar períodos académicos (recientes para crear cursos)
   private cargarPeriodos(): void {
     console.log('🔄 Cargando períodos académicos recientes...');
     
@@ -752,19 +747,18 @@ export class CursoDialogComponent implements OnInit {
     this.cursosService.getPeriodosRecientes().subscribe({
       next: (periodos) => {
         this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
-        console.log('✅ Períodos recientes cargados:', this.periodos);
-        console.log('📊 Total de períodos:', this.periodos.length);
+        // Períodos recientes cargados
         
         // Si hay períodos disponibles, pre-seleccionar el primer período futuro
         if (this.periodos.length > 0 && !this.data.editando) {
           const primerPeriodo = this.periodos[0];
           this.data.form.patchValue({ periodoAcademico: primerPeriodo });
-          console.log('✨ Período pre-seleccionado:', primerPeriodo);
+          // Período pre-seleccionado
         }
       },
       error: (error) => {
-        console.error('❌ Error cargando períodos recientes:', error);
-        console.error('🔍 Detalles del error:', {
+        console.error('Error cargando períodos recientes:', error);
+        console.error('Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
           url: error.url,
@@ -772,7 +766,7 @@ export class CursoDialogComponent implements OnInit {
         });
         
         // Si falla, intentar con períodos futuros como fallback
-        console.warn('⚠️ Intentando cargar períodos futuros como fallback...');
+        console.warn('Intentando cargar períodos futuros como fallback...');
         this.cargarPeriodosFuturosFallback();
       }
     });
@@ -783,7 +777,7 @@ export class CursoDialogComponent implements OnInit {
     this.cursosService.getPeriodosFuturos().subscribe({
       next: (periodos) => {
         this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
-        console.log('✅ Períodos futuros cargados (fallback):', this.periodos);
+        // Períodos futuros cargados (fallback)
         
         if (this.periodos.length > 0 && !this.data.editando) {
           const primerPeriodo = this.periodos[0];
@@ -791,9 +785,9 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('❌ Error cargando períodos futuros (fallback):', error);
+        console.error('Error cargando períodos futuros (fallback):', error);
         // Si falla, intentar con todos los períodos como último recurso
-        console.warn('⚠️ Intentando cargar TODOS los períodos como último recurso...');
+        console.warn('Intentando cargar TODOS los períodos como último recurso...');
         this.cargarTodosLosPeriodos();
       }
     });
@@ -804,7 +798,7 @@ export class CursoDialogComponent implements OnInit {
     this.cursosService.getPeriodosAcademicos().subscribe({
       next: (periodos) => {
         this.periodos = ordenarPeriodos(periodos, 'desc'); // Más recientes primero
-        console.log('✅ Todos los períodos cargados (fallback):', this.periodos);
+        // Todos los períodos cargados (fallback)
         
         if (this.periodos.length > 0 && !this.data.editando) {
           const primerPeriodo = this.periodos[0];
@@ -812,8 +806,8 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('❌ Error crítico cargando períodos:', error);
-        this.snackBar.open('⚠️ No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
+        console.error('Error crítico cargando períodos:', error);
+        this.snackBar.open('No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -821,12 +815,12 @@ export class CursoDialogComponent implements OnInit {
     });
   }
 
-  // ✨ NUEVO: Formatear período para visualización
+  // Formatear período para visualización
   formatearPeriodo(periodo: string): string {
     return formatearPeriodo(periodo);
   }
 
-  // ✨ NUEVO: Validar fechas al cambiar
+  // Validar fechas al cambiar
   onFechaChange(): void {
     const fechaInicio = this.data.form.get('fecha_inicio')?.value;
     const fechaFin = this.data.form.get('fecha_fin')?.value;
@@ -860,50 +854,21 @@ export class CursoDialogComponent implements OnInit {
           estado: formData.estado
         };
         
-        console.log('🔍 DATOS ENVIADOS AL BACKEND:');
-        console.log('📋 ID del curso:', this.data.cursoEditando.id_curso);
-        console.log('📋 Datos de actualización:', updateData);
-        console.log('📋 URL completa:', `PUT /api/cursos-intersemestrales/cursos-verano/${this.data.cursoEditando.id_curso}`);
+        // Log de depuración (comentado para producción)
         
         // Función de prueba para verificar el endpoint
-        console.log('🧪 FUNCIÓN DE PRUEBA PARA EL BACKEND:');
-        console.log(`
-        // Copia y pega esto en la consola del navegador para probar:
-        const probarEndpoint = async () => {
-          try {
-            const response = await fetch('/api/cursos-intersemestrales/cursos-verano/${this.data.cursoEditando.id_curso}', {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                cupo_estimado: ${updateData.cupo_estimado},
-                espacio_asignado: "${updateData.espacio_asignado}",
-                estado: "${updateData.estado}"
-              })
-            });
-            
-            const resultado = await response.json();
-            console.log('✅ Respuesta del backend:', resultado);
-            return resultado;
-          } catch (error) {
-            console.error('❌ Error:', error);
-          }
-        };
-        
-        // Ejecutar: probarEndpoint();
-        `);
+        // Función de prueba para verificar el endpoint (comentado para producción)
         
         this.cursosService.actualizarCurso(this.data.cursoEditando.id_curso, updateData)
           .subscribe({
             next: (cursoActualizado) => {
-              console.log('✅ Curso actualizado:', cursoActualizado);
+              // Curso actualizado
               this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', { duration: 3000 });
               this.dialogRef.close('guardado');
             },
             error: (err) => {
-              console.error('❌ Error actualizando curso:', err);
-              console.error('❌ Detalles del error:', {
+              console.error('Error actualizando curso:', err);
+              console.error('Detalles del error:', {
                 status: err.status,
                 statusText: err.statusText,
                 url: err.url,
@@ -921,7 +886,7 @@ export class CursoDialogComponent implements OnInit {
                 errorMessage = 'Datos inválidos enviados al servidor';
               }
               
-              this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+              this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
                 duration: 5000, 
                 panelClass: ['error-snackbar'] 
               });
@@ -933,7 +898,7 @@ export class CursoDialogComponent implements OnInit {
         // Crear nuevo curso
         const formValue = this.data.form.value;
         
-        // ✅ Verificar y corregir el id_docente antes de enviar
+        // Verificar y corregir el id_docente antes de enviar
         let idDocenteFinal = formValue.id_docente;
         
         // Si el id_docente es un número pero parece ser un índice, buscar el docente correcto
@@ -946,32 +911,32 @@ export class CursoDialogComponent implements OnInit {
           if (docenteSeleccionado) {
             // Usar id_docente si está disponible, sino id_usuario
             idDocenteFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
-            console.log('🔍 ID docente corregido:', idDocenteFinal);
+            // ID docente corregido
           }
         }
         
-        // ✅ Validar formato del período académico antes de enviar
+        // Validar formato del período académico antes de enviar
         const periodoAcademico = formValue.periodoAcademico || '';
         if (!validarPeriodo(periodoAcademico)) {
-          this.snackBar.open('❌ El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', { 
+          this.snackBar.open('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', { 
             duration: 5000, 
             panelClass: ['error-snackbar'] 
           });
           return;
         }
         
-        // ✅ Construir payload SOLO con los campos que el backend espera
+        // Construir payload SOLO con los campos que el backend espera
         // El backend NO espera: nombre_curso, codigo_curso, descripcion, cupo_maximo
         const createData: CreateCursoDTO = {
           id_materia: Number(formValue.id_materia),
-          id_docente: Number(idDocenteFinal), // ✅ Asegurar que se use el ID correcto y sea número
+          id_docente: Number(idDocenteFinal), // Asegurar que se use el ID correcto y sea número
           cupo_estimado: Number(formValue.cupo_estimado),
           fecha_inicio: formValue.fecha_inicio ? new Date(formValue.fecha_inicio).toISOString() : '',
           fecha_fin: formValue.fecha_fin ? new Date(formValue.fecha_fin).toISOString() : '',
           periodoAcademico: periodoAcademico
         };
         
-        // ✅ Campos opcionales (solo incluir si tienen valor)
+        // Campos opcionales (solo incluir si tienen valor)
         if (formValue.espacio_asignado) {
           createData.espacio_asignado = formValue.espacio_asignado;
         }
@@ -980,7 +945,7 @@ export class CursoDialogComponent implements OnInit {
           createData.estado = formValue.estado;
         }
         
-        // ✅ Campo grupo (opcional, se valida en el backend)
+        // Campo grupo (opcional, se valida en el backend)
         // Siempre incluir el grupo, incluso si es "A" (valor por defecto)
         const grupoValue = formValue.grupo || 'A';
         const grupoUpper = String(grupoValue).toUpperCase().trim();
@@ -991,29 +956,20 @@ export class CursoDialogComponent implements OnInit {
           createData.grupo = 'A';
         }
         
-        // ✅ Logs de depuración antes de enviar
-        console.log('🌐 Llamando a API: POST /api/cursos-intersemestrales/cursos-verano');
-        console.log('📤 FormValue completo:', formValue);
-        console.log('📤 createData (solo campos requeridos):', createData);
-        console.log('🔍 ID DOCENTE EN createData:', createData.id_docente);
-        console.log('🔍 TIPO DE ID_DOCENTE:', typeof createData.id_docente);
-        console.log('🔍 ID MATERIA EN createData:', createData.id_materia);
-        console.log('🔍 PERÍODO ACADÉMICO EN createData:', createData.periodoAcademico);
-        console.log('🔍 GRUPO EN createData:', createData.grupo);
-        console.log('🔍 GRUPO EN formValue:', formValue.grupo);
+        // Logs de depuración (comentados para producción)
         
         this.cursosService.crearCurso(createData)
           .subscribe({
             next: (nuevoCurso) => {
-              console.log('✅ Curso creado:', nuevoCurso);
+              // Curso creado
               this.snackBar.open('Curso creado exitosamente', 'Cerrar', { duration: 3000 });
               this.dialogRef.close('guardado');
             },
             error: (err) => {
-              console.error('❌ Error creando curso:', err);
-              console.error('🔍 Payload enviado:', createData);
+              console.error('Error creando curso:', err);
+              console.error('Payload enviado:', createData);
               
-              // ✅ Manejo específico de errores
+              // Manejo específico de errores
               let errorMessage = 'Error al crear el curso';
               
               if (err.status === 400 && err.error) {
@@ -1021,7 +977,7 @@ export class CursoDialogComponent implements OnInit {
                 if (err.error.codigo === 'CURSO_DUPLICADO' || (err.error.message && err.error.message.includes('duplicado'))) {
                   // Error específico de curso duplicado
                   errorMessage = err.error.message || 'Ya existe un curso con la misma materia, docente, período académico y grupo.';
-                  errorMessage += '\n\n💡 Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
+                  errorMessage += '\n\nPuedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
                 } else if (err.error.message && err.error.message.includes('período académico')) {
                   // Error específico de período académico inválido
                   errorMessage = err.error.message;
@@ -1045,7 +1001,7 @@ export class CursoDialogComponent implements OnInit {
                 errorMessage = 'Datos inválidos enviados al servidor. Verifica que todos los campos sean correctos.';
               }
               
-              this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+              this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
                 duration: 7000, 
                 panelClass: ['error-snackbar'] 
               });

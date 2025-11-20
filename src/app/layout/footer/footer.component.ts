@@ -13,6 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
   ]
 })
 export class FooterComponent {
-  // ✅ Propiedad para mostrar el año actual automáticamente
+  // Propiedad para mostrar el año actual automáticamente
   currentYear = new Date().getFullYear();
 }

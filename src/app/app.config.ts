@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    // ✅ INTERCEPTORES: JWT primero (agrega token), luego Error (maneja 401/403)
+    // INTERCEPTORES: JWT primero (agrega token), luego Error (maneja 401/403)
     // El orden es importante: los interceptores se ejecutan en el orden especificado
     provideHttpClient(
       withInterceptors([

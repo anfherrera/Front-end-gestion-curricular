@@ -136,7 +136,7 @@ export class EstadisticasService {
   }
 
   /**
-   * ✨ NUEVO: Obtiene estadísticas filtradas por período académico
+   * Obtiene estadísticas filtradas por período académico
    * @param periodo Período académico (ej: "2025-1")
    */
   getEstadisticasPorPeriodo(periodo: string): Observable<any> {
@@ -478,7 +478,7 @@ export class EstadisticasService {
 
   /**
    * Obtiene la lista de procesos disponibles (nombres exactos del backend)
-   * ✅ ACTUALIZADO: Usa los nombres exactos que el backend espera según el backend
+   * ACTUALIZADO: Usa los nombres exactos que el backend espera según el backend
    */
   getProcesosDisponibles(): string[] {
     return [
@@ -556,7 +556,7 @@ export class EstadisticasService {
           totalSolicitudes: Math.floor(estadisticasGlobales.totalSolicitudes * factor),
           solicitudesAprobadas: Math.floor(estadisticasGlobales.solicitudesAprobadas * factor),
           solicitudesRechazadas: Math.floor(estadisticasGlobales.solicitudesRechazadas * factor),
-          solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factor), // ✅ Campo obligatorio
+          solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factor), // Campo obligatorio
           solicitudesEnProceso: Math.floor(estadisticasGlobales.solicitudesEnProceso * factor),
           totalEstudiantes: Math.floor(estadisticasGlobales.totalEstudiantes * factor),
           totalProgramas: 1
@@ -572,7 +572,7 @@ export class EstadisticasService {
         totalSolicitudes: Math.floor(estadisticasGlobales.totalSolicitudes * factorFecha),
         solicitudesAprobadas: Math.floor(estadisticasGlobales.solicitudesAprobadas * factorFecha),
         solicitudesRechazadas: Math.floor(estadisticasGlobales.solicitudesRechazadas * factorFecha),
-        solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factorFecha), // ✅ Campo obligatorio
+        solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factorFecha), // Campo obligatorio
         solicitudesEnProceso: Math.floor(estadisticasGlobales.solicitudesEnProceso * factorFecha),
         totalEstudiantes: Math.floor(estadisticasGlobales.totalEstudiantes * factorFecha),
         totalProgramas: estadisticasGlobales.totalProgramas
@@ -596,7 +596,7 @@ export class EstadisticasService {
         totalSolicitudes: 1247,
         solicitudesAprobadas: 892,
         solicitudesRechazadas: 156,
-        solicitudesEnviadas: 120, // ✅ Campo obligatorio
+        solicitudesEnviadas: 120, // Campo obligatorio
         solicitudesEnProceso: 199,
         totalEstudiantes: 3241,
         totalProgramas: 5

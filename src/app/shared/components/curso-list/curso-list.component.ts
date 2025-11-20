@@ -13,11 +13,13 @@ export interface Curso {
   creditos?: number;
   espacio?: string;
   estado: 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Abierto' | 'Publicado' | 'Borrador';
-  // ✨ NUEVO: Campos de período y fechas
+  // Campos de período y fechas
   periodo?: string;
   periodoAcademico?: string;
   fecha_inicio?: Date | string;
   fecha_fin?: Date | string;
+  // Campo grupo (A, B, C, D)
+  grupo?: string;
 }
 
 @Component({
@@ -98,7 +100,7 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  // ✨ NUEVO: Métodos para formatear fechas y períodos
+  // Métodos para formatear fechas y períodos
   formatearFecha(fecha: Date | string | undefined): string {
     if (!fecha) return 'N/A';
     return formatearFechaCorta(fecha);

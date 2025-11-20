@@ -104,7 +104,7 @@ export class ListaProgramasComponent implements OnInit {
     this.programasService.eliminarPrograma(programa.id_programa).subscribe({
       next: () => {
         this.loading = false;
-        this.snackBar.open('✅ Programa eliminado exitosamente', 'Cerrar', { 
+        this.snackBar.open('Programa eliminado exitosamente', 'Cerrar', { 
           duration: 3000,
           panelClass: ['snackbar-success']
         });
@@ -120,19 +120,19 @@ export class ListaProgramasComponent implements OnInit {
         // Determinar el tipo de error
         if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
           // Error de dependencias (400) - Programa tiene usuarios asociados
-          this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
+          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
             duration: 6000,
             panelClass: ['snackbar-warning']
           });
         } else if (error.status === 404) {
           // No encontrado
-          this.snackBar.open('❌ Programa no encontrado', 'Cerrar', { 
+          this.snackBar.open('Programa no encontrado', 'Cerrar', { 
             duration: 3000,
             panelClass: ['snackbar-error']
           });
         } else {
           // Otros errores
-          this.snackBar.open(`❌ ${mensaje}`, 'Cerrar', { 
+          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
             duration: 4000,
             panelClass: ['snackbar-error']
           });

@@ -104,8 +104,8 @@ export class ListaDocentesComponent implements OnInit {
     this.docentesService.eliminarDocente(docente.id_docente).subscribe({
       next: () => {
         this.loading = false;
-        // ✅ Status 200 OK - Éxito
-        this.snackBar.open('✅ Docente eliminado exitosamente', 'Cerrar', { 
+        // Status 200 OK - Éxito
+        this.snackBar.open('Docente eliminado exitosamente', 'Cerrar', { 
           duration: 4000,
           panelClass: ['snackbar-success']
         });
@@ -118,28 +118,28 @@ export class ListaDocentesComponent implements OnInit {
         // Extraer mensaje de error usando el servicio
         const mensaje = this.errorHandler.extraerMensajeError(error);
         
-        // ❌ Manejo de errores específicos
+        // Manejo de errores específicos
         if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
           // Error de dependencias (400) - Docente tiene cursos asignados
-          this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
+          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
             duration: 6000,
             panelClass: ['snackbar-warning']
           });
         } else if (error.status === 409) {
           // Conflicto (respaldo para compatibilidad)
-          this.snackBar.open(`⚠️ ${mensaje}`, 'Cerrar', { 
+          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
             duration: 6000,
             panelClass: ['snackbar-warning']
           });
         } else if (error.status === 404) {
           // Docente no encontrado
-          this.snackBar.open('❌ Docente no encontrado', 'Cerrar', { 
+          this.snackBar.open('Docente no encontrado', 'Cerrar', { 
             duration: 4000,
             panelClass: ['snackbar-error']
           });
         } else {
           // Otros errores (500, etc.)
-          this.snackBar.open(`❌ ${mensaje}`, 'Cerrar', { 
+          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
             duration: 4000,
             panelClass: ['snackbar-error']
           });

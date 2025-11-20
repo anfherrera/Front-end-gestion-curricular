@@ -122,12 +122,12 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       next: (cursos) => {
         this.cursos = cursos;
         this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
-        console.log('✅ Cursos cargados del backend:', cursos);
+        // Cursos cargados del backend
         this.cargando = false;
       },
       error: (err) => {
         this.errorHandler.handleCargaError('cursos');
-        console.error('❌ Error cargando cursos del backend:', err);
+        console.error('Error cargando cursos del backend:', err);
         this.cargando = false;
         // Mostrar mensaje de error sin datos de prueba
         this.cursos = this.getCursosPrueba();
@@ -141,10 +141,10 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cursosService.getTodasLasMaterias().subscribe({
       next: (materias) => {
         this.materias = materias;
-        console.log('✅ Materias cargadas del backend:', materias);
+        // Materias cargadas del backend
       },
       error: (err) => {
-        console.error('❌ Error cargando materias del backend:', err);
+        console.error('Error cargando materias del backend:', err);
         this.materias = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
@@ -157,10 +157,10 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cursosService.getTodosLosDocentes().subscribe({
       next: (docentes) => {
         this.docentes = docentes;
-        console.log('✅ Docentes cargados del backend:', docentes);
+        // Docentes cargados del backend
       },
       error: (err) => {
-        console.error('❌ Error cargando docentes del backend:', err);
+        console.error('Error cargando docentes del backend:', err);
         this.docentes = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
@@ -338,7 +338,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('🔍 Dialog cerrado con resultado:', result);
+      // Dialog cerrado
       if (result === 'guardado') {
         console.log('🔄 Recargando datos después de guardar...');
         this.cargarDatos();
@@ -374,7 +374,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('🔍 Dialog de editar cerrado con resultado:', result);
+      // Dialog de editar cerrado
       if (result === 'guardado') {
         console.log('🔄 Recargando datos después de editar...');
         this.cargarDatos();
@@ -398,7 +398,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (cursoActualizado) => {
-              console.log('✅ Curso actualizado:', cursoActualizado);
+              // Curso actualizado
               this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', { duration: 3000 });
               this.cargarDatos();
             },
@@ -423,7 +423,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (nuevoCurso) => {
-              console.log('✅ Curso creado:', nuevoCurso);
+              // Curso creado
               this.snackBar.open('Curso creado exitosamente', 'Cerrar', { duration: 3000 });
               this.cargarDatos();
             },
@@ -440,7 +440,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   // Eliminar curso
   eliminarCurso(curso: CursoOfertadoVerano) {
     const mensaje = `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
-                   `⚠️ ADVERTENCIA: Esta acción no se puede deshacer.\n` +
+                   `ADVERTENCIA: Esta acción no se puede deshacer.\n` +
                    `Si hay estudiantes inscritos, la eliminación fallará.`;
     
     if (confirm(mensaje)) {
@@ -448,13 +448,13 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            console.log('✅ Curso eliminado:', curso.id_curso);
+            // Curso eliminado
             this.snackBar.open('Curso eliminado exitosamente', 'Cerrar', { duration: 3000 });
             // Recargar datos inmediatamente
             this.cargarDatos();
           },
           error: (err) => {
-            console.error('❌ Error eliminando curso:', err);
+            console.error('Error eliminando curso:', err);
             
             // Manejo específico de errores
             let mensajeError = 'Error al eliminar el curso';
