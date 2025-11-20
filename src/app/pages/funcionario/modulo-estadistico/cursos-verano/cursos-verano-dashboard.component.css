@@ -1729,7 +1729,7 @@ canvas {
 }
 
 .alerta-critica-card .acciones-urgentes ul li::before {
-  content: "⚠️";
+  content: "!";
   position: absolute;
   left: -1.5rem;
   top: 0;

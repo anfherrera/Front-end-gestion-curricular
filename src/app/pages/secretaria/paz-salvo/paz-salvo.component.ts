@@ -71,10 +71,10 @@ export class SecretariaPazSalvoComponent implements OnInit {
    * Cargar solicitudes pendientes para secretaría (estado APROBADA_COORDINADOR)
    */
   cargarSolicitudesPendientes(): void {
-    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getSecretariaRequests()
+    // IGUAL QUE HOMOLOGACIÓN: Usar método directo getSecretariaRequests()
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        // ✅ CORREGIDO: Filtrar solicitudes con estado APROBADA_COORDINADOR (igual que Homologación)
+        // CORREGIDO: Filtrar solicitudes con estado APROBADA_COORDINADOR (igual que Homologación)
         // El backend YA filtra por estado, así que mostramos TODAS las que llegan
         const solicitudesFiltradas = sols;
 
@@ -89,7 +89,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes (secretaria):', err);
+        console.error('Error al cargar solicitudes (secretaria):', err);
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
@@ -113,7 +113,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes procesadas:', err);
+        console.error('Error al cargar solicitudes procesadas:', err);
         this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
       }
     });
@@ -187,11 +187,11 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Limpiar estado anterior antes de seleccionar nueva solicitud
     this.limpiarEstado();
 
-    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo
+    // IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        // ✅ El backend YA filtra, solo buscamos la solicitud por ID
+        // El backend YA filtra, solo buscamos la solicitud por ID
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
         // Cargar documentos usando el nuevo endpoint
         if (this.selectedSolicitud) {
@@ -227,8 +227,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('❌ [DEBUG] Error al cargar documentos (secretaria):', error);
-        console.error('❌ [DEBUG] Error completo:', JSON.stringify(error));
+        console.error('[DEBUG] Error al cargar documentos (secretaria):', error);
+        console.error('[DEBUG] Error completo:', JSON.stringify(error));
         
         if (this.selectedSolicitud) {
           this.selectedSolicitud.documentos = [];
@@ -247,7 +247,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
   /**
    * Generar documento usando el componente genérico
-   * ✅ IGUAL QUE HOMOLOGACIÓN: NO actualiza el estado aquí, solo genera el documento
+   * IGUAL QUE HOMOLOGACIÓN: NO actualiza el estado aquí, solo genera el documento
    */
   onGenerarDocumento(request: DocumentRequest): void {
     if (!this.selectedSolicitud) return;
@@ -268,7 +268,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('❌ Error al generar documento:', err);
+        console.error('Error al generar documento:', err);
         this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
@@ -313,7 +313,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.subiendoPDF = false;
       },
       error: (err) => {
-        console.error('❌ Error al subir archivo PDF:', err);
+        console.error('Error al subir archivo PDF:', err);
         this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
@@ -333,7 +333,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
     this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
 
         // Limpiar el estado
@@ -346,7 +346,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.cargarSolicitudesProcesadas();
       },
       error: (err: any) => {
-        console.error('❌ Error al actualizar estado de solicitud:', err);
+        console.error('Error al actualizar estado de solicitud:', err);
         this.snackBar.open('Error al enviar al estudiante', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
       }
@@ -355,7 +355,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
   /**
    * Enviar documento (unifica subir PDF y enviar al estudiante)
-   * ✅ IGUAL QUE HOMOLOGACIÓN: Sube el PDF y LUEGO actualiza el estado
+   * IGUAL QUE HOMOLOGACIÓN: Sube el PDF y LUEGO actualiza el estado
    */
   enviarDocumento(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
@@ -374,7 +374,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.enviandoPDF = true;
         // Verificar que la solicitud sigue seleccionada
         if (!this.selectedSolicitud) {
-          console.error('❌ selectedSolicitud es undefined');
+          console.error('selectedSolicitud es undefined');
           this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
           this.enviandoPDF = false;
           return;
@@ -383,7 +383,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
         this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
           next: () => {
-            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
 
             // Limpiar el estado
@@ -396,14 +396,14 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.cargarSolicitudesProcesadas();
           },
           error: (err: any) => {
-            console.error('❌ Error al actualizar estado de solicitud:', err);
+            console.error('Error al actualizar estado de solicitud:', err);
             this.snackBar.open('PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
           }
         });
       },
       error: (err) => {
-        console.error('❌ Error al subir archivo PDF:', err);
+        console.error('Error al subir archivo PDF:', err);
         this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }

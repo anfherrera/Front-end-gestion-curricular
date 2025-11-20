@@ -56,7 +56,7 @@ export class PazSalvoComponent implements OnInit {
    * Cargar solicitudes pendientes para funcionario (estado ENVIADA)
    */
   cargarSolicitudesPendientes(): void {
-    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getPendingRequests()
+    // IGUAL QUE HOMOLOGACIÓN: Usar método directo getPendingRequests()
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent (igual que homologación)
@@ -68,11 +68,11 @@ export class PazSalvoComponent implements OnInit {
           rutaArchivo: '',
           comentarios: ''
         }));
-        // ✅ CORREGIDO: No seleccionar automáticamente la primera solicitud
+        // CORREGIDO: No seleccionar automáticamente la primera solicitud
         // Los documentos solo se mostrarán cuando el usuario seleccione manualmente
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes para funcionario:', err);
+        console.error('Error al cargar solicitudes para funcionario:', err);
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
@@ -93,7 +93,7 @@ export class PazSalvoComponent implements OnInit {
       return;
     }
 
-    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo
+    // IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
@@ -122,7 +122,7 @@ export class PazSalvoComponent implements OnInit {
         
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes procesadas (funcionario):', err);
+        console.error('Error al cargar solicitudes procesadas (funcionario):', err);
         this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
       }
     });
@@ -187,7 +187,7 @@ export class PazSalvoComponent implements OnInit {
         // Intentar actualizar documentos, pero no bloquear si falla
         this.pazSalvoService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).subscribe({
           next: () => {
-            this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud aprobada y documentos actualizados', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudesPendientes();
             this.cargarSolicitudesProcesadas();
             // Limpiar la selección para actualizar el card de documentación
@@ -195,9 +195,9 @@ export class PazSalvoComponent implements OnInit {
             this.requestStatusTable?.resetSelection();
           },
           error: (err) => {
-            console.error('❌ Error al actualizar documentos (no crítico):', err);
+            console.error('Error al actualizar documentos (no crítico):', err);
             // Mostrar mensaje informativo pero no de error
-            this.snackBar.open('Solicitud aprobada ✅ (Documentos se actualizarán automáticamente)', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud aprobada (Documentos se actualizarán automáticamente)', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudesPendientes();
             this.cargarSolicitudesProcesadas();
             // Limpiar la selección para actualizar el card de documentación
@@ -207,7 +207,7 @@ export class PazSalvoComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('❌ Error al aprobar solicitud:', err);
+        console.error('Error al aprobar solicitud:', err);
         // Intentar leer el contenido del error si es un Blob
         if (err.error instanceof Blob) {
           err.error.text().then((text: string) => {

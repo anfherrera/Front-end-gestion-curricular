@@ -59,7 +59,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
   // 📌 Cargar solicitudes pendientes según el rol del usuario actual
   cargarSolicitudesPendientes(): void {
-    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo getCoordinatorRequests()
+    // IGUAL QUE HOMOLOGACIÓN: Usar método directo getCoordinatorRequests()
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (data) => {
 
@@ -82,7 +82,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes (coordinador):', err);
+        console.error('Error al cargar solicitudes (coordinador):', err);
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
@@ -94,7 +94,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
       return;
     }
     
-    // ✅ IGUAL QUE HOMOLOGACIÓN: Usar método directo
+    // IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (sols) => {
@@ -131,8 +131,8 @@ export class PazSalvoCoordinadorComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('❌ [DEBUG] Error al cargar documentos (coordinador):', error);
-        console.error('❌ [DEBUG] Error completo:', JSON.stringify(error));
+        console.error('[DEBUG] Error al cargar documentos (coordinador):', error);
+        console.error('[DEBUG] Error completo:', JSON.stringify(error));
         
         if (this.selectedSolicitud) {
           this.selectedSolicitud.documentos = [];
@@ -171,7 +171,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
         
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes procesadas (coordinador):', err);
+        console.error('Error al cargar solicitudes procesadas (coordinador):', err);
         this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
       }
     });
@@ -227,13 +227,13 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
 
   // 📌 Aprobar toda la solicitud
-  // ✅ IGUAL QUE HOMOLOGACIÓN: Usar approveAsCoordinador() que envía 'APROBADA_COORDINADOR'
+  // IGUAL QUE HOMOLOGACIÓN: Usar approveAsCoordinador() que envía 'APROBADA_COORDINADOR'
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
     this.pazSalvoService.approveAsCoordinador(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudesPendientes();
         this.cargarSolicitudesProcesadas();
         this.selectedSolicitud = undefined;

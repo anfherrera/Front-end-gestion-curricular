@@ -1,6 +1,6 @@
 /**
  * ==========================================
- * ♿ PRUEBAS DE ACCESIBILIDAD - NAVEGACIÓN POR TECLADO
+ * PRUEBAS DE ACCESIBILIDAD - NAVEGACIÓN POR TECLADO
  * ==========================================
  * 
  * Objetivo: Validar que todas las funcionalidades sean accesibles por teclado
@@ -102,7 +102,7 @@ class TestKeyboardComponent implements AfterViewInit {
   }
 }
 
-describe('♿ PRUEBAS DE ACCESIBILIDAD - Navegación por Teclado', () => {
+describe('PRUEBAS DE ACCESIBILIDAD - Navegación por Teclado', () => {
   let component: TestKeyboardComponent;
   let fixture: ComponentFixture<TestKeyboardComponent>;
   let compiled: HTMLElement;

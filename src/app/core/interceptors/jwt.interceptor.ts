@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../services/logger.service';
 
 /**
- * 🔐 JWT Interceptor
+ * JWT Interceptor
  * 
  * Agrega automáticamente el token JWT en el header Authorization de todas las peticiones
  * excepto el endpoint de login (que es público).
@@ -15,7 +15,7 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const logger = inject(LoggerService);
 
-  // ✅ EXCLUIR endpoint de login - no requiere token
+  // EXCLUIR endpoint de login - no requiere token
   const isLoginEndpoint = req.url.includes('/usuarios/login');
   
   if (isLoginEndpoint) {
@@ -35,10 +35,10 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
       // Solo verificar expiración para logging, pero NO hacer logout aquí
       // El logout se manejará en el error interceptor cuando el backend responda con 401
       if (exp < now) {
-        logger.warn('⏳ Token expirado detectado, pero permitiendo la petición para que el backend lo valide');
+        logger.warn('Token expirado detectado, pero permitiendo la petición para que el backend lo valide');
       }
     } catch (e) {
-      logger.error('❌ Error decodificando token:', e);
+      logger.error('Error decodificando token:', e);
       // Token malformado, pero no hacer logout aquí
       // Dejar que el error interceptor lo maneje cuando el backend responda
     }
@@ -46,7 +46,7 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
     // Detectar si la petición es multipart/form-data (subida de archivos)
     const isFormData = req.body instanceof FormData;
 
-    // ✅ Agregar token JWT en el header Authorization
+    // Agregar token JWT en el header Authorization
     // Formato: Authorization: Bearer <token>
     const headers: any = {
       Authorization: `Bearer ${token}`

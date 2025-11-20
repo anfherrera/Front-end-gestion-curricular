@@ -26,7 +26,7 @@ export class PazSalvoService {
   // ================================
   
   /**
-   * ✅ CORREGIDO FINAL: Listar solicitudes por rol
+   * CORREGIDO FINAL: Listar solicitudes por rol
    * @param rol - "ESTUDIANTE", "FUNCIONARIO", "COORDINADOR", "SECRETARIA"
    * @param idUsuario - ID del usuario (solo necesario para ESTUDIANTE)
    * 
@@ -173,7 +173,7 @@ export class PazSalvoService {
         nombre_completo: usuario.nombre_completo || "Usuario",
         codigo: usuario.codigo || "104612345678",
         correo: usuario.email_usuario || "usuario@unicauca.edu.co",
-        // ✅ FIX: Agregar id_rol e id_programa como campos requeridos
+        // FIX: Agregar id_rol e id_programa como campos requeridos
         id_rol: usuario.id_rol || usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
         id_programa: usuario.id_programa || usuario.objPrograma?.id_programa || 1, // Programa por defecto
         objPrograma: usuario.objPrograma || {
@@ -187,10 +187,10 @@ export class PazSalvoService {
     return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
       .pipe(
         catchError(error => {
-          console.error('❌ Error al crear solicitud de paz y salvo:', error);
-          console.error('❌ Error status:', error.status);
-          console.error('❌ Error message:', error.message);
-          console.error('❌ Error body:', error.error);
+          console.error('Error al crear solicitud de paz y salvo:', error);
+          console.error('Error status:', error.status);
+          console.error('Error message:', error.message);
+          console.error('Error body:', error.error);
           throw error;
         })
       );
@@ -340,7 +340,7 @@ export class PazSalvoService {
   }
 
   /**
-   * ✅ IGUAL QUE HOMOLOGACIÓN: Subir archivo PDF usando endpoint genérico
+   * IGUAL QUE HOMOLOGACIÓN: Subir archivo PDF usando endpoint genérico
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
     const url = `${environment.apiUrl}/archivos/subir/pdf`;
@@ -403,7 +403,7 @@ export class PazSalvoService {
 
   /**
    * Aprobar solicitud como coordinador
-   * ✅ IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA_COORDINADOR'
+   * IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA_COORDINADOR'
    */
   approveAsCoordinador(requestId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
@@ -414,7 +414,7 @@ export class PazSalvoService {
 
   /**
    * Aprobar definitivamente la solicitud (usado por SECRETARIA)
-   * ✅ IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA' como estado final
+   * IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA' como estado final
    */
   approveDefinitively(idSolicitud: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
@@ -432,10 +432,10 @@ export class PazSalvoService {
   }
 
   /**
-   * ✅ CORREGIDO: Descargar archivo PDF usando endpoint específico de Paz y Salvo
+   * CORREGIDO: Descargar archivo PDF usando endpoint específico de Paz y Salvo
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
-    // ✅ USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
+    // USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
     const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
     
     return this.http.get(url, {
@@ -460,7 +460,7 @@ export class PazSalvoService {
   }
 
   /**
-   * ✅ NUEVO: Descargar archivo PDF por ID de documento
+   * NUEVO: Descargar archivo PDF por ID de documento
    * Este método es más confiable que usar el nombre del archivo
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
@@ -483,13 +483,13 @@ export class PazSalvoService {
   }
 
   /**
-   * ✅ NUEVO: Descargar archivo PDF por ruta del documento
+   * NUEVO: Descargar archivo PDF por ruta del documento
    * Usa la ruta almacenada en la base de datos
    */
   descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
     // Extraer el nombre del archivo de la ruta si es necesario
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
-    // ✅ USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
+    // USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
     const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
     console.log('🔗 URL de descarga por ruta (Paz y Salvo):', url);
     console.log('📁 Ruta del documento:', rutaDocumento);
@@ -524,10 +524,10 @@ export class PazSalvoService {
   }
 
   /**
-   * ✅ CORREGIDO: Añadir comentario usando endpoint genérico (igual que homologación)
+   * CORREGIDO: Añadir comentario usando endpoint genérico (igual que homologación)
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
-    // ✅ USAR ENDPOINT GENÉRICO CORRECTO
+    // USAR ENDPOINT GENÉRICO CORRECTO
     const url = `${environment.apiUrl}/documentos/añadirComentario`;
     const body = {
       idDocumento: idDocumento,

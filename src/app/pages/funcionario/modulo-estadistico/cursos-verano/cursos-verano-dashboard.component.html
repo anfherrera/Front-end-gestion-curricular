@@ -292,7 +292,7 @@
                   <mat-icon>hourglass_empty</mat-icon>
                   <span class="estado-nombre">En Proceso</span>
                 </div>
-                <!-- ✅ ACTUALIZADO: Usar EN_PROCESO directamente, con fallback a suma de APROBADA_FUNCIONARIO + APROBADA_COORDINADOR para compatibilidad -->
+                <!-- ACTUALIZADO: Usar EN_PROCESO directamente, con fallback a suma de APROBADA_FUNCIONARIO + APROBADA_COORDINADOR para compatibilidad -->
                 <div class="estado-valor">{{ data?.estadosSolicitudes?.EN_PROCESO ?? ((data?.estadosSolicitudes?.APROBADA_FUNCIONARIO || 0) + (data?.estadosSolicitudes?.APROBADA_COORDINADOR || 0)) }}</div>
                 <div class="estado-porcentaje" *ngIf="data?.resumen?.totalSolicitudes">
                   {{ calcularPorcentajeEstado(data?.estadosSolicitudes?.EN_PROCESO ?? ((data?.estadosSolicitudes?.APROBADA_FUNCIONARIO || 0) + (data?.estadosSolicitudes?.APROBADA_COORDINADOR || 0)), data?.resumen?.totalSolicitudes || 0) }}%
@@ -347,7 +347,7 @@
                   <div class="resumen-label">Fecha de Predicción</div>
                   <div class="resumen-valor">{{ data.predicciones.fechaPrediccion | date:'short' }}</div>
                 </div>
-                <!-- ❌ ELIMINADO: Metodología (campo técnico innecesario) -->
+                <!-- ELIMINADO: Metodología (campo técnico innecesario) -->
               </div>
             </mat-card-content>
           </mat-card>
@@ -602,7 +602,7 @@
           </div>
           <div class="stat critica" *ngIf="estadisticasRecomendaciones.alertasCriticas > 0">
             <div class="numero">{{ estadisticasRecomendaciones.alertasCriticas }}</div>
-            <div class="label">⚠️ CRÍTICAS</div>
+            <div class="label">CRÍTICAS</div>
           </div>
         </div>
       </mat-card-content>
@@ -650,7 +650,7 @@
           
           <!-- RECURSOS -->
           <div class="seccion" *ngIf="rec.recursos">
-            <strong>👥 RECURSOS NECESARIOS:</strong>
+            <strong>RECURSOS NECESARIOS:</strong>
             <ul>
               <li>{{ rec.recursos.docentes }} docente(s) especializado(s)</li>
               <li>{{ rec.recursos.aulas }} aula(s) o laboratorio(s)</li>
@@ -661,7 +661,7 @@
           
           <!-- ACCIONES -->
           <div class="seccion">
-            <strong>✅ ACCIONES RECOMENDADAS:</strong>
+            <strong>ACCIONES RECOMENDADAS:</strong>
             <div class="checklist">
               <div class="checklist-item" *ngFor="let accion of rec.acciones; let i = index">
                 <mat-checkbox [id]="rec.id + '_' + i">{{ accion }}</mat-checkbox>
@@ -676,9 +676,9 @@
               <strong>📅 CRONOGRAMA:</strong>
               <ul>
                 <li>⏰ Inicio gestión: {{ rec.cronograma.inicioGestion }}</li>
-                <li>📢 Publicación oferta: {{ rec.cronograma.publicacionOferta }}</li>
-                <li>👨‍🏫 Contratación docentes: {{ rec.cronograma.contratacionDocentes }}</li>
-                <li>📝 Inicio inscripciones: {{ rec.cronograma.inicioInscripciones }}</li>
+                <li>Publicación oferta: {{ rec.cronograma.publicacionOferta }}</li>
+                <li>Contratación docentes: {{ rec.cronograma.contratacionDocentes }}</li>
+                <li>Inicio inscripciones: {{ rec.cronograma.inicioInscripciones }}</li>
               </ul>
             </div>
             
@@ -693,7 +693,7 @@
             </div>
             
             <div class="seccion justificacion">
-              <strong>💡 JUSTIFICACIÓN:</strong>
+              <strong>JUSTIFICACIÓN:</strong>
               <p>{{ rec.justificacion }}</p>
             </div>
             

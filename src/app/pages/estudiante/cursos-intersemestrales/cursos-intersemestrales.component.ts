@@ -37,7 +37,7 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('🚀 CURSOS INTERSEMESTRALES COMPONENT INICIADO');
+    // Componente de cursos intersemestrales iniciado
     console.log('📍 URL actual:', this.router.url);
     this.setupNavigation();
   }

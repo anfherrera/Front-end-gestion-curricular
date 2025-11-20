@@ -1,6 +1,6 @@
 /**
  * ==========================================
- * ♿ PRUEBAS DE ACCESIBILIDAD - FORMULARIOS
+ * PRUEBAS DE ACCESIBILIDAD - FORMULARIOS
  * ==========================================
  * 
  * Objetivo: Validar cumplimiento de WCAG 2.1 en formularios
@@ -94,7 +94,7 @@ class TestFormComponent {
   }
 }
 
-describe('♿ PRUEBAS DE ACCESIBILIDAD - Formularios', () => {
+describe('PRUEBAS DE ACCESIBILIDAD - Formularios', () => {
   let component: TestFormComponent;
   let fixture: ComponentFixture<TestFormComponent>;
   let compiled: HTMLElement;

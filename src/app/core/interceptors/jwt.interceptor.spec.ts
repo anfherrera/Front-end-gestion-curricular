@@ -119,15 +119,15 @@ describe('🔒 PRUEBAS DE SEGURIDAD - JWT Interceptor', () => {
 
       httpClient.get('/api/test').subscribe();
 
-      // ✅ NUEVO COMPORTAMIENTO: NO cierra sesión automáticamente
+      // NUEVO COMPORTAMIENTO: NO cierra sesión automáticamente
       expect(authService.logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
       
-      // ✅ Debe mostrar warning en consola
-      expect(console.warn).toHaveBeenCalledWith('⏳ Token expirado. Las peticiones se enviarán sin autenticación.');
-      expect(console.warn).toHaveBeenCalledWith('💡 Por favor, cierre sesión y vuelva a iniciar sesión.');
+      // Debe mostrar warning en consola
+      expect(console.warn).toHaveBeenCalledWith('Token expirado. Las peticiones se enviarán sin autenticación.');
+      expect(console.warn).toHaveBeenCalledWith('Por favor, cierre sesión y vuelva a iniciar sesión.');
 
-      // ✅ La petición debe continuar sin token
+      // La petición debe continuar sin token
       const req = httpMock.expectOne('/api/test');
       expect(req.request.headers.has('Authorization')).toBeFalse();
       req.flush({});
@@ -258,11 +258,11 @@ describe('🔒 PRUEBAS DE SEGURIDAD - JWT Interceptor', () => {
       httpClient.get('/api/test1').subscribe();
       httpClient.get('/api/test2').subscribe();
 
-      // ✅ NUEVO COMPORTAMIENTO: NO cierra sesión automáticamente
+      // NUEVO COMPORTAMIENTO: NO cierra sesión automáticamente
       expect(authService.logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
       
-      // ✅ Debe mostrar warnings (uno por cada petición)
+      // Debe mostrar warnings (uno por cada petición)
       expect(console.warn).toHaveBeenCalled();
 
       const reqs = [
@@ -271,7 +271,7 @@ describe('🔒 PRUEBAS DE SEGURIDAD - JWT Interceptor', () => {
       ];
 
       reqs.forEach(req => {
-        // ✅ Las peticiones continúan sin token de autorización
+        // Las peticiones continúan sin token de autorización
         expect(req.request.headers.has('Authorization')).toBeFalse();
         req.flush({});
       });

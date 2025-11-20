@@ -80,7 +80,7 @@ export interface CursoOfertadoVerano {
   fecha_inicio: Date;
   fecha_fin: Date;
   periodo?: string; // Nuevo campo del backend (formato "YYYY-P")
-  // ✨ NUEVO: Período académico
+  // Período académico
   periodoAcademico?: string; // Ejemplo: "2025-1", "2025-2"
   cupo_maximo: number;
   cupo_disponible: number;
@@ -123,7 +123,7 @@ export interface EstadoSolicitudDetalle {
 
 export interface SolicitudCursoVerano {
   id_solicitud: number;
-  id_preinscripcion?: number; // ✅ Campo adicional para compatibilidad
+  id_preinscripcion?: number; // Campo adicional para compatibilidad
   nombre_solicitud: string;
   fecha_solicitud: Date;
   estado: 'Pendiente' | 'Enviado' | 'Enviada' | 'Aprobado' | 'Rechazado' | 'Completado';
@@ -355,7 +355,7 @@ export class CursosIntersemestralesService {
 
     // Log para depuración (solo en desarrollo)
     if (curso.grupo) {
-      console.log(`🔍 [normalizarCurso] Curso ID ${curso.id_curso}: grupo original = "${curso.grupo}", grupo normalizado = "${grupo}"`);
+      // Log de normalización de grupo (comentado para producción)
     }
 
     if (curso.periodo === periodo && curso.periodoAcademico === periodo && curso.grupo === grupo) {
@@ -405,9 +405,9 @@ export class CursosIntersemestralesService {
         return periodos;
       }),
       catchError(error => {
-        console.error('❌ [PERIODOS] Error obteniendo períodos académicos:', error);
-        console.error('🔍 [PERIODOS] URL que falló:', url);
-        console.error('🔍 [PERIODOS] Detalles del error:', {
+        console.error('[PERIODOS] Error obteniendo períodos académicos:', error);
+        console.error('[PERIODOS] URL que falló:', url);
+        console.error('[PERIODOS] Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
@@ -418,7 +418,7 @@ export class CursosIntersemestralesService {
     );
   }
 
-  // ✨ NUEVO: Obtener solo períodos futuros (recomendado para crear cursos)
+  // Obtener solo períodos futuros (recomendado para crear cursos)
   getPeriodosFuturos(): Observable<string[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.FUTUROS;
     
@@ -428,9 +428,9 @@ export class CursosIntersemestralesService {
         return periodos;
       }),
       catchError(error => {
-        console.error('❌ [PERIODOS] Error obteniendo períodos futuros:', error);
-        console.error('🔍 [PERIODOS] URL que falló:', url);
-        console.error('🔍 [PERIODOS] Detalles del error:', {
+        console.error('[PERIODOS] Error obteniendo períodos futuros:', error);
+        console.error('[PERIODOS] URL que falló:', url);
+        console.error('[PERIODOS] Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
@@ -441,7 +441,7 @@ export class CursosIntersemestralesService {
     );
   }
 
-  // ✨ NUEVO: Obtener períodos recientes (últimos 5 años)
+  // Obtener períodos recientes (últimos 5 años)
   getPeriodosRecientes(): Observable<string[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES;
     
@@ -451,9 +451,9 @@ export class CursosIntersemestralesService {
         return periodos;
       }),
       catchError(error => {
-        console.error('❌ [PERIODOS] Error obteniendo períodos recientes:', error);
-        console.error('🔍 [PERIODOS] URL que falló:', url);
-        console.error('🔍 [PERIODOS] Detalles del error:', {
+        console.error('[PERIODOS] Error obteniendo períodos recientes:', error);
+        console.error('[PERIODOS] URL que falló:', url);
+        console.error('[PERIODOS] Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
@@ -476,9 +476,9 @@ export class CursosIntersemestralesService {
         return periodo;
       }),
       catchError(error => {
-        console.error('❌ [PERIODOS] Error obteniendo período actual:', error);
-        console.error('🔍 [PERIODOS] URL que falló:', url);
-        console.error('🔍 [PERIODOS] Detalles del error:', {
+        console.error('[PERIODOS] Error obteniendo período actual:', error);
+        console.error('[PERIODOS] URL que falló:', url);
+        console.error('[PERIODOS] Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
@@ -595,10 +595,10 @@ export class CursosIntersemestralesService {
 
   // Aprobar preinscripción
   aprobarPreinscripcion(id: number, comentarios?: string): Observable<any> {
-    // ✅ Endpoint correcto según especificación
+    // Endpoint correcto según especificación
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${id}/aprobar`;
     
-    // ✅ Body simplificado - solo comentarios si se proporcionan
+    // Body simplificado - solo comentarios si se proporcionan
     const body = comentarios ? { comentarios } : {};
     
     return this.http.put<any>(endpoint, body);
@@ -606,10 +606,10 @@ export class CursosIntersemestralesService {
 
   // Rechazar preinscripción
   rechazarPreinscripcion(id: number, motivo: string): Observable<any> {
-    // ✅ Endpoint correcto según especificación
+    // Endpoint correcto según especificación
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${id}/rechazar`;
     
-    // ✅ Body con motivo obligatorio
+    // Body con motivo obligatorio
     const body = { motivo };
     
     return this.http.put<any>(endpoint, body);
@@ -617,10 +617,10 @@ export class CursosIntersemestralesService {
 
   // Actualizar observaciones de preinscripción
   actualizarObservacionesPreinscripcion(id: number, observaciones: string): Observable<any> {
-    // ✅ Endpoint correcto según especificación
+    // Endpoint correcto según especificación
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/${id}/observaciones`;
     
-    // ✅ Body con observaciones
+    // Body con observaciones
     const body = { observaciones };
     
     return this.http.put<any>(endpoint, body);
@@ -704,18 +704,18 @@ export class CursosIntersemestralesService {
 
   // Crear nuevo curso
   crearCurso(payload: CreateCursoDTO): Observable<CursoOfertadoVerano> {
-    // ✅ Construir payload SOLO con los campos que el backend espera
+    // Construir payload SOLO con los campos que el backend espera
     // El backend NO espera: nombre_curso, codigo_curso, descripcion, cupo_maximo
     const payloadParaBackend: any = {
       id_materia: Number(payload.id_materia),
-      id_docente: Number(payload.id_docente), // ✅ Asegurar que sea número
+      id_docente: Number(payload.id_docente), // Asegurar que sea número
       cupo_estimado: Number(payload.cupo_estimado),
       fecha_inicio: payload.fecha_inicio,
       fecha_fin: payload.fecha_fin,
       periodoAcademico: payload.periodoAcademico
     };
     
-    // ✅ Campos opcionales (solo incluir si tienen valor)
+    // Campos opcionales (solo incluir si tienen valor)
     if (payload.espacio_asignado) {
       payloadParaBackend.espacio_asignado = payload.espacio_asignado;
     }
@@ -725,7 +725,7 @@ export class CursosIntersemestralesService {
       payloadParaBackend.estado = this.mapEstadoParaBackend(payload.estado);
     }
     
-    // ✅ Campo grupo (opcional, se valida en el backend)
+    // Campo grupo (opcional, se valida en el backend)
     if (payload.grupo) {
       const grupoUpper = String(payload.grupo).toUpperCase().trim();
       if (['A', 'B', 'C', 'D'].includes(grupoUpper)) {
@@ -739,20 +739,18 @@ export class CursosIntersemestralesService {
       payloadParaBackend.grupo = 'A';
     }
     
-    // ✅ Asegurar que id_docente sea un número
+    // Asegurar que id_docente sea un número
     payloadParaBackend.id_docente = Number(payloadParaBackend.id_docente);
     
-    // ✅ Log para depuración
-    console.log('📤 [crearCurso] Payload enviado al backend:', payloadParaBackend);
-    console.log('🔍 [crearCurso] Grupo en payload:', payloadParaBackend.grupo);
+    // Log para depuración
+    // Log de depuración (comentado para producción)
     
     return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION, payloadParaBackend)
       .pipe(
         map(curso => {
           // Normalizar el curso retornado para asegurar que el grupo se preserve
           const cursoNormalizado = this.normalizarCurso(curso);
-          console.log('📥 [crearCurso] Curso recibido del backend:', cursoNormalizado);
-          console.log('🔍 [crearCurso] Grupo en curso recibido:', cursoNormalizado.grupo);
+          // Log de depuración (comentado para producción)
           return cursoNormalizado;
         })
       );
@@ -809,7 +807,7 @@ export class CursosIntersemestralesService {
         
         const docenteMapeado = {
           id_usuario: docente.id_usuario,
-          id_docente: docente.id_docente || docente.id_usuario, // ✅ Incluir id_docente si está disponible
+          id_docente: docente.id_docente || docente.id_usuario, // Incluir id_docente si está disponible
           nombre: nombre,
           apellido: apellido,
           email: this.corregirEncoding(docente.correo || 'Sin email'),
@@ -934,7 +932,7 @@ export class CursosIntersemestralesService {
         );
       }),
       catchError(error => {
-        console.error('❌ Error obteniendo inscripciones:', error);
+        console.error('Error obteniendo inscripciones:', error);
         // Intentar con endpoint alternativo
         return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
           switchMap(inscripciones => {
@@ -1078,7 +1076,7 @@ export class CursosIntersemestralesService {
 
   // 🆕 NUEVO: Descargar comprobante de pago
   descargarComprobantePago(idInscripcion: number): Observable<Blob> {
-    // ✅ Usar el endpoint correcto de archivos
+    // Usar el endpoint correcto de archivos
     const endpoint = ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION(idInscripcion);
     
     return this.http.get(endpoint, { 
@@ -1095,25 +1093,25 @@ export class CursosIntersemestralesService {
     return this.http.get<any>(endpoint);
   }
 
-  // 🔍 DEBUG: Endpoint para debuggear problemas con inscripciones
+  // DEBUG: Endpoint para debuggear problemas con inscripciones
   debugInscripcion(idPreinscripcion: number): Observable<DebugInscripcionResponse> {
     const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DEBUG_INSCRIPCION(idPreinscripcion);
     return this.http.get<DebugInscripcionResponse>(endpoint);
   }
 
-  // 🔍 DIAGNÓSTICO: Verificar estado de preinscripciones de un usuario en un curso específico
+  // DIAGNÓSTICO: Verificar estado de preinscripciones de un usuario en un curso específico
   verificarPreinscripcionesUsuario(idUsuario: number, idCurso: number): Observable<any> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${idUsuario}/curso/${idCurso}`;
     return this.http.get<any>(endpoint);
   }
 
-  // 🔍 DIAGNÓSTICO: Obtener todas las preinscripciones de un usuario
+  // DIAGNÓSTICO: Obtener todas las preinscripciones de un usuario
   getPreinscripcionesUsuario(idUsuario: number): Observable<any[]> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${idUsuario}`;
     return this.http.get<any[]>(endpoint);
   }
 
-  // 🔍 DIAGNÓSTICO: Obtener todas las preinscripciones de un curso (usando método existente)
+  // DIAGNÓSTICO: Obtener todas las preinscripciones de un curso (usando método existente)
   // Nota: Ya existe getPreinscripcionesCurso en la línea 82, no duplicar
 
   // ====== CURSOS (adaptados a CursoListComponent) ======
@@ -1195,7 +1193,7 @@ export class CursosIntersemestralesService {
     const docente = docenteNombre && docenteApellido ? `${docenteNombre} ${docenteApellido}`.trim() : 'Sin asignar';
     const espacio = this.corregirEncoding(c.espacio_asignado) || c.espacio_asignado || 'Por asignar';
     
-    // ✅ Obtener período académico (puede venir como 'periodo' o 'periodoAcademico')
+    // Obtener período académico (puede venir como 'periodo' o 'periodoAcademico')
     const periodo = c.periodo || c.periodoAcademico || undefined;
     
     const cursoMapeado = {
@@ -1206,7 +1204,7 @@ export class CursosIntersemestralesService {
       creditos: c.objMateria?.creditos || 0,
       espacio: espacio,
       estado,
-      // ✅ Campos de período y fechas
+      // Campos de período y fechas
       periodo: periodo,
       periodoAcademico: periodo,
       fecha_inicio: c.fecha_inicio,
@@ -1326,7 +1324,7 @@ export class CursosIntersemestralesService {
       ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DASHBOARD_ESTADISTICAS
     ).pipe(
       catchError(error => {
-        console.error('❌ Error al obtener estadísticas del dashboard:', error);
+        console.error('Error al obtener estadísticas del dashboard:', error);
         // Retornar valores por defecto en caso de error
         return of({
           totalPreinscripciones: 0,
@@ -1382,12 +1380,12 @@ export class CursosIntersemestralesService {
             filename
           };
         } else {
-          console.error('❌ Content-Type inválido:', contentType);
+          console.error('Content-Type inválido:', contentType);
           throw new Error(`El servidor no devolvió un Excel válido. Content-Type: ${contentType}`);
         }
       }),
       catchError(error => {
-        console.error('❌ Error al exportar solicitudes a Excel:', error);
+        console.error('Error al exportar solicitudes a Excel:', error);
         throw error;
       })
     );
@@ -1397,7 +1395,7 @@ export class CursosIntersemestralesService {
 // ====== DTOs PARA GESTIÓN DE CURSOS ======
 
 export interface CreateCursoDTO {
-  // ✅ Campos OBLIGATORIOS según especificación del backend
+  // Campos OBLIGATORIOS según especificación del backend
   id_materia: number;              // Long - ID de la materia seleccionada
   id_docente: number;              // Long - ID del docente seleccionado (usar id_docente, NO id_usuario)
   cupo_estimado: number;           // Integer - Entre 1 y 100
@@ -1405,14 +1403,14 @@ export interface CreateCursoDTO {
   fecha_fin: string;               // String - Formato ISO 8601 o fecha simple
   periodoAcademico: string;        // String - Formato "YYYY-P" (ej: "2025-1", "2025-2")
   
-  // ✅ Campos OPCIONALES
+  // Campos OPCIONALES
   espacio_asignado?: string;       // String - Si no se envía, se asigna "Aula 101" por defecto
   estado?: string;                 // String - Valores: "Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"
                                    // Si no se envía, se asigna "Abierto" por defecto
   grupo?: string;                  // String - Valores: "A", "B", "C", "D" (case-insensitive)
                                    // Si no se envía o es inválido, se asigna "A" por defecto
   
-  // ❌ Campos que NO se deben enviar (se obtienen automáticamente del backend):
+  // Campos que NO se deben enviar (se obtienen automáticamente del backend):
   // - nombre_curso: Se obtiene de la materia seleccionada
   // - codigo_curso: Se obtiene de la materia seleccionada
   // - descripcion: Se genera automáticamente como "Curso de [nombre_materia]"

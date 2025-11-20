@@ -31,7 +31,7 @@ export class EstadisticasService {
 
   /**
    * Obtiene estadísticas globales del API real con filtros opcionales
-   * ✅ ACTUALIZADO: Maneja código 500 como respuesta válida con valores en 0
+   * ACTUALIZADO: Maneja código 500 como respuesta válida con valores en 0
    */
   getEstadisticasGlobales(filtros: FiltroEstadisticas = {}): Observable<EstadisticasGlobalesAPI> {
     let params = new HttpParams();
@@ -58,7 +58,7 @@ export class EstadisticasService {
 
     const url = ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES;
 
-    // ✅ ACTUALIZADO: Detectar cuando el endpoint devuelve 500 con valores en 0 o bandera usarEndpointsAlternativos
+    // ACTUALIZADO: Detectar cuando el endpoint devuelve 500 con valores en 0 o bandera usarEndpointsAlternativos
     // En ese caso, lanzar error para que el componente use endpoints alternativos
     return this.http.get<EstadisticasGlobalesAPI & { usarEndpointsAlternativos?: boolean; error?: boolean; mensaje?: string }>(url, { 
       params,
@@ -128,7 +128,7 @@ export class EstadisticasService {
           throw error;
         }
         
-        console.error('❌ Error al obtener estadísticas globales:', error);
+        console.error('Error al obtener estadísticas globales:', error);
         // Para otros errores, también usar endpoints alternativos
         throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
       })
@@ -283,7 +283,7 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint de estadísticas por proceso
    */
   getEstadisticasDetalladasPorProceso(): Observable<EstadisticasPorProcesoResponse> {
-    // 🔧 Agregar timestamp para evitar caché
+    // Agregar timestamp para evitar caché
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO}?t=${Date.now()}`;
     return this.http.get<EstadisticasPorProcesoResponse>(url);
   }
@@ -435,7 +435,7 @@ export class EstadisticasService {
 
         estadoSolicitudes$.subscribe({
           next: (response) => {
-            // ✅ ACTUALIZADO: Usar resumenPorEstado con fallback a estados, asegurando que nunca sea undefined
+            // ACTUALIZADO: Usar resumenPorEstado con fallback a estados, asegurando que nunca sea undefined
             estadoSolicitudes = response.resumenPorEstado || response.estados || {};
             completed++;
             if (completed === total) {
@@ -535,7 +535,7 @@ export class EstadisticasService {
           totalSolicitudes: procesoFiltrado.totalSolicitudes,
           solicitudesAprobadas: procesoFiltrado.aprobadas,
           solicitudesRechazadas: procesoFiltrado.rechazadas,
-          solicitudesEnviadas: procesoFiltrado.enviadas || 0, // ✅ Campo obligatorio
+          solicitudesEnviadas: procesoFiltrado.enviadas || 0, // Campo obligatorio
           solicitudesEnProceso: procesoFiltrado.enProceso,
           totalEstudiantes: Math.floor(procesoFiltrado.totalSolicitudes * 2.6), // Aproximación
           totalProgramas: 1
@@ -723,7 +723,7 @@ export class EstadisticasService {
     }
 
 
-    // ✅ Código simplificado - el backend ahora funciona correctamente
+    // Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF, {
       params,
       responseType: 'blob',
@@ -757,7 +757,7 @@ export class EstadisticasService {
     }
 
 
-    // ✅ Código simplificado - el backend ahora funciona correctamente
+    // Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL, {
       params,
       responseType: 'blob',
@@ -856,14 +856,14 @@ export class EstadisticasService {
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = 'estadisticas.txt'; // ✅ Cambiado a .txt
+      link.download = 'estadisticas.txt'; // Cambiado a .txt
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
       
     } catch (error) {
-      console.error('❌ Error al descargar reporte de texto:', error);
+      console.error('Error al descargar reporte de texto:', error);
       throw error;
     }
   }
@@ -939,7 +939,7 @@ export class EstadisticasService {
       window.URL.revokeObjectURL(downloadUrl);
       
     } catch (error) {
-      console.error('❌ Error al descargar Excel:', error);
+      console.error('Error al descargar Excel:', error);
       throw error;
     }
   }
@@ -1060,7 +1060,7 @@ export class EstadisticasService {
         totalSolicitudes: datosAPI.totalSolicitudes || 0,
         solicitudesAprobadas: datosAPI.totalAprobadas || 0,
         solicitudesRechazadas: datosAPI.totalRechazadas || 0,
-        solicitudesEnviadas: datosAPI.totalEnviadas || 0, // ✅ Mapeo correcto del backend
+        solicitudesEnviadas: datosAPI.totalEnviadas || 0, // Mapeo correcto del backend
         solicitudesEnProceso: datosAPI.totalEnProceso || 0,
         totalEstudiantes: 0, // Se actualizará con el valor real del endpoint /api/estadisticas/total-estudiantes
         totalProgramas: Object.keys(porPrograma).length

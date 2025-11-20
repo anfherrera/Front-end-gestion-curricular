@@ -26,7 +26,7 @@ import { EstudiantesPorProgramaComponent } from '../../../shared/components/estu
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
 import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
-import { PeriodoSelectorComponent } from '../../../shared/components/periodo-selector/periodo-selector.component'; // ✨ NUEVO
+import { PeriodoSelectorComponent } from '../../../shared/components/periodo-selector/periodo-selector.component';
 import { 
   ResumenCompleto, 
   EstadisticasProceso,
@@ -60,7 +60,7 @@ Chart.register(...registerables);
     EstadisticasPorProcesoComponent,
     EstadisticasPorEstadoComponent,
     TendenciasComparativasComponent,
-    PeriodoSelectorComponent // ✨ NUEVO
+    PeriodoSelectorComponent
   ],
   templateUrl: './dashboard-estadistico.component.html',
   styleUrls: ['./dashboard-estadistico.component.css']
@@ -86,7 +86,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // KPIs
   kpis: KPIData[] = [];
   
-  // ❌ ELIMINADO: Predicciones (ya no están disponibles en /api/estadisticas/globales)
+  // ELIMINADO: Predicciones (ya no están disponibles en /api/estadisticas/globales)
   
   // Charts
   chartProcesos: Chart | null = null;
@@ -111,12 +111,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       programa: [''],
       fechaInicio: [''],
       fechaFin: [''],
-      periodoAcademico: [''] // ✨ NUEVO: Campo para período académico
+      periodoAcademico: [''] // Campo para período académico
     });
     
     this.inicializarDatos();
     
-    // ❌ ELIMINADO: No llamar generarKPIs() aquí porque resumenCompleto aún no tiene datos
+    // ELIMINADO: No llamar generarKPIs() aquí porque resumenCompleto aún no tiene datos
     // generarKPIs() se llamará automáticamente en cargarDatos() después de recibir los datos del backend
     
     // Cargar datos del backend
@@ -148,7 +148,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (datosAPI) => {
           
-          // ✅ ACTUALIZADO: Verificar que los datos sean válidos antes de mostrarlos
+          // ACTUALIZADO: Verificar que los datos sean válidos antes de mostrarlos
           // Si todos los valores son 0, usar endpoints alternativos en lugar de mostrar ceros
           const tieneDatos = (datosAPI.totalSolicitudes || 0) > 0 || 
                             Object.keys(datosAPI.porTipoProceso || {}).length > 0 ||
@@ -171,13 +171,13 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             
             this.mostrarExito('Datos cargados correctamente desde el backend');
           } catch (conversionError) {
-            console.error('❌ Error al convertir datos del API:', conversionError);
+            console.error('Error al convertir datos del API:', conversionError);
             // Si falla la conversión, intentar con endpoints alternativos
             this.cargarDatosConEndpointsAlternativos(filtros);
           }
         },
         error: (error) => {
-          console.error('❌ Error al cargar /estadisticas/globales:', error);
+          console.error('Error al cargar /estadisticas/globales:', error);
           
           // Si el endpoint principal falla, usar endpoints alternativos que funcionan
           // NO mostrar valores en 0, esperar a que los endpoints alternativos terminen
@@ -190,7 +190,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // Cargar total de estudiantes desde el endpoint específico
     this.cargarTotalEstudiantes();
     
-    // ❌ DESHABILITADO: No usar endpoint separado de estado de solicitudes
+    // DESHABILITADO: No usar endpoint separado de estado de solicitudes
     // Los datos ya vienen correctos desde /api/estadisticas/globales
     // this.cargarDatosEstadoSolicitudes();
 
@@ -258,7 +258,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             this.mostrarExito('Datos cargados usando endpoints alternativos');
           }
         } catch (error) {
-          console.error('❌ Error al construir resumen desde endpoints alternativos:', error);
+          console.error('Error al construir resumen desde endpoints alternativos:', error);
           this.loading = false;
           this.error = true;
           this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
@@ -272,7 +272,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('❌ Error al cargar estado de solicitudes:', error);
+        console.error('Error al cargar estado de solicitudes:', error);
         errores.push('estado-solicitudes');
         checkComplete();
       }
@@ -284,7 +284,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('❌ Error al cargar estadísticas por proceso:', error);
+        console.error('Error al cargar estadísticas por proceso:', error);
         errores.push('estadisticas-por-proceso');
         checkComplete();
       }
@@ -296,7 +296,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('❌ Error al cargar estudiantes por programa:', error);
+        console.error('Error al cargar estudiantes por programa:', error);
         errores.push('estudiantes-por-programa');
         checkComplete();
       }
@@ -308,7 +308,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('❌ Error al cargar estadísticas por período:', error);
+        console.error('Error al cargar estadísticas por período:', error);
         errores.push('por-periodo');
         checkComplete();
       }
@@ -335,11 +335,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     let enviadas = 0;
     let enProceso = 0;
     
-    // ✅ ACTUALIZADO: Usar resumenPorEstado con fallback a estados para compatibilidad
+    // ACTUALIZADO: Usar resumenPorEstado con fallback a estados para compatibilidad
     const estados = estadoSolicitudes?.resumenPorEstado || estadoSolicitudes?.estados;
     
     if (estadoSolicitudes && estados) {
-      // ✅ ACTUALIZADO: Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO
+      // ACTUALIZADO: Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO
       aprobadas = estados['APROBADA']?.cantidad || 0;
       rechazadas = estados['RECHAZADA']?.cantidad || 0;
       enviadas = estados['ENVIADA']?.cantidad || 0;
@@ -423,7 +423,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('❌ Error al obtener total de estudiantes:', error);
+          console.error('Error al obtener total de estudiantes:', error);
           this.loadingEstudiantes = false;
           
           // Usar valor por defecto en caso de error
@@ -445,9 +445,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           this.actualizarKPIsConEstadoSolicitudes(response);
         },
         error: (error) => {
-          console.error('❌ ERROR al obtener estado de solicitudes:', error);
+          console.error('ERROR al obtener estado de solicitudes:', error);
           
-          // ✅ FALLBACK: Usar valores reales si el endpoint falla
+          // FALLBACK: Usar valores reales si el endpoint falla
           const datosFallback = {
             totalSolicitudes: 50,
             estados: {
@@ -472,10 +472,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     if (!data || !data.estados) {
       return;
     }
-    // 🔧 Verificar cada estado individualmente
+    // Verificar cada estado individualmente
     const estados = data.estados;
-    // 🔧 VERIFICACIÓN DETALLADA DEL ESTADO "ENVIADA"
-    // ✅ CALCULAR totalSolicitudes sumando todos los estados
+    // VERIFICACIÓN DETALLADA DEL ESTADO "ENVIADA"
+    // CALCULAR totalSolicitudes sumando todos los estados
     // El backend envía: APROBADA, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA
     const aprobadas = (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0);
     const enviadas = estados.ENVIADA?.cantidad || 0;
@@ -513,7 +513,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 🔧 Método temporal para verificar la conexión del endpoint
+   * Método temporal para verificar la conexión del endpoint
    */
   verificarEndpoint(): void {
     // Hacer una llamada directa para verificar
@@ -529,18 +529,18 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           Object.entries(data.estados).forEach(([nombre, info]: [string, any]) => {
           });
 
-          // 🔧 FORZAR ACTUALIZACIÓN DE KPIs CON DATOS CORRECTOS
+          // FORZAR ACTUALIZACIÓN DE KPIs CON DATOS CORRECTOS
           this.actualizarKPIsConEstadoSolicitudes(data);
         } else {
         }
       })
       .catch(error => {
-        console.error('❌ Error al verificar endpoint:', error);
+        console.error('Error al verificar endpoint:', error);
            });
    }
 
    /**
-    * 🔧 Método temporal para forzar la actualización de KPIs
+    * Método temporal para forzar la actualización de KPIs
     */
    forzarActualizacionKPIs(): void {
      // Simular datos del backend con la estructura correcta
@@ -639,7 +639,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Genera los KPIs con datos del backend (resumenCompleto)
    */
   private generarKPIs(): void {
-    // ✅ CORREGIDO: Leer valores de resumenCompleto.estadisticasGlobales
+    // CORREGIDO: Leer valores de resumenCompleto.estadisticasGlobales
     const estadisticas = this.resumenCompleto?.estadisticasGlobales;
     
     
@@ -681,7 +681,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       },
       {
         titulo: 'Estudiantes',
-        valor: this.totalEstudiantes || 0, // ✅ Usar el valor real si ya está disponible
+        valor: this.totalEstudiantes || 0, // Usar el valor real si ya está disponible
         icono: 'people',
         color: 'info',
         descripcion: 'Total de estudiantes registrados'
@@ -700,12 +700,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Crea los gráficos del dashboard con datos reales
-   * ✅ OPTIMIZADO: Usa requestAnimationFrame para mejor rendimiento
+   * OPTIMIZADO: Usa requestAnimationFrame para mejor rendimiento
    */
   private async crearCharts(): Promise<void> {
     if (!this.resumenCompleto) return;
 
-    // ✅ Usar requestAnimationFrame en lugar de setTimeout
+    // Usar requestAnimationFrame en lugar de setTimeout
     requestAnimationFrame(async () => {
       await this.crearChartProcesos();
       await this.crearChartTendencia();
@@ -715,11 +715,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos reales del backend para el gráfico de procesos
-   * ✅ CORREGIDO: Usa el endpoint que funciona /api/estadisticas/estadisticas-por-proceso
+   * CORREGIDO: Usa el endpoint que funciona /api/estadisticas/estadisticas-por-proceso
    */
   private async cargarDatosRealesProcesos(): Promise<any> {
     try {
-      // ✅ Usar el endpoint que funciona correctamente
+      // Usar el endpoint que funciona correctamente
       const data: any = await this.estadisticasService.getEstadisticasDetalladasPorProceso().toPromise();
       
       // Convertir la estructura del endpoint a la esperada
@@ -743,12 +743,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       }
       
     } catch (error) {
-      console.error('❌ Error obteniendo datos reales de procesos:', error);
+      console.error('Error obteniendo datos reales de procesos:', error);
       return null;
     }
   }
 
-  // ❌ ELIMINADO: obtenerPrediccionProceso() (ya no disponible en /api/estadisticas/globales)
+  // ELIMINADO: obtenerPrediccionProceso() (ya no disponible en /api/estadisticas/globales)
 
   /**
    * Carga datos reales del backend para el gráfico de tendencia
@@ -759,7 +759,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('❌ Error obteniendo datos reales de tendencia:', error);
+      console.error('Error obteniendo datos reales de tendencia:', error);
       return null;
     }
   }
@@ -770,7 +770,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private async crearChartProcesos(): Promise<void> {
     const ctx = document.getElementById('chartProcesos') as HTMLCanvasElement;
     if (!ctx) {
-      console.error('❌ Canvas chartProcesos no encontrado en el DOM');
+      console.error('Canvas chartProcesos no encontrado en el DOM');
       return;
     }
 
@@ -784,16 +784,16 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // ✅ CORREGIDO: Transformar el objeto a arrays
+    // CORREGIDO: Transformar el objeto a arrays
     const labels = Object.keys(datosReales.estadisticasPorProceso);
     const valores = Object.values(datosReales.estadisticasPorProceso).map((p: any) => p.totalSolicitudes);
     
-    // ✅ Simplificar nombres (eliminar "Solicitud de " y "Solicitud ")
+    // Simplificar nombres (eliminar "Solicitud de " y "Solicitud ")
     const labelsSimplificados = labels.map(label => 
       label.replace("Solicitud de ", "").replace("Solicitud ", "")
     );
     
-    // 🎨 Mapeo explícito de colores por proceso (cada uno único y distintivo)
+    // Mapeo explícito de colores por proceso (cada uno único y distintivo)
     const coloresPorProceso: {[key: string]: string} = {
       'Cursos de Verano': '#2196F3',      // 🔵 Azul
       'Paz y Salvo': '#FF9800',           // 🟠 Naranja
@@ -802,7 +802,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       'Homologación': '#9C27B0'           // 🟣 Morado
     };
     
-    // 🔍 DEBUG: Mostrar procesos y labels
+    // DEBUG: Mostrar procesos y labels
     // Asignar colores según el nombre del proceso
     const colores = labelsSimplificados.map(label => {
       // Buscar coincidencia exacta primero
@@ -863,9 +863,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         animation: {
-          animateRotate: false, // ✅ Desactivado para mejorar rendimiento
+          animateRotate: false, // Desactivado para mejorar rendimiento
           animateScale: false,
-          duration: 0 // ✅ Sin animación = más rápido
+          duration: 0 // Sin animación = más rápido
         }
       }
     };
@@ -873,7 +873,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartProcesos = new Chart(ctx, config);
     } catch (error) {
-      console.error('❌ Error al crear gráfico de procesos:', error);
+      console.error('Error al crear gráfico de procesos:', error);
     }
   }
 
@@ -937,9 +937,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         animation: {
-          animateRotate: false, // ✅ Desactivado para mejorar rendimiento
+          animateRotate: false, // Desactivado para mejorar rendimiento
           animateScale: false,
-          duration: 0 // ✅ Sin animación = más rápido
+          duration: 0 // Sin animación = más rápido
         }
       }
     };
@@ -947,7 +947,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
     this.chartProcesos = new Chart(ctx, config);
     } catch (error) {
-      console.error('❌ Error al crear gráfico de procesos:', error);
+      console.error('Error al crear gráfico de procesos:', error);
     }
   }
 
@@ -969,7 +969,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       this.crearChartTendenciaFallback();
       return;
     }
-    // ✅ ACTUALIZADO: Usar mesesOrdenados o todosLosMeses del backend según la guía actualizada
+    // ACTUALIZADO: Usar mesesOrdenados o todosLosMeses del backend según la guía actualizada
     // El endpoint /por-periodo devuelve todos los meses (Enero-Diciembre), incluso con 0
     // Preferir usar mesesOrdenados o todosLosMeses del backend en lugar de hardcodear
     let mesesOrden: string[];
@@ -1066,7 +1066,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           intersect: false
         },
         animation: {
-          duration: 0, // ✅ Sin animación para mejor rendimiento
+          duration: 0, // Sin animación para mejor rendimiento
           easing: 'linear'
         }
       }
@@ -1075,7 +1075,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartTendencia = new Chart(ctx, config);
     } catch (error) {
-      console.error('❌ Error al crear gráfico de tendencia:', error);
+      console.error('Error al crear gráfico de tendencia:', error);
     }
   }
 
@@ -1208,7 +1208,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           intersect: false
         },
         animation: {
-          duration: 0, // ✅ Sin animación para mejor rendimiento
+          duration: 0, // Sin animación para mejor rendimiento
           easing: 'linear'
         }
       }
@@ -1217,7 +1217,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
     this.chartTendencia = new Chart(ctx, config);
     } catch (error) {
-      console.error('❌ Error al crear gráfico de tendencia:', error);
+      console.error('Error al crear gráfico de tendencia:', error);
     }
   }
 
@@ -1232,7 +1232,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     this.destruirChart('chartDistribucion');
 
-    // ✅ ACTUALIZADO: Cargar datos desde el endpoint /por-programa según la guía
+    // ACTUALIZADO: Cargar datos desde el endpoint /por-programa según la guía
     try {
       const response = await this.estadisticasService.getEstadisticasPorProgramaMejoradas().toPromise();
       
@@ -1321,7 +1321,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         animation: {
-          duration: 0, // ✅ Sin animación para mejor rendimiento
+          duration: 0, // Sin animación para mejor rendimiento
           easing: 'linear'
         }
       }
@@ -1329,7 +1329,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
       this.chartDistribucion = new Chart(ctx, config);
     } catch (error) {
-      console.error('❌ Error al crear gráfico de distribución:', error);
+      console.error('Error al crear gráfico de distribución:', error);
       // Fallback: usar datos del resumen si están disponibles
       if (this.resumenCompleto && this.resumenCompleto.estadisticasPorPrograma.length > 0) {
         this.crearChartDistribucionFallback();
@@ -1432,12 +1432,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartDistribucion = new Chart(ctx, config);
     } catch (error) {
-      console.error('❌ Error al crear gráfico de distribución (fallback):', error);
+      console.error('Error al crear gráfico de distribución (fallback):', error);
     }
   }
 
   /**
-   * ✨ NUEVO: Maneja el cambio de período académico
+   * NUEVO: Maneja el cambio de período académico
    */
   onPeriodoChange(periodo: string): void {
     if (this.filtrosForm) {
@@ -1447,7 +1447,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Aplica los filtros seleccionados y recarga los datos
-   * ✅ ACTUALIZADO: Envía los filtros en el formato correcto al backend
+   * ACTUALIZADO: Envía los filtros en el formato correcto al backend
    */
   aplicarFiltros(): void {
     if (this.filtrosForm && this.filtrosForm.valid) {
@@ -1499,7 +1499,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Limpia todos los filtros y recarga los datos completos
-   * ✅ ACTUALIZADO: Resetea el formulario a valores vacíos
+   * ACTUALIZADO: Resetea el formulario a valores vacíos
    */
   limpiarFiltros(): void {
     if (this.filtrosForm) {
@@ -1541,7 +1541,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Formatea el nombre del proceso para mostrarlo en la UI
-   * ✅ ACTUALIZADO: Los nombres ya vienen en el formato correcto del backend
+   * ACTUALIZADO: Los nombres ya vienen en el formato correcto del backend
    */
   formatearNombreProceso(proceso: string): string {
     // Los nombres ahora vienen directamente del backend en el formato correcto
@@ -1659,19 +1659,19 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('❌ [DEBUG] Error al exportar PDF del Dashboard General:', error);
+          console.error('[DEBUG] Error al exportar PDF del Dashboard General:', error);
           this.loading = false;
           this.mostrarError('Error al exportar el reporte PDF del Dashboard General');
         }
       });
     } catch (error) {
-      console.error('❌ Error al exportar reporte:', error);
+      console.error('Error al exportar reporte:', error);
       this.loading = false;
       this.mostrarError('Error al descargar el reporte PDF del Dashboard General');
     }
   }
 
-  // ✅ TrackBy functions para optimizar ngFor
+  // TrackBy functions para optimizar ngFor
   trackByIndex(index: number): number {
     return index;
   }
@@ -1720,13 +1720,13 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('❌ [DEBUG] Error al exportar Excel del Dashboard General:', error);
+          console.error('[DEBUG] Error al exportar Excel del Dashboard General:', error);
           this.loading = false;
           this.mostrarError('Error al exportar el reporte Excel del Dashboard General');
         }
       });
     } catch (error) {
-      console.error('❌ Error al exportar Excel:', error);
+      console.error('Error al exportar Excel:', error);
       this.loading = false;
       this.mostrarError('Error al descargar el reporte Excel del Dashboard General');
     }

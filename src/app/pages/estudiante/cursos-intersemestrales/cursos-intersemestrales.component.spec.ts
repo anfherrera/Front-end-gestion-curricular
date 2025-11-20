@@ -270,12 +270,12 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
 
   // REPORTE DE MÉTRICAS AL FINAL
   afterAll(() => {
-    console.log('\n📊 REPORTE DE MÉTRICAS DE USABILIDAD - CURSOS INTERSEMESTRALES');
+    console.log('\nREPORTE DE MÉTRICAS DE USABILIDAD - CURSOS INTERSEMESTRALES');
     console.log('═'.repeat(60));
-    console.log(`✅ Elementos visibles verificados: ${metricasUsabilidad.elementosVisibles}`);
-    console.log(`🧭 Navegaciones exitosas: ${metricasUsabilidad.navegacionesExitosas}`);
-    console.log(`🎯 Interacciones exitosas: ${metricasUsabilidad.interaccionesExitosas}`);
-    console.log(`✓  Validaciones correctas: ${metricasUsabilidad.validacionesCorrectas}`);
+    console.log(`Elementos visibles verificados: ${metricasUsabilidad.elementosVisibles}`);
+    console.log(`Navegaciones exitosas: ${metricasUsabilidad.navegacionesExitosas}`);
+    console.log(`Interacciones exitosas: ${metricasUsabilidad.interaccionesExitosas}`);
+    console.log(`Validaciones correctas: ${metricasUsabilidad.validacionesCorrectas}`);
     
     if (metricasUsabilidad.tiemposRespuesta.length > 0) {
       const promedio = metricasUsabilidad.tiemposRespuesta.reduce((a, b) => a + b, 0) / 
@@ -283,9 +283,9 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
       const maximo = Math.max(...metricasUsabilidad.tiemposRespuesta);
       const minimo = Math.min(...metricasUsabilidad.tiemposRespuesta);
       
-      console.log(`⏱️  Tiempo promedio de respuesta: ${promedio.toFixed(2)}ms`);
-      console.log(`⏱️  Tiempo máximo: ${maximo.toFixed(2)}ms`);
-      console.log(`⏱️  Tiempo mínimo: ${minimo.toFixed(2)}ms`);
+      console.log(`Tiempo promedio de respuesta: ${promedio.toFixed(2)}ms`);
+      console.log(`Tiempo máximo: ${maximo.toFixed(2)}ms`);
+      console.log(`Tiempo mínimo: ${minimo.toFixed(2)}ms`);
     }
     console.log('═'.repeat(60));
   });

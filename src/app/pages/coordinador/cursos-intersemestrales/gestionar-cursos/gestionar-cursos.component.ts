@@ -77,8 +77,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    // ✅ Formulario completo para crear cursos - Solo campos que el backend espera
-    // ❌ NO incluir: nombre_curso, codigo_curso, descripcion, cupo_maximo (se obtienen automáticamente)
+    // Formulario completo para crear cursos - Solo campos que el backend espera
+    // NO incluir: nombre_curso, codigo_curso, descripcion, cupo_maximo (se obtienen automáticamente)
     this.cursoForm = this.fb.group({
       // Campos OBLIGATORIOS
       id_materia: ['', Validators.required],
@@ -104,7 +104,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarDatos();
-    // ✅ Cargar materias y docentes reales del backend (sin datos de prueba)
+    // Cargar materias y docentes reales del backend (sin datos de prueba)
     this.cargarMateriasYDocentes();
   }
 
@@ -137,7 +137,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   }
 
   cargarMateriasYDocentes() {
-    // ✅ Cargar materias reales del backend
+    // Cargar materias reales del backend
     this.cursosService.getTodasLasMaterias().subscribe({
       next: (materias) => {
         this.materias = materias;
@@ -153,7 +153,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       }
     });
 
-    // ✅ Cargar docentes reales del backend
+    // Cargar docentes reales del backend
     this.cursosService.getTodosLosDocentes().subscribe({
       next: (docentes) => {
         this.docentes = docentes;
@@ -170,7 +170,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ⚠️ DATOS DE PRUEBA - SOLO PARA DESARROLLO/EMERGENCIA
+  // DATOS DE PRUEBA - SOLO PARA DESARROLLO/EMERGENCIA
   // Estos métodos YA NO SE USAN - Se cargan datos reales del backend
   private getCursosPrueba(): CursoOfertadoVerano[] {
     return [
@@ -233,7 +233,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // ⚠️ YA NO SE USA - Solo para emergencia si el backend falla
+  // YA NO SE USA - Solo para emergencia si el backend falla
   private getMateriasPrueba(): Materia[] {
     return [
       {
@@ -274,9 +274,9 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // ❌ ELIMINADO: Método duplicado - ahora se usa cargarMateriasYDocentes()
+  // ELIMINADO: Método duplicado - ahora se usa cargarMateriasYDocentes()
 
-  // ⚠️ YA NO SE USA - Solo para emergencia si el backend falla
+  // YA NO SE USA - Solo para emergencia si el backend falla
   private getDocentesPrueba(): Usuario[] {
     return [
       {

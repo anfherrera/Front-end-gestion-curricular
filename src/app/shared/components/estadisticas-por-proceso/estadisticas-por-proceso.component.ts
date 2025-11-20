@@ -435,7 +435,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
           this.loading = false;
         },
         error: (error) => {
-          console.error('❌ Error al obtener estadísticas por proceso:', error);
+          console.error('Error al obtener estadísticas por proceso:', error);
           this.loading = false;
           this.error = 'Error al cargar estadísticas por proceso';
         }
@@ -457,7 +457,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
           aprobadas: this.extraerAprobadas(datos),
           rechazadas: this.extraerRechazadas(datos),
           enProceso: this.extraerEnProceso(datos),
-          enviadas: enviadas, // ✅ AGREGADO: Mapear campo enviadas
+          enviadas: enviadas, // AGREGADO: Mapear campo enviadas
           porcentajeAprobacion: this.calcularPorcentajeAprobacion(datos)
         };
       })
@@ -567,7 +567,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 🔧 Método temporal para limpiar caché y recargar datos
+   * Método temporal para limpiar caché y recargar datos
    */
   limpiarCacheYRecargar(): void {
     

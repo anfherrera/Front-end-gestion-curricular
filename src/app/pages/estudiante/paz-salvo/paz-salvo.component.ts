@@ -7,7 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { descargarBlob } from '../../../core/utils/download.util';
-import { Subject, takeUntil } from 'rxjs'; // ✅ Agregar para limpieza de suscripciones
+import { Subject, takeUntil } from 'rxjs'; // Agregar para limpieza de suscripciones
 
 import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -39,7 +39,7 @@ import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 export class PazSalvoComponent implements OnInit, OnDestroy {
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent
 
-  // ✅ Subject para limpieza de suscripciones
+  // Subject para limpieza de suscripciones
   private destroy$ = new Subject<void>();
 
   solicitudes: Solicitud[] = [];
@@ -86,7 +86,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // ✅ Limpiar todas las suscripciones
+    // Limpiar todas las suscripciones
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -115,14 +115,14 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
 listarSolicitudes() {
   if (!this.usuario) {
-    console.error("❌ Usuario no encontrado en localStorage.");
+    console.error("Usuario no encontrado en localStorage.");
     return;
   }
-  // ✅ CORREGIDO: Usar el nuevo método con rol e idUsuario
+  // CORREGIDO: Usar el nuevo método con rol e idUsuario
   const rol = 'ESTUDIANTE';
   const idUsuario = this.usuario.id_usuario;
   this.pazSalvoService.listarSolicitudesPorRol(rol, idUsuario)
-    .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
+    .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
     .subscribe({
     next: (data) => {
       if (!data || !Array.isArray(data)) {
@@ -174,10 +174,10 @@ listarSolicitudes() {
 
     },
     error: (err) => {
-      console.error('❌ Error al listar solicitudes', err);
-      console.error('❌ Status:', err.status);
-      console.error('❌ Message:', err.message);
-      console.error('❌ Error completo:', err);
+      console.error('Error al listar solicitudes', err);
+      console.error('Status:', err.status);
+      console.error('Message:', err.message);
+      console.error('Error completo:', err);
     }
   });
 }
@@ -187,17 +187,17 @@ listarSolicitudes() {
 
   onSolicitudEnviada() {
     if (!this.usuario) {
-      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+      console.error('No se puede enviar solicitud: usuario no encontrado.');
       return;
     }
 
     if (!this.fileUploadComponent) {
-      console.error('❌ No se puede acceder al componente de archivos.');
+      console.error('No se puede acceder al componente de archivos.');
       return;
     }
     // 🆕 NUEVO FLUJO: Paso 1: Subir documentos SIN asociar a solicitud
     this.fileUploadComponent.subirArchivosPendientes()
-      .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
+      .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
       .subscribe({
       next: (archivosSubidos) => {
 
@@ -217,12 +217,12 @@ listarSolicitudes() {
 
 
         this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos)
-          .pipe(takeUntil(this.destroy$)) // ✅ Auto-unsubscribe
+          .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
           .subscribe({
           next: (resp) => {
             this.listarSolicitudes();
 
-            // ✅ FIX: Resetear el file upload en el siguiente ciclo de detección para evitar NG0100
+            // FIX: Resetear el file upload en el siguiente ciclo de detección para evitar NG0100
             setTimeout(() => {
               this.resetFileUpload = true;
               this.cdr.detectChanges(); // Forzar detección de cambios
@@ -232,22 +232,22 @@ listarSolicitudes() {
               }, 0);
             }, 0);
 
-            this.mostrarMensaje('🎉 ¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
+            this.mostrarMensaje('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
           },
           error: (err) => {
-            console.error('❌ Error al crear solicitud:', err);
+            console.error('Error al crear solicitud:', err);
             if (err.status === 400) {
-              this.mostrarMensaje('⚠️ Error de validación: revisa los datos de la solicitud', 'warning');
+              this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
             }
             if (err.status === 401) {
-              this.mostrarMensaje('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+              this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
             }
           }
         });
       },
       error: (err) => {
-        console.error('❌ Error al subir documentos:', err);
-        this.mostrarMensaje('❌ Error al subir documentos. Por favor, inténtalo de nuevo.', 'error');
+        console.error('Error al subir documentos:', err);
+        this.mostrarMensaje('Error al subir documentos. Por favor, inténtalo de nuevo.', 'error');
         
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
@@ -379,7 +379,7 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
       this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
     },
     error: (err) => {
-      console.error('❌ Error al obtener oficios:', err);
+      console.error('Error al obtener oficios:', err);
       
       // Si no se pueden obtener oficios, intentar con nombres comunes
       this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
@@ -416,7 +416,7 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
       }
     },
     error: (err) => {
-      console.error('❌ Error al descargar archivo:', err);
+      console.error('Error al descargar archivo:', err);
       this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
     }
   });
