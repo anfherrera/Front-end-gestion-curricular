@@ -143,13 +143,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = false;
     
-    console.log('📊 Cargando datos del dashboard con filtros:', filtros);
-    console.log('🔗 Endpoint principal:', `${environment.apiUrl}/estadisticas/globales`);
     
     const subscription = this.estadisticasService.getEstadisticasGlobales(filtros)
       .subscribe({
         next: (datosAPI) => {
-          console.log('✅ Datos recibidos del backend:', datosAPI);
           
           // ✅ ACTUALIZADO: Verificar que los datos sean válidos antes de mostrarlos
           // Si todos los valores son 0, usar endpoints alternativos en lugar de mostrar ceros
@@ -159,7 +156,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
                             Object.keys(datosAPI.porEstado || {}).length > 0;
           
           if (!tieneDatos) {
-            console.warn('⚠️ Endpoint principal devolvió solo ceros, usando endpoints alternativos...');
             this.cargarDatosConEndpointsAlternativos(filtros);
             return;
           }
@@ -182,7 +178,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('❌ Error al cargar /estadisticas/globales:', error);
-          console.warn('⚠️ Intentando cargar datos usando endpoints alternativos...');
           
           // Si el endpoint principal falla, usar endpoints alternativos que funcionan
           // NO mostrar valores en 0, esperar a que los endpoints alternativos terminen
@@ -224,7 +219,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Carga datos usando endpoints alternativos cuando /estadisticas/globales falla
    */
   private cargarDatosConEndpointsAlternativos(filtros: FiltroEstadisticas = {}): void {
-    console.log('🔄 Cargando datos usando endpoints alternativos...');
     
     // Combinar datos de múltiples endpoints que funcionan
     const estadoSolicitudes$ = this.estadisticasService.getEstadoSolicitudes();
@@ -274,7 +268,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     estadoSolicitudes$.subscribe({
       next: (data) => {
-        console.log('✅ Estado de solicitudes cargado:', data);
         estadoSolicitudes = data;
         checkComplete();
       },
@@ -287,7 +280,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     estadisticasPorProceso$.subscribe({
       next: (data) => {
-        console.log('✅ Estadísticas por proceso cargadas:', data);
         estadisticasPorProceso = data;
         checkComplete();
       },
@@ -300,7 +292,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     estudiantesPorPrograma$.subscribe({
       next: (data) => {
-        console.log('✅ Estudiantes por programa cargados:', data);
         estudiantesPorPrograma = data;
         checkComplete();
       },
@@ -313,7 +304,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     porPeriodo$.subscribe({
       next: (data) => {
-        console.log('✅ Estadísticas por período cargadas:', data);
         porPeriodo = data;
         checkComplete();
       },
@@ -334,9 +324,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     estudiantesPorPrograma: any,
     porPeriodo: any
   ): void {
-    console.log('🔍 [DEBUG] Construyendo resumen desde endpoints alternativos...');
-    console.log('🔍 [DEBUG] estadoSolicitudes:', estadoSolicitudes);
-    console.log('🔍 [DEBUG] estadisticasPorProceso:', estadisticasPorProceso);
     
     // Construir estadísticas por proceso desde estadisticasPorProceso
     const procesosData = estadisticasPorProceso?.estadisticasPorProceso || {};
@@ -352,7 +339,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     const estados = estadoSolicitudes?.resumenPorEstado || estadoSolicitudes?.estados;
     
     if (estadoSolicitudes && estados) {
-      console.log('✅ Usando datos de estadoSolicitudes');
       // ✅ ACTUALIZADO: Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO
       aprobadas = estados['APROBADA']?.cantidad || 0;
       rechazadas = estados['RECHAZADA']?.cantidad || 0;
@@ -364,16 +350,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       const totalCalculado = aprobadas + rechazadas + enviadas + enProceso;
       totalSolicitudes = totalDesdeBackend > 0 ? totalDesdeBackend : totalCalculado;
       
-      console.log('🔍 [DEBUG] Valores calculados desde estadoSolicitudes:');
-      console.log('  - totalSolicitudes (backend):', totalDesdeBackend);
-      console.log('  - totalSolicitudes (calculado):', totalCalculado);
-      console.log('  - totalSolicitudes (usado):', totalSolicitudes);
-      console.log('  - aprobadas:', aprobadas);
-      console.log('  - rechazadas:', rechazadas);
-      console.log('  - enviadas:', enviadas);
-      console.log('  - enProceso:', enProceso);
     } else {
-      console.log('⚠️ estadoSolicitudes no disponible, calculando desde estadisticasPorProceso');
       // Si no hay estadoSolicitudes, calcular desde estadisticasPorProceso
       Object.values(procesosData).forEach((proceso: any) => {
         totalSolicitudes += proceso.totalSolicitudes || 0;
@@ -383,12 +360,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         enProceso += proceso.enProceso || 0;
       });
       
-      console.log('🔍 [DEBUG] Valores calculados desde estadisticasPorProceso:');
-      console.log('  - totalSolicitudes:', totalSolicitudes);
-      console.log('  - aprobadas:', aprobadas);
-      console.log('  - rechazadas:', rechazadas);
-      console.log('  - enviadas:', enviadas);
-      console.log('  - enProceso:', enProceso);
     }
     const estadisticasPorProcesoArray: EstadisticasProceso[] = Object.keys(procesosData).map((nombreProceso, index) => {
       const proceso = procesosData[nombreProceso];
@@ -432,8 +403,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       ultimaActualizacion: new Date().toISOString()
     };
     
-    console.log('✅ Resumen construido desde endpoints alternativos:', this.resumenCompleto);
-    console.log('🔍 [DEBUG] estadisticasGlobales:', this.resumenCompleto.estadisticasGlobales);
   }
 
   /**
@@ -673,7 +642,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // ✅ CORREGIDO: Leer valores de resumenCompleto.estadisticasGlobales
     const estadisticas = this.resumenCompleto?.estadisticasGlobales;
     
-    console.log('🔍 [DEBUG] Generando KPIs desde:', estadisticas);
     
     this.kpis = [
       {

@@ -426,7 +426,6 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
     const sub = this.estadisticasService.getEstadoSolicitudes()
       .subscribe({
         next: (response: EstadoSolicitudesResponse) => {
-          console.log('✅ Estado de solicitudes obtenido:', response);
           
           // Procesar datos desde el endpoint de estado de solicitudes
           // ✅ ACTUALIZADO: El backend ahora usa resumenPorEstado en lugar de estados

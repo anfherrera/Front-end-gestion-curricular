@@ -57,9 +57,6 @@ export class EstadisticasService {
     }
 
     const url = ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES;
-    console.log('🌐 Llamando a:', url);
-    console.log('📋 Parámetros:', params.toString());
-    console.log('🔑 URL completa:', `${url}${params.toString() ? '?' + params.toString() : ''}`);
 
     // ✅ ACTUALIZADO: Detectar cuando el endpoint devuelve 500 con valores en 0 o bandera usarEndpointsAlternativos
     // En ese caso, lanzar error para que el componente use endpoints alternativos
@@ -93,7 +90,6 @@ export class EstadisticasService {
           
           // Verificar bandera usarEndpointsAlternativos
           if (dataWithFlags.usarEndpointsAlternativos === true || dataWithFlags.error === true) {
-            console.warn('⚠️ Endpoint principal falló con bandera usarEndpointsAlternativos:', dataWithFlags.mensaje);
             throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
           }
           
@@ -104,7 +100,6 @@ export class EstadisticasService {
                             Object.keys(data.porEstado || {}).length > 0;
           
           if (!tieneDatos) {
-            console.warn('⚠️ Endpoint principal devolvió solo ceros, usando endpoints alternativos...');
             throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
           }
           
@@ -145,7 +140,6 @@ export class EstadisticasService {
    * @param periodo Período académico (ej: "2025-1")
    */
   getEstadisticasPorPeriodo(periodo: string): Observable<any> {
-    console.log(`🌐 Llamando a API: GET /api/estadisticas/periodo/${periodo}`);
     return this.http.get<any>(`${ApiEndpoints.MODULO_ESTADISTICO.BASE}/periodo/${periodo}`);
   }
 
@@ -273,7 +267,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint de estudiantes
    */
   getTotalEstudiantes(): Observable<TotalEstudiantesResponse> {
-    console.log('📊 Obteniendo total de estudiantes desde:', ApiEndpoints.MODULO_ESTADISTICO.TOTAL_ESTUDIANTES);
     return this.http.get<TotalEstudiantesResponse>(ApiEndpoints.MODULO_ESTADISTICO.TOTAL_ESTUDIANTES);
   }
 
@@ -282,7 +275,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint de estudiantes por programa
    */
   getEstudiantesPorPrograma(): Observable<EstudiantesPorProgramaResponse> {
-    console.log('📊 Obteniendo estudiantes por programa desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTUDIANTES_POR_PROGRAMA);
     return this.http.get<EstudiantesPorProgramaResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTUDIANTES_POR_PROGRAMA);
   }
 
@@ -293,7 +285,6 @@ export class EstadisticasService {
   getEstadisticasDetalladasPorProceso(): Observable<EstadisticasPorProcesoResponse> {
     // 🔧 Agregar timestamp para evitar caché
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO}?t=${Date.now()}`;
-    console.log('📊 Obteniendo estadísticas por proceso desde:', url);
     return this.http.get<EstadisticasPorProcesoResponse>(url);
   }
 
@@ -303,7 +294,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint de estado de solicitudes
    */
   getEstadoSolicitudes(): Observable<EstadoSolicitudesResponse> {
-    console.log('📊 Obteniendo estado de solicitudes desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
     return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
   }
 
@@ -312,7 +302,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint de tendencias y comparativas
    */
   getTendenciasComparativas(): Observable<TendenciasComparativasResponse> {
-    console.log('📈 Obteniendo tendencias y comparativas desde:', ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
     return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
   }
 
@@ -321,7 +310,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint de cursos de verano
    */
   getCursosVeranoEstadisticas(): Observable<CursosVeranoResponse> {
-    console.log('🏖️ Obteniendo estadísticas de cursos de verano desde:', ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO);
     return this.http.get<CursosVeranoResponse>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO);
   }
 
@@ -330,7 +318,6 @@ export class EstadisticasService {
    * Carga más rápida, solo datos temporales
    */
   getCursosVeranoTendenciasTemporales(): Observable<{tendenciasTemporales: TendenciaTemporal[]}> {
-    console.log('📈 [OPTIMIZADO] Obteniendo tendencias temporales desde:', ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_TENDENCIAS_TEMPORALES);
     return this.http.get<{tendenciasTemporales: TendenciaTemporal[]}>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_TENDENCIAS_TEMPORALES);
   }
 
@@ -341,7 +328,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint mejorado de estadísticas por programa
    */
   getEstadisticasPorProgramaMejoradas(): Observable<EstadisticasPorProgramaMejoradasResponse> {
-    console.log('📊 Obteniendo estadísticas por programa mejoradas desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROGRAMA_MEJORADAS);
     return this.http.get<EstadisticasPorProgramaMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROGRAMA_MEJORADAS);
   }
 
@@ -350,7 +336,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint mejorado de estadísticas por período
    */
   getEstadisticasPorPeriodoMejoradas(): Observable<EstadisticasPorPeriodoMejoradasResponse> {
-    console.log('📈 Obteniendo estadísticas por período mejoradas desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PERIODO_MEJORADAS);
     return this.http.get<EstadisticasPorPeriodoMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PERIODO_MEJORADAS);
   }
 
@@ -359,7 +344,6 @@ export class EstadisticasService {
    * @returns Observable con la respuesta del endpoint mejorado de estado de solicitudes
    */
   getEstadoSolicitudesMejorado(): Observable<EstadoSolicitudesResponse> {
-    console.log('📋 Obteniendo estado de solicitudes mejorado desde:', ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
     return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
   }
 
@@ -368,7 +352,6 @@ export class EstadisticasService {
    * @returns Observable con todas las estadísticas consolidadas
    */
   getEstadisticasCompletas(): Observable<EstadisticasCompletas> {
-    console.log('📊 Obteniendo estadísticas completas...');
     
     return new Observable(observer => {
       let totalEstudiantes = 0;
@@ -523,7 +506,6 @@ export class EstadisticasService {
    * Obtiene resumen completo con filtros aplicados
    */
   getResumenCompletoConFiltros(filtros: FiltrosDashboard): Observable<ResumenCompleto> {
-    console.log('🔍 Aplicando filtros:', filtros);
     
     // Simular delay de red
     return of(this.generarResumenCompletoConFiltros(filtros)).pipe(delay(1000));
@@ -740,8 +722,6 @@ export class EstadisticasService {
       params = params.set('fechaFin', filtros.fechaFin);
     }
 
-    console.log('📄 [DEBUG] Exportando PDF con filtros:', filtros);
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF);
 
     // ✅ Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF, {
@@ -776,8 +756,6 @@ export class EstadisticasService {
       params = params.set('fechaFin', filtros.fechaFin);
     }
 
-    console.log('📊 [DEBUG] Exportando Excel con filtros:', filtros);
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL);
 
     // ✅ Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL, {
@@ -795,8 +773,6 @@ export class EstadisticasService {
    * Exporta reporte PDF del Dashboard General
    */
   exportarReporteGeneral(): Observable<Blob> {
-    console.log('📄 [DEBUG] Exportando PDF del Dashboard General...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_GENERAL);
 
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_GENERAL, {
       responseType: 'blob',
@@ -810,8 +786,6 @@ export class EstadisticasService {
    * Exporta reporte Excel del Dashboard General
    */
   exportarExcelGeneral(): Observable<Blob> {
-    console.log('📊 [DEBUG] Exportando Excel del Dashboard General...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_GENERAL);
 
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_GENERAL, {
       responseType: 'blob',
@@ -825,8 +799,6 @@ export class EstadisticasService {
    * Exporta reporte PDF de Cursos de Verano
    */
   exportarReporteCursosVerano(): Observable<Blob> {
-    console.log('📄 [DEBUG] Exportando PDF de Cursos de Verano...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_CURSOS_VERANO);
 
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_CURSOS_VERANO, {
       responseType: 'blob',
@@ -840,8 +812,6 @@ export class EstadisticasService {
    * Exporta reporte Excel de Cursos de Verano
    */
   exportarExcelCursosVerano(): Observable<Blob> {
-    console.log('📊 [DEBUG] Exportando Excel de Cursos de Verano...');
-    console.log('🔗 [DEBUG] URL:', ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_CURSOS_VERANO);
 
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_CURSOS_VERANO, {
       responseType: 'blob',
@@ -875,7 +845,6 @@ export class EstadisticasService {
     }
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
-    console.log('📄 Descargando reporte de texto con fetch:', url);
     
     try {
       const response = await fetch(url);
@@ -893,7 +862,6 @@ export class EstadisticasService {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
       
-      console.log('✅ Reporte de texto descargado exitosamente');
     } catch (error) {
       console.error('❌ Error al descargar reporte de texto:', error);
       throw error;
@@ -924,7 +892,6 @@ export class EstadisticasService {
     }
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
-    console.log('📄 Descargando reporte de texto directamente:', url);
     
     // Abrir en nueva ventana para descarga directa
     window.open(url, '_blank');
@@ -954,7 +921,6 @@ export class EstadisticasService {
     }
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
-    console.log('📊 Descargando Excel con fetch:', url);
     
     try {
       const response = await fetch(url);
@@ -972,7 +938,6 @@ export class EstadisticasService {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
       
-      console.log('✅ Excel descargado exitosamente');
     } catch (error) {
       console.error('❌ Error al descargar Excel:', error);
       throw error;
@@ -1003,7 +968,6 @@ export class EstadisticasService {
     }
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
-    console.log('📊 Descargando Excel directamente:', url);
     
     // Abrir en nueva ventana para descarga directa
     window.open(url, '_blank');
@@ -1013,7 +977,6 @@ export class EstadisticasService {
    * Convierte los datos del API real al formato del dashboard
    */
   convertirDatosAPI(datosAPI: EstadisticasGlobalesAPI): ResumenCompleto {
-    console.log('🔄 Convirtiendo datos del API:', datosAPI);
     
     // Validar que los datos existan
     if (!datosAPI) {
@@ -1081,7 +1044,6 @@ export class EstadisticasService {
       };
     });
 
-    console.log('✅ Procesos agrupados:', estadisticasPorProceso);
 
     // Convertir porPrograma a estadísticas por programa
     const porPrograma = datosAPI.porPrograma || {};

@@ -424,13 +424,11 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     const sub = this.estadisticasService.getEstadisticasDetalladasPorProceso()
       .subscribe({
         next: (response: EstadisticasPorProcesoResponse) => {
-          console.log('✅ Estadísticas por proceso obtenidas:', response);
           
           // 🔍 DEBUG: Verificar datos específicos de los procesos problemáticos
           const pazYSalvo = response.estadisticasPorProceso['Paz y Salvo'];
           const cursosVerano = response.estadisticasPorProceso['Cursos de Verano'];
           
-          console.log('🔍 DEBUG - PAZ Y SALVO:', {
             total: pazYSalvo?.totalSolicitudes,
             aprobadas: pazYSalvo?.aprobadas,
             rechazadas: pazYSalvo?.rechazadas,
@@ -439,7 +437,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
             tipoEnviadas: typeof pazYSalvo?.enviadas
           });
           
-          console.log('🔍 DEBUG - CURSOS DE VERANO:', {
             total: cursosVerano?.totalSolicitudes,
             aprobadas: cursosVerano?.aprobadas,
             rechazadas: cursosVerano?.rechazadas,
@@ -449,7 +446,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
           });
           
           // 🔍 DEBUG: Verificar estructura completa de datos
-          console.log('🔍 DEBUG - ESTRUCTURA COMPLETA:', response.estadisticasPorProceso);
           
           this.fechaConsulta = response.fechaConsulta;
           this.procesosData = this.procesarDatos(response.estadisticasPorProceso);
@@ -477,7 +473,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
         const enviadas = this.extraerEnviadas(datos);
         
         // 🔍 DEBUG: Log del mapeo para cada proceso
-        console.log(`🔍 MAPEO - ${nombre}:`, {
           datosOriginales: datos,
           enviadasExtraidas: enviadas,
           tipoEnviadas: typeof enviadas
@@ -595,7 +590,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     const total = proceso.totalSolicitudes || 0;
     
     if (suma !== total) {
-      console.warn(`⚠️ Discrepancia en ${proceso.nombreProceso || 'proceso'}: ${suma} vs ${total}`);
     }
     
     return suma === total;
@@ -609,7 +603,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
    * 🔧 Método temporal para limpiar caché y recargar datos
    */
   limpiarCacheYRecargar(): void {
-    console.log('🔄 Limpiando caché y recargando datos...');
     
     // Limpiar localStorage y sessionStorage
     localStorage.clear();
