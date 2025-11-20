@@ -1,9 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="12" fill="#ffffff"/>
-  <path d="M32 10c6 3.5 10 8.9 10 13.8 0 4.6-3.1 8.1-7.5 9.6l2.2-4.7c-1.7 1.9-4 3.1-6.7 3.1s-5-1.1-6.7-3.1l2.2 4.7c-4.4-1.5-7.5-5-7.5-9.6C18 18.9 22 13.5 28 10l1.5 4.3c0.7-1.2 1.6-2.2 2.5-3.1l0.1-0.1z" fill="#00138C"/>
-  <path d="M29 34h6l2 18c0.1 0.8-0.6 1.5-1.4 1.5h-7.2c-0.8 0-1.4-0.7-1.4-1.5l2-18z" fill="#00138C"/>
-  <rect x="24" y="30" width="16" height="6" rx="2" fill="#00138C"/>
-  <circle cx="32" cy="47" r="2.4" fill="#ffffff"/>
-  <text x="32" y="56" text-anchor="middle" font-size="10" font-family="Segoe UI, Arial, sans-serif" fill="#00138C">Unicauca</text>
+  <path d="M14 16h8v20c0 4.4 3.6 8 8 8s8-3.6 8-8V16h8v20c0 8.8-7.2 16-16 16s-16-7.2-16-16V16z" fill="#00138C"/>
+  <path d="M22 16h20v6H22z" fill="#00138C"/>
+  <text x="32" y="54" text-anchor="middle" font-size="14" font-family="Segoe UI, Arial, sans-serif" fill="#00138C" font-weight="600">UC</text>
 </svg>
 
