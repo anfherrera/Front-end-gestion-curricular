@@ -424,29 +424,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     const sub = this.estadisticasService.getEstadisticasDetalladasPorProceso()
       .subscribe({
         next: (response: EstadisticasPorProcesoResponse) => {
-          
-          // 🔍 DEBUG: Verificar datos específicos de los procesos problemáticos
-          const pazYSalvo = response.estadisticasPorProceso['Paz y Salvo'];
-          const cursosVerano = response.estadisticasPorProceso['Cursos de Verano'];
-          
-            total: pazYSalvo?.totalSolicitudes,
-            aprobadas: pazYSalvo?.aprobadas,
-            rechazadas: pazYSalvo?.rechazadas,
-            enProceso: pazYSalvo?.enProceso,
-            enviadas: pazYSalvo?.enviadas,
-            tipoEnviadas: typeof pazYSalvo?.enviadas
-          });
-          
-            total: cursosVerano?.totalSolicitudes,
-            aprobadas: cursosVerano?.aprobadas,
-            rechazadas: cursosVerano?.rechazadas,
-            enProceso: cursosVerano?.enProceso,
-            enviadas: cursosVerano?.enviadas,
-            tipoEnviadas: typeof cursosVerano?.enviadas
-          });
-          
-          // 🔍 DEBUG: Verificar estructura completa de datos
-          
           this.fechaConsulta = response.fechaConsulta;
           this.procesosData = this.procesarDatos(response.estadisticasPorProceso);
           
@@ -471,13 +448,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     return Object.entries(estadisticasPorProceso)
       .map(([nombre, datos]) => {
         const enviadas = this.extraerEnviadas(datos);
-        
-        // 🔍 DEBUG: Log del mapeo para cada proceso
-          datosOriginales: datos,
-          enviadasExtraidas: enviadas,
-          tipoEnviadas: typeof enviadas
-        });
-        
+
         return {
           nombre,
           nombreFormateado: this.formatearNombreProceso(nombre),
@@ -588,10 +559,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     const suma = (proceso.aprobadas || 0) + (proceso.rechazadas || 0) + 
                  (proceso.enProceso || 0) + (proceso.enviadas || 0);
     const total = proceso.totalSolicitudes || 0;
-    
-    if (suma !== total) {
-    }
-    
     return suma === total;
   }
 
