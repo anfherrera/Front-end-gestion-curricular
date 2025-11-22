@@ -67,9 +67,9 @@ export class ReingresoEstudianteComponent implements OnInit {
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
-      console.log('👤 Usuario cargado desde localStorage:', this.usuario);
+      // Usuario cargado desde localStorage
     } else {
-      console.warn('⚠️ No se encontró usuario en localStorage');
+      console.warn('No se encontró usuario en localStorage');
     }
 
     // Listar solicitudes existentes al cargar el componente
@@ -105,21 +105,21 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   onSolicitudEnviada() {
     if (!this.usuario) {
-      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+      console.error('No se puede enviar solicitud: usuario no encontrado.');
       return;
     }
 
     if (!this.fileUploadComponent) {
-      console.error('❌ No se puede acceder al componente de archivos.');
+      console.error('No se puede acceder al componente de archivos.');
       return;
     }
 
-    console.log('📤 Iniciando proceso de envío de solicitud...');
+    // Iniciando proceso de envío de solicitud
 
     // Paso 1: Subir archivos al backend
     this.fileUploadComponent.subirArchivosPendientes().subscribe({
       next: (archivosSubidos) => {
-        console.log('✅ Archivos subidos correctamente:', archivosSubidos);
+        // Archivos subidos correctamente
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
         const solicitud: SolicitudReingresoDTOPeticion = {
@@ -132,7 +132,7 @@ export class ReingresoEstudianteComponent implements OnInit {
             correo: this.usuario.correo || this.usuario.email_usuario,
             rol: this.usuario.rol,
             estado_usuario: this.usuario.estado_usuario,
-            // ✅ FIX: Agregar id_rol e id_programa como campos requeridos por el backend
+            // FIX: Agregar id_rol e id_programa como campos requeridos por el backend
             id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1,
             id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
             objPrograma: this.usuario.objPrograma || {
@@ -148,34 +148,33 @@ export class ReingresoEstudianteComponent implements OnInit {
           }))
         };
 
-        console.log('📋 Creando solicitud con archivos:', solicitud);
-        console.log('👤 Usuario completo:', this.usuario);
+        // Creando solicitud con archivos
 
         this.reingresoService.crearSolicitud(solicitud).subscribe({
           next: (resp) => {
-            console.log('✅ Solicitud creada en backend:', resp);
+            // Solicitud creada en backend
             this.listarSolicitudes();
 
             // Resetear el file upload
             this.resetFileUpload = true;
             setTimeout(() => this.resetFileUpload = false, 0);
 
-            this.mostrarMensaje('🎉 ¡Solicitud de reingreso enviada correctamente!', 'success');
+            this.mostrarMensaje('¡Solicitud de reingreso enviada correctamente!', 'success');
           },
           error: (err) => {
-            console.error('❌ Error al crear solicitud:', err);
+            console.error('Error al crear solicitud:', err);
             if (err.status === 400) {
-              this.mostrarMensaje('⚠️ Error de validación: revisa los datos de la solicitud', 'warning');
+              this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
             }
             if (err.status === 401) {
-              this.mostrarMensaje('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+              this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
             }
           }
         });
       },
       error: (err) => {
-        console.error('❌ Error al subir archivos:', err);
-        this.mostrarMensaje('❌ Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        console.error('Error al subir archivos:', err);
+        this.mostrarMensaje('Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
 
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
@@ -187,23 +186,20 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   listarSolicitudes() {
     if (!this.usuario) {
-      console.error("❌ Usuario no encontrado en localStorage.");
+      console.error("Usuario no encontrado en localStorage.");
       return;
     }
 
-    console.log('🔍 Usuario encontrado:', this.usuario);
-    console.log('🔍 Rol:', this.usuario.rol.nombre);
-    console.log('🔍 ID Usuario:', this.usuario.id_usuario);
+    // Usuario encontrado
+    // Rol
+    // ID Usuario
 
     this.reingresoService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).subscribe({
       next: (data) => {
-        console.log('📡 Respuesta del backend (raw):', data);
-        console.log('📡 Tipo de respuesta:', typeof data);
-        console.log('📡 Es array:', Array.isArray(data));
-        console.log('📡 Longitud:', data?.length);
+        // Respuesta del backend (raw)
 
         if (!data || !Array.isArray(data)) {
-          console.warn('⚠️ La respuesta no es un array válido');
+          console.warn('La respuesta no es un array válido');
           this.solicitudes = [];
           this.solicitudesCompletas = [];
           return;
@@ -213,7 +209,7 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.solicitudesCompletas = data;
 
         this.solicitudes = data.map((sol: any) => {
-          console.log('🔍 Procesando solicitud:', sol);
+          // Procesando solicitud
 
           const estados = sol.estado_actual || sol.estadosSolicitud || [];
           const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
@@ -230,18 +226,17 @@ export class ReingresoEstudianteComponent implements OnInit {
             esSeleccionado: sol.esSeleccionado || false
           };
 
-          console.log('✅ Solicitud transformada:', solicitudTransformada);
+          // Solicitud transformada
           return solicitudTransformada;
         });
 
-        console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
-        console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
+        // Solicitudes cargadas (transformadas)
       },
       error: (err) => {
-        console.error('❌ Error al listar solicitudes', err);
-        console.error('❌ Status:', err.status);
-        console.error('❌ Message:', err.message);
-        console.error('❌ Error completo:', err);
+        console.error('Error al listar solicitudes', err);
+        console.error('Status:', err.status);
+        console.error('Message:', err.message);
+        console.error('Error completo:', err);
       }
     });
   }
@@ -294,9 +289,7 @@ export class ReingresoEstudianteComponent implements OnInit {
    * Método de prueba para verificar el funcionamiento
    */
   verificarFuncionalidadComentarios(): void {
-    console.log('🔍 Verificando funcionalidad de comentarios...');
-    console.log('📋 Solicitudes completas:', this.solicitudesCompletas);
-    console.log('📋 Solicitudes transformadas:', this.solicitudes);
+    // Verificando funcionalidad de comentarios
   }
 
   /**

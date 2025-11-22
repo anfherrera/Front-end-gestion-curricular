@@ -62,7 +62,7 @@
 //     const usuario = this.authService.getUsuario();
 
 //     if (!usuario) {
-//       alert('⚠️ No se encontró información del usuario. Inicia sesión nuevamente.');
+//       alert('No se encontró información del usuario. Inicia sesión nuevamente.');
 //       return;
 //     }
 
@@ -75,15 +75,15 @@
 
 //     this.homologacionService.crearSolicitud(formData).subscribe({
 //       next: (res) => {
-//         alert('✅ Solicitud enviada correctamente');
+//         alert('Solicitud enviada correctamente');
 //         this.resetFileUpload = true;
 //         this.archivosActuales = [];
 //         this.cargarSolicitudes();
 //       },
 //       error: (err) => {
-//         console.error('❌ Error al crear solicitud:', err);
+//         console.error('Error al crear solicitud:', err);
 //         const msg = err?.error?.['objUsuario.password'] || 'Error al enviar la solicitud';
-//         alert('⚠️ ' + msg);
+//         alert(msg);
 //       }
 //     });
 //   }
@@ -95,7 +95,7 @@
 //         this.solicitudes = res;
 //       },
 //       error: (err) => {
-//         console.error('❌ Error al cargar solicitudes:', err);
+//         console.error('Error al cargar solicitudes:', err);
 //       }
 //     });
 //   }
@@ -135,7 +135,7 @@
 
 //   archivosExclusivos: string[] = ['Documento A', 'Documento B'];
 
-//   archivosActuales: Archivo[] = [];  // ✅ importante: usar Archivo[] y no File[]
+//   archivosActuales: Archivo[] = [];  // importante: usar Archivo[] y no File[]
 //   resetFileUpload = false;
 
 //   solicitudes: any[] = []; // Aquí irán tus solicitudes
@@ -215,13 +215,13 @@
 //   constructor(private http: HttpClient) {}
 
 //   ngOnInit(): void {
-//     // 🔑 Recuperamos usuario del localStorage
+//     // Recuperamos usuario del localStorage
 //     const usuarioLS = localStorage.getItem('usuario');
 //     if (usuarioLS) {
 //       this.usuario = JSON.parse(usuarioLS);
 //       console.log('👤 Usuario cargado desde localStorage:', this.usuario);
 //     } else {
-//       console.warn('⚠️ No se encontró usuario en localStorage');
+//       console.warn('No se encontró usuario en localStorage');
 //     }
 //   }
 
@@ -239,14 +239,14 @@
 //   // Lógica para enviar la solicitud
 //   onSolicitudEnviada() {
 //     if (!this.usuario) {
-//       console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+//       console.error('No se puede enviar solicitud: usuario no encontrado.');
 //       return;
 //     }
 
 //     console.log('🚀 Enviando solicitud con archivos:', this.archivosActuales);
 
 //     const solicitud = {
-//       usuarioId: this.usuario.id, // 🔑 dinámico
+//       usuarioId: this.usuario.id, // dinámico
 //       nombreUsuario: this.usuario.nombre,
 //       correo: this.usuario.correo,
 //       fecha: new Date(),
@@ -255,7 +255,7 @@
 
 //     this.http.post('/api/solicitudes/homologacion', solicitud).subscribe({
 //       next: (resp) => {
-//         console.log('✅ Solicitud creada en backend:', resp);
+//         console.log('Solicitud creada en backend:', resp);
 
 //         this.solicitudes.push({
 //           estado: 'Enviado',
@@ -269,7 +269,7 @@
 //         setTimeout(() => this.resetFileUpload = false, 0);
 //       },
 //       error: (err) => {
-//         console.error('❌ Error al enviar solicitud', err);
+//         console.error('Error al enviar solicitud', err);
 //       }
 //     });
 //   }
@@ -343,9 +343,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
-      console.log('👤 Usuario cargado desde localStorage:', this.usuario);
+      // Usuario cargado desde localStorage
     } else {
-      console.warn('⚠️ No se encontró usuario en localStorage');
+      console.warn('No se encontró usuario en localStorage');
     }
 
     // Listar solicitudes existentes al cargar el componente
@@ -381,21 +381,21 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
   onSolicitudEnviada() {
   if (!this.usuario) {
-    console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+    console.error('No se puede enviar solicitud: usuario no encontrado.');
     return;
   }
 
     if (!this.fileUploadComponent) {
-      console.error('❌ No se puede acceder al componente de archivos.');
+      console.error('No se puede acceder al componente de archivos.');
       return;
     }
 
-    console.log('📤 Iniciando proceso de envío de solicitud...');
+    // Iniciando proceso de envío de solicitud
 
     // Paso 1: Subir archivos al backend
     this.fileUploadComponent.subirArchivosPendientes().subscribe({
       next: (archivosSubidos) => {
-        console.log('✅ Archivos subidos correctamente:', archivosSubidos);
+        // Archivos subidos correctamente
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
   const solicitud = {
@@ -406,7 +406,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
       nombre_completo: this.usuario.nombre_completo,
       codigo: this.usuario.codigo,
       correo: this.usuario.correo || this.usuario.email_usuario,
-      // ✅ FIX: Agregar id_rol e id_programa como campos requeridos por el backend
+      // FIX: Agregar id_rol e id_programa como campos requeridos por el backend
       id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
       id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
       objPrograma: this.usuario.objPrograma || {
@@ -417,34 +417,33 @@ export class HomologacionAsignaturasComponent implements OnInit {
           archivos: archivosSubidos
   };
 
-        console.log('📋 Creando solicitud con archivos:', solicitud);
-        console.log('👤 Usuario completo:', this.usuario);
+        // Creando solicitud con archivos
 
   this.homologacionService.crearSolicitud(solicitud).subscribe({
     next: (resp) => {
-      console.log('✅ Solicitud creada en backend:', resp);
+      // Solicitud creada en backend
       this.listarSolicitudes();
 
       // Resetear el file upload
       this.resetFileUpload = true;
       setTimeout(() => this.resetFileUpload = false, 0);
 
-            this.mostrarMensaje('🎉 ¡Solicitud de homologación enviada correctamente!', 'success');
+            this.mostrarMensaje('¡Solicitud de homologación enviada correctamente!', 'success');
     },
     error: (err) => {
-            console.error('❌ Error al crear solicitud:', err);
+            console.error('Error al crear solicitud:', err);
       if (err.status === 400) {
-              this.mostrarMensaje('⚠️ Error de validación: revisa los datos de la solicitud', 'warning');
+              this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
       }
       if (err.status === 401) {
-              this.mostrarMensaje('⚠️ Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+              this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
             }
           }
         });
       },
       error: (err) => {
-        console.error('❌ Error al subir archivos:', err);
-        this.mostrarMensaje('❌ Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        console.error('Error al subir archivos:', err);
+        this.mostrarMensaje('Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
         
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
@@ -459,13 +458,13 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
 listarSolicitudes() {
   if (!this.usuario) {
-    console.error("❌ Usuario no encontrado en localStorage.");
+    console.error("Usuario no encontrado en localStorage.");
     return;
   }
 
-  console.log('🔍 Usuario encontrado:', this.usuario);
-  console.log('🔍 Rol:', this.usuario.rol.nombre);
-  console.log('🔍 ID Usuario:', this.usuario.id_usuario);
+  // Usuario encontrado
+  // Rol
+  // ID Usuario
 
   this.homologacionService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).subscribe({
     next: (data) => {

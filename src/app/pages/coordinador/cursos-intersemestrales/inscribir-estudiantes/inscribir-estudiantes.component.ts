@@ -106,37 +106,34 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarCursos(): void {
     this.cargando = true;
-    console.log('🔄 Cargando cursos para inscripción (funcionarios/coordinadores)...');
-    console.log('🔍 Usuario actual:', this.cursosService);
+    // Cargando cursos para inscripción
     
     // Para funcionarios/coordinadores, usar el endpoint que obtiene todos los cursos
     this.cursosService.getTodosLosCursosParaFuncionarios().subscribe({
       next: (response) => {
-        console.log('✅ Respuesta recibida del backend:', response);
-        console.log('🔍 Tipo de respuesta:', typeof response);
+        // Respuesta recibida del backend
         
         // El backend devuelve { value: [...], Count: n }
         let cursos = response;
         if (response && (response as any).value) {
           cursos = (response as any).value;
-          console.log('🔍 Cursos extraídos de response.value:', cursos);
+          // Cursos extraídos de response.value
         }
         
-        console.log('🔍 Cantidad de cursos:', cursos?.length);
+        // Cantidad de cursos
         
         if (cursos && cursos.length > 0) {
           // Filtrar solo cursos en estado "Inscripcion" (sin tilde, como viene del backend)
           this.cursos = cursos.filter((c: any) => c.estado === 'Inscripcion');
-          console.log('✅ Cursos en estado "Inscripcion":', this.cursos);
-          console.log('🔍 Cantidad de cursos filtrados:', this.cursos.length);
+          // Cursos en estado "Inscripcion"
           
           // Si no hay cursos filtrados, mostrar todos los cursos disponibles
           if (this.cursos.length === 0) {
-            console.log('⚠️ No hay cursos en estado "Inscripcion", mostrando todos los cursos');
+            // No hay cursos en estado "Inscripcion", mostrando todos los cursos
             this.cursos = cursos;
           }
         } else {
-          console.log('⚠️ No hay cursos del backend');
+          // No hay cursos del backend
           this.cursos = [];
           
           // Mostrar mensaje informativo al usuario
@@ -152,14 +149,14 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando cursos:', err);
-        console.error('❌ Detalles del error:', {
+        console.error('Error cargando cursos:', err);
+        console.error('Detalles del error:', {
           status: err.status,
           statusText: err.statusText,
           message: err.message,
           url: err.url
         });
-        console.log('🔄 Error al cargar cursos del backend');
+        // Error al cargar cursos del backend
         this.cursos = [];
         
         // Mostrar mensaje de error al usuario
@@ -178,24 +175,15 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarEstudiantesElegibles(cursoId: number): void {
     this.cargando = true;
-    console.log(`🔄 Cargando estudiantes elegibles para curso ID: ${cursoId}`);
+    // Cargando estudiantes elegibles para curso
     
     // Buscar el curso seleccionado
     this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
-    console.log('📍 Curso seleccionado:', this.cursoSeleccionado);
     
-    // 🆕 Usar el nuevo endpoint que filtra automáticamente estudiantes con pago validado
+    // Usar el nuevo endpoint que filtra automáticamente estudiantes con pago validado
     this.cursosService.getEstudiantesElegibles(cursoId).subscribe({
       next: (estudiantes) => {
-        console.log('✅ Estudiantes elegibles recibidos del backend:', estudiantes);
-        console.log('🔍 Estructura de primer estudiante:', estudiantes[0]);
-        if (estudiantes[0]) {
-          console.log('🔍 Campos disponibles en estudiante:', Object.keys(estudiantes[0]));
-          console.log('🔍 Nombre completo:', estudiantes[0].nombre_completo);
-          console.log('🔍 Código:', estudiantes[0].codigo);
-          console.log('🔍 Tipo solicitud:', estudiantes[0].tipo_solicitud);
-          console.log('🔍 Tiene inscripción formal:', estudiantes[0].tiene_inscripcion_formal);
-        }
+        // Estudiantes elegibles recibidos del backend
         
         // Normalizar estado: usar estado_inscripcion o, si no viene, estado_actual
         const normalizados = estudiantes.map((e: any) => ({
@@ -206,11 +194,11 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.estudiantesElegibles = normalizados;
         // Mostrar como elegibles únicamente los que no están rechazados
         this.estudiantesFiltrados = this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado');
-        console.log('✅ Estudiantes elegibles cargados para curso', cursoId, ':', this.estudiantesElegibles);
+        // Estudiantes elegibles cargados para curso
         
         // Si no hay estudiantes elegibles, mostrar mensaje informativo
         if (this.estudiantesFiltrados.length === 0) {
-          console.log('⚠️ No hay estudiantes elegibles - todos deben tener preinscripción aprobada y pago validado');
+          // No hay estudiantes elegibles - todos deben tener preinscripción aprobada y pago validado
           this.estudiantesFiltrados = [];
           
           // Mostrar mensaje informativo al usuario
@@ -227,14 +215,14 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando estudiantes elegibles:', err);
-        console.error('❌ Detalles del error:', {
+        console.error('Error cargando estudiantes elegibles:', err);
+        console.error('Detalles del error:', {
           status: err.status,
           statusText: err.statusText,
           message: err.message,
           url: err.url
         });
-        console.log('🔄 Mostrando lista vacía debido al error');
+        // Mostrando lista vacía debido al error
         this.estudiantesFiltrados = [];
         this.cargando = false;
         
@@ -248,15 +236,15 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   cargarEstadisticas(idCurso: number): void {
-    console.log(`📊 Cargando estadísticas para curso ID: ${idCurso}`);
+    // Cargando estadísticas para curso
     
     this.cursosService.obtenerEstadisticasCurso(idCurso).subscribe({
       next: (stats) => {
-        console.log('📊 Estadísticas recibidas:', stats);
+        // Estadísticas recibidas
         this.estadisticas = stats;
       },
       error: (error) => {
-        console.error('❌ Error cargando estadísticas:', error);
+        console.error('Error cargando estadísticas:', error);
         this.estadisticas = null;
       }
     });

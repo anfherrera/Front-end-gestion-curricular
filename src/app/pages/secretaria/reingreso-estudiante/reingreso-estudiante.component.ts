@@ -138,7 +138,7 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.cargandoSolicitudesAprobadas = false;
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes de reingreso aprobadas:', err);
+        console.error('Error al cargar solicitudes de reingreso aprobadas:', err);
         this.snackBar.open('Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
         this.cargandoSolicitudesAprobadas = false;
       }
@@ -160,8 +160,8 @@ export class ReingresoEstudianteComponent implements OnInit {
     this.reingresoService.getSecretariaRequests().subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
-        console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
-        console.log('🧹 Estado limpiado para nueva solicitud');
+        // Solicitud seleccionada
+        // Estado limpiado para nueva solicitud
       }
     });
   }
@@ -181,14 +181,11 @@ export class ReingresoEstudianteComponent implements OnInit {
     if (!this.selectedSolicitud) return;
 
     this.loading = true;
-    console.log('📄 Generando documento:', request);
-    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
-    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
-    console.log('👤 Datos del estudiante en request:', request.datosSolicitud);
+    // Generando documento
 
     this.documentGeneratorService.generarDocumento(request).subscribe({
       next: (blob) => {
-        console.log('✅ Documento generado exitosamente');
+        // Documento generado exitosamente
 
         // Generar nombre de archivo
         const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
@@ -202,10 +199,10 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.snackBar.open('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
         this.loading = false;
 
-        console.log('✅ Documento generado, estado de solicitud NO cambiado aún');
+        // Documento generado, estado de solicitud NO cambiado aún
       },
       error: (err: any) => {
-        console.error('❌ Error al generar documento:', err);
+        console.error('Error al generar documento:', err);
         this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
@@ -218,7 +215,7 @@ export class ReingresoEstudianteComponent implements OnInit {
   onCancelarGeneracion(): void {
     this.limpiarEstado();
     this.selectedSolicitud = undefined;
-    console.log('❌ Generación de documento cancelada');
+    // Generación de documento cancelada
   }
 
   /**
@@ -258,7 +255,7 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.subiendoPDF = false;
       },
       error: (err) => {
-        console.error('❌ Error al subir archivo PDF:', err);
+        console.error('Error al subir archivo PDF:', err);
         this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
@@ -360,7 +357,7 @@ export class ReingresoEstudianteComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('❌ Error al subir archivo PDF:', err);
+        console.error('Error al subir archivo PDF:', err);
         this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
