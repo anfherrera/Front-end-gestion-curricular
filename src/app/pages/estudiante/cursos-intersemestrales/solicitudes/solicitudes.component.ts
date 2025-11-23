@@ -13,6 +13,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
+import { NotificacionesService } from '../../../../core/services/notificaciones.service';
 
 @Component({
   selector: 'app-solicitudes',
@@ -35,7 +36,8 @@ export class SolicitudesComponent implements OnInit {
     private fb: FormBuilder,
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private notificacionesService: NotificacionesService
   ) {
     console.log('✅ SOLICITUDES COMPONENT CARGADO - Formulario para solicitar curso nuevo');
   }
@@ -134,6 +136,12 @@ export class SolicitudesComponent implements OnInit {
           this.solicitudEnviada = true;
           this.solicitudForm.reset();
           this.loadUserData(); // Recargar datos del usuario
+          
+          // Actualizar notificaciones después de crear la solicitud
+          if (this.usuario?.id_usuario) {
+            this.notificacionesService.actualizarNotificaciones(this.usuario.id_usuario);
+          }
+          
           this.snackBar.open('¡Solicitud enviada exitosamente!', 'Cerrar', {
             duration: 5000,
             panelClass: ['success-snackbar']

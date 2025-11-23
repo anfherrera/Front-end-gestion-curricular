@@ -36,9 +36,7 @@ export class PreinscripcionDialogComponent implements OnInit {
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
     private snackBar: MatSnackBar
-  ) {
-    // PREINSCRIPCION DIALOG CARGADO para curso
-  }
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -56,19 +54,13 @@ export class PreinscripcionDialogComponent implements OnInit {
 
   private loadUserData(): void {
     this.usuario = this.authService.getUsuario();
-    console.log('👤 Usuario cargado en preinscripción:', this.usuario);
     if (this.usuario) {
-      // Usar los campos correctos del usuario
       const nombreCompleto = this.usuario.nombre_completo || `${this.usuario.nombre || ''} ${this.usuario.apellido || ''}`.trim();
       const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || '';
-      // Datos del usuario
       this.preinscripcionForm.patchValue({
         nombreCompleto: nombreCompleto,
         codigo: codigo
       });
-      // Formulario de preinscripción actualizado con datos del usuario
-    } else {
-      // No se encontró usuario logueado
     }
   }
 
@@ -76,11 +68,8 @@ export class PreinscripcionDialogComponent implements OnInit {
     this.cursosService.getCondicionesSolicitud().subscribe({
       next: (condiciones) => {
         this.condiciones = condiciones;
-        // Condiciones cargadas
       },
       error: (error) => {
-        console.error('Error cargando condiciones:', error);
-        // Si falla, usar las condiciones por defecto
         this.condiciones = [
           CondicionSolicitudVerano.Primera_Vez,
           CondicionSolicitudVerano.Habilitacion,
@@ -109,12 +98,10 @@ export class PreinscripcionDialogComponent implements OnInit {
             duration: 5000,
             panelClass: ['success-snackbar']
           });
-          // Preinscripción creada
-          this.dialogRef.close(true); // Cerrar con éxito
+          this.dialogRef.close(true);
         },
         error: (error) => {
           this.loading = false;
-          console.error('Error enviando preinscripción:', error);
           
           // Manejar diferentes tipos de errores
           let mensaje = 'Error al enviar la preinscripción. Inténtalo de nuevo.';
@@ -166,18 +153,15 @@ export class PreinscripcionDialogComponent implements OnInit {
     }
   }
 
-  // Obtener nombre del docente de forma segura
   obtenerNombreDocente(curso: CursoOfertadoVerano): string {
     if (!curso.objDocente) {
       return 'Sin asignar';
     }
     
-    // Priorizar nombre_docente (estructura del backend)
     if ((curso.objDocente as any).nombre_docente) {
       return (curso.objDocente as any).nombre_docente;
     }
     
-    // Fallback a nombre y apellido (estructura legacy)
     if (curso.objDocente.nombre && curso.objDocente.apellido) {
       return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
     }

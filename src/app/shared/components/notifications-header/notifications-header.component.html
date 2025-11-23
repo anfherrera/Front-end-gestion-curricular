@@ -3,10 +3,11 @@
   
   <!-- Botón del icono de notificaciones con badge -->
   <button mat-icon-button 
+          #menuTrigger="matMenuTrigger"
           [matMenuTriggerFor]="notificationsMenu"
           matTooltip="Notificaciones"
           class="notifications-button"
-          (click)="actualizarManual()">
+          (click)="actualizarManual(); $event.stopPropagation()">
     
     <!-- Icono de notificaciones -->
     <mat-icon class="notification-icon">notifications</mat-icon>
@@ -14,13 +15,15 @@
     <!-- Badge con contador de no leídas -->
     <span class="notification-badge" 
           *ngIf="totalNoLeidas > 0"
-          [class.urgent]="tieneNotificacionesUrgentes()">
+          [class.urgent]="tieneNotificacionesUrgentes()"
+          [attr.data-count]="totalNoLeidas"
+          [title]="'Tienes ' + totalNoLeidas + ' notificaciones no leídas'">
       {{ totalNoLeidas > 99 ? '99+' : totalNoLeidas }}
     </span>
   </button>
 
   <!-- Menú dropdown de notificaciones -->
-  <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+  <mat-menu #notificationsMenu="matMenu" class="notifications-menu" (menuOpened)="onMenuOpened()">
     
     <!-- Header del menú -->
     <div class="menu-header">
@@ -62,21 +65,23 @@
         <div class="notification-item" 
              *ngFor="let notificacion of notificaciones; trackBy: trackByNotificationId"
              [class.urgent]="notificacion.esUrgente"
-             (click)="navegarANotificacion(notificacion)">
+             [class.unread]="!notificacion.leida"
+             (click)="navegarANotificacion(notificacion, $event)">
           
           <!-- Icono de la notificación -->
           <div class="notification-icon-container">
             <mat-icon [style.color]="getColorPorTipo(notificacion.tipoSolicitud)"
                       class="notification-type-icon">
-              {{ getIconoPorTipo(notificacion.tipoSolicitud) }}
+              {{ getIconoPorTipo(notificacion.tipoNotificacion) }}
             </mat-icon>
+            <div class="unread-dot" *ngIf="!notificacion.leida"></div>
           </div>
 
           <!-- Contenido de la notificación -->
           <div class="notification-content">
             <div class="notification-header">
-              <h4 class="notification-title">{{ notificacion.titulo }}</h4>
-              <span class="notification-time">{{ notificacion.tiempoTranscurrido }}</span>
+              <h4 class="notification-title" [class.unread-title]="!notificacion.leida">{{ notificacion.titulo }}</h4>
+              <span class="notification-time">{{ notificacion.tiempoTranscurrido || notificacion.fechaCreacion }}</span>
             </div>
             
             <p class="notification-message">{{ notificacion.mensaje }}</p>
@@ -85,13 +90,8 @@
               <mat-chip class="category-chip" 
                         [style.background-color]="getColorPorTipo(notificacion.tipoSolicitud) + '20'"
                         [style.color]="getColorPorTipo(notificacion.tipoSolicitud)">
-                {{ getCategoriaDisplay(notificacion.categoria) }}
+                {{ getCategoriaDisplay(notificacion.tipoSolicitud) }}
               </mat-chip>
-              
-              <span class="notification-action" 
-                    *ngIf="notificacion.accion">
-                {{ getAccionDisplay(notificacion.accion) }}
-              </span>
             </div>
           </div>
 

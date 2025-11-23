@@ -1,39 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, interval, Subscription, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-
-export interface Notificacion {
-  id: number;
-  id_notificacion?: number;
-  titulo: string;
-  mensaje: string;
-  tipoSolicitud: string;
-  tipoNotificacion: string;
-  fechaCreacion: string;
-  esUrgente: boolean;
-  accion: string;
-  urlAccion: string;
-  categoria: string;
-  icono: string;
-  color: string;
-  tiempoTranscurrido: string;
-  leida?: boolean;
-}
-
-export interface NotificacionesResponse {
-  totalNoLeidas: number;
-  cursosVeranoNoLeidas: number;
-  notificaciones: Notificacion[];
-  categorias: {
-    CURSO_VERANO: number;
-    ECAES: number;
-    REINGRESO: number;
-    HOMOLOGACION: number;
-    PAZ_SALVO: number;
-  };
-}
+import {
+  NotificacionDTORespuesta,
+  NotificacionDTOPeticion,
+  Notificacion,
+  NotificacionesResponse
+} from '../models/notificaciones.model';
+import { enrichNotificaciones } from '../utils/notificaciones.util';
 
 @Injectable({
   providedIn: 'root'
@@ -42,54 +18,211 @@ export class NotificacionesService {
   private apiUrl = `${environment.apiUrl}/notificaciones`;
   private notificacionesSubject = new BehaviorSubject<NotificacionesResponse | null>(null);
   public notificaciones$ = this.notificacionesSubject.asObservable();
+  private pollingSubscription?: Subscription;
+  private currentUserId?: number;
 
   constructor(private http: HttpClient) {}
 
+  // ===== ENDPOINTS PRINCIPALES =====
+
+  /**
+   * Crear notificación manualmente
+   */
+  crearNotificacion(notificacion: NotificacionDTOPeticion): Observable<NotificacionDTORespuesta> {
+    return this.http.post<NotificacionDTORespuesta>(`${this.apiUrl}/crear`, notificacion)
+      .pipe(
+        tap((response) => {
+          const userId = notificacion.idUsuario || this.currentUserId;
+          if (userId) {
+            setTimeout(() => {
+              this.actualizarNotificaciones(userId);
+            }, 500);
+          }
+        }),
+        catchError((error) => {
+          return this.handleError(error);
+        })
+      );
+  }
+
+  /**
+   * Obtener todas las notificaciones de un usuario
+   */
+  obtenerNotificacionesPorUsuario(idUsuario: number): Observable<NotificacionDTORespuesta[]> {
+    return this.http.get<NotificacionDTORespuesta[]>(`${this.apiUrl}/usuario/${idUsuario}`)
+      .pipe(
+        catchError((error) => {
+          if (error.status === 403) {
+            return of([]);
+          }
+          return this.handleError(error);
+        })
+      );
+  }
+
+  /**
+   * Obtener notificaciones no leídas de un usuario
+   */
+  obtenerNotificacionesNoLeidas(idUsuario: number): Observable<NotificacionDTORespuesta[]> {
+    const url = `${this.apiUrl}/usuario/${idUsuario}/no-leidas`;
+    return this.http.get<NotificacionDTORespuesta[]>(url)
+      .pipe(
+        catchError((error) => {
+          if (error.status === 403) {
+            return of([]);
+          }
+          return this.handleError(error);
+        })
+      );
+  }
+
+  /**
+   * Obtener notificaciones urgentes de un usuario
+   */
+  obtenerNotificacionesUrgentes(idUsuario: number): Observable<NotificacionDTORespuesta[]> {
+    return this.http.get<NotificacionDTORespuesta[]>(`${this.apiUrl}/usuario/${idUsuario}/urgentes`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Contar notificaciones no leídas
+   */
+  contarNotificacionesNoLeidas(idUsuario: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/usuario/${idUsuario}/contar-no-leidas`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Obtener notificaciones por tipo de solicitud
+   */
+  obtenerNotificacionesPorTipoSolicitud(tipoSolicitud: string): Observable<NotificacionDTORespuesta[]> {
+    return this.http.get<NotificacionDTORespuesta[]>(`${this.apiUrl}/tipo-solicitud/${tipoSolicitud}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Obtener notificaciones por solicitud
+   */
+  obtenerNotificacionesPorSolicitud(idSolicitud: number): Observable<NotificacionDTORespuesta[]> {
+    return this.http.get<NotificacionDTORespuesta[]>(`${this.apiUrl}/solicitud/${idSolicitud}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Obtener notificación por ID
+   */
+  obtenerNotificacionPorId(idNotificacion: number): Observable<NotificacionDTORespuesta> {
+    return this.http.get<NotificacionDTORespuesta>(`${this.apiUrl}/${idNotificacion}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Marcar notificación como leída
+   */
+  marcarNotificacionLeida(idNotificacion: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${idNotificacion}/marcar-leida`, {})
+      .pipe(
+        tap(() => {
+          // Actualizar estado local
+          if (this.currentUserId) {
+            this.actualizarNotificaciones(this.currentUserId);
+          }
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Marcar todas las notificaciones como leídas
+   */
+  marcarTodasComoLeidas(idUsuario: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/usuario/${idUsuario}/marcar-todas-leidas`, {})
+      .pipe(
+        tap(() => {
+          // Actualizar estado local
+          this.actualizarNotificaciones(idUsuario);
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  // ===== MÉTODOS COMPATIBLES CON CÓDIGO EXISTENTE =====
+
   /**
    * Obtiene las notificaciones del header para un usuario específico
+   * Compatible con el código existente
    */
   obtenerNotificacionesHeader(idUsuario: number): Observable<NotificacionesResponse> {
-    // Notificaciones deshabilitadas - retornar vacío
-    const notificacionesVacias: NotificacionesResponse = {
-      totalNoLeidas: 0,
-      cursosVeranoNoLeidas: 0,
-      notificaciones: [],
-      categorias: {
-        CURSO_VERANO: 0,
-        ECAES: 0,
-        REINGRESO: 0,
-        HOMOLOGACION: 0,
-        PAZ_SALVO: 0
-      }
-    };
-
     return new Observable(observer => {
-      observer.next(notificacionesVacias);
-      observer.complete();
+      this.obtenerNotificacionesNoLeidas(idUsuario).subscribe({
+        next: (notificaciones) => {
+          const notificacionesEnriquecidas = enrichNotificaciones(notificaciones);
+          
+          // Calcular categorías
+          const categorias = {
+            CURSO_VERANO: 0,
+            ECAES: 0,
+            REINGRESO: 0,
+            HOMOLOGACION: 0,
+            PAZ_SALVO: 0
+          };
+
+          notificacionesEnriquecidas.forEach(notif => {
+            const tipo = notif.tipoSolicitud;
+            if (tipo === 'CURSO_VERANO_PREINSCRIPCION' || tipo === 'CURSO_VERANO_INSCRIPCION') {
+              categorias.CURSO_VERANO++;
+            } else if (tipo === 'ECAES') {
+              categorias.ECAES++;
+            } else if (tipo === 'REINGRESO') {
+              categorias.REINGRESO++;
+            } else if (tipo === 'HOMOLOGACION') {
+              categorias.HOMOLOGACION++;
+            } else if (tipo === 'PAZ_Y_SALVO') {
+              categorias.PAZ_SALVO++;
+            }
+          });
+
+          const cursosVeranoNoLeidas = categorias.CURSO_VERANO;
+
+          const response: NotificacionesResponse = {
+            totalNoLeidas: notificacionesEnriquecidas.length,
+            cursosVeranoNoLeidas,
+            notificaciones: notificacionesEnriquecidas,
+            categorias
+          };
+
+          this.notificacionesSubject.next(response);
+          observer.next(response);
+          observer.complete();
+        },
+        error: (error) => {
+          // Retornar respuesta vacía en caso de error
+          const emptyResponse: NotificacionesResponse = {
+            totalNoLeidas: 0,
+            cursosVeranoNoLeidas: 0,
+            notificaciones: [],
+            categorias: {
+              CURSO_VERANO: 0,
+              ECAES: 0,
+              REINGRESO: 0,
+              HOMOLOGACION: 0,
+              PAZ_SALVO: 0
+            }
+          };
+          this.notificacionesSubject.next(emptyResponse);
+          observer.next(emptyResponse);
+          observer.complete();
+        }
+      });
     });
   }
 
   /**
    * Marca todas las notificaciones como leídas para un usuario
+   * Compatible con el código existente
    */
   marcarNotificacionesComoLeidas(idUsuario: number): Observable<any> {
-    // Marcando notificaciones como leídas
-    
-    return this.http.put(`${this.apiUrl}/header/${idUsuario}/marcar-leidas`, {})
-      .pipe(
-        tap(response => {
-          // Notificaciones marcadas como leídas
-          // Actualizar el estado local
-          const currentNotificaciones = this.notificacionesSubject.value;
-          if (currentNotificaciones) {
-            currentNotificaciones.totalNoLeidas = 0;
-            currentNotificaciones.notificaciones.forEach(notif => {
-              // Aquí podrías marcar individualmente como leídas si el backend lo soporta
-            });
-            this.notificacionesSubject.next(currentNotificaciones);
-          }
-        })
-      );
+    return this.marcarTodasComoLeidas(idUsuario);
   }
 
   /**
@@ -103,21 +236,14 @@ export class NotificacionesService {
    * Actualiza manualmente las notificaciones (útil para refresh)
    */
   actualizarNotificaciones(idUsuario: number): void {
-    this.obtenerNotificacionesHeader(idUsuario).subscribe({
-      next: () => {
-        // Notificaciones actualizadas manualmente
-      },
-      error: (error) => {
-        console.error('[NOTIFICACIONES] Error al actualizar notificaciones:', error);
-      }
-    });
+    this.currentUserId = idUsuario;
+    this.obtenerNotificacionesHeader(idUsuario).subscribe();
   }
 
   /**
    * Obtiene notificaciones del dashboard (compatible con código existente)
    */
   getDashboardNotificaciones(idUsuario: number): Observable<any> {
-    // Obteniendo notificaciones del dashboard
     return this.obtenerNotificacionesHeader(idUsuario);
   }
 
@@ -141,28 +267,24 @@ export class NotificacionesService {
    * Inicia el polling de notificaciones (compatible con código existente)
    */
   iniciarPolling(idUsuario: number, intervalo: number = 30000): void {
-    // Iniciando polling de notificaciones
+    this.currentUserId = idUsuario;
     
-    // Cargar notificaciones inmediatamente
+    this.detenerPolling();
+    
     this.actualizarNotificaciones(idUsuario);
     
-    // Configurar polling periódico
-    const interval = setInterval(() => {
+    this.pollingSubscription = interval(intervalo).subscribe(() => {
       this.actualizarNotificaciones(idUsuario);
-    }, intervalo);
-    
-    // Almacenar el intervalo para poder limpiarlo después
-    (this as any).pollingInterval = interval;
+    });
   }
 
   /**
    * Detiene el polling de notificaciones
    */
   detenerPolling(): void {
-    if ((this as any).pollingInterval) {
-      clearInterval((this as any).pollingInterval);
-      (this as any).pollingInterval = null;
-      // Polling detenido
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+      this.pollingSubscription = undefined;
     }
   }
 
@@ -174,21 +296,22 @@ export class NotificacionesService {
   }
 
   /**
-   * Marca una notificación individual como leída
+   * Marca una notificación individual como leída (compatible con código existente)
    */
-  marcarNotificacionLeida(idNotificacion: number): Observable<any> {
-    // Marcando notificación como leída
-    return this.http.put(`${this.apiUrl}/notificaciones/${idNotificacion}/marcar-leida`, {});
+  marcarNotificacionLeidaCompatible(idNotificacion: number): Observable<any> {
+    return this.marcarNotificacionLeida(idNotificacion);
   }
 
   /**
-   * Obtiene el icono por tipo de notificación
+   * Obtiene el icono por tipo de notificación (compatible con código existente)
    */
   getIconoTipo(tipoNotificacion: string): string {
     const iconos: { [key: string]: string } = {
-      'APROBADO': 'check_circle',
-      'RECHAZADO': 'cancel',
-      'PENDIENTE': 'schedule',
+      'APROBADA': 'check_circle',
+      'RECHAZADA': 'cancel',
+      'ENVIADA': 'send',
+      'CAMBIO_ESTADO': 'update',
+      'NUEVA_SOLICITUD': 'add_circle',
       'URGENTE': 'priority_high',
       'INFORMACION': 'info'
     };
@@ -196,32 +319,45 @@ export class NotificacionesService {
   }
 
   /**
-   * Obtiene el color por tipo de notificación
+   * Obtiene el color por tipo de notificación (compatible con código existente)
    */
   getColorTipo(tipoNotificacion: string): string {
     const colores: { [key: string]: string } = {
-      'APROBADO': '#4caf50', // Verde
-      'RECHAZADO': '#f44336', // Rojo
-      'PENDIENTE': '#ff9800', // Naranja
-      'URGENTE': '#e91e63', // Rosa
-      'INFORMACION': '#2196f3' // Azul
+      'APROBADA': '#4caf50',
+      'RECHAZADA': '#f44336',
+      'ENVIADA': '#2196f3',
+      'CAMBIO_ESTADO': '#ff9800',
+      'NUEVA_SOLICITUD': '#2196f3',
+      'URGENTE': '#e91e63',
+      'INFORMACION': '#2196f3'
     };
     return colores[tipoNotificacion] || '#666666';
   }
 
   /**
-   * Crea una notificación de prueba para un usuario
+   * Crea una notificación de prueba para un usuario (compatible con código existente)
    */
   crearNotificacionPrueba(idUsuario: number): Observable<any> {
-    // Creando notificación de prueba
+    const notificacionPrueba: NotificacionDTOPeticion = {
+      tipoSolicitud: 'ECAES',
+      tipoNotificacion: 'NUEVA_SOLICITUD',
+      titulo: 'Notificación de prueba',
+      mensaje: 'Esta es una notificación de prueba generada automáticamente.',
+      idUsuario,
+      esUrgente: false
+    };
     
-    return this.http.post(`${this.apiUrl}/prueba/${idUsuario}`, {})
-      .pipe(
-        tap(response => {
-          // Notificación de prueba creada
-          // Actualizar las notificaciones después de crear la de prueba
-          this.actualizarNotificaciones(idUsuario);
-        })
-      );
+    return this.crearNotificacion(notificacionPrueba);
   }
+
+  // ===== MANEJO DE ERRORES =====
+
+  private handleError = (error: any): Observable<never> => {
+    if (error.status === 401) {
+      // Token expirado, redirigir al login
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    throw error;
+  };
 }

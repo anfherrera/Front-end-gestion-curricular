@@ -266,9 +266,9 @@
                   <mat-icon>check_circle</mat-icon>
                   <span class="estado-nombre">Aprobada</span>
                 </div>
-                <div class="estado-valor">{{ data?.estadosSolicitudes?.APROBADA || 0 }}</div>
-                <div class="estado-porcentaje" *ngIf="data?.resumen?.totalSolicitudes">
-                  {{ calcularPorcentajeEstado(data?.estadosSolicitudes?.APROBADA || 0, data?.resumen?.totalSolicitudes || 0) }}%
+                <div class="estado-valor">{{ data.estadosSolicitudes.APROBADA || 0 }}</div>
+                <div class="estado-porcentaje" *ngIf="data.resumen.totalSolicitudes">
+                  {{ calcularPorcentajeEstado(data.estadosSolicitudes.APROBADA || 0, data.resumen.totalSolicitudes || 0) }}%
                 </div>
               </mat-card-content>
             </mat-card>
@@ -279,9 +279,9 @@
                   <mat-icon>send</mat-icon>
                   <span class="estado-nombre">Enviada</span>
                 </div>
-                <div class="estado-valor">{{ data?.estadosSolicitudes?.ENVIADA || 0 }}</div>
-                <div class="estado-porcentaje" *ngIf="data?.resumen?.totalSolicitudes">
-                  {{ calcularPorcentajeEstado(data?.estadosSolicitudes?.ENVIADA || 0, data?.resumen?.totalSolicitudes || 0) }}%
+                <div class="estado-valor">{{ data.estadosSolicitudes.ENVIADA || 0 }}</div>
+                <div class="estado-porcentaje" *ngIf="data.resumen.totalSolicitudes">
+                  {{ calcularPorcentajeEstado(data.estadosSolicitudes.ENVIADA || 0, data.resumen.totalSolicitudes || 0) }}%
                 </div>
               </mat-card-content>
             </mat-card>
@@ -293,9 +293,9 @@
                   <span class="estado-nombre">En Proceso</span>
                 </div>
                 <!-- ACTUALIZADO: Usar EN_PROCESO directamente, con fallback a suma de APROBADA_FUNCIONARIO + APROBADA_COORDINADOR para compatibilidad -->
-                <div class="estado-valor">{{ data?.estadosSolicitudes?.EN_PROCESO ?? ((data?.estadosSolicitudes?.APROBADA_FUNCIONARIO || 0) + (data?.estadosSolicitudes?.APROBADA_COORDINADOR || 0)) }}</div>
-                <div class="estado-porcentaje" *ngIf="data?.resumen?.totalSolicitudes">
-                  {{ calcularPorcentajeEstado(data?.estadosSolicitudes?.EN_PROCESO ?? ((data?.estadosSolicitudes?.APROBADA_FUNCIONARIO || 0) + (data?.estadosSolicitudes?.APROBADA_COORDINADOR || 0)), data?.resumen?.totalSolicitudes || 0) }}%
+                <div class="estado-valor">{{ data.estadosSolicitudes.EN_PROCESO || ((data.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) + (data.estadosSolicitudes.APROBADA_COORDINADOR || 0)) }}</div>
+                <div class="estado-porcentaje" *ngIf="data.resumen.totalSolicitudes">
+                  {{ calcularPorcentajeEstado(data.estadosSolicitudes.EN_PROCESO || ((data.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) + (data.estadosSolicitudes.APROBADA_COORDINADOR || 0)), data.resumen.totalSolicitudes || 0) }}%
                 </div>
               </mat-card-content>
             </mat-card>
@@ -306,9 +306,9 @@
                   <mat-icon>cancel</mat-icon>
                   <span class="estado-nombre">Rechazada</span>
                 </div>
-                <div class="estado-valor">{{ data?.estadosSolicitudes?.RECHAZADA || 0 }}</div>
-                <div class="estado-porcentaje" *ngIf="data?.resumen?.totalSolicitudes">
-                  {{ calcularPorcentajeEstado(data?.estadosSolicitudes?.RECHAZADA || 0, data?.resumen?.totalSolicitudes || 0) }}%
+                <div class="estado-valor">{{ data.estadosSolicitudes.RECHAZADA || 0 }}</div>
+                <div class="estado-porcentaje" *ngIf="data.resumen.totalSolicitudes">
+                  {{ calcularPorcentajeEstado(data.estadosSolicitudes.RECHAZADA || 0, data.resumen.totalSolicitudes || 0) }}%
                 </div>
               </mat-card-content>
             </mat-card>

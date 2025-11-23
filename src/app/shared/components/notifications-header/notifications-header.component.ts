@@ -1,17 +1,26 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
 
-import { NotificacionesService, Notificacion, NotificacionesResponse } from '../../../core/services/notificaciones.service';
+import { NotificacionService } from '../../../core/services/notificacion.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { Notificacion, NotificacionesResponse } from '../../../core/models/notificaciones.model';
+import { 
+  getIconByTipoSolicitud, 
+  getColorByTipoSolicitud, 
+  getCategoriaDisplay,
+  getIconByTipoNotificacion,
+  enrichNotificaciones
+} from '../../../core/utils/notificaciones.util';
 
 @Component({
   selector: 'app-notifications-header',
@@ -32,147 +41,186 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   @Input() userId?: number;
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   
   notificaciones: Notificacion[] = [];
   totalNoLeidas = 0;
   isLoading = false;
   private refreshInterval?: any;
+  private notificacionesSubscription?: Subscription;
+  private notificacionesCargadas = false; // Flag para saber si ya se cargaron
+
 
   constructor(
-    private notificacionesService: NotificacionesService,
+    private notificacionService: NotificacionService,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // Notificaciones deshabilitadas
-    // No cargar notificaciones ni iniciar polling
+    this.cargarContador();
+    
+    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    if (userId) {
+      this.iniciarPollingContador(userId, 30000);
+    }
   }
 
   ngOnDestroy(): void {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
+    if (this.notificacionesSubscription) {
+      this.notificacionesSubscription.unsubscribe();
+    }
   }
 
-  esperarUsuarioYcargarNotificaciones(): void {
-    // Verificar si ya tenemos el userId
-    if (this.userId) {
-      this.cargarNotificaciones();
+  cargarContador(): void {
+    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    if (!userId) {
+      setTimeout(() => {
+        const retryUserId = this.userId || this.authService.getUsuario()?.id_usuario;
+        if (retryUserId) {
+          this.actualizarContador();
+        }
+      }, 500);
       return;
     }
 
-    // Si no tenemos userId, esperar a que el usuario esté disponible
-    const usuario = this.authService.getUsuario();
-    if (usuario?.id) {
-      // Usuario encontrado, cargando notificaciones
-      this.cargarNotificaciones();
-    } else {
-      // Esperando a que el usuario esté disponible
-      // Intentar nuevamente después de un breve delay
-      setTimeout(() => {
-        this.esperarUsuarioYcargarNotificaciones();
-      }, 100);
-    }
+    this.actualizarContador();
+  }
+
+  actualizarContador(): void {
+    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    if (!userId) return;
+
+    this.notificacionService.contarNoLeidas(userId).subscribe({
+      next: (count) => {
+        this.totalNoLeidas = count;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        // Silenciar errores 403
+      }
+    });
   }
 
   cargarNotificaciones(): void {
-    const userId = this.userId || this.authService.getUsuario()?.id;
+    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
     if (!userId) {
-      console.warn('[NOTIFICACIONES] No hay ID de usuario disponible');
+      return;
+    }
+
+    if (this.isLoading) {
       return;
     }
 
     this.isLoading = true;
-    // Cargando notificaciones para usuario
 
-    this.notificacionesService.obtenerNotificacionesHeader(userId).subscribe({
-      next: (response: NotificacionesResponse) => {
-        this.notificaciones = response.notificaciones;
-        this.totalNoLeidas = response.totalNoLeidas;
+    this.notificacionService.obtenerNoLeidas(userId).subscribe({
+      next: (notificaciones) => {
+        const notificacionesEnriquecidas = enrichNotificaciones(notificaciones);
+
+        this.notificaciones = notificacionesEnriquecidas;
+        this.totalNoLeidas = notificacionesEnriquecidas.length;
+        this.notificacionesCargadas = true;
         this.isLoading = false;
-        
-        // Notificaciones cargadas exitosamente
+        this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('[NOTIFICACIONES] Error al cargar notificaciones:', error);
         this.isLoading = false;
-        this.snackBar.open('Error al cargar notificaciones', 'Cerrar', { duration: 3000 });
+        
+        if (error.status !== 403) {
+          this.snackBar.open('Error al cargar notificaciones', 'Cerrar', { duration: 3000 });
+        }
       }
     });
   }
 
   marcarTodasComoLeidas(): void {
-    const userId = this.userId || this.authService.getUsuario()?.id;
+    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
     if (!userId) {
-      console.warn('[NOTIFICACIONES] No hay ID de usuario disponible para marcar como leídas');
       return;
     }
 
-    // Marcando todas las notificaciones como leídas
-    
-    this.notificacionesService.marcarNotificacionesComoLeidas(userId).subscribe({
-      next: (response) => {
-        // Notificaciones marcadas como leídas
+    this.notificacionService.marcarTodasComoLeidas(userId).subscribe({
+      next: () => {
         this.totalNoLeidas = 0;
+        this.notificaciones = [];
+        this.cdr.detectChanges();
         this.snackBar.open('Notificaciones marcadas como leídas', 'Cerrar', { duration: 2000 });
       },
       error: (error) => {
-        console.error('[NOTIFICACIONES] Error al marcar como leídas:', error);
         this.snackBar.open('Error al marcar notificaciones como leídas', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
-  navegarANotificacion(notificacion: Notificacion): void {
-    // Navegando a notificación
-    // URL de acción
+  marcarNotificacionLeida(notificacion: Notificacion, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (notificacion.leida) {
+      return;
+    }
+
+    this.notificacionService.marcarComoLeida(notificacion.id_notificacion).subscribe({
+      next: () => {
+        // Actualizar estado local
+        notificacion.leida = true;
+        this.totalNoLeidas = Math.max(0, this.totalNoLeidas - 1);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        // Error silenciado
+      }
+    });
+  }
+
+  navegarANotificacion(notificacion: Notificacion, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (!notificacion.leida) {
+      this.marcarNotificacionLeida(notificacion);
+    }
+
+    if (this.menuTrigger && this.menuTrigger.menuOpen) {
+      this.menuTrigger.closeMenu();
+    }
     
-    if (notificacion.urlAccion) {
-      this.router.navigate([notificacion.urlAccion]);
-    } else {
-      console.warn('[NOTIFICACIONES] No hay URL de acción disponible');
-      this.snackBar.open('No hay acción disponible para esta notificación', 'Cerrar', { duration: 2000 });
+    setTimeout(() => {
+      this.router.navigate(['/notificaciones']);
+    }, 150);
+  }
+
+
+  actualizarManual(): void {
+    if (!this.notificacionesCargadas) {
+      this.cargarNotificaciones();
     }
   }
 
-  actualizarManual(): void {
-    // Actualización manual solicitada
-    this.cargarNotificaciones();
+  onMenuOpened(): void {
+    if (!this.notificacionesCargadas) {
+      this.cargarNotificaciones();
+    }
   }
 
-  getIconoPorTipo(tipoSolicitud: string): string {
-    const iconos: { [key: string]: string } = {
-      'CURSO_VERANO': 'school',
-      'ECAES': 'quiz',
-      'REINGRESO': 'person_add',
-      'HOMOLOGACION': 'swap_horiz',
-      'PAZ_SALVO': 'verified'
-    };
-    return iconos[tipoSolicitud] || 'notifications';
+  getIconoPorTipo(tipoNotificacion: string): string {
+    return getIconByTipoNotificacion(tipoNotificacion);
   }
 
   getColorPorTipo(tipoSolicitud: string): string {
-    const colores: { [key: string]: string } = {
-      'CURSO_VERANO': '#1976d2', // Azul
-      'ECAES': '#f57c00', // Naranja
-      'REINGRESO': '#388e3c', // Verde
-      'HOMOLOGACION': '#7b1fa2', // Púrpura
-      'PAZ_SALVO': '#d32f2f' // Rojo
-    };
-    return colores[tipoSolicitud] || '#666666';
+    return getColorByTipoSolicitud(tipoSolicitud);
   }
 
   getCategoriaDisplay(categoria: string): string {
-    const categorias: { [key: string]: string } = {
-      'Cursos Intersemestrales': 'Cursos Intersemestrales',
-      'Pruebas ECAES': 'ECAES',
-      'Reingreso': 'Reingreso',
-      'Homologación': 'Homologación',
-      'Paz y Salvo': 'Paz y Salvo'
-    };
-    return categorias[categoria] || categoria;
+    return getCategoriaDisplay(categoria);
   }
 
   getAccionDisplay(accion: string): string {
@@ -187,13 +235,11 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   verTodasLasNotificaciones(): void {
-    // Navegando a vista completa de notificaciones
-    // Aquí podrías navegar a una página dedicada de notificaciones
     this.router.navigate(['/notificaciones']);
   }
 
   trackByNotificationId(index: number, notificacion: Notificacion): number {
-    return notificacion.id;
+    return notificacion.id_notificacion;
   }
 
   tieneNotificacionesUrgentes(): boolean {
@@ -201,25 +247,12 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   crearNotificacionPrueba(): void {
-    const userId = this.userId || this.authService.getUsuario()?.id;
-    if (!userId) {
-      console.warn('[NOTIFICACIONES] No hay ID de usuario disponible para crear notificación de prueba');
-      this.snackBar.open('No hay usuario disponible para crear notificación de prueba', 'Cerrar', { duration: 3000 });
-      return;
-    }
+    this.snackBar.open('La creación de notificaciones se realiza desde el backend', 'Cerrar', { duration: 3000 });
+  }
 
-    // Creando notificación de prueba para usuario
-    
-    this.notificacionesService.crearNotificacionPrueba(userId).subscribe({
-      next: (response) => {
-        // Notificación de prueba creada
-        this.snackBar.open('Notificación de prueba creada exitosamente', 'Cerrar', { duration: 2000 });
-        // Las notificaciones se actualizarán automáticamente
-      },
-      error: (error) => {
-        console.error('[NOTIFICACIONES] Error al crear notificación de prueba:', error);
-        this.snackBar.open('Error al crear notificación de prueba', 'Cerrar', { duration: 3000 });
-      }
-    });
+  private iniciarPollingContador(userId: number, intervalo: number = 30000): void {
+    this.refreshInterval = setInterval(() => {
+      this.actualizarContador();
+    }, intervalo);
   }
 }

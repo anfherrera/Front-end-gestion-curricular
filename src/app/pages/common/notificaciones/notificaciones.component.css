@@ -1,0 +1,399 @@
+.notificaciones-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #00138C;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #00138C;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Filtros */
+.filters-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Tabs */
+.mat-mdc-tab-group {
+  margin-bottom: 24px;
+}
+
+/* Íconos de las pestañas en azul */
+.mat-mdc-tab-group mat-icon {
+  color: #00138C !important;
+}
+
+.mat-mdc-tab-label mat-icon {
+  color: #00138C !important;
+}
+
+.mat-mdc-tab-label .mat-icon {
+  color: #00138C !important;
+}
+
+.mat-mdc-tab .mat-icon {
+  color: #00138C !important;
+}
+
+.mat-mdc-tab-label-container .mat-icon {
+  color: #00138C !important;
+}
+
+/* Pestaña activa - íconos también en azul */
+.mat-mdc-tab-label-active mat-icon {
+  color: #00138C !important;
+}
+
+.mat-mdc-tab-label-active .mat-icon {
+  color: #00138C !important;
+}
+
+.mat-mdc-tab-label-active .mat-mdc-tab-label-content .mat-icon {
+  color: #00138C !important;
+}
+
+/* Para todas las pestañas */
+.mat-mdc-tab-label-content mat-icon {
+  color: #00138C !important;
+}
+
+.tab-badge {
+  margin-left: 8px;
+  background: #00138C;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tab-badge.urgent {
+  background: #dc2626;
+}
+
+/* Contenido */
+.content-section {
+  min-height: 400px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Lista de notificaciones */
+.notificaciones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Card de notificación */
+.notificacion-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 4px solid transparent;
+}
+
+/* Forzar color azul en todos los íconos de las notificaciones */
+.notificacion-card mat-icon:not(.tipo-icon) {
+  color: #00138C !important;
+}
+
+.notificacion-card .actions-section mat-icon {
+  color: #00138C !important;
+}
+
+.notificacion-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.notificacion-card.unread {
+  border-left-color: #00138C;
+  background-color: #f0f4ff;
+}
+
+.notificacion-card.urgent {
+  border-left-color: #dc2626;
+  background-color: white;
+}
+
+.notificacion-card.urgent.unread {
+  border-left-color: #00138C;
+  background-color: #f0f4ff;
+}
+
+.card-header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+.icon-section {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tipo-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.unread-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  background: #00138C;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+mat-card-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.categoria-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.fecha {
+  color: #888;
+  font-size: 13px;
+}
+
+.actions-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.actions-section mat-icon-button {
+  color: #00138C !important;
+}
+
+.actions-section mat-icon-button .mat-icon {
+  color: #00138C !important;
+}
+
+.urgent-icon {
+  color: #00138C !important;
+}
+
+.urgent-icon.mat-icon {
+  color: #00138C !important;
+}
+
+/* Contenido del card */
+.mensaje {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 16px 0;
+}
+
+.metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+  font-size: 13px;
+}
+
+.metadata-item mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #00138C;
+}
+
+.accion-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00138C;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.accion-section mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #00138C;
+}
+
+.actions-section mat-icon-button mat-icon {
+  color: #00138C !important;
+}
+
+.actions-section mat-icon-button .mat-icon {
+  color: #00138C !important;
+}
+
+.actions-section .mat-icon {
+  color: #00138C !important;
+}
+
+.notificacion-card .actions-section mat-icon {
+  color: #00138C !important;
+}
+
+/* Estado vacío */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: #ccc;
+  margin-bottom: 24px;
+}
+
+.empty-state h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+.empty-state p {
+  font-size: 16px;
+  color: #888;
+  margin: 0;
+}
+
+/* Animaciones */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notificaciones-container {
+    padding: 16px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .header-actions button {
+    width: 100%;
+  }
+
+  .card-header-content {
+    flex-direction: column;
+  }
+
+  .actions-section {
+    align-self: flex-end;
+  }
+}
+
+
+

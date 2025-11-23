@@ -293,6 +293,8 @@ import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shar
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 import { MatDialog } from '@angular/material/dialog';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 import { Solicitud } from '../../../core/models/procesos.model';
 
@@ -335,7 +337,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
     private homologacionService: HomologacionAsignaturasService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificacionesService: NotificacionesService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -423,6 +427,12 @@ export class HomologacionAsignaturasComponent implements OnInit {
     next: (resp) => {
       // Solicitud creada en backend
       this.listarSolicitudes();
+
+      // Actualizar notificaciones después de crear la solicitud
+      const usuario = this.authService.getUsuario();
+      if (usuario?.id_usuario) {
+        this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
+      }
 
       // Resetear el file upload
       this.resetFileUpload = true;

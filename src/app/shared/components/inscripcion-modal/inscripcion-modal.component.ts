@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CursosIntersemestralesService, CreateInscripcionDTO, PreinscripcionSeguimiento } from '../../../core/services/cursos-intersemestrales.service';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../material.imports';
 
 export interface InscripcionModalData {
@@ -20,7 +21,7 @@ export interface InscripcionModalData {
   styleUrls: ['./inscripcion-modal.component.css']
 })
 export class InscripcionModalComponent implements OnInit {
-  inscripcionForm: FormGroup;
+  inscripcionForm!: FormGroup;
   archivoSeleccionado: File | null = null;
   cargando = false;
   usuario: any = null;
@@ -33,7 +34,8 @@ export class InscripcionModalComponent implements OnInit {
     private cursosService: CursosIntersemestralesService,
     private archivosService: ArchivosService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private notificacionesService: NotificacionesService
   ) {
     this.inscripcionForm = this.fb.group({
       nombreCompleto: ['', Validators.required],
@@ -56,6 +58,7 @@ export class InscripcionModalComponent implements OnInit {
       
       // Campos extraídos
       // Valores individuales
+      console.log('Valores individuales', {
         'usuario.nombre_completo': this.usuario.nombre_completo,
         'usuario.nombreCompleto': this.usuario.nombreCompleto,
         'usuario.nombres': this.usuario.nombres,
@@ -100,6 +103,7 @@ export class InscripcionModalComponent implements OnInit {
       // Validar tamaño (máximo 15MB temporalmente)
       const maxSize = 15 * 1024 * 1024; // 15MB en bytes (temporalmente aumentado)
       // Validación de tamaño
+      console.log('Validación de tamaño', {
         fileSize: file.size,
         maxSize: maxSize,
         fileSizeKB: (file.size / 1024).toFixed(2) + ' KB',
@@ -200,21 +204,22 @@ export class InscripcionModalComponent implements OnInit {
         // Cantidad de preinscripciones para este curso
         
         if (preinscripciones && preinscripciones.length > 0) {
-                preinscripciones.forEach((p: any, index: number) => {
-                  // Preinscripción
-                    id: p.id,
-                    id_solicitud: p.id_solicitud,
-                    estado: p.estado,
-                    id_usuario: p.id_usuario,
-                    id_curso: p.id_curso,
-                    fecha: p.fecha,
-                    usuarioId: p.usuarioId,
-                    cursoId: p.cursoId,
-                    objUsuario: p.objUsuario,
-                    objCurso: p.objCurso
-                  });
-                  // Preinscripción - Objeto completo
-                });
+          preinscripciones.forEach((p: any, index: number) => {
+            // Preinscripción
+            console.log('Preinscripción', {
+              id: p.id,
+              id_solicitud: p.id_solicitud,
+              estado: p.estado,
+              id_usuario: p.id_usuario,
+              id_curso: p.id_curso,
+              fecha: p.fecha,
+              usuarioId: p.usuarioId,
+              cursoId: p.cursoId,
+              objUsuario: p.objUsuario,
+              objCurso: p.objCurso
+            });
+            // Preinscripción - Objeto completo
+          });
           
           // Buscar una preinscripción aprobada
           const preinscripcionAprobada = preinscripciones.find((p: any) => p.estado === 'Aprobado');
@@ -345,7 +350,7 @@ export class InscripcionModalComponent implements OnInit {
         console.error('Error creando inscripción:', error);
         
         // Mostrar detalles completos del error
-        // ERROR COMPLETO - Detalles
+        console.error('ERROR COMPLETO - Detalles', {
           status: error.status,
           statusText: error.statusText,
           url: error.url,
@@ -388,6 +393,12 @@ export class InscripcionModalComponent implements OnInit {
       next: (resultado) => {
         // Comprobante de pago subido exitosamente
         // Archivo organizado en
+        
+        // Actualizar notificaciones después de crear la inscripción
+        if (this.usuario?.id_usuario) {
+          this.notificacionesService.actualizarNotificaciones(this.usuario.id_usuario);
+        }
+        
         this.cargando = false;
         this.snackBar.open(
           `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 
@@ -398,6 +409,12 @@ export class InscripcionModalComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error subiendo comprobante de pago:', error);
+        
+        // Actualizar notificaciones incluso si falla la subida del archivo (la inscripción ya se creó)
+        if (this.usuario?.id_usuario) {
+          this.notificacionesService.actualizarNotificaciones(this.usuario.id_usuario);
+        }
+        
         this.cargando = false;
         this.snackBar.open('Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.', 'Cerrar', { duration: 8000 });
         this.dialogRef.close(true); // Aún cerrar el modal ya que la inscripción se creó

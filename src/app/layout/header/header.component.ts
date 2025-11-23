@@ -8,6 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ActivityIndicatorComponent } from '../../shared/components/activity-indicator/activity-indicator.component';
+import { NotificationsHeaderComponent } from '../../shared/components/notifications-header/notifications-header.component';
 
 @Component({
   selector: 'app-header',
@@ -22,7 +23,8 @@ import { ActivityIndicatorComponent } from '../../shared/components/activity-ind
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    ActivityIndicatorComponent
+    ActivityIndicatorComponent,
+    NotificationsHeaderComponent
   ]
 })
 export class HeaderComponent implements OnInit {

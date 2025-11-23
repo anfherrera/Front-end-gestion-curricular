@@ -15,5 +15,15 @@ export const CommonRoutes: Routes = [
     path: 'perfil',
     loadComponent: () =>
       import('./perfil/perfil.component').then(m => m.PerfilComponent)
+  },
+  {
+    path: 'notificaciones',
+    loadComponent: () =>
+      import('./notificaciones/notificaciones.component').then(m => m.NotificacionesComponent)
+  },
+  {
+    path: 'notificaciones-guia',
+    loadComponent: () =>
+      import('../../shared/components/notificaciones-guia/notificaciones-guia.component').then(m => m.NotificacionesGuiaComponent)
   }
 ];

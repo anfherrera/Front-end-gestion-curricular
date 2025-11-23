@@ -18,6 +18,8 @@ import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shar
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-paz-salvo',
@@ -51,21 +53,42 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   SolicitudStatusEnum = SolicitudStatusEnum;
 
   documentosRequeridos = [
-    { label: 'Formato PM-FO-4-FOR-27.pdf', obligatorio: true },
-    { label: 'Autorización para publicar.pdf', obligatorio: true },
-    { label: 'Formato de hoja de vida académica.pdf', obligatorio: true },
+    { label: 'Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf', obligatorio: true },
+    { label: 'Autorización para publicar y permitir la consulta y uso de obras en el Repositorio Institucional.pdf', obligatorio: true },
     { label: 'Comprobante de pago de derechos de sustentación.pdf', obligatorio: true },
-    { label: 'Documento final del trabajo de grado.pdf', obligatorio: true }
+    { label: 'Documento final del trabajo de grado con sus anexos (PDF).pdf', obligatorio: true },
+    // Formatos según modalidad de trabajo de grado (requeridos según corresponda)
+    // Para modalidad TRABAJO DE INVESTIGACIÓN: TI-G y TI-H
+    { label: 'Formato TI-G (Acta sustentación TRABAJO DE INVESTIGACIÓN).pdf', obligatorio: false },
+    { label: 'Formato TI-H (Constancia director y jurados TRABAJO DE INVESTIGACIÓN).pdf', obligatorio: false },
+    // Para modalidad PRÁCTICA PROFESIONAL: PP-G y PP-H (NOTA: PP-H es diferente a PPH)
+    { label: 'Formato PP-G (Acta sustentación PRÁCTICA PROFESIONAL).pdf', obligatorio: false },
+    { label: 'Formato PP-H (Constancia director y jurados PRÁCTICA PROFESIONAL).pdf', obligatorio: false }
   ];
 
-  archivosExclusivos: string[] = ['Formato TI-G.pdf', 'Formato PP-H.pdf'];
+  // Archivos exclusivos: Para programas de Sistemas, Electrónica y Automática (solo uno de estos dos)
+  // IMPORTANTE: Estos son DIFERENTES a PP-H (que está arriba en documentosRequeridos). 
+  // - PP-H (con guion) = Constancia para modalidad PRÁCTICA PROFESIONAL (va con PP-G)
+  // - PPH (sin guion) = Acta de sustentación para programas Sistemas, Electrónica, Automática
+  // Estos formatos también se suben a SIMCA Web, pero deben adjuntarse aquí también
+  archivosExclusivos: string[] = [
+    'Formato PPH (Acta sustentación - Sistemas, Electrónica, Automática).pdf',
+    'Formato TIH (Acta sustentación - Sistemas, Electrónica, Automática).pdf'
+  ];
+
+  // Archivos opcionales
+  optionalFiles: string[] = [
+    'Fotocopia de cédula (Solo para Tecnología en Telemática).pdf'
+  ];
 
   constructor(
     private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private notificacionesService: NotificacionesService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -221,6 +244,12 @@ listarSolicitudes() {
           .subscribe({
           next: (resp) => {
             this.listarSolicitudes();
+
+            // Actualizar notificaciones después de crear la solicitud
+            const usuario = this.authService.getUsuario();
+            if (usuario?.id_usuario) {
+              this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
+            }
 
             // FIX: Resetear el file upload en el siguiente ciclo de detección para evitar NG0100
             setTimeout(() => {

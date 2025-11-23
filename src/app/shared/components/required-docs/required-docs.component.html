@@ -18,7 +18,8 @@
       </li>
 
       <!-- Archivos exclusivos -->
-      <li *ngIf="exclusiveFiles.length">
+      <li *ngIf="exclusiveFiles.length"
+          [ngClass]="exclusiveUploaded() ? 'success' : 'pending'">
         <mat-icon
           [ngClass]="{
             'icon-success': exclusiveUploaded(),

@@ -23,6 +23,8 @@ import { InfoPreregistroDialogComponent } from '../../../shared/components/info-
 import { ComentariosDialogComponent, ComentariosDialogData } from '../../../shared/components/comentarios-dialog/comentarios-dialog.component';
 import { Archivo, Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-pruebas-ecaes',
@@ -84,7 +86,9 @@ export class PruebasEcaesComponent implements OnInit {
     private snackBar: MatSnackBar,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificacionesService: NotificacionesService,
+    private authService: AuthService
   ) {
     this.solicitudForm = this.fb.group({
       tipoDocumento: ['CC', Validators.required],
@@ -350,6 +354,12 @@ export class PruebasEcaesComponent implements OnInit {
     this.pruebasEcaesService.crearSolicitudEcaes(solicitud).subscribe({
       next: (response: SolicitudEcaesResponse) => {
         console.log('✅ Solicitud creada en backend:', response);
+
+        // Actualizar notificaciones después de crear la solicitud
+        const usuario = this.authService.getUsuario();
+        if (usuario?.id_usuario) {
+          this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
+        }
 
         // Actualizar el estado a "ENVIADA" (opcional, no bloquea el flujo)
         this.pruebasEcaesService.actualizarEstadoSolicitud(response.id_solicitud, 'ENVIADA').subscribe({

@@ -1,0 +1,53 @@
+<div class="notificaciones-container">
+  <!-- Header con contador y botón de marcar todas -->
+  <div class="notificaciones-header">
+    <h2>Notificaciones</h2>
+    <div class="header-actions">
+      <span class="badge" *ngIf="contadorNoLeidas > 0">
+        {{ contadorNoLeidas }} no leídas
+      </span>
+      <button 
+        *ngIf="contadorNoLeidas > 0"
+        (click)="marcarTodasComoLeidas()"
+        class="btn-marcar-todas">
+        Marcar todas como leídas
+      </button>
+    </div>
+  </div>
+
+  <!-- Lista de notificaciones -->
+  <div class="notificaciones-list">
+    <!-- Si no hay notificaciones -->
+    <div *ngIf="notificaciones.length === 0" class="sin-notificaciones">
+      <p>No tienes notificaciones</p>
+    </div>
+
+    <!-- Lista de notificaciones -->
+    <div 
+      *ngFor="let notificacion of notificaciones" 
+      class="notificacion-item"
+      [class.no-leida]="!notificacion.leida"
+      [class.urgente]="notificacion.esUrgente"
+      (click)="marcarComoLeida(notificacion)">
+      
+      <!-- Indicador de no leída -->
+      <div *ngIf="!notificacion.leida" class="indicador-no-leida"></div>
+      
+      <!-- Contenido -->
+      <div class="notificacion-contenido">
+        <div class="notificacion-header">
+          <h3>{{ notificacion.titulo }}</h3>
+          <span class="badge-tipo">{{ notificacion.tipoSolicitud }}</span>
+        </div>
+        
+        <p class="notificacion-mensaje">{{ notificacion.mensaje }}</p>
+        
+        <div class="notificacion-footer">
+          <span class="fecha">{{ notificacion.fechaCreacion | date:'short' }}</span>
+          <span *ngIf="notificacion.esUrgente" class="badge-urgente">Urgente</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
