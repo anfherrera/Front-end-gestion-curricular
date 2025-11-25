@@ -236,3 +236,5 @@ Para más información sobre Angular CLI:
 
 **Universidad del Cauca** - Facultad de Ingeniería Electrónica y Telecomunicaciones  
 **Proyecto de Grado** - Octubre 2025
+
+---
