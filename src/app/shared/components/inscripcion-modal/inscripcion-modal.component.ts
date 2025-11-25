@@ -54,18 +54,6 @@ export class InscripcionModalComponent implements OnInit {
       const nombreCompleto = this.usuario.nombre_completo || this.usuario.nombreCompleto || this.usuario.nombres || this.usuario.nombre || this.usuario.first_name || '';
       const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || this.usuario.documento || '';
       
-      // Campos extraídos
-      // Valores individuales
-        'usuario.nombre_completo': this.usuario.nombre_completo,
-        'usuario.nombreCompleto': this.usuario.nombreCompleto,
-        'usuario.nombres': this.usuario.nombres,
-        'usuario.nombre': this.usuario.nombre,
-        'usuario.first_name': this.usuario.first_name,
-        'usuario.apellidos': this.usuario.apellidos,
-        'usuario.apellido': this.usuario.apellido,
-        'usuario.last_name': this.usuario.last_name
-      });
-      
       this.inscripcionForm.patchValue({
         nombreCompleto: nombreCompleto || 'Usuario no identificado',
         codigo: codigo || 'Sin código'
