@@ -87,12 +87,6 @@ export class InscripcionModalComponent implements OnInit {
       
       // Validar tamaño (máximo 15MB temporalmente)
       const maxSize = 15 * 1024 * 1024; // 15MB en bytes (temporalmente aumentado)
-      // Validación de tamaño
-        fileSize: file.size,
-        maxSize: maxSize,
-        fileSizeKB: (file.size / 1024).toFixed(2) + ' KB',
-        fileSizeMB: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
-      });
       
       if (file.size > maxSize) {
         // Archivo muy grande
@@ -188,22 +182,6 @@ export class InscripcionModalComponent implements OnInit {
         // Cantidad de preinscripciones para este curso
         
         if (preinscripciones && preinscripciones.length > 0) {
-                preinscripciones.forEach((p: any, index: number) => {
-                  // Preinscripción
-                    id: p.id,
-                    id_solicitud: p.id_solicitud,
-                    estado: p.estado,
-                    id_usuario: p.id_usuario,
-                    id_curso: p.id_curso,
-                    fecha: p.fecha,
-                    usuarioId: p.usuarioId,
-                    cursoId: p.cursoId,
-                    objUsuario: p.objUsuario,
-                    objCurso: p.objCurso
-                  });
-                  // Preinscripción - Objeto completo
-                });
-          
           // Buscar una preinscripción aprobada
           const preinscripcionAprobada = preinscripciones.find((p: any) => p.estado === 'Aprobado');
           
@@ -331,16 +309,6 @@ export class InscripcionModalComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error creando inscripción:', error);
-        
-        // Mostrar detalles completos del error
-        // ERROR COMPLETO - Detalles
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          error_body: error.error,
-          error_message: error.error?.message || error.error?.error || 'Sin mensaje específico',
-          error_code: error.error?.codigo || 'Sin código específico'
-        });
         
         this.cargando = false;
         
