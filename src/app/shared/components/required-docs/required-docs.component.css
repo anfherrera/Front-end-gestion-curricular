@@ -3,7 +3,6 @@
   margin-bottom: 16px;
 }
 
-/* Card principal */
 .card-section {
   border-radius: 12px;
   background-color: #fff;
@@ -18,7 +17,6 @@
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
-/* Título azul igual que paz-salvo */
 .card-title {
   font-size: 1.25rem;
   font-weight: bold;
@@ -30,7 +28,6 @@
   border-radius: 12px 12px 0 0;
 }
 
-/* Texto introductorio */
 .info-intro {
   margin: 12px 16px;
   font-size: 14px;
@@ -42,7 +39,6 @@
   border-left: 4px solid #00138C;
 }
 
-/* Texto descriptivo */
 .info-text {
   margin: 12px 16px;
   font-size: 15px;
@@ -50,7 +46,6 @@
   font-weight: 500;
 }
 
-/* Lista de documentos requeridos */
 .required-list {
   list-style: none;
   padding: 0 16px 16px 16px;
@@ -81,27 +76,23 @@
   font-size: 20px;
 }
 
-/* Color negro normal para todos los íconos */
 .icon-success,
 .icon-pending {
   color: #333;
 }
 
-/* Texto en color negro normal */
 .required-list li.success,
 .required-list li.pending {
   color: #333;
   font-weight: normal;
 }
 
-/* Estilo para las notas (solo uno, opcional) */
 .nota {
   color: #666;
   font-size: 12px;
   margin-left: 4px;
 }
 
-/* Estilo específico para archivos opcionales */
 .required-list li.optional {
   color: #333 !important;
   font-weight: normal;
@@ -112,7 +103,6 @@
   font-weight: normal;
 }
 
-/* Información adicional */
 .info-adicional {
   margin: 16px;
   padding: 16px;

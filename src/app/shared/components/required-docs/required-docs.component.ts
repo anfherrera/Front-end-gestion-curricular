@@ -21,16 +21,9 @@ export interface Documento {
   styleUrls: ['./required-docs.component.css']
 })
 export class RequiredDocsComponent {
-  /** Documentos obligatorios y opcionales */
   @Input() requiredFiles: Documento[] = [];
-
-  /** Archivos exclusivos (solo se puede subir uno) */
   @Input() exclusiveFiles: string[] = [];
-
-  /** Archivos opcionales (se pueden subir independientemente) */
   @Input() optionalFiles: string[] = [];
-
-  /** Archivos ya subidos */
   @Input() archivos: Archivo[] = [];
 
   private normalizarTexto(texto: string): string {
@@ -42,7 +35,6 @@ export class RequiredDocsComponent {
       .replace(/[^a-z0-9]/g, ''); // eliminar caracteres no alfanuméricos
   }
 
-  /** Verifica si un archivo obligatorio está subido */
   isUploaded(file: string): boolean {
     const target = this.normalizarTexto(file);
     return this.archivos.some(a =>
@@ -50,7 +42,6 @@ export class RequiredDocsComponent {
     );
   }
 
-  /** Verifica si algún archivo exclusivo está subido */
   exclusiveUploaded(): string | null {
     const exclusivosNormalizados = this.exclusiveFiles.map(nombre => this.normalizarTexto(nombre));
     const encontrados = this.archivos.filter(a =>
@@ -61,7 +52,6 @@ export class RequiredDocsComponent {
     return encontrados.length ? encontrados[0].nombre : null;
   }
 
-  /** Verifica si un archivo opcional está subido */
   optionalUploaded(file: string): boolean {
     const target = this.normalizarTexto(file);
     return this.archivos.some(a =>
