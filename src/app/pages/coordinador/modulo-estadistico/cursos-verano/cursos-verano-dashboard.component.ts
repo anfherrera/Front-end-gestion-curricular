@@ -407,14 +407,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    */
   probarVelocidadCarga(): void {
     // Prueba 1: Carga completa
-    console.time('🔄 Carga Completa');
+    console.time('Carga Completa');
     const inicioCompleta = performance.now();
     
     this.estadisticasService.getCursosVeranoEstadisticas().subscribe({
       next: (response) => {
         const finCompleta = performance.now();
         const tiempoCompleta = finCompleta - inicioCompleta;
-        console.timeEnd('🔄 Carga Completa');
+        console.timeEnd('Carga Completa');
         
         // Prueba 2: Carga optimizada
         console.time('Carga Optimizada');

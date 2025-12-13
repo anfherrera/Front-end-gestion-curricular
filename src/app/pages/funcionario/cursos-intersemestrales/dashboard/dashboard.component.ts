@@ -61,7 +61,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    // ✅ Limpiar cache al destruir componente
+    // Limpiar cache al destruir componente
     this.fechasFormateadas.clear();
   }
 
@@ -72,13 +72,11 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
 
   private cargarEstadisticas(): void {
     this.cargandoEstadisticas = true;
-    console.log('📊 Cargando estadísticas del dashboard desde el backend...');
     
     this.cursosService.getDashboardEstadisticas()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (estadisticas: DashboardEstadisticas) => {
-          console.log('✅ Estadísticas recibidas del backend:', estadisticas);
           this.estadisticas = estadisticas;
           
           // Actualizar variables para el template desde el backend
@@ -86,17 +84,10 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
           this.preinscripcionesPendientes = estadisticas.totalPreinscripciones || 0;
           this.inscripcionesPendientes = estadisticas.totalInscripciones || 0;
           
-          console.log('📊 Variables actualizadas:', {
-            totalCursosActivos: this.totalCursosActivos,
-            preinscripcionesPendientes: this.preinscripcionesPendientes,
-            inscripcionesPendientes: this.inscripcionesPendientes,
-            porcentajeProgreso: estadisticas.porcentajeProgreso
-          });
-          
           this.cargandoEstadisticas = false;
         },
         error: (error: any) => {
-          console.error('❌ Error cargando estadísticas del dashboard:', error);
+          console.error('Error cargando estadísticas del dashboard:', error);
           // Mantener valores por defecto (ya inicializados en 0)
           this.cargandoEstadisticas = false;
         }
@@ -104,75 +95,18 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
   }
 
   private cargarCursosActivos(): void {
-    console.log('🔄 Intentando cargar cursos activos...');
-    console.log('🌐 URL del backend:', `${environment.apiUrl}/cursos-intersemestrales/cursos-verano/todos`);
-    
     this.cursosService.getTodosLosCursosParaFuncionarios()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (cursos) => {
-          console.log('✅ Cursos recibidos del backend:', cursos);
-          console.log('📊 Total de cursos:', cursos.length);
-          
-          if (cursos.length === 0) {
-            console.warn('⚠️ PROBLEMA: El backend devolvió un array vacío []');
-            console.warn('📋 POSIBLES CAUSAS:');
-            console.warn('   1. El query SQL en el backend tiene filtros muy restrictivos');
-            console.warn('   2. Los JOINs con materias/usuarios están fallando');
-            console.warn('   3. No hay datos en la tabla cursos_ofertados_verano');
-            console.warn('📖 Sigue la guía: ARREGLAR-CONEXION-BACKEND-FRONTEND.md');
-          } else {
-            console.log('✅ Primer curso:', cursos[0]);
-            
-            // ✅ Verificar cursos con campos null (para diagnóstico)
-            cursos.forEach((curso, index) => {
-              const tieneFechaInicio = curso.fecha_inicio != null;
-              const tieneFechaFin = curso.fecha_fin != null;
-              const tienePeriodo = (curso.periodo || curso.periodoAcademico) != null;
-              const tieneMateria = curso.objMateria != null;
-              const tieneDocente = curso.objDocente != null;
-              
-              if (!tieneFechaInicio || !tieneFechaFin || !tienePeriodo) {
-                console.warn(`⚠️ Curso ${index + 1} (ID: ${curso.id_curso}) tiene campos null:`, {
-                  nombre: curso.nombre_curso,
-                  fecha_inicio: curso.fecha_inicio,
-                  fecha_fin: curso.fecha_fin,
-                  periodo: curso.periodo || curso.periodoAcademico,
-                  tieneFechaInicio,
-                  tieneFechaFin,
-                  tienePeriodo
-                });
-              }
-              
-              if (!tieneMateria || !tieneDocente) {
-                console.warn(`⚠️ Curso ${index + 1} (ID: ${curso.id_curso}) tiene relaciones null:`, {
-                  nombre: curso.nombre_curso,
-                  tieneMateria,
-                  tieneDocente
-                });
-              }
-            });
-          }
-          
-          // ✅ NO filtrar cursos, mostrar todos (incluso con campos null)
+          // NO filtrar cursos, mostrar todos (incluso con campos null)
           // El backend calcula valores por defecto, pero si aún hay null, los manejamos en el template
           this.cursosActivos = cursos;
           this.totalCursosActivos = cursos.length;
           this.calcularEstadisticasCursos(cursos);
         },
         error: (error) => {
-          console.error('❌ Error cargando cursos activos:', error);
-          console.error('❌ Detalles del error:', {
-            status: error.status,
-            statusText: error.statusText,
-            message: error.message,
-            url: error.url
-          });
-          console.error('🔧 SOLUCIONES:');
-          console.error('   - Si ves error 404: El endpoint no existe en el backend');
-          console.error('   - Si ves error 500: Hay un error en el query SQL del backend');
-          console.error('   - Si ves CORS: Configura CORS en el backend');
-          console.error('   - Si no ves nada: El backend no está corriendo');
+          console.error('Error cargando cursos activos:', error);
         }
       });
   }
@@ -196,11 +130,11 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return '#00138C';
   }
 
-  // ✅ Cachear para no recalcular en cada detección de cambios
+  // Cachear para no recalcular en cada detección de cambios
   private fechasFormateadas = new Map<string, string>();
 
   formatearFecha(fecha: Date | string | null | undefined): string {
-    // ✅ Manejar casos null/undefined
+    // Manejar casos null/undefined
     if (!fecha) {
       return 'N/A';
     }
@@ -210,7 +144,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
       if (!this.fechasFormateadas.has(key)) {
         const fechaObj = new Date(fecha);
         
-        // ✅ Validar que la fecha sea válida
+        // Validar que la fecha sea válida
         if (isNaN(fechaObj.getTime())) {
           return 'Fecha inválida';
         }
@@ -223,12 +157,12 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
       }
       return this.fechasFormateadas.get(key)!;
     } catch (error) {
-      console.warn('⚠️ Error formateando fecha:', fecha, error);
+      console.warn('Error formateando fecha:', fecha, error);
       return 'N/A';
     }
   }
 
-  // ✅ Formatear rango de fechas de forma segura
+  // Formatear rango de fechas de forma segura
   formatearRangoFechas(fechaInicio: Date | string | null | undefined, fechaFin: Date | string | null | undefined): string {
     const inicio = this.formatearFecha(fechaInicio);
     const fin = this.formatearFecha(fechaFin);
@@ -240,7 +174,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return `${inicio} - ${fin}`;
   }
 
-  // ✅ Obtener período académico de forma segura
+  // Obtener período académico de forma segura
   obtenerPeriodo(curso: CursoOfertadoVerano): string {
     // El backend calcula valores por defecto, pero por si acaso manejamos null
     return curso.periodo || curso.periodoAcademico || 'N/A';
@@ -254,7 +188,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
     return this.cursoEstadosService.getIconoEstado(estado || 'Borrador');
   }
 
-  // ✅ TrackBy functions para optimizar ngFor
+  // TrackBy functions para optimizar ngFor
   trackByCursoId(index: number, curso: CursoOfertadoVerano): number {
     return curso.id_curso;
   }

@@ -69,25 +69,17 @@
   font-size: 20px;
 }
 
-/* Verde si está subido */
-.icon-success {
-  color: #2e7d32;
-}
-
-/* Rojo si falta */
+/* Color negro normal para todos los íconos */
+.icon-success,
 .icon-pending {
-  color: #c62828;
+  color: #333;
 }
 
-/* Texto cambia junto con el ícono */
-.required-list li.success {
-  color: #2e7d32;
-  font-weight: 500;
-}
-
+/* Texto en color negro normal */
+.required-list li.success,
 .required-list li.pending {
-  color: #c62828;
-  font-weight: 500;
+  color: #333;
+  font-weight: normal;
 }
 
 /* Estilo para las notas (solo uno, opcional) */
@@ -97,13 +89,13 @@
   margin-left: 4px;
 }
 
-/* Estilo específico para archivos opcionales - no hereda color rojo */
+/* Estilo específico para archivos opcionales */
 .required-list li.optional {
-  color: #444 !important;
+  color: #333 !important;
   font-weight: normal;
 }
 
 .required-list li.optional.success {
-  color: #2e7d32 !important;
+  color: #333 !important;
   font-weight: normal;
 }

@@ -132,7 +132,7 @@ export interface SolicitudCursoVerano {
   objUsuario: UsuarioSolicitud;
   objCursoOfertadoVerano: CursoOfertadoVerano;
   tipoSolicitud: 'PREINSCRIPCION' | 'INSCRIPCION';
-  // 🆕 Nuevos campos para el seguimiento mejorado
+  // Nuevos campos para el seguimiento mejorado
   estadoCurso?: string;           // Estado actual del curso
   accionesDisponibles?: string[]; // Acciones que puede realizar el estudiante
   comentarioEstado?: string | null; // Motivo asociado al estado actual
@@ -196,7 +196,7 @@ export interface Inscripcion {
   };
   objUsuario: Usuario;
   objCurso: CursoOfertadoVerano;
-  // 🆕 Nuevos campos para el seguimiento mejorado
+  // Nuevos campos para el seguimiento mejorado
   estadoCurso?: string;           // Estado actual del curso
   accionesDisponibles?: string[]; // Acciones que puede realizar el estudiante
 }
@@ -228,10 +228,10 @@ export interface PreinscripcionSeguimiento {
   curso: string;
   estudianteId: number;
   cursoId: number;
-  estadoCurso?: string;           // 🆕 NUEVO: Estado del curso
-  accionesDisponibles?: string[]; // 🆕 NUEVO: Acciones que puede realizar
-  comentarioEstado?: string | null; // 🆕 NUEVO: Comentario o motivo asociado al estado actual
-  estadoSolicitud?: EstadoSolicitudDetalle[]; // 🆕 NUEVO: Historial de estados
+  estadoCurso?: string;           // Estado del curso
+  accionesDisponibles?: string[]; // Acciones que puede realizar
+  comentarioEstado?: string | null; // Comentario o motivo asociado al estado actual
+  estadoSolicitud?: EstadoSolicitudDetalle[]; // Historial de estados
 }
 
 export interface InscripcionSeguimiento {
@@ -242,10 +242,10 @@ export interface InscripcionSeguimiento {
   curso: string;
   estudianteId: number;
   cursoId: number;
-  estadoCurso?: string;           // 🆕 NUEVO: Estado del curso
-  accionesDisponibles?: string[]; // 🆕 NUEVO: Acciones que puede realizar
-  comentarioEstado?: string | null; // 🆕 NUEVO: Comentario o motivo asociado al estado actual
-  estadoSolicitud?: EstadoSolicitudDetalle[]; // 🆕 NUEVO: Historial de estados
+  estadoCurso?: string;           // Estado del curso
+  accionesDisponibles?: string[]; // Acciones que puede realizar
+  comentarioEstado?: string | null; // Comentario o motivo asociado al estado actual
+  estadoSolicitud?: EstadoSolicitudDetalle[]; // Historial de estados
 }
 
 export interface SeguimientoActividades {
@@ -685,12 +685,12 @@ export class CursosIntersemestralesService {
     return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`);
   }
 
-  // 🆕 Nuevo método para el endpoint actualizado de visualizar solicitudes
+  // Nuevo método para el endpoint actualizado de visualizar solicitudes
   getSolicitudesVisualizar(): Observable<any[]> {
     return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes`);
   }
 
-  // 🆕 Nuevo método para el filtro de materias
+  // Nuevo método para el filtro de materias
   getMateriasFiltro(): Observable<any[]> {
     return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/materias-filtro`);
   }
@@ -851,7 +851,7 @@ export class CursosIntersemestralesService {
     );
   }
 
-  // 🆕 NUEVO: Obtener estudiantes elegibles para inscripción (con pago validado)
+  // Obtener estudiantes elegibles para inscripción (con pago validado)
   getEstudiantesElegibles(idCurso: number): Observable<EstudianteElegible[]> {
     const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_ELEGIBLES(idCurso);
     
@@ -1058,7 +1058,7 @@ export class CursosIntersemestralesService {
   }
 
 
-  // 🆕 NUEVO: Aceptar inscripción usando el endpoint correcto del backend
+  // Aceptar inscripción usando el endpoint correcto del backend
   aceptarInscripcion(idInscripcion: number, observaciones: string = "Inscripción aceptada"): Observable<any> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${idInscripcion}/aceptar`;
     const body = { observaciones };
@@ -1066,7 +1066,7 @@ export class CursosIntersemestralesService {
     return this.http.put<any>(endpoint, body);
   }
 
-  // 🆕 NUEVO: Rechazar inscripción usando el endpoint correcto del backend
+  // Rechazar inscripción usando el endpoint correcto del backend
   rechazarInscripcion(idInscripcion: number, motivo: string): Observable<any> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${idInscripcion}/rechazar`;
     const body = { motivo };
@@ -1074,7 +1074,7 @@ export class CursosIntersemestralesService {
     return this.http.put<any>(endpoint, body);
   }
 
-  // 🆕 NUEVO: Descargar comprobante de pago
+  // Descargar comprobante de pago
   descargarComprobantePago(idInscripcion: number): Observable<Blob> {
     // Usar el endpoint correcto de archivos
     const endpoint = ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION(idInscripcion);
@@ -1087,7 +1087,7 @@ export class CursosIntersemestralesService {
     });
   }
 
-  // 🆕 NUEVO: Obtener estadísticas del curso
+  // Obtener estadísticas del curso
   obtenerEstadisticasCurso(idCurso: number): Observable<any> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/curso/${idCurso}/estadisticas`;
     return this.http.get<any>(endpoint);

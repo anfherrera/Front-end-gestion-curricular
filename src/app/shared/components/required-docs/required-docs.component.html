@@ -1,45 +1,24 @@
 <mat-card class="card-section">
   <mat-card-title class="card-title">Documentación requerida</mat-card-title>
   <mat-card-content>
-    <p class="info-text">Adjunta los siguientes documentos en formato PDF:</p>
+    <p class="info-text">Debes subir los siguientes documentos necesarios en formato PDF:</p>
 
     <ul class="required-list">
       <!-- Archivos obligatorios/opcionales -->
-      <li *ngFor="let doc of requiredFiles"
-          [ngClass]="isUploaded(doc.label) ? 'success' : 'pending'">
-        <mat-icon
-          [ngClass]="{
-            'icon-success': isUploaded(doc.label),
-            'icon-pending': !isUploaded(doc.label)
-          }">
-          {{ isUploaded(doc.label) ? 'check_circle' : 'cancel' }}
-        </mat-icon>
+      <li *ngFor="let doc of requiredFiles">
+        <mat-icon>description</mat-icon>
         {{ doc.label }} <span *ngIf="doc.obligatorio">*</span>
       </li>
 
       <!-- Archivos exclusivos -->
-      <li *ngIf="exclusiveFiles.length"
-          [ngClass]="exclusiveUploaded() ? 'success' : 'pending'">
-        <mat-icon
-          [ngClass]="{
-            'icon-success': exclusiveUploaded(),
-            'icon-pending': !exclusiveUploaded()
-          }">
-          {{ exclusiveUploaded() ? 'check_circle' : 'cancel' }}
-        </mat-icon>
+      <li *ngIf="exclusiveFiles.length">
+        <mat-icon>description</mat-icon>
         {{ exclusiveFiles.join(' o ') }} <span class="nota">(solo uno)</span>
       </li>
 
       <!-- Archivos opcionales -->
-      <li *ngFor="let file of optionalFiles"
-          [ngClass]="optionalUploaded(file) ? 'success optional' : 'optional'">
-        <mat-icon
-          [ngClass]="{
-            'icon-success': optionalUploaded(file),
-            'icon-pending': !optionalUploaded(file)
-          }">
-          {{ optionalUploaded(file) ? 'check_circle' : 'cancel' }}
-        </mat-icon>
+      <li *ngFor="let file of optionalFiles" class="optional">
+        <mat-icon>description</mat-icon>
         {{ file }} <span class="nota">(opcional)</span>
       </li>
     </ul>

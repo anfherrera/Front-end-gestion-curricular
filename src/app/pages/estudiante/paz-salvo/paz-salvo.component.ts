@@ -218,13 +218,13 @@ listarSolicitudes() {
       console.error('No se puede acceder al componente de archivos.');
       return;
     }
-    // 🆕 NUEVO FLUJO: Paso 1: Subir documentos SIN asociar a solicitud
+    // Paso 1: Subir documentos SIN asociar a solicitud
     this.fileUploadComponent.subirArchivosPendientes()
       .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
       .subscribe({
       next: (archivosSubidos) => {
 
-        // 🆕 NUEVO FLUJO: Paso 2: Crear la solicitud (los documentos se asocian automáticamente)
+        // Paso 2: Crear la solicitud (los documentos se asocian automáticamente)
         const solicitud = {
           nombre_solicitud: `Solicitud_paz_salvo_${this.usuario.nombre_completo}`,
           fecha_registro_solicitud: new Date().toISOString(),
