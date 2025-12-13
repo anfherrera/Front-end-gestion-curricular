@@ -4,6 +4,13 @@
     <p class="info-intro">Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva programada por la Secretaría General de la Universidad del Cauca.</p>
     
     <p class="info-text">Debes subir los siguientes documentos necesarios en formato PDF. Todos los formatos deben estar debidamente diligenciados y firmados:</p>
+    
+    <p class="info-ayuda" *ngIf="!esTelematica">
+      <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
+    </p>
+    <p class="info-ayuda-telematica" *ngIf="esTelematica">
+      <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir los 4 documentos obligatorios (marcados con *) y la fotocopia de tu cédula. NO debes subir los formatos TI-G/TI-H, PP-G/PP-H ni PPH/TIH, ya que estos no aplican para tu programa.
+    </p>
 
     <ul class="required-list">
       <li *ngFor="let doc of requiredFiles">

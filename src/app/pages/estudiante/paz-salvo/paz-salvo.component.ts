@@ -57,13 +57,10 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     { label: 'Autorización para publicar y permitir la consulta y uso de obras en el Repositorio Institucional.pdf', obligatorio: true },
     { label: 'Comprobante de pago de derechos de sustentación.pdf', obligatorio: true },
     { label: 'Documento final del trabajo de grado con sus anexos (PDF).pdf', obligatorio: true },
-    // Formatos según modalidad de trabajo de grado (requeridos según corresponda)
-    // Para modalidad TRABAJO DE INVESTIGACIÓN: TI-G y TI-H
-    { label: 'Formato TI-G (Acta sustentación TRABAJO DE INVESTIGACIÓN).pdf', obligatorio: false },
-    { label: 'Formato TI-H (Constancia director y jurados TRABAJO DE INVESTIGACIÓN).pdf', obligatorio: false },
-    // Para modalidad PRÁCTICA PROFESIONAL: PP-G y PP-H (NOTA: PP-H es diferente a PPH)
-    { label: 'Formato PP-G (Acta sustentación PRÁCTICA PROFESIONAL).pdf', obligatorio: false },
-    { label: 'Formato PP-H (Constancia director y jurados PRÁCTICA PROFESIONAL).pdf', obligatorio: false }
+    { label: 'Formato TI-G (Acta sustentación TRABAJO DE INVESTIGACIÓN).pdf (según modalidad)', obligatorio: false },
+    { label: 'Formato TI-H (Constancia director y jurados TRABAJO DE INVESTIGACIÓN).pdf (según modalidad)', obligatorio: false },
+    { label: 'Formato PP-G (Acta sustentación PRÁCTICA PROFESIONAL).pdf (según modalidad)', obligatorio: false },
+    { label: 'Formato PP-H (Constancia director y jurados PRÁCTICA PROFESIONAL).pdf (según modalidad)', obligatorio: false }
   ];
 
   // Archivos exclusivos: Para programas de Sistemas, Electrónica y Automática (solo uno de estos dos)
@@ -72,8 +69,8 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   // - PPH (sin guion) = Acta de sustentación para programas Sistemas, Electrónica, Automática
   // Estos formatos también se suben a SIMCA Web, pero deben adjuntarse aquí también
   archivosExclusivos: string[] = [
-    'Formato PPH (Acta sustentación - Sistemas, Electrónica, Automática).pdf',
-    'Formato TIH (Acta sustentación - Sistemas, Electrónica, Automática).pdf'
+    'Formato PPH (Acta sustentación - Sistemas, Electrónica, Automática).pdf (obligatorio para estos programas)',
+    'Formato TIH (Acta sustentación - Sistemas, Electrónica, Automática).pdf (obligatorio para estos programas)'
   ];
 
   // Archivos opcionales
@@ -119,7 +116,135 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   }
 
   puedeEnviar(): boolean {
-    return this.archivosActuales.length > 0 && !!this.usuario;
+    if (!this.usuario || this.archivosActuales.length === 0) {
+      return false;
+    }
+
+    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
+    const todosObligatoriosSubidos = documentosObligatorios.every(doc => 
+      this.archivoSubido(doc.label)
+    );
+
+    if (!todosObligatoriosSubidos) {
+      return false;
+    }
+
+    const programa = this.usuario?.objPrograma?.nombre?.toLowerCase() || '';
+    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
+    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática'].some(
+      p => programa.includes(p.toLowerCase())
+    );
+
+    if (esTelematica) {
+      const tieneFormatosIncorrectos = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('tig') || nombre.includes('tih') || 
+               nombre.includes('ppg') || nombre.includes('pph') ||
+               (nombre.includes('pp-h') && !nombre.includes('pph'));
+      });
+
+      if (tieneFormatosIncorrectos) {
+        return false;
+      }
+    }
+
+    if (requiereArchivoExclusivo) {
+      const tienePPH = this.archivosActuales.some(a => 
+        this.normalizarNombre(a.nombre).includes('pph') && 
+        !this.normalizarNombre(a.nombre).includes('pp-h')
+      );
+      const tieneTIH = this.archivosActuales.some(a => 
+        this.normalizarNombre(a.nombre).includes('tih') && 
+        !this.normalizarNombre(a.nombre).includes('ti-h')
+      );
+      
+      if (!tienePPH && !tieneTIH) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private archivoSubido(nombreDocumento: string): boolean {
+    const nombreNormalizado = this.normalizarNombre(nombreDocumento);
+    return this.archivosActuales.some(archivo => {
+      const nombreArchivo = this.normalizarNombre(archivo.nombre);
+      return nombreArchivo.includes(nombreNormalizado) || nombreNormalizado.includes(nombreArchivo);
+    });
+  }
+
+  private normalizarNombre(nombre: string): string {
+    return nombre
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\.[^/.]+$/, '')
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  obtenerDocumentosFaltantes(): string[] {
+    const faltantes: string[] = [];
+    const errores: string[] = [];
+    
+    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
+    documentosObligatorios.forEach(doc => {
+      if (!this.archivoSubido(doc.label)) {
+        faltantes.push(doc.label);
+      }
+    });
+
+    const programa = this.usuario?.objPrograma?.nombre?.toLowerCase() || '';
+    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
+    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática'].some(
+      p => programa.includes(p.toLowerCase())
+    );
+
+    if (esTelematica) {
+      const tieneTI = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('tig') || nombre.includes('ti-h');
+      });
+      const tienePP = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('ppg') || (nombre.includes('pp-h') && !nombre.includes('pph'));
+      });
+      const tienePPH = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('pph') && !nombre.includes('pp-h');
+      });
+      const tieneTIH = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('tih') && !nombre.includes('ti-h');
+      });
+
+      if (tieneTI) {
+        errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
+      }
+      if (tienePP) {
+        errores.push('Los formatos PP-G/PP-H no aplican para tu programa (Telemática)');
+      }
+      if (tienePPH || tieneTIH) {
+        errores.push('Los formatos PPH/TIH no aplican para tu programa (Telemática)');
+      }
+    }
+
+    if (requiereArchivoExclusivo) {
+      const tienePPH = this.archivosActuales.some(a => 
+        this.normalizarNombre(a.nombre).includes('pph') && 
+        !this.normalizarNombre(a.nombre).includes('pp-h')
+      );
+      const tieneTIH = this.archivosActuales.some(a => 
+        this.normalizarNombre(a.nombre).includes('tih') && 
+        !this.normalizarNombre(a.nombre).includes('ti-h')
+      );
+      
+      if (!tienePPH && !tieneTIH) {
+        faltantes.push('Formato PPH o TIH (requerido para tu programa)');
+      }
+    }
+
+    return [...faltantes, ...errores];
   }
 
   /**

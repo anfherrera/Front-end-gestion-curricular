@@ -25,6 +25,12 @@ export class RequiredDocsComponent {
   @Input() exclusiveFiles: string[] = [];
   @Input() optionalFiles: string[] = [];
   @Input() archivos: Archivo[] = [];
+  @Input() programaEstudiante: string = '';
+
+  get esTelematica(): boolean {
+    const programa = this.programaEstudiante.toLowerCase();
+    return programa.includes('telemática') || programa.includes('telematica');
+  }
 
   private normalizarTexto(texto: string): string {
     return texto
