@@ -16,6 +16,12 @@
 
   <!-- Usuario e iconos -->
   <div class="header-right">
+    <!-- Período Académico Actual -->
+    <div class="periodo-header" *ngIf="periodoActual">
+      <mat-icon class="periodo-icon">calendar_today</mat-icon>
+      <span class="periodo-text">{{ periodoFormateado }}</span>
+    </div>
+
     <!-- Indicador de actividad de sesión -->
     <app-activity-indicator></app-activity-indicator>
 

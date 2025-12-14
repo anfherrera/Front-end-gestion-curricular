@@ -83,12 +83,14 @@
 
           <!-- Filtro por Período Académico -->
           <div class="filter-item">
-            <app-periodo-selector
+            <app-periodo-filtro-selector
               *ngIf="filtrosForm?.get('periodoAcademico')"
+              label="Período Académico"
               [mostrarTodos]="true"
-              [soloRegistrados]="false"
+              [incluirActual]="true"
+              [mostrarInfo]="false"
               (periodoChange)="onPeriodoChange($event)">
-            </app-periodo-selector>
+            </app-periodo-filtro-selector>
           </div>
         </div>
 

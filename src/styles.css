@@ -401,6 +401,13 @@ mat-icon {
   font-weight: 500 !important;
 }
 
+.periodo-cambio-notification {
+  background: linear-gradient(135deg, #00138C 0%, #1976d2 100%) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  border-left: 4px solid #fff !important;
+}
+
 /* Animación para los snackbars */
 .mat-mdc-snack-bar-container {
   animation: slideInFromTop 0.3s ease-out !important;

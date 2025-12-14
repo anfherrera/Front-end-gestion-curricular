@@ -36,6 +36,7 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Gestión de Programas', icon: 'assignment', route: '/admin/programas', roles: [UserRole.ADMIN] },
   { label: 'Gestión de Roles', icon: 'admin_panel_settings', route: '/admin/manage-roles', roles: [UserRole.ADMIN] },
   { label: 'Gestión de Usuarios', icon: 'people', route: '/admin/manage-users', roles: [UserRole.ADMIN] },
+  { label: 'Configurar Período Académico', icon: 'calendar_today', route: '/admin/configurar-periodo', roles: [UserRole.ADMIN] },
 
   // Separador para Admin
   { label: '---', icon: 'horizontal_rule', action: 'separator', roles: [UserRole.ADMIN] },

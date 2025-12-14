@@ -58,6 +58,12 @@ export const AdminRoutes: Routes = [
     loadComponent: () =>
       import('./gestion-programas/form-programa/form-programa.component').then(m => m.FormProgramaComponent)
   },
+  // Configuración de Período Académico
+  {
+    path: 'configurar-periodo',
+    loadComponent: () =>
+      import('./configurar-periodo/configurar-periodo.component').then(m => m.ConfigurarPeriodoComponent)
+  },
   // Redirección por defecto
   {
     path: '',

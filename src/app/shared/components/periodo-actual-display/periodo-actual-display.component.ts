@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
+import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
 import { formatearPeriodo } from '../../../core/utils/periodo.utils';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-periodo-actual-display',
@@ -73,22 +74,48 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
     }
   `]
 })
-export class PeriodoActualDisplayComponent implements OnInit {
-  periodoActual: string = '';
+export class PeriodoActualDisplayComponent implements OnInit, OnDestroy {
+  periodoActual: PeriodoAcademico | null = null;
   periodoFormateado: string = '';
+  private subscription?: Subscription;
 
-  constructor(private cursosService: CursosIntersemestralesService) {}
+  constructor(private periodosService: PeriodosAcademicosService) {}
 
   ngOnInit(): void {
-    this.cargarPeriodoActual();
+    // Suscribirse al observable del período actual
+    this.subscription = this.periodosService.periodoActual$.subscribe(periodo => {
+      if (periodo) {
+        this.periodoActual = periodo;
+        this.periodoFormateado = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
+      } else {
+        // Si no hay período en el subject, intentar cargarlo
+        this.cargarPeriodoActual();
+      }
+    });
+
+    // Si no hay período cargado, cargarlo
+    if (!this.periodosService.getPeriodoActualValue()) {
+      this.cargarPeriodoActual();
+    } else {
+      this.periodoActual = this.periodosService.getPeriodoActualValue();
+      if (this.periodoActual) {
+        this.periodoFormateado = this.periodoActual.nombrePeriodo || formatearPeriodo(this.periodoActual.valor);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   cargarPeriodoActual(): void {
-    this.cursosService.getPeriodoActual().subscribe({
+    this.periodosService.getPeriodoActual().subscribe({
       next: (periodo) => {
         if (periodo) {
           this.periodoActual = periodo;
-          this.periodoFormateado = formatearPeriodo(periodo);
+          this.periodoFormateado = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
         }
       },
       error: (error) => {

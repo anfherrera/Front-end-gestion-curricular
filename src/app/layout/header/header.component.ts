@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,9 +6,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
+import { PeriodosAcademicosService, PeriodoAcademico } from '../../core/services/periodos-academicos.service';
 import { ActivityIndicatorComponent } from '../../shared/components/activity-indicator/activity-indicator.component';
 import { NotificationsHeaderComponent } from '../../shared/components/notifications-header/notifications-header.component';
+import { formatearPeriodo } from '../../core/utils/periodo.utils';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +30,7 @@ import { NotificationsHeaderComponent } from '../../shared/components/notificati
     NotificationsHeaderComponent
   ]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @Output() toggleSidebar = new EventEmitter<void>();
 
   isSidebarOpen = true;
@@ -35,10 +38,15 @@ export class HeaderComponent implements OnInit {
   userEmail: string = '';
   userInitials: string = 'U'; // CACHEAR para evitar recalcular en cada ciclo
   userRole: string = 'Usuario'; // CACHEAR
+  periodoActual: PeriodoAcademico | null = null;
+  periodoFormateado: string = '';
+  private periodoSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private periodosService: PeriodosAcademicosService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +57,33 @@ export class HeaderComponent implements OnInit {
       // Calcular UNA VEZ en ngOnInit
       this.userInitials = this.calculateUserInitials();
       this.userRole = this.calculateUserRole();
+    }
+
+    // Suscribirse al período actual
+    this.periodoSubscription = this.periodosService.periodoActual$.subscribe(periodo => {
+      this.periodoActual = periodo;
+      if (periodo) {
+        this.periodoFormateado = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
+      } else {
+        this.periodoFormateado = '';
+      }
+      this.cdr.markForCheck();
+    });
+
+    // Si no hay período cargado, cargarlo
+    if (!this.periodosService.getPeriodoActualValue()) {
+      this.periodosService.getPeriodoActual().subscribe();
+    } else {
+      this.periodoActual = this.periodosService.getPeriodoActualValue();
+      if (this.periodoActual) {
+        this.periodoFormateado = this.periodoActual.nombrePeriodo || formatearPeriodo(this.periodoActual.valor);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.periodoSubscription) {
+      this.periodoSubscription.unsubscribe();
     }
   }
 

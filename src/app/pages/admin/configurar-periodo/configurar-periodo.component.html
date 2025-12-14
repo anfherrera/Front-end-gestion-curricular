@@ -1,0 +1,118 @@
+<div class="configurar-periodo-container">
+  <mat-card class="config-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>settings</mat-icon>
+        Configuración de Período Académico
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="cargando" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Cargando configuración...</p>
+      </div>
+
+      <div *ngIf="!cargando">
+        <!-- Información del Período Actual -->
+        <div class="info-section" *ngIf="periodoActual">
+          <h3>
+            <mat-icon>info</mat-icon>
+            Período Actual del Sistema
+          </h3>
+          <div class="periodo-actual-info">
+            <div class="periodo-item">
+              <span class="label">Período:</span>
+              <span class="value">{{ periodoActual.nombrePeriodo || formatearPeriodo(periodoActual.valor) }}</span>
+            </div>
+            <div class="periodo-item">
+              <span class="label">Valor:</span>
+              <span class="value">{{ periodoActual.valor }}</span>
+            </div>
+            <div class="periodo-item">
+              <span class="label">Fecha Inicio:</span>
+              <span class="value">{{ periodoActual.fechaInicio | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="periodo-item">
+              <span class="label">Fecha Fin:</span>
+              <span class="value">{{ periodoActual.fechaFin | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuración Actual -->
+        <div class="info-section" *ngIf="configActual">
+          <h3>
+            <mat-icon>settings</mat-icon>
+            Configuración Actual
+          </h3>
+          <div class="config-actual">
+            <div class="modo-badge" [class.automatico]="configActual.modo === 'automatico'" 
+                                  [class.manual]="configActual.modo === 'manual'">
+              <mat-icon>{{ configActual.modo === 'automatico' ? 'autorenew' : 'edit' }}</mat-icon>
+              <span>Modo: {{ configActual.modo === 'automatico' ? 'Automático' : 'Manual' }}</span>
+            </div>
+            <p class="descripcion">{{ configActual.descripcion }}</p>
+            <p *ngIf="configActual.periodoAcademico" class="periodo-configurado">
+              Período configurado: <strong>{{ formatearPeriodo(configActual.periodoAcademico) }}</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- Formulario de Configuración -->
+        <form [formGroup]="configForm" (ngSubmit)="guardarConfiguracion()" class="config-form">
+          <h3>
+            <mat-icon>edit</mat-icon>
+            Cambiar Configuración
+          </h3>
+
+          <div class="form-group">
+            <mat-radio-group formControlName="modo" class="modo-radio-group">
+              <mat-radio-button value="automatico" class="radio-option">
+                <div class="radio-content">
+                  <mat-icon>autorenew</mat-icon>
+                  <div>
+                    <strong>Modo Automático</strong>
+                    <p>El sistema determina automáticamente el período actual basado en la fecha del servidor</p>
+                  </div>
+                </div>
+              </mat-radio-button>
+              
+              <mat-radio-button value="manual" class="radio-option">
+                <div class="radio-content">
+                  <mat-icon>edit</mat-icon>
+                  <div>
+                    <strong>Modo Manual</strong>
+                    <p>Establece un período específico que el sistema usará hasta que lo cambies</p>
+                  </div>
+                </div>
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+          <div class="form-group" *ngIf="configForm.get('modo')?.value === 'manual'">
+            <mat-form-field appearance="outline" class="periodo-select">
+              <mat-label>Seleccionar Período</mat-label>
+              <mat-select formControlName="periodoSeleccionado">
+                <mat-option *ngFor="let periodo of periodosDisponibles" [value]="periodo.valor">
+                  {{ getPeriodoDisplay(periodo) }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="configForm.get('periodoSeleccionado')?.hasError('required')">
+                Debes seleccionar un período
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" [disabled]="guardando || configForm.invalid">
+              <mat-icon *ngIf="!guardando">save</mat-icon>
+              <mat-spinner *ngIf="guardando" diameter="20" class="button-spinner"></mat-spinner>
+              {{ guardando ? 'Guardando...' : 'Guardar Configuración' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

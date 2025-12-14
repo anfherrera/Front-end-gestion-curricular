@@ -1,0 +1,242 @@
+.configurar-periodo-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.config-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #00138C 0%, #1976d2 100%);
+  color: white;
+  border-radius: 4px 4px 0 0;
+}
+
+mat-card-header mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+mat-card-content {
+  padding: 24px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.info-section {
+  margin-bottom: 32px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border-left: 4px solid #00138C;
+}
+
+.info-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  color: #00138C;
+  font-size: 1.2rem;
+}
+
+.info-section mat-icon {
+  color: #00138C;
+}
+
+.periodo-actual-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.periodo-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.periodo-item .label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.periodo-item .value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.config-actual {
+  margin-top: 16px;
+}
+
+.modo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.modo-badge.automatico {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.modo-badge.manual {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.modo-badge mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.descripcion {
+  color: #666;
+  margin: 8px 0;
+  font-size: 0.9rem;
+}
+
+.periodo-configurado {
+  margin-top: 8px;
+  color: #333;
+}
+
+.config-form {
+  margin-top: 24px;
+}
+
+.config-form h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 24px 0;
+  color: #00138C;
+  font-size: 1.2rem;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.modo-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.radio-option {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.radio-option:hover {
+  border-color: #00138C;
+  background-color: #f5f5f5;
+}
+
+.radio-option.mat-radio-checked {
+  border-color: #00138C;
+  background-color: #e3f2fd;
+}
+
+.radio-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.radio-content mat-icon {
+  color: #00138C;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  margin-top: 4px;
+}
+
+.radio-content strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #00138C;
+  font-size: 1.1rem;
+}
+
+.radio-content p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.periodo-select {
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.form-actions button {
+  min-width: 200px;
+}
+
+.button-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .configurar-periodo-container {
+    padding: 16px;
+  }
+
+  .periodo-actual-info {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
+

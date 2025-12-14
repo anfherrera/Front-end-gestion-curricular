@@ -60,6 +60,47 @@
   gap: 16px;
 }
 
+.periodo-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 20px;
+  border: 1px solid #00138C;
+  transition: all 0.3s ease;
+}
+
+.periodo-header:hover {
+  background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2);
+}
+
+.periodo-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #00138C;
+}
+
+.periodo-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #00138C;
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .periodo-text {
+    display: none;
+  }
+  
+  .periodo-header {
+    padding: 6px;
+  }
+}
+
 .icon-btn mat-icon {
   font-size: 28px;
   color: #00138C;

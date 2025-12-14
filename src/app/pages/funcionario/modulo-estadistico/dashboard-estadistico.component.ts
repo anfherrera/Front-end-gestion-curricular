@@ -26,7 +26,7 @@ import { EstudiantesPorProgramaComponent } from '../../../shared/components/estu
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
 import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
-import { PeriodoSelectorComponent } from '../../../shared/components/periodo-selector/periodo-selector.component';
+import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { 
   ResumenCompleto, 
   EstadisticasProceso,
@@ -60,7 +60,7 @@ Chart.register(...registerables);
     EstadisticasPorProcesoComponent,
     EstadisticasPorEstadoComponent,
     TendenciasComparativasComponent,
-    PeriodoSelectorComponent
+    PeriodoFiltroSelectorComponent
   ],
   templateUrl: './dashboard-estadistico.component.html',
   styleUrls: ['./dashboard-estadistico.component.css']
