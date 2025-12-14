@@ -114,6 +114,7 @@ export class AuthService {
       case 'coordinador': normalizedRole = UserRole.COORDINADOR; break;
       case 'secretario':
       case 'secretaria': normalizedRole = UserRole.SECRETARIA; break;
+      case 'decano': normalizedRole = UserRole.DECANO; break;
       case 'estudiante':
       default: normalizedRole = UserRole.ESTUDIANTE;
     }

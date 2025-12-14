@@ -14,7 +14,8 @@ const ALL_ROLES: UserRole[] = [
   UserRole.FUNCIONARIO,
   UserRole.COORDINADOR,
   UserRole.SECRETARIA,
-  UserRole.ESTUDIANTE
+  UserRole.ESTUDIANTE,
+  UserRole.DECANO
 ];
 
 const ADMIN_AND_FUNCIONARIO: UserRole[] = [UserRole.ADMIN, UserRole.FUNCIONARIO];
@@ -75,6 +76,12 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   // Módulo Estadístico
   { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/funcionario/modulo-estadistico', roles: [UserRole.FUNCIONARIO] },
   { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/coordinador/modulo-estadistico', roles: [UserRole.COORDINADOR] },
+  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/decano/modulo-estadistico', roles: [UserRole.DECANO] },
+
+  // Historial Completo
+  { label: 'Historial Completo', icon: 'history', route: '/funcionario/historial-completo', roles: [UserRole.FUNCIONARIO] },
+  { label: 'Historial Completo', icon: 'history', route: '/coordinador/historial-completo', roles: [UserRole.COORDINADOR] },
+  { label: 'Historial Completo', icon: 'history', route: '/decano/historial-completo', roles: [UserRole.DECANO] },
 
   // Ajustes
   { label: 'Ajustes', icon: 'settings', route: '/ajustes', roles: ALL_ROLES },

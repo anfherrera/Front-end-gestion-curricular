@@ -44,6 +44,7 @@ export class HomeComponent implements OnInit {
     { name: 'Reingreso Estudiante', route: 'reingreso-estudiante', icon: 'person_add', color: 'bg-purple' },
     { name: 'Homologación Asignaturas', route: 'homologacion-asignaturas', icon: 'sync_alt', color: 'bg-red' },
     { name: 'Módulo Estadístico', route: 'modulo-estadistico', icon: 'bar_chart', color: 'bg-teal' },
+    { name: 'Historial Completo', route: 'historial-completo', icon: 'history', color: 'bg-indigo' },
     { name: 'Ajustes', route: 'ajustes', icon: 'settings', color: 'bg-gray' }
   ];
 
@@ -64,6 +65,7 @@ export class HomeComponent implements OnInit {
       // Mapear sinónimos de roles
       if (this.roleLower === 'secretario') this.roleLower = 'secretaria';
       if (this.roleLower === 'administrador') this.roleLower = 'admin';
+      if (this.roleLower === 'decano') this.roleLower = 'decano';
 
       this.userName = usuario.nombre_completo ?? this.getUserName();
     } else {
@@ -90,9 +92,11 @@ export class HomeComponent implements OnInit {
       // Filtrar por rol para opciones generales
       switch (this.roleLower) {
         case 'coordinador':
-          return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'ajustes'].includes(p.route);
+          return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo', 'ajustes'].includes(p.route);
         case 'funcionario':
-          return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'ajustes'].includes(p.route);
+          return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo', 'ajustes'].includes(p.route);
+        case 'decano':
+          return ['modulo-estadistico', 'historial-completo', 'ajustes'].includes(p.route);
         case 'estudiante':
           return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
         case 'secretaria':
@@ -112,6 +116,7 @@ export class HomeComponent implements OnInit {
       case 'admin': return 'Accede al panel de administración para gestionar docentes, programas, roles y usuarios del sistema.';
       case 'coordinador': return 'Puedes administrar los procesos y supervisar estudiantes.';
       case 'funcionario': return 'Accede a los procesos que gestionas.';
+      case 'decano': return 'Accede al historial completo y estadísticas del sistema.';
       case 'estudiante': return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
       case 'secretaria': return 'Gestiona los oficios y resoluciones según lo indicado.';
       default: return 'Bienvenido al sistema.';
@@ -139,6 +144,7 @@ export class HomeComponent implements OnInit {
     funcionario: '/funcionario',
     coordinador: '/coordinador',
     secretaria: '/secretaria',
+    decano: '/decano',
     admin: '/admin'
   };
 

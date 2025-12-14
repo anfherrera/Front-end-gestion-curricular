@@ -68,6 +68,7 @@ export class SidebarComponent implements OnChanges {
       case 'secretario':
       case 'secretaria': return UserRole.SECRETARIA;
       case 'estudiante': return UserRole.ESTUDIANTE;
+      case 'decano': return UserRole.DECANO;
       default: return UserRole.ESTUDIANTE;
     }
   }

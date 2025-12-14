@@ -30,6 +30,17 @@
         <app-card-container
           title="Solicitudes Procesadas">
           
+          <!-- Filtro por período académico -->
+          <div class="filtro-periodo">
+            <app-periodo-filtro-selector
+              label="Filtrar por período académico"
+              [mostrarTodos]="true"
+              [incluirActual]="true"
+              [mostrarInfo]="false"
+              (periodoChange)="onPeriodoChange($event)">
+            </app-periodo-filtro-selector>
+          </div>
+          
           <app-request-status-table
             [solicitudes]="solicitudesProcesadas"
             [showOficio]="false"

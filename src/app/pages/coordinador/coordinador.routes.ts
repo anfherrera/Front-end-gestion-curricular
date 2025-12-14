@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '../../core/guards/auth.guard';
+import { RoleGuard } from '../../core/guards/role.guard';
+import { UserRole } from '../../core/enums/roles.enum';
 
 export const CoordinadorRoutes: Routes = [
   {
@@ -22,6 +25,13 @@ export const CoordinadorRoutes: Routes = [
     loadChildren: () =>
       import('./cursos-intersemestrales/cursos-intersemestrales.routes')
         .then(m => m.CursosIntersemestralesCoordinadorRoutes),
+  },
+  {
+    path: 'historial-completo',
+    loadComponent: () =>
+      import('../common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent),
+    canActivate: [authGuard, RoleGuard],
+    data: { role: UserRole.COORDINADOR }
   },
   { path: '', redirectTo: 'paz-salvo', pathMatch: 'full' }
 ];

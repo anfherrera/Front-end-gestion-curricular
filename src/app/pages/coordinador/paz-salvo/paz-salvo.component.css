@@ -234,3 +234,11 @@
   color: #c62828; /* rojo */
   font-weight: 500;
 }
+
+/* Filtro de período académico */
+.filtro-periodo {
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}

@@ -135,6 +135,12 @@ export class ApiEndpoints {
     UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/documentos/upload`
   };
 
+  // ===== SOLICITUDES (GENERAL) =====
+  static readonly SOLICITUDES = {
+    BASE: `${this.BASE_URL}/solicitudes`,
+    HISTORIAL: `${this.BASE_URL}/solicitudes/historial` // Historial completo de todas las solicitudes
+  };
+
   // ===== PRUEBAS ECAES =====
   static readonly PRUEBAS_ECAES = {
     BASE: `${this.BASE_URL}/pruebas-ecaes`,

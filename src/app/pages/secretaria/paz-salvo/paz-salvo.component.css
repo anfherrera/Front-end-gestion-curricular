@@ -431,3 +431,11 @@
   transform: translateY(0) !important;
   box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
 }
+
+/* Filtro de período académico */
+.filtro-periodo {
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}

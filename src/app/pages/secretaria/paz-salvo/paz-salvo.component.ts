@@ -12,6 +12,7 @@ import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
+import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 
 @Component({
   selector: 'app-secretaria-paz-salvo',
@@ -25,7 +26,8 @@ import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '.
     MatTabsModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    DocumentGeneratorComponent
+    DocumentGeneratorComponent,
+    PeriodoFiltroSelectorComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
@@ -34,6 +36,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent - Pendientes
   solicitudesProcesadas: any[] = []; // Transformado para RequestStatusTableComponent - Procesadas
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
+  periodoAcademicoFiltro: string | null = null; // Filtro de período académico para historial
   template!: DocumentTemplate;
   loading: boolean = false;
 
@@ -96,10 +99,10 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
-   * Cargar solicitudes procesadas (historial) - Estado APROBADA
+   * Cargar solicitudes procesadas (historial) - Historial verdadero de todas las procesadas
    */
   cargarSolicitudesProcesadas(): void {
-    this.pazSalvoService.getSolicitudesProcesadasSecretaria().subscribe({
+    this.pazSalvoService.getSolicitudesProcesadasSecretaria(this.periodoAcademicoFiltro || undefined).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
         this.solicitudesProcesadas = sols.map(sol => ({
@@ -120,7 +123,15 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
-   * Obtener fecha de procesamiento (último estado APROBADA)
+   * Manejar cambio de período académico en el filtro
+   */
+  onPeriodoChange(periodo: string): void {
+    this.periodoAcademicoFiltro = periodo || null;
+    this.cargarSolicitudesProcesadas();
+  }
+
+  /**
+   * Obtener fecha de procesamiento (último estado)
    */
   getFechaProcesamiento(solicitud: SolicitudHomologacionDTORespuesta): string {
     if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {

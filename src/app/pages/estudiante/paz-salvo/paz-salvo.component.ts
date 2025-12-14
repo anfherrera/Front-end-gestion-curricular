@@ -1,13 +1,19 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { descargarBlob } from '../../../core/utils/download.util';
-import { Subject, takeUntil } from 'rxjs'; // Agregar para limpieza de suscripciones
+import { Subject, takeUntil } from 'rxjs';
+import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 
 import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -26,11 +32,16 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     RequestStatusTableComponent,
     FileUploadComponent,
     RequiredDocsComponent
@@ -49,6 +60,9 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
   usuario: any = null;
+  solicitudForm: FormGroup;
+  requiereTrabajoGrado: boolean = false;
+  maxDate: Date = new Date();
 
   SolicitudStatusEnum = SolicitudStatusEnum;
 
@@ -86,16 +100,32 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private notificacionesService: NotificacionesService,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private periodosService: PeriodosAcademicosService
+  ) {
+    // Inicializar formulario simplificado
+    this.solicitudForm = this.fb.group({
+      fecha_terminacion_plan: [null, Validators.required],
+      titulo_trabajo_grado: [''],
+      director_trabajo_grado: ['']
+    });
+  }
 
   ngOnInit(): void {
     // Recuperamos usuario del localStorage
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
-    } else {
     }
+
+    // Determinar si requiere trabajo de grado
+    this.determinarRequisitosPrograma();
+
+    // Configurar validaciones condicionales del formulario
+    this.configurarValidacionesCondicionales();
+
+    // El período académico se asignará automáticamente en el backend
 
     // Listar solicitudes existentes al cargar el componente
     this.listarSolicitudes();
@@ -104,6 +134,54 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.verificarFuncionalidadComentarios();
     }, 2000);
+  }
+
+  /**
+   * Determina si el programa del estudiante requiere trabajo de grado
+   */
+  private determinarRequisitosPrograma(): void {
+    if (!this.usuario) {
+      this.requiereTrabajoGrado = false;
+      return;
+    }
+
+    const nombrePrograma = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
+    const programa = nombrePrograma.toLowerCase();
+    
+    // Telemática NO requiere trabajo de grado
+    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
+    
+    // Sistemas, Electrónica, Automática SÍ requieren trabajo de grado
+    this.requiereTrabajoGrado = !esTelematica && (
+      programa.includes('sistemas') ||
+      programa.includes('electrónica') ||
+      programa.includes('electronica') ||
+      programa.includes('automática') ||
+      programa.includes('automatica') ||
+      programa.includes('automatización') ||
+      programa.includes('automatizacion')
+    );
+  }
+
+  /**
+   * Configura las validaciones condicionales del formulario
+   */
+  private configurarValidacionesCondicionales(): void {
+    const tituloControl = this.solicitudForm.get('titulo_trabajo_grado');
+    const directorControl = this.solicitudForm.get('director_trabajo_grado');
+
+    if (this.requiereTrabajoGrado) {
+      // Si requiere trabajo de grado, hacer los campos obligatorios
+      tituloControl?.setValidators([Validators.required, Validators.maxLength(500)]);
+      directorControl?.setValidators([Validators.required, Validators.maxLength(200)]);
+    } else {
+      // Si no requiere trabajo de grado, solo validar longitud máxima si se completa
+      tituloControl?.setValidators([Validators.maxLength(500)]);
+      directorControl?.setValidators([Validators.maxLength(200)]);
+    }
+
+    tituloControl?.updateValueAndValidity();
+    directorControl?.updateValueAndValidity();
   }
 
   ngOnDestroy(): void {
@@ -121,12 +199,39 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       return false;
     }
 
+    // Validar que el formulario sea válido
+    if (!this.solicitudForm.valid) {
+      return false;
+    }
+
+    // Validar campos específicos del formulario
+    const formValue = this.solicitudForm.value;
+    
+    // La fecha de terminación del plan es obligatoria
+    if (!formValue.fecha_terminacion_plan) {
+      return false;
+    }
+
     const nombrePrograma = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
     const programa = nombrePrograma.toLowerCase();
     const esTelematica = programa.includes('telemática') || programa.includes('telematica');
     const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática', 'automatización'].some(
       p => programa.includes(p.toLowerCase())
     );
+
+    // Si requiere trabajo de grado, validar que los campos estén completos
+    if (this.requiereTrabajoGrado) {
+      const titulo = formValue.titulo_trabajo_grado?.trim() || '';
+      const director = formValue.director_trabajo_grado?.trim() || '';
+      
+      if (!titulo || titulo.length === 0) {
+        return false;
+      }
+      
+      if (!director || director.length === 0) {
+        return false;
+      }
+    }
 
     // Para Telemática, solo se requiere la cédula
     if (esTelematica) {
@@ -392,22 +497,39 @@ listarSolicitudes() {
       .subscribe({
       next: (archivosSubidos) => {
 
-        // Paso 2: Crear la solicitud (los documentos se asocian automáticamente)
-        const solicitud = {
-          nombre_solicitud: `Solicitud_paz_salvo_${this.usuario.nombre_completo}`,
-          fecha_registro_solicitud: new Date().toISOString(),
-          objUsuario: {
-            id_usuario: this.usuario.id_usuario,
-            nombre_completo: this.usuario.nombre_completo,
-            codigo: this.usuario.codigo,
-            correo: this.usuario.correo,
-            objPrograma: this.usuario.objPrograma
-          },
-          archivos: archivosSubidos // Los documentos se asociarán automáticamente
+        // Paso 2: Preparar datos del formulario
+        const formValue = this.solicitudForm.value;
+        const fechaTerminacion = formValue.fecha_terminacion_plan instanceof Date
+          ? formValue.fecha_terminacion_plan.toISOString().split('T')[0]
+          : new Date(formValue.fecha_terminacion_plan).toISOString().split('T')[0];
+
+        // Paso 3: Crear la solicitud con los datos del formulario
+        // El backend espera: idUsuario, nombre_solicitud, fecha_registro_solicitud, periodo_academico (opcional),
+        // titulo_trabajo_grado (opcional), director_trabajo_grado (opcional)
+        // Obtener el nombre completo del usuario (puede estar en diferentes campos)
+        const nombreCompleto = this.usuario?.nombre_completo || 
+                               this.usuario?.nombre || 
+                               this.usuario?.nombreCompleto ||
+                               `${this.usuario?.primer_nombre || ''} ${this.usuario?.segundo_nombre || ''} ${this.usuario?.primer_apellido || ''} ${this.usuario?.segundo_apellido || ''}`.trim() ||
+                               'Usuario';
+        
+        const datosSolicitud: any = {
+          idUsuario: this.usuario.id_usuario,
+          nombre_solicitud: `Paz y Salvo - ${nombreCompleto}`, // Formato: "Paz y Salvo - [nombre del estudiante]"
+          fecha_registro_solicitud: fechaTerminacion // Usar la fecha de terminación del plan
         };
 
+        // Agregar campos de trabajo de grado solo si son requeridos
+        if (this.requiereTrabajoGrado) {
+          if (formValue.titulo_trabajo_grado) {
+            datosSolicitud.titulo_trabajo_grado = formValue.titulo_trabajo_grado;
+          }
+          if (formValue.director_trabajo_grado) {
+            datosSolicitud.director_trabajo_grado = formValue.director_trabajo_grado;
+          }
+        }
 
-        this.pazSalvoService.sendRequest(this.usuario.id_usuario, archivosSubidos)
+        this.pazSalvoService.crearSolicitudConFormulario(this.usuario.id_usuario, archivosSubidos, datosSolicitud)
           .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
           .subscribe({
           next: (resp) => {

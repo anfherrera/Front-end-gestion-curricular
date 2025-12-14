@@ -71,6 +71,7 @@ export const routes: Routes = [
       { path: 'funcionario/reingreso-estudiante', loadComponent: () => import('./pages/funcionario/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
       { path: 'funcionario/homologacion-asignaturas', loadComponent: () => import('./pages/funcionario/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
       { path: 'funcionario/modulo-estadistico', loadComponent: () => import('./pages/funcionario/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
+      { path: 'funcionario/historial-completo', loadComponent: () => import('./pages/common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent) },
 
       // ==========================
       // Coordinador
@@ -79,6 +80,7 @@ export const routes: Routes = [
       { path: 'coordinador/reingreso-estudiante', loadComponent: () => import('./pages/coordinador/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
       { path: 'coordinador/homologacion-asignaturas', loadComponent: () => import('./pages/coordinador/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
       { path: 'coordinador/modulo-estadistico', loadComponent: () => import('./pages/coordinador/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
+      { path: 'coordinador/historial-completo', loadComponent: () => import('./pages/common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent) },
       {
         path: 'coordinador/cursos-intersemestrales',
         loadChildren: () =>
@@ -93,6 +95,22 @@ export const routes: Routes = [
       { path: 'secretaria/paz-salvo', loadComponent: () => import('./pages/secretaria/paz-salvo/paz-salvo.component').then(m => m.SecretariaPazSalvoComponent) },
       { path: 'secretaria/reingreso-estudiante', loadComponent: () => import('./pages/secretaria/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
       { path: 'secretaria/homologacion-asignaturas', loadComponent: () => import('./pages/secretaria/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
+
+      // ==========================
+      // Decano
+      // ==========================
+      { 
+        path: 'decano/historial-completo', 
+        loadComponent: () => import('./pages/common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent),
+        canActivate: [authGuard, RoleGuard],
+        data: { role: UserRole.DECANO }
+      },
+      { 
+        path: 'decano/modulo-estadistico', 
+        loadComponent: () => import('./pages/funcionario/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent),
+        canActivate: [authGuard, RoleGuard],
+        data: { role: UserRole.DECANO }
+      },
 
       // ==========================
       // Admin

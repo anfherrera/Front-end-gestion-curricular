@@ -15,6 +15,7 @@ import { RequestStatusTableComponent } from '../../../shared/components/request-
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
+import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 
 @Component({
   selector: 'app-paz-salvo',
@@ -29,7 +30,8 @@ import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared
     MatTabsModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    DocumentationViewerComponent
+    DocumentationViewerComponent,
+    PeriodoFiltroSelectorComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
@@ -40,6 +42,7 @@ export class PazSalvoComponent implements OnInit {
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent - Pendientes
   solicitudesProcesadas: any[] = []; // Transformado para RequestStatusTableComponent - Procesadas
   selectedSolicitud: SolicitudHomologacionDTORespuesta | null = null;
+  periodoAcademicoFiltro: string | null = null; // Filtro de período académico para historial
 
   constructor(
     public pazSalvoService: PazSalvoService,
@@ -86,6 +89,14 @@ export class PazSalvoComponent implements OnInit {
     return 'Pendiente';
   }
 
+  /**
+   * Manejar cambio de período académico en el filtro
+   */
+  onPeriodoChange(periodo: string): void {
+    this.periodoAcademicoFiltro = periodo || null;
+    this.cargarSolicitudesProcesadas();
+  }
+
   onSolicitudSeleccionada(solicitudId: number | null): void {
     // Si se deseleccionó (null), limpiar la selección
     if (solicitudId === null) {
@@ -103,10 +114,10 @@ export class PazSalvoComponent implements OnInit {
   }
 
   /**
-   * Cargar solicitudes procesadas (historial) - Estado APROBADA_FUNCIONARIO
+   * Cargar solicitudes procesadas (historial) - Historial verdadero de todas las procesadas
    */
   cargarSolicitudesProcesadas(): void {
-    this.pazSalvoService.getSolicitudesProcesadasFuncionario().subscribe({
+    this.pazSalvoService.getSolicitudesProcesadasFuncionario(this.periodoAcademicoFiltro || undefined).subscribe({
       next: (sols) => {
         
         // Transformar datos para RequestStatusTableComponent

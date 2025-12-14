@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { PeriodosAcademicosService, PeriodoAcademico } from '../../core/services/periodos-academicos.service';
-import { ActivityIndicatorComponent } from '../../shared/components/activity-indicator/activity-indicator.component';
 import { NotificationsHeaderComponent } from '../../shared/components/notifications-header/notifications-header.component';
 import { formatearPeriodo } from '../../core/utils/periodo.utils';
 
@@ -26,7 +25,6 @@ import { formatearPeriodo } from '../../core/utils/periodo.utils';
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    ActivityIndicatorComponent,
     NotificationsHeaderComponent
   ]
 })

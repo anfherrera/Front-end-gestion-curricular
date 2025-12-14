@@ -1,0 +1,326 @@
+.historial-completo-container {
+  padding: 24px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* Filtros Section */
+.filtros-section {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.filtros-form {
+  width: 100%;
+}
+
+.filtros-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: baseline;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 220px;
+  max-width: 300px;
+}
+
+.filtro-item mat-form-field {
+  width: 100%;
+  margin: 0;
+}
+
+.filtro-item app-periodo-filtro-selector {
+  width: 100%;
+  margin: 0;
+  display: block;
+}
+
+/* Asegurar que el periodo-filtro-selector tenga la misma altura y sin márgenes */
+.filtro-item app-periodo-filtro-selector ::ng-deep .periodo-filtro-container {
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  margin-bottom: 0 !important;
+  display: block !important;
+}
+
+.filtro-item app-periodo-filtro-selector ::ng-deep .periodo-selector {
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  margin-bottom: 0 !important;
+}
+
+.filtro-item app-periodo-filtro-selector ::ng-deep .periodo-selector .mat-mdc-form-field {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.filtro-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-wrapper {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.filtro-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Asegurar que todos los mat-form-field tengan el mismo padding-bottom */
+.filtros-section ::ng-deep .mat-mdc-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.filtros-section ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+}
+
+.filtro-actions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  min-width: 180px;
+  max-width: 200px;
+  margin-bottom: 0;
+  padding-top: 0;
+}
+
+.filtro-actions button {
+  width: 100%;
+  height: 56px;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin: 0;
+  margin-top: 0 !important;
+}
+
+.filtro-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.filtro-actions button mat-icon {
+  margin-right: 8px;
+}
+
+/* Estilo mejorado para los mat-form-field */
+.filtros-section ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+.filtros-section ::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.filtros-section ::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: rgba(33, 150, 243, 0.04);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filtros-grid {
+    flex-direction: column;
+  }
+  
+  .filtro-item {
+    max-width: 100%;
+  }
+  
+  .filtro-actions {
+    max-width: 100%;
+  }
+}
+
+/* Info Filtros */
+.info-filtros {
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #e3f2fd;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.info-filtros mat-chip {
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.info-filtros mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Tabla */
+.tabla-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.historial-table {
+  width: 100%;
+}
+
+.historial-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+  padding: 16px;
+}
+
+.historial-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.historial-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Solicitud Nombre */
+.solicitud-nombre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-solicitud {
+  color: #2196f3;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Usuario Info */
+.usuario-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.usuario-nombre {
+  font-weight: 500;
+  color: #333;
+}
+
+.usuario-codigo {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Chips */
+.tipo-chip {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 0.85rem;
+}
+
+.estado-aprobada {
+  background-color: #c8e6c9 !important;
+  color: #2e7d32 !important;
+}
+
+.estado-rechazada {
+  background-color: #ffcdd2 !important;
+  color: #c62828 !important;
+}
+
+.estado-enviada {
+  background-color: #fff9c4 !important;
+  color: #f57f17 !important;
+}
+
+.estado-proceso {
+  background-color: #bbdefb !important;
+  color: #1565c0 !important;
+}
+
+.estado-default {
+  background-color: #e0e0e0 !important;
+  color: #424242 !important;
+}
+
+/* No Solicitudes */
+.no-solicitudes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #999;
+  text-align: center;
+}
+
+.no-solicitudes mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.no-solicitudes p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filtros-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .historial-table {
+    font-size: 0.85rem;
+  }
+
+  .historial-table th,
+  .historial-table td {
+    padding: 12px 8px;
+  }
+
+  .displayedColumns {
+    /* Ocultar algunas columnas en móvil */
+  }
+}
+

@@ -48,5 +48,12 @@ export const FuncionarioRoutes: Routes = [
     canActivate: [authGuard, RoleGuard],
     data: { role: UserRole.FUNCIONARIO }
   },
+  {
+    path: 'historial-completo',
+    loadComponent: () =>
+      import('../common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent),
+    canActivate: [authGuard, RoleGuard],
+    data: { role: UserRole.FUNCIONARIO }
+  },
   { path: '', redirectTo: 'paz-salvo', pathMatch: 'full' }
 ];

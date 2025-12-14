@@ -1,0 +1,170 @@
+<div class="historial-completo-container">
+  <app-card-container title="Historial Completo de Solicitudes">
+    
+    <!-- Filtros -->
+    <div class="filtros-section">
+      <form [formGroup]="filtrosForm" class="filtros-form">
+        <div class="filtros-grid">
+          <!-- Filtro por Período Académico -->
+          <div class="filtro-item">
+            <app-periodo-filtro-selector
+              label="Período Académico"
+              [mostrarTodos]="true"
+              [incluirActual]="true"
+              [mostrarInfo]="false"
+              (periodoChange)="onPeriodoChange($event)">
+            </app-periodo-filtro-selector>
+          </div>
+
+          <!-- Filtro por Tipo de Solicitud -->
+          <div class="filtro-item">
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de Solicitud</mat-label>
+              <mat-select formControlName="tipoSolicitud">
+                <mat-option value="">Todos los tipos</mat-option>
+                <mat-option *ngFor="let tipo of tiposSolicitud" [value]="tipo.codigo">
+                  {{ tipo.display }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Filtro por Estado -->
+          <div class="filtro-item">
+            <mat-form-field appearance="outline">
+              <mat-label>Estado Actual</mat-label>
+              <mat-select formControlName="estadoActual">
+                <mat-option value="">Todos los estados</mat-option>
+                <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado">
+                  {{ estado }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Botón Limpiar -->
+          <div class="filtro-item filtro-actions">
+            <button mat-raised-button type="button" (click)="limpiarFiltros()" color="accent">
+              <mat-icon>clear</mat-icon>
+              Limpiar Filtros
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Información de Filtros Aplicados -->
+    <div class="info-filtros" *ngIf="historial">
+      <div class="chips-container">
+        <mat-chip>
+          <mat-icon>info</mat-icon>
+          Total: <strong>{{ historial.total }}</strong> solicitudes
+        </mat-chip>
+        <mat-chip *ngIf="historial.filtros_aplicados.periodo_academico !== 'Todos'">
+          Período: {{ historial.filtros_aplicados.periodo_academico }}
+        </mat-chip>
+        <mat-chip *ngIf="historial.filtros_aplicados.tipo_solicitud !== 'Todos'">
+          Tipo: {{ historial.filtros_aplicados.tipo_solicitud }}
+        </mat-chip>
+        <mat-chip *ngIf="historial.filtros_aplicados.estado_actual !== 'Todos'">
+          Estado: {{ historial.filtros_aplicados.estado_actual }}
+        </mat-chip>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando historial...</p>
+    </div>
+
+    <!-- Tabla de Solicitudes -->
+    <div *ngIf="!loading && historial" class="tabla-container">
+      <table mat-table [dataSource]="historial.solicitudes" class="historial-table">
+        
+        <!-- Columna ID -->
+        <ng-container matColumnDef="id_solicitud">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let solicitud">{{ solicitud.id_solicitud }}</td>
+        </ng-container>
+
+        <!-- Columna Nombre Solicitud -->
+        <ng-container matColumnDef="nombre_solicitud">
+          <th mat-header-cell *matHeaderCellDef>Solicitud</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <div class="solicitud-nombre">
+              <mat-icon class="icon-solicitud">description</mat-icon>
+              <span>{{ solicitud.nombre_solicitud }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna Tipo -->
+        <ng-container matColumnDef="tipo_solicitud">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <mat-chip class="tipo-chip">{{ solicitud.tipo_solicitud_display }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Columna Usuario -->
+        <ng-container matColumnDef="usuario">
+          <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <div class="usuario-info">
+              <div class="usuario-nombre">{{ solicitud.usuario.nombre_completo }}</div>
+              <div class="usuario-codigo">{{ solicitud.usuario.codigo }}</div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna Período -->
+        <ng-container matColumnDef="periodo_academico">
+          <th mat-header-cell *matHeaderCellDef>Período</th>
+          <td mat-cell *matCellDef="let solicitud">{{ solicitud.periodo_academico }}</td>
+        </ng-container>
+
+        <!-- Columna Estado -->
+        <ng-container matColumnDef="estado_actual">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <mat-chip [class]="getEstadoClass(solicitud.estado_actual)">
+              {{ solicitud.estado_actual }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Columna Fecha -->
+        <ng-container matColumnDef="fecha_registro">
+          <th mat-header-cell *matHeaderCellDef>Fecha Registro</th>
+          <td mat-cell *matCellDef="let solicitud">
+            {{ formatearFecha(solicitud.fecha_registro_solicitud) }}
+          </td>
+        </ng-container>
+
+        <!-- Columna Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let solicitud">
+            <button mat-icon-button 
+                    matTooltip="Ver detalle"
+                    (click)="verDetalle(solicitud)"
+                    color="primary">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- Mensaje cuando no hay solicitudes -->
+      <div *ngIf="historial.solicitudes.length === 0" class="no-solicitudes">
+        <mat-icon>inbox</mat-icon>
+        <p>No se encontraron solicitudes con los filtros aplicados</p>
+      </div>
+    </div>
+  </app-card-container>
+</div>
+

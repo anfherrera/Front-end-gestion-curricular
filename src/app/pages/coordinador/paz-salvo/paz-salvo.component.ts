@@ -18,6 +18,7 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
+import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 
 @Component({
   selector: 'app-paz-salvo-coordinador',
@@ -33,7 +34,8 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
     MatTabsModule,
     RequestStatusTableComponent,
     DocumentationViewerComponent,
-    CardContainerComponent
+    CardContainerComponent,
+    PeriodoFiltroSelectorComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
@@ -44,6 +46,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   solicitudes: Solicitud[] = []; // Pendientes
   solicitudesProcesadas: Solicitud[] = []; // Procesadas
   selectedSolicitud: SolicitudHomologacionDTORespuesta | undefined;
+  periodoAcademicoFiltro: string | null = null; // Filtro de período académico para historial
 
   constructor(
     public pazSalvoService: PazSalvoService,
@@ -145,10 +148,10 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   }
 
   /**
-   * Cargar solicitudes procesadas (historial) - Estado APROBADA_COORDINADOR
+   * Cargar solicitudes procesadas (historial) - Historial verdadero de todas las procesadas
    */
   cargarSolicitudesProcesadas(): void {
-    this.pazSalvoService.getSolicitudesProcesadasCoordinador().subscribe({
+    this.pazSalvoService.getSolicitudesProcesadasCoordinador(this.periodoAcademicoFiltro || undefined).subscribe({
       next: (sols) => {
         
         // Mapear a formato de solicitudes para la tabla
@@ -178,7 +181,15 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   }
 
   /**
-   * Obtener fecha de procesamiento (último estado APROBADA_COORDINADOR)
+   * Manejar cambio de período académico en el filtro
+   */
+  onPeriodoChange(periodo: string): void {
+    this.periodoAcademicoFiltro = periodo || null;
+    this.cargarSolicitudesProcesadas();
+  }
+
+  /**
+   * Obtener fecha de procesamiento (último estado)
    */
   getFechaProcesamiento(solicitud: SolicitudHomologacionDTORespuesta): string {
     if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {

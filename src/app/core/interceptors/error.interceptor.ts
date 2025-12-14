@@ -78,7 +78,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         // ===== 403 FORBIDDEN =====
         // Usuario autenticado pero sin permisos para el recurso
         if (error.status === 403) {
-          logger.warn('🚫 Error 403: Acceso denegado - Usuario sin permisos');
+          // No mostrar error 403 para endpoints de períodos académicos (puede ocurrir si el usuario no está autenticado)
+          const isPeriodosEndpoint = error.url?.includes('/periodos-academicos/');
+          if (!isPeriodosEndpoint) {
+            logger.warn('🚫 Error 403: Acceso denegado - Usuario sin permisos');
+          }
           // No hacer logout, solo dejar que el error se propague
           // El componente puede mostrar un mensaje de error apropiado
         }

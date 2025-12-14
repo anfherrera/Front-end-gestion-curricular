@@ -230,6 +230,58 @@ export class PazSalvoService {
       );
   }
 
+  /**
+   * Crea una solicitud de paz y salvo con datos del formulario
+   * @param studentId ID del estudiante
+   * @param archivos Archivos subidos
+   * @param datosFormulario Datos del formulario (nombre_solicitud, fecha_registro_solicitud, periodo_academico, titulo_trabajo_grado, director_trabajo_grado)
+   */
+  crearSolicitudConFormulario(
+    studentId: number, 
+    archivos: Archivo[], 
+    datosFormulario: {
+      nombre_solicitud: string;
+      fecha_registro_solicitud: string;
+      periodo_academico?: string;
+      titulo_trabajo_grado?: string;
+      director_trabajo_grado?: string;
+    }
+  ): Observable<Solicitud> {
+    const usuario = this.authService.getUsuario();
+    if (!usuario) throw new Error('Usuario no autenticado');
+
+    const body: any = {
+      idUsuario: studentId,
+      nombre_solicitud: datosFormulario.nombre_solicitud,
+      fecha_registro_solicitud: datosFormulario.fecha_registro_solicitud
+    };
+
+    // Agregar período académico si se proporciona
+    if (datosFormulario.periodo_academico) {
+      body.periodo_academico = datosFormulario.periodo_academico;
+    }
+
+    // Agregar campos de trabajo de grado si se proporcionan
+    if (datosFormulario.titulo_trabajo_grado) {
+      body.titulo_trabajo_grado = datosFormulario.titulo_trabajo_grado;
+    }
+
+    if (datosFormulario.director_trabajo_grado) {
+      body.director_trabajo_grado = datosFormulario.director_trabajo_grado;
+    }
+
+    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
+      .pipe(
+        catchError(error => {
+          console.error('Error al crear solicitud de paz y salvo:', error);
+          console.error('Error status:', error.status);
+          console.error('Error message:', error.message);
+          console.error('Error body:', error.error);
+          throw error;
+        })
+      );
+  }
+
   approveRequest(requestId: number): Observable<any> {
     const url = `${this.apiUrl}/actualizarEstadoSolicitud`;
     const body = {
