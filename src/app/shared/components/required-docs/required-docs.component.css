@@ -61,6 +61,36 @@
   color: #856404;
 }
 
+.info-ayuda-sistemas {
+  margin: 8px 16px 16px 16px;
+  font-size: 13px;
+  color: #004085;
+  line-height: 1.6;
+  padding: 12px;
+  background-color: #cfe2ff;
+  border-radius: 6px;
+  border-left: 4px solid #00138C;
+}
+
+.info-ayuda-sistemas strong {
+  color: #00138C;
+  font-weight: 600;
+}
+
+.info-ayuda-sistemas .lista-requisitos {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.info-ayuda-sistemas .lista-requisitos li {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.info-ayuda-sistemas .lista-requisitos li:last-child {
+  margin-bottom: 0;
+}
+
 .info-ayuda-telematica {
   margin: 8px 16px 16px 16px;
   font-size: 13px;
@@ -124,6 +154,13 @@
   margin-left: 4px;
 }
 
+.asterisco-obligatorio {
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 4px;
+}
+
 .required-list li.optional {
   color: #333 !important;
   font-weight: normal;
@@ -132,6 +169,24 @@
 .required-list li.optional.success {
   color: #333 !important;
   font-weight: normal;
+}
+
+.required-list li.obligatorio-exclusivo {
+  font-weight: normal;
+}
+
+.required-list li.obligatorio-exclusivo strong {
+  color: #333;
+}
+
+.required-list li.obligatorio-telematica {
+  background-color: #fff3cd;
+  border-left: 3px solid #ffc107;
+  font-weight: 500;
+}
+
+.required-list li.obligatorio-telematica strong {
+  color: #856404;
 }
 
 .info-adicional {

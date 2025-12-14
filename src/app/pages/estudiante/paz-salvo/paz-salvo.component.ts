@@ -56,11 +56,12 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     { label: 'Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf', obligatorio: true },
     { label: 'Autorización para publicar y permitir la consulta y uso de obras en el Repositorio Institucional.pdf', obligatorio: true },
     { label: 'Comprobante de pago de derechos de sustentación.pdf', obligatorio: true },
-    { label: 'Documento final del trabajo de grado con sus anexos (PDF).pdf', obligatorio: true },
+    { label: 'Documento final del trabajo de grado con sus anexos.pdf', obligatorio: true },
     { label: 'Formato TI-G (Acta sustentación TRABAJO DE INVESTIGACIÓN).pdf (según modalidad)', obligatorio: false },
     { label: 'Formato TI-H (Constancia director y jurados TRABAJO DE INVESTIGACIÓN).pdf (según modalidad)', obligatorio: false },
     { label: 'Formato PP-G (Acta sustentación PRÁCTICA PROFESIONAL).pdf (según modalidad)', obligatorio: false },
-    { label: 'Formato PP-H (Constancia director y jurados PRÁCTICA PROFESIONAL).pdf (según modalidad)', obligatorio: false }
+    { label: 'Formato PP-H (Constancia director y jurados PRÁCTICA PROFESIONAL).pdf (según modalidad)', obligatorio: false },
+    { label: 'Resultados de pruebas ECAES (opcional).pdf', obligatorio: false, opcional: true }
   ];
 
   // Archivos exclusivos: Para programas de Sistemas, Electrónica y Automática (solo uno de estos dos)
@@ -69,8 +70,8 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   // - PPH (sin guion) = Acta de sustentación para programas Sistemas, Electrónica, Automática
   // Estos formatos también se suben a SIMCA Web, pero deben adjuntarse aquí también
   archivosExclusivos: string[] = [
-    'Formato PPH (Acta sustentación - Sistemas, Electrónica, Automática).pdf (obligatorio para estos programas)',
-    'Formato TIH (Acta sustentación - Sistemas, Electrónica, Automática).pdf (obligatorio para estos programas)'
+    'Formato PPH.pdf',
+    'Formato TIH.pdf'
   ];
 
   // Archivos opcionales
@@ -120,6 +121,43 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       return false;
     }
 
+    const nombrePrograma = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
+    const programa = nombrePrograma.toLowerCase();
+    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
+    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática', 'automatización'].some(
+      p => programa.includes(p.toLowerCase())
+    );
+
+    // Para Telemática, solo se requiere la cédula
+    if (esTelematica) {
+      const tieneFormatosIncorrectos = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('tig') || nombre.includes('tih') || 
+               nombre.includes('ppg') || nombre.includes('pph') ||
+               (nombre.includes('pp-h') && !nombre.includes('pph')) ||
+               nombre.includes('pmfo4for27') || nombre.includes('hoja de vida') ||
+               nombre.includes('autorizacion') || nombre.includes('autorización') ||
+               nombre.includes('comprobante') || nombre.includes('trabajo de grado');
+      });
+
+      if (tieneFormatosIncorrectos) {
+        return false;
+      }
+
+      // Para Telemática, solo la cédula es obligatoria
+      const tieneCedula = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('cedula') || nombre.includes('cédula');
+      });
+
+      if (!tieneCedula) {
+        return false;
+      }
+
+      return true; // Solo necesita la cédula
+    }
+
+    // Para otros programas, validar los documentos obligatorios
     const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
     const todosObligatoriosSubidos = documentosObligatorios.every(doc => 
       this.archivoSubido(doc.label)
@@ -127,25 +165,6 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
     if (!todosObligatoriosSubidos) {
       return false;
-    }
-
-    const programa = this.usuario?.objPrograma?.nombre?.toLowerCase() || '';
-    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
-    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática'].some(
-      p => programa.includes(p.toLowerCase())
-    );
-
-    if (esTelematica) {
-      const tieneFormatosIncorrectos = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('tig') || nombre.includes('tih') || 
-               nombre.includes('ppg') || nombre.includes('pph') ||
-               (nombre.includes('pp-h') && !nombre.includes('pph'));
-      });
-
-      if (tieneFormatosIncorrectos) {
-        return false;
-      }
     }
 
     if (requiereArchivoExclusivo) {
@@ -186,20 +205,15 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   obtenerDocumentosFaltantes(): string[] {
     const faltantes: string[] = [];
     const errores: string[] = [];
-    
-    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
-    documentosObligatorios.forEach(doc => {
-      if (!this.archivoSubido(doc.label)) {
-        faltantes.push(doc.label);
-      }
-    });
 
-    const programa = this.usuario?.objPrograma?.nombre?.toLowerCase() || '';
+    const nombrePrograma = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
+    const programa = nombrePrograma.toLowerCase();
     const esTelematica = programa.includes('telemática') || programa.includes('telematica');
-    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática'].some(
+    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática', 'automatización'].some(
       p => programa.includes(p.toLowerCase())
     );
 
+    // Para Telemática, solo se requiere la cédula
     if (esTelematica) {
       const tieneTI = this.archivosActuales.some(a => {
         const nombre = this.normalizarNombre(a.nombre);
@@ -217,6 +231,12 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
         const nombre = this.normalizarNombre(a.nombre);
         return nombre.includes('tih') && !nombre.includes('ti-h');
       });
+      const tieneDocumentosObligatorios = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('pmfo4for27') || nombre.includes('hoja de vida') ||
+               nombre.includes('autorizacion') || nombre.includes('autorización') ||
+               nombre.includes('comprobante') || nombre.includes('trabajo de grado');
+      });
 
       if (tieneTI) {
         errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
@@ -227,7 +247,30 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       if (tienePPH || tieneTIH) {
         errores.push('Los formatos PPH/TIH no aplican para tu programa (Telemática)');
       }
+      if (tieneDocumentosObligatorios) {
+        errores.push('Los documentos obligatorios (PM-FO-4-FOR-27, Autorización, Comprobante, Trabajo de grado) no aplican para tu programa (Telemática)');
+      }
+
+      // Para Telemática, solo la cédula es obligatoria
+      const tieneCedula = this.archivosActuales.some(a => {
+        const nombre = this.normalizarNombre(a.nombre);
+        return nombre.includes('cedula') || nombre.includes('cédula');
+      });
+
+      if (!tieneCedula) {
+        faltantes.push('Fotocopia de cédula (obligatoria para Telemática)');
+      }
+
+      return [...faltantes, ...errores];
     }
+
+    // Para otros programas, validar los documentos obligatorios
+    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
+    documentosObligatorios.forEach(doc => {
+      if (!this.archivoSubido(doc.label)) {
+        faltantes.push(doc.label);
+      }
+    });
 
     if (requiereArchivoExclusivo) {
       const tienePPH = this.archivosActuales.some(a => 

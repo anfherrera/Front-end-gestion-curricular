@@ -1,10 +1,14 @@
 <div class="homologacion-container">
 
+  <!-- Período Académico Actual -->
+  <app-periodo-actual-display></app-periodo-actual-display>
+
   <!-- Documentación requerida -->
   <app-required-docs
     [requiredFiles]="documentosRequeridos"
     [exclusiveFiles]="archivosExclusivos"
-    [archivos]="archivosActuales">
+    [archivos]="archivosActuales"
+    [programaEstudiante]="usuario?.objPrograma?.nombre || ''">
   </app-required-docs>
 
   <!-- Subir Archivos -->

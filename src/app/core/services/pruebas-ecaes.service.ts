@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -153,14 +153,16 @@ export class PruebasEcaesService {
   /**
    * Listar solicitudes ECAES por rol y usuario
    */
-  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<SolicitudEcaesResponse[]> {
-    let params: any = { rol: rol };
+  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudEcaesResponse[]> {
+    let params = new HttpParams().set('rol', rol);
     if (idUsuario) {
-      params.idUsuario = idUsuario;
+      params = params.set('idUsuario', idUsuario.toString());
+    }
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
     }
 
     const url = `${this.apiUrl}/listarSolicitud-ecaes/porRol`;
-    // Log de depuración (comentado para producción)
 
     return this.http.get<SolicitudEcaesResponse[]>(url, {
       params: params,
@@ -199,8 +201,14 @@ export class PruebasEcaesService {
   /**
    * Listar solicitudes ECAES para funcionario
    */
-  listarSolicitudesFuncionario(): Observable<SolicitudEcaesResponse[]> {
+  listarSolicitudesFuncionario(periodoAcademico?: string): Observable<SolicitudEcaesResponse[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitudes-Ecaes/Funcionario`, {
+      params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders()
     });
   }

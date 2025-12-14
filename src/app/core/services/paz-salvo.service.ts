@@ -26,17 +26,12 @@ export class PazSalvoService {
   // ================================
   
   /**
-   * CORREGIDO FINAL: Listar solicitudes por rol
+   * Listar solicitudes por rol
    * @param rol - "ESTUDIANTE", "FUNCIONARIO", "COORDINADOR", "SECRETARIA"
    * @param idUsuario - ID del usuario (solo necesario para ESTUDIANTE)
-   * 
-   * IMPORTANTE: Ahora usa endpoints específicos con mayúscula inicial (igual que Homologación)
-   * - FUNCIONARIO → /Funcionario
-   * - COORDINADOR → /Coordinador
-   * - SECRETARIA → /Secretaria
-   * - ESTUDIANTE → /porRol?rol=ESTUDIANTE&idUsuario=X
+   * @param periodoAcademico - Período académico opcional (formato: "YYYY-P", ej: "2025-1"). Si no se envía, el backend usa el período actual.
    */
-  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<SolicitudHomologacionDTORespuesta[]> {
+  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
     const rolUpper = rol.toUpperCase();
     
     // ESTUDIANTE usa el endpoint /porRol con parámetros
@@ -44,6 +39,10 @@ export class PazSalvoService {
       let params = new HttpParams()
         .set('rol', 'ESTUDIANTE')
         .set('idUsuario', idUsuario?.toString() || '');
+      
+      if (periodoAcademico) {
+        params = params.set('periodoAcademico', periodoAcademico);
+      }
       
       return this.http.get<SolicitudHomologacionDTORespuesta[]>(
         `${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`,
@@ -61,9 +60,14 @@ export class PazSalvoService {
       endpoint = 'Secretaria';
     }
     
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/${endpoint}`,
-      { headers: this.getAuthHeaders() }
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     );
   }
 
@@ -71,18 +75,23 @@ export class PazSalvoService {
    * Obtener solicitudes para estudiante
    * Usa el endpoint /porRol con parámetros
    */
-  getStudentRequests(studentId: number): Observable<SolicitudHomologacionDTORespuesta[]> {
-    return this.listarSolicitudesPorRol('ESTUDIANTE', studentId);
+  getStudentRequests(studentId: number, periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    return this.listarSolicitudesPorRol('ESTUDIANTE', studentId, periodoAcademico);
   }
 
   /**
    * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
    * Igual que Homologación: usa endpoint directo /Funcionario
    */
-  getPendingRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getPendingRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Funcionario`, 
-      { headers: this.getAuthHeaders() }
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     );
   }
 
@@ -90,10 +99,15 @@ export class PazSalvoService {
    * Obtener solicitudes para coordinador
    * Igual que Homologación: usa endpoint directo /Coordinador
    */
-  getCoordinatorRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getCoordinatorRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Coordinador`, 
-      { headers: this.getAuthHeaders() }
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     );
   }
 
@@ -102,10 +116,15 @@ export class PazSalvoService {
    * Igual que Homologación: usa endpoint directo /Secretaria
    * Estado: APROBADA_COORDINADOR (pendientes de procesar)
    */
-  getSecretariaRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getSecretariaRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria`, 
-      { headers: this.getAuthHeaders() }
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     );
   }
 
@@ -113,14 +132,19 @@ export class PazSalvoService {
    * Obtener solicitudes ya procesadas por funcionario (historial)
    * Estado: APROBADA_FUNCIONARIO (ya aprobadas por funcionario)
    */
-  getSolicitudesProcesadasFuncionario(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Funcionario/Aprobadas`, 
-      { headers: this.getAuthHeaders() }
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
         console.error('Error obteniendo solicitudes procesadas (funcionario):', error);
-        return of([]); // Retornar array vacío en caso de error
+        return of([]);
       })
     );
   }
@@ -129,14 +153,19 @@ export class PazSalvoService {
    * Obtener solicitudes ya procesadas por coordinador (historial)
    * Estado: APROBADA_COORDINADOR (ya aprobadas por coordinador)
    */
-  getSolicitudesProcesadasCoordinador(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Coordinador/Aprobadas`, 
-      { headers: this.getAuthHeaders() }
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
         console.error('Error obteniendo solicitudes procesadas (coordinador):', error);
-        return of([]); // Retornar array vacío en caso de error
+        return of([]);
       })
     );
   }
@@ -145,14 +174,19 @@ export class PazSalvoService {
    * Obtener solicitudes ya procesadas por secretaría (historial)
    * Estado: APROBADA (ya enviadas al estudiante)
    */
-  getSolicitudesProcesadasSecretaria(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getSolicitudesProcesadasSecretaria(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria/Aprobadas`, 
-      { headers: this.getAuthHeaders() }
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
         console.error('Error obteniendo solicitudes procesadas (secretaria):', error);
-        return of([]); // Retornar array vacío en caso de error
+        return of([]);
       })
     );
   }

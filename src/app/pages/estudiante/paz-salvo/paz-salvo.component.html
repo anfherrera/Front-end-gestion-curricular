@@ -6,7 +6,7 @@
     [exclusiveFiles]="archivosExclusivos"
     [optionalFiles]="optionalFiles"
     [archivos]="archivosActuales"
-    [programaEstudiante]="usuario?.objPrograma?.nombre || ''">
+    [programaEstudiante]="(usuario?.objPrograma?.nombre_programa || usuario?.objPrograma?.nombre || '')">
   </app-required-docs>
 
   <!-- Subir Archivos -->

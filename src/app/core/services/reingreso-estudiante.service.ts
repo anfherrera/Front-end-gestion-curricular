@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SolicitudReingresoDTOPeticion, SolicitudReingresoDTORespuesta, CambioEstadoSolicitudDTOPeticion } from '../models/procesos.model';
 import { environment } from '../../../environments/environment';
@@ -39,10 +39,16 @@ export class ReingresoEstudianteService {
     );
   }
 
-  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<SolicitudReingresoDTORespuesta[]> {
+  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudReingresoDTORespuesta[]> {
     const headers = this.getAuthHeaders();
 
     let url: string;
+    let params = new HttpParams();
+    
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     switch (rol.toLowerCase()) {
       case 'funcionario':
         url = `${this.apiUrl}/listarSolicitud-Reingreso/Funcionario`;
@@ -54,11 +60,10 @@ export class ReingresoEstudianteService {
         url = `${this.apiUrl}/listarSolicitud-Reingreso/Secretaria`;
         break;
       default:
-        // Fallback al endpoint general
         url = `${this.apiUrl}/listarSolicitud-Reingreso/porUser`;
-        let params: any = { rol: rol };
+        params = params.set('rol', rol);
         if (idUsuario) {
-          params.idUsuario = idUsuario;
+          params = params.set('idUsuario', idUsuario.toString());
         }
         return this.http.get<SolicitudReingresoDTORespuesta[]>(url, {
           params: params,
@@ -66,9 +71,10 @@ export class ReingresoEstudianteService {
         });
     }
 
-    // Log de depuración (comentado para producción)
-
-    return this.http.get<SolicitudReingresoDTORespuesta[]>(url, { headers });
+    return this.http.get<SolicitudReingresoDTORespuesta[]>(url, { 
+      params: params.keys().length > 0 ? params : undefined,
+      headers 
+    });
   }
 
   obtenerSolicitudPorId(id: number): Observable<SolicitudReingresoDTORespuesta> {
@@ -185,12 +191,16 @@ export class ReingresoEstudianteService {
    * Obtener solicitudes aprobadas para secretaría
    * Endpoint: /listarSolicitud-Reingreso/Secretaria/Aprobadas
    */
-  getSecretariaApprovedRequests(): Observable<SolicitudReingresoDTORespuesta[]> {
+  getSecretariaApprovedRequests(periodoAcademico?: string): Observable<SolicitudReingresoDTORespuesta[]> {
     const url = `${this.apiUrl}/listarSolicitud-Reingreso/Secretaria/Aprobadas`;
-
-    // URL solicitudes aprobadas secretaría
+    
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
 
     return this.http.get<SolicitudReingresoDTORespuesta[]>(url, {
+      params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders()
     });
   }

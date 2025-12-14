@@ -95,6 +95,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   
   // Subscriptions
   private subscriptions: Subscription[] = [];
+  
+  // Flag para evitar recargas múltiples
+  private chartsCreados = false;
 
   constructor(
     private estadisticasService: EstadisticasService,
@@ -165,11 +168,24 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
             
             this.generarKPIs();
-            this.crearCharts();
+            
+            // Solo crear gráficos si no se han creado antes
+            const primeraCarga = !this.chartsCreados;
+            if (primeraCarga) {
+              this.crearCharts();
+              this.chartsCreados = true;
+            } else {
+              // Si los gráficos ya existen, solo actualizarlos
+              this.actualizarCharts();
+            }
+            
             this.loading = false;
             this.error = false;
             
-            this.mostrarExito('Datos cargados correctamente desde el backend');
+            // Solo mostrar mensaje de éxito si es la primera carga
+            if (primeraCarga) {
+              this.mostrarExito('Datos cargados correctamente desde el backend');
+            }
           } catch (conversionError) {
             console.error('Error al convertir datos del API:', conversionError);
             // Si falla la conversión, intentar con endpoints alternativos
@@ -248,13 +264,23 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           );
           
           this.generarKPIs();
-          this.crearCharts();
+          
+          // Solo crear gráficos si no se han creado antes
+          const primeraCarga = !this.chartsCreados;
+          if (primeraCarga) {
+            this.crearCharts();
+            this.chartsCreados = true;
+          } else {
+            // Si los gráficos ya existen, solo actualizarlos
+            this.actualizarCharts();
+          }
+          
           this.loading = false;
           this.error = false;
           
           if (errores.length > 0) {
             this.mostrarError(`Datos cargados parcialmente. Algunos endpoints fallaron: ${errores.join(', ')}`);
-          } else {
+          } else if (primeraCarga) {
             this.mostrarExito('Datos cargados usando endpoints alternativos');
           }
         } catch (error) {
@@ -772,7 +798,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.destruirChart('chartProcesos');
+    // Solo destruir si el gráfico ya existe
+    if (this.chartProcesos) {
+      this.destruirChart('chartProcesos');
+    }
 
     // Cargar datos reales del backend
     const datosReales = await this.cargarDatosRealesProcesos();
@@ -958,7 +987,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.destruirChart('chartTendencia');
+    // Solo destruir si el gráfico ya existe
+    if (this.chartTendencia) {
+      this.destruirChart('chartTendencia');
+    }
 
     // Cargar datos reales del backend
     const datosReales = await this.cargarDatosRealesTendencia();
@@ -1086,7 +1118,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.destruirChart('chartTendencia');
+    // Solo destruir si el gráfico ya existe
+    if (this.chartTendencia) {
+      this.destruirChart('chartTendencia');
+    }
 
     // Generar datos de tendencia basados en los datos reales del backend
     const totalSolicitudes = this.resumenCompleto?.estadisticasGlobales.totalSolicitudes || 46;
@@ -1228,7 +1263,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.destruirChart('chartDistribucion');
+    // Solo destruir si el gráfico ya existe
+    if (this.chartDistribucion) {
+      this.destruirChart('chartDistribucion');
+    }
 
     // ACTUALIZADO: Cargar datos desde el endpoint /por-programa según la guía
     try {
@@ -1344,7 +1382,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.destruirChart('chartDistribucion');
+    // Solo destruir si el gráfico ya existe
+    if (this.chartDistribucion) {
+      this.destruirChart('chartDistribucion');
+    }
 
     if (!this.resumenCompleto || !this.resumenCompleto.estadisticasPorPrograma.length) {
       return;
@@ -1588,6 +1629,40 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       this.chartDistribucion.destroy();
       this.chartDistribucion = null;
     }
+    this.chartsCreados = false;
+  }
+
+  /**
+   * Actualiza los gráficos existentes en lugar de recrearlos
+   * Si los gráficos no existen, los crea
+   */
+  private actualizarCharts(): void {
+    // Si los gráficos no existen, crearlos
+    if (!this.chartProcesos || !this.chartTendencia || !this.chartDistribucion) {
+      this.crearCharts();
+      this.chartsCreados = true;
+      return;
+    }
+    
+    // Si los gráficos existen, solo actualizarlos sin animación
+    try {
+      if (this.chartProcesos) {
+        this.chartProcesos.update('none');
+      }
+      if (this.chartTendencia) {
+        this.chartTendencia.update('none');
+      }
+      if (this.chartDistribucion) {
+        this.chartDistribucion.update('none');
+      }
+    } catch (error) {
+      // Si hay un error al actualizar, recrear los gráficos
+      console.warn('Error al actualizar gráficos, recreándolos:', error);
+      this.destruirCharts();
+      this.chartsCreados = false;
+      this.crearCharts();
+      this.chartsCreados = true;
+    }
   }
 
   /**
@@ -1618,6 +1693,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Actualiza los datos del dashboard llamando nuevamente al servicio
    */
   actualizarDatos(): void {
+    // Resetear flag para forzar recreación de gráficos
+    this.chartsCreados = false;
+    this.destruirCharts();
     this.cargarDatos();
   }
 

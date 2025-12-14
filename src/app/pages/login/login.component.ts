@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
@@ -33,7 +33,7 @@ import { getLoginCooldownRemainingSeconds } from '../../core/interceptors/login-
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   hide = true;
   errorMensaje = '';
@@ -62,20 +62,47 @@ export class LoginComponent implements OnInit {
     // Verificar si ya está autenticado
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/welcome']);
+      return;
     }
 
     // Iniciar contador de cooldown si aplica
     this.tickRate();
-    this.rateSub = interval(1000).subscribe(() => this.tickRate());
+    
+    // Solo iniciar el intervalo si localStorage está disponible (evitar problemas con SSR/HMR)
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      this.rateSub = interval(1000).subscribe(() => {
+        // Verificar que el componente aún esté activo antes de actualizar
+        if (this.rateSub && !this.rateSub.closed) {
+          this.tickRate();
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {
-    this.rateSub?.unsubscribe();
+    if (this.rateSub && !this.rateSub.closed) {
+      this.rateSub.unsubscribe();
+      this.rateSub = undefined;
+    }
   }
 
   private tickRate(): void {
-    this.rateRemaining = getLoginCooldownRemainingSeconds();
-    this.loginDisabled = this.rateRemaining > 0;
+    try {
+      // Solo actualizar si localStorage está disponible
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        const nuevoRate = getLoginCooldownRemainingSeconds();
+        // Solo actualizar si el valor cambió para evitar detección de cambios innecesaria
+        if (nuevoRate !== this.rateRemaining) {
+          this.rateRemaining = nuevoRate;
+          this.loginDisabled = this.rateRemaining > 0;
+        }
+      }
+    } catch (error) {
+      // Silenciar errores durante desarrollo/HMR
+      console.warn('Error en tickRate (puede ignorarse durante HMR):', error);
+      this.rateRemaining = 0;
+      this.loginDisabled = false;
+    }
   }
 
   // Validador personalizado para correos de Unicauca

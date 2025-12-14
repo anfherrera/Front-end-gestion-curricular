@@ -11,6 +11,7 @@ export interface Archivo {
 export interface Documento {
   label: string;
   obligatorio: boolean;
+  opcional?: boolean;
 }
 
 @Component({
@@ -28,8 +29,64 @@ export class RequiredDocsComponent {
   @Input() programaEstudiante: string = '';
 
   get esTelematica(): boolean {
-    const programa = this.programaEstudiante.toLowerCase();
+    if (!this.programaEstudiante) return false;
+    const programa = this.programaEstudiante.toLowerCase().trim();
     return programa.includes('telemática') || programa.includes('telematica');
+  }
+
+  get esSistemasElectronicaAutomatica(): boolean {
+    if (!this.programaEstudiante) return false;
+    const programa = this.programaEstudiante.toLowerCase().trim();
+    // Verificar variaciones del nombre del programa
+    return programa.includes('sistemas') || 
+           programa.includes('electrónica') || 
+           programa.includes('electronica') ||
+           programa.includes('electrónica y telecomunicaciones') ||
+           programa.includes('electronica y telecomunicaciones') ||
+           programa.includes('automática') ||
+           programa.includes('automatica') ||
+           programa.includes('automatización') ||
+           programa.includes('automatizacion') ||
+           programa.includes('ingeniería de sistemas') ||
+           programa.includes('ingenieria de sistemas') ||
+           programa.includes('ingeniería en sistemas') ||
+           programa.includes('ingenieria en sistemas');
+  }
+
+  get documentosObligatorios(): Documento[] {
+    if (this.esTelematica) {
+      return []; // Telemática solo sube la cédula, no los 4 documentos obligatorios
+    }
+    return this.requiredFiles.filter(doc => doc.obligatorio);
+  }
+
+  get documentosSegunModalidad(): Documento[] {
+    if (this.esTelematica) {
+      return []; // Telemática no necesita estos formatos
+    }
+    return this.requiredFiles.filter(doc => !doc.obligatorio && !doc.opcional);
+  }
+
+  get documentosOpcionales(): Documento[] {
+    return this.requiredFiles.filter(doc => doc.opcional === true);
+  }
+
+  get archivosExclusivosFiltrados(): string[] {
+    if (this.esSistemasElectronicaAutomatica) {
+      return this.exclusiveFiles; // Solo para Sistemas, Electrónica, Automática
+    }
+    return []; // No mostrar para otros programas
+  }
+
+  get archivosOpcionalesFiltrados(): string[] {
+    return []; // Ya no hay opcionales, la cédula es obligatoria para Telemática
+  }
+
+  get archivosObligatoriosTelematica(): string[] {
+    if (this.esTelematica) {
+      return this.optionalFiles; // Para Telemática, la cédula es obligatoria
+    }
+    return []; // No mostrar para otros programas
   }
 
   private normalizarTexto(texto: string): string {

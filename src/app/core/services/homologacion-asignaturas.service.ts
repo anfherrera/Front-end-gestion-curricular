@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Solicitud, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { environment } from '../../../environments/environment';
@@ -36,14 +36,16 @@ export class HomologacionAsignaturasService {
     );
   }
 
-  listarSolicitudesPorRol(rol: string, idUsuario?: number): Observable<SolicitudHomologacionDTORespuesta[]> {
-    let params: any = { rol: rol };
+  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams().set('rol', rol);
     if (idUsuario) {
-      params.idUsuario = idUsuario;
+      params = params.set('idUsuario', idUsuario.toString());
+    }
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
     }
 
     const url = `${this.apiUrl}/listarSolicitud-Homologacion/porRol`;
-    // Log de depuración (comentado para producción)
 
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(url, {
       params: params,
@@ -58,8 +60,14 @@ export class HomologacionAsignaturasService {
   /**
    * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
    */
-  getPendingRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getPendingRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/Funcionario`, { 
+      params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders() 
     });
   }
@@ -67,8 +75,14 @@ export class HomologacionAsignaturasService {
   /**
    * Obtener solicitudes para coordinador
    */
-  getCoordinadorRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getCoordinadorRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/Coordinador`, { 
+      params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders() 
     });
   }
@@ -76,8 +90,14 @@ export class HomologacionAsignaturasService {
   /**
    * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
    */
-  getSecretariaRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getSecretariaRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/Secretaria`, { 
+      params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders() 
     });
   }
@@ -86,12 +106,16 @@ export class HomologacionAsignaturasService {
    * Obtener solicitudes aprobadas para secretaría
    * Endpoint: /listarSolicitud-Homologacion/Secretaria/Aprobadas
    */
-  getSecretariaApprovedRequests(): Observable<SolicitudHomologacionDTORespuesta[]> {
+  getSecretariaApprovedRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
     const url = `${this.apiUrl}/listarSolicitud-Homologacion/Secretaria/Aprobadas`;
-
-    // URL solicitudes homologación aprobadas secretaría
+    
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
 
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(url, {
+      params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders()
     });
   }

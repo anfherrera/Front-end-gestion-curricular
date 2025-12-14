@@ -1,4 +1,7 @@
 <div class="container">
+  <!-- Período Académico Actual -->
+  <app-periodo-actual-display></app-periodo-actual-display>
+
   <div class="header-section">
     <h1 class="page-title">
       <mat-icon class="title-icon">school</mat-icon>
@@ -20,7 +23,8 @@
     <mat-card-content>
       <app-required-docs
         [requiredFiles]="documentosRequeridos"
-        [archivos]="archivosActuales">
+        [archivos]="archivosActuales"
+        [programaEstudiante]="usuario?.objPrograma?.nombre || ''">
       </app-required-docs>
     </mat-card-content>
   </mat-card>

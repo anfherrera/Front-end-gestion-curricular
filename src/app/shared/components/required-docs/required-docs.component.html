@@ -5,27 +5,58 @@
     
     <p class="info-text">Debes subir los siguientes documentos necesarios en formato PDF. Todos los formatos deben estar debidamente diligenciados y firmados:</p>
     
-    <p class="info-ayuda" *ngIf="!esTelematica">
-      <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
-    </p>
+    <!-- Nota para Sistemas, Electrónica y Automática -->
+    <div class="info-ayuda-sistemas" *ngIf="esSistemasElectronicaAutomatica && !esTelematica">
+      <p><strong>Importante para estudiantes de Sistemas, Electrónica y Automática:</strong></p>
+      <ul class="lista-requisitos">
+        <li>Debes subir los 4 documentos obligatorios marcados con (*)</li>
+        <li><strong>Además, debes subir OBLIGATORIAMENTE uno de estos formatos:</strong> PPH o TIH (solo uno de los dos, marcado con *)</li>
+        <li><strong>Y según tu modalidad de trabajo de grado:</strong> Si es TRABAJO DE INVESTIGACIÓN, sube TI-G y TI-H. Si es PRÁCTICA PROFESIONAL, sube PP-G y PP-H. <strong>NO subas ambos grupos</strong></li>
+      </ul>
+    </div>
+
+    <!-- Nota para Telemática -->
     <p class="info-ayuda-telematica" *ngIf="esTelematica">
-      <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir los 4 documentos obligatorios (marcados con *) y la fotocopia de tu cédula. NO debes subir los formatos TI-G/TI-H, PP-G/PP-H ni PPH/TIH, ya que estos no aplican para tu programa.
+      <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir la fotocopia de tu cédula (marcada con *). Los formatos TI-G/TI-H, PP-G/PP-H, PPH/TIH y los demás documentos no aplican para tu programa.
+    </p>
+
+    <!-- Nota para otros programas -->
+    <p class="info-ayuda" *ngIf="!esTelematica && !esSistemasElectronicaAutomatica">
+      <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
     </p>
 
     <ul class="required-list">
-      <li *ngFor="let doc of requiredFiles">
+      <!-- Documentos obligatorios para todos -->
+      <li *ngFor="let doc of documentosObligatorios">
         <mat-icon>description</mat-icon>
-        {{ doc.label }} <span *ngIf="doc.obligatorio">*</span>
+        {{ doc.label }} <span class="asterisco-obligatorio">*</span>
       </li>
 
-      <li *ngIf="exclusiveFiles.length">
+      <!-- Archivos exclusivos (solo para Sistemas, Electrónica, Automática) -->
+      <li *ngIf="archivosExclusivosFiltrados.length" class="obligatorio-exclusivo">
         <mat-icon>description</mat-icon>
-        {{ exclusiveFiles.join(' o ') }} <span class="nota">(solo uno)</span>
+        {{ archivosExclusivosFiltrados.join(' o ') }} 
+        <span class="asterisco-obligatorio">*</span>
+        <span class="nota">(solo uno)</span>
       </li>
 
-      <li *ngFor="let file of optionalFiles" class="optional">
+      <!-- Cédula obligatoria para Telemática -->
+      <li *ngFor="let file of archivosObligatoriosTelematica" class="obligatorio-telematica">
         <mat-icon>description</mat-icon>
-        {{ file }} <span class="nota">(opcional)</span>
+        <strong>{{ file }}</strong> 
+        <span class="asterisco-obligatorio">*</span>
+      </li>
+
+      <!-- Documentos según modalidad (no para Telemática) -->
+      <li *ngFor="let doc of documentosSegunModalidad">
+        <mat-icon>description</mat-icon>
+        {{ doc.label }}
+      </li>
+
+      <!-- Documentos opcionales -->
+      <li *ngFor="let doc of documentosOpcionales">
+        <mat-icon>description</mat-icon>
+        {{ doc.label }}
       </li>
     </ul>
     <div class="info-adicional">
