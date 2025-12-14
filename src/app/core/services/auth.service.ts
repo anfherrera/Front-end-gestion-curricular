@@ -189,6 +189,13 @@ export class AuthService {
     const storage = this.safeLocalStorage();
     if (!storage) return;
 
+    // Verificar primero si el token sigue siendo válido
+    if (!this.isAuthenticated()) {
+      // Token expirado o inválido - limpiar sesión
+      this.clearToken();
+      return;
+    }
+
     const exp = storage.getItem(this.EXP_KEY);
     if (exp) {
       this.startLogoutTimer(Number(exp));
