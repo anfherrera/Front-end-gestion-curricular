@@ -10,34 +10,37 @@ export interface HistorialSolicitud {
   periodo_academico: string;
   fecha_registro_solicitud: string;
   fecha_ceremonia?: string | null;
-  tipo_solicitud: string;
-  tipo_solicitud_display: string;
-  estado_actual: string;
-  fecha_ultimo_estado: string;
-  total_estados: number;
-  total_documentos: number;
-  usuario: {
+  tipo_solicitud?: string;
+  tipo_solicitud_display?: string;
+  estado_actual?: string;
+  fecha_ultimo_estado?: string;
+  total_estados?: number;
+  total_documentos?: number;
+  objUsuario?: {
     id_usuario: number;
     nombre_completo: string;
     codigo: string;
+    cedula?: string;
     correo?: string;
+    estado_usuario?: boolean;
+    rol?: string | null;
+    objPrograma?: any | null;
   };
   estadosSolicitud: Array<{
+    id_estado?: number;
     estado_actual: string;
     fecha_registro_estado: string;
-    comentario?: string;
+    comentario?: string | null;
   }>;
+  documentos?: Array<any>;
 }
 
 export interface HistorialResponse {
-  total: number;
-  filtros_aplicados: {
-    periodo_academico: string;
-    tipo_solicitud: string;
-    estado_actual: string;
-    id_usuario: string;
-  };
   solicitudes: HistorialSolicitud[];
+  total: number;
+  total_solicitudes_sistema?: number;
+  total_solicitudes_procesadas?: number;
+  total_solicitudes_no_procesadas?: number;
 }
 
 export interface FiltrosHistorial {
@@ -102,14 +105,11 @@ export class HistorialSolicitudesService {
       catchError(error => {
         console.error('Error obteniendo historial completo:', error);
         return of({
+          solicitudes: [],
           total: 0,
-          filtros_aplicados: {
-            periodo_academico: filtros?.periodoAcademico || 'Todos',
-            tipo_solicitud: filtros?.tipoSolicitud || 'Todos',
-            estado_actual: filtros?.estadoActual || 'Todos',
-            id_usuario: filtros?.idUsuario?.toString() || 'Todos'
-          },
-          solicitudes: []
+          total_solicitudes_sistema: 0,
+          total_solicitudes_procesadas: 0,
+          total_solicitudes_no_procesadas: 0
         });
       })
     );

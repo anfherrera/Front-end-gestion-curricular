@@ -162,6 +162,33 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Detecta el tipo de solicitud desde el nombre
+   */
+  detectarTipoSolicitud(nombreSolicitud: string): string {
+    if (!nombreSolicitud) return 'N/A';
+    if (nombreSolicitud.includes('Reingreso')) return 'Reingreso';
+    if (nombreSolicitud.includes('Homologacion') || nombreSolicitud.includes('Homologación')) return 'Homologación';
+    if (nombreSolicitud.includes('Paz y Salvo')) return 'Paz y Salvo';
+    if (nombreSolicitud.includes('ECAES')) return 'ECAES';
+    if (nombreSolicitud.includes('Curso Verano') || nombreSolicitud.includes('Curso Intersemestral')) return 'Cursos de Verano';
+    return 'Otro';
+  }
+
+  /**
+   * Obtiene el estado actual desde el array de estados
+   */
+  obtenerEstadoActual(solicitud: any): string {
+    if (solicitud.estado_actual) {
+      return solicitud.estado_actual;
+    }
+    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+      return ultimoEstado.estado_actual || 'N/A';
+    }
+    return 'N/A';
+  }
+
+  /**
    * Exporta el historial actual a PDF
    */
   exportarPDF(): void {
