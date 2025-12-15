@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiEndpoints } from '../utils/api-endpoints';
 
@@ -153,6 +153,48 @@ export class HistorialSolicitudesService {
       catchError(error => {
         console.error('Error obteniendo historial de solicitud:', error);
         throw error;
+      })
+    );
+  }
+
+  /**
+   * Exporta el historial de solicitudes a PDF
+   * @param filtros Objeto con los filtros a aplicar (periodoAcademico, tipoSolicitud, estadoActual, idUsuario)
+   * @returns Observable con el blob del PDF
+   */
+  exportarHistorialPDF(filtros?: FiltrosHistorial): Observable<Blob> {
+    const url = ApiEndpoints.SOLICITUDES.EXPORTAR_PDF;
+    
+    // Construir parámetros solo con los que tienen valor
+    let params = new HttpParams();
+    
+    if (filtros?.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    }
+    if (filtros?.tipoSolicitud) {
+      params = params.set('tipoSolicitud', filtros.tipoSolicitud);
+    }
+    if (filtros?.estadoActual) {
+      params = params.set('estadoActual', filtros.estadoActual);
+    }
+    if (filtros?.idUsuario) {
+      params = params.set('idUsuario', filtros.idUsuario.toString());
+    }
+
+    // Headers para descargar PDF (sin Content-Type para que el navegador lo maneje)
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+
+    return this.http.get(url, {
+      headers,
+      params: params.keys().length > 0 ? params : undefined,
+      responseType: 'blob'
+    }).pipe(
+      catchError(error => {
+        console.error('Error exportando historial a PDF:', error);
+        return throwError(() => error);
       })
     );
   }

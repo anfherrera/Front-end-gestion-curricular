@@ -45,6 +45,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
   filtrosForm: FormGroup;
   historial: HistorialResponse | null = null;
   loading = false;
+  exportandoPDF = false;
   displayedColumns: string[] = [
     'id_solicitud',
     'nombre_solicitud',
@@ -157,6 +158,87 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
+    });
+  }
+
+  /**
+   * Exporta el historial actual a PDF
+   */
+  exportarPDF(): void {
+    this.exportandoPDF = true;
+
+    // Construir filtros desde el formulario
+    const filtros: FiltrosHistorial = {};
+    const formValue = this.filtrosForm.value;
+
+    if (formValue.periodoAcademico) {
+      filtros.periodoAcademico = formValue.periodoAcademico;
+    }
+    if (formValue.tipoSolicitud) {
+      filtros.tipoSolicitud = formValue.tipoSolicitud;
+    }
+    if (formValue.estadoActual) {
+      filtros.estadoActual = formValue.estadoActual;
+    }
+
+    this.historialService.exportarHistorialPDF(filtros).subscribe({
+      next: (blob: Blob) => {
+        try {
+          // Crear URL del blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Crear elemento <a> para descargar
+          const link = document.createElement('a');
+          link.href = url;
+          
+          // Nombre del archivo con timestamp
+          const fecha = new Date();
+          const fechaStr = fecha.toISOString()
+            .slice(0, 19)
+            .replace(/[:-]/g, '')
+            .replace('T', '_');
+          link.download = `historial_solicitudes_${fechaStr}.pdf`;
+          
+          // Simular click para descargar
+          document.body.appendChild(link);
+          link.click();
+          
+          // Limpiar
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          
+          this.snackBar.open('PDF exportado exitosamente', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        } catch (error) {
+          console.error('Error al procesar el PDF:', error);
+          this.snackBar.open('Error al procesar el archivo PDF', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        } finally {
+          this.exportandoPDF = false;
+        }
+      },
+      error: (err) => {
+        console.error('Error al exportar PDF:', err);
+        this.exportandoPDF = false;
+        
+        let mensaje = 'Error al exportar PDF';
+        if (err.status === 401) {
+          mensaje = 'No autorizado. Por favor, inicia sesión nuevamente';
+        } else if (err.status === 403) {
+          mensaje = 'No tienes permisos para exportar el historial';
+        } else if (err.status === 500) {
+          mensaje = 'Error del servidor al generar el PDF';
+        }
+        
+        this.snackBar.open(mensaje, 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
     });
   }
 }

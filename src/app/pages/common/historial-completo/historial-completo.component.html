@@ -1,6 +1,19 @@
 <div class="historial-completo-container">
   <app-card-container title="Historial Completo de Solicitudes">
     
+    <!-- Botón Exportar PDF -->
+    <div class="header-actions">
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="exportarPDF()"
+        [disabled]="exportandoPDF || loading">
+        <mat-icon *ngIf="!exportandoPDF">picture_as_pdf</mat-icon>
+        <mat-spinner *ngIf="exportandoPDF" diameter="16" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+        <span>{{ exportandoPDF ? 'Generando PDF...' : 'Exportar PDF' }}</span>
+      </button>
+    </div>
+    
     <!-- Filtros -->
     <div class="filtros-section">
       <form [formGroup]="filtrosForm" class="filtros-form">
