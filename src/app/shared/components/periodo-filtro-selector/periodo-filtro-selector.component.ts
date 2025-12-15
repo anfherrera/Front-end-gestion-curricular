@@ -27,10 +27,10 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
           (selectionChange)="onPeriodoChange($event.value)"
           [disabled]="cargando">
           <mat-option [value]="''" *ngIf="mostrarTodos">
-            <span class="option-text">Período actual ({{ periodoActualTexto }})</span>
+            <span class="option-text">Período actual{{ periodoActualTexto ? ' (' + periodoActualTexto + ')' : '' }}</span>
           </mat-option>
           <mat-option [value]="''" *ngIf="!mostrarTodos && incluirActual">
-            <span class="option-text">Período actual ({{ periodoActualTexto }})</span>
+            <span class="option-text">Período actual{{ periodoActualTexto ? ' (' + periodoActualTexto + ')' : '' }}</span>
           </mat-option>
           <mat-option *ngFor="let periodo of periodosDisponibles" [value]="periodo.valor">
             <span class="option-text">{{ getPeriodoDisplay(periodo) }}</span>
@@ -112,7 +112,34 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
   constructor(private periodosService: PeriodosAcademicosService) {}
 
   ngOnInit(): void {
-    // Suscribirse al período actual
+    // Cargar período actual primero si no está cargado
+    const periodoActualValue = this.periodosService.getPeriodoActualValue();
+    if (!periodoActualValue) {
+      this.periodosService.getPeriodoActual().subscribe({
+        next: (periodo) => {
+          if (periodo) {
+            this.periodoActual = periodo;
+            this.periodoActualTexto = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
+            // Si no hay período seleccionado, usar el actual
+            if (!this.periodoSeleccionado && !this.periodoInicial) {
+              this.periodoSeleccionado = periodo.valor;
+            }
+          } else {
+            // Fallback si no hay período actual
+            this.periodoActualTexto = 'No disponible';
+          }
+        },
+        error: (error) => {
+          console.error('Error cargando período actual:', error);
+          this.periodoActualTexto = 'No disponible';
+        }
+      });
+    } else {
+      this.periodoActual = periodoActualValue;
+      this.periodoActualTexto = periodoActualValue.nombrePeriodo || formatearPeriodo(periodoActualValue.valor);
+    }
+
+    // Suscribirse al período actual para actualizaciones
     const periodoSub = this.periodosService.periodoActual$.subscribe(periodo => {
       this.periodoActual = periodo;
       if (periodo) {
@@ -121,19 +148,12 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
         if (!this.periodoSeleccionado && !this.periodoInicial) {
           this.periodoSeleccionado = periodo.valor;
         }
+      } else {
+        // Fallback si no hay período actual
+        this.periodoActualTexto = 'No disponible';
       }
     });
     this.subscriptions.push(periodoSub);
-
-    // Cargar período actual si no está cargado
-    if (!this.periodosService.getPeriodoActualValue()) {
-      this.periodosService.getPeriodoActual().subscribe();
-    } else {
-      this.periodoActual = this.periodosService.getPeriodoActualValue();
-      if (this.periodoActual) {
-        this.periodoActualTexto = this.periodoActual.nombrePeriodo || formatearPeriodo(this.periodoActual.valor);
-      }
-    }
 
     // Establecer período inicial
     if (this.periodoInicial) {

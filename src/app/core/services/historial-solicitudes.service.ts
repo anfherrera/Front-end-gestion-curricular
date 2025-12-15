@@ -159,13 +159,24 @@ export class HistorialSolicitudesService {
 
   /**
    * Exporta el historial de solicitudes a PDF
-   * @param filtros Objeto con los filtros a aplicar (periodoAcademico, tipoSolicitud, estadoActual, idUsuario)
-   * @returns Observable con el blob del PDF y el nombre del archivo
+   * 
+   * IMPORTANTE: El endpoint respeta TODOS los filtros enviados como parámetros de consulta.
+   * - Si se envían filtros, el PDF solo incluirá las solicitudes que cumplan con esos criterios.
+   * - Si NO se envían filtros (filtros vacío o undefined), el PDF incluirá TODAS las solicitudes del sistema.
+   * - El PDF siempre mostrará qué filtros se aplicaron (o "Todos" si no hay filtro).
+   * 
+   * @param filtros Objeto con los filtros opcionales a aplicar:
+   *   - periodoAcademico: Filtra por período académico (ej: "2025-2")
+   *   - tipoSolicitud: Filtra por tipo (ej: "Reingreso", "Homologacion", "Curso de Verano", "ECAES", "Paz y Salvo")
+   *   - estadoActual: Filtra por estado (ej: "APROBADA", "ENVIADA", "RECHAZADA", etc.)
+   *   - idUsuario: Filtra por ID de usuario
+   * @returns Observable con el blob del PDF y el nombre del archivo extraído del header Content-Disposition
    */
   exportarHistorialPDF(filtros?: FiltrosHistorial): Observable<{ blob: Blob; filename: string }> {
     const url = ApiEndpoints.SOLICITUDES.EXPORTAR_PDF;
     
     // Construir parámetros solo con los que tienen valor
+    // Si no se envían parámetros, el backend incluirá todas las solicitudes
     let params = new HttpParams();
     
     if (filtros?.periodoAcademico) {

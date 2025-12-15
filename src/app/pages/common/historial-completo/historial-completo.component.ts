@@ -190,14 +190,20 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
 
   /**
    * Exporta el historial actual a PDF
+   * IMPORTANTE: Usa los mismos filtros que están aplicados en la tabla del historial
+   * para garantizar que el PDF contenga exactamente las mismas solicitudes que se muestran.
+   * Si no hay filtros, el PDF incluirá todas las solicitudes del sistema.
    */
   exportarPDF(): void {
     this.exportandoPDF = true;
 
-    // Construir filtros desde el formulario
+    // Construir filtros desde el formulario (los mismos que se usan para cargar el historial)
+    // Esto garantiza que el PDF contenga las mismas solicitudes que se muestran en la tabla
     const filtros: FiltrosHistorial = {};
     const formValue = this.filtrosForm.value;
 
+    // Solo agregar filtros que tengan valor (cadenas vacías no se envían)
+    // Si no se envían filtros, el backend incluirá todas las solicitudes
     if (formValue.periodoAcademico) {
       filtros.periodoAcademico = formValue.periodoAcademico;
     }
