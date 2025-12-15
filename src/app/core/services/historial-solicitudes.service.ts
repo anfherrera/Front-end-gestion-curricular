@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, catchError, of, throwError } from 'rxjs';
+import { Observable, catchError, of, throwError, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiEndpoints } from '../utils/api-endpoints';
 
@@ -160,9 +160,9 @@ export class HistorialSolicitudesService {
   /**
    * Exporta el historial de solicitudes a PDF
    * @param filtros Objeto con los filtros a aplicar (periodoAcademico, tipoSolicitud, estadoActual, idUsuario)
-   * @returns Observable con el blob del PDF
+   * @returns Observable con el blob del PDF y el nombre del archivo
    */
-  exportarHistorialPDF(filtros?: FiltrosHistorial): Observable<Blob> {
+  exportarHistorialPDF(filtros?: FiltrosHistorial): Observable<{ blob: Blob; filename: string }> {
     const url = ApiEndpoints.SOLICITUDES.EXPORTAR_PDF;
     
     // Construir parámetros solo con los que tienen valor
@@ -190,11 +190,41 @@ export class HistorialSolicitudesService {
     return this.http.get(url, {
       headers,
       params: params.keys().length > 0 ? params : undefined,
-      responseType: 'blob'
+      responseType: 'blob',
+      observe: 'response' // Necesario para acceder a los headers
     }).pipe(
       catchError(error => {
         console.error('Error exportando historial a PDF:', error);
         return throwError(() => error);
+      }),
+      // Mapear la respuesta para incluir el blob y el nombre del archivo
+      map(response => {
+        const blob = response.body as Blob;
+        let filename = 'historial_solicitudes.pdf';
+        
+        // Intentar obtener el nombre del archivo del header Content-Disposition
+        const contentDisposition = response.headers.get('content-disposition');
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1].replace(/['"]/g, '');
+            // Decodificar si está codificado en URL
+            try {
+              filename = decodeURIComponent(filename);
+            } catch (e) {
+              // Si falla la decodificación, usar el nombre tal cual
+            }
+          }
+        }
+        
+        // Si no se obtuvo del header, generar uno con la fecha actual
+        if (filename === 'historial_solicitudes.pdf') {
+          const fecha = new Date();
+          const fechaStr = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+          filename = `historial_solicitudes_${fechaStr}.pdf`;
+        }
+        
+        return { blob, filename };
       })
     );
   }

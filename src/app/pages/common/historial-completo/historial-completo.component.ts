@@ -209,22 +209,17 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
     }
 
     this.historialService.exportarHistorialPDF(filtros).subscribe({
-      next: (blob: Blob) => {
+      next: (response) => {
         try {
+          const { blob, filename } = response;
+          
           // Crear URL del blob
           const url = window.URL.createObjectURL(blob);
           
           // Crear elemento <a> para descargar
           const link = document.createElement('a');
           link.href = url;
-          
-          // Nombre del archivo con timestamp
-          const fecha = new Date();
-          const fechaStr = fecha.toISOString()
-            .slice(0, 19)
-            .replace(/[:-]/g, '')
-            .replace('T', '_');
-          link.download = `historial_solicitudes_${fechaStr}.pdf`;
+          link.download = filename;
           
           // Simular click para descargar
           document.body.appendChild(link);
@@ -259,6 +254,8 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
           mensaje = 'No tienes permisos para exportar el historial';
         } else if (err.status === 500) {
           mensaje = 'Error del servidor al generar el PDF';
+        } else if (err.status === 0) {
+          mensaje = 'Error de conexión. Verifica tu conexión a internet';
         }
         
         this.snackBar.open(mensaje, 'Cerrar', {
