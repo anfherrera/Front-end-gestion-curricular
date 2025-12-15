@@ -106,6 +106,12 @@ export const routes: Routes = [
         data: { role: UserRole.DECANO }
       },
       { 
+        path: 'decano/historial-completo/detalle/:id', 
+        loadComponent: () => import('./pages/common/detalle-solicitud/detalle-solicitud.component').then(m => m.DetalleSolicitudComponent),
+        canActivate: [authGuard, RoleGuard],
+        data: { role: UserRole.DECANO }
+      },
+      { 
         path: 'decano/modulo-estadistico', 
         loadComponent: () => import('./pages/funcionario/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent),
         canActivate: [authGuard, RoleGuard],

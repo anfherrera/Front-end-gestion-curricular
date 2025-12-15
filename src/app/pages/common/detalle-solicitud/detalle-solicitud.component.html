@@ -1,0 +1,191 @@
+<div class="detalle-solicitud-container">
+  <app-card-container title="Detalle de Solicitud">
+    
+    <!-- Botón Volver -->
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="volver()">
+        <mat-icon>arrow_back</mat-icon>
+        Volver al Historial
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando información de la solicitud...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !loading" class="error-container">
+      <mat-icon>error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="volver()">
+        Volver al Historial
+      </button>
+    </div>
+
+    <!-- Contenido -->
+    <div *ngIf="!loading && !error && solicitud" class="detalle-content">
+      
+      <!-- Información General -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>description</mat-icon>
+            Información de la Solicitud
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">ID:</span>
+              <span class="info-value">{{ solicitud.id_solicitud }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ solicitud.nombre_solicitud }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tipo:</span>
+              <mat-chip class="tipo-chip">{{ solicitud.tipo_solicitud_display }}</mat-chip>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Período Académico:</span>
+              <span class="info-value">{{ solicitud.periodo_academico }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Estado Actual:</span>
+              <mat-chip [class]="getEstadoClass(solicitud.estado_actual)">
+                {{ solicitud.estado_actual }}
+              </mat-chip>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fecha Registro:</span>
+              <span class="info-value">{{ formatearFecha(solicitud.fecha_registro_solicitud) }}</span>
+            </div>
+            <div class="info-item" *ngIf="solicitud.fecha_ultimo_estado">
+              <span class="info-label">Última Actualización:</span>
+              <span class="info-value">{{ formatearFecha(solicitud.fecha_ultimo_estado) }}</span>
+            </div>
+            <div class="info-item" *ngIf="solicitud.fecha_ceremonia">
+              <span class="info-label">Fecha Ceremonia:</span>
+              <span class="info-value">{{ formatearFecha(solicitud.fecha_ceremonia) }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Información del Estudiante -->
+      <mat-card class="info-card" *ngIf="solicitud.usuario">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            Información del Estudiante
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ solicitud.usuario.nombre_completo }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Código:</span>
+              <span class="info-value">{{ solicitud.usuario.codigo }}</span>
+            </div>
+            <div class="info-item" *ngIf="solicitud.usuario.cedula">
+              <span class="info-label">Cédula:</span>
+              <span class="info-value">{{ solicitud.usuario.cedula }}</span>
+            </div>
+            <div class="info-item" *ngIf="solicitud.usuario.correo">
+              <span class="info-label">Correo:</span>
+              <span class="info-value">{{ solicitud.usuario.correo }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Historial de Estados -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>history</mat-icon>
+            Historial de Estados ({{ solicitud.total_estados }})
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="timeline">
+            <div *ngFor="let estado of solicitud.historial_estados; let i = index" 
+                 class="timeline-item">
+              <div class="timeline-marker">
+                <div class="timeline-number">{{ i + 1 }}</div>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <mat-chip [class]="getEstadoClass(estado.estado_actual)">
+                    {{ estado.estado_actual }}
+                  </mat-chip>
+                  <span class="timeline-date">{{ formatearFecha(estado.fecha_registro_estado) }}</span>
+                </div>
+                <p *ngIf="estado.comentario" class="timeline-comentario">
+                  <mat-icon>comment</mat-icon>
+                  {{ estado.comentario }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Documentos -->
+      <mat-card class="info-card" *ngIf="solicitud.documentos && solicitud.documentos.length > 0">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>attach_file</mat-icon>
+            Documentos ({{ solicitud.total_documentos }})
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item *ngFor="let documento of solicitud.documentos">
+              <mat-icon matListItemIcon>description</mat-icon>
+              <div matListItemTitle>{{ documento.nombre_documento }}</div>
+              <div matListItemLine>Tipo: {{ documento.tipo_documento }}</div>
+              <button mat-icon-button 
+                      matListItemMeta
+                      (click)="descargarDocumento(documento)"
+                      matTooltip="Descargar documento">
+                <mat-icon>download</mat-icon>
+              </button>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Información Adicional (solo para Paz y Salvo) -->
+      <mat-card class="info-card" 
+                *ngIf="solicitud.informacion_adicional && solicitud.tipo_solicitud === 'PAZ_SALVO'">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>school</mat-icon>
+            Información Adicional
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item" *ngIf="solicitud.informacion_adicional.titulo_trabajo_grado">
+              <span class="info-label">Título del Trabajo de Grado:</span>
+              <span class="info-value">{{ solicitud.informacion_adicional.titulo_trabajo_grado }}</span>
+            </div>
+            <div class="info-item" *ngIf="solicitud.informacion_adicional.director_trabajo_grado">
+              <span class="info-label">Director:</span>
+              <span class="info-value">{{ solicitud.informacion_adicional.director_trabajo_grado }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  </app-card-container>
+</div>
+

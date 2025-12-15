@@ -16,6 +16,7 @@ import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial, TipoSolicitud } from '../../../core/services/historial-solicitudes.service';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
+import { UtfFixPipe } from '../../../shared/pipes/utf-fix.pipe';
 
 @Component({
   selector: 'app-historial-completo',
@@ -34,7 +35,8 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
     MatTooltipModule,
     MatChipsModule,
     PeriodoFiltroSelectorComponent,
-    CardContainerComponent
+    CardContainerComponent,
+    UtfFixPipe
   ],
   templateUrl: './historial-completo.component.html',
   styleUrls: ['./historial-completo.component.css']
@@ -50,8 +52,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
     'usuario',
     'periodo_academico',
     'estado_actual',
-    'fecha_registro',
-    'acciones'
+    'fecha_registro'
   ];
 
   tiposSolicitud: Array<{ codigo: string; display: string }> = [];
@@ -158,13 +159,6 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
       day: '2-digit'
     });
   }
-
-  verDetalle(solicitud: any): void {
-    // TODO: Implementar vista de detalle o navegación
-    console.log('Ver detalle de solicitud:', solicitud);
-    this.snackBar.open('Funcionalidad de detalle próximamente', 'Cerrar', {
-      duration: 2000
-    });
-  }
 }
+
 

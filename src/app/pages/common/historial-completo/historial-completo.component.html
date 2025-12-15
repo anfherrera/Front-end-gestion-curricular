@@ -94,7 +94,7 @@
           <td mat-cell *matCellDef="let solicitud">
             <div class="solicitud-nombre">
               <mat-icon class="icon-solicitud">description</mat-icon>
-              <span>{{ solicitud.nombre_solicitud }}</span>
+              <span>{{ solicitud.nombre_solicitud | utfFix }}</span>
             </div>
           </td>
         </ng-container>
@@ -112,8 +112,8 @@
           <th mat-header-cell *matHeaderCellDef>Estudiante</th>
           <td mat-cell *matCellDef="let solicitud">
             <div class="usuario-info">
-              <div class="usuario-nombre">{{ solicitud.usuario.nombre_completo }}</div>
-              <div class="usuario-codigo">{{ solicitud.usuario.codigo }}</div>
+              <div class="usuario-nombre">{{ solicitud.usuario.nombre_completo | utfFix }}</div>
+              <div class="usuario-codigo">{{ solicitud.usuario.codigo | utfFix }}</div>
             </div>
           </td>
         </ng-container>
@@ -139,19 +139,6 @@
           <th mat-header-cell *matHeaderCellDef>Fecha Registro</th>
           <td mat-cell *matCellDef="let solicitud">
             {{ formatearFecha(solicitud.fecha_registro_solicitud) }}
-          </td>
-        </ng-container>
-
-        <!-- Columna Acciones -->
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let solicitud">
-            <button mat-icon-button 
-                    matTooltip="Ver detalle"
-                    (click)="verDetalle(solicitud)"
-                    color="primary">
-              <mat-icon>visibility</mat-icon>
-            </button>
           </td>
         </ng-container>
 

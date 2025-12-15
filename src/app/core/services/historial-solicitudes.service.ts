@@ -142,5 +142,20 @@ export class HistorialSolicitudesService {
       'EN_PROCESO'
     ];
   }
+
+  /**
+   * Obtener historial completo de una solicitud específica
+   * @param id ID de la solicitud
+   */
+  obtenerHistorialSolicitud(id: number): Observable<any> {
+    const url = ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(id);
+    return this.http.get<any>(url, { headers: this.getAuthHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error obteniendo historial de solicitud:', error);
+        throw error;
+      })
+    );
+  }
 }
+
 
