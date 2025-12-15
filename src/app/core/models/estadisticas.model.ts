@@ -57,10 +57,9 @@ export interface DistribucionProceso {
 
 export interface FiltroEstadisticas {
   proceso?: string;
-  programa?: number;
-  fechaInicio?: string;
-  fechaFin?: string;
-  periodoAcademico?: string; // NUEVO: Filtro por período académico (ej: "2025-1")
+  idPrograma?: number; // Cambiado de 'programa' a 'idPrograma' para coincidir con el backend
+  periodoAcademico?: string; // Filtro por período académico (ej: "2025-1" o "Segundo Período 2025")
+  // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 }
 
 export interface KPIData {
@@ -77,10 +76,10 @@ export interface KPIData {
  */
 export interface FiltrosDashboard {
   proceso?: string;
-  programa?: number;
-  fechaInicio?: Date;
-  fechaFin?: Date;
+  idPrograma?: number; // Cambiado de 'programa' a 'idPrograma' para coincidir con el backend
+  periodoAcademico?: string; // Agregado período académico
   estado?: string;
+  // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 }
 
 /**

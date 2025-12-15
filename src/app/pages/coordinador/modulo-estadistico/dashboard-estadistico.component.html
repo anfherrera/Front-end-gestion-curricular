@@ -52,32 +52,14 @@
           </div>
 
           <div class="filter-item">
-            <mat-form-field *ngIf="filtrosForm?.get('programa')" appearance="outline">
+            <mat-form-field *ngIf="filtrosForm?.get('idPrograma')" appearance="outline">
               <mat-label>Programa</mat-label>
-              <mat-select formControlName="programa">
+              <mat-select formControlName="idPrograma">
                 <mat-option value="">Todos los programas</mat-option>
                 <mat-option *ngFor="let programa of programasDisponibles" [value]="programa.id">
                   {{ programa.nombre }}
                 </mat-option>
               </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="filter-item">
-            <mat-form-field *ngIf="filtrosForm?.get('fechaInicio')" appearance="outline">
-              <mat-label>Fecha Inicio</mat-label>
-              <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
-              <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-              <mat-datepicker #pickerInicio></mat-datepicker>
-            </mat-form-field>
-          </div>
-
-          <div class="filter-item">
-            <mat-form-field *ngIf="filtrosForm?.get('fechaFin')" appearance="outline">
-              <mat-label>Fecha Fin</mat-label>
-              <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
-              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-              <mat-datepicker #pickerFin></mat-datepicker>
             </mat-form-field>
           </div>
 

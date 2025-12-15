@@ -3,7 +3,6 @@
   <div class="header-content">
     <div class="header-text">
       <div class="dashboard-title">
-        <mat-icon>beach_access</mat-icon>
         Dashboard de Cursos de Verano
       </div>
       <p class="dashboard-subtitle">Análisis y Predicciones de Demanda</p>
@@ -45,6 +44,56 @@
     Reintentar
   </button>
 </div>
+
+<!-- ===== FILTROS ===== -->
+<mat-card class="filters-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>filter_list</mat-icon>
+      Filtros
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form *ngIf="filtrosForm" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      <div class="filters-grid">
+        <!-- Filtro por Período Académico -->
+        <div class="filter-item">
+          <app-periodo-filtro-selector
+            label="Período Académico"
+            [mostrarTodos]="true"
+            [incluirActual]="true"
+            [mostrarInfo]="false"
+            (periodoChange)="onPeriodoChange($event)">
+          </app-periodo-filtro-selector>
+        </div>
+
+        <!-- Filtro por Programa -->
+        <div class="filter-item">
+          <mat-form-field appearance="outline">
+            <mat-label>Programa</mat-label>
+            <mat-select formControlName="idPrograma">
+              <mat-option value="">Todos los programas</mat-option>
+              <mat-option *ngFor="let programa of programasDisponibles; trackBy: trackByProgramaId" [value]="programa.id">
+                {{ programa.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          <mat-icon>search</mat-icon>
+          Aplicar Filtros
+        </button>
+        <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading">
+          <mat-icon>clear</mat-icon>
+          Limpiar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
 
 <!-- ===== CONTENIDO PRINCIPAL ===== -->
 <div *ngIf="data && !loading" class="dashboard-container">

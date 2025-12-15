@@ -40,21 +40,15 @@ export class EstadisticasService {
       params = params.set('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params = params.set('idPrograma', filtros.programa.toString());
-    }
-    
-    if (filtros.fechaInicio) {
-      params = params.set('fechaInicio', filtros.fechaInicio);
-    }
-    
-    if (filtros.fechaFin) {
-      params = params.set('fechaFin', filtros.fechaFin);
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
     if (filtros.periodoAcademico) {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
+    
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     const url = ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES;
 
@@ -184,17 +178,15 @@ export class EstadisticasService {
       params = params.set('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params = params.set('idPrograma', filtros.programa.toString());
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
-    if (filtros.fechaInicio) {
-      params = params.set('fechaInicio', filtros.fechaInicio);
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.fechaFin) {
-      params = params.set('fechaFin', filtros.fechaFin);
-    }
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.POR_PERIODO_ESTADO_PROGRAMA, { params });
   }
@@ -309,16 +301,41 @@ export class EstadisticasService {
    * Obtiene estadísticas completas de cursos de verano con predicciones
    * @returns Observable con la respuesta del endpoint de cursos de verano
    */
-  getCursosVeranoEstadisticas(): Observable<CursosVeranoResponse> {
-    return this.http.get<CursosVeranoResponse>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO);
+  /**
+   * Obtiene estadísticas de cursos de verano con filtros opcionales
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
+   */
+  getCursosVeranoEstadisticas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<CursosVeranoResponse> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    }
+    
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<CursosVeranoResponse>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO, { params });
   }
 
   /**
    * Obtiene solo las tendencias temporales de cursos de verano (OPTIMIZADO)
    * Carga más rápida, solo datos temporales
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getCursosVeranoTendenciasTemporales(): Observable<{tendenciasTemporales: TendenciaTemporal[]}> {
-    return this.http.get<{tendenciasTemporales: TendenciaTemporal[]}>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_TENDENCIAS_TEMPORALES);
+  getCursosVeranoTendenciasTemporales(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<{tendenciasTemporales: TendenciaTemporal[]}> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    }
+    
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<{tendenciasTemporales: TendenciaTemporal[]}>(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_TENDENCIAS_TEMPORALES, { params });
   }
 
   // ===== MÉTODOS PARA ENDPOINTS MEJORADOS =====
@@ -544,9 +561,9 @@ export class EstadisticasService {
     }
 
     // Filtrar por programa
-    if (filtros.programa) {
+    if (filtros.idPrograma) {
       const programaFiltrado = estadisticasPorPrograma.find(
-        programa => programa.idPrograma === filtros.programa
+        programa => programa.idPrograma === filtros.idPrograma
       );
       
       if (programaFiltrado) {
@@ -564,20 +581,8 @@ export class EstadisticasService {
       }
     }
 
-    // Filtrar por rango de fechas (simulado)
-    if (filtros.fechaInicio || filtros.fechaFin) {
-      // Simular reducción de datos por filtro de fechas
-      const factorFecha = 0.7; // 70% de los datos en el rango
-      estadisticasGlobales = {
-        totalSolicitudes: Math.floor(estadisticasGlobales.totalSolicitudes * factorFecha),
-        solicitudesAprobadas: Math.floor(estadisticasGlobales.solicitudesAprobadas * factorFecha),
-        solicitudesRechazadas: Math.floor(estadisticasGlobales.solicitudesRechazadas * factorFecha),
-        solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factorFecha), // Campo obligatorio
-        solicitudesEnProceso: Math.floor(estadisticasGlobales.solicitudesEnProceso * factorFecha),
-        totalEstudiantes: Math.floor(estadisticasGlobales.totalEstudiantes * factorFecha),
-        totalProgramas: estadisticasGlobales.totalProgramas
-      };
-    }
+    // ELIMINADO: Filtro por rango de fechas - usar periodoAcademico en su lugar
+    // El filtro por periodoAcademico se maneja en el backend
 
     return {
       estadisticasGlobales,
@@ -710,18 +715,15 @@ export class EstadisticasService {
       params = params.set('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params = params.set('idPrograma', filtros.programa.toString());
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
-    if (filtros.fechaInicio) {
-      params = params.set('fechaInicio', filtros.fechaInicio);
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.fechaFin) {
-      params = params.set('fechaFin', filtros.fechaFin);
-    }
-
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     // Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF, {
@@ -744,18 +746,15 @@ export class EstadisticasService {
       params = params.set('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params = params.set('idPrograma', filtros.programa.toString());
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
-    if (filtros.fechaInicio) {
-      params = params.set('fechaInicio', filtros.fechaInicio);
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.fechaFin) {
-      params = params.set('fechaFin', filtros.fechaFin);
-    }
-
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     // Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL, {
@@ -796,11 +795,22 @@ export class EstadisticasService {
   }
 
   /**
-   * Exporta reporte PDF de Cursos de Verano
+   * Exporta reporte PDF de Cursos de Verano con filtros opcionales
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  exportarReporteCursosVerano(): Observable<Blob> {
+  exportarReporteCursosVerano(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<Blob> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    }
+    
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
 
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_CURSOS_VERANO, {
+      params,
       responseType: 'blob',
       headers: {
         'Accept': 'application/pdf'
@@ -809,11 +819,22 @@ export class EstadisticasService {
   }
 
   /**
-   * Exporta reporte Excel de Cursos de Verano
+   * Exporta reporte Excel de Cursos de Verano con filtros opcionales
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  exportarExcelCursosVerano(): Observable<Blob> {
+  exportarExcelCursosVerano(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<Blob> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    }
+    
+    if (filtros.idPrograma) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
 
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_CURSOS_VERANO, {
+      params,
       responseType: 'blob',
       headers: {
         'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -832,17 +853,15 @@ export class EstadisticasService {
       params.append('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params.append('idPrograma', filtros.programa.toString());
+    if (filtros.idPrograma) {
+      params.append('idPrograma', filtros.idPrograma.toString());
     }
     
-    if (filtros.fechaInicio) {
-      params.append('fechaInicio', filtros.fechaInicio);
+    if (filtros.periodoAcademico) {
+      params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.fechaFin) {
-      params.append('fechaFin', filtros.fechaFin);
-    }
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
     
@@ -879,17 +898,15 @@ export class EstadisticasService {
       params.append('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params.append('idPrograma', filtros.programa.toString());
+    if (filtros.idPrograma) {
+      params.append('idPrograma', filtros.idPrograma.toString());
     }
     
-    if (filtros.fechaInicio) {
-      params.append('fechaInicio', filtros.fechaInicio);
+    if (filtros.periodoAcademico) {
+      params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.fechaFin) {
-      params.append('fechaFin', filtros.fechaFin);
-    }
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
     
@@ -908,17 +925,15 @@ export class EstadisticasService {
       params.append('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params.append('idPrograma', filtros.programa.toString());
+    if (filtros.idPrograma) {
+      params.append('idPrograma', filtros.idPrograma.toString());
     }
     
-    if (filtros.fechaInicio) {
-      params.append('fechaInicio', filtros.fechaInicio);
+    if (filtros.periodoAcademico) {
+      params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.fechaFin) {
-      params.append('fechaFin', filtros.fechaFin);
-    }
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
     
@@ -955,17 +970,15 @@ export class EstadisticasService {
       params.append('proceso', filtros.proceso);
     }
     
-    if (filtros.programa) {
-      params.append('idPrograma', filtros.programa.toString());
+    if (filtros.idPrograma) {
+      params.append('idPrograma', filtros.idPrograma.toString());
     }
     
-    if (filtros.fechaInicio) {
-      params.append('fechaInicio', filtros.fechaInicio);
+    if (filtros.periodoAcademico) {
+      params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.fechaFin) {
-      params.append('fechaFin', filtros.fechaFin);
-    }
+    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
     

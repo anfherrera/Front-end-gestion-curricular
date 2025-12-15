@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -13,11 +14,15 @@ import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { Subscription } from 'rxjs';
 import { Chart, ChartConfiguration, ChartData, ChartOptions, registerables } from 'chart.js';
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
 import { environment } from '../../../../../environments/environment';
+import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { 
   CursosVeranoResponse, 
   ResumenCursosVerano, 
@@ -40,6 +45,8 @@ Chart.register(...registerables);
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -52,7 +59,11 @@ Chart.register(...registerables);
     MatListModule,
     MatExpansionModule,
     MatSnackBarModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatInputModule,
+    PeriodoFiltroSelectorComponent
   ],
   templateUrl: './cursos-verano-dashboard.component.html',
   styleUrls: ['./cursos-verano-dashboard.component.css']
@@ -64,6 +75,11 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   error: string | null = null;
   ultimaActualizacion: Date = new Date();
   private intervalId: any;
+
+  // ===== FILTROS =====
+  filtrosForm: FormGroup | null = null;
+  programasDisponibles: any[] = [];
+  filtrosAplicados: { periodoAcademico?: string; idPrograma?: number } = {};
 
   // Propiedades para mapear datos del backend a las gráficas
   tendenciasTemporalesData: any[] = [];
@@ -106,10 +122,20 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private estadisticasService: EstadisticasService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    // Inicializar formulario de filtros
+    this.filtrosForm = this.fb.group({
+      periodoAcademico: [''],
+      idPrograma: ['']
+    });
+    
+    // Cargar programas disponibles
+    this.programasDisponibles = this.estadisticasService.getProgramasDisponibles();
+    
     // Cargar primero las tendencias temporales de forma optimizada para una carga más rápida
     this.cargarTendenciasTemporalesOptimizadas();
     
@@ -131,10 +157,57 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   // ===== MÉTODOS DE CARGA DE DATOS =====
 
   /**
+   * Obtiene los filtros actuales del formulario
+   */
+  obtenerFiltrosActuales(): { periodoAcademico?: string; idPrograma?: number } {
+    if (!this.filtrosForm) {
+      return {};
+    }
+    
+    const formValue = this.filtrosForm.value;
+    const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+    
+    if (formValue.periodoAcademico) {
+      filtros.periodoAcademico = formValue.periodoAcademico;
+    }
+    
+    if (formValue.idPrograma) {
+      filtros.idPrograma = formValue.idPrograma;
+    }
+    
+    return filtros;
+  }
+
+  /**
+   * Aplica los filtros y recarga los datos
+   */
+  aplicarFiltros(): void {
+    this.filtrosAplicados = this.obtenerFiltrosActuales();
+    this.cargarTendenciasTemporalesOptimizadas();
+    this.cargarDatos();
+  }
+
+  /**
+   * Limpia los filtros y recarga los datos
+   */
+  limpiarFiltros(): void {
+    if (this.filtrosForm) {
+      this.filtrosForm.patchValue({
+        periodoAcademico: '',
+        idPrograma: ''
+      });
+    }
+    this.filtrosAplicados = {};
+    this.cargarTendenciasTemporalesOptimizadas();
+    this.cargarDatos();
+  }
+
+  /**
    * Carga solo las tendencias temporales de forma optimizada (MÁS RÁPIDO)
    */
   cargarTendenciasTemporalesOptimizadas(): void {
-    this.estadisticasService.getCursosVeranoTendenciasTemporales().subscribe({
+    const filtros = this.obtenerFiltrosActuales();
+    this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).subscribe({
       next: (response) => {
         // Asignar solo los datos de tendencias temporales
         this.tendenciasTemporalesData = response.tendenciasTemporales || [];
@@ -155,7 +228,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   cargarDatos(): void {
     this.loading = true;
     this.error = null;
-    const subscription = this.estadisticasService.getCursosVeranoEstadisticas().subscribe({
+    const filtros = this.obtenerFiltrosActuales();
+    const subscription = this.estadisticasService.getCursosVeranoEstadisticas(filtros).subscribe({
       next: (response) => {
         // Verificar que los datos se asignen correctamente
         if (response.predicciones?.demandaEstimadaProximoPeriodo) {
@@ -350,10 +424,16 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   actualizarDatos(): void {
+    // Aplicar filtros actuales al recargar
+    this.filtrosAplicados = this.obtenerFiltrosActuales();
+    this.cargarTendenciasTemporalesOptimizadas();
     this.cargarDatos();
   }
 
   refrescarDatos(): void {
+    // Aplicar filtros actuales al refrescar
+    this.filtrosAplicados = this.obtenerFiltrosActuales();
+    this.cargarTendenciasTemporalesOptimizadas();
     this.cargarDatos();
   }
 
@@ -414,7 +494,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         console.time('Carga Optimizada');
         const inicioOptimizada = performance.now();
         
-        this.estadisticasService.getCursosVeranoTendenciasTemporales().subscribe({
+        const filtros = this.obtenerFiltrosActuales();
+        this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).subscribe({
           next: (responseOpt) => {
             const finOptimizada = performance.now();
             const tiempoOptimizada = finOptimizada - inicioOptimizada;
@@ -1152,10 +1233,27 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     return iconos[prioridad] || '⚪';
   }
 
+  /**
+   * TrackBy function para programas
+   */
+  trackByProgramaId(index: number, programa: any): any {
+    return programa?.id || index;
+  }
+
+  /**
+   * Maneja el cambio de período académico desde el selector
+   */
+  onPeriodoChange(periodo: string): void {
+    if (this.filtrosForm) {
+      this.filtrosForm.patchValue({ periodoAcademico: periodo });
+    }
+  }
+
   // ===== MÉTODOS DE EXPORTACIÓN =====
 
   exportarPDF(): void {
-    this.estadisticasService.exportarReporteCursosVerano().subscribe({
+    const filtros = this.obtenerFiltrosActuales();
+    this.estadisticasService.exportarReporteCursosVerano(filtros).subscribe({
       next: (blob: Blob) => {
         // Verificar que sea un blob válido
         if (blob && blob.size > 0) {
@@ -1187,7 +1285,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           });
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('[DEBUG] Error al exportar PDF:', error);
         
         this.snackBar.open('Error al exportar el reporte PDF', 'Cerrar', {
@@ -1208,7 +1306,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   exportarExcel(): void {
-    this.estadisticasService.exportarExcelCursosVerano().subscribe({
+    const filtros = this.obtenerFiltrosActuales();
+    this.estadisticasService.exportarExcelCursosVerano(filtros).subscribe({
       next: (blob: Blob) => {
         // Verificar que sea un blob válido
         if (blob && blob.size > 0) {
@@ -1240,7 +1339,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           });
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('[DEBUG] Error al exportar Excel:', error);
         
         this.snackBar.open('Error al exportar el reporte Excel', 'Cerrar', {

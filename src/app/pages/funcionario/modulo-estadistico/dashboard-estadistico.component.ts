@@ -111,10 +111,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // Inicializar formulario reactivo
     this.filtrosForm = this.fb.group({
       proceso: [''],
-      programa: [''],
-      fechaInicio: [''],
-      fechaFin: [''],
+      idPrograma: [''], // Cambiado de 'programa' a 'idPrograma'
       periodoAcademico: [''] // Campo para período académico
+      // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
     });
     
     this.inicializarDatos();
@@ -1488,17 +1487,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     if (this.filtrosForm && this.filtrosForm.valid) {
       const formValue = this.filtrosForm.value;
       
-      // Validar que fechaFin no sea menor que fechaInicio
-      if (formValue.fechaInicio && formValue.fechaFin) {
-        const inicio = new Date(formValue.fechaInicio);
-        const fin = new Date(formValue.fechaFin);
-        if (fin < inicio) {
-          this.mostrarError('La fecha de fin no puede ser anterior a la fecha de inicio');
-          return;
-        }
-      }
-      
-      // Convertir filtros al formato correcto (formato yyyy-MM-dd para fechas)
+      // Convertir filtros al formato correcto
       const filtros: FiltroEstadisticas = {};
       
       // Proceso: enviar solo si no es "Todos los procesos"
@@ -1507,24 +1496,17 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       }
       
       // Programa: enviar como número (idPrograma)
-      if (formValue.programa && formValue.programa !== '' && formValue.programa !== 'Todos los programas') {
-        filtros.programa = Number(formValue.programa);
+      if (formValue.idPrograma && formValue.idPrograma !== '' && formValue.idPrograma !== 'Todos los programas') {
+        filtros.idPrograma = Number(formValue.idPrograma);
       }
       
-      // Fechas: convertir a formato yyyy-MM-dd
-      if (formValue.fechaInicio) {
-        const fecha = new Date(formValue.fechaInicio);
-        filtros.fechaInicio = fecha.toISOString().split('T')[0];
-      }
-      
-      if (formValue.fechaFin) {
-        const fecha = new Date(formValue.fechaFin);
-        filtros.fechaFin = fecha.toISOString().split('T')[0];
-      }
-      
+      // Período Académico
       if (formValue.periodoAcademico) {
         filtros.periodoAcademico = formValue.periodoAcademico;
       }
+      
+      // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+      
       // Usar el método de carga de datos con filtros
       this.cargarDatos(filtros);
       
@@ -1540,9 +1522,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     if (this.filtrosForm) {
       this.filtrosForm.reset({
         proceso: '',
-        programa: '',
-        fechaInicio: '',
-        fechaFin: '',
+        idPrograma: '',
         periodoAcademico: ''
       });
     }
@@ -1702,11 +1682,27 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   async exportarPDF(): Promise<void> {
     this.loading = true;
-    this.mostrarExito('Descargando reporte PDF del Dashboard General...');
+    this.mostrarExito('Descargando reporte PDF...');
 
     try {
-      // Usar el nuevo endpoint específico para Dashboard General
-      this.estadisticasService.exportarReporteGeneral().subscribe({
+      // Construir filtros desde el formulario
+      const filtros: FiltroEstadisticas = {};
+      const formValue = this.filtrosForm?.value;
+      
+      if (formValue?.proceso && formValue.proceso !== '' && formValue.proceso !== 'Todos los procesos') {
+        filtros.proceso = formValue.proceso;
+      }
+      
+      if (formValue?.idPrograma && formValue.idPrograma !== '' && formValue.idPrograma !== 'Todos los programas') {
+        filtros.idPrograma = Number(formValue.idPrograma);
+      }
+      
+      if (formValue?.periodoAcademico) {
+        filtros.periodoAcademico = formValue.periodoAcademico;
+      }
+      
+      // Usar el endpoint con filtros
+      this.estadisticasService.exportarPDF(filtros).subscribe({
         next: (blob: Blob) => {
           if (blob && blob.size > 0) {
             // Crear URL del blob
@@ -1732,10 +1728,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             this.mostrarError('El archivo PDF está vacío o corrupto');
           }
         },
-        error: (error) => {
-          console.error('[DEBUG] Error al exportar PDF del Dashboard General:', error);
+        error: (error: any) => {
+          console.error('[DEBUG] Error al exportar PDF:', error);
           this.loading = false;
-          this.mostrarError('Error al exportar el reporte PDF del Dashboard General');
+          this.mostrarError('Error al exportar el reporte PDF');
         }
       });
     } catch (error) {
@@ -1763,11 +1759,27 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   async exportarExcel(): Promise<void> {
     this.loading = true;
-    this.mostrarExito('Descargando Excel del Dashboard General...');
+    this.mostrarExito('Descargando reporte Excel...');
 
     try {
-      // Usar el nuevo endpoint específico para Dashboard General
-      this.estadisticasService.exportarExcelGeneral().subscribe({
+      // Construir filtros desde el formulario
+      const filtros: FiltroEstadisticas = {};
+      const formValue = this.filtrosForm?.value;
+      
+      if (formValue?.proceso && formValue.proceso !== '' && formValue.proceso !== 'Todos los procesos') {
+        filtros.proceso = formValue.proceso;
+      }
+      
+      if (formValue?.idPrograma && formValue.idPrograma !== '' && formValue.idPrograma !== 'Todos los programas') {
+        filtros.idPrograma = Number(formValue.idPrograma);
+      }
+      
+      if (formValue?.periodoAcademico) {
+        filtros.periodoAcademico = formValue.periodoAcademico;
+      }
+      
+      // Usar el endpoint con filtros
+      this.estadisticasService.exportarExcel(filtros).subscribe({
         next: (blob: Blob) => {
           if (blob && blob.size > 0) {
             // Crear URL del blob
@@ -1793,10 +1805,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             this.mostrarError('El archivo Excel está vacío o corrupto');
           }
         },
-        error: (error) => {
-          console.error('[DEBUG] Error al exportar Excel del Dashboard General:', error);
+        error: (error: any) => {
+          console.error('[DEBUG] Error al exportar Excel:', error);
           this.loading = false;
-          this.mostrarError('Error al exportar el reporte Excel del Dashboard General');
+          this.mostrarError('Error al exportar el reporte Excel');
         }
       });
     } catch (error) {
