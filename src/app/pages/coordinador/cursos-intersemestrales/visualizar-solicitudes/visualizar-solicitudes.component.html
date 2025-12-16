@@ -11,6 +11,16 @@
       </mat-select>
     </mat-form-field>
     
+    <app-periodo-filtro-selector
+      [mostrarTodos]="true"
+      [incluirActual]="false"
+      [mostrarInfo]="true"
+      [periodoInicial]="periodoFiltro"
+      label="Filtrar por período académico"
+      (periodoChange)="onPeriodoChange($event)"
+      class="filtro-field">
+    </app-periodo-filtro-selector>
+    
     <button mat-raised-button 
             color="primary" 
             (click)="cargarSolicitudes()"

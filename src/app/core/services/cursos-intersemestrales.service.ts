@@ -1755,11 +1755,42 @@ export class CursosIntersemestralesService {
    * Exporta las solicitudes de cursos intersemestrales a Excel
    * @returns Observable con el blob del archivo Excel y el nombre del archivo
    */
-  exportarSolicitudesExcel(): Observable<{ blob: Blob; filename?: string }> {
-    return this.http.get(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL, {
-      responseType: 'blob',
-      observe: 'response'
-    }).pipe(
+  exportarSolicitudesExcel(
+    periodoAcademico?: string | null, 
+    idCurso?: number,
+    estado?: string,
+    fechaInicio?: string,
+    fechaFin?: string
+  ): Observable<{ blob: Blob; filename?: string }> {
+    let httpParams = new HttpParams();
+    
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
+      httpParams = httpParams.set('periodoAcademico', periodoAcademico.trim());
+    }
+    
+    if (idCurso !== undefined && idCurso !== null) {
+      httpParams = httpParams.set('idCurso', idCurso.toString());
+    }
+    
+    if (estado && estado.trim() !== '') {
+      httpParams = httpParams.set('estado', estado.trim());
+    }
+    
+    if (fechaInicio && fechaInicio.trim() !== '') {
+      httpParams = httpParams.set('fechaInicio', fechaInicio.trim());
+    }
+    
+    if (fechaFin && fechaFin.trim() !== '') {
+      httpParams = httpParams.set('fechaFin', fechaFin.trim());
+    }
+    
+    const options = httpParams.keys().length > 0 
+      ? { params: httpParams, responseType: 'blob' as 'blob', observe: 'response' as const }
+      : { responseType: 'blob' as 'blob', observe: 'response' as const };
+    
+    console.log('[EXPORTAR] Exportando solicitudes con parámetros:', httpParams.toString());
+    
+    return this.http.get(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL, options).pipe(
       map(response => {
         // Verificar que la respuesta sea un blob válido
         const contentType = response.headers.get('Content-Type');

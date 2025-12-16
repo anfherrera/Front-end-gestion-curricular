@@ -76,7 +76,7 @@
       <ng-container matColumnDef="estadoCurso">
         <th mat-header-cell *matHeaderCellDef>Estado del Curso</th>
         <td mat-cell *matCellDef="let preinscripcion">
-          <span class="estado-curso-badge" *ngIf="preinscripcion.estadoCurso">
+          <span *ngIf="preinscripcion.estadoCurso">
             {{ preinscripcion.estadoCurso }}
           </span>
           <span *ngIf="!preinscripcion.estadoCurso" class="text-muted">N/A</span>
@@ -100,41 +100,33 @@
           </div>
           
           <!-- Mensaje cuando ya existe inscripción activa -->
-          <div 
+          <span 
             *ngIf="!mostrarBotonInscripcion(preinscripcion) && 
                    preinscripcion.estadoCurso?.toUpperCase() === 'INSCRIPCION' && 
                    preinscripcion.estado?.toUpperCase() === 'APROBADO' &&
-                   tieneInscripcionEnCurso(preinscripcion.cursoId)"
-            class="mensaje-inscripcion-existente">
-            <mat-icon class="icono-check">check_circle</mat-icon>
-            <span>{{ getMensajeInscripcionExistente(preinscripcion.cursoId) }}</span>
-          </div>
+                   tieneInscripcionEnCurso(preinscripcion.cursoId)">
+            {{ getMensajeInscripcionExistente(preinscripcion.cursoId) }}
+          </span>
           
           <!-- Mensaje cuando está esperando aprobación -->
-          <div 
-            *ngIf="preinscripcion.estado?.toUpperCase() === 'ENVIADA'"
-            class="mensaje-pendiente">
-            <mat-icon class="icono-pendiente">hourglass_empty</mat-icon>
-            <span>Esperando aprobación</span>
-          </div>
+          <span 
+            *ngIf="preinscripcion.estado?.toUpperCase() === 'ENVIADA'">
+            Esperando aprobación
+          </span>
           
           <!-- Mensaje cuando la preinscripción fue rechazada -->
-          <div 
-            *ngIf="preinscripcion.estado?.toUpperCase() === 'RECHAZADO'"
-            class="mensaje-rechazado">
-            <mat-icon class="icono-rechazado">cancel</mat-icon>
-            <span>Preinscripción rechazada</span>
-          </div>
+          <span 
+            *ngIf="preinscripcion.estado?.toUpperCase() === 'RECHAZADO'">
+            Preinscripción rechazada
+          </span>
 
           <!-- Mensaje cuando el curso no está en inscripción -->
-          <div 
+          <span 
             *ngIf="preinscripcion.estado?.toUpperCase() === 'APROBADO' && 
                    preinscripcion.estadoCurso?.toUpperCase() !== 'INSCRIPCION' &&
-                   !tieneInscripcionEnCurso(preinscripcion.cursoId)"
-            class="mensaje-esperando">
-            <mat-icon class="icono-esperando">schedule</mat-icon>
-            <span>Esperando apertura de inscripciones</span>
-          </div>
+                   !tieneInscripcionEnCurso(preinscripcion.cursoId)">
+            Esperando apertura de inscripciones
+          </span>
           
           <!-- Sin acciones -->
           <span 
@@ -201,7 +193,7 @@
       <ng-container matColumnDef="estadoCurso">
         <th mat-header-cell *matHeaderCellDef>Estado del Curso</th>
         <td mat-cell *matCellDef="let inscripcion">
-          <span class="estado-curso-badge" *ngIf="inscripcion.estadoCurso">
+          <span *ngIf="inscripcion.estadoCurso">
             {{ inscripcion.estadoCurso }}
           </span>
           <span *ngIf="!inscripcion.estadoCurso" class="text-muted">N/A</span>
@@ -222,12 +214,10 @@
               <mat-icon>{{ getIconoAccion(inscripcion.accionesDisponibles) }}</mat-icon>
               {{ getTextoAccion(inscripcion.accionesDisponibles) }}
             </button>
-            <div 
-              *ngIf="!esAccionClickeable(inscripcion.accionesDisponibles)"
-              class="accion-info">
-              <mat-icon class="accion-icon">{{ getIconoAccion(inscripcion.accionesDisponibles) }}</mat-icon>
-              <span>{{ getTextoAccion(inscripcion.accionesDisponibles) }}</span>
-            </div>
+            <span 
+              *ngIf="!esAccionClickeable(inscripcion.accionesDisponibles)">
+              {{ getTextoAccion(inscripcion.accionesDisponibles) }}
+            </span>
           </div>
           <span *ngIf="!inscripcion.accionesDisponibles || inscripcion.accionesDisponibles.length === 0" class="text-muted">
             Sin acciones

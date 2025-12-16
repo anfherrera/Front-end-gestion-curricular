@@ -16,13 +16,37 @@ app-card-container {
   border: 1px solid #e3f2fd;
   display: flex;
   gap: 16px;
-  align-items: center;
+  align-items: start;
   flex-wrap: wrap;
 }
 
 .filtro-field {
   min-width: 200px;
   flex: 1;
+}
+
+/* Asegurar que el selector de período se alinee con los otros campos */
+.filtros-container app-periodo-filtro-selector {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Ocultar el subscript wrapper para mantener altura consistente */
+.filtros-container app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-subscript-wrapper,
+.filtros-container mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Asegurar que los mat-form-field tengan la misma altura */
+.filtros-container mat-form-field,
+.filtros-container app-periodo-filtro-selector ::ng-deep mat-form-field {
+  width: 100%;
+}
+
+/* Alinear los botones con los campos */
+.filtros-container button {
+  align-self: start;
+  margin-top: 0;
 }
 
 /* Loading */

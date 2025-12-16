@@ -7,6 +7,7 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { descargarBlob } from '../../../../core/utils/download.util';
+import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 
 @Component({
   selector: 'app-visualizar-solicitudes',
@@ -15,6 +16,7 @@ import { descargarBlob } from '../../../../core/utils/download.util';
     CommonModule,
     ReactiveFormsModule,
     CardContainerComponent,
+    PeriodoFiltroSelectorComponent,
     ...MATERIAL_IMPORTS,
     MatSnackBarModule,
     UtfFixPipe
@@ -28,6 +30,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
   materias: Materia[] = [];
   cargando = true;
   exportando = false;
+  periodoFiltro: string = 'todos'; // Filtro por período académico
   
   filtroForm: FormGroup;
 
@@ -271,8 +274,25 @@ export class VisualizarSolicitudesComponent implements OnInit {
       });
     }
 
+    // Filtrar por período académico
+    if (this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '') {
+      const periodoBuscado = this.periodoFiltro.trim();
+      filtradas = filtradas.filter(s => {
+        // Verificar en el campo periodo de la solicitud o del curso
+        const periodoSolicitud = s.periodo || s.periodoAcademico || s.objCursoOfertadoVerano?.periodo || s.objCursoOfertadoVerano?.periodoAcademico;
+        return periodoSolicitud && periodoSolicitud.toString().includes(periodoBuscado);
+      });
+    }
+
     this.solicitudesFiltradas = filtradas;
-    console.log('🔍 Filtros aplicados:', filtros, 'Resultados:', filtradas.length);
+    console.log('🔍 Filtros aplicados:', { ...filtros, periodo: this.periodoFiltro }, 'Resultados:', filtradas.length);
+  }
+
+  // Manejar cambio de período académico
+  onPeriodoChange(periodo: string): void {
+    console.log('🔄 Cambio de período detectado:', periodo);
+    this.periodoFiltro = periodo;
+    this.aplicarFiltros();
   }
 
 
@@ -348,7 +368,19 @@ export class VisualizarSolicitudesComponent implements OnInit {
   exportarSolicitudesExcel(): void {
     this.exportando = true;
     
-    this.cursosService.exportarSolicitudesExcel().subscribe({
+    // Obtener el período para el filtro
+    const periodoParam = this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '' 
+      ? this.periodoFiltro.trim() 
+      : undefined;
+    
+    // Obtener el ID de materia si está seleccionada
+    const idCurso = this.filtroForm.value.materia && this.filtroForm.value.materia !== 0
+      ? this.filtroForm.value.materia
+      : undefined;
+    
+    console.log('📄 Exportando solicitudes con filtros:', { periodo: periodoParam, idCurso });
+    
+    this.cursosService.exportarSolicitudesExcel(periodoParam, idCurso).subscribe({
       next: (response: { blob: Blob; filename?: string }) => {
         // Obtener el nombre del archivo de la respuesta o usar uno por defecto
         const fecha = new Date().toISOString().split('T')[0];

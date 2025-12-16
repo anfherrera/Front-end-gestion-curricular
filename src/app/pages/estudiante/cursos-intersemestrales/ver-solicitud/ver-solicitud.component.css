@@ -255,108 +255,54 @@ td.mat-cell:last-child {
   height: 16px;
 }
 
-/* Información de acción no clickeable */
+/* Información de acción no clickeable - Texto normal */
 .accion-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
-  border-radius: 20px;
-  border: 1px solid #e0e0e0;
-  font-size: 12px;
-  color: #666;
+  color: #333;
+  font-size: 14px;
 }
 
 .accion-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: #666;
+  display: none;
 }
 
-/* Mensaje de inscripción existente */
+/* Mensaje de inscripción existente - Texto normal */
 .mensaje-inscripcion-existente {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border-radius: 20px;
-  border: 1px solid #81c784;
-  font-size: 12px;
-  color: #2e7d32;
-  font-weight: 500;
+  color: #333;
+  font-size: 14px;
 }
 
 .mensaje-inscripcion-existente .icono-check {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: #2e7d32;
+  display: none;
 }
 
-/* Mensaje de preinscripción pendiente */
+/* Mensaje de preinscripción pendiente - Texto normal */
 .mensaje-pendiente {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-  border-radius: 20px;
-  border: 1px solid #ffb74d;
-  font-size: 12px;
-  color: #f57c00;
-  font-weight: 500;
+  color: #333;
+  font-size: 14px;
 }
 
 .mensaje-pendiente .icono-pendiente {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: #f57c00;
+  display: none;
 }
 
-/* Mensaje de preinscripción rechazada */
+/* Mensaje de preinscripción rechazada - Texto normal */
 .mensaje-rechazado {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-  border-radius: 20px;
-  border: 1px solid #ef5350;
-  font-size: 12px;
-  color: #c62828;
-  font-weight: 500;
+  color: #333;
+  font-size: 14px;
 }
 
 .mensaje-rechazado .icono-rechazado {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: #c62828;
+  display: none;
 }
 
-/* Mensaje de esperando apertura de inscripciones */
+/* Mensaje de esperando apertura de inscripciones - Texto normal */
 .mensaje-esperando {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border-radius: 20px;
-  border: 1px solid #64b5f6;
-  font-size: 12px;
-  color: #1976d2;
-  font-weight: 500;
+  color: #333;
+  font-size: 14px;
 }
 
 .mensaje-esperando .icono-esperando {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: #1976d2;
+  display: none;
 }
 
 .motivo-container {
