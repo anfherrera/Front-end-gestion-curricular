@@ -142,6 +142,13 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         // Ahora cargar las preinscripciones para este curso
         this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
           next: (solicitudes) => {
+            // Completar objCursoOfertadoVerano con la información del curso seleccionado
+            solicitudes.forEach(solicitud => {
+              if (!solicitud.objCursoOfertadoVerano && this.cursoSeleccionado) {
+                solicitud.objCursoOfertadoVerano = this.cursoSeleccionado;
+              }
+            });
+            
             this.solicitudes = solicitudes;
             this.solicitudesFiltradas = this.solicitudes;
             console.log('✅ Preinscripciones cargadas:', this.solicitudes);
@@ -171,6 +178,15 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         // Intentar cargar preinscripciones de todas formas
         this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
           next: (solicitudes) => {
+            // Completar objCursoOfertadoVerano con la información del curso seleccionado si está disponible
+            if (this.cursoSeleccionado) {
+              solicitudes.forEach(solicitud => {
+                if (!solicitud.objCursoOfertadoVerano) {
+                  solicitud.objCursoOfertadoVerano = this.cursoSeleccionado!;
+                }
+              });
+            }
+            
             this.solicitudes = solicitudes;
             this.solicitudesFiltradas = this.solicitudes;
             console.log('✅ Preinscripciones cargadas (sin info del curso):', this.solicitudes);
@@ -437,10 +453,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
   }
 
-  getEstadoColor(estado: string): string {
-    return '#00138C'; // Color azul consistente
-  }
-
   // ===== VALIDACIONES DE PERMISOS =====
 
   /**
@@ -459,8 +471,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       return false;
     }
     
-    // Se pueden aprobar preinscripciones en estado Pendiente, Enviado o Enviada
-    return solicitud.estado === 'Pendiente' || solicitud.estado === 'Enviado' || solicitud.estado === 'Enviada';
+    // Se pueden aprobar preinscripciones en estado ENVIADA, Enviada, Enviado o Pendiente
+    const estado = solicitud.estado?.toString().toUpperCase() || '';
+    return estado === 'ENVIADA' || estado === 'ENVIADO' || estado === 'PENDIENTE';
   }
 
   /**
@@ -471,8 +484,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       return false;
     }
     
-    // Se pueden rechazar preinscripciones en estado Pendiente, Enviado o Enviada
-    return solicitud.estado === 'Pendiente' || solicitud.estado === 'Enviado' || solicitud.estado === 'Enviada';
+    // Se pueden rechazar preinscripciones en estado ENVIADA, Enviada, Enviado o Pendiente
+    const estado = solicitud.estado?.toString().toUpperCase() || '';
+    return estado === 'ENVIADA' || estado === 'ENVIADO' || estado === 'PENDIENTE';
   }
 
   /**
@@ -481,6 +495,25 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   puedeVerDetalles(solicitud: SolicitudCursoVerano): boolean {
     // Todos los funcionarios pueden ver detalles
     return this.puedeGestionarPreinscripciones();
+  }
+
+  /**
+   * Obtener el color del estado para mostrar en la tabla
+   */
+  getEstadoColor(estado: string | undefined): string {
+    if (!estado) return '#9e9e9e';
+    
+    const estadoUpper = estado.toUpperCase();
+    if (estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_FUNCIONARIO') {
+      return '#4caf50'; // Verde
+    } else if (estadoUpper === 'RECHAZADA' || estadoUpper === 'RECHAZADO') {
+      return '#f44336'; // Rojo
+    } else if (estadoUpper === 'ENVIADA' || estadoUpper === 'ENVIADO') {
+      return '#2196f3'; // Azul
+    } else if (estadoUpper === 'PENDIENTE') {
+      return '#ff9800'; // Naranja
+    }
+    return '#00138C'; // Azul oscuro por defecto
   }
 
   // Obtener nombre del docente de forma segura

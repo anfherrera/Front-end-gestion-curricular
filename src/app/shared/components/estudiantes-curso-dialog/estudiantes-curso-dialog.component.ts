@@ -60,6 +60,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
     this.cargando = true;
     this.error = null;
     
+    // El backend ahora maneja UTF-8 correctamente, los nombres con tildes se muestran correctamente
     this.cursosService.getEstudiantesDelCurso(this.data.idCurso).subscribe({
       next: (respuesta) => {
         this.datos = respuesta;
@@ -94,21 +95,19 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   }
 
   getEstadoColor(estado: string | null | undefined): string {
-    if (!estado) return '#9e9e9e';
+    if (!estado || estado === 'Sin inscripción') return '#9e9e9e';
     
-    const estadoLower = estado.toLowerCase();
-    if (estadoLower.includes('aprobada') || estadoLower.includes('validado')) {
-      return '#4caf50';
-    } else if (estadoLower.includes('enviada')) {
-      return '#2196f3';
-    } else if (estadoLower.includes('rechazada') || estadoLower.includes('rechazado')) {
-      return '#f44336';
+    const estadoUpper = estado.toUpperCase();
+    if (estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_FUNCIONARIO' || estadoUpper === 'PAGO_VALIDADO') {
+      return '#4caf50'; // Verde
+    } else if (estadoUpper === 'RECHAZADA' || estadoUpper === 'RECHAZADO' || estadoUpper === 'PAGO_RECHAZADO') {
+      return '#f44336'; // Rojo
+    } else if (estadoUpper === 'ENVIADA' || estadoUpper === 'ENVIADO') {
+      return '#2196f3'; // Azul
+    } else if (estadoUpper === 'PENDIENTE') {
+      return '#ff9800'; // Naranja
     }
-    return '#ff9800';
-  }
-
-  getTipoColor(tipo: string): string {
-    return tipo === 'Inscrito' ? '#4caf50' : '#ff9800';
+    return '#00138C'; // Azul oscuro por defecto
   }
 
   cerrar(): void {

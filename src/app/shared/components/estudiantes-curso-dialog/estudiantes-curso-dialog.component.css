@@ -7,25 +7,36 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 2px solid #00138C;
+  border-radius: 8px 8px 0 0;
 }
 
 .dialog-header h2 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   margin: 0;
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 22px;
+  font-weight: 600;
+  color: #00138C;
 }
 
 .dialog-header mat-icon {
-  color: #1976d2;
+  color: #00138C;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
 }
 
 .btn-cerrar {
   margin-left: auto;
+  color: #00138C !important;
+}
+
+.btn-cerrar:hover {
+  background-color: rgba(0, 19, 140, 0.1) !important;
 }
 
 .loading-container,
@@ -34,8 +45,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px;
-  gap: 16px;
+  padding: 60px 48px;
+  gap: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  margin: 24px 0;
+}
+
+.loading-container p {
+  color: #00138C;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
 }
 
 .error-container {
@@ -43,106 +64,160 @@
 }
 
 .error-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
   color: #f44336;
 }
 
+.error-container p {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.error-container button {
+  margin-top: 8px;
+  background-color: #00138C !important;
+  color: white !important;
+}
+
 .contenido {
-  padding: 16px 0;
+  padding: 24px;
+  background: #ffffff;
 }
 
 .resumen-curso {
-  background: #f5f5f5;
-  padding: 20px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 24px;
+  border-radius: 12px;
   margin-bottom: 24px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .resumen-curso h3 {
-  margin: 0 0 16px 0;
-  font-size: 18px;
-  font-weight: 500;
-  color: #424242;
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #00138C;
+  border-bottom: 2px solid #00138C;
+  padding-bottom: 12px;
 }
 
 .estadisticas {
   display: flex;
-  gap: 32px;
+  gap: 40px;
   flex-wrap: wrap;
 }
 
 .stat {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  min-width: 140px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .stat .label {
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  font-weight: 600;
 }
 
 .stat .valor {
-  font-size: 24px;
-  font-weight: bold;
-  color: #1976d2;
+  font-size: 28px;
+  font-weight: 700;
+  color: #00138C;
+  line-height: 1.2;
 }
 
 .tabla-container {
   overflow-x: auto;
   max-height: 500px;
   overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .tabla-estudiantes {
   width: 100%;
+  background: white;
 }
 
 .tabla-estudiantes th {
-  background: #1976d2;
-  color: white;
-  padding: 12px;
+  background: #00138C !important;
+  color: white !important;
+  padding: 14px 12px;
   text-align: left;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   position: sticky;
   top: 0;
   z-index: 1;
+  border-bottom: 2px solid #001a99;
 }
 
 .tabla-estudiantes td {
-  padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 14px 12px;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 14px;
+  color: #424242;
 }
 
 .tabla-estudiantes tr:hover {
-  background: #f5f5f5;
+  background: #f8f9fa !important;
+  transition: background-color 0.2s ease;
+}
+
+.tabla-estudiantes tr:last-child td {
+  border-bottom: none;
 }
 
 .estado-badge {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
   font-size: 11px;
-  font-weight: 500;
-  color: white;
-  text-transform: capitalize;
+  font-weight: 600;
+  color: white !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border: none;
+}
+
+.estado-texto {
+  color: #212529;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: inherit;
 }
 
 .sin-estado {
   color: #999;
   font-style: italic;
+  font-size: 14px;
 }
 
 .correo-link {
-  color: #1976d2;
+  color: #00138C;
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .correo-link:hover {
+  color: #001a99;
   text-decoration: underline;
 }
 
@@ -151,27 +226,84 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px;
-  gap: 16px;
+  padding: 60px 48px;
+  gap: 20px;
   color: #666;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 2px dashed #e9ecef;
+  margin: 24px 0;
 }
 
 .sin-estudiantes mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: #ccc;
+  font-size: 72px;
+  width: 72px;
+  height: 72px;
+  color: #00138C;
+  opacity: 0.3;
+}
+
+.sin-estudiantes p {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
 }
 
 mat-dialog-actions {
-  padding: 16px 24px;
-  border-top: 1px solid #e0e0e0;
+  padding: 20px 24px;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 mat-dialog-actions button {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+mat-dialog-actions button[mat-button] {
+  color: #00138C;
+  border-color: #00138C;
+}
+
+mat-dialog-actions button[mat-button]:hover {
+  background-color: rgba(0, 19, 140, 0.1);
+}
+
+mat-dialog-actions button[mat-raised-button] {
+  background-color: #00138C !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2);
+  transition: all 0.2s ease;
+}
+
+mat-dialog-actions button[mat-raised-button]:hover:not([disabled]) {
+  background-color: #001a99 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
+}
+
+mat-dialog-actions button[mat-raised-button][disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mejoras adicionales para consistencia */
+.tabla-estudiantes td strong {
+  color: #00138C;
+  font-weight: 600;
+}
+
+.tabla-estudiantes td {
+  vertical-align: middle;
 }
 
 /* Responsive */
@@ -185,12 +317,32 @@ mat-dialog-actions button {
     gap: 16px;
   }
 
+  .stat {
+    min-width: 120px;
+  }
+
   .stat .valor {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   .tabla-container {
     max-height: 400px;
+  }
+
+  .dialog-header {
+    padding: 16px 20px;
+  }
+
+  .dialog-header h2 {
+    font-size: 18px;
+  }
+
+  .resumen-curso {
+    padding: 20px;
+  }
+
+  .resumen-curso h3 {
+    font-size: 18px;
   }
 }
 

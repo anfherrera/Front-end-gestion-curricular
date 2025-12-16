@@ -32,8 +32,22 @@ export interface EstudianteCurso {
   id_solicitud_preinscripcion?: number | null;
   condicion?: string | null;
   tiene_inscripcion: boolean;
+  /**
+   * Estado de la inscripción. Siempre viene del backend.
+   * Puede ser:
+   * - "Sin inscripción": No tiene solicitud de inscripción
+   * - "Enviada": Inscripción enviada, pendiente de validación
+   * - "Pago_Validado": Inscripción validada y completada (solo estos estudiantes son "Inscrito")
+   * - "Pago_Rechazado": Pago rechazado
+   * - Otros estados según el flujo
+   */
   estado_inscripcion?: string | null;
   id_solicitud_inscripcion?: number | null;
+  /**
+   * Tipo del estudiante. Calculado por el backend.
+   * - "Inscrito": Solo si estado_inscripcion === "Pago_Validado"
+   * - "Preinscrito": En todos los demás casos
+   */
   tipo: 'Preinscrito' | 'Inscrito';
 }
 
@@ -129,14 +143,15 @@ export interface CursoOfertadoVerano {
 export interface UsuarioSolicitud {
   id_usuario: number;
   nombre_completo: string;
-  rol: {
+  rol?: {
     id_rol: number;
     nombre: string;
   };
   codigo: string;
+  codigo_estudiante?: string; // Campo opcional para compatibilidad
   correo: string;
-  estado_usuario: boolean;
-  objPrograma: {
+  estado_usuario?: boolean;
+  objPrograma?: {
     id_programa: number;
     nombre_programa: string;
   };
@@ -150,22 +165,51 @@ export interface EstadoSolicitudDetalle {
   registradoPor?: string;
 }
 
+// Interfaz para la respuesta del endpoint de preinscripciones por curso
+export interface PreinscripcionCurso {
+  id_preinscripcion: number;
+  id_solicitud: number; // Alias para compatibilidad
+  fecha_preinscripcion: string; // ISO string
+  estado: 'ENVIADA' | 'APROBADA' | 'APROBADA_FUNCIONARIO' | 'RECHAZADA';
+  observaciones?: string | null;
+  condicion?: string | null;
+  objUsuario: {
+    id_usuario: number;
+    nombre_completo: string;
+    correo: string;
+    codigo: string;
+    codigo_estudiante: string;
+    objRol?: {
+      id_rol: number;
+      nombre: string;
+    };
+  };
+  objCurso: {
+    id_curso: number;
+    nombre_curso: string;
+    codigo_curso: string;
+  };
+}
+
 export interface SolicitudCursoVerano {
   id_solicitud: number;
   id_preinscripcion?: number; // Campo adicional para compatibilidad
   nombre_solicitud: string;
   fecha_solicitud: Date;
-  estado: 'Pendiente' | 'Enviado' | 'Enviada' | 'Aprobado' | 'Rechazado' | 'Completado';
+  estado: 'Pendiente' | 'Enviado' | 'Enviada' | 'Aprobado' | 'Rechazado' | 'Completado' | 'ENVIADA' | 'APROBADA' | 'APROBADA_FUNCIONARIO' | 'RECHAZADA';
   observaciones?: string;
   condicion?: string;
   objUsuario: UsuarioSolicitud;
-  objCursoOfertadoVerano: CursoOfertadoVerano;
+  objCursoOfertadoVerano?: CursoOfertadoVerano;
+  objCurso?: { id_curso: number; nombre_curso: string; codigo_curso: string; }; // Alias para compatibilidad
   tipoSolicitud: 'PREINSCRIPCION' | 'INSCRIPCION';
   // Nuevos campos para el seguimiento mejorado
   estadoCurso?: string;           // Estado actual del curso
   accionesDisponibles?: string[]; // Acciones que puede realizar el estudiante
   comentarioEstado?: string | null; // Motivo asociado al estado actual
   estadoSolicitud?: EstadoSolicitudDetalle[]; // Historial de estados con comentarios
+  // Campos adicionales para compatibilidad con el nuevo formato
+  fecha_preinscripcion?: string; // ISO string para compatibilidad
 }
 
 export interface Notificacion {
@@ -989,9 +1033,55 @@ export class CursosIntersemestralesService {
 
   // ====== PREINSCRIPCIONES (para funcionarios) ======
   
-  // Obtener preinscripciones por curso (endpoint actualizado)
+  /**
+   * Obtener preinscripciones por curso
+   * 
+   * @param idCurso ID del curso del cual se desean obtener las preinscripciones
+   * @returns Observable con la lista de preinscripciones del curso
+   */
   getPreinscripcionesPorCurso(idCurso: number): Observable<SolicitudCursoVerano[]> {
-    return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/curso/${idCurso}`);
+    const url = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/curso/${idCurso}`;
+    
+    return this.http.get<PreinscripcionCurso[]>(url).pipe(
+      map(preinscripciones => {
+        console.log('[PREINSCRIPCIONES] Respuesta del backend (raw):', preinscripciones);
+        
+        // Convertir PreinscripcionCurso[] a SolicitudCursoVerano[] para compatibilidad
+        return preinscripciones.map(preins => {
+          // Obtener el curso completo si está disponible, o crear uno básico
+          const cursoCompleto: CursoOfertadoVerano | undefined = undefined; // Se puede obtener después si es necesario
+          
+          const solicitud: SolicitudCursoVerano = {
+            id_solicitud: preins.id_solicitud,
+            id_preinscripcion: preins.id_preinscripcion,
+            nombre_solicitud: `Preinscripción - ${preins.objUsuario.nombre_completo}`,
+            fecha_solicitud: new Date(preins.fecha_preinscripcion),
+            estado: preins.estado as any, // Convertir el estado (ENVIADA, APROBADA_FUNCIONARIO, etc.)
+            observaciones: preins.observaciones || undefined,
+            condicion: preins.condicion || undefined,
+            objUsuario: {
+              id_usuario: preins.objUsuario.id_usuario,
+              nombre_completo: preins.objUsuario.nombre_completo,
+              correo: preins.objUsuario.correo,
+              codigo: preins.objUsuario.codigo,
+              codigo_estudiante: preins.objUsuario.codigo_estudiante
+            },
+            objCurso: preins.objCurso, // Usar objCurso del nuevo formato
+            objCursoOfertadoVerano: cursoCompleto, // Puede ser undefined, se completará si es necesario
+            tipoSolicitud: 'PREINSCRIPCION',
+            fecha_preinscripcion: preins.fecha_preinscripcion
+          };
+          return solicitud;
+        });
+      }),
+      catchError(error => {
+        console.error('[PREINSCRIPCIONES] Error obteniendo preinscripciones del curso:', error);
+        if (error.status === 404) {
+          console.error('[PREINSCRIPCIONES] Curso no encontrado');
+        }
+        throw error;
+      })
+    );
   }
 
   // Obtener inscripciones por curso específico
@@ -1024,6 +1114,8 @@ export class CursosIntersemestralesService {
   getEstudiantesDelCurso(idCurso: number): Observable<RespuestaEstudiantesCurso> {
     const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_CURSO(idCurso);
     
+    // El backend ahora maneja UTF-8 correctamente, no necesitamos normalización manual
+    // Los headers UTF-8 se configuran automáticamente en el JWT interceptor
     return this.http.get<RespuestaEstudiantesCurso>(endpoint).pipe(
       catchError(error => {
         console.error('[CURSOS] Error obteniendo estudiantes del curso:', error);
