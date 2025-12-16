@@ -262,10 +262,16 @@ export class CursosOfertadosComponent implements OnInit {
       return;
     }
 
+    // Obtener nombre completo del usuario
+    const nombreCompleto = this.usuario?.nombre_completo || 
+                          this.usuario?.nombre || 
+                          'Usuario';
+    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+
     const payload: CreatePreinscripcionDTO = {
       idUsuario: this.usuario.id_usuario,
       idCurso: curso.id_curso,
-      nombreSolicitud: `Preinscripción - ${curso.nombre_curso}`,
+      nombreSolicitud: `Solicitud Preinscripción - ${nombreFinal}`,
       condicion: 'Primera_Vez' // Valor por defecto para preinscripciones directas
     };
 
@@ -295,10 +301,16 @@ export class CursosOfertadosComponent implements OnInit {
       return;
     }
 
+    // Obtener nombre completo del usuario
+    const nombreCompleto = this.usuario?.nombre_completo || 
+                          this.usuario?.nombre || 
+                          'Usuario';
+    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+
     const payload = {
       idUsuario: this.usuario.id_usuario,
       idCurso: curso.id_curso,
-      nombreSolicitud: `Inscripción - ${curso.nombre_curso}`
+      nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`
     };
 
     this.cursosService.crearInscripcion(payload).subscribe({

@@ -84,10 +84,18 @@ export class PreinscripcionDialogComponent implements OnInit {
       this.loading = true;
       
       const formData = this.preinscripcionForm.value;
+      
+      // Obtener nombre completo del usuario
+      const nombreCompleto = this.usuario?.nombre_completo || 
+                            this.usuario?.nombre || 
+                            formData.nombreCompleto ||
+                            'Usuario';
+      const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+      
       const payload: CreatePreinscripcionDTO = {
         idUsuario: this.usuario.id_usuario,
         idCurso: this.data.curso.id_curso,
-        nombreSolicitud: `Preinscripción - ${this.data.curso.nombre_curso}`,
+        nombreSolicitud: `Solicitud Preinscripción - ${nombreFinal}`,
         condicion: formData.condicion
       };
 

@@ -124,8 +124,14 @@ export class ReingresoEstudianteComponent implements OnInit {
         // Archivos subidos correctamente
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
+        // Obtener nombre completo del usuario
+        const nombreCompleto = this.usuario?.nombre_completo || 
+                               this.usuario?.nombre || 
+                               'Usuario';
+        const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+        
         const solicitud: SolicitudReingresoDTOPeticion = {
-          nombre_solicitud: `Solicitud_reingreso_${this.usuario.nombre_completo}`,
+          nombre_solicitud: `Solicitud Reingreso - ${nombreFinal}`,
           fecha_registro_solicitud: new Date(),
           objUsuario: {
             id_usuario: this.usuario.id_usuario,

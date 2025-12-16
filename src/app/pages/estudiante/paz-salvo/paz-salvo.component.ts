@@ -513,9 +513,19 @@ listarSolicitudes() {
                                `${this.usuario?.primer_nombre || ''} ${this.usuario?.segundo_nombre || ''} ${this.usuario?.primer_apellido || ''} ${this.usuario?.segundo_apellido || ''}`.trim() ||
                                'Usuario';
         
+        // Asegurar que el nombre completo no esté vacío
+        const nombreFinal = nombreCompleto && nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+        
+        // Formato: "Solicitud Paz y Salvo - [nombre del estudiante]"
+        const nombreSolicitud = `Solicitud Paz y Salvo - ${nombreFinal}`;
+        
+        console.log('📝 Creando solicitud con nombre:', nombreSolicitud);
+        console.log('👤 Usuario completo:', this.usuario);
+        console.log('📋 Nombre completo obtenido:', nombreFinal);
+        
         const datosSolicitud: any = {
           idUsuario: this.usuario.id_usuario,
-          nombre_solicitud: `Paz y Salvo - ${nombreCompleto}`, // Formato: "Paz y Salvo - [nombre del estudiante]"
+          nombre_solicitud: nombreSolicitud,
           fecha_registro_solicitud: fechaTerminacion // Usar la fecha de terminación del plan
         };
 

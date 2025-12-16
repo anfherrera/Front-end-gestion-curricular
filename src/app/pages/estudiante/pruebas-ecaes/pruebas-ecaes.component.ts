@@ -323,9 +323,14 @@ export class PruebasEcaesComponent implements OnInit {
   }
 
   private crearSolicitudConArchivos(formValue: any, archivosSubidos: any[]): void {
-    // Concatenar el nombre del estudiante al nombre de la solicitud
-    const nombreCompleto = this.usuario.nombre_completo || 'Estudiante';
-    const nombreSolicitud = `Inscripción a Pruebas ECAES - ${nombreCompleto}`;
+    // Obtener nombre completo del usuario
+    const nombreCompleto = this.usuario?.nombre_completo || 
+                          this.usuario?.nombre || 
+                          'Usuario';
+    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+    
+    // Formato: "Solicitud ECAES - [nombre del estudiante]"
+    const nombreSolicitud = `Solicitud ECAES - ${nombreFinal}`;
 
     const solicitud = {
       nombre_solicitud: nombreSolicitud,

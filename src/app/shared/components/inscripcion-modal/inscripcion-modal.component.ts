@@ -140,11 +140,17 @@ export class InscripcionModalComponent implements OnInit {
 
     this.cargando = true;
 
+    // Obtener nombre completo del usuario
+    const nombreCompleto = this.usuario?.nombre_completo || 
+                          this.usuario?.nombre || 
+                          'Usuario';
+    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+
     // Crear el payload para la inscripción
     const payload: CreateInscripcionDTO = {
       idUsuario: this.usuario.id_usuario,
       idCurso: this.data.preinscripcion.cursoId,
-      nombreSolicitud: `Inscripción - ${this.data.preinscripcion.curso}`
+      nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`
     };
     
     // Payload alternativo para debugging
@@ -153,7 +159,7 @@ export class InscripcionModalComponent implements OnInit {
       cursoId: this.data.preinscripcion.cursoId,
       periodoId: 1, // Valor por defecto ya que no está en PreinscripcionSeguimiento
       tipoSolicitud: 'Inscripcion',
-      nombreSolicitud: `Inscripción - ${this.data.preinscripcion.curso}`,
+      nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`,
       idUsuario: this.usuario.id_usuario,
       idCurso: this.data.preinscripcion.cursoId
     };
@@ -271,10 +277,16 @@ export class InscripcionModalComponent implements OnInit {
   private crearNuevaPreinscripcion(): void {
     // DIAGNÓSTICO PASO 3: Creando nueva preinscripción
     
+    // Obtener nombre completo del usuario
+    const nombreCompleto = this.usuario?.nombre_completo || 
+                          this.usuario?.nombre || 
+                          'Usuario';
+    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+    
     const preinscripcionPayload = {
       idUsuario: this.usuario.id_usuario,
       idCurso: this.data.preinscripcion.cursoId,
-      nombreSolicitud: `Preinscripción - ${this.data.preinscripcion.curso}`,
+      nombreSolicitud: `Solicitud Preinscripción - ${nombreFinal}`,
       condicion: 'Primera_Vez' // Valor por defecto
     };
 
@@ -324,10 +336,16 @@ export class InscripcionModalComponent implements OnInit {
   private crearInscripcionDirecta(): void {
     // DIAGNÓSTICO PASO 5: Creando inscripción
     
+    // Obtener nombre completo del usuario
+    const nombreCompleto = this.usuario?.nombre_completo || 
+                          this.usuario?.nombre || 
+                          'Usuario';
+    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+    
     const inscripcionPayload = {
       idUsuario: this.usuario.id_usuario,
       idCurso: this.data.preinscripcion.cursoId,
-      nombreSolicitud: `Inscripción - ${this.data.preinscripcion.curso}`
+      nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`
     };
     
     // Creando inscripción con payload

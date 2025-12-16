@@ -199,8 +199,14 @@ export class PazSalvoService {
     const usuario = this.authService.getUsuario();
     if (!usuario) throw new Error('Usuario no autenticado');
 
+    // Obtener nombre completo del usuario
+    const nombreCompleto = usuario.nombre_completo || 
+                          usuario.nombre || 
+                          'Usuario';
+    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+    
     const body = {
-      nombre_solicitud: `Solicitud_paz_salvo_${usuario.nombre_completo || "Usuario"}`,
+      nombre_solicitud: `Solicitud Paz y Salvo - ${nombreFinal}`,
       fecha_registro_solicitud: new Date().toISOString(),
       objUsuario: { 
         id_usuario: usuario.id_usuario,
@@ -250,9 +256,24 @@ export class PazSalvoService {
     const usuario = this.authService.getUsuario();
     if (!usuario) throw new Error('Usuario no autenticado');
 
+    // Asegurar que el nombre_solicitud tenga el formato correcto
+    let nombreSolicitud = datosFormulario.nombre_solicitud;
+    
+    // Si el nombre no incluye "Solicitud Paz y Salvo -", agregarlo
+    if (!nombreSolicitud.includes('Solicitud Paz y Salvo -')) {
+      const nombreUsuario = usuario.nombre_completo || 
+                           usuario.nombre || 
+                           'Usuario';
+      const nombreFinal = nombreUsuario.trim() !== '' ? nombreUsuario.trim() : 'Usuario';
+      nombreSolicitud = `Solicitud Paz y Salvo - ${nombreFinal}`;
+    }
+    
+    console.log('📤 Enviando solicitud al backend con nombre:', nombreSolicitud);
+    console.log('📋 Datos completos del formulario:', datosFormulario);
+
     const body: any = {
       idUsuario: studentId,
-      nombre_solicitud: datosFormulario.nombre_solicitud,
+      nombre_solicitud: nombreSolicitud,
       fecha_registro_solicitud: datosFormulario.fecha_registro_solicitud
     };
 
