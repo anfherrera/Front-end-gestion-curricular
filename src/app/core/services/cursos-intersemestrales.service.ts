@@ -909,8 +909,65 @@ export class CursosIntersemestralesService {
   }
 
   // Nuevo método para el endpoint actualizado de visualizar solicitudes
-  getSolicitudesVisualizar(): Observable<any[]> {
-    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes`);
+  getSolicitudesVisualizar(
+    idMateria?: number | null,
+    periodoAcademico?: string | null,
+    idCurso?: number | null,
+    estado?: string | null,
+    fechaInicio?: string | null,
+    fechaFin?: string | null
+  ): Observable<any[]> {
+    const url = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes`;
+    let httpParams = new HttpParams();
+    
+    if (idMateria !== undefined && idMateria !== null && idMateria !== 0) {
+      httpParams = httpParams.set('idMateria', idMateria.toString());
+    }
+    
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
+      httpParams = httpParams.set('periodoAcademico', periodoAcademico.trim());
+    }
+    
+    if (idCurso !== undefined && idCurso !== null) {
+      httpParams = httpParams.set('idCurso', idCurso.toString());
+    }
+    
+    if (estado && estado.trim() !== '') {
+      httpParams = httpParams.set('estado', estado.trim());
+    }
+    
+    if (fechaInicio && fechaInicio.trim() !== '') {
+      httpParams = httpParams.set('fechaInicio', fechaInicio.trim());
+    }
+    
+    if (fechaFin && fechaFin.trim() !== '') {
+      httpParams = httpParams.set('fechaFin', fechaFin.trim());
+    }
+    
+    const options = httpParams.keys().length > 0 
+      ? { params: httpParams }
+      : {};
+    
+    console.log('[SOLICITUDES] Cargando solicitudes con filtros:', {
+      idMateria,
+      periodoAcademico,
+      idCurso,
+      estado,
+      fechaInicio,
+      fechaFin
+    });
+    console.log('[SOLICITUDES] URL completa:', url, 'Params:', httpParams.toString());
+    
+    return this.http.get<any[]>(url, options).pipe(
+      map(solicitudes => {
+        console.log('[SOLICITUDES] Solicitudes recibidas del backend:', solicitudes.length);
+        return solicitudes;
+      }),
+      catchError(error => {
+        console.error('[SOLICITUDES] Error obteniendo solicitudes:', error);
+        throw error;
+      })
+    );
   }
 
   // Nuevo método para el filtro de materias

@@ -50,9 +50,9 @@ export class VisualizarSolicitudesComponent implements OnInit {
     this.cargarMaterias();
     this.cargarSolicitudes();
     
-    // Suscribirse a cambios en los filtros
+    // Suscribirse a cambios en los filtros - recargar desde el backend
     this.filtroForm.valueChanges.subscribe(() => {
-      this.aplicarFiltros();
+      this.cargarSolicitudes(); // Recargar desde el backend con los nuevos filtros
     });
   }
 
@@ -87,20 +87,30 @@ export class VisualizarSolicitudesComponent implements OnInit {
 
   cargarSolicitudes() {
     this.cargando = true;
-    console.log('🔄 Cargando todas las solicitudes desde el nuevo endpoint...');
+    console.log('🔄 Cargando solicitudes desde el backend con filtros...');
     
-    this.cursosService.getSolicitudesVisualizar().subscribe({
+    // Obtener los filtros actuales
+    const filtros = this.filtroForm.value;
+    const idMateria = filtros.materia && filtros.materia !== 0 ? filtros.materia : undefined;
+    const periodoParam = this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '' 
+      ? this.periodoFiltro.trim() 
+      : undefined;
+    
+    console.log('📋 Filtros aplicados:', { idMateria, periodoAcademico: periodoParam });
+    
+    // Cargar solicitudes con filtros del backend
+    this.cursosService.getSolicitudesVisualizar(idMateria, periodoParam).subscribe({
       next: (solicitudes: any[]) => {
         this.solicitudes = solicitudes;
-        console.log('✅ Solicitudes cargadas desde backend:', solicitudes);
-        this.aplicarFiltros();
+        this.solicitudesFiltradas = [...solicitudes]; // Las solicitudes ya vienen filtradas del backend
+        console.log('✅ Solicitudes cargadas desde backend (ya filtradas):', solicitudes.length);
         this.cargando = false;
       },
       error: (err: any) => {
         console.error('❌ Error cargando solicitudes del backend:', err);
         this.cargando = false;
         this.solicitudes = [];
-        this.aplicarFiltros();
+        this.solicitudesFiltradas = [];
       }
     });
   }
@@ -257,42 +267,12 @@ export class VisualizarSolicitudesComponent implements OnInit {
     ];
   }
 
-  aplicarFiltros() {
-    const filtros = this.filtroForm.value;
-    let filtradas = [...this.solicitudes];
-
-    // Filtrar por materia (ahora usando el nuevo formato)
-    if (filtros.materia && filtros.materia !== 0) {
-      filtradas = filtradas.filter(s => {
-        // Para solicitudes del nuevo endpoint, comparar con el campo 'curso'
-        if (s.curso) {
-          const materiaSeleccionada = this.materias.find(m => m.id_materia === filtros.materia);
-          return materiaSeleccionada && s.curso.toLowerCase().includes(materiaSeleccionada.nombre.toLowerCase());
-        }
-        // Para solicitudes del formato anterior
-        return s.objCursoOfertadoVerano?.objMateria?.id_materia === parseInt(filtros.materia);
-      });
-    }
-
-    // Filtrar por período académico
-    if (this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '') {
-      const periodoBuscado = this.periodoFiltro.trim();
-      filtradas = filtradas.filter(s => {
-        // Verificar en el campo periodo de la solicitud o del curso
-        const periodoSolicitud = s.periodo || s.periodoAcademico || s.objCursoOfertadoVerano?.periodo || s.objCursoOfertadoVerano?.periodoAcademico;
-        return periodoSolicitud && periodoSolicitud.toString().includes(periodoBuscado);
-      });
-    }
-
-    this.solicitudesFiltradas = filtradas;
-    console.log('🔍 Filtros aplicados:', { ...filtros, periodo: this.periodoFiltro }, 'Resultados:', filtradas.length);
-  }
-
   // Manejar cambio de período académico
   onPeriodoChange(periodo: string): void {
     console.log('🔄 Cambio de período detectado:', periodo);
     this.periodoFiltro = periodo;
-    this.aplicarFiltros();
+    // Recargar desde el backend con el nuevo filtro
+    this.cargarSolicitudes();
   }
 
 
