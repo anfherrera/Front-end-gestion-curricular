@@ -434,13 +434,13 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     UtfFixPipe
   ],
   template: `
-    <!-- Dialog simplificado - Solo solicitud y comprobante -->
-    <h2 mat-dialog-title>📋 Solicitud del Estudiante</h2>
+    <!-- Dialog simplificado - Solo información esencial -->
+    <h2 mat-dialog-title>Solicitud del Estudiante</h2>
     
     <div mat-dialog-content class="dialog-content">
       <!-- Información del estudiante -->
       <div class="form-section">
-        <h3>👤 Información del Estudiante</h3>
+        <h3>Información del Estudiante</h3>
         <div class="info-grid">
           <div class="info-item">
             <strong>Nombre Completo:</strong> {{ data.estudiante.nombre_completo | utfFix }}
@@ -454,76 +454,31 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           <div class="info-item">
             <strong>Condición:</strong> {{ data.estudiante.condicion_solicitud }}
           </div>
-          <div class="info-item">
-            <strong>Inscripción Formal:</strong> {{ data.estudiante.tiene_inscripcion_formal ? 'Sí' : 'No' }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Información de la solicitud -->
-      <div class="form-section">
-        <h3>📝 Detalles de la Solicitud</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <strong>ID Preinscripción:</strong> {{ data.estudiante.id_preinscripcion }}
-          </div>
-          <div class="info-item">
-            <strong>Fecha Preinscripción:</strong> {{ data.estudiante.fecha_preinscripcion | date:'dd/MM/yyyy HH:mm' }}
-          </div>
-          <div class="info-item">
-            <strong>Estado Preinscripción:</strong> 
-            <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-              {{ data.estudiante.estado_preinscripcion }}
-            </span>
-          </div>
-          <div class="info-item">
-            <strong>Motivo de Inclusión:</strong> {{ data.estudiante.motivo_inclusion }}
-          </div>
         </div>
       </div>
 
       <!-- Estado de inscripción -->
       <div class="form-section">
-        <h3>📋 Estado de Inscripción</h3>
+        <h3>Estado de Inscripción</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Estado Actual:</strong> 
-            <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-              {{ data.estudiante.tipo_solicitud }}
-            </span>
-          </div>
-          <div class="info-item" *ngIf="data.estudiante.id_inscripcion">
-            <strong>ID Inscripción:</strong> {{ data.estudiante.id_inscripcion }}
-          </div>
-          <div class="info-item" *ngIf="data.estudiante.fecha_inscripcion">
-            <strong>Fecha Inscripción:</strong> 
-            {{ data.estudiante.fecha_inscripcion | date:'dd/MM/yyyy HH:mm' }}
+            <strong>Estado Actual:</strong> {{ data.estudiante.tipo_solicitud }}
           </div>
         </div>
       </div>
 
       <!-- Comprobante de pago -->
       <div class="form-section">
-        <h3>💰 Comprobante de Pago</h3>
+        <h3>Comprobante de Pago</h3>
         <div class="info-grid">
           <div class="info-item" *ngIf="data.estudiante.archivoPago; else sinComprobante">
             <div class="comprobante-info">
               <strong>Nombre del Archivo:</strong> {{ data.estudiante.archivoPago.nombre }}
               <br>
-              <strong>ID Documento:</strong> {{ data.estudiante.archivoPago.id_documento || 'No disponible' }}
-              <br>
               <strong>Fecha de Subida:</strong> 
               {{ data.estudiante.archivoPago.fecha ? (data.estudiante.archivoPago.fecha | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}
               <br>
-              <strong>URL del Archivo:</strong> 
-              <span style="font-family: monospace; font-size: 11px; background: #f5f5f5; padding: 2px 4px; border-radius: 3px;">
-                {{ data.estudiante.archivoPago.url || 'No disponible' }}
-              </span>
-              <br>
-              <strong>Estado del Pago:</strong> 
-              <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-                Pago Validado ✅
-              </span>
+              <strong>Estado del Pago:</strong> Pago Validado
               <br><br>
               
               <!-- Botones de acción para el comprobante -->
@@ -541,10 +496,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           </div>
           <ng-template #sinComprobante>
             <div class="info-item">
-              <strong>Estado:</strong> 
-              <span style="color: #f44336; font-weight: bold;">Sin comprobante de pago</span>
-              <br>
-              <small style="color: #666;">El estudiante no ha subido un comprobante de pago</small>
+              <strong>Estado:</strong> Sin comprobante de pago
             </div>
           </ng-template>
         </div>
