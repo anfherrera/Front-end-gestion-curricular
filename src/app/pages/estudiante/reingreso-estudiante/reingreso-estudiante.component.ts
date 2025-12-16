@@ -13,7 +13,6 @@ import { RequestStatusTableComponent } from "../../../shared/components/request-
 import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
 import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
 import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
-import { PeriodoActualDisplayComponent } from "../../../shared/components/periodo-actual-display/periodo-actual-display.component";
 
 import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,8 +31,7 @@ import { Solicitud } from '../../../core/models/procesos.model';
     MatDialogModule,
     FileUploadComponent,
     RequiredDocsComponent,
-    RequestStatusTableComponent,
-    PeriodoActualDisplayComponent
+    RequestStatusTableComponent
   ],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']

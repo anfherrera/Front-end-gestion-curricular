@@ -1,29 +1,33 @@
 <mat-card class="card-section">
   <mat-card-title class="card-title">Documentación requerida</mat-card-title>
   <mat-card-content>
-    <p class="info-intro">Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva programada por la Secretaría General de la Universidad del Cauca.</p>
+    <!-- Texto introductorio solo para Paz y Salvo -->
+    <p class="info-intro" *ngIf="esPazYSalvo">Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva programada por la Secretaría General de la Universidad del Cauca.</p>
     
     <p class="info-text">Debes subir los siguientes documentos necesarios en formato PDF. Todos los formatos deben estar debidamente diligenciados y firmados:</p>
     
-    <!-- Nota para Sistemas, Electrónica y Automática -->
-    <div class="info-ayuda-sistemas" *ngIf="esSistemasElectronicaAutomatica && !esTelematica">
-      <p><strong>Importante para estudiantes de Sistemas, Electrónica y Automática:</strong></p>
-      <ul class="lista-requisitos">
-        <li>Debes subir los 4 documentos obligatorios marcados con (*)</li>
-        <li><strong>Además, debes subir OBLIGATORIAMENTE uno de estos formatos:</strong> PPH o TIH (solo uno de los dos, marcado con *)</li>
-        <li><strong>Y según tu modalidad de trabajo de grado:</strong> Si es TRABAJO DE INVESTIGACIÓN, sube TI-G y TI-H. Si es PRÁCTICA PROFESIONAL, sube PP-G y PP-H. <strong>NO subas ambos grupos</strong></li>
-      </ul>
-    </div>
+    <!-- Notas específicas solo para Paz y Salvo -->
+    <ng-container *ngIf="esPazYSalvo">
+      <!-- Nota para Sistemas, Electrónica y Automática -->
+      <div class="info-ayuda-sistemas" *ngIf="esSistemasElectronicaAutomatica && !esTelematica">
+        <p><strong>Importante para estudiantes de Sistemas, Electrónica y Automática:</strong></p>
+        <ul class="lista-requisitos">
+          <li>Debes subir los 4 documentos obligatorios marcados con (*)</li>
+          <li><strong>Además, debes subir OBLIGATORIAMENTE uno de estos formatos:</strong> PPH o TIH (solo uno de los dos, marcado con *)</li>
+          <li><strong>Y según tu modalidad de trabajo de grado:</strong> Si es TRABAJO DE INVESTIGACIÓN, sube TI-G y TI-H. Si es PRÁCTICA PROFESIONAL, sube PP-G y PP-H. <strong>NO subas ambos grupos</strong></li>
+        </ul>
+      </div>
 
-    <!-- Nota para Telemática -->
-    <p class="info-ayuda-telematica" *ngIf="esTelematica">
-      <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir la fotocopia de tu cédula (marcada con *). Los formatos TI-G/TI-H, PP-G/PP-H, PPH/TIH y los demás documentos no aplican para tu programa.
-    </p>
+      <!-- Nota para Telemática -->
+      <p class="info-ayuda-telematica" *ngIf="esTelematica">
+        <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir la fotocopia de tu cédula (marcada con *). Los formatos TI-G/TI-H, PP-G/PP-H, PPH/TIH y los demás documentos no aplican para tu programa.
+      </p>
 
-    <!-- Nota para otros programas -->
-    <p class="info-ayuda" *ngIf="!esTelematica && !esSistemasElectronicaAutomatica">
-      <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
-    </p>
+      <!-- Nota para otros programas -->
+      <p class="info-ayuda" *ngIf="!esTelematica && !esSistemasElectronicaAutomatica">
+        <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
+      </p>
+    </ng-container>
 
     <ul class="required-list">
       <!-- Documentos obligatorios para todos -->
@@ -59,7 +63,8 @@
         {{ doc.label }}
       </li>
     </ul>
-    <div class="info-adicional">
+    <!-- Información adicional solo para Paz y Salvo -->
+    <div class="info-adicional" *ngIf="esPazYSalvo">
       <p class="info-nota">
         <strong>Nota importante sobre pruebas ECAES:</strong> Los resultados de las pruebas ECAES deben estar registrados en la historia académica. De lo contrario, el estudiante debe presentar el resultado a DARCA para su inclusión.
       </p>

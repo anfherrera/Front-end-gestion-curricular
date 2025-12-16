@@ -57,7 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.userRole = this.calculateUserRole();
     }
 
-    // Suscribirse al período actual
+    // Suscribirse primero al período actual para recibir actualizaciones
     this.periodoSubscription = this.periodosService.periodoActual$.subscribe(periodo => {
       this.periodoActual = periodo;
       if (periodo) {
@@ -68,13 +68,33 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
-    // Si no hay período cargado, cargarlo
-    if (!this.periodosService.getPeriodoActualValue()) {
-      this.periodosService.getPeriodoActual().subscribe();
+    // Verificar si hay período cargado en el servicio
+    const periodoCargado = this.periodosService.getPeriodoActualValue();
+    if (periodoCargado) {
+      this.periodoActual = periodoCargado;
+      this.periodoFormateado = periodoCargado.nombrePeriodo || formatearPeriodo(periodoCargado.valor);
+      this.cdr.markForCheck();
     } else {
-      this.periodoActual = this.periodosService.getPeriodoActualValue();
-      if (this.periodoActual) {
-        this.periodoFormateado = this.periodoActual.nombrePeriodo || formatearPeriodo(this.periodoActual.valor);
+      // Si no hay período cargado, intentar cargarlo
+      // El endpoint NO requiere autenticación
+      if (typeof window !== 'undefined') {
+        this.periodosService.getPeriodoActual().subscribe({
+          next: (periodo) => {
+            if (periodo) {
+              this.periodoActual = periodo;
+              this.periodoFormateado = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
+              this.cdr.markForCheck();
+            } else {
+              this.periodoFormateado = '';
+              this.cdr.markForCheck();
+            }
+          },
+          error: (error) => {
+            console.error('Error cargando período actual en header:', error);
+            this.periodoFormateado = '';
+            this.cdr.markForCheck();
+          }
+        });
       }
     }
   }

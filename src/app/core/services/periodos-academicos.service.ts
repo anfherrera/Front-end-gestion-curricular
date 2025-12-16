@@ -22,7 +22,7 @@ export interface PeriodoAcademico {
 
 export interface PeriodoActualResponse {
   success: boolean;
-  data: PeriodoAcademico;
+  data: string | null; // El backend retorna el período como string (ej: "2025-2") o null
   message: string;
 }
 
@@ -86,39 +86,63 @@ export class PeriodosAcademicosService {
 
   /**
    * Obtiene el período académico actual
+   * El backend retorna un string (ej: "2025-2") o null
    */
   getPeriodoActual(): Observable<PeriodoAcademico | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL;
     
-    return this.http.get<PeriodoActualResponse>(url, { headers: this.getAuthHeaders() }).pipe(
+    // El endpoint NO requiere autenticación según la documentación
+    return this.http.get<PeriodoActualResponse>(url).pipe(
       map(response => {
         if (response.success && response.data) {
+          // Convertir el string del período (ej: "2025-2") a un objeto PeriodoAcademico
+          const periodoValor = response.data;
+          const partes = periodoValor.split('-');
+          const año = parseInt(partes[0]) || new Date().getFullYear();
+          const numeroPeriodo = parseInt(partes[1]) || 1;
+          
+          const periodoAcademico: PeriodoAcademico = {
+            valor: periodoValor,
+            año: año,
+            numeroPeriodo: numeroPeriodo,
+            nombrePeriodo: formatearPeriodo(periodoValor),
+            fechaInicio: '',
+            fechaFin: '',
+            activo: true,
+            tipoPeriodo: 'ORDINARIO',
+            esPeriodoEspecial: false,
+            descripcion: ''
+          };
+          
           const periodoAnterior = this.periodoActualSubject.value;
-          this.periodoActualSubject.next(response.data);
+          this.periodoActualSubject.next(periodoAcademico);
           
           // Detectar cambio de período
-          if (periodoAnterior && periodoAnterior.valor !== response.data.valor) {
+          if (periodoAnterior && periodoAnterior.valor !== periodoAcademico.valor) {
             this.cambioPeriodoSubject.next({
               anterior: periodoAnterior,
-              actual: response.data
+              actual: periodoAcademico
             });
           }
           
-          return response.data;
+          return periodoAcademico;
         }
+        // Si data es null, limpiar el subject
+        this.periodoActualSubject.next(null);
         return null;
       }),
       catchError(error => {
-        // Solo mostrar error si no es un error de conexión (backend no disponible) o 403 (sin permisos)
-        // El 403 puede ocurrir si el usuario no está autenticado o no tiene permisos
-        if (error.status !== 0 && error.status !== undefined && error.status !== 403) {
+        // Solo mostrar error si no es un error de conexión (backend no disponible)
+        if (error.status !== 0 && error.status !== undefined) {
           console.error('[PERIODOS] Error obteniendo período actual:', error);
         }
-        // Silenciosamente retornar null si el backend no está disponible o hay error de permisos
+        // Silenciosamente retornar null si el backend no está disponible
+        this.periodoActualSubject.next(null);
         return of(null);
       })
     );
   }
+
 
   /**
    * Obtiene el período actual desde el subject (sin hacer petición HTTP)
@@ -284,8 +308,8 @@ export class PeriodosAcademicosService {
    * Solo intenta cargar si hay un token disponible
    */
   inicializarPeriodoActual(): void {
-    // Verificar si hay token antes de hacer la petición
-    if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+    // El endpoint NO requiere autenticación, así que siempre intentamos cargarlo
+    if (typeof window !== 'undefined') {
       this.getPeriodoActual().subscribe();
     }
   }

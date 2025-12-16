@@ -27,6 +27,7 @@ export class RequiredDocsComponent {
   @Input() optionalFiles: string[] = [];
   @Input() archivos: Archivo[] = [];
   @Input() programaEstudiante: string = '';
+  @Input() esPazYSalvo: boolean = false; // Indica si es para Paz y Salvo
 
   get esTelematica(): boolean {
     if (!this.programaEstudiante) return false;

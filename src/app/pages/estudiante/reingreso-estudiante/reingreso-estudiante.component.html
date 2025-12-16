@@ -1,87 +1,51 @@
-<div class="container">
-  <!-- Período Académico Actual -->
-  <app-periodo-actual-display></app-periodo-actual-display>
+<div class="homologacion-container">
 
-  <div class="header-section">
-    <h1 class="page-title">
-      <mat-icon class="title-icon">school</mat-icon>
-      Solicitud de Reingreso
-    </h1>
-    <p class="page-description">
-      Aquí puedes crear y gestionar tus solicitudes de reingreso a la universidad.
-    </p>
-  </div>
+  <!-- Documentación requerida -->
+  <app-required-docs
+    [requiredFiles]="documentosRequeridos"
+    [archivos]="archivosActuales"
+    [programaEstudiante]="usuario?.objPrograma?.nombre || ''">
+  </app-required-docs>
 
-  <!-- Sección de documentos requeridos -->
-  <mat-card class="docs-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>description</mat-icon>
-        Documentos Requeridos
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <app-required-docs
-        [requiredFiles]="documentosRequeridos"
-        [archivos]="archivosActuales"
-        [programaEstudiante]="usuario?.objPrograma?.nombre || ''">
-      </app-required-docs>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Sección de carga de archivos -->
-  <mat-card class="card-section upload-card">
-    <mat-card-title class="card-title">
-      Cargar Documentos
-    </mat-card-title>
+  <!-- Subir Archivos -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Subir Archivos</mat-card-title>
     <mat-card-content>
       <app-file-upload
         [archivos]="archivosActuales"
-        [reset]="resetFileUpload"
-        (archivosChange)="onArchivosChange($event)">
+        (archivosChange)="onArchivosChange($event)"
+        [reset]="resetFileUpload">
       </app-file-upload>
 
-      <div class="enviar-solicitud">
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="!puedeEnviar()"
-          (click)="onSolicitudEnviada()"
-          class="btn-enviar">
-          <mat-icon>send</mat-icon>
+      <div class="enviar-solicitud mt-4">
+        <button mat-raised-button color="primary"
+                class="btn-enviar"
+                [disabled]="!puedeEnviar()"
+                (click)="onSolicitudEnviada()">
           Enviar Solicitud
         </button>
       </div>
     </mat-card-content>
   </mat-card>
 
-  <!-- Sección de solicitudes existentes -->
-  <mat-card class="requests-card" *ngIf="solicitudes.length > 0">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>history</mat-icon>
-        Mis Solicitudes de Reingreso
-      </mat-card-title>
-    </mat-card-header>
+  <!-- Seguimiento de solicitud -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
     <mat-card-content>
+      <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
+        No se ha enviado ninguna solicitud aún.
+      </p>
+
       <app-request-status-table
+        *ngIf="solicitudes.length > 0"
         [solicitudes]="solicitudes"
-        [showComentarios]="true"
         [showOficio]="true"
+        [showComentarios]="true"
         (verComentarios)="verComentarios($event)"
         (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
       </app-request-status-table>
+
     </mat-card-content>
   </mat-card>
 
-  <!-- Mensaje cuando no hay solicitudes -->
-  <mat-card class="empty-card" *ngIf="solicitudes.length === 0">
-    <mat-card-content>
-      <div class="empty-state">
-        <mat-icon class="empty-icon">inbox</mat-icon>
-        <h3>No tienes solicitudes de reingreso</h3>
-        <p>Crea tu primera solicitud cargando los documentos requeridos arriba.</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
 </div>
