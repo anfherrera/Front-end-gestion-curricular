@@ -243,6 +243,24 @@ table {
   font-size: 12px;
 }
 
+/* Información de salón */
+.salon-asignado {
+  color: #00138C;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.salon-simple {
+  color: #495057;
+  font-size: 14px;
+}
+
+.sin-salon {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
 /* Chips de estado */
 .estado-chip {
   font-weight: 600 !important;

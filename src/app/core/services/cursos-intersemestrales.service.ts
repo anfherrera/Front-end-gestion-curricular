@@ -129,6 +129,9 @@ export interface CursoOfertadoVerano {
   cupo_disponible: number;
   cupo_estimado: number;
   espacio_asignado: string;
+  salon?: string; // Número del salón (String, ej: "221")
+  id_salon?: number; // ID del salón asignado
+  salonInfo?: Salon; // Información completa del salón (objeto)
   // Mantener el campo estado para compatibilidad, pero ahora se obtendrá del estado actual
   estado?: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
   objMateria: Materia;
@@ -1950,6 +1953,9 @@ export interface CreateCursoDTO {
 export interface UpdateCursoDTO {
   // Solo campos editables según requerimientos
   cupo_estimado?: number;
-  espacio_asignado?: string;
+  id_salon?: number;               // ID del salón seleccionado (recomendado)
+  espacio_asignado?: string;       // Deprecated: mantener para compatibilidad
   estado?: 'Borrador' | 'Abierto' | 'Publicado' | 'Preinscripción' | 'Inscripción' | 'Cerrado' | 'Disponible';
+  fecha_inicio?: string;           // Opcional
+  fecha_fin?: string;              // Opcional
 }

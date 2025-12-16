@@ -182,7 +182,7 @@ export interface CursoDialogData {
         <div class="form-section">
           <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
           
-          <mat-form-field appearance="outline" class="form-field" *ngIf="!data.soloEdicion">
+          <mat-form-field appearance="outline" class="form-field">
             <mat-label>Salón Asignado</mat-label>
             <mat-select formControlName="id_salon">
               <mat-option value="">Seleccione un salón</mat-option>
@@ -193,17 +193,13 @@ export interface CursoDialogData {
             <mat-error *ngIf="data.form.get('id_salon')?.hasError('required')">
               El salón es requerido
             </mat-error>
-            <mat-hint *ngIf="!cargandoSalones">Seleccione un salón de la lista disponible</mat-hint>
+            <mat-hint *ngIf="!cargandoSalones">
+              <span *ngIf="!data.soloEdicion">Seleccione un salón de la lista disponible</span>
+              <span *ngIf="data.soloEdicion && data.cursoEditando">
+                Salón actual: {{ data.cursoEditando.salonInfo?.descripcion || data.cursoEditando.salon || data.cursoEditando.espacio_asignado || 'No asignado' }}
+              </span>
+            </mat-hint>
             <mat-hint *ngIf="cargandoSalones">Cargando salones...</mat-hint>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field" *ngIf="data.soloEdicion">
-            <mat-label>Espacio Asignado</mat-label>
-            <input matInput formControlName="espacio_asignado" placeholder="Ej: Lab 301, Aula 205">
-            <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('minlength')">
-              El espacio debe tener al menos 3 caracteres
-            </mat-error>
-            <mat-hint>Opcional. Si no se especifica, se asignará "Aula 101" por defecto</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -706,16 +702,21 @@ export class CursoDialogComponent implements OnInit {
   }
 
   cargarSalones(): void {
-    // Solo cargar salones si no es modo de solo edición
-    if (this.data.soloEdicion) {
-      return;
-    }
-    
     this.cargandoSalones = true;
     this.cursosService.getSalones().subscribe({
       next: (salones) => {
         this.salones = salones;
         this.cargandoSalones = false;
+        
+        // Si estamos en modo edición y el curso tiene un salón asignado, preseleccionarlo
+        if (this.data.soloEdicion && this.data.cursoEditando) {
+          const curso = this.data.cursoEditando;
+          if (curso.id_salon) {
+            this.data.form.patchValue({ id_salon: curso.id_salon });
+          } else if (curso.salonInfo?.id_salon) {
+            this.data.form.patchValue({ id_salon: curso.salonInfo.id_salon });
+          }
+        }
       },
       error: (error) => {
         console.error('Error al cargar salones:', error);
@@ -890,9 +891,17 @@ export class CursoDialogComponent implements OnInit {
         // Actualizar curso existente (solo campos editables)
         const updateData: UpdateCursoDTO = {
           cupo_estimado: formData.cupo_estimado,
-          espacio_asignado: formData.espacio_asignado,
           estado: formData.estado
         };
+        
+        // Incluir id_salon si está presente (recomendado)
+        // Si no hay id_salon, mantener espacio_asignado para compatibilidad con datos antiguos
+        if (formData.id_salon) {
+          updateData.id_salon = Number(formData.id_salon);
+        } else if (formData.espacio_asignado) {
+          // Solo mantener espacio_asignado si no hay id_salon (compatibilidad legacy)
+          updateData.espacio_asignado = formData.espacio_asignado;
+        }
         
         // Log de depuración (comentado para producción)
         

@@ -69,6 +69,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     'fecha_inicio', 
     'fecha_fin', 
     'cupo_maximo', 
+    'salon',
     'estado', 
     'acciones'
   ];
@@ -101,7 +102,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     // Formulario específico para edición (solo campos editables)
     this.edicionForm = this.fb.group({
       cupo_estimado: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
-      espacio_asignado: ['', [Validators.required, Validators.minLength(3)]],
+      id_salon: [''], // ID del salón seleccionado
+      espacio_asignado: [''], // Deprecated: mantener para compatibilidad
       estado: ['Borrador', Validators.required]
     });
   }
@@ -386,7 +388,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     // Solo llenar campos editables
     this.edicionForm.patchValue({
       cupo_estimado: curso.cupo_estimado,
-      espacio_asignado: curso.espacio_asignado,
+      id_salon: curso.id_salon || curso.salonInfo?.id_salon || null,
+      espacio_asignado: curso.espacio_asignado, // Mantener para compatibilidad
       estado: curso.estado
     });
 

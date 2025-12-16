@@ -150,6 +150,22 @@
         </td>
       </ng-container>
 
+      <!-- Salón -->
+      <ng-container matColumnDef="salon">
+        <th mat-header-cell *matHeaderCellDef>Salón</th>
+        <td mat-cell *matCellDef="let curso">
+          <span *ngIf="curso.salonInfo?.descripcion" class="salon-asignado">
+            {{ curso.salonInfo.descripcion }}
+          </span>
+          <span *ngIf="!curso.salonInfo?.descripcion && curso.salon" class="salon-simple">
+            {{ curso.salon }}
+          </span>
+          <span *ngIf="!curso.salonInfo?.descripcion && !curso.salon" class="sin-salon">
+            Sin asignar
+          </span>
+        </td>
+      </ng-container>
+
       <!-- Estado -->
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef>Estado</th>
