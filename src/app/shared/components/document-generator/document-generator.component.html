@@ -70,7 +70,6 @@
                  [class.error]="hasError('fechaDocumento')">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
-          <mat-icon matSuffix>calendar_today</mat-icon>
           <mat-error *ngIf="hasError('fechaDocumento')">
             {{ getFieldError('fechaDocumento') }}
           </mat-error>
