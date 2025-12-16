@@ -551,6 +551,14 @@ listarSolicitudes() {
               this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
             }
 
+            // Limpiar el formulario después de enviar exitosamente
+            this.solicitudForm.reset({
+              fecha_terminacion_plan: null,
+              titulo_trabajo_grado: '',
+              director_trabajo_grado: ''
+            });
+            this.archivosActuales = [];
+
             // FIX: Resetear el file upload en el siguiente ciclo de detección para evitar NG0100
             setTimeout(() => {
               this.resetFileUpload = true;
@@ -632,23 +640,34 @@ verComentarios(solicitudId: number): void {
     return;
   }
 
-  if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
-    this.mostrarMensaje('No hay documentos asociados a esta solicitud', 'warning');
-    return;
-  }
+  // Usar el nuevo endpoint que devuelve solo comentarios existentes
+  this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).subscribe({
+    next: (comentarios) => {
+      // Mapear la respuesta del backend al formato esperado por el diálogo
+      const documentosConComentarios = comentarios.documentosConComentarios?.map(doc => ({
+        id: doc.id,
+        nombre: doc.nombre,
+        comentario: doc.comentario
+      })) || [];
 
-  // Obtener el comentario de rechazo del último estado
-  const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
-  const dialogRef = this.dialog.open(ComentariosDialogComponent, {
-    width: '700px',
-    data: <ComentariosDialogData>{
-      titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
-      documentos: solicitudCompleta.documentos,
-      comentarioRechazo: comentarioRechazo
+      const dialogRef = this.dialog.open(ComentariosDialogComponent, {
+        width: '700px',
+        data: <ComentariosDialogData>{
+          titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
+          documentos: documentosConComentarios,
+          comentarioRechazo: comentarios.comentarioRechazo || null,
+          mensaje: comentarios.mensaje || undefined
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(() => {
+        // No es necesario hacer nada al cerrar
+      });
+    },
+    error: (err) => {
+      console.error('Error al obtener comentarios:', err);
+      this.mostrarMensaje('Error al cargar los comentarios', 'error');
     }
-  });
-
-  dialogRef.afterClosed().subscribe(() => {
   });
 }
 

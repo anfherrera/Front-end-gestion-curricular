@@ -193,6 +193,14 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     this.cargarSolicitudesProcesadas();
   }
 
+  getEstadoActual(solicitud: SolicitudHomologacionDTORespuesta): string {
+    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+      return ultimoEstado.estado_actual;
+    }
+    return 'Pendiente';
+  }
+
   /**
    * Obtener fecha de procesamiento (último estado)
    */
@@ -219,6 +227,36 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     }
 
     return this.selectedSolicitud.documentos;
+  }
+
+  /**
+   * Obtener el comentario de rechazo de una solicitud
+   */
+  obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
+    if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
+      return null;
+    }
+
+    // Buscar el último estado que sea RECHAZADA
+    const estadosRechazados = solicitud.estadosSolicitud.filter(estado => 
+      estado.estado_actual === 'RECHAZADA' || estado.estado_actual === 'Rechazada'
+    );
+    if (estadosRechazados.length === 0) {
+      return null;
+    }
+
+    // Obtener el último estado de rechazo
+    const ultimoEstadoRechazo = estadosRechazados[estadosRechazados.length - 1];
+    return ultimoEstadoRechazo.comentario || null;
+  }
+
+  /**
+   * Verificar si la solicitud seleccionada está rechazada
+   */
+  estaRechazada(): boolean {
+    if (!this.selectedSolicitud) return false;
+    const estado = this.getEstadoActual(this.selectedSolicitud);
+    return estado === 'RECHAZADA' || estado === 'Rechazada';
   }
 
   /**

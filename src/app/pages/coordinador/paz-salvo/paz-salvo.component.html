@@ -63,6 +63,15 @@
     *ngIf="selectedSolicitud"
     title="Documentación Adjunta">
 
+    <!-- Mostrar comentario de rechazo si la solicitud está rechazada -->
+    <div *ngIf="estaRechazada() && obtenerComentarioRechazo(selectedSolicitud)" class="comentario-rechazo">
+      <mat-icon>error_outline</mat-icon>
+      <div class="comentario-rechazo-content">
+        <strong>Motivo del rechazo:</strong>
+        <p>{{ obtenerComentarioRechazo(selectedSolicitud) }}</p>
+      </div>
+    </div>
+
     <app-documentation-viewer
       [documentos]="documentosDelEstudiante"
       [solicitudId]="selectedSolicitud.id_solicitud"

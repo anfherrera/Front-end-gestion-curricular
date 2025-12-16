@@ -242,3 +242,42 @@
   background-color: #f8f9fa;
   border-radius: 8px;
 }
+
+/* Comentario de rechazo */
+.comentario-rechazo {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #ffebee;
+  border-left: 4px solid #c62828;
+  border-radius: 4px;
+  align-items: flex-start;
+}
+
+.comentario-rechazo mat-icon {
+  color: #c62828;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.comentario-rechazo-content {
+  flex: 1;
+}
+
+.comentario-rechazo-content strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #c62828;
+  font-size: 0.95rem;
+}
+
+.comentario-rechazo-content p {
+  margin: 0;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}

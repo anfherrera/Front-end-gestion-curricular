@@ -195,6 +195,36 @@ export class PazSalvoService {
     return this.http.get<Solicitud>(`${this.apiUrl}/listarSolicitud-PazYSalvo/${requestId}`, { headers: this.getAuthHeaders() });
   }
 
+  /**
+   * Obtener comentarios filtrados de una solicitud
+   * Solo devuelve comentarios existentes (rechazo y documentos con comentarios)
+   */
+  obtenerComentarios(idSolicitud: number): Observable<{
+    comentarioRechazo?: string;
+    documentosConComentarios?: Array<{
+      id: number;
+      nombre: string;
+      comentario: string;
+    }>;
+    mensaje?: string;
+  }> {
+    return this.http.get<{
+      comentarioRechazo?: string;
+      documentosConComentarios?: Array<{
+        id: number;
+        nombre: string;
+        comentario: string;
+      }>;
+      mensaje?: string;
+    }>(`${this.apiUrl}/obtenerComentarios/${idSolicitud}`, { headers: this.getAuthHeaders() }).pipe(
+      catchError((error: any) => {
+        console.error('Error obteniendo comentarios:', error);
+        // Si hay error, devolver objeto vacío con mensaje
+        return of({ mensaje: 'Error al obtener comentarios' });
+      })
+    );
+  }
+
   sendRequest(studentId: number, archivos: Archivo[]): Observable<Solicitud> {
     const usuario = this.authService.getUsuario();
     if (!usuario) throw new Error('Usuario no autenticado');
