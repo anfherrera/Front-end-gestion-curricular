@@ -19,6 +19,35 @@ export interface Usuario {
 }
 
 // Nueva interfaz para la respuesta del endpoint de estudiantes elegibles (estructura real del backend)
+// ================== INTERFACES PARA ESTUDIANTES DE UN CURSO ==================
+export interface EstudianteCurso {
+  id_usuario: number;
+  nombre_completo: string;
+  codigo: string;
+  correo: string;
+  programa: string;
+  id_programa: number;
+  estado_preinscripcion?: string | null;
+  fecha_preinscripcion?: string | null;
+  id_solicitud_preinscripcion?: number | null;
+  condicion?: string | null;
+  tiene_inscripcion: boolean;
+  estado_inscripcion?: string | null;
+  id_solicitud_inscripcion?: number | null;
+  tipo: 'Preinscrito' | 'Inscrito';
+}
+
+export interface RespuestaEstudiantesCurso {
+  id_curso: number;
+  nombre_curso: string;
+  codigo_curso: string;
+  cupo_estimado: number;
+  total_estudiantes: number;
+  total_preinscritos: number;
+  total_inscritos: number;
+  estudiantes: EstudianteCurso[];
+}
+
 export interface EstudianteElegible {
   nombre_completo: string;
   codigo: string;
@@ -602,38 +631,92 @@ export class CursosIntersemestralesService {
     return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/estadisticas/periodo/${periodo}`);
   }
 
-  // Obtener todos los cursos para funcionarios (incluye todos los estados)
-  getTodosLosCursosParaFuncionarios(): Observable<CursoOfertadoVerano[]> {
-    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS).pipe(
+  /**
+   * Obtener todos los cursos para funcionarios (incluye todos los estados)
+   * 
+   * @param periodoAcademico (opcional): Período académico en formato "YYYY-P" (ej: "2025-2")
+   *                         Si no se proporciona o se envía "todos", muestra TODOS los cursos sin filtrar.
+   * @param idPrograma (opcional): ID del programa académico para filtrar cursos
+   * 
+   * @returns Observable con la lista de cursos
+   */
+  getTodosLosCursosParaFuncionarios(periodoAcademico?: string | null, idPrograma?: number): Observable<CursoOfertadoVerano[]> {
+    const url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS;
+    
+    // Solo agregar parámetros si se proporcionan
+    let httpParams = new HttpParams();
+    
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
+      httpParams = httpParams.set('periodoAcademico', periodoAcademico);
+      console.log('[CURSOS] Filtrando todos los cursos por período:', periodoAcademico);
+    } else {
+      console.log('[CURSOS] Mostrando TODOS los cursos sin filtrar por período');
+    }
+    
+    if (idPrograma !== undefined && idPrograma !== null) {
+      httpParams = httpParams.set('idPrograma', idPrograma.toString());
+    }
+    
+    // Si hay parámetros, agregarlos a la URL, si no, llamar sin parámetros para mostrar todos
+    const options = httpParams.keys().length > 0 
+      ? { params: httpParams }
+      : {};
+    
+    return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
       map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
     );
   }
 
-  // Obtener cursos por estado específico
-  getCursosPorEstado(estado: string): Observable<CursoOfertadoVerano[]> {
-    // Para funcionarios, usar endpoint /todos y filtrar localmente
+  /**
+   * Obtener cursos filtrados por estado
+   * 
+   * @param estado Estado del curso (Preinscripción, Inscripción, etc.)
+   * @param periodoAcademico (opcional): Período académico en formato "YYYY-P" (ej: "2025-2")
+   *                         Si no se proporciona o se envía "todos", muestra cursos de todos los períodos.
+   * 
+   * @returns Observable con la lista de cursos filtrados por estado
+   */
+  getCursosPorEstado(estado: string, periodoAcademico?: string | null): Observable<CursoOfertadoVerano[]> {
+    let url: string;
+    let httpParams = new HttpParams();
+    
+    // Determinar el endpoint según el estado
     if (estado === 'Preinscripción') {
-      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION).pipe(
-        map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
-      );
+      url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION;
     } else if (estado === 'Inscripción') {
-      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION).pipe(
-        map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
-      );
+      url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCION;
     } else {
-      // Para otros estados, obtener todos los cursos y filtrar localmente
-      return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS)
-        .pipe(
-          map(cursos => {
-            const cursosNormalizados = cursos.map(curso => this.normalizarCurso(curso));
-            const cursosFiltrados = cursosNormalizados.filter(curso => {
-              const estadoActual = this.obtenerEstadoActual(curso);
-              return estadoActual === estado;
-            });
-            return cursosFiltrados;
-          })
-        );
+      // Para otros estados, usar endpoint /todos y filtrar localmente
+      url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS;
     }
+    
+    // Agregar parámetro de período si se proporciona (y no es "todos")
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
+      httpParams = httpParams.set('periodoAcademico', periodoAcademico);
+      console.log(`[CURSOS] Filtrando cursos de ${estado} por período:`, periodoAcademico);
+    } else {
+      console.log(`[CURSOS] Mostrando TODOS los cursos de ${estado} sin filtrar por período`);
+    }
+    
+    const options = httpParams.keys().length > 0 
+      ? { params: httpParams }
+      : {};
+    
+    return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
+      map(cursos => {
+        const cursosNormalizados = cursos.map(curso => this.normalizarCurso(curso));
+        
+        // Si no es Preinscripción ni Inscripción, filtrar por estado localmente
+        if (estado !== 'Preinscripción' && estado !== 'Inscripción') {
+          return cursosNormalizados.filter(curso => {
+            const estadoActual = this.obtenerEstadoActual(curso);
+            return estadoActual === estado;
+          });
+        }
+        
+        return cursosNormalizados;
+      })
+    );
   }
 
   // Consultar permisos para un estado y rol específico
@@ -927,6 +1010,29 @@ export class CursosIntersemestralesService {
         );
         
         return inscripcionesFiltradas;
+      })
+    );
+  }
+
+  /**
+   * Obtener la lista completa de estudiantes (preinscritos e inscritos) de un curso
+   * Solo accesible para funcionarios, coordinadores y administradores
+   * 
+   * @param idCurso ID del curso del cual se desean obtener los estudiantes
+   * @returns Observable con la respuesta que incluye información del curso y lista de estudiantes
+   */
+  getEstudiantesDelCurso(idCurso: number): Observable<RespuestaEstudiantesCurso> {
+    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_CURSO(idCurso);
+    
+    return this.http.get<RespuestaEstudiantesCurso>(endpoint).pipe(
+      catchError(error => {
+        console.error('[CURSOS] Error obteniendo estudiantes del curso:', error);
+        if (error.status === 403) {
+          console.error('[CURSOS] Acceso denegado. Se requiere rol de Funcionario, Coordinador o Administrador');
+        } else if (error.status === 404) {
+          console.error('[CURSOS] Curso no encontrado');
+        }
+        throw error;
       })
     );
   }

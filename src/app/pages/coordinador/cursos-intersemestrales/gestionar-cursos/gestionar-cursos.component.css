@@ -282,6 +282,16 @@ table {
   align-items: center;
 }
 
+.btn-estudiantes {
+  color: #1976d2 !important;
+  transition: all 0.2s ease;
+}
+
+.btn-estudiantes:hover {
+  background-color: rgba(25, 118, 210, 0.1) !important;
+  transform: scale(1.1);
+}
+
 .btn-editar {
   color: #00138C !important;
   transition: all 0.2s ease;

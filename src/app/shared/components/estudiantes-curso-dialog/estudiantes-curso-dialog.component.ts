@@ -1,0 +1,118 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { 
+  CursosIntersemestralesService, 
+  RespuestaEstudiantesCurso,
+  EstudianteCurso 
+} from '../../../core/services/cursos-intersemestrales.service';
+
+@Component({
+  selector: 'app-estudiantes-curso-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule
+  ],
+  templateUrl: './estudiantes-curso-dialog.component.html',
+  styleUrls: ['./estudiantes-curso-dialog.component.css']
+})
+export class EstudiantesCursoDialogComponent implements OnInit {
+  datos: RespuestaEstudiantesCurso | null = null;
+  cargando = true;
+  error: string | null = null;
+  
+  displayedColumns: string[] = [
+    'numero',
+    'nombre_completo',
+    'codigo',
+    'programa',
+    'tipo',
+    'estado_preinscripcion',
+    'estado_inscripcion',
+    'correo'
+  ];
+
+  constructor(
+    public dialogRef: MatDialogRef<EstudiantesCursoDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { idCurso: number; nombreCurso: string },
+    private cursosService: CursosIntersemestralesService,
+    private snackBar: MatSnackBar
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarEstudiantes();
+  }
+
+  cargarEstudiantes(): void {
+    this.cargando = true;
+    this.error = null;
+    
+    this.cursosService.getEstudiantesDelCurso(this.data.idCurso).subscribe({
+      next: (respuesta) => {
+        this.datos = respuesta;
+        this.cargando = false;
+        console.log('✅ Estudiantes cargados:', respuesta);
+      },
+      error: (err) => {
+        this.cargando = false;
+        console.error('❌ Error cargando estudiantes:', err);
+        
+        if (err.status === 403) {
+          this.error = 'No tienes permisos para ver esta información';
+          this.snackBar.open('No tienes permisos para ver esta información', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        } else if (err.status === 404) {
+          this.error = 'Curso no encontrado';
+          this.snackBar.open('Curso no encontrado', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        } else {
+          this.error = 'Error al cargar los estudiantes';
+          this.snackBar.open('Error al cargar los estudiantes', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      }
+    });
+  }
+
+  getEstadoColor(estado: string | null | undefined): string {
+    if (!estado) return '#9e9e9e';
+    
+    const estadoLower = estado.toLowerCase();
+    if (estadoLower.includes('aprobada') || estadoLower.includes('validado')) {
+      return '#4caf50';
+    } else if (estadoLower.includes('enviada')) {
+      return '#2196f3';
+    } else if (estadoLower.includes('rechazada') || estadoLower.includes('rechazado')) {
+      return '#f44336';
+    }
+    return '#ff9800';
+  }
+
+  getTipoColor(tipo: string): string {
+    return tipo === 'Inscrito' ? '#4caf50' : '#ff9800';
+  }
+
+  cerrar(): void {
+    this.dialogRef.close();
+  }
+}
+

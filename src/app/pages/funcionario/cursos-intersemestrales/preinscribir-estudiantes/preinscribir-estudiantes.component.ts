@@ -109,10 +109,12 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     this.cargando = true;
     console.log('🔄 Cargando cursos para preinscripción...');
     
-    this.cursosService.getCursosDisponibles().subscribe({
+    // Usar getCursosPorEstado para obtener cursos en estado "Preinscripción"
+    // Sin período para mostrar TODOS los cursos de preinscripción
+    this.cursosService.getCursosPorEstado('Preinscripción').subscribe({
       next: (cursos) => {
         this.cursos = cursos;
-        console.log('✅ Cursos cargados:', cursos);
+        console.log('✅ Cursos de preinscripción cargados:', cursos);
         this.cargando = false;
       },
       error: (err) => {

@@ -19,6 +19,7 @@ import { CursoEstadosService, EstadoCurso } from '../../../../core/services/curs
 import { EstadoFiltersComponent } from '../../../../shared/components/estado-filters/estado-filters.component';
 import { ErrorHandlerService } from '../../../../shared/components/error-handler/error-handler.service';
 import { CursoDialogComponent } from './curso-dialog.component';
+import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -343,6 +344,19 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         console.log('🔄 Recargando datos después de guardar...');
         this.cargarDatos();
       }
+    });
+  }
+
+  abrirDialogEstudiantes(curso: CursoOfertadoVerano): void {
+    this.dialog.open(EstudiantesCursoDialogComponent, {
+      width: '1000px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {
+        idCurso: curso.id_curso,
+        nombreCurso: curso.nombre_curso
+      },
+      disableClose: false
     });
   }
 

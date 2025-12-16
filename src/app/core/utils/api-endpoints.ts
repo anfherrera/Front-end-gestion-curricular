@@ -80,6 +80,7 @@ export class ApiEndpoints {
       PREINSCRIPCIONES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/curso/${idCurso}`,
       INSCRIPCIONES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/curso/${idCurso}`,
       ESTUDIANTES_ELEGIBLES: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/inscripciones/estudiantes-elegibles/${idCurso}`,
+      ESTUDIANTES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes`,
       APROBAR_PREINSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/aprobar`,
       RECHAZAR_PREINSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/rechazar`,
       VALIDAR_PAGO: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/validar-pago`,

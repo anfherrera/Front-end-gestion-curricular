@@ -109,39 +109,22 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     console.log('🔄 Cargando cursos para inscripción (funcionarios)...');
     console.log('🔍 Usuario actual:', this.cursosService);
     
-    // Para funcionarios, usar el endpoint que obtiene todos los cursos
-    this.cursosService.getTodosLosCursosParaFuncionarios().subscribe({
-      next: (response) => {
-        console.log('✅ Respuesta recibida del backend:', response);
-        console.log('🔍 Tipo de respuesta:', typeof response);
+    // Usar getCursosPorEstado para obtener cursos en estado "Inscripción"
+    // Sin período para mostrar TODOS los cursos de inscripción
+    this.cursosService.getCursosPorEstado('Inscripción').subscribe({
+      next: (cursos) => {
+        console.log('✅ Cursos de inscripción cargados:', cursos);
+        this.cursos = cursos;
+        console.log('🔍 Cantidad de cursos:', this.cursos?.length);
         
-        // El backend devuelve { value: [...], Count: n }
-        let cursos = response;
-        if (response && (response as any).value) {
-          cursos = (response as any).value;
-          console.log('🔍 Cursos extraídos de response.value:', cursos);
-        }
-        
-        console.log('🔍 Cantidad de cursos:', cursos?.length);
-        
-        if (cursos && cursos.length > 0) {
-          // Filtrar solo cursos en estado "Inscripcion" (sin tilde, como viene del backend)
-          this.cursos = cursos.filter((c: any) => c.estado === 'Inscripcion');
-          console.log('✅ Cursos en estado "Inscripcion":', this.cursos);
-          console.log('🔍 Cantidad de cursos filtrados:', this.cursos.length);
-          
-          // Si no hay cursos filtrados, mostrar todos los cursos disponibles
-          if (this.cursos.length === 0) {
-            console.log('⚠️ No hay cursos en estado "Inscripcion", mostrando todos los cursos');
-            this.cursos = cursos;
-          }
+        if (this.cursos && this.cursos.length > 0) {
+          console.log('✅ Cursos disponibles para inscripción:', this.cursos);
         } else {
-          console.log('⚠️ No hay cursos del backend');
-          this.cursos = [];
+          console.log('⚠️ No hay cursos disponibles para inscripción');
           
           // Mostrar mensaje informativo al usuario
           this.snackBar.open(
-            'No hay cursos disponibles en este momento. Contacte al administrador.', 
+            'No hay cursos disponibles para inscripción en este momento.', 
             'Cerrar', 
             { 
               duration: 5000,
