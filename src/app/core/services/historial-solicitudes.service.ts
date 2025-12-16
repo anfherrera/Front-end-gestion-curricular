@@ -7,10 +7,11 @@ import { ApiEndpoints } from '../utils/api-endpoints';
 export interface HistorialSolicitud {
   id_solicitud: number;
   nombre_solicitud: string;
+  categoria?: string; // Categoría de la solicitud: "Cursos de Verano", "Paz y Salvo", "Reingreso", "Homologación", "ECAES", "Otro"
   periodo_academico: string;
   fecha_registro_solicitud: string;
   fecha_ceremonia?: string | null;
-  tipo_solicitud?: string;
+  tipo_solicitud?: string; // Tipo específico: "Preinscripcion", "Inscripcion", "Curso Nuevo", "Paz y Salvo", "Reingreso", "Homologacion", "ECAES", "Otro"
   tipo_solicitud_display?: string;
   estado_actual?: string;
   fecha_ultimo_estado?: string;

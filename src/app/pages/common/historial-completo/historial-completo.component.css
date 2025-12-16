@@ -265,7 +265,19 @@
   color: #666;
 }
 
-/* Chips */
+/* Categoría y Tipo */
+.categoria-texto {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.tipo-texto {
+  color: #333;
+  font-size: 0.9rem;
+}
+
+/* Chips (mantener para estados) */
 .tipo-chip {
   background-color: #e3f2fd;
   color: #1976d2;

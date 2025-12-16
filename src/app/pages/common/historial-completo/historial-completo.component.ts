@@ -49,6 +49,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'id_solicitud',
     'nombre_solicitud',
+    'categoria',
     'tipo_solicitud',
     'usuario',
     'periodo_academico',
