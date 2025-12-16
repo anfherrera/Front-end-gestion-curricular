@@ -184,7 +184,12 @@ export class PazSalvoCoordinadorComponent implements OnInit {
    * Manejar cambio de período académico en el filtro
    */
   onPeriodoChange(periodo: string): void {
-    this.periodoAcademicoFiltro = periodo || null;
+    // Si es "todos", enviar null/undefined para que el backend muestre todas las solicitudes
+    if (periodo === 'todos' || !periodo) {
+      this.periodoAcademicoFiltro = null;
+    } else {
+      this.periodoAcademicoFiltro = periodo;
+    }
     this.cargarSolicitudesProcesadas();
   }
 

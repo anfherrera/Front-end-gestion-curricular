@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
 import { SolicitudReingresoDTORespuesta, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
@@ -16,6 +17,7 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
+import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -28,9 +30,11 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
     MatIconModule,
     MatTooltipModule,
     MatCardModule,
+    MatTabsModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    DocumentationViewerComponent
+    DocumentationViewerComponent,
+    PeriodoFiltroSelectorComponent
   ],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']
@@ -38,8 +42,10 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
 export class ReingresoEstudianteComponent implements OnInit {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
 
-  solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
+  solicitudes: any[] = []; // Transformado para RequestStatusTableComponent - Pendientes
+  solicitudesProcesadas: any[] = []; // Transformado para RequestStatusTableComponent - Procesadas
   selectedSolicitud?: SolicitudReingresoDTORespuesta;
+  periodoAcademicoFiltro: string | null = null; // Filtro de período académico para historial
 
   // Enums para estados
   EstadosSolicitud = EstadosSolicitud;
@@ -54,6 +60,7 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarSolicitudes();
+    this.cargarSolicitudesProcesadas();
   }
 
   cargarSolicitudes(): void {
@@ -208,5 +215,68 @@ export class ReingresoEstudianteComponent implements OnInit {
     const estado = this.getEstadoActual(this.selectedSolicitud);
     console.log('🔍 Estado actual para completar validación:', estado);
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
+  }
+
+  /**
+   * Cargar solicitudes procesadas (historial) - Historial verdadero de todas las procesadas
+   */
+  cargarSolicitudesProcesadas(): void {
+    this.reingresoService.getSolicitudesProcesadasFuncionario(this.periodoAcademicoFiltro || undefined).subscribe({
+      next: (sols) => {
+        // Transformar datos para RequestStatusTableComponent
+        this.solicitudesProcesadas = sols.map(solicitud => ({
+          id: solicitud.id_solicitud,
+          nombre: solicitud.nombre_solicitud,
+          fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
+          estado: this.getEstadoActual(solicitud),
+          fechaProcesamiento: this.getFechaProcesamiento(solicitud),
+          archivos: solicitud.documentos?.map((doc: any) => ({
+            id_documento: doc.id_documento,
+            nombre: doc.nombre,
+            ruta_documento: doc.ruta_documento,
+            fecha: doc.fecha_documento,
+            esValido: doc.esValido,
+            comentario: doc.comentario
+          })) || [],
+          comentarios: ''
+        }));
+      },
+      error: (err) => {
+        console.error('Error al cargar solicitudes procesadas (funcionario):', err);
+        this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  /**
+   * Manejar cambio de período académico en el filtro
+   */
+  onPeriodoChange(periodo: string): void {
+    // Si es "todos", enviar null/undefined para que el backend muestre todas las solicitudes
+    if (periodo === 'todos' || !periodo) {
+      this.periodoAcademicoFiltro = null;
+    } else {
+      this.periodoAcademicoFiltro = periodo;
+    }
+    this.cargarSolicitudesProcesadas();
+  }
+
+  /**
+   * Obtener fecha de procesamiento (último estado APROBADA_FUNCIONARIO)
+   */
+  getFechaProcesamiento(solicitud: SolicitudReingresoDTORespuesta): string {
+    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
+      if (ultimoEstado.fecha_registro_estado) {
+        return new Date(ultimoEstado.fecha_registro_estado).toLocaleString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    }
+    return '';
   }
 }

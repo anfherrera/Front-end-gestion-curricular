@@ -1,20 +1,62 @@
 <div class="funcionario-container">
 
-  <!-- 📌 Contenedor de solicitudes usando componente genérico -->
-  <app-card-container
-    title="Solicitudes de Reingreso Pendientes"
-    icon="assignment">
+  <!-- Pestañas para Pendientes y Procesadas -->
+  <mat-tab-group>
+    
+    <!-- Pestaña 1: Pendientes de Procesar -->
+    <mat-tab label="Pendientes de Procesar">
+      <div class="tab-content">
+        <app-card-container
+          title="Solicitudes Pendientes de Procesar">
 
-    <app-request-status-table
-      #requestStatusTable
-      [solicitudes]="solicitudes"
-      [showOficio]="false"
-      [showComentarios]="false"
-      [showSeleccionar]="true"
-      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
-    </app-request-status-table>
+          <app-request-status-table
+            #requestStatusTable
+            [solicitudes]="solicitudes"
+            [showOficio]="false"
+            [showComentarios]="false"
+            [showSeleccionar]="true"
+            (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+          </app-request-status-table>
 
-  </app-card-container>
+          <p *ngIf="solicitudes.length === 0" class="no-solicitudes">
+            No hay solicitudes pendientes de procesar
+          </p>
+        </app-card-container>
+      </div>
+    </mat-tab>
+
+    <!-- Pestaña 2: Historial - Ya Procesadas -->
+    <mat-tab label="Historial - Ya Procesadas">
+      <div class="tab-content">
+        <app-card-container
+          title="Solicitudes Procesadas">
+          
+          <!-- Filtro por período académico -->
+          <div class="filtro-periodo">
+            <app-periodo-filtro-selector
+              label="Filtrar por período académico"
+              [mostrarTodos]="true"
+              [incluirActual]="true"
+              [mostrarInfo]="false"
+              (periodoChange)="onPeriodoChange($event)">
+            </app-periodo-filtro-selector>
+          </div>
+          
+          <app-request-status-table
+            [solicitudes]="solicitudesProcesadas"
+            [showOficio]="false"
+            [showComentarios]="false"
+            [showSeleccionar]="false">
+          </app-request-status-table>
+          
+          <p *ngIf="solicitudesProcesadas.length === 0" class="no-solicitudes">
+            No hay solicitudes procesadas todavía
+          </p>
+        </app-card-container>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
 
   <!-- 📌 Documentación de la solicitud seleccionada -->
   <app-card-container

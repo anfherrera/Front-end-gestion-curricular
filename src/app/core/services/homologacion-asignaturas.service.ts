@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { Solicitud, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { environment } from '../../../environments/environment';
 
@@ -118,6 +118,50 @@ export class HomologacionAsignaturasService {
       params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders()
     });
+  }
+
+  /**
+   * Obtener solicitudes ya procesadas por funcionario (historial)
+   * Estado: APROBADA_FUNCIONARIO (ya aprobadas por funcionario)
+   * Endpoint: /listarSolicitud-Homologacion/Funcionario/Aprobadas
+   */
+  getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-Homologacion/Funcionario/Aprobadas`, 
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError((error: any) => {
+        console.error('Error obteniendo solicitudes procesadas (funcionario):', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
+   * Obtener solicitudes ya procesadas por coordinador (historial)
+   * Estado: APROBADA_COORDINADOR (ya aprobadas por coordinador)
+   * Endpoint: /listarSolicitud-Homologacion/Coordinador/Aprobadas
+   */
+  getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+    let params = new HttpParams();
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
+      `${this.apiUrl}/listarSolicitud-Homologacion/Coordinador/Aprobadas`, 
+      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError((error: any) => {
+        console.error('Error obteniendo solicitudes procesadas (coordinador):', error);
+        return of([]);
+      })
+    );
   }
 
   /**
