@@ -133,6 +133,13 @@
 
   <mat-dialog-actions align="end">
     <button mat-button (click)="cerrar()">Cerrar</button>
+    <button mat-stroked-button 
+            (click)="exportarEstudiantesPDF()" 
+            [disabled]="cargando || !datos || datos.estudiantes.length === 0"
+            class="btn-exportar">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Exportar a PDF
+    </button>
     <button mat-raised-button color="primary" (click)="cargarEstudiantes()" [disabled]="cargando">
       <mat-icon>refresh</mat-icon>
       Actualizar

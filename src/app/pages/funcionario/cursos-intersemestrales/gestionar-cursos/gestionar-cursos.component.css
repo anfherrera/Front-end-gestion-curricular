@@ -19,6 +19,22 @@ app-card-container {
   border: 1px solid #e9ecef;
 }
 
+/* Filtro por período académico */
+.filtro-periodo-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #e3f2fd;
+}
+
+.filtro-periodo-section h3 {
+  color: #00138C;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
 .btn-crear {
   background-color: #00138C !important;
   color: white !important;
@@ -48,6 +64,21 @@ app-card-container {
 .btn-actualizar:hover {
   background-color: #00138C !important;
   color: white !important;
+}
+
+.btn-exportar {
+  border-color: #d32f2f !important;
+  color: #d32f2f !important;
+  font-weight: 500;
+}
+
+.btn-exportar:hover:not([disabled]) {
+  background-color: #d32f2f !important;
+  color: white !important;
+}
+
+.btn-exportar mat-icon {
+  margin-right: 8px;
 }
 
 .btn-actualizar mat-icon {

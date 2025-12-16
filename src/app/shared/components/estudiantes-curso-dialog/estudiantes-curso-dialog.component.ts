@@ -113,5 +113,56 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   cerrar(): void {
     this.dialogRef.close();
   }
+
+  // Exportar estudiantes a PDF
+  exportarEstudiantesPDF(): void {
+    if (!this.data.idCurso) {
+      this.snackBar.open('Error: No se pudo identificar el curso', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    console.log('📄 Exportando estudiantes del curso a PDF:', this.data.idCurso);
+    
+    this.cursosService.exportarEstudiantesPDF(this.data.idCurso).subscribe({
+      next: (result) => {
+        // Crear enlace temporal para descargar el archivo
+        const urlBlob = window.URL.createObjectURL(result.blob);
+        const link = document.createElement('a');
+        link.href = urlBlob;
+        link.download = result.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(urlBlob);
+        
+        this.snackBar.open('PDF exportado correctamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error exportando estudiantes a PDF:', err);
+        let mensajeError = 'Error al exportar el PDF';
+        
+        if (err.status === 401) {
+          mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente';
+        } else if (err.status === 403) {
+          mensajeError = 'No tienes permisos para exportar estudiantes';
+        } else if (err.status === 404) {
+          mensajeError = 'Curso no encontrado';
+        } else if (err.status === 500) {
+          mensajeError = 'Error interno del servidor al generar el PDF';
+        }
+        
+        this.snackBar.open(mensajeError, 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
 }
 

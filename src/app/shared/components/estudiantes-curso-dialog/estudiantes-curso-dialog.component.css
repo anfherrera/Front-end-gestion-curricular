@@ -296,6 +296,21 @@ mat-dialog-actions button[mat-raised-button][disabled] {
   cursor: not-allowed;
 }
 
+.btn-exportar {
+  border-color: #d32f2f !important;
+  color: #d32f2f !important;
+  font-weight: 500;
+}
+
+.btn-exportar:hover:not([disabled]) {
+  background-color: #d32f2f !important;
+  color: white !important;
+}
+
+.btn-exportar mat-icon {
+  margin-right: 8px;
+}
+
 /* Mejoras adicionales para consistencia */
 .tabla-estudiantes td strong {
   color: #00138C;

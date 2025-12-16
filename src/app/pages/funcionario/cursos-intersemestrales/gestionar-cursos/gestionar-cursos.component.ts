@@ -20,6 +20,7 @@ import { EstadoFiltersComponent } from '../../../../shared/components/estado-fil
 import { ErrorHandlerService } from '../../../../shared/components/error-handler/error-handler.service';
 import { CursoDialogComponent } from './curso-dialog.component';
 import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
+import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -32,6 +33,7 @@ import { EstudiantesCursoDialogComponent } from '../../../../shared/components/e
     MatChipsModule,
     CardContainerComponent,
     EstadoFiltersComponent,
+    PeriodoFiltroSelectorComponent,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './gestionar-cursos.component.html',
@@ -46,6 +48,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   docentes: Usuario[] = [];
   cargando = true;
   estadoFiltro = '';
+  periodoFiltro: string = 'todos'; // Filtro por período académico - Inicializar con 'todos' para mostrar todos los cursos por defecto
   
   // Formulario para crear/editar curso
   cursoForm: FormGroup;
@@ -117,10 +120,23 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   cargarDatos() {
     this.cargando = true;
     console.log('🔄 Cargando datos para gestión de cursos...');
+    console.log('📅 Período filtro seleccionado:', this.periodoFiltro);
     
-    // Cargar cursos del backend
-    this.cursosService.getTodosLosCursosParaFuncionarios().subscribe({
+    // IMPORTANTE: Limpiar cursos antes de cargar nuevos para evitar mostrar datos antiguos
+    this.cursos = [];
+    this.cursosFiltrados = [];
+    
+    // Determinar el período a usar: si es 'todos' o vacío, pasar null/undefined
+    const periodoParam = this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '' 
+      ? this.periodoFiltro.trim() 
+      : undefined;
+    
+    console.log('📤 Enviando período al backend:', periodoParam || 'todos (sin filtrar)');
+    
+    // Cargar cursos del backend con filtro de período
+    this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).subscribe({
       next: (cursos) => {
+        console.log('✅ Cursos recibidos del backend:', cursos.length);
         this.cursos = cursos;
         this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
         // Cursos cargados del backend
@@ -128,10 +144,12 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.errorHandler.handleCargaError('cursos');
-        console.error('Error cargando cursos del backend:', err);
+        console.error('❌ Error cargando cursos del backend:', err);
+        console.error('📅 Período que causó el error:', periodoParam);
         this.cargando = false;
         // Mostrar mensaje de error sin datos de prueba
-        this.cursos = this.getCursosPrueba();
+        this.cursos = [];
+        this.cursosFiltrados = [];
         this.cargarMateriasYDocentes();
       }
     });
@@ -599,9 +617,68 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.estadoFiltro = estado;
   }
 
+  // Manejar cambio de período académico
+  onPeriodoChange(periodo: string): void {
+    console.log('🔄 Cambio de período detectado:', periodo);
+    // IMPORTANTE: Actualizar el filtro y limpiar estado antes de recargar
+    this.periodoFiltro = periodo;
+    // Limpiar cursos inmediatamente para evitar mostrar datos antiguos
+    this.cursos = [];
+    this.cursosFiltrados = [];
+    // Recargar cursos con el nuevo filtro
+    this.cargarDatos();
+  }
+
   // Método para actualizar cursos en el filtro
   actualizarCursosEnFiltro(): void {
     // Este método se puede llamar después de crear/editar/eliminar cursos
     // para actualizar el componente de filtros
+  }
+
+  // Exportar cursos a PDF
+  exportarCursosPDF(): void {
+    const periodoParam = this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '' 
+      ? this.periodoFiltro.trim() 
+      : undefined;
+    
+    console.log('📄 Exportando cursos a PDF con período:', periodoParam || 'todos');
+    
+    this.cursosService.exportarCursosPDF(periodoParam).subscribe({
+      next: (result) => {
+        // Crear enlace temporal para descargar el archivo
+        const urlBlob = window.URL.createObjectURL(result.blob);
+        const link = document.createElement('a');
+        link.href = urlBlob;
+        link.download = result.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(urlBlob);
+        
+        this.snackBar.open('PDF exportado correctamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error exportando cursos a PDF:', err);
+        let mensajeError = 'Error al exportar el PDF';
+        
+        if (err.status === 401) {
+          mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente';
+        } else if (err.status === 403) {
+          mensajeError = 'No tienes permisos para exportar cursos';
+        } else if (err.status === 404) {
+          mensajeError = 'No se encontraron cursos para exportar';
+        } else if (err.status === 500) {
+          mensajeError = 'Error interno del servidor al generar el PDF';
+        }
+        
+        this.snackBar.open(mensajeError, 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 }

@@ -17,12 +17,33 @@
       <mat-icon>refresh</mat-icon>
       Actualizar
     </button>
+    
+    <button mat-stroked-button 
+            (click)="exportarCursosPDF()"
+            [disabled]="cargando || cursos.length === 0"
+            class="btn-exportar">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Exportar a PDF
+    </button>
   </div>
 
   <!-- Loading -->
   <div *ngIf="cargando" class="loading-container">
     <mat-spinner diameter="50"></mat-spinner>
     <p>Cargando cursos...</p>
+  </div>
+
+  <!-- Filtro por período académico -->
+  <div *ngIf="!cargando" class="filtro-periodo-section">
+    <h3>Filtro por Período Académico</h3>
+    <app-periodo-filtro-selector
+      [mostrarTodos]="true"
+      [incluirActual]="false"
+      [mostrarInfo]="true"
+      [periodoInicial]="periodoFiltro"
+      label="Filtrar por período académico"
+      (periodoChange)="onPeriodoChange($event)">
+    </app-periodo-filtro-selector>
   </div>
 
   <!-- Filtros por estado -->

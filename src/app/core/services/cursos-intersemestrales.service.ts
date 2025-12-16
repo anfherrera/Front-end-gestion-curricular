@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { Curso as CursoList } from '../../shared/components/curso-list/curso-list.component';
@@ -691,10 +691,14 @@ export class CursosIntersemestralesService {
     let httpParams = new HttpParams();
     
     if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
-      httpParams = httpParams.set('periodoAcademico', periodoAcademico);
-      console.log('[CURSOS] Filtrando todos los cursos por período:', periodoAcademico);
+      // Normalizar el período: asegurar formato YYYY-P (el backend normaliza automáticamente)
+      const periodoNormalizado = periodoAcademico.trim();
+      httpParams = httpParams.set('periodoAcademico', periodoNormalizado);
+      console.log('[CURSOS] Filtrando todos los cursos por período:', periodoNormalizado);
+      console.log('[CURSOS] URL completa:', `${url}?periodoAcademico=${periodoNormalizado}`);
     } else {
       console.log('[CURSOS] Mostrando TODOS los cursos sin filtrar por período');
+      console.log('[CURSOS] URL completa:', url);
     }
     
     if (idPrograma !== undefined && idPrograma !== null) {
@@ -707,7 +711,19 @@ export class CursosIntersemestralesService {
       : {};
     
     return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
-      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+      map(cursos => {
+        console.log('[CURSOS] Cursos recibidos del backend:', cursos.length);
+        if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
+          console.log('[CURSOS] Cursos filtrados por período', periodoAcademico.trim(), ':', cursos.length);
+        }
+        return cursos.map(curso => this.normalizarCurso(curso));
+      }),
+      catchError(error => {
+        console.error('[CURSOS] Error obteniendo todos los cursos:', error);
+        console.error('[CURSOS] Período que causó el error:', periodoAcademico);
+        console.error('[CURSOS] URL que falló:', url);
+        throw error;
+      })
     );
   }
 
@@ -1125,6 +1141,121 @@ export class CursosIntersemestralesService {
           console.error('[CURSOS] Curso no encontrado');
         }
         throw error;
+      })
+    );
+  }
+
+  /**
+   * Exporta los cursos filtrados a PDF
+   * @param periodoAcademico Período académico para filtrar (opcional)
+   * @param idPrograma ID del programa para filtrar (opcional)
+   * @returns Observable con el blob del PDF y el nombre del archivo
+   */
+  exportarCursosPDF(periodoAcademico?: string | null, idPrograma?: number): Observable<{ blob: Blob; filename: string }> {
+    const url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_CURSOS_PDF;
+    
+    let httpParams = new HttpParams();
+    
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
+      httpParams = httpParams.set('periodoAcademico', periodoAcademico.trim());
+    }
+    
+    if (idPrograma !== undefined && idPrograma !== null) {
+      httpParams = httpParams.set('idPrograma', idPrograma.toString());
+    }
+    
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    });
+    
+    return this.http.get(url, {
+      headers,
+      params: httpParams.keys().length > 0 ? httpParams : undefined,
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        const blob = response.body as Blob;
+        let filename = 'cursos_verano.pdf';
+        
+        // Intentar obtener el nombre del archivo del header Content-Disposition
+        const contentDisposition = response.headers.get('content-disposition');
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1].replace(/['"]/g, '');
+            try {
+              filename = decodeURIComponent(filename);
+            } catch (e) {
+              // Si falla la decodificación, usar el nombre tal cual
+            }
+          }
+        }
+        
+        // Si no se obtuvo del header, generar uno con la fecha actual
+        if (filename === 'cursos_verano.pdf') {
+          const fecha = new Date().toISOString().split('T')[0];
+          const periodoStr = periodoAcademico ? `_${periodoAcademico.replace('-', '_')}` : '';
+          filename = `cursos_verano${periodoStr}_${fecha}.pdf`;
+        }
+        
+        return { blob, filename };
+      }),
+      catchError(error => {
+        console.error('[CURSOS] Error exportando cursos a PDF:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Exporta los estudiantes de un curso a PDF
+   * @param idCurso ID del curso
+   * @returns Observable con el blob del PDF y el nombre del archivo
+   */
+  exportarEstudiantesPDF(idCurso: number): Observable<{ blob: Blob; filename: string }> {
+    const url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_ESTUDIANTES_PDF(idCurso);
+    
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    });
+    
+    return this.http.get(url, {
+      headers,
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        const blob = response.body as Blob;
+        let filename = `estudiantes_curso_${idCurso}.pdf`;
+        
+        // Intentar obtener el nombre del archivo del header Content-Disposition
+        const contentDisposition = response.headers.get('content-disposition');
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1].replace(/['"]/g, '');
+            try {
+              filename = decodeURIComponent(filename);
+            } catch (e) {
+              // Si falla la decodificación, usar el nombre tal cual
+            }
+          }
+        }
+        
+        // Si no se obtuvo del header, generar uno con la fecha actual
+        if (filename === `estudiantes_curso_${idCurso}.pdf`) {
+          const fecha = new Date().toISOString().split('T')[0];
+          filename = `estudiantes_curso_${idCurso}_${fecha}.pdf`;
+        }
+        
+        return { blob, filename };
+      }),
+      catchError(error => {
+        console.error('[CURSOS] Error exportando estudiantes a PDF:', error);
+        return throwError(() => error);
       })
     );
   }

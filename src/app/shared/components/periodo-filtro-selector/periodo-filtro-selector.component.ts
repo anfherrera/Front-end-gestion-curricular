@@ -26,10 +26,10 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
           [value]="periodoSeleccionado" 
           (selectionChange)="onPeriodoChange($event.value)"
           [disabled]="cargando">
-          <mat-option [value]="''" *ngIf="mostrarTodos">
-            <span class="option-text">Período actual{{ periodoActualTexto ? ' (' + periodoActualTexto + ')' : '' }}</span>
+          <mat-option [value]="'todos'" *ngIf="mostrarTodos">
+            <span class="option-text">Todos los Períodos</span>
           </mat-option>
-          <mat-option [value]="''" *ngIf="!mostrarTodos && incluirActual">
+          <mat-option [value]="''" *ngIf="incluirActual">
             <span class="option-text">Período actual{{ periodoActualTexto ? ' (' + periodoActualTexto + ')' : '' }}</span>
           </mat-option>
           <mat-option *ngFor="let periodo of periodosDisponibles" [value]="periodo.valor">
@@ -39,9 +39,17 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
         <mat-spinner *ngIf="cargando" diameter="20" class="spinner"></mat-spinner>
       </mat-form-field>
       
-      <div class="info-periodo" *ngIf="periodoSeleccionado && mostrarInfo">
+      <div class="info-periodo" *ngIf="mostrarInfo">
         <mat-icon>info</mat-icon>
-        <span>Mostrando datos del período: <strong>{{ getPeriodoTexto(periodoSeleccionado) }}</strong></span>
+        <span *ngIf="periodoSeleccionado === 'todos'">
+          Mostrando <strong>todos los cursos</strong> de todos los períodos
+        </span>
+        <span *ngIf="periodoSeleccionado && periodoSeleccionado !== 'todos'">
+          Mostrando datos del período: <strong>{{ getPeriodoTexto(periodoSeleccionado) }}</strong>
+        </span>
+        <span *ngIf="!periodoSeleccionado">
+          Mostrando datos del <strong>período académico actual</strong>
+        </span>
       </div>
     </div>
   `,
@@ -112,6 +120,13 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
   constructor(private periodosService: PeriodosAcademicosService) {}
 
   ngOnInit(): void {
+    // Inicializar con período inicial o "todos" por defecto si mostrarTodos está activo
+    if (this.periodoInicial) {
+      this.periodoSeleccionado = this.periodoInicial;
+    } else if (this.mostrarTodos) {
+      this.periodoSeleccionado = 'todos'; // Por defecto mostrar todos los períodos
+    }
+    
     // Cargar período actual primero si no está cargado
     const periodoActualValue = this.periodosService.getPeriodoActualValue();
     if (!periodoActualValue) {
@@ -120,10 +135,6 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
           if (periodo) {
             this.periodoActual = periodo;
             this.periodoActualTexto = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
-            // Si no hay período seleccionado, usar el actual
-            if (!this.periodoSeleccionado && !this.periodoInicial) {
-              this.periodoSeleccionado = periodo.valor;
-            }
           } else {
             // Fallback si no hay período actual
             this.periodoActualTexto = 'No disponible';
@@ -195,6 +206,9 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
   }
 
   getPeriodoTexto(periodo: string): string {
+    if (periodo === 'todos') {
+      return 'Todos los Períodos';
+    }
     if (!periodo) {
       return this.periodoActualTexto || 'Período actual';
     }
