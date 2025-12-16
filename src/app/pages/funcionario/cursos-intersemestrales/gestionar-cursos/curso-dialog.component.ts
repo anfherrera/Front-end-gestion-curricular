@@ -10,7 +10,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { CursosIntersemestralesService, CreateCursoDTO, UpdateCursoDTO } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, CreateCursoDTO, UpdateCursoDTO, Salon } from '../../../../core/services/cursos-intersemestrales.service';
 import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '../../../../core/utils/periodo.utils';
 
 export interface CursoDialogData {
@@ -182,7 +182,22 @@ export interface CursoDialogData {
         <div class="form-section">
           <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
           
-          <mat-form-field appearance="outline" class="form-field">
+          <mat-form-field appearance="outline" class="form-field" *ngIf="!data.soloEdicion">
+            <mat-label>Salón Asignado</mat-label>
+            <mat-select formControlName="id_salon">
+              <mat-option value="">Seleccione un salón</mat-option>
+              <mat-option *ngFor="let salon of salones" [value]="salon.id_salon">
+                {{ salon.descripcion }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="data.form.get('id_salon')?.hasError('required')">
+              El salón es requerido
+            </mat-error>
+            <mat-hint *ngIf="!cargandoSalones">Seleccione un salón de la lista disponible</mat-hint>
+            <mat-hint *ngIf="cargandoSalones">Cargando salones...</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field" *ngIf="data.soloEdicion">
             <mat-label>Espacio Asignado</mat-label>
             <input matInput formControlName="espacio_asignado" placeholder="Ej: Lab 301, Aula 205">
             <mat-error *ngIf="data.form.get('espacio_asignado')?.hasError('minlength')">
@@ -667,6 +682,10 @@ export class CursoDialogComponent implements OnInit {
   errorFechas: string | null = null;
   duracionSemanas: number = 0;
   mostrarDuracion: boolean = false;
+  
+  // Propiedades para salones
+  salones: Salon[] = [];
+  cargandoSalones: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<CursoDialogComponent>,
@@ -677,12 +696,33 @@ export class CursoDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarPeriodos();
+    this.cargarSalones();
     
     // Suscribirse a cambios en las fechas para validar
     if (!this.data.soloEdicion) {
       this.data.form.get('fecha_inicio')?.valueChanges.subscribe(() => this.onFechaChange());
       this.data.form.get('fecha_fin')?.valueChanges.subscribe(() => this.onFechaChange());
     }
+  }
+
+  cargarSalones(): void {
+    // Solo cargar salones si no es modo de solo edición
+    if (this.data.soloEdicion) {
+      return;
+    }
+    
+    this.cargandoSalones = true;
+    this.cursosService.getSalones().subscribe({
+      next: (salones) => {
+        this.salones = salones;
+        this.cargandoSalones = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar salones:', error);
+        this.snackBar.open('Error al cargar la lista de salones', 'Cerrar', { duration: 3000 });
+        this.cargandoSalones = false;
+      }
+    });
   }
 
   // Método para manejar la selección del docente
@@ -937,7 +977,10 @@ export class CursoDialogComponent implements OnInit {
         };
         
         // Campos opcionales (solo incluir si tienen valor)
-        if (formValue.espacio_asignado) {
+        if (formValue.id_salon) {
+          createData.id_salon = Number(formValue.id_salon);
+        } else if (formValue.espacio_asignado) {
+          // Mantener compatibilidad con espacio_asignado (deprecated)
           createData.espacio_asignado = formValue.espacio_asignado;
         }
         

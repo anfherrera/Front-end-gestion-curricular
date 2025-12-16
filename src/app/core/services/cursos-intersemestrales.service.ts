@@ -883,6 +883,25 @@ export class CursosIntersemestralesService {
 
   // ====== SOLICITUD DE CURSO NUEVO ======
   
+  /**
+   * Obtiene la lista de salones activos disponibles
+   * Requiere autenticación con rol Funcionario, Coordinador o Administrador
+   */
+  getSalones(): Observable<Salon[]> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    });
+    
+    return this.http.get<Salon[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SALONES, { headers })
+      .pipe(
+        catchError((error: any) => {
+          console.error('Error al obtener salones:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
   // Obtener todas las materias disponibles para solicitar (datos reales de la BD)
   getMateriasDisponibles(): Observable<Materia[]> {
     return this.http.get<Materia[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
@@ -996,7 +1015,10 @@ export class CursosIntersemestralesService {
     };
     
     // Campos opcionales (solo incluir si tienen valor)
-    if (payload.espacio_asignado) {
+    if (payload.id_salon) {
+      payloadParaBackend.id_salon = Number(payload.id_salon);
+    } else if (payload.espacio_asignado) {
+      // Mantener compatibilidad con espacio_asignado (deprecated)
       payloadParaBackend.espacio_asignado = payload.espacio_asignado;
     }
     
@@ -1893,6 +1915,14 @@ export class CursosIntersemestralesService {
 
 // ====== DTOs PARA GESTIÓN DE CURSOS ======
 
+export interface Salon {
+  id_salon: number;
+  numero_salon: string;
+  edificio: string;
+  activo: boolean;
+  descripcion: string;
+}
+
 export interface CreateCursoDTO {
   // Campos OBLIGATORIOS según especificación del backend
   id_materia: number;              // Long - ID de la materia seleccionada
@@ -1903,7 +1933,8 @@ export interface CreateCursoDTO {
   periodoAcademico: string;        // String - Formato "YYYY-P" (ej: "2025-1", "2025-2")
   
   // Campos OPCIONALES
-  espacio_asignado?: string;       // String - Si no se envía, se asigna "Aula 101" por defecto
+  id_salon?: number;               // Integer - ID del salón seleccionado (recomendado)
+  espacio_asignado?: string;       // String - Deprecated: Si no se envía id_salon, se asigna "Aula 101" por defecto
   estado?: string;                 // String - Valores: "Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"
                                    // Si no se envía, se asigna "Abierto" por defecto
   grupo?: string;                  // String - Valores: "A", "B", "C", "D" (case-insensitive)

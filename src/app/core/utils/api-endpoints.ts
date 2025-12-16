@@ -99,6 +99,9 @@ export class ApiEndpoints {
       EXPORTAR_CURSOS_PDF: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos/export/pdf`,
       EXPORTAR_ESTUDIANTES_PDF: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes/export/pdf`,
       
+      // Endpoint de salones
+      SALONES: `${this.BASE_URL}/cursos-intersemestrales/salones`,
+      
       // Endpoint de estadísticas del dashboard
       DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-intersemestrales/dashboard/estadisticas`
     }

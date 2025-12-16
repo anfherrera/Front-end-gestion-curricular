@@ -93,7 +93,8 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       periodoAcademico: ['', Validators.required],
       
       // Campos OPCIONALES
-      espacio_asignado: [''], // Opcional - sin validación requerida
+      id_salon: [''], // Opcional - ID del salón seleccionado
+      espacio_asignado: [''], // Deprecated - mantener para compatibilidad con edición
       estado: ['Abierto'], // Opcional - valor por defecto "Abierto"
       grupo: ['A'] // Opcional - valor por defecto "A" (A, B, C, D)
     });
