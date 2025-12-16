@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
@@ -496,10 +496,90 @@ export class CursosIntersemestralesService {
 
   // ====== CURSOS DE VERANO - NUEVAS APIs ======
   
-  // Obtener cursos disponibles para verano (para estudiantes - datos reales de la BD)
-  getCursosDisponibles(): Observable<CursoOfertadoVerano[]> {
-    return this.http.get<CursoOfertadoVerano[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES).pipe(
-      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+  /**
+   * Obtener cursos disponibles para verano (para estudiantes - datos reales de la BD)
+   * 
+   * @param periodoAcademico (opcional): Período académico en formato "YYYY-P" (ej: "2025-2")
+   *                         - Si se envía "todos", se muestran todos los cursos sin filtrar
+   *                         - Si no se proporciona o es null/undefined, el backend automáticamente
+   *                           filtra por el período académico actual calculado según la fecha del sistema.
+   * @param idPrograma (opcional): ID del programa académico para filtrar cursos
+   * @param todosLosPeriodos (opcional): Si es true, muestra todos los cursos sin filtrar por período
+   * 
+   * @returns Observable con la lista de cursos disponibles
+   */
+  getCursosDisponibles(
+    periodoAcademico?: string | null, 
+    idPrograma?: number,
+    todosLosPeriodos?: boolean
+  ): Observable<CursoOfertadoVerano[]> {
+    const url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES;
+    
+    // Solo agregar parámetros si se proporcionan
+    let httpParams = new HttpParams();
+    
+    // Si todosLosPeriodos es true, usar ese parámetro (ignora periodoAcademico)
+    if (todosLosPeriodos === true) {
+      httpParams = httpParams.set('todosLosPeriodos', 'true');
+      console.log('[CURSOS] Mostrando todos los cursos sin filtrar por período');
+    } else if (periodoAcademico && periodoAcademico.trim() !== '') {
+      // Si periodoAcademico es "todos", también mostrar todos
+      if (periodoAcademico.trim().toLowerCase() === 'todos') {
+        httpParams = httpParams.set('todosLosPeriodos', 'true');
+        console.log('[CURSOS] Mostrando todos los cursos (periodoAcademico="todos")');
+      } else {
+        httpParams = httpParams.set('periodoAcademico', periodoAcademico);
+        console.log('[CURSOS] Filtrando por período:', periodoAcademico);
+      }
+    } else {
+      console.log('[CURSOS] No se envía período, usando período actual automático');
+    }
+    
+    if (idPrograma !== undefined && idPrograma !== null) {
+      httpParams = httpParams.set('idPrograma', idPrograma.toString());
+    }
+    
+    // Si hay parámetros, agregarlos a la URL, si no, llamar sin parámetros para usar período actual automático
+    const options = httpParams.keys().length > 0 
+      ? { params: httpParams }
+      : {};
+    
+    console.log('[CURSOS] URL completa:', url);
+    console.log('[CURSOS] Opciones:', options);
+    
+    return this.http.get<CursoOfertadoVerano[] | { data: CursoOfertadoVerano[] }>(url, options).pipe(
+      map(response => {
+        console.log('[CURSOS] Respuesta del backend (raw):', response);
+        
+        // Manejar si la respuesta viene envuelta en un objeto { data: [...] } o es un array directo
+        let cursos: CursoOfertadoVerano[] = [];
+        if (Array.isArray(response)) {
+          cursos = response;
+        } else if (response && typeof response === 'object' && 'data' in response && Array.isArray((response as any).data)) {
+          cursos = (response as any).data;
+        } else if (response && typeof response === 'object' && 'success' in response && (response as any).success && Array.isArray((response as any).data)) {
+          cursos = (response as any).data;
+        }
+        
+        console.log('[CURSOS] Cursos extraídos:', cursos);
+        console.log('[CURSOS] Cantidad de cursos:', cursos.length);
+        
+        const cursosNormalizados = cursos.map(curso => this.normalizarCurso(curso));
+        console.log('[CURSOS] Cursos normalizados:', cursosNormalizados);
+        return cursosNormalizados;
+      }),
+      catchError(error => {
+        console.error('[CURSOS] Error obteniendo cursos disponibles:', error);
+        console.error('[CURSOS] URL que falló:', url);
+        console.error('[CURSOS] Opciones:', options);
+        console.error('[CURSOS] Error completo:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error
+        });
+        return of([]); // Retornar array vacío en caso de error
+      })
     );
   }
 

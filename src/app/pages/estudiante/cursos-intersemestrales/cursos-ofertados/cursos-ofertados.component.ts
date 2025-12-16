@@ -23,7 +23,8 @@ export class CursosOfertadosComponent implements OnInit {
   cursosVeranoOriginales: CursoOfertadoVerano[] = []; // ✨ NUEVO: Para guardar todos los cursos antes de filtrar
   cargando = true;
   usuario: any = null;
-  periodoSeleccionado = ''; // ✨ NUEVO: Período seleccionado para filtrar
+  periodoSeleccionado = ''; // ✨ NUEVO: Período seleccionado para filtrar ('', 'todos', o 'YYYY-P')
+  mostrarTodosLosCursos = false; // ✨ NUEVO: Flag para mostrar todos los cursos
   
   // 🆕 Variables para manejar parámetros de navegación
   cursoIdDestino?: number;
@@ -66,16 +67,69 @@ export class CursosOfertadosComponent implements OnInit {
     this.cargando = true;
     console.log('🔄 Cargando cursos de verano...');
     
-    // Cargar cursos de verano disponibles
-    this.cursosService.getCursosDisponibles().subscribe({
+    // Determinar qué parámetros enviar
+    let periodoParam: string | undefined = undefined;
+    let todosLosPeriodos = false;
+    
+    if (this.periodoSeleccionado === 'todos' || this.mostrarTodosLosCursos) {
+      // Mostrar todos los cursos sin filtrar
+      todosLosPeriodos = true;
+      console.log('📅 Cargando: Todos los períodos');
+    } else if (this.periodoSeleccionado && this.periodoSeleccionado.trim() !== '') {
+      // Período específico
+      periodoParam = this.periodoSeleccionado;
+      console.log('📅 Cargando: Período específico:', periodoParam);
+    } else {
+      // Período actual (no enviar parámetro)
+      console.log('📅 Cargando: Período Actual');
+    }
+    
+    // Cargar cursos de verano disponibles (con período opcional)
+    this.cursosService.getCursosDisponibles(periodoParam, undefined, todosLosPeriodos).subscribe({
       next: (cursosVerano) => {
         console.log('✅ Cursos de verano recibidos:', cursosVerano);
-        this.cursosVeranoOriginales = cursosVerano; // ✨ NUEVO: Guardar originales
-        this.aplicarFiltroPeriodo(); // ✨ NUEVO: Aplicar filtro si hay período seleccionado
+        console.log('📊 Cantidad de cursos:', cursosVerano?.length || 0);
+        
+        // Si no hay cursos para el período actual y no se está mostrando todos, cargar todos automáticamente
+        if ((!cursosVerano || cursosVerano.length === 0) && 
+            !this.periodoSeleccionado && 
+            !this.mostrarTodosLosCursos && 
+            !todosLosPeriodos) {
+          console.log('🔄 No hay cursos para el período actual, cargando todos los cursos automáticamente...');
+          this.mostrarTodosLosCursos = true;
+          // Recargar con todos los períodos
+          this.cursosService.getCursosDisponibles(undefined, undefined, true).subscribe({
+            next: (todosLosCursos) => {
+              console.log('✅ Todos los cursos recibidos:', todosLosCursos);
+              this.cursosVeranoOriginales = todosLosCursos || [];
+              this.cursosVerano = todosLosCursos || [];
+              this.cursos = this.mapCursosToLegacy(todosLosCursos || []);
+              this.cargando = false;
+            },
+            error: (err) => {
+              console.error('❌ Error cargando todos los cursos', err);
+              this.cursosVeranoOriginales = [];
+              this.cursosVerano = [];
+              this.cursos = [];
+              this.cargando = false;
+            }
+          });
+          return; // Salir temprano para evitar ejecutar el código de abajo
+        }
+        
+        this.cursosVeranoOriginales = cursosVerano || [];
+        this.cursosVerano = cursosVerano || [];
+        this.cursos = this.mapCursosToLegacy(cursosVerano || []);
         this.cargando = false;
       },
       error: (err) => {
         console.error('❌ Error cargando cursos de verano', err);
+        console.error('❌ Detalles del error:', {
+          status: err.status,
+          statusText: err.statusText,
+          message: err.message,
+          error: err.error
+        });
         // Fallback a cursos legacy si hay error
         this.loadCursosLegacy();
       }
@@ -84,43 +138,12 @@ export class CursosOfertadosComponent implements OnInit {
 
   // ✨ NUEVO: Manejar cambio de período
   onPeriodoChange(periodo: string): void {
-    console.log('📅 Período seleccionado:', periodo);
+    console.log('📅 Período seleccionado:', periodo || 'Período Actual');
     this.periodoSeleccionado = periodo;
+    this.mostrarTodosLosCursos = periodo === 'todos';
     
-    if (!periodo) {
-      // Si no hay período seleccionado, cargar todos los cursos
-      this.loadCursos();
-    } else {
-      // Cargar cursos filtrados por período
-      this.cargando = true;
-      this.cursosService.getCursosPorPeriodo(periodo).subscribe({
-        next: (cursosVerano) => {
-          console.log(`✅ Cursos del período ${periodo} recibidos:`, cursosVerano);
-          this.cursosVerano = cursosVerano;
-          this.cursos = this.mapCursosToLegacy(cursosVerano);
-          this.cargando = false;
-        },
-        error: (err) => {
-          console.error(`❌ Error cargando cursos del período ${periodo}:`, err);
-          this.cargando = false;
-        }
-      });
-    }
-  }
-
-  // ✨ NUEVO: Aplicar filtro de período a los cursos cargados
-  private aplicarFiltroPeriodo(): void {
-    if (!this.periodoSeleccionado) {
-      // Sin filtro, mostrar todos
-      this.cursosVerano = this.cursosVeranoOriginales;
-    } else {
-      // Filtrar por período
-      this.cursosVerano = this.cursosVeranoOriginales.filter(
-        curso => this.obtenerPeriodoCurso(curso) === this.periodoSeleccionado
-      );
-    }
-    this.cursos = this.mapCursosToLegacy(this.cursosVerano);
-    console.log('📋 Cursos después de filtro:', this.cursos);
+    // Recargar cursos con el nuevo período (o sin período para usar el actual)
+    this.loadCursos();
   }
 
   private loadCursosLegacy() {

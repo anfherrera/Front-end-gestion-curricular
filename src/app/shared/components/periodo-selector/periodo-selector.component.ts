@@ -13,16 +13,25 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
       <mat-form-field appearance="outline" class="periodo-selector">
         <mat-label>Filtrar por período académico</mat-label>
         <mat-select [(value)]="periodoSeleccionado" (selectionChange)="onPeriodoChange()">
-          <mat-option [value]="''">Todos los períodos</mat-option>
+          <mat-option [value]="''">Período Actual</mat-option>
+          <mat-option [value]="'todos'">Todos los Períodos</mat-option>
           <mat-option *ngFor="let periodo of periodos" [value]="periodo">
             {{ formatearPeriodoDisplay(periodo) }}
           </mat-option>
         </mat-select>
       </mat-form-field>
       
-      <div class="info-periodo" *ngIf="periodoSeleccionado">
+      <div class="info-periodo" *ngIf="periodoSeleccionado === 'todos'">
+        <mat-icon>info</mat-icon>
+        <span>Mostrando <strong>todos los cursos</strong> de todos los períodos</span>
+      </div>
+      <div class="info-periodo" *ngIf="periodoSeleccionado && periodoSeleccionado !== 'todos'">
         <mat-icon>info</mat-icon>
         <span>Mostrando cursos del período: <strong>{{ formatearPeriodoDisplay(periodoSeleccionado) }}</strong></span>
+      </div>
+      <div class="info-periodo" *ngIf="!periodoSeleccionado">
+        <mat-icon>info</mat-icon>
+        <span>Mostrando cursos del <strong>período académico actual</strong></span>
       </div>
     </div>
   `,
@@ -124,6 +133,9 @@ export class PeriodoSelectorComponent implements OnInit {
   }
 
   formatearPeriodoDisplay(periodo: string): string {
+    if (periodo === 'todos') {
+      return 'Todos los Períodos';
+    }
     return formatearPeriodo(periodo);
   }
 }
