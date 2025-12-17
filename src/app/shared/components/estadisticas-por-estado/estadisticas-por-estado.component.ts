@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -403,7 +403,10 @@ import { Subscription } from 'rxjs';
     }
   `]
 })
-export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
+export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() periodoAcademico?: string;
+  @Input() idPrograma?: number;
+  
   data: EstadoSolicitudesResponse | null = null;
   estadosData: Array<{nombre: string} & EstadoInfo> = [];
   totalSolicitudes = 0;
@@ -418,12 +421,27 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy {
     this.cargarDatos();
   }
 
+  ngOnChanges(): void {
+    this.cargarDatos();
+  }
+
   cargarDatos(): void {
     this.loading = true;
     this.error = false;
 
+    // Preparar filtros
+    const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+    
+    if (this.periodoAcademico && this.periodoAcademico.trim() !== '' && this.periodoAcademico !== 'todos') {
+      filtros.periodoAcademico = this.periodoAcademico.trim();
+    }
+    
+    if (this.idPrograma !== undefined && this.idPrograma !== null && !isNaN(this.idPrograma) && this.idPrograma > 0) {
+      filtros.idPrograma = this.idPrograma;
+    }
+
     // Usar el endpoint específico de estado de solicitudes que funciona
-    const sub = this.estadisticasService.getEstadoSolicitudes()
+    const sub = this.estadisticasService.getEstadoSolicitudes(filtros)
       .subscribe({
         next: (response: EstadoSolicitudesResponse) => {
           

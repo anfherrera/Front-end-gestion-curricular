@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -294,8 +294,10 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
     }
   `]
 })
-export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy {
+export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnChanges {
   @Input() autoLoad: boolean = true;
+  @Input() periodoAcademico?: string;
+  @Input() idPrograma?: number;
   
   programasData: ProgramaData[] = [];
   totalEstudiantes: number = 0;
@@ -313,6 +315,12 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy {
     }
   }
 
+  ngOnChanges(): void {
+    if (this.autoLoad) {
+      this.cargarDatos();
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
@@ -321,11 +329,20 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    const sub = this.estadisticasService.getEstudiantesPorPrograma()
+    // Preparar filtros
+    const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+    
+    if (this.periodoAcademico && this.periodoAcademico.trim() !== '' && this.periodoAcademico !== 'todos') {
+      filtros.periodoAcademico = this.periodoAcademico.trim();
+    }
+    
+    if (this.idPrograma !== undefined && this.idPrograma !== null && !isNaN(this.idPrograma) && this.idPrograma > 0) {
+      filtros.idPrograma = this.idPrograma;
+    }
+
+    const sub = this.estadisticasService.getEstudiantesPorPrograma(filtros)
       .subscribe({
         next: (response: EstudiantesPorProgramaResponse) => {
-          // Estudiantes por programa obtenidos
-          
           this.fechaConsulta = response.fechaConsulta;
           this.programasData = this.procesarDatos(response.estudiantesPorPrograma);
           this.totalEstudiantes = this.calcularTotalEstudiantes(response.estudiantesPorPrograma);

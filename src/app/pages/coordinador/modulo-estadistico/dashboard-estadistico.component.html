@@ -146,21 +146,33 @@
       
         <div class="nuevas-estadisticas-grid">
           <!-- Componente de Estudiantes por Programa -->
-          <app-estudiantes-por-programa></app-estudiantes-por-programa>
+          <app-estudiantes-por-programa 
+            [periodoAcademico]="filtros.periodoAcademico"
+            [idPrograma]="filtros.idPrograma">
+          </app-estudiantes-por-programa>
 
           <!-- Componente de Estadísticas por Proceso -->
-          <app-estadisticas-por-proceso></app-estadisticas-por-proceso>
+          <app-estadisticas-por-proceso 
+            [periodoAcademico]="filtros.periodoAcademico"
+            [idPrograma]="filtros.idPrograma">
+          </app-estadisticas-por-proceso>
         </div>
 
         <!-- Componente de Estadísticas por Estado -->
         <div class="estadisticas-estado-section">
-          <app-estadisticas-por-estado></app-estadisticas-por-estado>
+          <app-estadisticas-por-estado 
+            [periodoAcademico]="filtros.periodoAcademico"
+            [idPrograma]="filtros.idPrograma">
+          </app-estadisticas-por-estado>
         </div>
     </div>
 
     <!-- NUEVA SECCIÓN - Tendencias y Comparativas -->
     <div class="tendencias-comparativas-section">
-      <app-tendencias-comparativas></app-tendencias-comparativas>
+      <app-tendencias-comparativas 
+        [periodoAcademico]="filtros.periodoAcademico"
+        [idPrograma]="filtros.idPrograma">
+      </app-tendencias-comparativas>
     </div>
 
     <!-- ELIMINADO: Sección "Predicciones con Regresión Lineal" (ya no disponible en /api/estadisticas/globales) -->

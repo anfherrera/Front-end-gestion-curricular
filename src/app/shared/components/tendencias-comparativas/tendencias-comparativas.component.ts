@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,7 +25,10 @@ import { TendenciasComparativasResponse, CrecimientoTemporal, ComparativaProceso
   templateUrl: './tendencias-comparativas.component.html',
   styleUrls: ['./tendencias-comparativas.component.css']
 })
-export class TendenciasComparativasComponent implements OnInit, OnDestroy {
+export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() periodoAcademico?: string;
+  @Input() idPrograma?: number;
+  
   data: TendenciasComparativasResponse | null = null;
   loading = false;
   error = false;
@@ -41,23 +44,35 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy {
     this.cargarTendenciasComparativas();
   }
 
+  ngOnChanges(): void {
+    this.cargarTendenciasComparativas();
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   /**
-   * Carga las tendencias y comparativas desde el API
+   * Carga las tendencias y comparativas desde el API con filtros opcionales
    */
   cargarTendenciasComparativas(): void {
     this.loading = true;
     this.error = false;
     
-    // Cargando tendencias y comparativas
+    // Preparar filtros
+    const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
     
-    const subscription = this.estadisticasService.getTendenciasComparativas()
+    if (this.periodoAcademico && this.periodoAcademico.trim() !== '' && this.periodoAcademico !== 'todos') {
+      filtros.periodoAcademico = this.periodoAcademico.trim();
+    }
+    
+    if (this.idPrograma !== undefined && this.idPrograma !== null && !isNaN(this.idPrograma) && this.idPrograma > 0) {
+      filtros.idPrograma = this.idPrograma;
+    }
+    
+    const subscription = this.estadisticasService.getTendenciasComparativas(filtros)
       .subscribe({
         next: (response) => {
-          // Tendencias y comparativas cargadas
           this.data = response;
           this.loading = false;
           this.mostrarExito('Tendencias y comparativas cargadas correctamente');

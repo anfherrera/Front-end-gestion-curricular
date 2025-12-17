@@ -7,6 +7,7 @@ import {
   EstadisticasProceso, 
   EstadisticasPrograma, 
   ResumenCompleto,
+  ResumenCompletoAPI,
   FiltroEstadisticas,
   FiltrosDashboard,
   EstadisticasGlobalesAPI,
@@ -199,48 +200,58 @@ export class EstadisticasService {
   }
 
   /**
-   * Obtiene el resumen completo de estadísticas
+   * Obtiene el resumen completo de estadísticas con soporte para filtros opcionales
    * GET /api/estadisticas/resumen-completo
    * 
-   * Parámetros opcionales:
-   * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
-   * - idPrograma: ID del programa académico
+   * Parámetros de consulta (todos opcionales):
+   * - periodoAcademico: String en formato "YYYY-P" (ej: "2025-1", "2025-2")
+   *   El backend acepta múltiples formatos y los normaliza automáticamente:
+   *   - "2025-1" o "2025-2" (formato estándar)
+   *   - "2025 - Primer Semestre" o "2025 - Segundo Semestre"
+   *   - "2025 Primer Semestre" o "2025 Segundo Semestre"
+   *   - "Primer Semestre 2025" o "Segundo Semestre 2025"
+   * - idPrograma: Integer - ID del programa académico (ej: 1, 2, 3)
    * 
-   * IMPORTANTE: Para que las estadísticas generales se filtren correctamente,
-   * el frontend debe pasar los mismos filtros a ambos endpoints:
-   * - /api/estadisticas/cursos-verano
-   * - /api/estadisticas/resumen-completo
+   * Ejemplos de uso:
+   * 1. Sin filtros (todas las estadísticas):
+   *    getResumenCompleto().subscribe(...)
    * 
-   * Si no se pasan filtros, mostrará datos generales sin filtrar.
+   * 2. Solo período académico:
+   *    getResumenCompleto({ periodoAcademico: '2025-2' }).subscribe(...)
    * 
-   * Ejemplo de uso:
-   * ```typescript
-   * const filtros = { periodoAcademico: '2025-2', idPrograma: 1 };
+   * 3. Solo programa:
+   *    getResumenCompleto({ idPrograma: 1 }).subscribe(...)
    * 
-   * // Obtener estadísticas de cursos de verano con filtros
-   * this.estadisticasService.getCursosVeranoEstadisticas(filtros).subscribe(...);
+   * 4. Ambos filtros combinados:
+   *    getResumenCompleto({ periodoAcademico: '2025-1', idPrograma: 1 }).subscribe(...)
    * 
-   * // Obtener resumen completo con LOS MISMOS filtros
-   * this.estadisticasService.getResumenCompleto(filtros).subscribe(...);
-   * ```
+   * La respuesta incluye:
+   * - estadisticasGlobales: Resumen general con totales y porcentajes
+   * - porTipoProceso: Estadísticas desglosadas por tipo de proceso (objeto con claves como "Reingreso", "Homologacion", etc.)
+   * - porEstado: Estadísticas desglosadas por estado (objeto con claves como "APROBADA", "RECHAZADA", etc.)
+   * - totalProgramas: Número total de programas
+   * - fechaGeneracion: Fecha de generación del resumen
+   * - filtrosAplicados: Indica qué filtros se aplicaron (si hay)
    * 
-   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
-   * @returns Observable con el resumen completo de estadísticas
+   * @param filtros Filtros opcionales: periodoAcademico (formato "YYYY-P" o variantes), idPrograma (número)
+   * @returns Observable con el resumen completo de estadísticas en formato ResumenCompletoAPI
    */
-  getResumenCompleto(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<ResumenCompleto> {
+  getResumenCompleto(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<ResumenCompletoAPI> {
     let params = new HttpParams();
     
-    if (filtros.periodoAcademico) {
-      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    // Validar y agregar periodoAcademico solo si tiene valor válido
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
     }
     
-    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
+    // Validar y agregar idPrograma solo si tiene valor válido
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
     const options = params.keys().length > 0 ? { params } : {};
     
-    return this.http.get<ResumenCompleto>(ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO, options);
+    return this.http.get<ResumenCompletoAPI>(ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO, options);
   }
 
   /**
@@ -361,36 +372,83 @@ export class EstadisticasService {
    * Obtiene la distribución de estudiantes por programa académico
    * @returns Observable con la respuesta del endpoint de estudiantes por programa
    */
-  getEstudiantesPorPrograma(): Observable<EstudiantesPorProgramaResponse> {
-    return this.http.get<EstudiantesPorProgramaResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTUDIANTES_POR_PROGRAMA);
+  /**
+   * Obtiene estudiantes por programa con filtros opcionales
+   * GET /api/estadisticas/estudiantes-por-programa
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
+   */
+  getEstudiantesPorPrograma(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstudiantesPorProgramaResponse> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<EstudiantesPorProgramaResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTUDIANTES_POR_PROGRAMA, { params });
   }
 
   /**
-   * Obtiene estadísticas detalladas por proceso académico
-   * @returns Observable con la respuesta del endpoint de estadísticas por proceso
+   * Obtiene estadísticas detalladas por proceso académico con filtros opcionales
+   * GET /api/estadisticas/estadisticas-por-proceso
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadisticasDetalladasPorProceso(): Observable<EstadisticasPorProcesoResponse> {
+  getEstadisticasDetalladasPorProceso(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadisticasPorProcesoResponse> {
+    let params = new HttpParams();
+    
     // Agregar timestamp para evitar caché
-    const url = `${ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO}?t=${Date.now()}`;
-    return this.http.get<EstadisticasPorProcesoResponse>(url);
+    params = params.set('t', Date.now().toString());
+    
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<EstadisticasPorProcesoResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO, { params });
   }
 
-
   /**
-   * Obtiene estadísticas por estado de solicitudes
+   * Obtiene estadísticas por estado de solicitudes con filtros opcionales
    * GET /api/estadisticas/estado-solicitudes
-   * @returns Observable con la respuesta del endpoint de estado de solicitudes
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadoSolicitudes(): Observable<EstadoSolicitudesResponse> {
-    return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES);
+  getEstadoSolicitudes(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadoSolicitudesResponse> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES, { params });
   }
 
   /**
-   * Obtiene tendencias y comparativas estratégicas
-   * @returns Observable con la respuesta del endpoint de tendencias y comparativas
+   * Obtiene tendencias y comparativas estratégicas con filtros opcionales
+   * GET /api/estadisticas/tendencias-comparativas
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getTendenciasComparativas(): Observable<TendenciasComparativasResponse> {
-    return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS);
+  getTendenciasComparativas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<TendenciasComparativasResponse> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS, { params });
   }
 
   /**
@@ -458,18 +516,40 @@ export class EstadisticasService {
 
   /**
    * Obtiene estadísticas por programa mejoradas con análisis de rendimiento
-   * @returns Observable con la respuesta del endpoint mejorado de estadísticas por programa
+   * GET /api/estadisticas/por-programa
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadisticasPorProgramaMejoradas(): Observable<EstadisticasPorProgramaMejoradasResponse> {
-    return this.http.get<EstadisticasPorProgramaMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROGRAMA_MEJORADAS);
+  getEstadisticasPorProgramaMejoradas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadisticasPorProgramaMejoradasResponse> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<EstadisticasPorProgramaMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROGRAMA_MEJORADAS, { params });
   }
 
   /**
    * Obtiene estadísticas por período mejoradas con tendencias y proyecciones
-   * @returns Observable con la respuesta del endpoint mejorado de estadísticas por período
+   * GET /api/estadisticas/por-periodo
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadisticasPorPeriodoMejoradas(): Observable<EstadisticasPorPeriodoMejoradasResponse> {
-    return this.http.get<EstadisticasPorPeriodoMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PERIODO_MEJORADAS);
+  getEstadisticasPorPeriodoMejoradas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadisticasPorPeriodoMejoradasResponse> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    return this.http.get<EstadisticasPorPeriodoMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PERIODO_MEJORADAS, { params });
   }
 
   /**

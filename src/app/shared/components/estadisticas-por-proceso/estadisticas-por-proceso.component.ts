@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -394,8 +394,10 @@ interface ProcesoData {
     }
   `]
 })
-export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
+export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnChanges {
   @Input() autoLoad: boolean = true;
+  @Input() periodoAcademico?: string;
+  @Input() idPrograma?: number;
   
   procesosData: ProcesoData[] = [];
   fechaConsulta: string | null = null;
@@ -413,6 +415,12 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     }
   }
 
+  ngOnChanges(): void {
+    if (this.autoLoad) {
+      this.cargarDatos();
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
@@ -421,7 +429,18 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    const sub = this.estadisticasService.getEstadisticasDetalladasPorProceso()
+    // Preparar filtros
+    const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+    
+    if (this.periodoAcademico && this.periodoAcademico.trim() !== '' && this.periodoAcademico !== 'todos') {
+      filtros.periodoAcademico = this.periodoAcademico.trim();
+    }
+    
+    if (this.idPrograma !== undefined && this.idPrograma !== null && !isNaN(this.idPrograma) && this.idPrograma > 0) {
+      filtros.idPrograma = this.idPrograma;
+    }
+
+    const sub = this.estadisticasService.getEstadisticasDetalladasPorProceso(filtros)
       .subscribe({
         next: (response: EstadisticasPorProcesoResponse) => {
           this.fechaConsulta = response.fechaConsulta;

@@ -19,6 +19,7 @@ import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
+import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
 import { ApiEndpoints } from '../../../core/utils/api-endpoints';
 import { environment } from '../../../../environments/environment';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -28,7 +29,8 @@ import { EstadisticasPorEstadoComponent } from '../../../shared/components/estad
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { 
-  ResumenCompleto, 
+  ResumenCompleto,
+  ResumenCompletoAPI,
   EstadisticasProceso,
   EstadisticasPrograma,
   FiltroEstadisticas,
@@ -101,6 +103,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   constructor(
     private estadisticasService: EstadisticasService,
+    private periodosService: PeriodosAcademicosService,
     private snackBar: MatSnackBar,
     private fb: FormBuilder
   ) {
@@ -140,103 +143,135 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga los datos del dashboard con filtros opcionales
+   * ACTUALIZADO: Usa getResumenCompleto cuando hay filtros de período académico o programa
    */
   cargarDatos(filtros: FiltroEstadisticas = {}): void {
     this.loading = true;
     this.error = false;
     
+    // Siempre usar getResumenCompleto (soporta filtros y sin filtros)
+    // El backend maneja automáticamente:
+    // - Sin filtros: muestra todos los períodos
+    // - Con periodoAcademico: filtra por ese período
+    const filtrosResumen: { periodoAcademico?: string; idPrograma?: number } = {};
     
-    const subscription = this.estadisticasService.getEstadisticasGlobales(filtros)
+    // Solo agregar período si hay un valor válido (no 'todos' ni '')
+    const tienePeriodo = filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '';
+    if (tienePeriodo) {
+      filtrosResumen.periodoAcademico = filtros.periodoAcademico!.trim();
+    }
+    
+    // Solo agregar programa si hay un valor válido
+    const tienePrograma = filtros.idPrograma !== undefined && filtros.idPrograma !== null && filtros.idPrograma > 0;
+    if (tienePrograma) {
+      filtrosResumen.idPrograma = filtros.idPrograma;
+    }
+    
+    const subscription = this.estadisticasService.getResumenCompleto(filtrosResumen)
       .subscribe({
-        next: (datosAPI) => {
-          
-          // ACTUALIZADO: Verificar que los datos sean válidos antes de mostrarlos
-          // Si todos los valores son 0, usar endpoints alternativos en lugar de mostrar ceros
-          const tieneDatos = (datosAPI.totalSolicitudes || 0) > 0 || 
-                            Object.keys(datosAPI.porTipoProceso || {}).length > 0 ||
-                            Object.keys(datosAPI.porPrograma || {}).length > 0 ||
-                            Object.keys(datosAPI.porEstado || {}).length > 0;
-          
-          if (!tieneDatos) {
-            this.cargarDatosConEndpointsAlternativos(filtros);
-            return;
-          }
-          
+        next: (resumenAPI) => {
           try {
-            // Convertir datos del API al formato del dashboard
-            this.resumenCompleto = this.estadisticasService.convertirDatosAPI(datosAPI);
+            // Convertir ResumenCompletoAPI a ResumenCompleto para compatibilidad
+            this.resumenCompleto = this.convertirResumenCompletoAPI(resumenAPI);
             
             this.generarKPIs();
             
-            // Solo crear gráficos si no se han creado antes
             const primeraCarga = !this.chartsCreados;
             if (primeraCarga) {
               this.crearCharts();
               this.chartsCreados = true;
             } else {
-              // Si los gráficos ya existen, solo actualizarlos
               this.actualizarCharts();
             }
             
             this.loading = false;
             this.error = false;
             
-            // Solo mostrar mensaje de éxito si es la primera carga
             if (primeraCarga) {
               this.mostrarExito('Datos cargados correctamente desde el backend');
             }
           } catch (conversionError) {
-            // Si falla la conversión, intentar con endpoints alternativos
             this.cargarDatosConEndpointsAlternativos(filtros);
           }
         },
         error: (error) => {
-          
-          // Si el endpoint principal falla, usar endpoints alternativos que funcionan
-          // NO mostrar valores en 0, esperar a que los endpoints alternativos terminen
           this.cargarDatosConEndpointsAlternativos(filtros);
         }
       });
-
+    
     this.subscriptions.push(subscription);
 
     // Cargar total de estudiantes desde el endpoint específico
     this.cargarTotalEstudiantes();
-    
-    // DESHABILITADO: No usar endpoint separado de estado de solicitudes
-    // Los datos ya vienen correctos desde /api/estadisticas/globales
-    // this.cargarDatosEstadoSolicitudes();
-
-    // Comentamos la llamada real al backend por ahora
-    /*
-    const subscription = this.estadisticasService.getResumenCompleto().subscribe({
-      next: (data) => {
-        this.resumenCompleto = data;
-        this.generarKPIs();
-        this.crearCharts();
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = true;
-        this.loading = false;
-        this.mostrarError('Error al cargar las estadísticas');
-      }
+  }
+  
+  /**
+   * Convierte ResumenCompletoAPI a ResumenCompleto para compatibilidad
+   */
+  private convertirResumenCompletoAPI(resumenAPI: any): ResumenCompleto {
+    // Convertir porTipoProceso de objeto a array
+    const estadisticasPorProceso: EstadisticasProceso[] = Object.keys(resumenAPI.porTipoProceso || {}).map(key => {
+      const proceso = resumenAPI.porTipoProceso[key];
+      return {
+        nombreProceso: key.toLowerCase().replace(/\s+/g, '-'),
+        totalSolicitudes: proceso.totalSolicitudes || 0,
+        aprobadas: proceso.totalAprobadas || 0,
+        rechazadas: proceso.totalRechazadas || 0,
+        enProceso: proceso.totalEnProceso || 0,
+        pendientes: 0,
+        porcentajeAprobacion: proceso.porcentajeAprobacion || 0,
+        tendenciaMensual: [],
+        distribucionPorPrograma: []
+      };
     });
-
-    this.subscriptions.push(subscription);
-    */
+    
+    // Convertir porPrograma desde estadisticasGlobales.porPrograma
+    const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(resumenAPI.estadisticasGlobales?.porPrograma || {}).map((nombrePrograma, index) => ({
+      idPrograma: index + 1,
+      nombrePrograma,
+      totalSolicitudes: resumenAPI.estadisticasGlobales.porPrograma[nombrePrograma] || 0,
+      distribucionPorProceso: [],
+      tendenciaAnual: []
+    }));
+    
+    return {
+      estadisticasGlobales: {
+        totalSolicitudes: resumenAPI.estadisticasGlobales?.totalSolicitudes || 0,
+        solicitudesAprobadas: resumenAPI.estadisticasGlobales?.totalAprobadas || 0,
+        solicitudesRechazadas: resumenAPI.estadisticasGlobales?.totalRechazadas || 0,
+        solicitudesEnviadas: 0,
+        solicitudesEnProceso: resumenAPI.estadisticasGlobales?.totalEnProceso || 0,
+        totalEstudiantes: 0,
+        totalProgramas: resumenAPI.totalProgramas || 0
+      },
+      estadisticasPorProceso,
+      estadisticasPorPrograma,
+      ultimaActualizacion: resumenAPI.fechaGeneracion || new Date().toISOString()
+    };
   }
 
   /**
    * Carga datos usando endpoints alternativos cuando /estadisticas/globales falla
+   * ACTUALIZADO: Pasa los filtros a todos los endpoints
    */
   private cargarDatosConEndpointsAlternativos(filtros: FiltroEstadisticas = {}): void {
     
-    // Combinar datos de múltiples endpoints que funcionan
-    const estadoSolicitudes$ = this.estadisticasService.getEstadoSolicitudes();
-    const estadisticasPorProceso$ = this.estadisticasService.getEstadisticasDetalladasPorProceso();
-    const estudiantesPorPrograma$ = this.estadisticasService.getEstudiantesPorPrograma();
-    const porPeriodo$ = this.estadisticasService.getEstadisticasPorPeriodoMejoradas();
+    // Preparar filtros para los endpoints (solo periodoAcademico e idPrograma)
+    const filtrosResumen: { periodoAcademico?: string; idPrograma?: number } = {};
+    
+    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
+      filtrosResumen.periodoAcademico = filtros.periodoAcademico.trim();
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && filtros.idPrograma > 0) {
+      filtrosResumen.idPrograma = filtros.idPrograma;
+    }
+    
+    // Combinar datos de múltiples endpoints que funcionan, pasando los filtros
+    const estadoSolicitudes$ = this.estadisticasService.getEstadoSolicitudes(filtrosResumen);
+    const estadisticasPorProceso$ = this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosResumen);
+    const estudiantesPorPrograma$ = this.estadisticasService.getEstudiantesPorPrograma(filtrosResumen);
+    const porPeriodo$ = this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosResumen);
     
     // Combinar todas las respuestas
     let estadoSolicitudes: any = null;
@@ -728,11 +763,23 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   /**
    * Carga datos reales del backend para el gráfico de procesos
    * CORREGIDO: Usa el endpoint que funciona /api/estadisticas/estadisticas-por-proceso
+   * ACTUALIZADO: Pasa los filtros del dashboard
    */
   private async cargarDatosRealesProcesos(): Promise<any> {
     try {
-      // Usar el endpoint que funciona correctamente
-      const data: any = await this.estadisticasService.getEstadisticasDetalladasPorProceso().toPromise();
+      // Preparar filtros
+      const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+      
+      if (this.filtros.periodoAcademico && this.filtros.periodoAcademico.trim() !== '' && this.filtros.periodoAcademico !== 'todos') {
+        filtros.periodoAcademico = this.filtros.periodoAcademico.trim();
+      }
+      
+      if (this.filtros.idPrograma !== undefined && this.filtros.idPrograma !== null && this.filtros.idPrograma > 0) {
+        filtros.idPrograma = this.filtros.idPrograma;
+      }
+      
+      // Usar el endpoint que funciona correctamente, pasando los filtros
+      const data: any = await this.estadisticasService.getEstadisticasDetalladasPorProceso(filtros).toPromise();
       
       // Convertir la estructura del endpoint a la esperada
       if (data && data.estadisticasPorProceso) {
@@ -763,10 +810,25 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos reales del backend para el gráfico de tendencia
+   * ACTUALIZADO: Pasa los filtros del dashboard
    */
   private async cargarDatosRealesTendencia(): Promise<any> {
     try {
-      const response = await fetch(`${environment.apiUrl}/estadisticas/por-periodo`);
+      // Preparar filtros
+      const params = new URLSearchParams();
+      
+      if (this.filtros.periodoAcademico && this.filtros.periodoAcademico.trim() !== '' && this.filtros.periodoAcademico !== 'todos') {
+        params.append('periodoAcademico', this.filtros.periodoAcademico.trim());
+      }
+      
+      if (this.filtros.idPrograma !== undefined && this.filtros.idPrograma !== null && this.filtros.idPrograma > 0) {
+        params.append('idPrograma', this.filtros.idPrograma.toString());
+      }
+      
+      const queryString = params.toString();
+      const url = `${environment.apiUrl}/estadisticas/por-periodo${queryString ? `?${queryString}` : ''}`;
+      
+      const response = await fetch(url);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -1254,7 +1316,18 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     // ACTUALIZADO: Cargar datos desde el endpoint /por-programa según la guía
     try {
-      const response = await this.estadisticasService.getEstadisticasPorProgramaMejoradas().toPromise();
+      // Preparar filtros
+      const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+      
+      if (this.filtros.periodoAcademico && this.filtros.periodoAcademico.trim() !== '' && this.filtros.periodoAcademico !== 'todos') {
+        filtros.periodoAcademico = this.filtros.periodoAcademico.trim();
+      }
+      
+      if (this.filtros.idPrograma !== undefined && this.filtros.idPrograma !== null && this.filtros.idPrograma > 0) {
+        filtros.idPrograma = this.filtros.idPrograma;
+      }
+      
+      const response = await this.estadisticasService.getEstadisticasPorProgramaMejoradas(filtros).toPromise();
       
       if (!response || !response.solicitudesPorPrograma) {
         // Fallback: usar datos del resumen si están disponibles
@@ -1472,28 +1545,67 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * ACTUALIZADO: Envía los filtros en el formato correcto al backend
    */
   aplicarFiltros(): void {
-    if (this.filtrosForm && this.filtrosForm.valid) {
+    if (this.filtrosForm) {
       const formValue = this.filtrosForm.value;
       
       // Convertir filtros al formato correcto
       const filtros: FiltroEstadisticas = {};
       
-      // Proceso: enviar solo si no es "Todos los procesos"
-      if (formValue.proceso && formValue.proceso !== '' && formValue.proceso !== 'Todos los procesos') {
-        filtros.proceso = formValue.proceso;
+      // Proceso: enviar solo si no es "Todos los procesos" o vacío
+      if (formValue.proceso && formValue.proceso.trim() !== '' && formValue.proceso !== 'Todos los procesos') {
+        filtros.proceso = formValue.proceso.trim();
       }
       
-      // Programa: enviar como número (idPrograma)
-      if (formValue.idPrograma && formValue.idPrograma !== '' && formValue.idPrograma !== 'Todos los programas') {
-        filtros.idPrograma = Number(formValue.idPrograma);
+      // Programa: enviar como número (idPrograma) solo si tiene valor válido
+      if (formValue.idPrograma && formValue.idPrograma !== '' && formValue.idPrograma !== 'Todos los programas' && formValue.idPrograma !== null && formValue.idPrograma !== undefined) {
+        const idProgramaNum = Number(formValue.idPrograma);
+        if (!isNaN(idProgramaNum) && idProgramaNum > 0) {
+          filtros.idPrograma = idProgramaNum;
+        }
       }
       
-      // Período Académico
-      if (formValue.periodoAcademico) {
-        filtros.periodoAcademico = formValue.periodoAcademico;
+      // Período Académico: manejar correctamente 'todos', '' (actual), y períodos específicos
+      const periodoValue = formValue.periodoAcademico;
+      if (periodoValue !== undefined && periodoValue !== null) {
+        const periodoTrimmed = String(periodoValue).trim();
+        // Si es 'todos', NO agregar filtro (mostrar todos)
+        if (periodoTrimmed === 'todos' || periodoTrimmed === 'Todos los períodos') {
+          // No agregar filtro de período - mostrar todos
+          // Marcar explícitamente que se quiere mostrar todos
+          filtros.periodoAcademico = undefined;
+        } 
+        // Si es cadena vacía, es período actual - obtener el período actual y enviarlo
+        else if (periodoTrimmed === '') {
+          // Obtener el período actual del servicio y enviarlo como filtro
+          const periodoActualSub = this.periodosService.getPeriodoActual().subscribe({
+            next: (periodoActual: PeriodoAcademico | null) => {
+              if (periodoActual && periodoActual.valor) {
+                filtros.periodoAcademico = periodoActual.valor;
+              }
+              // Guardar filtros para pasarlos a los componentes hijos
+              this.filtros = filtros;
+              // Usar el método de carga de datos con filtros
+              this.cargarDatos(filtros);
+              this.mostrarExito('Filtros aplicados correctamente');
+            },
+            error: (error: any) => {
+              // Si falla obtener el período actual, cargar sin filtro de período
+              this.filtros = filtros;
+              this.cargarDatos(filtros);
+              this.mostrarExito('Filtros aplicados correctamente');
+            }
+          });
+          this.subscriptions.push(periodoActualSub);
+          return; // Salir temprano, el cargarDatos se llamará en el subscribe
+        }
+        // Si es un período específico, enviarlo
+        else {
+          filtros.periodoAcademico = periodoTrimmed;
+        }
       }
       
-      // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+      // Guardar filtros para pasarlos a los componentes hijos
+      this.filtros = filtros;
       
       // Usar el método de carga de datos con filtros
       this.cargarDatos(filtros);
@@ -1514,6 +1626,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         periodoAcademico: ''
       });
     }
+    // Limpiar filtros guardados
+    this.filtros = {};
     // Volver a cargar datos sin filtros
     this.cargarDatos();
     this.mostrarExito('Filtros limpiados correctamente');
@@ -1596,8 +1710,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Actualiza los gráficos existentes en lugar de recrearlos
-   * Si los gráficos no existen, los crea
+   * Actualiza los gráficos con los nuevos datos filtrados
+   * ACTUALIZADO: Recrea los gráficos cuando cambian los filtros para mostrar datos correctos
    */
   private actualizarCharts(): void {
     // Si los gráficos no existen, crearlos
@@ -1607,19 +1721,28 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
     
-    // Si los gráficos existen, solo actualizarlos sin animación
+    // Cuando cambian los filtros, es mejor recrear los gráficos con los nuevos datos
+    // para asegurar que muestren los datos filtrados correctamente
     try {
+      // Destruir gráficos existentes
       if (this.chartProcesos) {
-        this.chartProcesos.update('none');
+        this.chartProcesos.destroy();
+        this.chartProcesos = null;
       }
       if (this.chartTendencia) {
-        this.chartTendencia.update('none');
+        this.chartTendencia.destroy();
+        this.chartTendencia = null;
       }
       if (this.chartDistribucion) {
-        this.chartDistribucion.update('none');
+        this.chartDistribucion.destroy();
+        this.chartDistribucion = null;
       }
+      
+      // Recrear los gráficos con los nuevos datos filtrados
+      this.crearCharts();
+      this.chartsCreados = true;
     } catch (error) {
-      // Si hay un error al actualizar, recrear los gráficos
+      // Si falla, intentar recrear los gráficos
       this.destruirCharts();
       this.chartsCreados = false;
       this.crearCharts();

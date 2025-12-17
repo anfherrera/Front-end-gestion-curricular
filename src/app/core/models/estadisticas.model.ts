@@ -37,6 +37,47 @@ export interface ResumenCompleto {
   ultimaActualizacion: string;
 }
 
+/**
+ * Interfaz para la respuesta del endpoint /api/estadisticas/resumen-completo
+ * Estructura exacta que devuelve el backend
+ */
+export interface ResumenCompletoAPI {
+  estadisticasGlobales: {
+    totalSolicitudes: number;
+    totalAprobadas: number;
+    totalRechazadas: number;
+    totalEnProceso: number;
+    porcentajeAprobacion: number;
+    porTipoProceso: Record<string, number>;
+    porPrograma: Record<string, number>;
+    fechaConsulta: string;
+  };
+  porTipoProceso: Record<string, {
+    tipoProceso: string;
+    totalSolicitudes: number;
+    totalAprobadas: number;
+    totalRechazadas: number;
+    totalEnProceso: number;
+    porcentajeAprobacion: number;
+    porEstado: Record<string, number>;
+  }>;
+  porEstado: Record<string, {
+    estado: string;
+    totalSolicitudes: number;
+    totalAprobadas: number;
+    totalRechazadas: number;
+    totalEnProceso: number;
+    porTipoProceso?: Record<string, number>;
+    porPrograma?: Record<string, number>;
+  }>;
+  totalProgramas: number;
+  fechaGeneracion: string;
+  filtrosAplicados?: {
+    periodoAcademico?: string;
+    idPrograma?: number;
+  };
+}
+
 export interface TendenciaData {
   periodo: string;
   valor: number;
