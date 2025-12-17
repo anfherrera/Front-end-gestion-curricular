@@ -90,7 +90,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
             }
           },
           error: (error) => {
-            console.error('Error cargando período actual en header:', error);
             this.periodoFormateado = '';
             this.cdr.markForCheck();
           }

@@ -78,7 +78,6 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
           this.mostrarExito('Tendencias y comparativas cargadas correctamente');
         },
         error: (error) => {
-          console.error('Error cargando tendencias y comparativas:', error);
           this.loading = false;
           this.error = true;
           this.mostrarError('Error al cargar tendencias y comparativas');
@@ -139,22 +138,6 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
    */
   verificarDatos(): void {
     if (this.data) {
-      // VERIFICACIÓN DE DATOS
-      console.log('  - data existe:', !!this.data);
-      console.log('  - comparativaProgramas existe:', !!this.data.comparativaProgramas);
-      console.log('  - resumenEstrategico existe:', !!this.data.resumenEstrategico);
-      
-      if (this.data.comparativaProgramas) {
-        console.log('  - comparativaProgramas keys:', Object.keys(this.data.comparativaProgramas));
-        console.log('  - programaMasActivo:', this.data.comparativaProgramas.programaMasActivo);
-        console.log('  - solicitudesPorPrograma keys:', Object.keys(this.data.comparativaProgramas.solicitudesPorPrograma || {}));
-      }
-      
-      if (this.data.resumenEstrategico) {
-        console.log('  - resumenEstrategico keys:', Object.keys(this.data.resumenEstrategico));
-        console.log('  - totalSolicitudes:', this.data.resumenEstrategico.totalSolicitudes);
-        console.log('  - recomendacionEstrategica:', this.data.resumenEstrategico.recomendacionEstrategica);
-      }
     } else {
       // No hay datos disponibles para verificar
     }

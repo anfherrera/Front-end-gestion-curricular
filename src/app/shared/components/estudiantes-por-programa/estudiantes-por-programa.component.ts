@@ -349,7 +349,6 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
           this.loading = false;
         },
         error: (error) => {
-          console.error('Error al obtener estudiantes por programa:', error);
           this.loading = false;
           this.error = 'Error al cargar datos de estudiantes por programa';
         }

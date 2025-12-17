@@ -454,7 +454,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
           this.loading = false;
         },
         error: (error) => {
-          console.error('Error al obtener estadísticas por proceso:', error);
           this.loading = false;
           this.error = 'Error al cargar estadísticas por proceso';
         }

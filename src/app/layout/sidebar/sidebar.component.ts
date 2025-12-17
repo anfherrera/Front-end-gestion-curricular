@@ -99,7 +99,6 @@ export class SidebarComponent implements OnChanges {
 
   logout() {
     this.authService.logout();
-    console.log('Usuario deslogueado');
     this.router.navigate(['/login']);
   }
 }

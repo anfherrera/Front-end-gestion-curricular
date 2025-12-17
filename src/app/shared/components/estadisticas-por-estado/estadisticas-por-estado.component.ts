@@ -502,7 +502,6 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
           this.loading = false;
         },
         error: (err) => {
-          console.error('Error al obtener estado de solicitudes:', err);
           this.error = true;
           this.loading = false;
         }
