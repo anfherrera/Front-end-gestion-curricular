@@ -19,10 +19,9 @@
         <div class="form-row">
           <mat-form-field appearance="outline" class="form-field-full">
             <mat-label>Fecha de Terminación del Plan de Estudios</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="fecha_terminacion_plan" [max]="maxDate">
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <input matInput [matDatepicker]="picker" formControlName="fecha_terminacion_plan" [max]="maxDate" readonly placeholder="Seleccione la fecha">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
-            <mat-hint>Fecha en que terminó el plan de estudios (ej: 5 de junio de 2025)</mat-hint>
             <mat-error *ngIf="solicitudForm.get('fecha_terminacion_plan')?.hasError('required')">
               La fecha de terminación del plan de estudios es obligatoria
             </mat-error>

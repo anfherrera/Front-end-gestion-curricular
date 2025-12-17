@@ -45,17 +45,44 @@ export class DocumentGeneratorService {
       
       // Campos OBLIGATORIOS
       formData.append('numeroDocumento', request.datosDocumento.numeroDocumento);
-      formData.append('fechaDocumento', request.datosDocumento.fechaDocumento.toString());
+      
+      // Formatear fecha a YYYY-MM-DD sin conversiones de zona horaria
+      // Si el usuario no selecciona fecha, no enviar nada (o enviar string vacío)
+      // El backend usará la fecha actual del sistema
+      const fechaDoc = request.datosDocumento.fechaDocumento;
+      
+      // Verificar primero si es null o undefined
+      if (fechaDoc === null || fechaDoc === undefined) {
+        // No enviar fecha - el backend usará la fecha actual
+        formData.append('fechaDocumento', '');
+      } else if (fechaDoc instanceof Date) {
+        // Si es Date, formatear manualmente sin usar toISOString() para evitar cambios de zona horaria
+        const year = fechaDoc.getFullYear();
+        const month = String(fechaDoc.getMonth() + 1).padStart(2, '0');
+        const day = String(fechaDoc.getDate()).padStart(2, '0');
+        const fechaFormateada = `${year}-${month}-${day}`;
+        formData.append('fechaDocumento', fechaFormateada);
+      } else {
+        // Si es string, validar y usar directamente (ya viene en formato YYYY-MM-DD del input)
+        const fechaStr = String(fechaDoc).trim();
+        if (fechaStr === '' || fechaStr === 'null' || fechaStr === 'undefined') {
+          // Fecha vacía o inválida - no enviar o enviar string vacío
+          formData.append('fechaDocumento', '');
+        } else if (fechaStr.includes('T')) {
+          // Si tiene hora, extraer solo la fecha
+          formData.append('fechaDocumento', fechaStr.split('T')[0]);
+        } else {
+          // Ya está en formato YYYY-MM-DD, usar directamente
+          formData.append('fechaDocumento', fechaStr);
+        }
+      }
       
       // Campos OPCIONALES
+      // NOTA: No enviamos tituloTrabajoGrado ni directorTrabajoGrado
+      // El backend los recupera automáticamente de la solicitud guardada
+      
       if (request.datosSolicitud?.cedula) {
         formData.append('cedulaEstudiante', request.datosSolicitud.cedula);
-      }
-      if (request.datosSolicitud?.tituloTrabajoGrado) {
-        formData.append('tituloTrabajoGrado', request.datosSolicitud.tituloTrabajoGrado);
-      }
-      if (request.datosSolicitud?.directorTrabajoGrado) {
-        formData.append('directorTrabajoGrado', request.datosSolicitud.directorTrabajoGrado);
       }
       if (request.datosDocumento?.observaciones) {
         formData.append('observaciones', request.datosDocumento.observaciones);

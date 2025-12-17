@@ -312,13 +312,19 @@ export class PazSalvoService {
       body.periodo_academico = datosFormulario.periodo_academico;
     }
 
-    // Agregar campos de trabajo de grado si se proporcionan
+    // Agregar campos de trabajo de grado si se proporcionan (con trim para limpiar espacios)
     if (datosFormulario.titulo_trabajo_grado) {
-      body.titulo_trabajo_grado = datosFormulario.titulo_trabajo_grado;
+      const tituloLimpio = datosFormulario.titulo_trabajo_grado.trim();
+      if (tituloLimpio.length > 0) {
+        body.titulo_trabajo_grado = tituloLimpio;
+      }
     }
 
     if (datosFormulario.director_trabajo_grado) {
-      body.director_trabajo_grado = datosFormulario.director_trabajo_grado;
+      const directorLimpio = datosFormulario.director_trabajo_grado.trim();
+      if (directorLimpio.length > 0) {
+        body.director_trabajo_grado = directorLimpio;
+      }
     }
 
     return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })

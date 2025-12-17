@@ -529,13 +529,18 @@ listarSolicitudes() {
           fecha_registro_solicitud: fechaTerminacion // Usar la fecha de terminación del plan
         };
 
-        // Agregar campos de trabajo de grado solo si son requeridos
+        // Agregar campos de trabajo de grado solo si son requeridos y tienen valor
         if (this.requiereTrabajoGrado) {
-          if (formValue.titulo_trabajo_grado) {
-            datosSolicitud.titulo_trabajo_grado = formValue.titulo_trabajo_grado;
+          // Limpiar y validar título del trabajo de grado
+          const tituloTrabajo = formValue.titulo_trabajo_grado?.trim();
+          if (tituloTrabajo && tituloTrabajo.length > 0) {
+            datosSolicitud.titulo_trabajo_grado = tituloTrabajo;
           }
-          if (formValue.director_trabajo_grado) {
-            datosSolicitud.director_trabajo_grado = formValue.director_trabajo_grado;
+          
+          // Limpiar y validar director del trabajo de grado
+          const directorTrabajo = formValue.director_trabajo_grado?.trim();
+          if (directorTrabajo && directorTrabajo.length > 0) {
+            datosSolicitud.director_trabajo_grado = directorTrabajo;
           }
         }
 

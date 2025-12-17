@@ -74,7 +74,9 @@ export class DocumentGeneratorComponent implements OnInit {
   private initializeForm(): void {
     const formControls: any = {
       numeroDocumento: ['', [Validators.required, Validators.minLength(1)]],
-      fechaDocumento: [new Date().toISOString().split('T')[0], Validators.required]
+      // No inicializar con fecha por defecto - el usuario debe seleccionar la fecha
+      // Si no se selecciona, el backend usará la fecha actual
+      fechaDocumento: [null, Validators.required]
     };
 
     // Agregar campos opcionales si existen
@@ -112,7 +114,14 @@ export class DocumentGeneratorComponent implements OnInit {
       codigoEstudiante: this.solicitud.usuario?.codigo || this.solicitud.objUsuario?.codigo,
       programa: this.solicitud.usuario?.objPrograma?.nombre_programa || this.solicitud.objUsuario?.objPrograma?.nombre_programa,
       fechaSolicitud: this.solicitud.fecha || this.solicitud.fecha_registro_solicitud,
-      estado: estadoActual || 'Pendiente'
+      estado: estadoActual || 'Pendiente',
+      // Extraer campos de trabajo de grado si están disponibles (para Paz y Salvo)
+      tituloTrabajoGrado: this.solicitud.informacion_adicional?.titulo_trabajo_grado || 
+                         this.solicitud.titulo_trabajo_grado || 
+                         undefined,
+      directorTrabajoGrado: this.solicitud.informacion_adicional?.director_trabajo_grado || 
+                           this.solicitud.director_trabajo_grado || 
+                           undefined
     };
 
     // Datos de solicitud preparados
