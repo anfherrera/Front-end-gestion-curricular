@@ -130,11 +130,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err: any) => {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          url: err.url
-        });
         // Error al cargar cursos del backend
         this.cursos = [];
         
@@ -194,11 +189,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err: any) => {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          url: err.url
-        });
         // Mostrando lista vacía debido al error
         this.estudiantesFiltrados = [];
         this.cargando = false;
@@ -287,7 +277,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     const observaciones = "Inscripción aceptada por funcionario/coordinador";
     
     this.cursosService.aceptarInscripcion(estudiante.id_solicitud, observaciones).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         alert('Inscripción aceptada exitosamente');
         // Recargar la lista de estudiantes y estadísticas
         if (this.cursoSeleccionado) {
@@ -295,7 +285,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         this.manejarErrorInscripcion(error);
       }
     });
@@ -312,7 +302,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     // Usar el servicio para rechazar inscripción
     this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
         alert(`Inscripción rechazada exitosamente.\nMotivo: ${motivoRespuesta}`);
         
@@ -322,7 +312,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         this.manejarErrorInscripcion(error);
       }
     });

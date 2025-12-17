@@ -793,12 +793,6 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error: any) => {
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          message: error.message
-        });
-        
         // Si falla, intentar con períodos futuros como fallback
         this.cargarPeriodosFuturosFallback();
       }
@@ -902,13 +896,6 @@ export class CursoDialogComponent implements OnInit {
               this.dialogRef.close('guardado');
             },
             error: (err: any) => {
-                status: err.status,
-                statusText: err.statusText,
-                url: err.url,
-                error: err.error,
-                message: err.message
-              });
-              
               // Mostrar mensaje de error más específico
               let errorMessage = 'Error al actualizar el curso';
               if (err.error && err.error.message) {
@@ -1001,7 +988,7 @@ export class CursoDialogComponent implements OnInit {
               this.snackBar.open('Curso creado exitosamente', 'Cerrar', { duration: 3000 });
               this.dialogRef.close('guardado');
             },
-            error: (err) => {
+            error: (err: any) => {
               
               // Manejo específico de errores
               let errorMessage = 'Error al crear el curso';

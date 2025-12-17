@@ -18,7 +18,7 @@ export interface RechazoDialogData {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
