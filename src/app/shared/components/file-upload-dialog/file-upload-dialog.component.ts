@@ -157,7 +157,6 @@ export class FileUploadComponent implements OnChanges {
         }),
         tap({
           error: (error) => {
-            console.error(`Error al subir archivo ${archivo.nombre}:`, error);
             // Marcar el archivo como con error
             const index = this.archivos.findIndex(a => a.file === archivo.file);
             if (index !== -1) {
@@ -176,7 +175,6 @@ export class FileUploadComponent implements OnChanges {
           this.notificarCambio();
         },
         error: (error) => {
-          console.error('Error al subir archivos:', error);
           this.cargando = false;
           this.notificarCambio();
         }

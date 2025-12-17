@@ -385,7 +385,6 @@ export class EstadoFiltersComponent implements OnInit {
             this.cargandoFiltro = false;
           },
           error: (error) => {
-            console.error(`Error obteniendo cursos para estado "${estado}":`, error);
             // Fallback: filtrar localmente
             // Usando filtro local como fallback
             this.aplicarFiltro();
@@ -438,7 +437,6 @@ export class EstadoFiltersComponent implements OnInit {
             // Conteo actualizado para estado
           },
           error: (error) => {
-            console.warn(`No se pudo obtener conteo para estado "${estado.value}":`, error);
             // Mantener el conteo local
           }
         });
@@ -473,7 +471,6 @@ export class EstadoFiltersComponent implements OnInit {
 
   // Método para limpiar filtros
   limpiarFiltros(): void {
-    console.log('🧹 Limpiando filtros');
     this.estadoSeleccionado = '';
     this.estadoInfo = undefined;
     this.cargandoFiltro = false;

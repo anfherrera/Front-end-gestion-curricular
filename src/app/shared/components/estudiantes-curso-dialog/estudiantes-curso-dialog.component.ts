@@ -65,11 +65,9 @@ export class EstudiantesCursoDialogComponent implements OnInit {
       next: (respuesta) => {
         this.datos = respuesta;
         this.cargando = false;
-        console.log('✅ Estudiantes cargados:', respuesta);
       },
       error: (err) => {
         this.cargando = false;
-        console.error('❌ Error cargando estudiantes:', err);
         
         if (err.status === 403) {
           this.error = 'No tienes permisos para ver esta información';
@@ -124,7 +122,6 @@ export class EstudiantesCursoDialogComponent implements OnInit {
       return;
     }
 
-    console.log('📄 Exportando estudiantes del curso a PDF:', this.data.idCurso);
     
     this.cursosService.exportarEstudiantesPDF(this.data.idCurso).subscribe({
       next: (result) => {
@@ -144,7 +141,6 @@ export class EstudiantesCursoDialogComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('❌ Error exportando estudiantes a PDF:', err);
         let mensajeError = 'Error al exportar el PDF';
         
         if (err.status === 401) {

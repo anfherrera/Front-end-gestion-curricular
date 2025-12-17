@@ -190,7 +190,6 @@ export class EstudiantesKpiComponent implements OnInit, OnDestroy {
           this.loading = false;
         },
         error: (error) => {
-          console.error('Error al obtener total de estudiantes:', error);
           this.loading = false;
           this.error = true;
           this.totalEstudiantes = 0;

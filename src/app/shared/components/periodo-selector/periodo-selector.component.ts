@@ -102,7 +102,6 @@ export class PeriodoSelectorComponent implements OnInit {
           // Períodos registrados cargados
         },
         error: (error) => {
-          console.error('Error cargando períodos registrados:', error);
           this.cargando = false;
           // Fallback: cargar todos los períodos
           this.cargarTodosLosPeriodos();
@@ -122,7 +121,6 @@ export class PeriodoSelectorComponent implements OnInit {
         // Todos los períodos cargados
       },
       error: (error) => {
-        console.error('Error cargando todos los períodos:', error);
         this.cargando = false;
       }
     });

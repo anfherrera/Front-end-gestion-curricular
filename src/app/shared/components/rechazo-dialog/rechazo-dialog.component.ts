@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 👈 IMPORTANTE para usar [(ngModel)]
+import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -18,7 +18,7 @@ export interface RechazoDialogData {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, // 👈 AÑADIDO
+    FormsModule
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,

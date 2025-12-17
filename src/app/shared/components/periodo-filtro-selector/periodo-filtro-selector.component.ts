@@ -141,7 +141,6 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('Error cargando período actual:', error);
           this.periodoActualTexto = 'No disponible';
         }
       });
@@ -190,7 +189,6 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (error) => {
-        console.error('Error cargando períodos:', error);
         this.cargando = false;
       }
     });

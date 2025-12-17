@@ -27,17 +27,17 @@ import { FechaPipe } from '../../pipes/fecha.pipe';
 })
 export class RequestStatusTableComponent implements OnInit {
   @Input() solicitudes: Solicitud[] = [];
-  @Input() showOficio: boolean = true; // 👈 controla si se muestra la columna
-  @Input() showComentarios: boolean = false; // 👈 controla si se muestra la columna de comentarios
-  @Input() showSeleccionar: boolean = false; // 👈 controla si se muestra la columna de seleccionar
-  @Input() headerAcciones: string = 'Oficio/Resolución'; // 👈 texto personalizable para el header de acciones
-  @Output() verComentarios = new EventEmitter<number>(); // 👈 emite el ID de la solicitud
-  @Output() solicitudSeleccionada = new EventEmitter<number | null>(); // 👈 emite el ID de la solicitud seleccionada
-  @Output() descargarOficio = new EventEmitter<{id: number, nombreArchivo: string}>(); // 👈 emite datos para descargar oficio
-  @Output() mostrarInfoPreregistro = new EventEmitter<void>(); // 👈 emite evento para mostrar información de pre-registro
+  @Input() showOficio: boolean = true;
+  @Input() showComentarios: boolean = false;
+  @Input() showSeleccionar: boolean = false;
+  @Input() headerAcciones: string = 'Oficio/Resolución';
+  @Output() verComentarios = new EventEmitter<number>();
+  @Output() solicitudSeleccionada = new EventEmitter<number | null>();
+  @Output() descargarOficio = new EventEmitter<{id: number, nombreArchivo: string}>();
+  @Output() mostrarInfoPreregistro = new EventEmitter<void>();
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
-  selectedSolicitudId: number | null = null; // 👈 rastrear solicitud seleccionada
+  selectedSolicitudId: number | null = null;
 
   ngOnInit() {
     if (this.showOficio) {

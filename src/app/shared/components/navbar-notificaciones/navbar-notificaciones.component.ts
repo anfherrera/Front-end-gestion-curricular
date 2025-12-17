@@ -56,7 +56,6 @@ export class NavbarNotificacionesComponent implements OnInit {
           this.contadorNoLeidas = count;
         },
         error: (error) => {
-          console.error('Error al contar notificaciones:', error);
         }
       });
   }

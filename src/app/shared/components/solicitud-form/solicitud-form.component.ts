@@ -74,14 +74,12 @@ export class SolicitudFormComponent implements OnInit {
   onFileSelected(event: Event, fieldName: string): void {
     const input = event.target as HTMLInputElement;
     if (input?.files?.length) {
-      console.log(`Archivo seleccionado para ${fieldName}:`, input.files[0]);
       this.form.patchValue({ [fieldName]: input.files[0] });
     }
   }
 
   onSubmit(): void {
     if (this.form.valid) {
-      console.log('Datos enviados:', this.form.value);
     }
   }
 }

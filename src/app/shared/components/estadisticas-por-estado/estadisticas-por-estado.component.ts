@@ -446,17 +446,15 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
         next: (response: EstadoSolicitudesResponse) => {
           
           // Procesar datos desde el endpoint de estado de solicitudes
-          // ACTUALIZADO: El backend ahora usa resumenPorEstado en lugar de estados
           const estados = response.resumenPorEstado || response.estados || {};
-          // ACTUALIZADO: Usar totalSolicitudes del nivel raíz según la guía actualizada
           this.totalSolicitudes = response.totalSolicitudes || 0;
           this.fechaConsulta = response.fechaConsulta || new Date().toISOString();
           
-          // ACTUALIZADO: Siempre mostrar los 4 estados principales, incluso con cantidad 0
+          // Siempre mostrar los 4 estados principales, incluso con cantidad 0
           // El backend ahora siempre devuelve: APROBADA, ENVIADA, EN_PROCESO, RECHAZADA
           const estadosPrincipales = ['APROBADA', 'ENVIADA', 'EN_PROCESO', 'RECHAZADA'];
           
-          // ACTUALIZADO: Usar el nuevo estado EN_PROCESO (combinado) en lugar de APROBADA_FUNCIONARIO y APROBADA_COORDINADOR
+          // Usar el nuevo estado EN_PROCESO (combinado) en lugar de APROBADA_FUNCIONARIO y APROBADA_COORDINADOR
           this.estadosData = estadosPrincipales.map(estadoKey => {
             const estado = estados[estadoKey];
             
@@ -483,7 +481,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
             };
           });
           
-          // ACTUALIZADO: Crear datos de análisis usando los estados principales
+          // Crear datos de análisis usando los estados principales
           // Usar tasaResolucion del nivel raíz si está disponible, sino calcular
           const tasaResolucion = response.tasaResolucion ?? (response.analisis?.tasaResolucion ?? (this.totalSolicitudes > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes) * 100 : 0));
           const analisis = response.analisis;

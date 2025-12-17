@@ -23,7 +23,6 @@ export class ErrorHandlerService {
    * Maneja errores específicos del backend de cursos intersemestrales
    */
   handleCursoError(error: any, operacion: string = 'operación'): void {
-    console.error('Error en cursos intersemestrales:', error);
 
     let mensaje = 'Ha ocurrido un error inesperado';
     let tipoError: 'error' | 'warning' = 'error';
@@ -119,7 +118,7 @@ export class ErrorHandlerService {
     }
 
     // Mensaje genérico con contexto
-    return `❌ ${mensaje}`;
+    return mensaje;
   }
 
   /**
@@ -184,7 +183,6 @@ export class ErrorHandlerService {
    * Maneja errores de cambio de estado con validaciones específicas
    */
   handleCambioEstadoError(error: any, estadoActual: string, nuevoEstado: string): void {
-    console.error('Error cambiando estado:', error);
 
     let mensaje = 'No se pudo cambiar el estado del curso';
 
@@ -208,7 +206,6 @@ export class ErrorHandlerService {
    * Maneja errores de permisos
    */
   handlePermisoError(error: any, estado: string, rol: string, operacion: string): void {
-    console.error('Error de permisos:', error);
 
     let mensaje = 'No tienes permisos para realizar esta acción';
 

@@ -328,13 +328,6 @@ export class ComentariosDialogComponent {
     public dialogRef: MatDialogRef<ComentariosDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ComentariosDialogData
   ) {
-    // Log para debugging
-    // Datos recibidos en el diálogo
-    console.log('  - Título:', this.data.titulo);
-    console.log('  - Documentos:', this.data.documentos);
-    console.log('  - Comentario de rechazo:', this.data.comentarioRechazo);
-    console.log('  - ¿Tiene comentario de rechazo?:', !!this.data.comentarioRechazo);
-    console.log('  - ¿Comentario de rechazo no vacío?:', this.data.comentarioRechazo && this.data.comentarioRechazo.trim().length > 0);
   }
 
   /**

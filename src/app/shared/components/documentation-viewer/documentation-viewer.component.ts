@@ -67,7 +67,7 @@ export class DocumentationViewerComponent implements OnInit {
   }
 
   /**
-   * CORREGIDO: Ver documento usando endpoint genérico (igual que homologación)
+   * Ver documento usando endpoint genérico
    * Ahora intenta usar ID del documento primero, luego ruta, y finalmente nombre como fallback
    */
   verDocumento(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
@@ -77,7 +77,6 @@ export class DocumentationViewerComponent implements OnInit {
     this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
 
     if (!this.servicio) {
-      console.error('Servicio no disponible');
       this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
       return;
     }
@@ -92,7 +91,6 @@ export class DocumentationViewerComponent implements OnInit {
           this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
         },
         error: (error: any) => {
-          console.warn('Error al descargar por ID, intentando por ruta...', error);
           // Intentar por ruta como fallback
           this.intentarDescargaPorRuta(documento);
         }
@@ -109,7 +107,6 @@ export class DocumentationViewerComponent implements OnInit {
           this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
         },
         error: (error: any) => {
-          console.warn('Error al descargar por ruta, intentando por nombre...', error);
           // Intentar por nombre como último recurso
           this.intentarDescargaPorNombre(documento);
         }
@@ -137,7 +134,6 @@ export class DocumentationViewerComponent implements OnInit {
         this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
       },
       error: (error: any) => {
-        console.error('Error al descargar por ruta:', error);
         this.intentarDescargaPorNombre(documento);
       }
     });
@@ -148,13 +144,11 @@ export class DocumentationViewerComponent implements OnInit {
    */
   private intentarDescargaPorNombre(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
     if (!documento.nombre) {
-      console.error('No hay nombre de archivo disponible');
       this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', { duration: 3000 });
       return;
     }
 
     if (!this.servicio?.descargarArchivo) {
-      console.error('Método descargarArchivo no disponible');
       this.snackBar.open('Error: Método de descarga no disponible', 'Cerrar', { duration: 3000 });
       return;
     }
@@ -166,7 +160,6 @@ export class DocumentationViewerComponent implements OnInit {
         this.mostrarDocumentoEnVentana(blob, documento.nombre);
       },
       error: (error: any) => {
-        console.error('Error al descargar documento por nombre:', error);
         const errorMessage = error.status === 404 
           ? 'El archivo no se encontró en el servidor. Verifique que el documento existe.'
           : (error.error?.message || error.message || 'Error desconocido');
@@ -235,7 +228,7 @@ export class DocumentationViewerComponent implements OnInit {
 
     // Mostrando comentarios
     
-    // CORREGIDO: Mostrar comentarios en un diálogo
+    // Mostrar comentarios en un diálogo
     const comentario = documento.comentario.trim();
 
     this.dialog.open(ComentarioDialogComponent, {
@@ -282,13 +275,12 @@ export class DocumentationViewerComponent implements OnInit {
   }
 
   /**
-   * CORREGIDO: Agregar comentario usando endpoint genérico (igual que homologación)
+   * Agregar comentario usando endpoint genérico
    */
   agregarComentario(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
     // agregarComentario() llamado
     
     if (!documento.id_documento) {
-      console.error('No hay ID de documento disponible');
       this.snackBar.open('No hay ID de documento disponible', 'Cerrar', { duration: 3000 });
       return;
     }
@@ -317,12 +309,11 @@ export class DocumentationViewerComponent implements OnInit {
         return;
       }
 
-      console.log('💬 Comentario a agregar usando endpoint genérico:', comentario.trim());
 
       // Mostrar mensaje de carga
       this.snackBar.open('Agregando comentario...', 'Cerrar', { duration: 2000 });
 
-      // CORREGIDO: Usar el servicio con endpoint genérico
+      // Usar el servicio con endpoint genérico
       if (this.servicio && this.servicio.agregarComentario) {
         this.servicio.agregarComentario(documento.id_documento, comentario.trim()).subscribe({
           next: (result: any) => {
@@ -335,12 +326,10 @@ export class DocumentationViewerComponent implements OnInit {
             });
           },
           error: (error: any) => {
-            console.error('Error al agregar comentario:', error);
             this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
           }
         });
       } else {
-        console.error('Servicio no disponible o método agregarComentario no existe');
         this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
       }
     });

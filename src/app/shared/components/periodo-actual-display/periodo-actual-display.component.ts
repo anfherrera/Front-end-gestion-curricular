@@ -119,7 +119,6 @@ export class PeriodoActualDisplayComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('Error obteniendo período actual:', error);
       }
     });
   }

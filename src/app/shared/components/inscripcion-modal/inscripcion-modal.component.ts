@@ -57,17 +57,6 @@ export class InscripcionModalComponent implements OnInit {
       const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || this.usuario.documento || '';
       
       // Campos extraídos
-      // Valores individuales
-      console.log('Valores individuales', {
-        'usuario.nombre_completo': this.usuario.nombre_completo,
-        'usuario.nombreCompleto': this.usuario.nombreCompleto,
-        'usuario.nombres': this.usuario.nombres,
-        'usuario.nombre': this.usuario.nombre,
-        'usuario.first_name': this.usuario.first_name,
-        'usuario.apellidos': this.usuario.apellidos,
-        'usuario.apellido': this.usuario.apellido,
-        'usuario.last_name': this.usuario.last_name
-      });
       
       this.inscripcionForm.patchValue({
         nombreCompleto: nombreCompleto || 'Usuario no identificado',
@@ -102,13 +91,6 @@ export class InscripcionModalComponent implements OnInit {
       
       // Validar tamaño (máximo 15MB temporalmente)
       const maxSize = 15 * 1024 * 1024; // 15MB en bytes (temporalmente aumentado)
-      // Validación de tamaño
-      console.log('Validación de tamaño', {
-        fileSize: file.size,
-        maxSize: maxSize,
-        fileSizeKB: (file.size / 1024).toFixed(2) + ' KB',
-        fileSizeMB: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
-      });
       
       if (file.size > maxSize) {
         // Archivo muy grande
@@ -183,22 +165,14 @@ export class InscripcionModalComponent implements OnInit {
     
     // Payload completo
     
-    // DIAGNÓSTICO COMPLETO: Verificar estado real en backend
-    // DIAGNÓSTICO COMPLETO - Verificando estado real en la base de datos
-    
     // Realizar diagnóstico completo antes de proceder
     this.realizarDiagnosticoCompleto();
   }
 
   private realizarDiagnosticoCompleto(): void {
-    // DIAGNÓSTICO PASO 1: Verificando preinscripciones del usuario en el curso
-    
     // Verificar todas las preinscripciones del usuario y filtrar por curso
     this.cursosService.getPreinscripcionesUsuario(this.usuario.id_usuario).subscribe({
       next: (todasPreinscripciones) => {
-        // RESULTADO DIAGNÓSTICO - Todas las preinscripciones del usuario
-        // Cantidad total de preinscripciones
-        
         // Filtrar preinscripciones para este curso específico
         const preinscripciones = todasPreinscripciones?.filter((p: any) => 
           p.id_curso === this.data.preinscripcion.cursoId || 
@@ -206,45 +180,20 @@ export class InscripcionModalComponent implements OnInit {
           p.objCurso?.id_curso === this.data.preinscripcion.cursoId
         ) || [];
         
-        // Preinscripciones filtradas para este curso
-        // Cantidad de preinscripciones para este curso
-        
         if (preinscripciones && preinscripciones.length > 0) {
-          preinscripciones.forEach((p: any, index: number) => {
-            // Preinscripción
-            console.log('Preinscripción', {
-              id: p.id,
-              id_solicitud: p.id_solicitud,
-              estado: p.estado,
-              id_usuario: p.id_usuario,
-              id_curso: p.id_curso,
-              fecha: p.fecha,
-              usuarioId: p.usuarioId,
-              cursoId: p.cursoId,
-              objUsuario: p.objUsuario,
-              objCurso: p.objCurso
-            });
-            // Preinscripción - Objeto completo
-          });
-          
           // Buscar una preinscripción aprobada
           const preinscripcionAprobada = preinscripciones.find((p: any) => p.estado === 'Aprobado');
           
           if (preinscripcionAprobada) {
-            // DIAGNÓSTICO: Se encontró preinscripción aprobada, procediendo a crear inscripción
             this.crearInscripcionDirecta();
           } else {
-            // DIAGNÓSTICO: No hay preinscripción aprobada, pero hay preinscripciones existentes
-            // Estados encontrados
             this.procesarPreinscripcionesExistentes(preinscripciones);
           }
         } else {
-          // DIAGNÓSTICO: No se encontraron preinscripciones para este usuario en este curso
           this.crearNuevaPreinscripcion();
         }
       },
       error: (error) => {
-        console.error('Error en diagnóstico de preinscripciones:', error);
         // Continuando con flujo alternativo
         this.crearNuevaPreinscripcion();
       }
@@ -252,16 +201,12 @@ export class InscripcionModalComponent implements OnInit {
   }
 
   private procesarPreinscripcionesExistentes(preinscripciones: any[]): void {
-    // DIAGNÓSTICO PASO 2: Procesando preinscripciones existentes
-    
     // Buscar la preinscripción más reciente
     const preinscripcionMasReciente = preinscripciones.reduce((latest, current) => {
       const latestDate = new Date(latest.fecha || latest.createdAt || 0);
       const currentDate = new Date(current.fecha || current.createdAt || 0);
       return currentDate > latestDate ? current : latest;
     });
-    
-    // Preinscripción más reciente
     
     // Intentar aprobar la preinscripción más reciente
     if (preinscripcionMasReciente.id_solicitud || preinscripcionMasReciente.id) {
@@ -275,8 +220,6 @@ export class InscripcionModalComponent implements OnInit {
   }
 
   private crearNuevaPreinscripcion(): void {
-    // DIAGNÓSTICO PASO 3: Creando nueva preinscripción
-    
     // Obtener nombre completo del usuario
     const nombreCompleto = this.usuario?.nombre_completo || 
                           this.usuario?.nombre || 
@@ -290,17 +233,12 @@ export class InscripcionModalComponent implements OnInit {
       condicion: 'Primera_Vez' // Valor por defecto
     };
 
-    // Creando preinscripción con payload
-
     this.cursosService.crearPreinscripcion(preinscripcionPayload).subscribe({
       next: (preinscripcion) => {
-        // Preinscripción creada
-        
         // Ahora aprobar la preinscripción
         this.aprobarPreinscripcion(preinscripcion.id_solicitud);
       },
       error: (error) => {
-        console.error('Error creando preinscripción:', error);
         this.cargando = false;
         this.snackBar.open(
           'Error al crear la preinscripción. Por favor, inténtalo de nuevo.',
@@ -312,17 +250,12 @@ export class InscripcionModalComponent implements OnInit {
   }
 
   private aprobarPreinscripcion(preinscripcionId: number): void {
-    // DIAGNÓSTICO PASO 4: Aprobando preinscripción
-    
     this.cursosService.aprobarPreinscripcion(preinscripcionId).subscribe({
       next: (response) => {
-        // Preinscripción aprobada
-        
         // Ahora crear la inscripción
         this.crearInscripcionDirecta();
       },
       error: (error) => {
-        console.error('Error aprobando preinscripción:', error);
         this.cargando = false;
         this.snackBar.open(
           'Error al aprobar la preinscripción. Por favor, inténtalo de nuevo.',
@@ -334,8 +267,6 @@ export class InscripcionModalComponent implements OnInit {
   }
 
   private crearInscripcionDirecta(): void {
-    // DIAGNÓSTICO PASO 5: Creando inscripción
-    
     // Obtener nombre completo del usuario
     const nombreCompleto = this.usuario?.nombre_completo || 
                           this.usuario?.nombre || 
@@ -348,34 +279,12 @@ export class InscripcionModalComponent implements OnInit {
       nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`
     };
     
-    // Creando inscripción con payload
-    // DEBUG - Verificando preinscripción antes de crear inscripción
-    // DEBUG - Usuario ID
-    // DEBUG - Curso ID
-    // DEBUG - Estado preinscripción
-    
-    // TEMPORAL: Intentar crear inscripción directamente
-    // INTENTANDO CREAR INSCRIPCIÓN DIRECTO
-    
     this.cursosService.crearInscripcion(inscripcionPayload).subscribe({
       next: (inscripcion) => {
-        // Inscripción creada
-        
         // Subir el archivo PDF
         this.subirArchivo(inscripcion.id_solicitud);
       },
       error: (error) => {
-        console.error('Error creando inscripción:', error);
-        
-        // Mostrar detalles completos del error
-        console.error('ERROR COMPLETO - Detalles', {
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          error_body: error.error,
-          error_message: error.error?.message || error.error?.error || 'Sin mensaje específico',
-          error_code: error.error?.codigo || 'Sin código específico'
-        });
         
         this.cargando = false;
         
@@ -426,7 +335,6 @@ export class InscripcionModalComponent implements OnInit {
         this.dialogRef.close(true); // Cerrar modal con éxito
       },
       error: (error) => {
-        console.error('Error subiendo comprobante de pago:', error);
         
         // Actualizar notificaciones incluso si falla la subida del archivo (la inscripción ya se creó)
         if (this.usuario?.id_usuario) {
