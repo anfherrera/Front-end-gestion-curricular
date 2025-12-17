@@ -115,7 +115,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       proceso: [''],
       idPrograma: [''], // Cambiado de 'programa' a 'idPrograma'
       periodoAcademico: [''] // Campo para período académico
-      // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
     });
     
     this.inicializarDatos();
@@ -141,7 +140,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga los datos del dashboard con filtros opcionales
-   * ACTUALIZADO: Usa getResumenCompleto cuando hay filtros de período académico o programa
+   * Usa getResumenCompleto cuando hay filtros de período académico o programa
    */
   cargarDatos(filtros: FiltroEstadisticas = {}): void {
     this.loading = true;
@@ -250,7 +249,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos usando endpoints alternativos cuando /estadisticas/globales falla
-   * ACTUALIZADO: Pasa los filtros a todos los endpoints
+   * Pasa los filtros a todos los endpoints
    */
   private cargarDatosConEndpointsAlternativos(filtros: FiltroEstadisticas = {}): void {
     
@@ -493,7 +492,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           
-          // FALLBACK: Usar valores reales si el endpoint falla
+          // Usar valores reales si el endpoint falla
           const datosFallback = {
             totalSolicitudes: 50,
             estados: {
@@ -760,7 +759,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   /**
    * Carga datos reales del backend para el gráfico de procesos
    * Usa el endpoint /api/estadisticas/estadisticas-por-proceso
-   * ACTUALIZADO: Pasa los filtros del dashboard
+   * Pasa los filtros del dashboard
    */
   private async cargarDatosRealesProcesos(): Promise<any> {
     try {
@@ -806,7 +805,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos reales del backend para el gráfico de tendencia
-   * ACTUALIZADO: Pasa los filtros del dashboard
+   * Pasa los filtros del dashboard
    */
   private async cargarDatosRealesTendencia(): Promise<any> {
     try {
@@ -1697,7 +1696,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   /**
    * Actualiza los gráficos con los nuevos datos filtrados
-   * ACTUALIZADO: Recrea los gráficos cuando cambian los filtros para mostrar datos correctos
+   * Recrea los gráficos cuando cambian los filtros para mostrar datos correctos
    */
   private actualizarCharts(): void {
     // Si los gráficos no existen, crearlos

@@ -87,7 +87,6 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
           this.cargandoEstadisticas = false;
         },
         error: (error: any) => {
-          console.error('Error cargando estadísticas del dashboard:', error);
           // Mantener valores por defecto (ya inicializados en 0)
           this.cargandoEstadisticas = false;
         }
@@ -106,7 +105,6 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
           this.calcularEstadisticasCursos(cursos);
         },
         error: (error) => {
-          console.error('Error cargando cursos activos:', error);
         }
       });
   }
@@ -157,7 +155,6 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
       }
       return this.fechasFormateadas.get(key)!;
     } catch (error) {
-      console.warn('Error formateando fecha:', fecha, error);
       return 'N/A';
     }
   }

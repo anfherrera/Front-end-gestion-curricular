@@ -59,10 +59,9 @@ export class PazSalvoComponent implements OnInit {
    * Cargar solicitudes pendientes para funcionario (estado ENVIADA)
    */
   cargarSolicitudesPendientes(): void {
-    // IGUAL QUE HOMOLOGACIÓN: Usar método directo getPendingRequests()
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
-        // Transformar datos para RequestStatusTableComponent (igual que homologación)
+        // Transformar datos para RequestStatusTableComponent
         this.solicitudes = sols.map(sol => ({
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
@@ -71,7 +70,6 @@ export class PazSalvoComponent implements OnInit {
           rutaArchivo: '',
           comentarios: ''
         }));
-        // CORREGIDO: No seleccionar automáticamente la primera solicitud
         // Los documentos solo se mostrarán cuando el usuario seleccione manualmente
       },
       error: (err) => {
@@ -108,7 +106,6 @@ export class PazSalvoComponent implements OnInit {
       return;
     }
 
-    // IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getPendingRequests().subscribe({
       next: (sols) => {
@@ -281,7 +278,6 @@ export class PazSalvoComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((motivo: string) => {
       if (motivo) {
-        // Actualizar estado de la solicitud (igual que homologación)
         this.pazSalvoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
           next: () => {
             // Actualizar estado de los documentos

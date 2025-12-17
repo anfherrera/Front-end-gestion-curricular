@@ -728,7 +728,6 @@ export class CursoDialogComponent implements OnInit {
   // Método para manejar la selección del docente
   onDocenteSelected(event: any): void {
     const selectedId = event.value;
-    // Log de depuración (comentado para producción)
     
     // Buscar el docente seleccionado en la lista
     const docenteSeleccionado = this.data.docentes?.find(d => 
@@ -737,7 +736,6 @@ export class CursoDialogComponent implements OnInit {
     );
     
     if (docenteSeleccionado) {
-      // Log de depuración (comentado para producción)
       
       // Asegurarse de que se use id_docente si está disponible
       const idFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
@@ -795,7 +793,6 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error: any) => {
-        console.error('Error al cargar períodos recientes:', {
           status: error.status,
           statusText: error.statusText,
           url: error.url,
@@ -895,7 +892,6 @@ export class CursoDialogComponent implements OnInit {
           updateData.espacio_asignado = formData.espacio_asignado;
         }
         
-        // Log de depuración (comentado para producción)
         // Código de depuración removido
 
         this.cursosService.actualizarCurso(this.data.cursoEditando!.id_curso, updateData)
@@ -906,7 +902,6 @@ export class CursoDialogComponent implements OnInit {
               this.dialogRef.close('guardado');
             },
             error: (err: any) => {
-              console.error('Error al actualizar curso:', {
                 status: err.status,
                 statusText: err.statusText,
                 url: err.url,

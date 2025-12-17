@@ -260,7 +260,6 @@ export class VisualizarSolicitudesComponent implements OnInit {
 
   // Manejar cambio de período académico
   onPeriodoChange(periodo: string): void {
-    console.log('🔄 Cambio de período detectado:', periodo);
     this.periodoFiltro = periodo;
     // Recargar desde el backend con el nuevo filtro
     this.cargarSolicitudes();
@@ -299,7 +298,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
     }
   }
 
-  // 🆕 Método para obtener el texto del estado
+  // Método para obtener el texto del estado
   getEstadoTexto(estado: string): string {
     switch (estado?.toUpperCase()) {
       case 'ENVIADA':
@@ -317,7 +316,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
     }
   }
 
-  // 🆕 Método para obtener la clase CSS del estado
+  // Método para obtener la clase CSS del estado
   getEstadoClass(estado: string): string {
     switch (estado?.toUpperCase()) {
       case 'ENVIADA':
@@ -349,7 +348,6 @@ export class VisualizarSolicitudesComponent implements OnInit {
       ? this.filtroForm.value.materia
       : undefined;
     
-    console.log('📄 Exportando solicitudes con filtros:', { periodo: periodoParam, idCurso });
     
     this.cursosService.exportarSolicitudesExcel(periodoParam, idCurso).subscribe({
       next: (response: { blob: Blob; filename?: string }) => {
@@ -360,7 +358,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
         // Descargar el archivo
         descargarBlob(response.blob, nombreArchivo);
         
-        this.snackBar.open('✅ Excel descargado exitosamente', 'Cerrar', {
+        this.snackBar.open('Excel descargado exitosamente', 'Cerrar', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
@@ -368,7 +366,6 @@ export class VisualizarSolicitudesComponent implements OnInit {
         this.exportando = false;
       },
       error: (error: any) => {
-        console.error('❌ Error al exportar solicitudes a Excel:', error);
         
         let mensajeError = 'Error al exportar las solicitudes. Por favor, intente nuevamente.';
         if (error.error instanceof Blob) {
@@ -380,14 +377,14 @@ export class VisualizarSolicitudesComponent implements OnInit {
             } catch {
               // Si no se puede parsear, usar el mensaje por defecto
             }
-            this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', {
+            this.snackBar.open(`${mensajeError}`, 'Cerrar', {
               duration: 5000,
               panelClass: ['error-snackbar']
             });
           });
         } else {
           mensajeError = error.message || mensajeError;
-          this.snackBar.open(`❌ ${mensajeError}`, 'Cerrar', {
+          this.snackBar.open(`${mensajeError}`, 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
           });

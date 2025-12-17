@@ -74,10 +74,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
    * Cargar solicitudes pendientes para secretaría (estado APROBADA_COORDINADOR)
    */
   cargarSolicitudesPendientes(): void {
-    // IGUAL QUE HOMOLOGACIÓN: Usar método directo getSecretariaRequests()
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
-        // CORREGIDO: Filtrar solicitudes con estado APROBADA_COORDINADOR (igual que Homologación)
         // El backend YA filtra por estado, así que mostramos TODAS las que llegan
         const solicitudesFiltradas = sols;
 
@@ -202,7 +200,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Limpiar estado anterior antes de seleccionar nueva solicitud
     this.limpiarEstado();
 
-    // IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getSecretariaRequests().subscribe({
       next: (sols) => {
@@ -217,10 +214,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
-   * Maneja el clic en "Tengo un documento"
-   */
-  /**
-   * 🆕 Cargar documentos usando el nuevo endpoint para secretaria
+   * Cargar documentos usando el endpoint para secretaria
    */
   cargarDocumentos(idSolicitud: number): void {
     const endpoint = `/api/solicitudes-pazysalvo/obtenerOficios/${idSolicitud}`;
@@ -260,7 +254,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
   /**
    * Generar documento usando el componente genérico
-   * IGUAL QUE HOMOLOGACIÓN: NO actualiza el estado aquí, solo genera el documento
    */
   onGenerarDocumento(request: DocumentRequest): void {
     if (!this.selectedSolicitud) return;
@@ -365,7 +358,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
   /**
    * Enviar documento (unifica subir PDF y enviar al estudiante)
-   * IGUAL QUE HOMOLOGACIÓN: Sube el PDF y LUEGO actualiza el estado
    */
   enviarDocumento(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {

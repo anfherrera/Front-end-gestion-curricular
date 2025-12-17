@@ -94,7 +94,6 @@ export class PazSalvoCoordinadorComponent implements OnInit {
       return;
     }
     
-    // IGUAL QUE HOMOLOGACIÓN: Usar método directo
     // Buscar la solicitud original por ID
     this.pazSalvoService.getCoordinatorRequests().subscribe({
       next: (sols) => {
@@ -109,7 +108,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
   }
 
   /**
-   * 🆕 Cargar documentos usando el nuevo endpoint para coordinadores
+   * Cargar documentos usando el endpoint para coordinadores
    */
   cargarDocumentos(idSolicitud: number): void {
     const endpoint = `/api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/${idSolicitud}`;

@@ -616,7 +616,6 @@ export class DetallesInscripcionDialogComponent {
             window.URL.revokeObjectURL(downloadUrl);
             document.body.removeChild(a);
             
-            console.log('✅ Archivo descargado exitosamente');
             alert('Comprobante descargado exitosamente');
           } else {
             alert('Error: El archivo PDF está vacío o corrupto');

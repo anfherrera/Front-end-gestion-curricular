@@ -107,18 +107,15 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarCursos(): void {
     this.cargando = true;
-    console.log('🔄 Cargando cursos para preinscripción...');
     
     // Usar getCursosPorEstado para obtener cursos en estado "Preinscripción"
     // Sin período para mostrar TODOS los cursos de preinscripción
     this.cursosService.getCursosPorEstado('Preinscripción').subscribe({
       next: (cursos) => {
         this.cursos = cursos;
-        console.log('✅ Cursos de preinscripción cargados:', cursos);
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando cursos:', err);
         this.cursos = [];
         this.cargando = false;
         this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', { 
@@ -131,13 +128,11 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarSolicitudesPorCurso(cursoId: number): void {
     this.cargando = true;
-    console.log(`🔄 Cargando información del curso ID: ${cursoId}`);
     
     // Cargar información actualizada del curso específico
     this.cursosService.getCursoPorId(cursoId).subscribe({
       next: (curso) => {
         this.cursoSeleccionado = curso;
-        console.log('✅ Información del curso cargada:', curso);
         
         // Ahora cargar las preinscripciones para este curso
         this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
@@ -151,16 +146,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
             
             this.solicitudes = solicitudes;
             this.solicitudesFiltradas = this.solicitudes;
-            console.log('✅ Preinscripciones cargadas:', this.solicitudes);
-            console.log('🔍 DEBUG - Primera solicitud completa:', this.solicitudes[0]);
-            if (this.solicitudes[0]) {
-              console.log('🔍 DEBUG - Campos disponibles:', Object.keys(this.solicitudes[0]));
-              console.log('🔍 DEBUG - ID de primera solicitud:', this.solicitudes[0].id_solicitud);
-            }
             this.cargando = false;
           },
           error: (err) => {
-            console.error('❌ Error cargando preinscripciones:', err);
             this.solicitudesFiltradas = [];
             this.cargando = false;
             this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', { 
@@ -171,7 +159,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         });
       },
       error: (err) => {
-        console.error('❌ Error cargando información del curso:', err);
         // Fallback: buscar el curso en la lista local
         this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
         
@@ -189,16 +176,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
             
             this.solicitudes = solicitudes;
             this.solicitudesFiltradas = this.solicitudes;
-            console.log('✅ Preinscripciones cargadas (sin info del curso):', this.solicitudes);
-            console.log('🔍 DEBUG - Primera solicitud completa (fallback):', this.solicitudes[0]);
-            if (this.solicitudes[0]) {
-              console.log('🔍 DEBUG - Campos disponibles (fallback):', Object.keys(this.solicitudes[0]));
-              console.log('🔍 DEBUG - ID de primera solicitud (fallback):', this.solicitudes[0].id_solicitud);
-            }
             this.cargando = false;
           },
           error: (err) => {
-            console.error('❌ Error cargando preinscripciones:', err);
             this.solicitudesFiltradas = [];
             this.cargando = false;
             this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', { 
@@ -212,9 +192,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   verDetalles(solicitud: SolicitudCursoVerano): void {
-    // ✅ Usar el campo correcto del ID
     const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
-    console.log(`👁️ Abriendo modal de detalles para preinscripción ${idSolicitud}`);
     
     this.solicitudSeleccionada = solicitud;
     this.observacionForm.patchValue({
@@ -236,7 +214,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.observaciones !== undefined) {
-        // ✅ Usar el campo correcto del ID
         const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
         this.actualizarObservaciones(idSolicitud, result.observaciones);
       }
@@ -244,11 +221,8 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   actualizarObservaciones(idSolicitud: number, observaciones: string): void {
-    console.log('🔍 DEBUG - ID de solicitud para observaciones:', idSolicitud);
-    console.log('🔍 DEBUG - Observaciones:', observaciones);
     
     if (!idSolicitud) {
-      console.error('❌ ERROR: ID de solicitud es undefined para observaciones');
       this.snackBar.open('Error: No se pudo identificar la preinscripción para guardar observaciones', 'Cerrar', { 
         duration: 3000,
         panelClass: ['error-snackbar']
@@ -256,11 +230,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       return;
     }
     
-    console.log(`🔄 Actualizando observaciones para preinscripción ${idSolicitud}`);
     
     this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).subscribe({
       next: (response) => {
-        console.log('✅ Observaciones actualizadas:', response);
         
         // Actualizar localmente usando el ID correcto
         const index = this.solicitudesFiltradas.findIndex(s => {
@@ -277,7 +249,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         });
       },
       error: (err) => {
-        console.error('❌ Error actualizando observaciones:', err);
         this.snackBar.open('Error al guardar las observaciones', 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
@@ -287,16 +258,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   aprobarSolicitud(solicitud: SolicitudCursoVerano): void {
-    console.log('🔍 DEBUG - Objeto solicitud completo:', solicitud);
-    console.log('🔍 DEBUG - Campos disponibles:', Object.keys(solicitud));
-    
-    // ✅ Usar el campo correcto del ID (id_solicitud o id_preinscripcion)
     const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
-    console.log('🔍 DEBUG - ID encontrado:', idSolicitud);
-    console.log('🔍 DEBUG - Tipo de ID:', typeof idSolicitud);
     
     if (!idSolicitud) {
-      console.error('❌ ERROR: No se encontró ID de la solicitud');
       this.snackBar.open('Error: No se pudo identificar la preinscripción', 'Cerrar', { 
         duration: 3000,
         panelClass: ['error-snackbar']
@@ -304,11 +268,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       return;
     }
     
-    console.log(`✅ Aprobando preinscripción ${idSolicitud}`);
     
     this.cursosService.aprobarPreinscripcion(idSolicitud).subscribe({
       next: (response) => {
-        console.log('✅ Preinscripción aprobada:', response);
         
         // Actualizar estado localmente usando el ID correcto
         const index = this.solicitudesFiltradas.findIndex(s => {
@@ -325,11 +287,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         });
       },
       error: (err) => {
-        console.error('❌ Error aprobando preinscripción:', err);
-        console.error('🔍 DEBUG - Status:', err.status);
-        console.error('🔍 DEBUG - Status Text:', err.statusText);
-        console.error('🔍 DEBUG - Error Body:', err.error);
-        console.error('🔍 DEBUG - Full Error:', JSON.stringify(err, null, 2));
         
         let errorMessage = 'Error al aprobar la preinscripción';
         
@@ -345,7 +302,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para aprobar la preinscripción';
         }
         
-        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+        this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -354,17 +311,13 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   rechazarSolicitud(solicitud: SolicitudCursoVerano): void {
-    // ✅ Usar el campo correcto del ID
     const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
-    console.log(`❌ Abriendo modal de rechazo para preinscripción ${idSolicitud}`);
     
     // Abrir modal para solicitar motivo de rechazo
     this.abrirModalRechazo(solicitud);
   }
 
   abrirModalRechazo(solicitud: SolicitudCursoVerano): void {
-    console.log('❌ Abriendo diálogo de rechazo para preinscripción:', solicitud);
-    console.log('🔍 Curso seleccionado:', this.cursoSeleccionado);
     
     // Abrir diálogo de Angular Material
     const dialogRef = this.dialog.open(RechazoPreinscripcionDialogComponent, {
@@ -391,7 +344,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
     
     if (!idSolicitud) {
-      console.error('❌ ERROR: ID de solicitud es undefined o null para rechazo');
       this.snackBar.open('Error: No se pudo identificar la preinscripción para rechazar', 'Cerrar', { 
         duration: 3000,
         panelClass: ['error-snackbar']
@@ -399,11 +351,9 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       return;
     }
     
-    console.log(`❌ Confirmando rechazo de preinscripción ${idSolicitud} con motivo:`, motivo);
     
     this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).subscribe({
       next: (response) => {
-        console.log('✅ Preinscripción rechazada:', response);
         
         // Actualizar estado localmente usando el ID correcto
         const index = this.solicitudesFiltradas.findIndex(s => {
@@ -425,11 +375,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('❌ Error rechazando preinscripción:', err);
-        console.error('🔍 DEBUG - Status:', err.status);
-        console.error('🔍 DEBUG - Status Text:', err.statusText);
-        console.error('🔍 DEBUG - Error Body:', err.error);
-        console.error('🔍 DEBUG - Full Error:', JSON.stringify(err, null, 2));
         
         let errorMessage = 'Error al rechazar la preinscripción';
         
@@ -445,7 +390,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para rechazar la preinscripción';
         }
         
-        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+        this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -561,7 +506,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     <div mat-dialog-content class="dialog-content">
       <!-- Información que llenó el estudiante -->
       <div class="form-section">
-        <h3>📝 Información de la Solicitud</h3>
+        <h3>Información de la Solicitud</h3>
         <div class="info-grid">
           <div class="info-item">
             <strong>Nombre Completo:</strong> {{ data.solicitud.objUsuario.nombre_completo }}
@@ -577,7 +522,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
       <!-- Observaciones del funcionario -->
       <div class="form-section">
-        <h3>📝 Observaciones del Funcionario</h3>
+        <h3>Observaciones del Funcionario</h3>
         <form [formGroup]="observacionesForm">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Agrega observaciones sobre esta preinscripción</mat-label>

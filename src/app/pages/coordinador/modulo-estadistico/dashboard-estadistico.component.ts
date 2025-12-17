@@ -88,7 +88,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // KPIs
   kpis: KPIData[] = [];
   
-  // ELIMINADO: Predicciones (ya no están disponibles en /api/estadisticas/globales)
   
   // Charts
   chartProcesos: Chart | null = null;
@@ -116,12 +115,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       proceso: [''],
       idPrograma: [''], // Cambiado de 'programa' a 'idPrograma'
       periodoAcademico: [''] // Campo para período académico
-      // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
     });
     
     this.inicializarDatos();
     
-    // ELIMINADO: No llamar generarKPIs() aquí porque resumenCompleto aún no tiene datos
     // generarKPIs() se llamará automáticamente en cargarDatos() después de recibir los datos del backend
     
     // Cargar datos del backend
@@ -143,7 +140,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga los datos del dashboard con filtros opcionales
-   * ACTUALIZADO: Usa getResumenCompleto cuando hay filtros de período académico o programa
+   * Usa getResumenCompleto cuando hay filtros de período académico o programa
    */
   cargarDatos(filtros: FiltroEstadisticas = {}): void {
     this.loading = true;
@@ -252,7 +249,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos usando endpoints alternativos cuando /estadisticas/globales falla
-   * ACTUALIZADO: Pasa los filtros a todos los endpoints
+   * Pasa los filtros a todos los endpoints
    */
   private cargarDatosConEndpointsAlternativos(filtros: FiltroEstadisticas = {}): void {
     
@@ -387,11 +384,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     let enviadas = 0;
     let enProceso = 0;
     
-    // ACTUALIZADO: Usar resumenPorEstado con fallback a estados para compatibilidad
+    // Usar resumenPorEstado con fallback a estados para compatibilidad
     const estados = estadoSolicitudes?.resumenPorEstado || estadoSolicitudes?.estados;
     
     if (estadoSolicitudes && estados) {
-      // ACTUALIZADO: Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO
+      // Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO
       aprobadas = estados['APROBADA']?.cantidad || 0;
       rechazadas = estados['RECHAZADA']?.cantidad || 0;
       enviadas = estados['ENVIADA']?.cantidad || 0;
@@ -497,7 +494,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           
-          // FALLBACK: Usar valores reales si el endpoint falla
+          // Usar valores reales si el endpoint falla
           const datosFallback = {
             totalSolicitudes: 50,
             estados: {
@@ -688,7 +685,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Genera los KPIs con datos del backend (resumenCompleto)
    */
   private generarKPIs(): void {
-    // CORREGIDO: Leer valores de resumenCompleto.estadisticasGlobales
+    // Leer valores de resumenCompleto.estadisticasGlobales
     const estadisticas = this.resumenCompleto?.estadisticasGlobales;
     
     
@@ -762,8 +759,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Carga datos reales del backend para el gráfico de procesos
-   * CORREGIDO: Usa el endpoint que funciona /api/estadisticas/estadisticas-por-proceso
-   * ACTUALIZADO: Pasa los filtros del dashboard
+   * Usa el endpoint /api/estadisticas/estadisticas-por-proceso
+   * Pasa los filtros del dashboard
    */
   private async cargarDatosRealesProcesos(): Promise<any> {
     try {
@@ -806,11 +803,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ELIMINADO: obtenerPrediccionProceso() (ya no disponible en /api/estadisticas/globales)
 
   /**
    * Carga datos reales del backend para el gráfico de tendencia
-   * ACTUALIZADO: Pasa los filtros del dashboard
+   * Pasa los filtros del dashboard
    */
   private async cargarDatosRealesTendencia(): Promise<any> {
     try {
@@ -858,7 +854,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // CORREGIDO: Transformar el objeto a arrays
+    // Transformar el objeto a arrays
     const labels = Object.keys(datosReales.estadisticasPorProceso);
     const valores = Object.values(datosReales.estadisticasPorProceso).map((p: any) => p.totalSolicitudes);
     
@@ -1045,7 +1041,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       this.crearChartTendenciaFallback();
       return;
     }
-    // ACTUALIZADO: Usar mesesOrdenados o todosLosMeses del backend según la guía actualizada
+    // Usar mesesOrdenados o todosLosMeses del backend
     // El endpoint /por-periodo devuelve todos los meses (Enero-Diciembre), incluso con 0
     // Preferir usar mesesOrdenados o todosLosMeses del backend en lugar de hardcodear
     let mesesOrden: string[];
@@ -1314,7 +1310,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       this.destruirChart('chartDistribucion');
     }
 
-    // ACTUALIZADO: Cargar datos desde el endpoint /por-programa según la guía
+    // Cargar datos desde el endpoint /por-programa
     try {
       // Preparar filtros
       const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
