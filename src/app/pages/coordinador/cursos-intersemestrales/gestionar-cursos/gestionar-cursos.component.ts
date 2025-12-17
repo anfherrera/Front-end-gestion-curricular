@@ -122,7 +122,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   cargarDatos() {
     this.cargando = true;
     
-    // IMPORTANTE: Limpiar cursos antes de cargar nuevos para evitar mostrar datos antiguos
+    // Limpiar cursos antes de cargar nuevos para evitar mostrar datos antiguos
     this.cursos = [];
     this.cursosFiltrados = [];
     
@@ -287,7 +287,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // ELIMINADO: Método duplicado - ahora se usa cargarMateriasYDocentes()
+  // Método duplicado eliminado - ahora se usa cargarMateriasYDocentes()
 
   // YA NO SE USA - Solo para emergencia si el backend falla
   private getDocentesPrueba(): Usuario[] {
@@ -600,7 +600,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   // Manejar cambio de período académico
   onPeriodoChange(periodo: string): void {
-    // IMPORTANTE: Actualizar el filtro y limpiar estado antes de recargar
+    // Actualizar el filtro y limpiar estado antes de recargar
     this.periodoFiltro = periodo;
     // Limpiar cursos inmediatamente para evitar mostrar datos antiguos
     this.cursos = [];

@@ -38,7 +38,7 @@ export class EstadisticasService {
    * - idPrograma: ID del programa
    * - fechaInicio: "yyyy-MM-dd"
    * - fechaFin: "yyyy-MM-dd"
-   * ACTUALIZADO: Maneja código 500 como respuesta válida con valores en 0
+   * Maneja código 500 como respuesta válida con valores en 0
    */
   getEstadisticasGlobales(filtros: FiltroEstadisticas = {}): Observable<EstadisticasGlobalesAPI> {
     let params = new HttpParams();
@@ -55,7 +55,7 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ACTUALIZADO: Agregar fechaInicio y fechaFin según las nuevas instrucciones
+    // Agregar fechaInicio y fechaFin según las nuevas instrucciones
     if (filtros.fechaInicio) {
       params = params.set('fechaInicio', filtros.fechaInicio);
     }
@@ -66,7 +66,7 @@ export class EstadisticasService {
 
     const url = ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES;
 
-    // ACTUALIZADO: Detectar cuando el endpoint devuelve 500 con valores en 0 o bandera usarEndpointsAlternativos
+    // Detectar cuando el endpoint devuelve 500 con valores en 0 o bandera usarEndpointsAlternativos
     // En ese caso, lanzar error para que el componente use endpoints alternativos
     return this.http.get<EstadisticasGlobalesAPI & { usarEndpointsAlternativos?: boolean; error?: boolean; mensaje?: string }>(url, { 
       params,
@@ -645,7 +645,7 @@ export class EstadisticasService {
 
         estadoSolicitudes$.subscribe({
           next: (response) => {
-            // ACTUALIZADO: Usar resumenPorEstado con fallback a estados, asegurando que nunca sea undefined
+            // Usar resumenPorEstado con fallback a estados, asegurando que nunca sea undefined
             estadoSolicitudes = response.resumenPorEstado || response.estados || {};
             completed++;
             if (completed === total) {
@@ -687,7 +687,7 @@ export class EstadisticasService {
 
   /**
    * Obtiene la lista de procesos disponibles (nombres exactos del backend)
-   * ACTUALIZADO: Usa los nombres exactos que el backend espera según el backend
+   * Usa los nombres exactos que el backend espera
    */
   getProcesosDisponibles(): string[] {
     return [
@@ -773,7 +773,7 @@ export class EstadisticasService {
       }
     }
 
-    // ELIMINADO: Filtro por rango de fechas - usar periodoAcademico en su lugar
+    // Filtro por rango de fechas eliminado - usar periodoAcademico en su lugar
     // El filtro por periodoAcademico se maneja en el backend
 
     return {
@@ -897,7 +897,7 @@ export class EstadisticasService {
   }
 
   /**
-   * Exporta estadísticas a PDF usando el endpoint del backend (ACTUALIZADO)
+   * Exporta estadísticas a PDF usando el endpoint del backend
    * @param filtros Filtros a aplicar en la exportación
    */
   exportarPDF(filtros: FiltroEstadisticas = {}): Observable<Blob> {
@@ -915,7 +915,7 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     // Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF, {
@@ -928,7 +928,7 @@ export class EstadisticasService {
   }
 
   /**
-   * Exporta estadísticas a Excel usando el endpoint del backend (ACTUALIZADO)
+   * Exporta estadísticas a Excel usando el endpoint del backend
    * @param filtros Filtros a aplicar en la exportación
    */
   exportarExcel(filtros: FiltroEstadisticas = {}): Observable<Blob> {
@@ -946,7 +946,7 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     // Código simplificado - el backend ahora funciona correctamente
     return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL, {
@@ -1075,7 +1075,7 @@ export class EstadisticasService {
       params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
     
@@ -1119,7 +1119,7 @@ export class EstadisticasService {
       params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
     
@@ -1146,7 +1146,7 @@ export class EstadisticasService {
       params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
     
@@ -1190,7 +1190,7 @@ export class EstadisticasService {
       params.append('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
     

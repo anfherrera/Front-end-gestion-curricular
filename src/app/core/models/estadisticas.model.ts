@@ -199,7 +199,7 @@ export interface EstadoInfo {
 
 /**
  * Interfaz para la respuesta del endpoint de estado de solicitudes
- * ACTUALIZADO: Ahora usa resumenPorEstado en lugar de estados
+ * Ahora usa resumenPorEstado en lugar de estados
  */
 export interface EstadoSolicitudesResponse {
   totalSolicitudes: number;
@@ -347,7 +347,7 @@ export interface MateriaPrediccion {
   tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
   variacion: number;
   porcentajeVariacion: number;
-  // ELIMINADOS (backend ya no los envía): pendiente, rSquared, modeloUtilizado
+  // Backend ya no envía: pendiente, rSquared, modeloUtilizado
 }
 
 export interface ProgramaPrediccion {
@@ -357,7 +357,7 @@ export interface ProgramaPrediccion {
   tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
   variacion: number;
   porcentajeVariacion: number;
-  // ELIMINADOS (backend ya no los envía): pendiente, rSquared, modeloUtilizado
+  // Backend ya no envía: pendiente, rSquared, modeloUtilizado
 }
 
 export interface PrediccionesTemporales {
@@ -384,10 +384,10 @@ export interface PrediccionesCursosVerano {
   todasLasPrediccionesPorPrograma: ProgramaPrediccion[]; // NUEVO: Lista completa de todos los programas
   programasConTendenciaDecreciente: ProgramaPrediccion[];
   prediccionesTemporales: PrediccionesTemporales;
-  // ELIMINADO: recomendacionesFuturas (ahora está en el nivel superior como 'recomendaciones')
+  // recomendacionesFuturas ahora está en el nivel superior como 'recomendaciones'
   confiabilidad: "ALTA" | "MEDIA" | "BAJA";
   fechaPrediccion: string;
-  // ❌ ELIMINADO: metodologia (campo técnico innecesario)
+  // metodologia eliminado (campo técnico innecesario)
   // Nuevos campos para la pestaña de Recomendaciones
   estadisticasRecomendaciones?: {
     totalRecomendaciones: number;
@@ -482,7 +482,7 @@ export interface PrediccionItem {
   variacion: number;
   porcentajeVariacion: number;
   tendencia: 'CRECIENTE' | 'DECRECIENTE' | 'ESTABLE';
-  // ELIMINADOS (backend ya no los envía): pendiente, rSquared, modeloUtilizado
+  // Backend ya no envía: pendiente, rSquared, modeloUtilizado
 }
 
 export interface PrediccionesGlobales {
@@ -503,7 +503,7 @@ export interface PrediccionesGlobales {
   programasEstables: PrediccionItem[];
   
   // Metadata
-  // ❌ ELIMINADO: metodologia (campo técnico innecesario)
+  // metodologia eliminado (campo técnico innecesario)
   confiabilidad: 'ALTA' | 'MEDIA' | 'BAJA';
   fechaPrediccion: string;
   umbralTendencia: number;

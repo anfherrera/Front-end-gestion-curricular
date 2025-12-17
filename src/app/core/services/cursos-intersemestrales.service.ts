@@ -6,7 +6,7 @@ import { ApiEndpoints } from '../utils/api-endpoints';
 import { Curso as CursoList } from '../../shared/components/curso-list/curso-list.component';
 import { AuthService } from './auth.service';
 
-// ================== MODELOS ACTUALIZADOS ==================
+// ================== MODELOS ==================
 export interface Usuario {
   id_usuario: number;
   nombre: string;
@@ -329,7 +329,7 @@ export interface SeguimientoActividades {
   inscripciones: InscripcionSeguimiento[];
 }
 
-// ================== DTOs ACTUALIZADOS ==================
+// ================== DTOs ==================
 export interface CreatePreinscripcionDTO {
   idUsuario: number;
   idCurso: number;

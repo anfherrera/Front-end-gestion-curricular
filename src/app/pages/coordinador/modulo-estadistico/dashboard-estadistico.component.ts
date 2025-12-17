@@ -1538,7 +1538,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Aplica los filtros seleccionados y recarga los datos
-   * ACTUALIZADO: Envía los filtros en el formato correcto al backend
+   * Envía los filtros en el formato correcto al backend
    */
   aplicarFiltros(): void {
     if (this.filtrosForm) {
@@ -1612,7 +1612,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Limpia todos los filtros y recarga los datos completos
-   * ACTUALIZADO: Resetea el formulario a valores vacíos
+   * Resetea el formulario a valores vacíos
    */
   limpiarFiltros(): void {
     if (this.filtrosForm) {
@@ -1653,7 +1653,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Formatea el nombre del proceso para mostrarlo en la UI
-   * ACTUALIZADO: Los nombres ya vienen en el formato correcto del backend
+   * Los nombres ya vienen en el formato correcto del backend
    */
   formatearNombreProceso(proceso: string): string {
     // Los nombres ahora vienen directamente del backend en el formato correcto
@@ -1707,7 +1707,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /**
    * Actualiza los gráficos con los nuevos datos filtrados
-   * ACTUALIZADO: Recrea los gráficos cuando cambian los filtros para mostrar datos correctos
+   * Recrea los gráficos cuando cambian los filtros para mostrar datos correctos
    */
   private actualizarCharts(): void {
     // Si los gráficos no existen, crearlos
@@ -1781,7 +1781,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Exporta el reporte de estadísticas como archivo de texto (ACTUALIZADO)
+   * Exporta el reporte de estadísticas como archivo de texto
    */
   async exportarPDF(): Promise<void> {
     this.loading = true;
@@ -1845,7 +1845,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Exporta los datos del dashboard a Excel usando el endpoint del backend (ACTUALIZADO)
+   * Exporta los datos del dashboard a Excel usando el endpoint del backend
    */
   async exportarExcel(): Promise<void> {
     this.loading = true;
