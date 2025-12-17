@@ -145,17 +145,14 @@ export class NotificacionService {
   private handleError = (error: HttpErrorResponse): Observable<never> => {
     if (error.status === 401) {
       // Token inválido - redirigir a login
-      console.error('Token inválido - redirigiendo a login');
       localStorage.removeItem('token');
       this.router.navigate(['/login']);
       return throwError(() => error);
     } else if (error.status === 403) {
       // Sin permisos
-      console.warn('No tienes permisos para ver estas notificaciones');
       return throwError(() => error);
     } else {
       // Error genérico
-      console.error('Error al procesar la solicitud:', error);
       return throwError(() => error);
     }
   };

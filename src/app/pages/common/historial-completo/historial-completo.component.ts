@@ -118,7 +118,6 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error al cargar historial:', error);
         this.snackBar.open('Error al cargar el historial de solicitudes', 'Cerrar', {
           duration: 3000
         });
@@ -241,7 +240,6 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
             panelClass: ['success-snackbar']
           });
         } catch (error) {
-          console.error('Error al procesar el PDF:', error);
           this.snackBar.open('Error al procesar el archivo PDF', 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -251,7 +249,6 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al exportar PDF:', err);
         this.exportandoPDF = false;
         
         let mensaje = 'Error al exportar PDF';

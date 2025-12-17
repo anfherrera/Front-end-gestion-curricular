@@ -96,7 +96,6 @@ export class FormProcesoDialogComponent implements OnInit {
         this.dialogRef.close(true);
       },
       error: (err: any) => {
-        console.error('Error al crear:', err);
         const mensaje = err.error?.mensaje || 'Error al crear el proceso';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;
@@ -111,7 +110,6 @@ export class FormProcesoDialogComponent implements OnInit {
         this.dialogRef.close(true);
       },
       error: (err: any) => {
-        console.error('Error al actualizar:', err);
         const mensaje = err.error?.mensaje || 'Error al actualizar el proceso';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;

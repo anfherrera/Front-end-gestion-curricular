@@ -63,7 +63,6 @@ export class ManageRolesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error al cargar roles:', err);
         this.snackBar.open('Error al cargar la lista de roles', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
@@ -83,7 +82,6 @@ export class ManageRolesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error en búsqueda:', err);
         this.snackBar.open('No se encontró el rol', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
@@ -113,7 +111,6 @@ export class ManageRolesComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.loading = false;
-        console.error('Error al eliminar rol:', error);
         
         // Extraer mensaje de error usando el servicio
         const mensaje = this.errorHandler.extraerMensajeError(error);

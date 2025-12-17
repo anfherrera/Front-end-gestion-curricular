@@ -123,7 +123,6 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (error: HttpErrorResponse) => {
-        console.error('[NOTIFICACIONES] Error al cargar notificaciones:', error);
         this.isLoading = false;
         
         // Si es 403, no mostrar error (puede ser normal)
@@ -186,7 +185,6 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         this.snackBar.open('Notificación marcada como leída', 'Cerrar', { duration: 2000 });
       },
       error: (error: HttpErrorResponse) => {
-        console.error('[NOTIFICACIONES] Error al marcar como leída:', error);
         this.snackBar.open('Error al marcar notificación como leída', 'Cerrar', { duration: 3000 });
       }
     });
@@ -207,7 +205,6 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         this.snackBar.open('Todas las notificaciones marcadas como leídas', 'Cerrar', { duration: 2000 });
       },
       error: (error: HttpErrorResponse) => {
-        console.error('[NOTIFICACIONES] Error al marcar todas como leídas:', error);
         this.snackBar.open('Error al marcar notificaciones como leídas', 'Cerrar', { duration: 3000 });
       }
     });

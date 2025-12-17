@@ -99,7 +99,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       // Silenciar errores durante desarrollo/HMR
-      console.warn('Error en tickRate (puede ignorarse durante HMR):', error);
       this.rateRemaining = 0;
       this.loginDisabled = false;
     }
@@ -128,10 +127,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
       this.apiService.login(correo, password).subscribe({
         next: (response: any) => {
-          this.logger.log('✅ Respuesta del backend recibida');
 
           if (response.token && response.usuario) {
-            // ✅ Guardar token JWT después del login exitoso
+            // Guardar token JWT después del login exitoso
             // El token se guarda en localStorage y se usará automáticamente
             // en todas las peticiones gracias al JwtInterceptor
             this.authService.setToken(response.token);
@@ -139,7 +137,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.authService.setRole(response.usuario.rol?.nombre || 'Usuario');
             this.authService.restoreSession();
 
-            this.logger.log('✅ Token guardado correctamente');
 
             // Mostrar mensaje de éxito
             this.snackBar.open(`¡Bienvenido, ${response.usuario.nombre_completo}!`, 'Cerrar', {
@@ -150,7 +147,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             // Redirigir a la página de home
             this.router.navigate(['/welcome']);
           } else {
-            this.logger.error('❌ Respuesta inválida del servidor:', response);
+            this.logger.error('Respuesta inválida del servidor:', response);
             this.errorMensaje = 'Error: respuesta del servidor inválida.';
             this.snackBar.open('Error en la respuesta del servidor', 'Cerrar', {
               duration: 5000,
@@ -161,7 +158,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.cargando = false;
         },
         error: (err) => {
-          this.logger.error('❌ Error en la autenticación', err);
+          this.logger.error('Error en la autenticación', err);
           
           // Manejo específico de errores según la guía del backend
           let errorMessage = 'Error al iniciar sesión';

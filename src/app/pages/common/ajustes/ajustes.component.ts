@@ -69,7 +69,6 @@ export class AjustesComponent implements OnInit {
         const ajustes = JSON.parse(ajustesGuardados);
         this.ajustesForm.patchValue(ajustes);
       } catch (error) {
-        console.error('Error cargando ajustes:', error);
       }
     }
   }

@@ -97,7 +97,6 @@ export class FormUsuarioComponent implements OnInit {
         this.roles = corregirEncodingObjeto(data);
       },
       error: (err: any) => {
-        console.error('Error al cargar roles:', err);
         this.snackBar.open('Error al cargar roles', 'Cerrar', { duration: 3000 });
       }
     });
@@ -109,7 +108,6 @@ export class FormUsuarioComponent implements OnInit {
         this.programas = corregirEncodingObjeto(data);
       },
       error: (err: any) => {
-        console.error('Error al cargar programas:', err);
         this.snackBar.open('Error al cargar programas', 'Cerrar', { duration: 3000 });
       }
     });
@@ -121,11 +119,8 @@ export class FormUsuarioComponent implements OnInit {
     this.loading = true;
     this.usuariosService.buscarUsuarioPorId(this.usuarioId).subscribe({
       next: (data: any) => {
-        console.log('Usuario cargado (original):', data);
-        
         // Corregir encoding de tildes y caracteres especiales
         const usuarioCorregido = corregirEncodingObjeto(data);
-        console.log('Usuario cargado (corregido):', usuarioCorregido);
         
         // Llenar el formulario con TODOS los datos del usuario
         this.usuarioForm.patchValue({
@@ -146,7 +141,6 @@ export class FormUsuarioComponent implements OnInit {
         this.snackBar.open('Usuario cargado correctamente. Modifique los campos que desee actualizar.', 'Cerrar', { duration: 4000 });
       },
       error: (err: any) => {
-        console.error('Error al cargar usuario:', err);
         this.snackBar.open('Error al cargar usuario', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/admin/manage-users']);
         this.loading = false;
@@ -207,7 +201,6 @@ export class FormUsuarioComponent implements OnInit {
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
-        console.error('Error:', err);
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackBar.open('Error: ' + mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;
@@ -223,7 +216,6 @@ export class FormUsuarioComponent implements OnInit {
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
-        console.error('Error:', err);
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackBar.open('Error: ' + mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;

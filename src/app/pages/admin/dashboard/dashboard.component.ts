@@ -51,7 +51,6 @@ export class DashboardComponent implements OnInit {
         this.verificarCargaCompleta();
       },
       error: (err) => {
-        console.error('Error al cargar docentes:', err);
         this.verificarCargaCompleta();
       }
     });
@@ -63,7 +62,6 @@ export class DashboardComponent implements OnInit {
         this.verificarCargaCompleta();
       },
       error: (err) => {
-        console.error('Error al cargar programas:', err);
         this.verificarCargaCompleta();
       }
     });
@@ -75,7 +73,6 @@ export class DashboardComponent implements OnInit {
         this.verificarCargaCompleta();
       },
       error: (err) => {
-        console.error('Error al cargar roles:', err);
         this.verificarCargaCompleta();
       }
     });

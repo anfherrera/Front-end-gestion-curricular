@@ -81,7 +81,6 @@ export class FormDocenteComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error al cargar docente:', err);
         this.snackBar.open('Error al cargar los datos del docente', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/admin/docentes']);
         this.loading = false;
@@ -117,7 +116,6 @@ export class FormDocenteComponent implements OnInit {
         this.router.navigate(['/admin/docentes']);
       },
       error: (err) => {
-        console.error('Error al crear:', err);
         const mensaje = err.error?.mensaje || 'Error al crear el docente';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;
@@ -132,7 +130,6 @@ export class FormDocenteComponent implements OnInit {
         this.router.navigate(['/admin/docentes']);
       },
       error: (err) => {
-        console.error('Error al actualizar:', err);
         const mensaje = err.error?.mensaje || 'Error al actualizar el docente';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
         this.loading = false;

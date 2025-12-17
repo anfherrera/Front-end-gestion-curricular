@@ -134,7 +134,6 @@ export class PeriodosAcademicosService {
       catchError(error => {
         // Solo mostrar error si no es un error de conexión (backend no disponible)
         if (error.status !== 0 && error.status !== undefined) {
-          console.error('[PERIODOS] Error obteniendo período actual:', error);
         }
         // Silenciosamente retornar null si el backend no está disponible
         this.periodoActualSubject.next(null);
@@ -162,7 +161,6 @@ export class PeriodosAcademicosService {
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
         if (error.status !== 0 && error.status !== undefined) {
-          console.error('[PERIODOS] Error obteniendo todos los períodos:', error);
         }
         return of([]);
       })
@@ -180,7 +178,6 @@ export class PeriodosAcademicosService {
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
         if (error.status !== 0 && error.status !== undefined) {
-          console.error('[PERIODOS] Error obteniendo períodos futuros:', error);
         }
         return of([]);
       })
@@ -229,7 +226,6 @@ export class PeriodosAcademicosService {
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
         if (error.status !== 0 && error.status !== undefined) {
-          console.error('[PERIODOS] Error obteniendo períodos recientes:', error);
         }
         return of([]);
       })
@@ -247,7 +243,6 @@ export class PeriodosAcademicosService {
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
         if (error.status !== 0 && error.status !== undefined) {
-          console.error(`[PERIODOS] Error obteniendo info del período ${periodo}:`, error);
         }
         return of(null);
       })
@@ -265,7 +260,6 @@ export class PeriodosAcademicosService {
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
         if (error.status !== 0 && error.status !== undefined) {
-          console.error('[PERIODOS] Error obteniendo configuración de período activo:', error);
         }
         return of(null);
       })
@@ -296,7 +290,6 @@ export class PeriodosAcademicosService {
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
         if (error.status !== 0 && error.status !== undefined) {
-          console.error('[PERIODOS] Error estableciendo período activo:', error);
         }
         return of(null);
       })

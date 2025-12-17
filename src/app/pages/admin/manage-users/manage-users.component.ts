@@ -62,7 +62,6 @@ export class ManageUsersComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('Error al cargar usuarios:', err);
         this.snackBar.open('Error al cargar usuarios', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
@@ -117,7 +116,6 @@ export class ManageUsersComponent implements OnInit {
       },
       error: (error: any) => {
         this.loading = false;
-        console.error('Error al cambiar el estado:', error);
         
         // Mostrar mensaje de error
         this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', { 
@@ -146,7 +144,6 @@ export class ManageUsersComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.loading = false;
-        console.error('Error al eliminar usuario:', error);
         
         // Extraer mensaje de error usando el servicio
         const mensaje = this.errorHandler.extraerMensajeError(error);

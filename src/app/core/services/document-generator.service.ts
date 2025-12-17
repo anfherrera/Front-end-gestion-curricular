@@ -135,7 +135,6 @@ export class DocumentGeneratorService {
               observer.complete();
             },
             error: (error) => {
-              console.error('Error al guardar en BD:', error);
               // Aún así devolver el blob para descarga
               observer.next(blob);
               observer.complete();
@@ -143,12 +142,10 @@ export class DocumentGeneratorService {
           });
 
         }).catch(error => {
-          console.error('Error al generar documento Word:', error);
           observer.error(error);
         });
 
       } catch (error) {
-        console.error('Error al crear documento:', error);
         observer.error(error);
       }
     });
@@ -186,7 +183,6 @@ export class DocumentGeneratorService {
     if (request.idSolicitud) {
       formData.append('idSolicitud', request.idSolicitud.toString());
     } else {
-      console.warn('idSolicitud es undefined, usando valor por defecto');
       formData.append('idSolicitud', '1'); // Valor por defecto
     }
 
@@ -196,7 +192,6 @@ export class DocumentGeneratorService {
     if (request.datosDocumento?.numeroDocumento) {
       formData.append('numeroDocumento', request.datosDocumento.numeroDocumento);
     } else {
-      console.warn('numeroDocumento es undefined, usando valor por defecto');
       formData.append('numeroDocumento', '001-2024');
     }
 
@@ -204,7 +199,6 @@ export class DocumentGeneratorService {
     if (request.datosDocumento?.fechaDocumento) {
       formData.append('fechaDocumento', request.datosDocumento.fechaDocumento.toString());
     } else {
-      console.warn('fechaDocumento es undefined, usando fecha actual');
       formData.append('fechaDocumento', new Date().toISOString().split('T')[0]);
     }
 

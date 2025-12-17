@@ -59,7 +59,6 @@ export class ManageProcessesComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('Error al cargar procesos:', err);
         this.snackBar.open('Error al cargar procesos', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
@@ -100,7 +99,6 @@ export class ManageProcessesComponent implements OnInit {
         this.cargarProcesos();
       },
       error: (err: any) => {
-        console.error('Error al cambiar estado:', err);
         this.snackBar.open('Error al cambiar el estado del proceso', 'Cerrar', { duration: 3000 });
       }
     });
@@ -143,7 +141,6 @@ export class ManageProcessesComponent implements OnInit {
         this.cargarProcesos();
       },
       error: (err: any) => {
-        console.error('Error al eliminar:', err);
         this.snackBar.open('Error al eliminar el proceso', 'Cerrar', { duration: 3000 });
       }
     });

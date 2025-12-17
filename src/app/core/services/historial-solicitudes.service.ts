@@ -104,7 +104,6 @@ export class HistorialSolicitudesService {
       }
     ).pipe(
       catchError(error => {
-        console.error('Error obteniendo historial completo:', error);
         return of({
           solicitudes: [],
           total: 0,
@@ -152,7 +151,6 @@ export class HistorialSolicitudesService {
     const url = ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(id);
     return this.http.get<any>(url, { headers: this.getAuthHeaders() }).pipe(
       catchError(error => {
-        console.error('Error obteniendo historial de solicitud:', error);
         throw error;
       })
     );
@@ -161,9 +159,9 @@ export class HistorialSolicitudesService {
   /**
    * Exporta el historial de solicitudes a PDF
    * 
-   * IMPORTANTE: El endpoint respeta TODOS los filtros enviados como parámetros de consulta.
+   * El endpoint respeta todos los filtros enviados como parámetros de consulta.
    * - Si se envían filtros, el PDF solo incluirá las solicitudes que cumplan con esos criterios.
-   * - Si NO se envían filtros (filtros vacío o undefined), el PDF incluirá TODAS las solicitudes del sistema.
+   * - Si NO se envían filtros (filtros vacío o undefined), el PDF incluirá todas las solicitudes del sistema.
    * - El PDF siempre mostrará qué filtros se aplicaron (o "Todos" si no hay filtro).
    * 
    * @param filtros Objeto con los filtros opcionales a aplicar:
@@ -206,7 +204,6 @@ export class HistorialSolicitudesService {
       observe: 'response' // Necesario para acceder a los headers
     }).pipe(
       catchError(error => {
-        console.error('Error exportando historial a PDF:', error);
         return throwError(() => error);
       }),
       // Mapear la respuesta para incluir el blob y el nombre del archivo
