@@ -352,7 +352,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       // Dialog cerrado
       if (result === 'guardado') {
-        console.log('🔄 Recargando datos después de guardar...');
         this.cargarDatos();
       }
     });
