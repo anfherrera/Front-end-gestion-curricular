@@ -79,7 +79,6 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   ];
 
   // Archivos exclusivos: Para programas de Sistemas, Electrónica y Automática (solo uno de estos dos)
-  // IMPORTANTE: Estos son DIFERENTES a PP-H (que está arriba en documentosRequeridos). 
   // - PP-H (con guion) = Constancia para modalidad PRÁCTICA PROFESIONAL (va con PP-G)
   // - PPH (sin guion) = Acta de sustentación para programas Sistemas, Electrónica, Automática
   // Estos formatos también se suben a SIMCA Web, pero deben adjuntarse aquí también
@@ -130,7 +129,6 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     // Listar solicitudes existentes al cargar el componente
     this.listarSolicitudes();
     
-    // Verificar funcionalidad de comentarios (para debugging)
     setTimeout(() => {
       this.verificarFuncionalidadComentarios();
     }, 2000);
@@ -411,10 +409,8 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
 listarSolicitudes() {
   if (!this.usuario) {
-    console.error("Usuario no encontrado en localStorage.");
     return;
   }
-  // CORREGIDO: Usar el nuevo método con rol e idUsuario
   const rol = 'ESTUDIANTE';
   const idUsuario = this.usuario.id_usuario;
   this.pazSalvoService.listarSolicitudesPorRol(rol, idUsuario)
@@ -430,7 +426,6 @@ listarSolicitudes() {
       // Guardar las solicitudes completas para usar esSeleccionado y comentarios
       this.solicitudesCompletas = data;
 
-      // Log para debugging - verificar estructura de datos
       if (data.length > 0) {
         if (data[0].estadosSolicitud) {
           data[0].estadosSolicitud.forEach((estado: any, index: number) => {
@@ -470,10 +465,6 @@ listarSolicitudes() {
 
     },
     error: (err) => {
-      console.error('Error al listar solicitudes', err);
-      console.error('Status:', err.status);
-      console.error('Message:', err.message);
-      console.error('Error completo:', err);
     }
   });
 }
@@ -483,12 +474,10 @@ listarSolicitudes() {
 
   onSolicitudEnviada() {
     if (!this.usuario) {
-      console.error('No se puede enviar solicitud: usuario no encontrado.');
       return;
     }
 
     if (!this.fileUploadComponent) {
-      console.error('No se puede acceder al componente de archivos.');
       return;
     }
     // Paso 1: Subir documentos SIN asociar a solicitud
@@ -519,9 +508,6 @@ listarSolicitudes() {
         // Formato: "Solicitud Paz y Salvo - [nombre del estudiante]"
         const nombreSolicitud = `Solicitud Paz y Salvo - ${nombreFinal}`;
         
-        console.log('📝 Creando solicitud con nombre:', nombreSolicitud);
-        console.log('👤 Usuario completo:', this.usuario);
-        console.log('📋 Nombre completo obtenido:', nombreFinal);
         
         const datosSolicitud: any = {
           idUsuario: this.usuario.id_usuario,
@@ -564,7 +550,6 @@ listarSolicitudes() {
             });
             this.archivosActuales = [];
 
-            // FIX: Resetear el file upload en el siguiente ciclo de detección para evitar NG0100
             setTimeout(() => {
               this.resetFileUpload = true;
               this.cdr.detectChanges(); // Forzar detección de cambios
@@ -577,7 +562,6 @@ listarSolicitudes() {
             this.mostrarMensaje('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
           },
           error: (err) => {
-            console.error('Error al crear solicitud:', err);
             if (err.status === 400) {
               this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
             }
@@ -588,7 +572,6 @@ listarSolicitudes() {
         });
       },
       error: (err) => {
-        console.error('Error al subir documentos:', err);
         this.mostrarMensaje('Error al subir documentos. Por favor, inténtalo de nuevo.', 'error');
         
         // Resetear el estado de carga del componente de subida
@@ -645,7 +628,6 @@ verComentarios(solicitudId: number): void {
     return;
   }
 
-  // Usar el nuevo endpoint que devuelve solo comentarios existentes
   this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).subscribe({
     next: (comentarios) => {
       // Mapear la respuesta del backend al formato esperado por el diálogo
@@ -670,7 +652,6 @@ verComentarios(solicitudId: number): void {
       });
     },
     error: (err) => {
-      console.error('Error al obtener comentarios:', err);
       this.mostrarMensaje('Error al cargar los comentarios', 'error');
     }
   });
@@ -732,7 +713,6 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
       this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
     },
     error: (err) => {
-      console.error('Error al obtener oficios:', err);
       
       // Si no se pueden obtener oficios, intentar con nombres comunes
       this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
@@ -769,7 +749,6 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
       }
     },
     error: (err) => {
-      console.error('Error al descargar archivo:', err);
       this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
     }
   });

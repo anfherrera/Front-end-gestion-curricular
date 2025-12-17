@@ -50,7 +50,6 @@ export class VerSolicitudComponent implements OnInit {
         seguimiento: this.cursosService.getSeguimientoActividades(this.usuario.id_usuario),
         preinscripcionesDetalle: this.cursosService.getPreinscripcionesUsuario(this.usuario.id_usuario).pipe(
           catchError(error => {
-            console.warn('No se pudo obtener detalle de preinscripciones:', error);
             return of([]);
           })
         )
@@ -61,7 +60,6 @@ export class VerSolicitudComponent implements OnInit {
           this.cargando = false;
         },
         error: (err) => {
-          console.error('Error cargando seguimiento', err);
           this.cargando = false;
         }
       });
@@ -238,7 +236,6 @@ export class VerSolicitudComponent implements OnInit {
         this.revisarMotivoRechazo(preinscripcion);
         break;
       default:
-        console.log('Acción no implementada:', accion);
     }
   }
 

@@ -20,13 +20,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class CursosOfertadosComponent implements OnInit {
   cursos: Curso[] = [];
   cursosVerano: CursoOfertadoVerano[] = [];
-  cursosVeranoOriginales: CursoOfertadoVerano[] = []; // ✨ NUEVO: Para guardar todos los cursos antes de filtrar
+  cursosVeranoOriginales: CursoOfertadoVerano[] = [];
   cargando = true;
   usuario: any = null;
-  periodoSeleccionado = ''; // ✨ NUEVO: Período seleccionado para filtrar ('', 'todos', o 'YYYY-P')
-  mostrarTodosLosCursos = false; // ✨ NUEVO: Flag para mostrar todos los cursos
-  
-  // 🆕 Variables para manejar parámetros de navegación
+  periodoSeleccionado = '';
+  mostrarTodosLosCursos = false;
   cursoIdDestino?: number;
   cursoNombreDestino?: string;
   accionDestino?: string;
@@ -41,10 +39,7 @@ export class CursosOfertadosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('🎯 CURSOS OFERTADOS COMPONENT CARGADO');
     this.usuario = this.authService.getUsuario();
-    
-    // 🆕 Verificar parámetros de consulta para navegación desde seguimiento
     this.route.queryParams.subscribe(params => {
       if (params['cursoId'] && params['accion'] === 'inscripcion') {
         this.cursoIdDestino = +params['cursoId'];
@@ -52,7 +47,6 @@ export class CursosOfertadosComponent implements OnInit {
         this.accionDestino = params['accion'];
         this.mostrarMensajeInscripcion = true;
         
-        console.log('🎯 Navegación desde seguimiento:', {
           cursoId: this.cursoIdDestino,
           cursoNombre: this.cursoNombreDestino,
           accion: this.accionDestino
@@ -65,7 +59,6 @@ export class CursosOfertadosComponent implements OnInit {
 
   loadCursos() {
     this.cargando = true;
-    console.log('🔄 Cargando cursos de verano...');
     
     // Determinar qué parámetros enviar
     let periodoParam: string | undefined = undefined;
@@ -74,40 +67,32 @@ export class CursosOfertadosComponent implements OnInit {
     if (this.periodoSeleccionado === 'todos' || this.mostrarTodosLosCursos) {
       // Mostrar todos los cursos sin filtrar
       todosLosPeriodos = true;
-      console.log('📅 Cargando: Todos los períodos');
     } else if (this.periodoSeleccionado && this.periodoSeleccionado.trim() !== '') {
       // Período específico
       periodoParam = this.periodoSeleccionado;
-      console.log('📅 Cargando: Período específico:', periodoParam);
     } else {
       // Período actual (no enviar parámetro)
-      console.log('📅 Cargando: Período Actual');
     }
     
     // Cargar cursos de verano disponibles (con período opcional)
     this.cursosService.getCursosDisponibles(periodoParam, undefined, todosLosPeriodos).subscribe({
       next: (cursosVerano) => {
-        console.log('✅ Cursos de verano recibidos:', cursosVerano);
-        console.log('📊 Cantidad de cursos:', cursosVerano?.length || 0);
         
         // Si no hay cursos para el período actual y no se está mostrando todos, cargar todos automáticamente
         if ((!cursosVerano || cursosVerano.length === 0) && 
             !this.periodoSeleccionado && 
             !this.mostrarTodosLosCursos && 
             !todosLosPeriodos) {
-          console.log('🔄 No hay cursos para el período actual, cargando todos los cursos automáticamente...');
           this.mostrarTodosLosCursos = true;
           // Recargar con todos los períodos
           this.cursosService.getCursosDisponibles(undefined, undefined, true).subscribe({
             next: (todosLosCursos) => {
-              console.log('✅ Todos los cursos recibidos:', todosLosCursos);
               this.cursosVeranoOriginales = todosLosCursos || [];
               this.cursosVerano = todosLosCursos || [];
               this.cursos = this.mapCursosToLegacy(todosLosCursos || []);
               this.cargando = false;
             },
             error: (err) => {
-              console.error('❌ Error cargando todos los cursos', err);
               this.cursosVeranoOriginales = [];
               this.cursosVerano = [];
               this.cursos = [];
@@ -123,8 +108,6 @@ export class CursosOfertadosComponent implements OnInit {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando cursos de verano', err);
-        console.error('❌ Detalles del error:', {
           status: err.status,
           statusText: err.statusText,
           message: err.message,
@@ -136,9 +119,7 @@ export class CursosOfertadosComponent implements OnInit {
     });
   }
 
-  // ✨ NUEVO: Manejar cambio de período
   onPeriodoChange(periodo: string): void {
-    console.log('📅 Período seleccionado:', periodo || 'Período Actual');
     this.periodoSeleccionado = periodo;
     this.mostrarTodosLosCursos = periodo === 'todos';
     
@@ -153,14 +134,12 @@ export class CursosOfertadosComponent implements OnInit {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('Error cargando cursos ofertados', err);
         this.cargando = false;
       }
     });
   }
 
   private loadDatosPrueba() {
-    console.log('📚 Cargando datos de prueba...');
     this.cursos = [
       {
         codigo: 'MAT-101',
@@ -191,7 +170,6 @@ export class CursosOfertadosComponent implements OnInit {
       }
     ];
     this.cargando = false;
-    console.log('✅ Datos de prueba cargados:', this.cursos);
   }
 
   private mapCursosToLegacy(cursosVerano: CursoOfertadoVerano[]): Curso[] {
@@ -203,7 +181,6 @@ export class CursosOfertadosComponent implements OnInit {
       creditos: curso.objMateria.creditos,
       espacio: curso.espacio_asignado || 'Por asignar',
       estado: this.mapEstadoCurso(curso.estado || 'Borrador'),
-      // ✨ NUEVO: Mapear período y fechas
       periodo: this.obtenerPeriodoCurso(curso),
       periodoAcademico: this.obtenerPeriodoCurso(curso),
       fecha_inicio: curso.fecha_inicio,
@@ -308,7 +285,6 @@ export class CursosOfertadosComponent implements OnInit {
         this.loadCursos(); // Recargar para actualizar cupos
       },
       error: (error) => {
-        console.error('Error en preinscripción:', error);
         this.snackBar.open(
           'Error al realizar la preinscripción. Inténtalo nuevamente.', 
           'Cerrar', 
@@ -346,7 +322,6 @@ export class CursosOfertadosComponent implements OnInit {
         this.loadCursos(); // Recargar para actualizar cupos
       },
       error: (error) => {
-        console.error('Error en inscripción:', error);
         this.snackBar.open(
           'Error al realizar la inscripción. Inténtalo nuevamente.', 
           'Cerrar', 
@@ -380,7 +355,6 @@ export class CursosOfertadosComponent implements OnInit {
     return acciones;
   }
 
-  // 🆕 Método para cerrar el mensaje de inscripción
   cerrarMensajeInscripcion() {
     this.mostrarMensajeInscripcion = false;
     this.cursoIdDestino = undefined;

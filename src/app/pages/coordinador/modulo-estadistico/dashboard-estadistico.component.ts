@@ -186,13 +186,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
               this.mostrarExito('Datos cargados correctamente desde el backend');
             }
           } catch (conversionError) {
-            console.error('Error al convertir datos del API:', conversionError);
             // Si falla la conversión, intentar con endpoints alternativos
             this.cargarDatosConEndpointsAlternativos(filtros);
           }
         },
         error: (error) => {
-          console.error('Error al cargar /estadisticas/globales:', error);
           
           // Si el endpoint principal falla, usar endpoints alternativos que funcionan
           // NO mostrar valores en 0, esperar a que los endpoints alternativos terminen
@@ -219,7 +217,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error al cargar estadísticas:', error);
         this.error = true;
         this.loading = false;
         this.mostrarError('Error al cargar las estadísticas');
@@ -283,7 +280,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             this.mostrarExito('Datos cargados usando endpoints alternativos');
           }
         } catch (error) {
-          console.error('Error al construir resumen desde endpoints alternativos:', error);
           this.loading = false;
           this.error = true;
           this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
@@ -297,7 +293,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('Error al cargar estado de solicitudes:', error);
         errores.push('estado-solicitudes');
         checkComplete();
       }
@@ -309,7 +304,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('Error al cargar estadísticas por proceso:', error);
         errores.push('estadisticas-por-proceso');
         checkComplete();
       }
@@ -321,7 +315,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('Error al cargar estudiantes por programa:', error);
         errores.push('estudiantes-por-programa');
         checkComplete();
       }
@@ -333,7 +326,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         checkComplete();
       },
       error: (error) => {
-        console.error('Error al cargar estadísticas por período:', error);
         errores.push('por-periodo');
         checkComplete();
       }
@@ -448,7 +440,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('Error al obtener total de estudiantes:', error);
           this.loadingEstudiantes = false;
           
           // Usar valor por defecto en caso de error
@@ -470,7 +461,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           this.actualizarKPIsConEstadoSolicitudes(response);
         },
         error: (error) => {
-          console.error('ERROR al obtener estado de solicitudes:', error);
           
           // FALLBACK: Usar valores reales si el endpoint falla
           const datosFallback = {
@@ -560,7 +550,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         }
       })
       .catch(error => {
-        console.error('Error al verificar endpoint:', error);
            });
    }
 
@@ -766,7 +755,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       }
       
     } catch (error) {
-      console.error('Error obteniendo datos reales de procesos:', error);
       return null;
     }
   }
@@ -782,7 +770,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error obteniendo datos reales de tendencia:', error);
       return null;
     }
   }
@@ -793,7 +780,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private async crearChartProcesos(): Promise<void> {
     const ctx = document.getElementById('chartProcesos') as HTMLCanvasElement;
     if (!ctx) {
-      console.error('Canvas chartProcesos no encontrado en el DOM');
       return;
     }
 
@@ -1364,7 +1350,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
       this.chartDistribucion = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error al crear gráfico de distribución:', error);
+replace_all
+True
       // Fallback: usar datos del resumen si están disponibles
       if (this.resumenCompleto && this.resumenCompleto.estadisticasPorPrograma.length > 0) {
         this.crearChartDistribucionFallback();
@@ -1549,7 +1536,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error al cargar estadísticas del proceso:', error);
         this.loading = false;
         this.mostrarError('Error al cargar estadísticas del proceso');
       }
@@ -1637,7 +1623,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       // Si hay un error al actualizar, recrear los gráficos
-      console.warn('Error al actualizar gráficos, recreándolos:', error);
       this.destruirCharts();
       this.chartsCreados = false;
       this.crearCharts();
@@ -1733,13 +1718,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('[DEBUG] Error al exportar PDF del Dashboard General:', error);
           this.loading = false;
           this.mostrarError('Error al exportar el reporte PDF');
         }
       });
     } catch (error) {
-      console.error('Error al exportar reporte:', error);
       this.loading = false;
       this.mostrarError('Error al descargar el reporte PDF');
     }
@@ -1799,13 +1782,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           }
         },
         error: (error: any) => {
-          console.error('[DEBUG] Error al exportar Excel:', error);
           this.loading = false;
           this.mostrarError('Error al exportar el reporte Excel');
         }
       });
     } catch (error) {
-      console.error('Error al exportar Excel:', error);
       this.loading = false;
       this.mostrarError('Error al descargar el reporte Excel');
     }

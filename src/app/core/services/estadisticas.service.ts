@@ -135,8 +135,6 @@ export class EstadisticasService {
           throw error;
         }
         
-        console.error('Error al obtener estadísticas globales:', error);
-        // Para otros errores, también usar endpoints alternativos
         throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
       })
     );
@@ -518,7 +516,6 @@ export class EstadisticasService {
             }
           },
           error: (err) => {
-            console.error('Error obteniendo total de estudiantes:', err);
             error = 'Error al obtener total de estudiantes';
             completed++;
             if (completed === total) {
@@ -538,7 +535,6 @@ export class EstadisticasService {
             }
           },
           error: (err) => {
-            console.error('Error obteniendo estudiantes por programa:', err);
             error = 'Error al obtener estudiantes por programa';
             completed++;
             if (completed === total) {
@@ -558,7 +554,6 @@ export class EstadisticasService {
             }
           },
           error: (err) => {
-            console.error('Error obteniendo estadísticas por proceso:', err);
             error = 'Error al obtener estadísticas por proceso';
             completed++;
             if (completed === total) {
@@ -579,7 +574,6 @@ export class EstadisticasService {
             }
           },
           error: (err) => {
-            console.error('Error obteniendo estado de solicitudes:', err);
             error = 'Error al obtener estado de solicitudes';
             completed++;
             if (completed === total) {
@@ -1022,7 +1016,6 @@ export class EstadisticasService {
       window.URL.revokeObjectURL(downloadUrl);
       
     } catch (error) {
-      console.error('Error al descargar reporte de texto:', error);
       throw error;
     }
   }
@@ -1094,7 +1087,6 @@ export class EstadisticasService {
       window.URL.revokeObjectURL(downloadUrl);
       
     } catch (error) {
-      console.error('Error al descargar Excel:', error);
       throw error;
     }
   }

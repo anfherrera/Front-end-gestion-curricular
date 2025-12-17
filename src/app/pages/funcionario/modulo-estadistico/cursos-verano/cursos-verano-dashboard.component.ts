@@ -144,14 +144,12 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       this.cargarDatos();
     }, 100);
     
-    // OPTIMIZACIÓN: Eliminado setInterval (refresco manual solamente)
     // El usuario puede refrescar con el botón "Actualizar datos"
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.destruirGraficos();
-    // intervalId eliminado - ya no se usa
   }
 
   // ===== MÉTODOS DE CARGA DE DATOS =====
@@ -218,7 +216,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('[OPTIMIZADO] Error al cargar tendencias temporales:', error);
         // Fallback: cargar datos completos
         this.cargarDatos();
       }
@@ -243,7 +240,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         this.analisisProgramaData = response.analisisPorPrograma || [];
         this.prediccionesData = response.predicciones || {};
         
-        // ACTUALIZADO: Recomendaciones ahora están en el nivel superior
         this.recomendaciones = response.recomendaciones || [];
         if (response.predicciones) {
           this.alertasCriticas = response.predicciones.alertasCriticas || [];
@@ -262,8 +258,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }, 200);
       },
       error: (error) => {
-        console.error('[DEBUG] Error al conectar con el backend:', error);
-        console.error('[DEBUG] URL del endpoint:', `${environment.apiUrl}/estadisticas/cursos-verano`);
         this.error = 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.';
         this.loading = false;
       }
@@ -301,7 +295,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       estadosSolicitudes: {
         APROBADA: 4,
         ENVIADA: 2,
-        EN_PROCESO: 2,  // ACTUALIZADO: Usar EN_PROCESO en lugar de APROBADA_FUNCIONARIO + APROBADA_COORDINADOR
+        EN_PROCESO: 2,
         RECHAZADA: 1
       },
       recomendaciones: [
@@ -410,10 +404,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           demandaEstimadaMesPico: 6,
           mesesRecomendados: ['Marzo', 'Abril', 'Mayo']
         },
-        // ELIMINADO: recomendacionesFuturas (ahora está en nivel superior como 'recomendaciones')
         confiabilidad: 'ALTA',
         fechaPrediccion: new Date().toISOString()
-        // ELIMINADO: metodologia (campo técnico innecesario)
       }
     };
 
@@ -471,8 +463,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       .then(data => {
       })
       .catch(error => {
-        console.error('[DEBUG] Error de conexión:', error);
-        console.error('[DEBUG] Verifique que el servidor backend esté ejecutándose');
       });
   }
 
@@ -481,17 +471,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    */
   probarVelocidadCarga(): void {
     // Prueba 1: Carga completa
-    console.time('🔄 Carga Completa');
     const inicioCompleta = performance.now();
     
     this.estadisticasService.getCursosVeranoEstadisticas().subscribe({
       next: (response) => {
         const finCompleta = performance.now();
         const tiempoCompleta = finCompleta - inicioCompleta;
-        console.timeEnd('🔄 Carga Completa');
         
         // Prueba 2: Carga optimizada
-        console.time('Carga Optimizada');
         const inicioOptimizada = performance.now();
         
         const filtros = this.obtenerFiltrosActuales();
@@ -499,7 +486,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           next: (responseOpt) => {
             const finOptimizada = performance.now();
             const tiempoOptimizada = finOptimizada - inicioOptimizada;
-            console.timeEnd('Carga Optimizada');
             
             // Comparación
             const mejora = ((tiempoCompleta - tiempoOptimizada) / tiempoCompleta) * 100;
@@ -511,12 +497,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
             );
           },
           error: (error) => {
-            console.error('Error en carga optimizada:', error);
           }
         });
       },
       error: (error) => {
-        console.error('Error en carga completa:', error);
       }
     });
   }
@@ -619,7 +603,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       this.chartTendencias.destroy();
     }
     
-    // ACTUALIZADO: El backend ahora devuelve TODOS los meses (Enero-Diciembre), incluso con solicitudes: 0
     // NO filtrar meses con solicitudes 0 - mostrar todos los meses del array tendenciasTemporales
     // Crear nueva gráfica
     this.chartTendencias = new Chart(ctx, {
@@ -738,7 +721,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       this.crearGraficoPrediccionesProgramas();
       this.crearGraficoPrediccionesTemporales();
     } catch (error) {
-      console.error('Error creando gráficos:', error);
     }
   }
 
@@ -1298,7 +1280,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
             panelClass: ['success-snackbar']
           });
         } else {
-          console.error('[DEBUG] El archivo PDF está vacío o corrupto');
           this.snackBar.open('El archivo PDF está vacío o corrupto', 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -1306,7 +1287,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        console.error('[DEBUG] Error al exportar PDF:', error);
         
         this.snackBar.open('Error al exportar el reporte PDF', 'Cerrar', {
           duration: 5000,
@@ -1317,7 +1297,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * NUEVO: Calcula el porcentaje de un estado respecto al total de solicitudes
+   * Calcula el porcentaje de un estado respecto al total de solicitudes
    */
   calcularPorcentajeEstado(cantidad: number, total: number): number {
     if (total === 0) return 0;
@@ -1352,7 +1332,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
             panelClass: ['success-snackbar']
           });
         } else {
-          console.error('[DEBUG] El archivo Excel está vacío o corrupto');
           this.snackBar.open('El archivo Excel está vacío o corrupto', 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -1360,7 +1339,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        console.error('[DEBUG] Error al exportar Excel:', error);
         
         this.snackBar.open('Error al exportar el reporte Excel', 'Cerrar', {
           duration: 5000,

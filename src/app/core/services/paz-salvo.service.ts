@@ -143,7 +143,6 @@ export class PazSalvoService {
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
-        console.error('Error obteniendo solicitudes procesadas (funcionario):', error);
         return of([]);
       })
     );
@@ -164,7 +163,6 @@ export class PazSalvoService {
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
-        console.error('Error obteniendo solicitudes procesadas (coordinador):', error);
         return of([]);
       })
     );
@@ -185,7 +183,6 @@ export class PazSalvoService {
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
-        console.error('Error obteniendo solicitudes procesadas (secretaria):', error);
         return of([]);
       })
     );
@@ -218,8 +215,6 @@ export class PazSalvoService {
       mensaje?: string;
     }>(`${this.apiUrl}/obtenerComentarios/${idSolicitud}`, { headers: this.getAuthHeaders() }).pipe(
       catchError((error: any) => {
-        console.error('Error obteniendo comentarios:', error);
-        // Si hay error, devolver objeto vacío con mensaje
         return of({ mensaje: 'Error al obtener comentarios' });
       })
     );
@@ -257,10 +252,6 @@ export class PazSalvoService {
     return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
       .pipe(
         catchError(error => {
-          console.error('Error al crear solicitud de paz y salvo:', error);
-          console.error('Error status:', error.status);
-          console.error('Error message:', error.message);
-          console.error('Error body:', error.error);
           throw error;
         })
       );
@@ -298,9 +289,6 @@ export class PazSalvoService {
       nombreSolicitud = `Solicitud Paz y Salvo - ${nombreFinal}`;
     }
     
-    console.log('📤 Enviando solicitud al backend con nombre:', nombreSolicitud);
-    console.log('📋 Datos completos del formulario:', datosFormulario);
-
     const body: any = {
       idUsuario: studentId,
       nombre_solicitud: nombreSolicitud,
@@ -330,10 +318,6 @@ export class PazSalvoService {
     return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
       .pipe(
         catchError(error => {
-          console.error('Error al crear solicitud de paz y salvo:', error);
-          console.error('Error status:', error.status);
-          console.error('Error message:', error.message);
-          console.error('Error body:', error.error);
           throw error;
         })
       );
@@ -608,8 +592,6 @@ export class PazSalvoService {
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    // URL de descarga por ID
-    console.log('📁 ID del documento:', idDocumento);
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -630,13 +612,8 @@ export class PazSalvoService {
    * Usa la ruta almacenada en la base de datos
    */
   descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
-    // Extraer el nombre del archivo de la ruta si es necesario
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
-    // USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
     const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
-    // URL de descarga por ruta
-    console.log('📁 Ruta del documento:', rutaDocumento);
-    console.log('📁 Nombre extraído:', nombreArchivo);
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -681,7 +658,7 @@ export class PazSalvoService {
   }
 
   /**
-   * 🆕 Generar documento de Paz y Salvo usando endpoint específico (para secretaría)
+   * Generar documento de Paz y Salvo usando endpoint específico (para secretaría)
    */
   generarDocumento(idSolicitud: number, numeroDocumento: string, fechaDocumento: string, observaciones?: string): Observable<{blob: Blob, filename: string}> {
     const url = `${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/${idSolicitud}`;
@@ -720,7 +697,7 @@ export class PazSalvoService {
   }
 
   /**
-   * 🆕 Obtener TODOS los documentos de una solicitud de Paz y Salvo
+   * Obtener todos los documentos de una solicitud de Paz y Salvo
    * Para funcionarios
    */
   obtenerDocumentos(idSolicitud: number): Observable<any[]> {
@@ -730,7 +707,7 @@ export class PazSalvoService {
   }
 
   /**
-   * 🆕 Obtener TODOS los documentos de una solicitud de Paz y Salvo
+   * Obtener todos los documentos de una solicitud de Paz y Salvo
    * Para coordinadores
    */
   obtenerDocumentosCoordinador(idSolicitud: number): Observable<any[]> {
@@ -740,8 +717,7 @@ export class PazSalvoService {
   }
 
   /**
-   * 🆕 Asociar documentos huérfanos a una solicitud
-   * Para mantener compatibilidad con el flujo anterior si es necesario
+   * Asociar documentos huérfanos a una solicitud
    */
   asociarDocumentosHuerfanos(idSolicitud: number): Observable<any> {
     const url = `${this.apiUrl}/asociar-documentos-huerfanos/${idSolicitud}`;

@@ -122,10 +122,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   cargarDatos() {
     this.cargando = true;
-    console.log('🔄 Cargando datos para gestión de cursos...');
-    console.log('📅 Período filtro seleccionado:', this.periodoFiltro);
-    
-    // IMPORTANTE: Limpiar cursos antes de cargar nuevos para evitar mostrar datos antiguos
     this.cursos = [];
     this.cursosFiltrados = [];
     
@@ -134,12 +130,10 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       ? this.periodoFiltro.trim() 
       : undefined;
     
-    console.log('📤 Enviando período al backend:', periodoParam || 'todos (sin filtrar)');
     
     // Cargar cursos del backend con filtro de período
     this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).subscribe({
       next: (cursos) => {
-        console.log('✅ Cursos recibidos del backend:', cursos.length);
         this.cursos = cursos;
         this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
         // Cursos cargados del backend
@@ -147,8 +141,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.errorHandler.handleCargaError('cursos');
-        console.error('❌ Error cargando cursos del backend:', err);
-        console.error('📅 Período que causó el error:', periodoParam);
         this.cargando = false;
         // Mostrar mensaje de error sin datos de prueba
         this.cursos = [];
@@ -166,7 +158,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         // Materias cargadas del backend
       },
       error: (err) => {
-        console.error('Error cargando materias del backend:', err);
         this.materias = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
@@ -182,7 +173,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         // Docentes cargados del backend
       },
       error: (err) => {
-        console.error('Error cargando docentes del backend:', err);
         this.docentes = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,

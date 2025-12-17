@@ -719,7 +719,6 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error al cargar salones:', error);
         this.snackBar.open('Error al cargar la lista de salones', 'Cerrar', { duration: 3000 });
         this.cargandoSalones = false;
       }
@@ -746,7 +745,6 @@ export class CursoDialogComponent implements OnInit {
       // Actualizar el valor del formulario con el ID correcto
       this.data.form.patchValue({ id_docente: idFinal }, { emitEvent: false });
     } else {
-      console.warn('Docente no encontrado en la lista con ID:', selectedId);
     }
   }
 
@@ -782,9 +780,6 @@ export class CursoDialogComponent implements OnInit {
 
   // Cargar períodos académicos (recientes para crear cursos)
   private cargarPeriodos(): void {
-    console.log('🔄 Cargando períodos académicos recientes...');
-    
-    // Usar períodos recientes para crear cursos nuevos (recomendado según especificación)
     this.cursosService.getPeriodosRecientes().subscribe({
       next: (periodos) => {
         this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
@@ -798,8 +793,6 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error cargando períodos recientes:', error);
-        console.error('Detalles del error:', {
           status: error.status,
           statusText: error.statusText,
           url: error.url,
@@ -807,7 +800,6 @@ export class CursoDialogComponent implements OnInit {
         });
         
         // Si falla, intentar con períodos futuros como fallback
-        console.warn('Intentando cargar períodos futuros como fallback...');
         this.cargarPeriodosFuturosFallback();
       }
     });
@@ -826,9 +818,7 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error cargando períodos futuros (fallback):', error);
         // Si falla, intentar con todos los períodos como último recurso
-        console.warn('Intentando cargar TODOS los períodos como último recurso...');
         this.cargarTodosLosPeriodos();
       }
     });
@@ -847,7 +837,6 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error crítico cargando períodos:', error);
         this.snackBar.open('No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
@@ -916,8 +905,6 @@ export class CursoDialogComponent implements OnInit {
               this.dialogRef.close('guardado');
             },
             error: (err) => {
-              console.error('Error actualizando curso:', err);
-              console.error('Detalles del error:', {
                 status: err.status,
                 statusText: err.statusText,
                 url: err.url,
@@ -944,7 +931,6 @@ export class CursoDialogComponent implements OnInit {
             }
           });
       } else {
-        // Crear nuevo curso
         const formValue = this.data.form.value;
         
         // Verificar y corregir el id_docente antes de enviar
@@ -960,7 +946,6 @@ export class CursoDialogComponent implements OnInit {
           if (docenteSeleccionado) {
             // Usar id_docente si está disponible, sino id_usuario
             idDocenteFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
-            // ID docente corregido
           }
         }
         
@@ -1018,8 +1003,6 @@ export class CursoDialogComponent implements OnInit {
               this.dialogRef.close('guardado');
             },
             error: (err) => {
-              console.error('Error creando curso:', err);
-              console.error('Payload enviado:', createData);
               
               // Manejo específico de errores
               let errorMessage = 'Error al crear el curso';

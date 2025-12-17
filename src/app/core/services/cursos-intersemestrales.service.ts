@@ -481,14 +481,6 @@ export class CursosIntersemestralesService {
         return periodos;
       }),
       catchError(error => {
-        console.error('[PERIODOS] Error obteniendo períodos académicos:', error);
-        console.error('[PERIODOS] URL que falló:', url);
-        console.error('[PERIODOS] Detalles del error:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          url: error.url
-        });
         return of([]);
       })
     );
@@ -504,14 +496,6 @@ export class CursosIntersemestralesService {
         return periodos;
       }),
       catchError(error => {
-        console.error('[PERIODOS] Error obteniendo períodos futuros:', error);
-        console.error('[PERIODOS] URL que falló:', url);
-        console.error('[PERIODOS] Detalles del error:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          url: error.url
-        });
         return of([]);
       })
     );
@@ -527,14 +511,6 @@ export class CursosIntersemestralesService {
         return periodos;
       }),
       catchError(error => {
-        console.error('[PERIODOS] Error obteniendo períodos recientes:', error);
-        console.error('[PERIODOS] URL que falló:', url);
-        console.error('[PERIODOS] Detalles del error:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          url: error.url
-        });
         return of([]);
       })
     );
@@ -552,14 +528,6 @@ export class CursosIntersemestralesService {
         return periodo;
       }),
       catchError(error => {
-        console.error('[PERIODOS] Error obteniendo período actual:', error);
-        console.error('[PERIODOS] URL que falló:', url);
-        console.error('[PERIODOS] Detalles del error:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          url: error.url
-        });
         return of('');
       })
     );
@@ -597,18 +565,14 @@ export class CursosIntersemestralesService {
     // Si todosLosPeriodos es true, usar ese parámetro (ignora periodoAcademico)
     if (todosLosPeriodos === true) {
       httpParams = httpParams.set('todosLosPeriodos', 'true');
-      console.log('[CURSOS] Mostrando todos los cursos sin filtrar por período');
     } else if (periodoAcademico && periodoAcademico.trim() !== '') {
       // Si periodoAcademico es "todos", también mostrar todos
       if (periodoAcademico.trim().toLowerCase() === 'todos') {
         httpParams = httpParams.set('todosLosPeriodos', 'true');
-        console.log('[CURSOS] Mostrando todos los cursos (periodoAcademico="todos")');
       } else {
         httpParams = httpParams.set('periodoAcademico', periodoAcademico);
-        console.log('[CURSOS] Filtrando por período:', periodoAcademico);
       }
     } else {
-      console.log('[CURSOS] No se envía período, usando período actual automático');
     }
     
     if (idPrograma !== undefined && idPrograma !== null) {
@@ -620,14 +584,8 @@ export class CursosIntersemestralesService {
       ? { params: httpParams }
       : {};
     
-    console.log('[CURSOS] URL completa:', url);
-    console.log('[CURSOS] Opciones:', options);
-    
     return this.http.get<CursoOfertadoVerano[] | { data: CursoOfertadoVerano[] }>(url, options).pipe(
       map(response => {
-        console.log('[CURSOS] Respuesta del backend (raw):', response);
-        
-        // Manejar si la respuesta viene envuelta en un objeto { data: [...] } o es un array directo
         let cursos: CursoOfertadoVerano[] = [];
         if (Array.isArray(response)) {
           cursos = response;
@@ -637,24 +595,11 @@ export class CursosIntersemestralesService {
           cursos = (response as any).data;
         }
         
-        console.log('[CURSOS] Cursos extraídos:', cursos);
-        console.log('[CURSOS] Cantidad de cursos:', cursos.length);
-        
         const cursosNormalizados = cursos.map(curso => this.normalizarCurso(curso));
-        console.log('[CURSOS] Cursos normalizados:', cursosNormalizados);
         return cursosNormalizados;
       }),
       catchError(error => {
-        console.error('[CURSOS] Error obteniendo cursos disponibles:', error);
-        console.error('[CURSOS] URL que falló:', url);
-        console.error('[CURSOS] Opciones:', options);
-        console.error('[CURSOS] Error completo:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          error: error.error
-        });
-        return of([]); // Retornar array vacío en caso de error
+        return of([]);
       })
     );
   }
@@ -683,7 +628,6 @@ export class CursosIntersemestralesService {
     return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
       map(cursos => cursos.map(curso => this.normalizarCurso(curso))),
       catchError(error => {
-        console.error('[CURSOS] Error obteniendo cursos verano:', error);
         return of([]);
       })
     );
@@ -718,7 +662,6 @@ export class CursosIntersemestralesService {
     return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
       map(cursos => cursos.map(curso => this.normalizarCurso(curso))),
       catchError(error => {
-        console.error('[CURSOS] Error obteniendo cursos disponibles:', error);
         return of([]);
       })
     );
@@ -764,11 +707,7 @@ export class CursosIntersemestralesService {
       // Normalizar el período: asegurar formato YYYY-P (el backend normaliza automáticamente)
       const periodoNormalizado = periodoAcademico.trim();
       httpParams = httpParams.set('periodoAcademico', periodoNormalizado);
-      console.log('[CURSOS] Filtrando todos los cursos por período:', periodoNormalizado);
-      console.log('[CURSOS] URL completa:', `${url}?periodoAcademico=${periodoNormalizado}`);
     } else {
-      console.log('[CURSOS] Mostrando TODOS los cursos sin filtrar por período');
-      console.log('[CURSOS] URL completa:', url);
     }
     
     if (idPrograma !== undefined && idPrograma !== null) {
@@ -782,16 +721,11 @@ export class CursosIntersemestralesService {
     
     return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
       map(cursos => {
-        console.log('[CURSOS] Cursos recibidos del backend:', cursos.length);
         if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
-          console.log('[CURSOS] Cursos filtrados por período', periodoAcademico.trim(), ':', cursos.length);
         }
         return cursos.map(curso => this.normalizarCurso(curso));
       }),
       catchError(error => {
-        console.error('[CURSOS] Error obteniendo todos los cursos:', error);
-        console.error('[CURSOS] Período que causó el error:', periodoAcademico);
-        console.error('[CURSOS] URL que falló:', url);
         throw error;
       })
     );
@@ -823,10 +757,6 @@ export class CursosIntersemestralesService {
     // Agregar parámetro de período si se proporciona (y no es "todos")
     if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
       httpParams = httpParams.set('periodoAcademico', periodoAcademico);
-      console.log(`[CURSOS] Filtrando cursos de ${estado} por período:`, periodoAcademico);
-    } else {
-      console.log(`[CURSOS] Mostrando TODOS los cursos de ${estado} sin filtrar por período`);
-    }
     
     const options = httpParams.keys().length > 0 
       ? { params: httpParams }
@@ -966,7 +896,6 @@ export class CursosIntersemestralesService {
     return this.http.get<Salon[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SALONES, { headers })
       .pipe(
         catchError((error: any) => {
-          console.error('Error al obtener salones:', error);
           return throwError(() => error);
         })
       );
@@ -1037,7 +966,6 @@ export class CursosIntersemestralesService {
       ? { params: httpParams }
       : {};
     
-    console.log('[SOLICITUDES] Cargando solicitudes con filtros:', {
       idMateria,
       periodoAcademico,
       idCurso,
@@ -1045,15 +973,12 @@ export class CursosIntersemestralesService {
       fechaInicio,
       fechaFin
     });
-    console.log('[SOLICITUDES] URL completa:', url, 'Params:', httpParams.toString());
     
     return this.http.get<any[]>(url, options).pipe(
       map(solicitudes => {
-        console.log('[SOLICITUDES] Solicitudes recibidas del backend:', solicitudes.length);
         return solicitudes;
       }),
       catchError(error => {
-        console.error('[SOLICITUDES] Error obteniendo solicitudes:', error);
         throw error;
       })
     );
@@ -1114,8 +1039,6 @@ export class CursosIntersemestralesService {
     // Asegurar que id_docente sea un número
     payloadParaBackend.id_docente = Number(payloadParaBackend.id_docente);
     
-    // Log para depuración
-    // Log de depuración (comentado para producción)
     
     return this.http.post<CursoOfertadoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION, payloadParaBackend)
       .pipe(
@@ -1209,7 +1132,6 @@ export class CursosIntersemestralesService {
     
     return this.http.get<PreinscripcionCurso[]>(url).pipe(
       map(preinscripciones => {
-        console.log('[PREINSCRIPCIONES] Respuesta del backend (raw):', preinscripciones);
         
         // Convertir PreinscripcionCurso[] a SolicitudCursoVerano[] para compatibilidad
         return preinscripciones.map(preins => {
@@ -1240,9 +1162,7 @@ export class CursosIntersemestralesService {
         });
       }),
       catchError(error => {
-        console.error('[PREINSCRIPCIONES] Error obteniendo preinscripciones del curso:', error);
         if (error.status === 404) {
-          console.error('[PREINSCRIPCIONES] Curso no encontrado');
         }
         throw error;
       })
@@ -1283,12 +1203,6 @@ export class CursosIntersemestralesService {
     // Los headers UTF-8 se configuran automáticamente en el JWT interceptor
     return this.http.get<RespuestaEstudiantesCurso>(endpoint).pipe(
       catchError(error => {
-        console.error('[CURSOS] Error obteniendo estudiantes del curso:', error);
-        if (error.status === 403) {
-          console.error('[CURSOS] Acceso denegado. Se requiere rol de Funcionario, Coordinador o Administrador');
-        } else if (error.status === 404) {
-          console.error('[CURSOS] Curso no encontrado');
-        }
         throw error;
       })
     );
@@ -1352,7 +1266,6 @@ export class CursosIntersemestralesService {
         return { blob, filename };
       }),
       catchError(error => {
-        console.error('[CURSOS] Error exportando cursos a PDF:', error);
         return throwError(() => error);
       })
     );
@@ -1403,7 +1316,6 @@ export class CursosIntersemestralesService {
         return { blob, filename };
       }),
       catchError(error => {
-        console.error('[CURSOS] Error exportando estudiantes a PDF:', error);
         return throwError(() => error);
       })
     );
@@ -1490,7 +1402,6 @@ export class CursosIntersemestralesService {
         );
       }),
       catchError(error => {
-        console.error('Error obteniendo inscripciones:', error);
         // Intentar con endpoint alternativo
         return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
           switchMap(inscripciones => {
@@ -1701,7 +1612,6 @@ export class CursosIntersemestralesService {
         .replace(/Rodr\?\?guez/g, 'Rodríguez')
         .replace(/Botero/g, 'Botero'); // Este no tiene acentos
     } catch (error) {
-      console.warn('Error corrigiendo encoding:', error);
       return texto || '';
     }
   }
@@ -1884,7 +1794,6 @@ export class CursosIntersemestralesService {
       ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DASHBOARD_ESTADISTICAS
     ).pipe(
       catchError(error => {
-        console.error('Error al obtener estadísticas del dashboard:', error);
         // Retornar valores por defecto en caso de error
         return of({
           totalPreinscripciones: 0,
@@ -1937,7 +1846,6 @@ export class CursosIntersemestralesService {
       ? { params: httpParams, responseType: 'blob' as 'blob', observe: 'response' as const }
       : { responseType: 'blob' as 'blob', observe: 'response' as const };
     
-    console.log('[EXPORTAR] Exportando solicitudes con parámetros:', httpParams.toString());
     
     return this.http.get(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL, options).pipe(
       map(response => {
@@ -1971,12 +1879,10 @@ export class CursosIntersemestralesService {
             filename
           };
         } else {
-          console.error('Content-Type inválido:', contentType);
           throw new Error(`El servidor no devolvió un Excel válido. Content-Type: ${contentType}`);
         }
       }),
       catchError(error => {
-        console.error('Error al exportar solicitudes a Excel:', error);
         throw error;
       })
     );
