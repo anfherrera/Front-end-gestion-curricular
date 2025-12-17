@@ -103,12 +103,6 @@ export class CursosOfertadosComponent implements OnInit {
         this.cargando = false;
       },
       error: (err: any) => {
-        console.error('Error al cargar cursos:', {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          error: err.error
-        });
         // Fallback a cursos legacy si hay error
         this.loadCursosLegacy();
       }

@@ -312,7 +312,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para aprobar la preinscripción';
         }
         
-        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+        this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -321,7 +321,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   rechazarSolicitud(solicitud: SolicitudCursoVerano): void {
-    // ✅ Usar el campo correcto del ID
     const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
     
     // Abrir modal para solicitar motivo de rechazo
@@ -401,7 +400,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para rechazar la preinscripción';
         }
         
-        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+        this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -517,7 +516,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     <div mat-dialog-content class="dialog-content">
       <!-- Información que llenó el estudiante -->
       <div class="form-section">
-        <h3>📝 Información de la Solicitud</h3>
+        <h3>Información de la Solicitud</h3>
         <div class="info-grid">
           <div class="info-item">
             <strong>Nombre Completo:</strong> {{ data.solicitud.objUsuario.nombre_completo }}
@@ -533,7 +532,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
       <!-- Observaciones del funcionario -->
       <div class="form-section">
-        <h3>📝 Observaciones del Funcionario</h3>
+        <h3>Observaciones del Funcionario</h3>
         <form [formGroup]="observacionesForm">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Agrega observaciones sobre esta preinscripción</mat-label>
