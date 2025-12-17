@@ -18,7 +18,6 @@ export function formatearFecha(fechaISO: string | Date): string {
       day: 'numeric'
     });
   } catch (error) {
-    console.error('Error formateando fecha:', error);
     return 'Fecha inválida';
   }
 }
@@ -39,7 +38,6 @@ export function formatearFechaCorta(fechaISO: string | Date): string {
       day: '2-digit'
     });
   } catch (error) {
-    console.error('Error formateando fecha:', error);
     return 'N/A';
   }
 }
@@ -58,7 +56,6 @@ export function calcularDuracionSemanas(fechaInicio: string | Date, fechaFin: st
     const dias = Math.abs((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
     return Math.round(dias / 7);
   } catch (error) {
-    console.error('Error calculando duración:', error);
     return 0;
   }
 }
@@ -76,7 +73,6 @@ export function calcularDuracionDias(fechaInicio: string | Date, fechaFin: strin
     
     return Math.abs(Math.round((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)));
   } catch (error) {
-    console.error('Error calculando duración en días:', error);
     return 0;
   }
 }
@@ -96,7 +92,6 @@ export function esCursoActivo(fechaInicio: string | Date, fechaFin: string | Dat
     
     return referencia >= inicio && referencia <= fin;
   } catch (error) {
-    console.error('Error verificando si curso está activo:', error);
     return false;
   }
 }
@@ -160,7 +155,6 @@ export function validarFechasCurso(fechaInicio: string | Date, fechaFin: string 
     
     return null; // Válido
   } catch (error) {
-    console.error('Error validando fechas:', error);
     return 'Error al validar las fechas';
   }
 }
@@ -279,7 +273,6 @@ export function getEstadoCursoPorFechas(fechaInicio: string | Date, fechaFin: st
     if (hoy >= inicio && hoy <= fin) return 'activo';
     return 'finalizado';
   } catch (error) {
-    console.error('Error obteniendo estado del curso:', error);
     return 'proximo';
   }
 }

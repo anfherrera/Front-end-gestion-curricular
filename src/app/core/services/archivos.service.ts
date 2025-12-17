@@ -21,7 +21,7 @@ export class ArchivosService {
    */
   subirPDF(file: File, inscripcionId?: number, tipoSolicitud?: string): Observable<Archivo> {
     const formData = new FormData();
-    formData.append('file', file); // 👈 debe coincidir con @RequestParam("file")
+    formData.append('file', file);
     
     if (inscripcionId) {
       formData.append('inscripcionId', inscripcionId.toString());

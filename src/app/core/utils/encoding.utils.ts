@@ -47,7 +47,6 @@ export function corregirEncoding(texto: string): string {
     
     return textoCorregido;
   } catch (error) {
-    console.error('Error al corregir encoding:', error);
     return texto;
   }
 }

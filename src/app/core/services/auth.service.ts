@@ -15,7 +15,7 @@ export class AuthService {
   private readonly EXP_KEY = 'tokenExp';
 
   private roleSubject = new BehaviorSubject<UserRole | null>(null);
-  role$ = this.roleSubject.asObservable(); // 👈 los componentes se suscriben a esto
+  role$ = this.roleSubject.asObservable();
   private logoutTimer: any;
 
   constructor(
@@ -124,7 +124,7 @@ export class AuthService {
       storage.setItem(this.ROLE_KEY, normalizedRole);
     }
 
-    this.roleSubject.next(normalizedRole); // 👈 actualiza en tiempo real
+    this.roleSubject.next(normalizedRole);
   }
 
   getRole(): UserRole | null {
@@ -170,7 +170,7 @@ export class AuthService {
     }
     clearTimeout(this.logoutTimer);
     this.stopActivityMonitoring(); // detiene el monitoreo de actividad
-    this.roleSubject.next(null); // 👈 limpia el rol
+    this.roleSubject.next(null);
     this.router.navigate(['/login']);
   }
 
