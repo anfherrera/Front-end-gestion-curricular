@@ -92,7 +92,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('Error al cargar solicitudes (secretaria):', err);
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
@@ -116,7 +115,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('Error al cargar solicitudes procesadas:', err);
         this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
       }
     });
@@ -244,8 +242,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('[DEBUG] Error al cargar documentos (secretaria):', error);
-        console.error('[DEBUG] Error completo:', JSON.stringify(error));
         
         if (this.selectedSolicitud) {
           this.selectedSolicitud.documentos = [];
@@ -285,7 +281,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('Error al generar documento:', err);
         this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
@@ -330,7 +325,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.subiendoPDF = false;
       },
       error: (err) => {
-        console.error('Error al subir archivo PDF:', err);
         this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
@@ -363,7 +357,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.cargarSolicitudesProcesadas();
       },
       error: (err: any) => {
-        console.error('Error al actualizar estado de solicitud:', err);
         this.snackBar.open('Error al enviar al estudiante', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
       }
@@ -391,7 +384,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.enviandoPDF = true;
         // Verificar que la solicitud sigue seleccionada
         if (!this.selectedSolicitud) {
-          console.error('selectedSolicitud es undefined');
           this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
           this.enviandoPDF = false;
           return;
@@ -413,14 +405,12 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.cargarSolicitudesProcesadas();
           },
           error: (err: any) => {
-            console.error('Error al actualizar estado de solicitud:', err);
             this.snackBar.open('PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
           }
         });
       },
       error: (err) => {
-        console.error('Error al subir archivo PDF:', err);
         this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }

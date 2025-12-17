@@ -75,7 +75,6 @@ export class PazSalvoComponent implements OnInit {
         // Los documentos solo se mostrarán cuando el usuario seleccione manualmente
       },
       error: (err) => {
-        console.error('Error al cargar solicitudes para funcionario:', err);
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
@@ -138,7 +137,6 @@ export class PazSalvoComponent implements OnInit {
         
       },
       error: (err) => {
-        console.error('Error al cargar solicitudes procesadas (funcionario):', err);
         this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
       }
     });
@@ -209,7 +207,6 @@ export class PazSalvoComponent implements OnInit {
           this.cargarSolicitudesPendientes();
         },
         error: (error) => {
-          console.error('Error al añadir comentario:', error);
           this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
         }
       });
@@ -241,7 +238,6 @@ export class PazSalvoComponent implements OnInit {
             this.requestStatusTable?.resetSelection();
           },
           error: (err) => {
-            console.error('Error al actualizar documentos (no crítico):', err);
             // Mostrar mensaje informativo pero no de error
             this.snackBar.open('Solicitud aprobada (Documentos se actualizarán automáticamente)', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudesPendientes();
@@ -253,7 +249,6 @@ export class PazSalvoComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Error al aprobar solicitud:', err);
         // Intentar leer el contenido del error si es un Blob
         if (err.error instanceof Blob) {
           err.error.text().then((text: string) => {

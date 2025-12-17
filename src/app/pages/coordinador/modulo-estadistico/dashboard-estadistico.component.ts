@@ -814,7 +814,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       'Homologación': '#9C27B0'           // 🟣 Morado
     };
     
-    // DEBUG: Mostrar procesos y labels
     // Asignar colores según el nombre del proceso
     const colores = labelsSimplificados.map(label => {
       // Buscar coincidencia exacta primero
@@ -885,7 +884,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartProcesos = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error al crear gráfico de procesos:', error);
+      // Error al crear gráfico
     }
   }
 
@@ -959,7 +958,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartProcesos = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error al crear gráfico de procesos:', error);
+      // Error al crear gráfico
     }
   }
 
@@ -1090,7 +1089,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartTendencia = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error al crear gráfico de tendencia:', error);
+      // Error al crear gráfico
     }
   }
 
@@ -1235,7 +1234,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartTendencia = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error al crear gráfico de tendencia:', error);
+      // Error al crear gráfico
     }
   }
 
@@ -1455,7 +1454,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartDistribucion = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error al crear gráfico de distribución (fallback):', error);
+      // Error al crear gráfico
     }
   }
 

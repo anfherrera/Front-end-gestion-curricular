@@ -1435,7 +1435,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     try {
       this.chartDistribucion = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error al crear gráfico de distribución (fallback):', error);
+      // Error al crear gráfico
     }
   }
 

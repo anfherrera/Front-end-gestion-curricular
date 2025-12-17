@@ -81,7 +81,6 @@ export class PazSalvoService {
 
   /**
    * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
-   * Igual que Homologación: usa endpoint directo /Funcionario
    */
   getPendingRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
     let params = new HttpParams();
@@ -97,7 +96,6 @@ export class PazSalvoService {
 
   /**
    * Obtener solicitudes para coordinador
-   * Igual que Homologación: usa endpoint directo /Coordinador
    */
   getCoordinatorRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
     let params = new HttpParams();
@@ -113,7 +111,6 @@ export class PazSalvoService {
 
   /**
    * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
-   * Igual que Homologación: usa endpoint directo /Secretaria
    * Estado: APROBADA_COORDINADOR (pendientes de procesar)
    */
   getSecretariaRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
@@ -238,7 +235,6 @@ export class PazSalvoService {
         nombre_completo: usuario.nombre_completo || "Usuario",
         codigo: usuario.codigo || "104612345678",
         correo: usuario.email_usuario || "usuario@unicauca.edu.co",
-        // FIX: Agregar id_rol e id_programa como campos requeridos
         id_rol: usuario.id_rol || usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
         id_programa: usuario.id_programa || usuario.objPrograma?.id_programa || 1, // Programa por defecto
         objPrograma: usuario.objPrograma || {
@@ -467,7 +463,7 @@ export class PazSalvoService {
   }
 
   /**
-   * IGUAL QUE HOMOLOGACIÓN: Subir archivo PDF usando endpoint genérico
+   * Subir archivo PDF usando endpoint genérico
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
     const url = `${environment.apiUrl}/archivos/subir/pdf`;
@@ -530,7 +526,6 @@ export class PazSalvoService {
 
   /**
    * Aprobar solicitud como coordinador
-   * IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA_COORDINADOR'
    */
   approveAsCoordinador(requestId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
@@ -541,7 +536,6 @@ export class PazSalvoService {
 
   /**
    * Aprobar definitivamente la solicitud (usado por SECRETARIA)
-   * IGUAL QUE HOMOLOGACIÓN: Envía 'APROBADA' como estado final
    */
   approveDefinitively(idSolicitud: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
@@ -559,7 +553,7 @@ export class PazSalvoService {
   }
 
   /**
-   * CORREGIDO: Descargar archivo PDF usando endpoint específico de Paz y Salvo
+   * Descargar archivo PDF usando endpoint específico de Paz y Salvo
    */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
@@ -644,7 +638,7 @@ export class PazSalvoService {
   }
 
   /**
-   * CORREGIDO: Añadir comentario usando endpoint genérico (igual que homologación)
+   * Añadir comentario usando endpoint genérico
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
     // USAR ENDPOINT GENÉRICO CORRECTO

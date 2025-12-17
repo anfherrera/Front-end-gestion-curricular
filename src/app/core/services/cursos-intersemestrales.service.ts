@@ -370,7 +370,6 @@ export interface RechazarInscripcionResponse {
   message: string;
 }
 
-// Respuesta del endpoint de debug
 export interface DebugInscripcionResponse {
   success: boolean;
   message: string;
@@ -428,11 +427,6 @@ export class CursosIntersemestralesService {
 
     // Preservar el campo grupo si existe, o usar 'A' por defecto
     const grupo = curso.grupo || 'A';
-
-    // Log para depuración (solo en desarrollo)
-    if (curso.grupo) {
-      // Log de normalización de grupo (comentado para producción)
-    }
 
     if (curso.periodo === periodo && curso.periodoAcademico === periodo && curso.grupo === grupo) {
       return curso;
@@ -1038,7 +1032,6 @@ export class CursosIntersemestralesService {
         map(curso => {
           // Normalizar el curso retornado para asegurar que el grupo se preserve
           const cursoNormalizado = this.normalizarCurso(curso);
-          // Log de depuración (comentado para producción)
           return cursoNormalizado;
         })
       );
@@ -1555,26 +1548,21 @@ export class CursosIntersemestralesService {
     return this.http.get<any>(endpoint);
   }
 
-  // DEBUG: Endpoint para debuggear problemas con inscripciones
   debugInscripcion(idPreinscripcion: number): Observable<DebugInscripcionResponse> {
     const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DEBUG_INSCRIPCION(idPreinscripcion);
     return this.http.get<DebugInscripcionResponse>(endpoint);
   }
 
-  // DIAGNÓSTICO: Verificar estado de preinscripciones de un usuario en un curso específico
   verificarPreinscripcionesUsuario(idUsuario: number, idCurso: number): Observable<any> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${idUsuario}/curso/${idCurso}`;
     return this.http.get<any>(endpoint);
   }
 
-  // DIAGNÓSTICO: Obtener todas las preinscripciones de un usuario
   getPreinscripcionesUsuario(idUsuario: number): Observable<any[]> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${idUsuario}`;
     return this.http.get<any[]>(endpoint);
   }
 
-  // DIAGNÓSTICO: Obtener todas las preinscripciones de un curso (usando método existente)
-  // Nota: Ya existe getPreinscripcionesCurso en la línea 82, no duplicar
 
   // ====== CURSOS (adaptados a CursoListComponent) ======
   
