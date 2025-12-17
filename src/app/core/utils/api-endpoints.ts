@@ -171,7 +171,7 @@ export class ApiEndpoints {
     ESTADISTICAS: `${this.BASE_URL}/modulo-estadistico/estadisticas`,
     EXPORTAR: (formato: string) => `${this.BASE_URL}/modulo-estadistico/exportar/${formato}`,
     
-    // ===== ENDPOINTS DE ESTADÍSTICAS (ACTUALIZADOS) =====
+    // ===== ENDPOINTS DE ESTADÍSTICAS =====
     ESTADISTICAS_GLOBALES: `${this.BASE_URL}/estadisticas/globales`,
     ESTADISTICAS_PERIODO: `${this.BASE_URL}/estadisticas/periodo`,
     ESTADISTICAS_PROCESO: (nombreProceso: string) => `${this.BASE_URL}/estadisticas/proceso/${nombreProceso}`,
@@ -204,7 +204,7 @@ export class ApiEndpoints {
     // ===== ENDPOINTS OPTIMIZADOS - CURSOS DE VERANO =====
     CURSOS_VERANO_TENDENCIAS_TEMPORALES: `${this.BASE_URL}/estadisticas/cursos-verano/tendencias-temporales`,
     
-    // ===== ENDPOINTS DE EXPORTACIÓN (ACTUALIZADOS) =====
+    // ===== ENDPOINTS DE EXPORTACIÓN =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
     EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`,
     

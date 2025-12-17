@@ -34,7 +34,7 @@ export class SidebarComponent implements OnChanges {
     // Intentar obtener el rol del localStorage primero
     let backendRole = this.authService.getRole();
     
-    // FALLBACK: Si el rol es null o incorrecto, leer del usuario directamente
+    // Si el rol es null o incorrecto, leer del usuario directamente
     if (!backendRole || backendRole === UserRole.ESTUDIANTE) {
       const usuario = this.authService.getUsuario();
       if (usuario?.rol?.nombre) {

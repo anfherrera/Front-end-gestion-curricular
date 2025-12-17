@@ -190,7 +190,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
 
   /**
    * Exporta el historial actual a PDF
-   * IMPORTANTE: Usa los mismos filtros que están aplicados en la tabla del historial
+   * Usa los mismos filtros que están aplicados en la tabla del historial
    * para garantizar que el PDF contenga exactamente las mismas solicitudes que se muestran.
    * Si no hay filtros, el PDF incluirá todas las solicitudes del sistema.
    */
