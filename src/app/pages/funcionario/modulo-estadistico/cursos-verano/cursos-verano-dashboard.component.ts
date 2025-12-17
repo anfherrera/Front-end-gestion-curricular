@@ -1251,6 +1251,26 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   // ===== MÉTODOS DE EXPORTACIÓN =====
 
+  /**
+   * Genera un nombre de archivo dinámico basado en los filtros aplicados
+   * Formato: estadisticas_cursos_verano_{periodo}_{programa}.{extension}
+   */
+  generarNombreArchivo(extension: 'pdf' | 'xlsx', filtros: { periodoAcademico?: string; idPrograma?: number }): string {
+    let nombre = 'estadisticas_cursos_verano';
+    
+    if (filtros.periodoAcademico) {
+      // Reemplazar guiones por guiones bajos para el nombre de archivo
+      const periodo = filtros.periodoAcademico.replace(/-/g, '_');
+      nombre += `_${periodo}`;
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
+      nombre += `_programa_${filtros.idPrograma}`;
+    }
+    
+    return `${nombre}.${extension}`;
+  }
+
   exportarPDF(): void {
     const filtros = this.obtenerFiltrosActuales();
     this.estadisticasService.exportarReporteCursosVerano(filtros).subscribe({
@@ -1260,10 +1280,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           // Crear URL del blob
           const url = window.URL.createObjectURL(blob);
           
-          // Crear enlace de descarga
+          // Crear enlace de descarga con nombre dinámico
           const link = document.createElement('a');
           link.href = url;
-          link.download = `reporte_cursos_verano_${new Date().toISOString().split('T')[0]}.pdf`;
+          link.download = this.generarNombreArchivo('pdf', filtros);
           
           // Simular clic para descargar
           document.body.appendChild(link);
@@ -1314,10 +1334,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           // Crear URL del blob
           const url = window.URL.createObjectURL(blob);
           
-          // Crear enlace de descarga
+          // Crear enlace de descarga con nombre dinámico
           const link = document.createElement('a');
           link.href = url;
-          link.download = `reporte_cursos_verano_${new Date().toISOString().split('T')[0]}.xlsx`;
+          link.download = this.generarNombreArchivo('xlsx', filtros);
           
           // Simular clic para descargar
           document.body.appendChild(link);

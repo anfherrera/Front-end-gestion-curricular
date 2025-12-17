@@ -31,6 +31,12 @@ export class EstadisticasService {
 
   /**
    * Obtiene estadísticas globales del API real con filtros opcionales
+   * GET /api/estadisticas/globales
+   * Query params (todos opcionales):
+   * - proceso: "Reingreso", "Paz y Salvo", "Homologación", "CURSO_VERANO", "ECAES"
+   * - idPrograma: ID del programa
+   * - fechaInicio: "yyyy-MM-dd"
+   * - fechaFin: "yyyy-MM-dd"
    * ACTUALIZADO: Maneja código 500 como respuesta válida con valores en 0
    */
   getEstadisticasGlobales(filtros: FiltroEstadisticas = {}): Observable<EstadisticasGlobalesAPI> {
@@ -48,7 +54,14 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+    // ACTUALIZADO: Agregar fechaInicio y fechaFin según las nuevas instrucciones
+    if (filtros.fechaInicio) {
+      params = params.set('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params = params.set('fechaFin', filtros.fechaFin);
+    }
 
     const url = ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES;
 
@@ -131,10 +144,25 @@ export class EstadisticasService {
 
   /**
    * Obtiene estadísticas filtradas por período académico
-   * @param periodo Período académico (ej: "2025-1")
+   * GET /api/estadisticas/periodo
+   * Query params:
+   * - periodoAcademico: "2025-1" (formato YYYY-P) O
+   * - fechaInicio: "yyyy-MM-dd"
+   * - fechaFin: "yyyy-MM-dd"
+   * @param periodo Período académico (ej: "2025-1") o objeto con fechaInicio y fechaFin
    */
-  getEstadisticasPorPeriodo(periodo: string): Observable<any> {
-    return this.http.get<any>(`${ApiEndpoints.MODULO_ESTADISTICO.BASE}/periodo/${periodo}`);
+  getEstadisticasPorPeriodo(periodo: string | { fechaInicio: string; fechaFin: string }): Observable<any> {
+    let params = new HttpParams();
+    
+    if (typeof periodo === 'string') {
+      params = params.set('periodoAcademico', periodo);
+    } else {
+      params = params.set('fechaInicio', periodo.fechaInicio);
+      params = params.set('fechaFin', periodo.fechaFin);
+    }
+    
+    // Usar el endpoint correcto según las instrucciones
+    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PERIODO, { params });
   }
 
   /**
@@ -146,10 +174,22 @@ export class EstadisticasService {
 
   /**
    * Obtiene estadísticas de un proceso específico
-   * @param nombreProceso Nombre del proceso (ej: 'reingreso', 'homologacion', etc.)
+   * GET /api/estadisticas/proceso/{tipoProceso}
+   * Ejemplo: /api/estadisticas/proceso/Reingreso
+   * @param nombreProceso Nombre del proceso (ej: 'Reingreso', 'Paz y Salvo', 'Homologación', etc.)
    */
   getEstadisticasProceso(nombreProceso: string): Observable<EstadisticasProceso> {
     return this.http.get<EstadisticasProceso>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PROCESO(nombreProceso));
+  }
+  
+  /**
+   * Obtiene estadísticas por estado
+   * GET /api/estadisticas/estado/{estado}
+   * Ejemplo: /api/estadisticas/estado/Enviada
+   * @param estado Estado de las solicitudes (ej: 'Enviada', 'Aprobada', 'Rechazada', etc.)
+   */
+  getEstadisticasPorEstado(estado: string): Observable<any> {
+    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_ESTADO(estado));
   }
 
   /**
@@ -162,33 +202,90 @@ export class EstadisticasService {
 
   /**
    * Obtiene el resumen completo de estadísticas
+   * GET /api/estadisticas/resumen-completo
+   * 
+   * Parámetros opcionales:
+   * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
+   * - idPrograma: ID del programa académico
+   * 
+   * IMPORTANTE: Para que las estadísticas generales se filtren correctamente,
+   * el frontend debe pasar los mismos filtros a ambos endpoints:
+   * - /api/estadisticas/cursos-verano
+   * - /api/estadisticas/resumen-completo
+   * 
+   * Si no se pasan filtros, mostrará datos generales sin filtrar.
+   * 
+   * Ejemplo de uso:
+   * ```typescript
+   * const filtros = { periodoAcademico: '2025-2', idPrograma: 1 };
+   * 
+   * // Obtener estadísticas de cursos de verano con filtros
+   * this.estadisticasService.getCursosVeranoEstadisticas(filtros).subscribe(...);
+   * 
+   * // Obtener resumen completo con LOS MISMOS filtros
+   * this.estadisticasService.getResumenCompleto(filtros).subscribe(...);
+   * ```
+   * 
+   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
+   * @returns Observable con el resumen completo de estadísticas
    */
-  getResumenCompleto(): Observable<ResumenCompleto> {
-    return this.http.get<ResumenCompleto>(ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO);
+  getResumenCompleto(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<ResumenCompleto> {
+    let params = new HttpParams();
+    
+    if (filtros.periodoAcademico) {
+      params = params.set('periodoAcademico', filtros.periodoAcademico);
+    }
+    
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
+      params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    const options = params.keys().length > 0 ? { params } : {};
+    
+    return this.http.get<ResumenCompleto>(ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO, options);
   }
 
   /**
    * Obtiene estadísticas con filtros aplicados usando el endpoint real del backend
+   * GET /api/estadisticas/filtradas
+   * Query params (todos opcionales):
+   * - nombreProceso: "Reingreso"
+   * - idPrograma: ID del programa
+   * - estado: "Enviada"
+   * - fechaInicio: "yyyy-MM-dd"
+   * - fechaFin: "yyyy-MM-dd"
    * @param filtros Filtros a aplicar
    */
-  getEstadisticasConFiltros(filtros: FiltroEstadisticas): Observable<any> {
+  getEstadisticasConFiltros(filtros: FiltroEstadisticas & { nombreProceso?: string; estado?: string; fechaInicio?: string; fechaFin?: string }): Observable<any> {
     let params = new HttpParams();
     
-    if (filtros.proceso) {
-      params = params.set('proceso', filtros.proceso);
+    if (filtros.nombreProceso) {
+      params = params.set('nombreProceso', filtros.nombreProceso);
+    } else if (filtros.proceso) {
+      params = params.set('nombreProceso', filtros.proceso);
     }
     
     if (filtros.idPrograma) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
+    if (filtros.estado) {
+      params = params.set('estado', filtros.estado);
+    }
+    
+    if (filtros.fechaInicio) {
+      params = params.set('fechaInicio', filtros.fechaInicio);
+    }
+    
+    if (filtros.fechaFin) {
+      params = params.set('fechaFin', filtros.fechaFin);
+    }
+    
     if (filtros.periodoAcademico) {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
-    
-    // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
 
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.POR_PERIODO_ESTADO_PROGRAMA, { params });
+    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_FILTRADAS, { params });
   }
 
   /**
@@ -283,6 +380,7 @@ export class EstadisticasService {
 
   /**
    * Obtiene estadísticas por estado de solicitudes
+   * GET /api/estadisticas/estado-solicitudes
    * @returns Observable con la respuesta del endpoint de estado de solicitudes
    */
   getEstadoSolicitudes(): Observable<EstadoSolicitudesResponse> {
@@ -303,7 +401,19 @@ export class EstadisticasService {
    */
   /**
    * Obtiene estadísticas de cursos de verano con filtros opcionales
+   * GET /api/estadisticas/cursos-verano
+   * 
+   * Parámetros opcionales:
+   * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
+   * - idPrograma: ID del programa académico
+   * 
+   * Lógica de filtrado:
+   * - Filtro por período académico: verifica el período en la solicitud y en el curso asociado
+   * - Filtro por programa: verifica que el usuario de la solicitud pertenezca al programa especificado
+   * - Ambos filtros son opcionales; si no se envían, se muestran todos los datos
+   * 
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
+   * @returns Observable con las estadísticas de cursos de verano
    */
   getCursosVeranoEstadisticas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<CursosVeranoResponse> {
     let params = new HttpParams();
@@ -312,7 +422,7 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.idPrograma) {
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
@@ -321,8 +431,16 @@ export class EstadisticasService {
 
   /**
    * Obtiene solo las tendencias temporales de cursos de verano (OPTIMIZADO)
-   * Carga más rápida, solo datos temporales
+   * GET /api/estadisticas/cursos-verano/tendencias-temporales
+   * 
+   * Parámetros opcionales (mismos que getCursosVeranoEstadisticas):
+   * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
+   * - idPrograma: ID del programa académico
+   * 
+   * Carga más rápida, solo datos temporales.
+   * 
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
+   * @returns Observable con las tendencias temporales de cursos de verano
    */
   getCursosVeranoTendenciasTemporales(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<{tendenciasTemporales: TendenciaTemporal[]}> {
     let params = new HttpParams();
@@ -331,7 +449,7 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.idPrograma) {
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
@@ -796,7 +914,18 @@ export class EstadisticasService {
 
   /**
    * Exporta reporte PDF de Cursos de Verano con filtros opcionales
+   * GET /api/estadisticas/export/pdf/cursos-verano
+   * 
+   * Parámetros opcionales:
+   * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
+   * - idPrograma: ID del programa académico
+   * 
+   * El PDF incluye:
+   * - Fecha en formato: "EEE MMM dd HH:mm:ss zzz yyyy" (ej: "Wed Dec 17 00:36:01 COT 2025")
+   * - Información de filtros aplicados si existen
+   * 
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
+   * @returns Observable con el blob del PDF
    */
   exportarReporteCursosVerano(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<Blob> {
     let params = new HttpParams();
@@ -805,7 +934,7 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.idPrograma) {
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
 
@@ -820,7 +949,18 @@ export class EstadisticasService {
 
   /**
    * Exporta reporte Excel de Cursos de Verano con filtros opcionales
+   * GET /api/estadisticas/export/excel/cursos-verano
+   * 
+   * Parámetros opcionales:
+   * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
+   * - idPrograma: ID del programa académico
+   * 
+   * El Excel incluye:
+   * - Fecha en formato: "EEE MMM dd HH:mm:ss zzz yyyy" (ej: "Wed Dec 17 00:36:01 COT 2025")
+   * - Información de filtros aplicados si existen
+   * 
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
+   * @returns Observable con el blob del Excel
    */
   exportarExcelCursosVerano(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<Blob> {
     let params = new HttpParams();
@@ -829,7 +969,7 @@ export class EstadisticasService {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
     
-    if (filtros.idPrograma) {
+    if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
 

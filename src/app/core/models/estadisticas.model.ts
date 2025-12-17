@@ -59,7 +59,8 @@ export interface FiltroEstadisticas {
   proceso?: string;
   idPrograma?: number; // Cambiado de 'programa' a 'idPrograma' para coincidir con el backend
   periodoAcademico?: string; // Filtro por período académico (ej: "2025-1" o "Segundo Período 2025")
-  // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+  fechaInicio?: string; // Filtro por fecha de inicio (formato: "yyyy-MM-dd")
+  fechaFin?: string; // Filtro por fecha de fin (formato: "yyyy-MM-dd")
 }
 
 export interface KPIData {
@@ -79,7 +80,8 @@ export interface FiltrosDashboard {
   idPrograma?: number; // Cambiado de 'programa' a 'idPrograma' para coincidir con el backend
   periodoAcademico?: string; // Agregado período académico
   estado?: string;
-  // ELIMINADOS: fechaInicio y fechaFin - usar periodoAcademico en su lugar
+  fechaInicio?: string; // Filtro por fecha de inicio (formato: "yyyy-MM-dd")
+  fechaFin?: string; // Filtro por fecha de fin (formato: "yyyy-MM-dd")
 }
 
 /**

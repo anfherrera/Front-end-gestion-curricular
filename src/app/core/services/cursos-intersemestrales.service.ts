@@ -659,11 +659,74 @@ export class CursosIntersemestralesService {
     );
   }
 
-  // Obtener cursos filtrados por período académico
-  getCursosPorPeriodo(periodo: string): Observable<CursoOfertadoVerano[]> {
-    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/periodo/${periodo}`).pipe(
-      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
+  /**
+   * Obtener todos los cursos (estudiantes)
+   * GET /api/cursos-intersemestrales/cursos-verano
+   * Query params opcionales:
+   * - periodoAcademico: "2025-1" o "2025-2"
+   * - idPrograma: ID del programa
+   */
+  getCursosVerano(periodoAcademico?: string, idPrograma?: number): Observable<CursoOfertadoVerano[]> {
+    let params = new HttpParams();
+    
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
+    if (idPrograma !== undefined && idPrograma !== null) {
+      params = params.set('idPrograma', idPrograma.toString());
+    }
+    
+    const url = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`;
+    const options = params.keys().length > 0 ? { params } : {};
+    
+    return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
+      map(cursos => cursos.map(curso => this.normalizarCurso(curso))),
+      catchError(error => {
+        console.error('[CURSOS] Error obteniendo cursos verano:', error);
+        return of([]);
+      })
     );
+  }
+
+  /**
+   * Obtener cursos disponibles (estudiantes - solo visibles)
+   * GET /api/cursos-intersemestrales/cursos-verano/disponibles
+   * Query params opcionales:
+   * - periodoAcademico: "2025-1", "2025-2" o "todos"
+   * - idPrograma: ID del programa
+   * - todosLosPeriodos: true/false
+   */
+  getCursosVeranoDisponibles(periodoAcademico?: string, idPrograma?: number, todosLosPeriodos?: boolean): Observable<CursoOfertadoVerano[]> {
+    let params = new HttpParams();
+    
+    if (periodoAcademico) {
+      params = params.set('periodoAcademico', periodoAcademico);
+    }
+    
+    if (idPrograma !== undefined && idPrograma !== null) {
+      params = params.set('idPrograma', idPrograma.toString());
+    }
+    
+    if (todosLosPeriodos !== undefined) {
+      params = params.set('todosLosPeriodos', todosLosPeriodos.toString());
+    }
+    
+    const url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES;
+    const options = params.keys().length > 0 ? { params } : {};
+    
+    return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
+      map(cursos => cursos.map(curso => this.normalizarCurso(curso))),
+      catchError(error => {
+        console.error('[CURSOS] Error obteniendo cursos disponibles:', error);
+        return of([]);
+      })
+    );
+  }
+
+  // Obtener cursos filtrados por período académico (método legacy - mantener para compatibilidad)
+  getCursosPorPeriodo(periodo: string): Observable<CursoOfertadoVerano[]> {
+    return this.getCursosVerano(periodo);
   }
 
   // Obtener cursos activos en una fecha específica
@@ -679,7 +742,11 @@ export class CursosIntersemestralesService {
   }
 
   /**
-   * Obtener todos los cursos para funcionarios (incluye todos los estados)
+   * Obtener todos los cursos (funcionarios/coordinadores)
+   * GET /api/cursos-intersemestrales/cursos-verano/todos
+   * Query params opcionales:
+   * - periodoAcademico: "2025-1", "2025-2" o "todos"
+   * - idPrograma: ID del programa
    * 
    * @param periodoAcademico (opcional): Período académico en formato "YYYY-P" (ej: "2025-2")
    *                         Si no se proporciona o se envía "todos", muestra TODOS los cursos sin filtrar.
