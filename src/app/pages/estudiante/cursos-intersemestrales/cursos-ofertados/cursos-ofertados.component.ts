@@ -46,11 +46,6 @@ export class CursosOfertadosComponent implements OnInit {
         this.cursoNombreDestino = params['cursoNombre'];
         this.accionDestino = params['accion'];
         this.mostrarMensajeInscripcion = true;
-        
-          cursoId: this.cursoIdDestino,
-          cursoNombre: this.cursoNombreDestino,
-          accion: this.accionDestino
-        });
       }
     });
     
@@ -75,8 +70,8 @@ export class CursosOfertadosComponent implements OnInit {
     }
     
     // Cargar cursos de verano disponibles (con período opcional)
-    this.cursosService.getCursosDisponibles(periodoParam, undefined, todosLosPeriodos).subscribe({
-      next: (cursosVerano) => {
+    this.cursosService!.getCursosDisponibles(periodoParam, undefined, todosLosPeriodos).subscribe({
+      next: (cursosVerano: CursoOfertadoVerano[]) => {
         
         // Si no hay cursos para el período actual y no se está mostrando todos, cargar todos automáticamente
         if ((!cursosVerano || cursosVerano.length === 0) && 
@@ -85,14 +80,14 @@ export class CursosOfertadosComponent implements OnInit {
             !todosLosPeriodos) {
           this.mostrarTodosLosCursos = true;
           // Recargar con todos los períodos
-          this.cursosService.getCursosDisponibles(undefined, undefined, true).subscribe({
-            next: (todosLosCursos) => {
+          this.cursosService!.getCursosDisponibles(undefined, undefined, true).subscribe({
+            next: (todosLosCursos: CursoOfertadoVerano[]) => {
               this.cursosVeranoOriginales = todosLosCursos || [];
               this.cursosVerano = todosLosCursos || [];
               this.cursos = this.mapCursosToLegacy(todosLosCursos || []);
               this.cargando = false;
             },
-            error: (err) => {
+            error: (err: any) => {
               this.cursosVeranoOriginales = [];
               this.cursosVerano = [];
               this.cursos = [];
@@ -107,7 +102,8 @@ export class CursosOfertadosComponent implements OnInit {
         this.cursos = this.mapCursosToLegacy(cursosVerano || []);
         this.cargando = false;
       },
-      error: (err) => {
+      error: (err: any) => {
+        console.error('Error al cargar cursos:', {
           status: err.status,
           statusText: err.statusText,
           message: err.message,
@@ -128,12 +124,12 @@ export class CursosOfertadosComponent implements OnInit {
   }
 
   private loadCursosLegacy() {
-    this.cursosService.getCursosOfertados().subscribe({
-      next: (data) => {
+    this.cursosService!.getCursosOfertados().subscribe({
+      next: (data: any) => {
         this.cursos = data;
         this.cargando = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.cargando = false;
       }
     });
@@ -239,13 +235,13 @@ export class CursosOfertadosComponent implements OnInit {
 
   onAccionCurso(event: { accion: string; curso: Curso }) {
     if (!this.usuario?.id_usuario) {
-      this.snackBar.open('Error: Usuario no autenticado', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Error: Usuario no autenticado', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    const cursoVerano = this.cursosVerano.find(c => c.id_curso.toString() === event.curso.codigo);
+    const cursoVerano = this.cursosVerano.find((c: CursoOfertadoVerano) => c.id_curso.toString() === event.curso.codigo);
     if (!cursoVerano) {
-      this.snackBar.open('Error: Curso no encontrado', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Error: Curso no encontrado', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -258,7 +254,7 @@ export class CursosOfertadosComponent implements OnInit {
 
   private realizarPreinscripcion(curso: CursoOfertadoVerano) {
     if (curso.estado !== 'Preinscripción') {
-      this.snackBar.open('Este curso no está en período de preinscripción', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Este curso no está en período de preinscripción', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -269,23 +265,23 @@ export class CursosOfertadosComponent implements OnInit {
     const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
 
     const payload: CreatePreinscripcionDTO = {
-      idUsuario: this.usuario.id_usuario,
+      idUsuario: this.usuario!.id_usuario,
       idCurso: curso.id_curso,
       nombreSolicitud: `Solicitud Preinscripción - ${nombreFinal}`,
       condicion: 'Primera_Vez' // Valor por defecto para preinscripciones directas
     };
 
-    this.cursosService.crearPreinscripcion(payload).subscribe({
-      next: (solicitud) => {
-        this.snackBar.open(
+    this.cursosService!.crearPreinscripcion(payload).subscribe({
+      next: (solicitud: any) => {
+        this.snackBar!.open(
           `Preinscripción exitosa en ${curso.nombre_curso}`, 
           'Cerrar', 
           { duration: 5000 }
         );
         this.loadCursos(); // Recargar para actualizar cupos
       },
-      error: (error) => {
-        this.snackBar.open(
+      error: (error: any) => {
+        this.snackBar!.open(
           'Error al realizar la preinscripción. Inténtalo nuevamente.', 
           'Cerrar', 
           { duration: 5000 }
@@ -296,7 +292,7 @@ export class CursosOfertadosComponent implements OnInit {
 
   private realizarInscripcion(curso: CursoOfertadoVerano) {
     if (curso.estado !== 'Inscripción') {
-      this.snackBar.open('Este curso no está en período de inscripción', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Este curso no está en período de inscripción', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -307,22 +303,22 @@ export class CursosOfertadosComponent implements OnInit {
     const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
 
     const payload = {
-      idUsuario: this.usuario.id_usuario,
+      idUsuario: this.usuario!.id_usuario,
       idCurso: curso.id_curso,
       nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`
     };
 
-    this.cursosService.crearInscripcion(payload).subscribe({
-      next: (solicitud) => {
-        this.snackBar.open(
+    this.cursosService!.crearInscripcion(payload).subscribe({
+      next: (solicitud: any) => {
+        this.snackBar!.open(
           `Inscripción exitosa en ${curso.nombre_curso}`, 
           'Cerrar', 
           { duration: 5000 }
         );
         this.loadCursos(); // Recargar para actualizar cupos
       },
-      error: (error) => {
-        this.snackBar.open(
+      error: (error: any) => {
+        this.snackBar!.open(
           'Error al realizar la inscripción. Inténtalo nuevamente.', 
           'Cerrar', 
           { duration: 5000 }
@@ -332,7 +328,7 @@ export class CursosOfertadosComponent implements OnInit {
   }
 
   getAccionesDisponibles(curso: Curso): string[] {
-    const cursoVerano = this.cursosVerano.find(c => c.id_curso.toString() === curso.codigo);
+    const cursoVerano = this.cursosVerano.find((c: CursoOfertadoVerano) => c.id_curso.toString() === curso.codigo);
     if (!cursoVerano) return [];
 
     const acciones: string[] = [];

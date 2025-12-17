@@ -1333,8 +1333,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
       this.chartDistribucion = new Chart(ctx, config);
     } catch (error) {
-replace_all
-True
       // Fallback: usar datos del resumen si están disponibles
       if (this.resumenCompleto && this.resumenCompleto.estadisticasPorPrograma.length > 0) {
         this.crearChartDistribucionFallback();

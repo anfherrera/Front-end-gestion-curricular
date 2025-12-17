@@ -401,7 +401,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       // Dialog de editar cerrado
       if (result === 'guardado') {
-        console.log('🔄 Recargando datos después de editar...');
         this.cargarDatos();
       }
     });
@@ -490,7 +489,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
             this.cargarDatos();
           },
           error: (err) => {
-            console.error('Error eliminando curso:', err);
             
             // Manejo específico de errores
             let mensajeError = 'Error al eliminar el curso';
@@ -612,7 +610,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   // Manejar cambio de período académico
   onPeriodoChange(periodo: string): void {
-    console.log('🔄 Cambio de período detectado:', periodo);
     // IMPORTANTE: Actualizar el filtro y limpiar estado antes de recargar
     this.periodoFiltro = periodo;
     // Limpiar cursos inmediatamente para evitar mostrar datos antiguos
@@ -634,7 +631,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       ? this.periodoFiltro.trim() 
       : undefined;
     
-    console.log('📄 Exportando cursos a PDF con período:', periodoParam || 'todos');
     
     this.cursosService.exportarCursosPDF(periodoParam).subscribe({
       next: (result) => {
@@ -654,7 +650,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         });
       },
       error: (err) => {
-        console.error('❌ Error exportando cursos a PDF:', err);
         let mensajeError = 'Error al exportar el PDF';
         
         if (err.status === 401) {

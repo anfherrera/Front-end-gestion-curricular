@@ -106,21 +106,14 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarCursos(): void {
     this.cargando = true;
-    console.log('🔄 Cargando cursos para inscripción (funcionarios)...');
-    console.log('🔍 Usuario actual:', this.cursosService);
     
     // Usar getCursosPorEstado para obtener cursos en estado "Inscripción"
     // Sin período para mostrar TODOS los cursos de inscripción
     this.cursosService.getCursosPorEstado('Inscripción').subscribe({
       next: (cursos) => {
-        console.log('✅ Cursos de inscripción cargados:', cursos);
         this.cursos = cursos;
-        console.log('🔍 Cantidad de cursos:', this.cursos?.length);
         
         if (this.cursos && this.cursos.length > 0) {
-          console.log('✅ Cursos disponibles para inscripción:', this.cursos);
-        } else {
-          console.log('⚠️ No hay cursos disponibles para inscripción');
           
           // Mostrar mensaje informativo al usuario
           this.snackBar.open(
@@ -135,14 +128,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando cursos:', err);
-        console.error('❌ Detalles del error:', {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          url: err.url
-        });
-        console.log('🔄 Error al cargar cursos del backend');
         this.cursos = [];
         
         // Mostrar mensaje de error al usuario
@@ -161,24 +146,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarEstudiantesElegibles(cursoId: number): void {
     this.cargando = true;
-    console.log(`🔄 Cargando estudiantes elegibles para curso ID: ${cursoId}`);
-    
-    // Buscar el curso seleccionado
     this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
-    console.log('📍 Curso seleccionado:', this.cursoSeleccionado);
-    
-    // 🆕 Usar el nuevo endpoint que filtra automáticamente estudiantes con pago validado
     this.cursosService.getEstudiantesElegibles(cursoId).subscribe({
       next: (estudiantes) => {
-        console.log('✅ Estudiantes elegibles recibidos del backend:', estudiantes);
-        console.log('🔍 Estructura de primer estudiante:', estudiantes[0]);
-        if (estudiantes[0]) {
-          console.log('🔍 Campos disponibles en estudiante:', Object.keys(estudiantes[0]));
-          console.log('🔍 Nombre completo:', estudiantes[0].nombre_completo);
-          console.log('🔍 Código:', estudiantes[0].codigo);
-          console.log('🔍 Tipo solicitud:', estudiantes[0].tipo_solicitud);
-          console.log('🔍 Tiene inscripción formal:', estudiantes[0].tiene_inscripcion_formal);
-        }
         
         // Normalizar estado: usar estado_inscripcion o, si no viene, estado_actual
         const normalizados = estudiantes.map((e: any) => ({
@@ -189,11 +159,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.estudiantesElegibles = normalizados;
         // Mostrar como elegibles únicamente los que no están rechazados
         this.estudiantesFiltrados = this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado');
-        console.log('✅ Estudiantes elegibles cargados para curso', cursoId, ':', this.estudiantesElegibles);
-        
-        // Si no hay estudiantes elegibles, mostrar mensaje informativo
         if (this.estudiantesFiltrados.length === 0) {
-          console.log('⚠️ No hay estudiantes elegibles - todos deben tener preinscripción aprobada y pago validado');
           this.estudiantesFiltrados = [];
           
           // Mostrar mensaje informativo al usuario
@@ -210,14 +176,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando estudiantes elegibles:', err);
-        console.error('❌ Detalles del error:', {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          url: err.url
-        });
-        console.log('🔄 Mostrando lista vacía debido al error');
         this.estudiantesFiltrados = [];
         this.cargando = false;
         
@@ -231,15 +189,12 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   cargarEstadisticas(idCurso: number): void {
-    console.log(`📊 Cargando estadísticas para curso ID: ${idCurso}`);
     
     this.cursosService.obtenerEstadisticasCurso(idCurso).subscribe({
       next: (stats) => {
-        console.log('📊 Estadísticas recibidas:', stats);
         this.estadisticas = stats;
       },
       error: (error) => {
-        console.error('❌ Error cargando estadísticas:', error);
         this.estadisticas = null;
       }
     });
@@ -272,7 +227,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   confirmarInscripcion(estudiante: EstudianteElegible): void {
     // Verificar que id_solicitud existe (campo principal)
     if (!estudiante.id_solicitud) {
-      console.error('❌ Error: No se encontró ID de solicitud para el estudiante');
       this.snackBar.open('Error: No se encontró ID de solicitud para el estudiante', 'Cerrar', { 
         duration: 3000,
         panelClass: ['error-snackbar']
@@ -280,13 +234,11 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       return;
     }
     
-    console.log(`✅ Aceptando inscripción ${estudiante.id_solicitud} para estudiante ${estudiante.nombre_completo}`);
     
     // Abrir modal de confirmación personalizado
     this.abrirModalConfirmacionInscripcion(estudiante);
   }
 
-  // 🆕 Método para abrir modal de confirmación personalizado
   private abrirModalConfirmacionInscripcion(estudiante: EstudianteElegible): void {
     const dialogRef = this.dialog.open(ConfirmacionInscripcionDialogComponent, {
       width: '500px',
@@ -309,7 +261,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     this.cursosService.aceptarInscripcion(estudiante.id_solicitud, observaciones).subscribe({
       next: (response) => {
-        console.log('✅ Inscripción aceptada:', response);
         alert('Inscripción aceptada exitosamente');
         // Recargar la lista de estudiantes y estadísticas
         if (this.cursoSeleccionado) {
@@ -318,14 +269,12 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('❌ Error aceptando inscripción:', error);
         this.manejarErrorInscripcion(error);
       }
     });
   }
 
   rechazarInscripcion(estudiante: EstudianteElegible): void {
-    console.log(`❌ Rechazando inscripción ${estudiante.id_solicitud} para estudiante ${estudiante.nombre_completo}`);
     
     // Pedir motivo de rechazo
     const motivo = prompt('Ingrese el motivo del rechazo:');
@@ -337,19 +286,15 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     // Usar el servicio para rechazar inscripción
     this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo).subscribe({
       next: (response) => {
-        console.log('❌ Inscripción rechazada:', response);
         const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
         alert(`Inscripción rechazada exitosamente.\nMotivo: ${motivoRespuesta}`);
         
-        // 🔄 REFRESCAR LA LISTA DESPUÉS DEL RECHAZO EXITOSO
         if (this.cursoSeleccionado) {
-          console.log('🔄 Refrescando lista de estudiantes después del rechazo...');
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
           this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
       },
       error: (error) => {
-        console.error('❌ Error rechazando inscripción:', error);
         this.manejarErrorInscripcion(error);
       }
     });
@@ -357,38 +302,37 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   // Método para manejar errores específicos del backend
   private manejarErrorInscripcion(error: any): void {
-    console.error('🔍 Detalles del error:', error);
     
     let mensaje = 'Error al procesar la inscripción';
     
     if (error.error?.codigo) {
       switch (error.error.codigo) {
         case 'INSCRIPCION_DUPLICADA':
-          mensaje = '⚠️ Ya existe una inscripción activa para este estudiante';
+          mensaje = 'Ya existe una inscripción activa para este estudiante';
           break;
         case 'PREINSCRIPCION_NO_APROBADA':
-          mensaje = '❌ No hay una preinscripción aprobada para este estudiante';
+          mensaje = 'No hay una preinscripción aprobada para este estudiante';
           break;
         case 'ESTADO_INVALIDO':
-          mensaje = '❌ El estado actual de la inscripción no permite esta acción';
+          mensaje = 'El estado actual de la inscripción no permite esta acción';
           break;
         case 'INSCRIPCION_NO_ENCONTRADA':
-          mensaje = '❌ No se encontró la inscripción especificada';
+          mensaje = 'No se encontró la inscripción especificada';
           break;
         case 'DOCUMENTO_NO_VALIDADO':
-          mensaje = '❌ El documento de pago no ha sido validado';
+          mensaje = 'El documento de pago no ha sido validado';
           break;
         default:
-          mensaje = `❌ Error: ${error.error.codigo}`;
+          mensaje = `Error: ${error.error.codigo}`;
       }
     } else if (error.error?.error) {
-      mensaje = `❌ Error: ${error.error.error}`;
+      mensaje = `Error: ${error.error.error}`;
     } else if (error.status === 404) {
-      mensaje = '❌ No se encontró el recurso solicitado';
+      mensaje = 'No se encontró el recurso solicitado';
     } else if (error.status === 400) {
-      mensaje = '❌ Error en la solicitud enviada';
+      mensaje = 'Error en la solicitud enviada';
     } else if (error.status === 500) {
-      mensaje = '❌ Error interno del servidor. Contacte al administrador';
+      mensaje = 'Error interno del servidor. Contacte al administrador';
     }
     
     alert(mensaje);
@@ -636,41 +580,30 @@ export class DetallesInscripcionDialogComponent {
   }
 
   async descargarComprobante(): Promise<void> {
-    console.log('📥 Descargando comprobante para estudiante:', this.data.estudiante.nombre_completo);
-    console.log('🔍 ID de solicitud:', this.data.estudiante.id_solicitud);
-    console.log('🔍 ID de inscripción:', this.data.estudiante.id_inscripcion);
-    console.log('📁 Archivo de pago:', this.data.estudiante.archivoPago);
     
     try {
       // Verificar si hay archivo de pago disponible en los datos del estudiante
       if (!this.data.estudiante.archivoPago || !this.data.estudiante.archivoPago.nombre) {
-        console.error('❌ Error: No se encontró archivo de pago en los datos del estudiante');
         alert('No se encontró el archivo de comprobante');
         return;
       }
       
       const nombreArchivo = this.data.estudiante.archivoPago.nombre;
-      console.log('📥 Descargando archivo:', nombreArchivo);
       
       // Usar el servicio de cursos intersemestrales para descargar
-      console.log('🔗 Usando servicio de cursos intersemestrales para descargar');
       
       // Usar id_inscripcion si está disponible, sino usar id_solicitud
       const idParaDescarga = this.data.estudiante.id_inscripcion || this.data.estudiante.id_solicitud;
       
       if (!idParaDescarga) {
-        console.error('❌ Error: No se encontró ID para descargar comprobante');
         alert('Error: No se encontró ID para descargar comprobante');
         return;
       }
       
-      console.log('🔍 Usando ID para descarga:', idParaDescarga);
       
       // Usar el servicio de cursos intersemestrales
       this.cursosService.descargarComprobantePago(idParaDescarga).subscribe({
         next: (blob: Blob) => {
-          console.log('📄 Descargando comprobante de pago usando servicio de cursos intersemestrales');
-          console.log('📊 Tamaño del archivo:', blob.size, 'bytes');
           
           // Verificar que el blob no esté vacío
           if (blob && blob.size > 0) {
@@ -686,19 +619,16 @@ export class DetallesInscripcionDialogComponent {
             console.log('✅ Archivo descargado exitosamente');
             alert('Comprobante descargado exitosamente');
           } else {
-            console.error('❌ El archivo PDF está vacío o corrupto');
             alert('Error: El archivo PDF está vacío o corrupto');
           }
         },
         error: (error: any) => {
-          console.error('❌ Error descargando comprobante:', error);
           alert('Error al descargar el comprobante de pago: ' + (error.error?.message || error.message || 'Error desconocido'));
         }
       });
       
       return; // Salir del método ya que usamos subscribe
     } catch (error) {
-      console.error('❌ Error:', error);
       alert('Error de conexión');
     }
   }

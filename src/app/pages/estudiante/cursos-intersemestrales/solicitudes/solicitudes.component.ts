@@ -39,7 +39,6 @@ export class SolicitudesComponent implements OnInit {
     private snackBar: MatSnackBar,
     private notificacionesService: NotificacionesService
   ) {
-    console.log('✅ SOLICITUDES COMPONENT CARGADO - Formulario para solicitar curso nuevo');
   }
 
   ngOnInit(): void {
@@ -60,32 +59,24 @@ export class SolicitudesComponent implements OnInit {
 
   private loadUserData(): void {
     this.usuario = this.authService.getUsuario();
-    console.log('👤 Usuario cargado:', this.usuario);
     if (this.usuario) {
       // Usar los campos correctos del usuario
       const nombreCompleto = this.usuario.nombre_completo || `${this.usuario.nombre || ''} ${this.usuario.apellido || ''}`.trim();
       const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || '';
-      console.log('📝 Datos del usuario - Nombre:', nombreCompleto, 'Código:', codigo);
       this.solicitudForm.patchValue({
         nombreCompleto: nombreCompleto,
         codigo: codigo
       });
-      console.log('✅ Formulario actualizado con datos del usuario');
     } else {
-      console.log('❌ No se encontró usuario logueado');
     }
   }
 
   private loadCursosDisponibles(): void {
-    console.log('🔄 Cargando materias disponibles para solicitud...');
     this.cursosService.getMateriasDisponibles().subscribe({
       next: (materias) => {
         this.materiasDisponibles = materias;
-        console.log('📚 Materias disponibles cargadas:', materias);
-        console.log(`✅ Cargadas ${materias.length} materias`);
       },
       error: (error) => {
-        console.error('❌ Error cargando materias disponibles:', error);
         this.snackBar.open('Error al cargar las materias disponibles', 'Cerrar', {
           duration: 3000,
           panelClass: ['error-snackbar']
@@ -95,21 +86,17 @@ export class SolicitudesComponent implements OnInit {
   }
 
   private loadCondiciones(): void {
-    console.log('🔄 Cargando condiciones de solicitud...');
     this.cursosService.getCondicionesSolicitud().subscribe({
       next: (condiciones) => {
         this.condiciones = condiciones;
-        console.log('📋 Condiciones cargadas:', condiciones);
       },
       error: (error) => {
-        console.error('❌ Error cargando condiciones:', error);
         // Si falla, usar las condiciones por defecto
         this.condiciones = [
           CondicionSolicitudVerano.Primera_Vez,
           CondicionSolicitudVerano.Habilitacion,
           CondicionSolicitudVerano.Repeticion
         ];
-        console.log('⚠️ Usando condiciones por defecto:', this.condiciones);
       }
     });
   }
@@ -127,8 +114,6 @@ export class SolicitudesComponent implements OnInit {
         idUsuario: this.usuario.id_usuario
       };
 
-      console.log('📤 Enviando solicitud con payload:', payload);
-      console.log('🌐 URL del endpoint:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`);
 
       this.cursosService.crearSolicitudCursoNuevo(payload).subscribe({
         next: (response) => {
@@ -146,28 +131,17 @@ export class SolicitudesComponent implements OnInit {
             duration: 5000,
             panelClass: ['success-snackbar']
           });
-          console.log('✅ Solicitud creada:', response);
         },
         error: (error) => {
           this.loading = false;
-          console.error('❌ Error enviando solicitud:', error);
-          console.log('📋 Detalles del error:', {
-            status: error.status,
-            statusText: error.statusText,
-            url: error.url,
-            message: error.message,
-            error: error.error
-          });
           
           // Manejar diferentes tipos de errores
           let mensaje = 'Error al enviar la solicitud. Inténtalo de nuevo.';
           
           if (error.status === 500) {
             mensaje = 'Error del servidor. Por favor, verifica los datos e inténtalo de nuevo.';
-            console.error('🔍 Error 500 - Detalles del servidor:', error.error);
           } else if (error.status === 400) {
             mensaje = 'Datos inválidos. Verifica la información e inténtalo de nuevo.';
-            console.error('🔍 Error 400 - Datos inválidos:', error.error);
           } else if (error.status === 401) {
             mensaje = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
           } else if (error.status === 403) {
@@ -202,7 +176,6 @@ export class SolicitudesComponent implements OnInit {
   }
 
   private loadMateriasDisponiblesPrueba(): void {
-    console.log('📚 Cargando materias de prueba para solicitud...');
     this.materiasDisponibles = [
       {
         id_materia: 1,
@@ -233,7 +206,6 @@ export class SolicitudesComponent implements OnInit {
         descripcion: 'Inteligencia Artificial (IA001) - 4 créditos'
       }
     ];
-    console.log('✅ Materias de prueba cargadas:', this.materiasDisponibles);
   }
 
   getCondicionDisplayName(condicion: CondicionSolicitudVerano): string {

@@ -113,14 +113,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     // Sin período para mostrar TODOS los cursos de inscripción
     this.cursosService.getCursosPorEstado('Inscripción').subscribe({
       next: (cursos) => {
-        console.log('✅ Cursos de inscripción cargados:', cursos);
         this.cursos = cursos;
-        console.log('🔍 Cantidad de cursos:', this.cursos?.length);
         
         if (this.cursos && this.cursos.length > 0) {
-          console.log('✅ Cursos disponibles para inscripción:', this.cursos);
-        } else {
-          console.log('⚠️ No hay cursos disponibles para inscripción');
           
           // Mostrar mensaje informativo al usuario
           this.snackBar.open(
@@ -133,11 +128,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           );
         }
         this.cargando = false;
-        this.cargando = false;
       },
-      error: (err) => {
-        console.error('Error cargando cursos:', err);
-        console.error('Detalles del error:', {
+      error: (err: any) => {
+        console.error('Error al cargar cursos:', {
           status: err.status,
           statusText: err.statusText,
           message: err.message,
@@ -201,9 +194,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         
         this.cargando = false;
       },
-      error: (err) => {
-        console.error('Error cargando estudiantes elegibles:', err);
-        console.error('Detalles del error:', {
+      error: (err: any) => {
+        console.error('Error al cargar estudiantes elegibles:', {
           status: err.status,
           statusText: err.statusText,
           message: err.message,
@@ -231,7 +223,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.estadisticas = stats;
       },
       error: (error) => {
-        console.error('Error cargando estadísticas:', error);
         this.estadisticas = null;
       }
     });

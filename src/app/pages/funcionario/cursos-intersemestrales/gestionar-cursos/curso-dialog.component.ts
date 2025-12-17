@@ -695,31 +695,31 @@ export class CursoDialogComponent implements OnInit {
     this.cargarSalones();
     
     // Suscribirse a cambios en las fechas para validar
-    if (!this.data.soloEdicion) {
-      this.data.form.get('fecha_inicio')?.valueChanges.subscribe(() => this.onFechaChange());
-      this.data.form.get('fecha_fin')?.valueChanges.subscribe(() => this.onFechaChange());
+    if (!this.data?.soloEdicion) {
+      this.data?.form.get('fecha_inicio')?.valueChanges.subscribe(() => this.onFechaChange());
+      this.data?.form.get('fecha_fin')?.valueChanges.subscribe(() => this.onFechaChange());
     }
   }
 
   cargarSalones(): void {
     this.cargandoSalones = true;
-    this.cursosService.getSalones().subscribe({
-      next: (salones) => {
+    this.cursosService!.getSalones().subscribe({
+      next: (salones: Salon[]) => {
         this.salones = salones;
         this.cargandoSalones = false;
         
         // Si estamos en modo edición y el curso tiene un salón asignado, preseleccionarlo
-        if (this.data.soloEdicion && this.data.cursoEditando) {
+        if (this.data?.soloEdicion && this.data?.cursoEditando) {
           const curso = this.data.cursoEditando;
           if (curso.id_salon) {
-            this.data.form.patchValue({ id_salon: curso.id_salon });
+            this.data!.form.patchValue({ id_salon: curso.id_salon });
           } else if (curso.salonInfo?.id_salon) {
-            this.data.form.patchValue({ id_salon: curso.salonInfo.id_salon });
+            this.data!.form.patchValue({ id_salon: curso.salonInfo.id_salon });
           }
         }
       },
-      error: (error) => {
-        this.snackBar.open('Error al cargar la lista de salones', 'Cerrar', { duration: 3000 });
+      error: (error: any) => {
+        this.snackBar!.open('Error al cargar la lista de salones', 'Cerrar', { duration: 3000 });
         this.cargandoSalones = false;
       }
     });
@@ -728,23 +728,19 @@ export class CursoDialogComponent implements OnInit {
   // Método para manejar la selección del docente
   onDocenteSelected(event: any): void {
     const selectedId = event.value;
-    // Log de depuración (comentado para producción)
     
     // Buscar el docente seleccionado en la lista
-    const docenteSeleccionado = this.data.docentes?.find(d => 
+    const docenteSeleccionado = this.data?.docentes?.find((d: any) => 
       (d.id_docente && d.id_docente === selectedId) || 
       (d.id_usuario && d.id_usuario === selectedId)
     );
     
     if (docenteSeleccionado) {
-      // Log de depuración (comentado para producción)
-      
       // Asegurarse de que se use id_docente si está disponible
       const idFinal = docenteSeleccionado.id_docente || docenteSeleccionado.id_usuario;
       
       // Actualizar el valor del formulario con el ID correcto
-      this.data.form.patchValue({ id_docente: idFinal }, { emitEvent: false });
-    } else {
+      this.data!.form.patchValue({ id_docente: idFinal }, { emitEvent: false });
     }
   }
 
@@ -780,25 +776,19 @@ export class CursoDialogComponent implements OnInit {
 
   // Cargar períodos académicos (recientes para crear cursos)
   private cargarPeriodos(): void {
-    this.cursosService.getPeriodosRecientes().subscribe({
-      next: (periodos) => {
+    this.cursosService!.getPeriodosRecientes().subscribe({
+      next: (periodos: string[]) => {
         this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
         // Períodos recientes cargados
         
         // Si hay períodos disponibles, pre-seleccionar el primer período futuro
-        if (this.periodos.length > 0 && !this.data.editando) {
+        if (this.periodos.length > 0 && !this.data?.editando) {
           const primerPeriodo = this.periodos[0];
-          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+          this.data!.form.patchValue({ periodoAcademico: primerPeriodo });
           // Período pre-seleccionado
         }
       },
-      error: (error) => {
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          message: error.message
-        });
-        
+      error: (error: any) => {
         // Si falla, intentar con períodos futuros como fallback
         this.cargarPeriodosFuturosFallback();
       }
@@ -807,17 +797,17 @@ export class CursoDialogComponent implements OnInit {
 
   // Método de fallback para cargar períodos futuros
   private cargarPeriodosFuturosFallback(): void {
-    this.cursosService.getPeriodosFuturos().subscribe({
-      next: (periodos) => {
+    this.cursosService!.getPeriodosFuturos().subscribe({
+      next: (periodos: string[]) => {
         this.periodos = ordenarPeriodos(periodos, 'asc'); // Orden cronológico
         // Períodos futuros cargados (fallback)
         
-        if (this.periodos.length > 0 && !this.data.editando) {
+        if (this.periodos.length > 0 && !this.data?.editando) {
           const primerPeriodo = this.periodos[0];
-          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+          this.data!.form.patchValue({ periodoAcademico: primerPeriodo });
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         // Si falla, intentar con todos los períodos como último recurso
         this.cargarTodosLosPeriodos();
       }
@@ -826,18 +816,18 @@ export class CursoDialogComponent implements OnInit {
 
   // Método de fallback para cargar todos los períodos
   private cargarTodosLosPeriodos(): void {
-    this.cursosService.getPeriodosAcademicos().subscribe({
-      next: (periodos) => {
+    this.cursosService!.getPeriodosAcademicos().subscribe({
+      next: (periodos: string[]) => {
         this.periodos = ordenarPeriodos(periodos, 'desc'); // Más recientes primero
         // Todos los períodos cargados (fallback)
         
-        if (this.periodos.length > 0 && !this.data.editando) {
+        if (this.periodos.length > 0 && !this.data?.editando) {
           const primerPeriodo = this.periodos[0];
-          this.data.form.patchValue({ periodoAcademico: primerPeriodo });
+          this.data!.form.patchValue({ periodoAcademico: primerPeriodo });
         }
       },
-      error: (error) => {
-        this.snackBar.open('No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
+      error: (error: any) => {
+        this.snackBar!.open('No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
           panelClass: ['error-snackbar']
         });
@@ -852,8 +842,8 @@ export class CursoDialogComponent implements OnInit {
 
   // Validar fechas al cambiar
   onFechaChange(): void {
-    const fechaInicio = this.data.form.get('fecha_inicio')?.value;
-    const fechaFin = this.data.form.get('fecha_fin')?.value;
+    const fechaInicio = this.data?.form.get('fecha_inicio')?.value;
+    const fechaFin = this.data?.form.get('fecha_fin')?.value;
 
     if (fechaInicio && fechaFin) {
       // Validar fechas
@@ -872,11 +862,11 @@ export class CursoDialogComponent implements OnInit {
     }
   }
 
-  guardarCurso() {
-    if (this.data.form.valid) {
-      const formData = this.data.form.value;
+  guardarCurso(): void {
+    if (this.data?.form.valid) {
+      const formData = this.data!.form.value;
       
-      if (this.data.editando && this.data.cursoEditando) {
+      if (this.data!.editando && this.data!.cursoEditando) {
         // Actualizar curso existente (solo campos editables)
         const updateData: UpdateCursoDTO = {
           cupo_estimado: formData.cupo_estimado,
@@ -897,21 +887,14 @@ export class CursoDialogComponent implements OnInit {
         // Función de prueba para verificar el endpoint
         // Función de prueba para verificar el endpoint (comentado para producción)
         
-        this.cursosService.actualizarCurso(this.data.cursoEditando.id_curso, updateData)
+        this.cursosService!.actualizarCurso(this.data.cursoEditando!.id_curso, updateData)
           .subscribe({
-            next: (cursoActualizado) => {
+            next: (cursoActualizado: any) => {
               // Curso actualizado
-              this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', { duration: 3000 });
-              this.dialogRef.close('guardado');
+              this.snackBar!.open('Curso actualizado exitosamente', 'Cerrar', { duration: 3000 });
+              this.dialogRef!.close('guardado');
             },
-            error: (err) => {
-                status: err.status,
-                statusText: err.statusText,
-                url: err.url,
-                error: err.error,
-                message: err.message
-              });
-              
+            error: (err: any) => {
               // Mostrar mensaje de error más específico
               let errorMessage = 'Error al actualizar el curso';
               if (err.error && err.error.message) {
@@ -922,23 +905,23 @@ export class CursoDialogComponent implements OnInit {
                 errorMessage = 'Datos inválidos enviados al servidor';
               }
               
-              this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
+              this.snackBar!.open(`${errorMessage}`, 'Cerrar', { 
                 duration: 5000, 
                 panelClass: ['error-snackbar'] 
               });
               // Cerrar dialog incluso si hay error para que se actualice la lista
-              this.dialogRef.close('guardado');
+              this.dialogRef!.close('guardado');
             }
           });
       } else {
-        const formValue = this.data.form.value;
+        const formValue = this.data!.form.value;
         
         // Verificar y corregir el id_docente antes de enviar
         let idDocenteFinal = formValue.id_docente;
         
         // Si el id_docente es un número pero parece ser un índice, buscar el docente correcto
         if (idDocenteFinal && this.data.docentes) {
-          const docenteSeleccionado = this.data.docentes.find(d => 
+          const docenteSeleccionado = this.data.docentes.find((d: any) => 
             (d.id_docente && d.id_docente === idDocenteFinal) || 
             (d.id_usuario && d.id_usuario === idDocenteFinal)
           );
@@ -952,7 +935,7 @@ export class CursoDialogComponent implements OnInit {
         // Validar formato del período académico antes de enviar
         const periodoAcademico = formValue.periodoAcademico || '';
         if (!validarPeriodo(periodoAcademico)) {
-          this.snackBar.open('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', { 
+          this.snackBar!.open('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', { 
             duration: 5000, 
             panelClass: ['error-snackbar'] 
           });
@@ -995,15 +978,14 @@ export class CursoDialogComponent implements OnInit {
         
         // Logs de depuración (comentados para producción)
         
-        this.cursosService.crearCurso(createData)
+        this.cursosService!.crearCurso(createData)
           .subscribe({
-            next: (nuevoCurso) => {
+            next: (nuevoCurso: any) => {
               // Curso creado
-              this.snackBar.open('Curso creado exitosamente', 'Cerrar', { duration: 3000 });
-              this.dialogRef.close('guardado');
+              this.snackBar!.open('Curso creado exitosamente', 'Cerrar', { duration: 3000 });
+              this.dialogRef!.close('guardado');
             },
-            error: (err) => {
-              
+            error: (err: any) => {
               // Manejo específico de errores
               let errorMessage = 'Error al crear el curso';
               
@@ -1036,7 +1018,7 @@ export class CursoDialogComponent implements OnInit {
                 errorMessage = 'Datos inválidos enviados al servidor. Verifica que todos los campos sean correctos.';
               }
               
-              this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
+              this.snackBar!.open(`${errorMessage}`, 'Cerrar', { 
                 duration: 7000, 
                 panelClass: ['error-snackbar'] 
               });
@@ -1046,19 +1028,19 @@ export class CursoDialogComponent implements OnInit {
           });
       }
     } else {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
     }
   }
 
-  limpiarFormulario() {
-    this.data.form.reset({
+  limpiarFormulario(): void {
+    this.data!.form.reset({
       estado: 'Abierto',
       cupo_estimado: 25,
       grupo: 'A'
     });
   }
 
-  cerrarDialog() {
-    this.dialogRef.close();
+  cerrarDialog(): void {
+    this.dialogRef!.close();
   }
 }

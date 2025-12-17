@@ -121,8 +121,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   cargarDatos() {
     this.cargando = true;
-    console.log('🔄 Cargando datos para gestión de cursos...');
-    console.log('📅 Período filtro seleccionado:', this.periodoFiltro);
     
     // IMPORTANTE: Limpiar cursos antes de cargar nuevos para evitar mostrar datos antiguos
     this.cursos = [];
@@ -133,12 +131,10 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       ? this.periodoFiltro.trim() 
       : undefined;
     
-    console.log('📤 Enviando período al backend:', periodoParam || 'todos (sin filtrar)');
     
     // Cargar cursos del backend con filtro de período
     this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).subscribe({
       next: (cursos) => {
-        console.log('✅ Cursos recibidos del backend:', cursos.length);
         this.cursos = cursos;
         this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
         // Cursos cargados del backend
@@ -146,8 +142,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.errorHandler.handleCargaError('cursos');
-        console.error('❌ Error cargando cursos del backend:', err);
-        console.error('📅 Período que causó el error:', periodoParam);
         this.cargando = false;
         // Mostrar mensaje de error sin datos de prueba
         this.cursos = [];
@@ -165,7 +159,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         // Materias cargadas del backend
       },
       error: (err) => {
-        console.error('Error cargando materias del backend:', err);
         this.materias = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
@@ -181,7 +174,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         // Docentes cargados del backend
       },
       error: (err) => {
-        console.error('Error cargando docentes del backend:', err);
         this.docentes = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', { 
           duration: 5000,
@@ -361,7 +353,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       // Dialog cerrado
       if (result === 'guardado') {
-        console.log('🔄 Recargando datos después de guardar...');
         this.cargarDatos();
       }
     });
@@ -411,7 +402,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       // Dialog de editar cerrado
       if (result === 'guardado') {
-        console.log('🔄 Recargando datos después de editar...');
         this.cargarDatos();
       }
     });
@@ -489,7 +479,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
             this.cargarDatos();
           },
           error: (err) => {
-            console.error('Error eliminando curso:', err);
             
             // Manejo específico de errores
             let mensajeError = 'Error al eliminar el curso';
@@ -611,7 +600,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   // Manejar cambio de período académico
   onPeriodoChange(periodo: string): void {
-    console.log('🔄 Cambio de período detectado:', periodo);
     // IMPORTANTE: Actualizar el filtro y limpiar estado antes de recargar
     this.periodoFiltro = periodo;
     // Limpiar cursos inmediatamente para evitar mostrar datos antiguos
@@ -633,7 +621,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       ? this.periodoFiltro.trim() 
       : undefined;
     
-    console.log('📄 Exportando cursos a PDF con período:', periodoParam || 'todos');
     
     this.cursosService.exportarCursosPDF(periodoParam).subscribe({
       next: (result) => {
@@ -653,7 +640,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         });
       },
       error: (err) => {
-        console.error('❌ Error exportando cursos a PDF:', err);
         let mensajeError = 'Error al exportar el PDF';
         
         if (err.status === 401) {

@@ -37,26 +37,10 @@ export class CursosPreinscripcionComponent implements OnInit {
 
   loadCursos() {
     this.cargando = true;
-    console.log('🔄 Cargando cursos reales de la base de datos...');
-    console.log('🌐 Endpoint de datos reales:', ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
     
     // Cargar cursos reales del backend (solo cursos en preinscripción)
     this.cursosService.getCursosPorEstado('Preinscripción').subscribe({
       next: (cursosReales) => {
-        console.log('✅ CURSOS REALES DE LA BASE DE DATOS:', cursosReales);
-        console.log(`📊 Total de cursos encontrados: ${cursosReales.length}`);
-        
-        // Mostrar información de los cursos reales
-        if (cursosReales.length > 0) {
-          console.log('🔍 Cursos disponibles:', cursosReales.map(c => ({ 
-            codigo: c.codigo_curso, 
-            nombre: c.nombre_curso, 
-            estado: c.estado 
-          })));
-        } else {
-          console.log('ℹ️ No hay cursos disponibles en la base de datos');
-        }
-        
         // Usar todos los cursos reales (sin filtros)
         this.cursosOriginales = cursosReales;
         
@@ -71,12 +55,9 @@ export class CursosPreinscripcionComponent implements OnInit {
           estado: curso.estado || 'Borrador'
         }));
         
-        console.log('📋 Cursos mapeados para tabla:', this.cursos);
         this.cargando = false;
       },
       error: (err) => {
-        console.error('❌ ERROR cargando cursos reales:', err);
-        console.log('🔄 Intentando fallback a cursos legacy...');
         // Fallback a cursos legacy
         this.loadCursosLegacy();
       }
@@ -84,18 +65,12 @@ export class CursosPreinscripcionComponent implements OnInit {
   }
 
   private loadCursosLegacy() {
-    console.log('🔄 FALLBACK: Cargando cursos legacy...');
-    console.log('🌐 URL del endpoint legacy:', `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/preinscripcion`);
-    
     this.cursosService.getCursosPreinscripcion().subscribe({
-      next: (data) => {
-        console.log('✅ FALLBACK: Cursos legacy recibidos:', data);
-        console.log('📊 Cantidad de cursos legacy:', data.length);
+      next: (data: any) => {
         this.cursos = data;
         this.cargando = false;
       },
-      error: (err) => {
-        console.error('❌ FALLBACK: Error cargando cursos legacy:', err);
+      error: (err: any) => {
         this.cargando = false;
       }
     });
@@ -116,19 +91,10 @@ export class CursosPreinscripcionComponent implements OnInit {
     );
     
     if (!cursoOriginal) {
-      console.error('❌ Curso original no encontrado:', {
-        codigoBuscado: event.curso.codigo,
-        cursosOriginalesDisponibles: this.cursosOriginales.map(c => ({ 
-          codigo: c.codigo_curso, 
-          id: c.id_curso, 
-          nombre: c.nombre_curso 
-        }))
-      });
       this.snackBar.open('Error: Curso no encontrado', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    console.log('🔍 Curso original encontrado para diálogo:', cursoOriginal);
 
     if (event.accion === 'preinscribir') {
       this.abrirDialogoPreinscripcion(cursoOriginal);

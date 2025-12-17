@@ -39,7 +39,6 @@ export class VisualizarSolicitudesComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar
   ) {
-    console.log('📋 VISUALIZAR SOLICITUDES COMPONENT CARGADO');
     
     this.filtroForm = this.fb.group({
       materia: [0] // Usar 0 como valor por defecto para "Todas las materias"
@@ -57,7 +56,6 @@ export class VisualizarSolicitudesComponent implements OnInit {
   }
 
   cargarMaterias() {
-    console.log('🔄 Cargando materias desde el nuevo endpoint...');
     
     this.cursosService.getMateriasFiltro().subscribe({
       next: (materias: any[]) => {
@@ -69,10 +67,8 @@ export class VisualizarSolicitudesComponent implements OnInit {
           creditos: 0, // No viene en la respuesta del filtro
           descripcion: `${materia.nombre} (${materia.codigo})`
         }));
-        console.log('✅ Materias cargadas desde nuevo endpoint:', this.materias);
       },
       error: (err: any) => {
-        console.error('❌ Error cargando materias del nuevo endpoint:', err);
         // Fallback: datos básicos si falla el backend
         this.materias = [
           { id_materia: 0, codigo: 'TODAS', nombre: 'Todas las materias', creditos: 0, descripcion: 'Todas las materias' },
@@ -80,14 +76,12 @@ export class VisualizarSolicitudesComponent implements OnInit {
           { id_materia: 2, codigo: 'SOF-201', nombre: 'Calidad de Software', creditos: 0, descripcion: 'Calidad de Software (SOF-201)' },
           { id_materia: 3, codigo: 'BD-101', nombre: 'Bases de Datos', creditos: 0, descripcion: 'Bases de Datos (BD-101)' }
         ];
-        console.log('✅ Materias cargadas (fallback):', this.materias);
       }
     });
   }
 
   cargarSolicitudes() {
     this.cargando = true;
-    console.log('🔄 Cargando solicitudes desde el backend con filtros...');
     
     // Obtener los filtros actuales
     const filtros = this.filtroForm.value;
@@ -96,18 +90,15 @@ export class VisualizarSolicitudesComponent implements OnInit {
       ? this.periodoFiltro.trim() 
       : undefined;
     
-    console.log('📋 Filtros aplicados:', { idMateria, periodoAcademico: periodoParam });
     
     // Cargar solicitudes con filtros del backend
     this.cursosService.getSolicitudesVisualizar(idMateria, periodoParam).subscribe({
       next: (solicitudes: any[]) => {
         this.solicitudes = solicitudes;
         this.solicitudesFiltradas = [...solicitudes]; // Las solicitudes ya vienen filtradas del backend
-        console.log('✅ Solicitudes cargadas desde backend (ya filtradas):', solicitudes.length);
         this.cargando = false;
       },
       error: (err: any) => {
-        console.error('❌ Error cargando solicitudes del backend:', err);
         this.cargando = false;
         this.solicitudes = [];
         this.solicitudesFiltradas = [];

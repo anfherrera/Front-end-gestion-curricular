@@ -757,6 +757,7 @@ export class CursosIntersemestralesService {
     // Agregar parámetro de período si se proporciona (y no es "todos")
     if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico.trim().toLowerCase() !== 'todos') {
       httpParams = httpParams.set('periodoAcademico', periodoAcademico);
+    }
     
     const options = httpParams.keys().length > 0 
       ? { params: httpParams }
@@ -965,14 +966,6 @@ export class CursosIntersemestralesService {
     const options = httpParams.keys().length > 0 
       ? { params: httpParams }
       : {};
-    
-      idMateria,
-      periodoAcademico,
-      idCurso,
-      estado,
-      fechaInicio,
-      fechaFin
-    });
     
     return this.http.get<any[]>(url, options).pipe(
       map(solicitudes => {
