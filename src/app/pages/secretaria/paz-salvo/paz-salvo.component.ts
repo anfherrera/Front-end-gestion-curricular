@@ -61,7 +61,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
       nombre: 'Oficio de Paz y Salvo',
       descripcion: 'Documento oficial que aprueba el paz y salvo del estudiante',
       camposRequeridos: ['numeroDocumento', 'fechaDocumento'],
-      camposOpcionales: ['observaciones']
+      camposOpcionales: []
     };
   }
 
