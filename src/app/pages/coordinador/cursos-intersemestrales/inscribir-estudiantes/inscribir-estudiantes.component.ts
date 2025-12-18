@@ -19,6 +19,9 @@ import { Inject } from '@angular/core';
 import { CursosIntersemestralesService, CursoOfertadoVerano, Inscripcion, EstudianteElegible, AceptarInscripcionResponse, RechazarInscripcionResponse, DebugInscripcionResponse } from '../../../../core/services/cursos-intersemestrales.service';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { PromptDialogComponent, PromptDialogData } from '../../../../shared/components/prompt-dialog/prompt-dialog.component';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -74,7 +77,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {
     this.filtroForm = this.fb.group({
       curso: ['', Validators.required]
@@ -106,17 +111,19 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarCursos(): void {
     this.cargando = true;
-    // Cargando cursos para inscripción
+    this.logger.debug('Cargando cursos para inscripción');
     
     // Para funcionarios/coordinadores, usar el endpoint que obtiene todos los cursos
     // Usar getCursosPorEstado para obtener cursos en estado "Inscripción"
     // Sin período para mostrar TODOS los cursos de inscripción
-    this.cursosService.getCursosPorEstado('Inscripción').subscribe({
+    this.cursosService.getCursosPorEstado('Inscripción')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (cursos) => {
         this.cursos = cursos;
+        this.logger.debug('Cursos cargados:', cursos);
         
-        if (this.cursos && this.cursos.length > 0) {
-          
+        if (!this.cursos || this.cursos.length === 0) {
           // Mostrar mensaje informativo al usuario
           this.snackBar.open(
             'No hay cursos disponibles para inscripción en este momento.', 
@@ -130,12 +137,13 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err: any) => {
-        // Error al cargar cursos del backend
+        this.logger.error('Error al cargar cursos del backend', err);
         this.cursos = [];
         
+        const mensajeError = this.errorHandler.extraerMensajeError(err);
         // Mostrar mensaje de error al usuario
         this.snackBar.open(
-          'Error al cargar los cursos. Verifique su conexión o contacte al administrador.', 
+          mensajeError || 'Error al cargar los cursos. Verifique su conexión o contacte al administrador.', 
           'Cerrar', 
           { 
             duration: 5000,
@@ -149,15 +157,17 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   cargarEstudiantesElegibles(cursoId: number): void {
     this.cargando = true;
-    // Cargando estudiantes elegibles para curso
+    this.logger.debug('Cargando estudiantes elegibles para curso:', cursoId);
     
     // Buscar el curso seleccionado
     this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
     
     // Usar el nuevo endpoint que filtra automáticamente estudiantes con pago validado
-    this.cursosService.getEstudiantesElegibles(cursoId).subscribe({
+    this.cursosService.getEstudiantesElegibles(cursoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (estudiantes) => {
-        // Estudiantes elegibles recibidos del backend
+        this.logger.debug('Estudiantes elegibles recibidos del backend:', estudiantes);
         
         // Normalizar estado: usar estado_inscripcion o, si no viene, estado_actual
         const normalizados = estudiantes.map((e: any) => ({
@@ -168,7 +178,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.estudiantesElegibles = normalizados;
         // Mostrar como elegibles únicamente los que no están rechazados
         this.estudiantesFiltrados = this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado');
-        // Estudiantes elegibles cargados para curso
+        this.logger.debug('Estudiantes elegibles cargados para curso:', this.estudiantesFiltrados.length);
         
         // Si no hay estudiantes elegibles, mostrar mensaje informativo
         if (this.estudiantesFiltrados.length === 0) {
@@ -189,28 +199,36 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: (err: any) => {
-        // Mostrando lista vacía debido al error
+        this.logger.error('Error al cargar estudiantes elegibles', err);
         this.estudiantesFiltrados = [];
         this.cargando = false;
         
+        const mensajeError = this.errorHandler.extraerMensajeError(err);
         // Mostrar mensaje de error al usuario
-        this.snackBar.open('Error al cargar los estudiantes elegibles', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open(
+          mensajeError || 'Error al cargar los estudiantes elegibles', 
+          'Cerrar', 
+          { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          }
+        );
       }
     });
   }
 
   cargarEstadisticas(idCurso: number): void {
-    // Cargando estadísticas para curso
+    this.logger.debug('Cargando estadísticas para curso:', idCurso);
     
-    this.cursosService.obtenerEstadisticasCurso(idCurso).subscribe({
+    this.cursosService.obtenerEstadisticasCurso(idCurso)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (stats) => {
-        // Estadísticas recibidas
+        this.logger.debug('Estadísticas recibidas:', stats);
         this.estadisticas = stats;
       },
       error: (error) => {
+        this.logger.warn('Error al cargar estadísticas del curso', error);
         this.estadisticas = null;
       }
     });
@@ -230,7 +248,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
       if (result === 'inscrito') {
         // Recargar estudiantes elegibles si se completó la inscripción
         if (this.cursoSeleccionado) {
@@ -264,7 +284,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
       if (result === 'confirmar') {
         // Usar el método del servicio con el endpoint correcto
         this.aceptarInscripcion(estudiante);
@@ -276,9 +298,15 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   aceptarInscripcion(estudiante: EstudianteElegible): void {
     const observaciones = "Inscripción aceptada por funcionario/coordinador";
     
-    this.cursosService.aceptarInscripcion(estudiante.id_solicitud, observaciones).subscribe({
+    this.cursosService.aceptarInscripcion(estudiante.id_solicitud, observaciones)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (response: any) => {
-        alert('Inscripción aceptada exitosamente');
+        this.logger.debug('Inscripción aceptada exitosamente', response);
+        this.snackBar.open('Inscripción aceptada exitosamente', 'Cerrar', {
+          duration: 4000,
+          panelClass: ['success-snackbar']
+        });
         // Recargar la lista de estudiantes y estadísticas
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
@@ -292,34 +320,64 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   rechazarInscripcion(estudiante: EstudianteElegible): void {
-    
-    // Pedir motivo de rechazo
-    const motivo = prompt('Ingrese el motivo del rechazo:');
-    if (!motivo || motivo.trim() === '') {
-      alert('Debe ingresar un motivo para rechazar la inscripción');
-      return;
-    }
-    
-    // Usar el servicio para rechazar inscripción
-    this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo).subscribe({
-      next: (response: any) => {
-        const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
-        alert(`Inscripción rechazada exitosamente.\nMotivo: ${motivoRespuesta}`);
-        
-        // Refrescar la lista después del rechazo exitoso
-        if (this.cursoSeleccionado) {
-          this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-          this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
+    // Abrir diálogo para pedir motivo de rechazo
+    const dialogRef = this.dialog.open<PromptDialogComponent, PromptDialogData, string>(
+      PromptDialogComponent,
+      {
+        width: '500px',
+        maxWidth: '90vw',
+        data: {
+          title: 'Rechazar Inscripción',
+          message: 'Ingrese el motivo del rechazo:',
+          placeholder: 'Motivo del rechazo',
+          required: true
         }
-      },
-      error: (error: any) => {
-        this.manejarErrorInscripcion(error);
       }
-    });
+    );
+
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(motivo => {
+        if (!motivo || motivo.trim() === '') {
+          this.snackBar.open('Debe ingresar un motivo para rechazar la inscripción', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['warning-snackbar']
+          });
+          return;
+        }
+        
+        // Usar el servicio para rechazar inscripción
+        this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+          next: (response: any) => {
+            const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
+            this.logger.debug('Inscripción rechazada exitosamente', response);
+            this.snackBar.open(
+              `Inscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`,
+              'Cerrar',
+              {
+                duration: 5000,
+                panelClass: ['info-snackbar']
+              }
+            );
+            
+            // Refrescar la lista después del rechazo exitoso
+            if (this.cursoSeleccionado) {
+              this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
+              this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
+            }
+          },
+          error: (error: any) => {
+            this.manejarErrorInscripcion(error);
+          }
+        });
+      });
   }
 
   // Método para manejar errores específicos del backend
   private manejarErrorInscripcion(error: any): void {
+    this.logger.error('Error al procesar inscripción', error);
     
     let mensaje = 'Error al procesar la inscripción';
     
@@ -341,19 +399,16 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           mensaje = 'El documento de pago no ha sido validado';
           break;
         default:
-          mensaje = `Error: ${error.error.codigo}`;
+          mensaje = this.errorHandler.extraerMensajeError(error) || `Error: ${error.error.codigo}`;
       }
-    } else if (error.error?.error) {
-      mensaje = `Error: ${error.error.error}`;
-    } else if (error.status === 404) {
-      mensaje = 'No se encontró el recurso solicitado';
-    } else if (error.status === 400) {
-      mensaje = 'Error en la solicitud enviada';
-    } else if (error.status === 500) {
-      mensaje = 'Error interno del servidor. Contacte al administrador';
+    } else {
+      mensaje = this.errorHandler.extraerMensajeError(error) || mensaje;
     }
     
-    alert(mensaje);
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
   }
 
   // Obtener nombre del docente de forma segura
@@ -393,6 +448,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     MatInputModule,
     MatChipsModule,
     MatIconModule,
+    MatSnackBarModule,
     UtfFixPipe
   ],
   template: `
@@ -579,7 +635,10 @@ export class DetallesInscripcionDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<DetallesInscripcionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible },
-    private cursosService: CursosIntersemestralesService
+    private cursosService: CursosIntersemestralesService,
+    private snackBar: MatSnackBar,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {}
 
   getEstadoColor(estado: string): string {
@@ -598,11 +657,15 @@ export class DetallesInscripcionDialogComponent {
   }
 
   async descargarComprobante(): Promise<void> {
+    this.logger.debug('Descargando comprobante de pago');
     
     try {
       // Verificar si hay archivo de pago disponible en los datos del estudiante
       if (!this.data.estudiante.archivoPago || !this.data.estudiante.archivoPago.nombre) {
-        alert('No se encontró el archivo de comprobante');
+        this.snackBar.open('No se encontró el archivo de comprobante', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['warning-snackbar']
+        });
         return;
       }
       
@@ -612,14 +675,17 @@ export class DetallesInscripcionDialogComponent {
       const idParaDescarga = this.data.estudiante.id_inscripcion || this.data.estudiante.id_solicitud;
       
       if (!idParaDescarga) {
-        alert('Error: No se encontró ID para descargar comprobante');
+        this.snackBar.open('Error: No se encontró ID para descargar comprobante', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
         return;
       }
-      
       
       // Usar el servicio de cursos intersemestrales
       this.cursosService.descargarComprobantePago(idParaDescarga).subscribe({
         next: (blob: Blob) => {
+          this.logger.debug('Comprobante descargado exitosamente');
           
           // Verificar que el blob no esté vacío
           if (blob && blob.size > 0) {
@@ -632,19 +698,36 @@ export class DetallesInscripcionDialogComponent {
             window.URL.revokeObjectURL(downloadUrl);
             document.body.removeChild(a);
             
-            alert('Comprobante descargado exitosamente');
+            this.snackBar.open('Comprobante descargado exitosamente', 'Cerrar', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
           } else {
-            alert('Error: El archivo PDF está vacío o corrupto');
+            this.snackBar.open('Error: El archivo PDF está vacío o corrupto', 'Cerrar', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
           }
         },
         error: (error: any) => {
-          alert('Error al descargar el comprobante de pago: ' + (error.error?.message || error.message || 'Error desconocido'));
+          this.logger.error('Error al descargar comprobante de pago', error);
+          const mensajeError = this.errorHandler.extraerMensajeError(error);
+          this.snackBar.open(
+            mensajeError || 'Error al descargar el comprobante de pago',
+            'Cerrar',
+            {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            }
+          );
         }
       });
-      
-      return; // Salir del método ya que usamos subscribe
     } catch (error) {
-      alert('Error de conexión');
+      this.logger.error('Error de conexión al descargar comprobante', error);
+      this.snackBar.open('Error de conexión', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
     }
   }
 

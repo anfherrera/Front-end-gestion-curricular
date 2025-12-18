@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
@@ -13,6 +15,8 @@ import { RequestStatusTableComponent } from '../../../shared/components/request-
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -32,7 +36,7 @@ import { ApprovedRequestsSectionComponent } from '../../../shared/components/app
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
-export class HomologacionAsignaturasComponent implements OnInit {
+export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
   solicitudesAprobadas: any[] = [];
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
@@ -49,10 +53,14 @@ export class HomologacionAsignaturasComponent implements OnInit {
   // Nueva propiedad para controlar la habilitación del generador de documentos
   documentoHabilitado: boolean = false;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     public homologacionService: HomologacionAsignaturasService,
     private documentGeneratorService: DocumentGeneratorService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {
     // Inicializar plantilla para homologación
     this.template = {
@@ -69,11 +77,18 @@ export class HomologacionAsignaturasComponent implements OnInit {
     this.cargarSolicitudesAprobadas();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   /**
    * Cargar solicitudes pendientes para secretaría (solo las aprobadas por coordinador)
    */
   cargarSolicitudes(): void {
-    this.homologacionService.getSecretariaRequests().subscribe({
+    this.homologacionService.getSecretariaRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
         this.solicitudes = sols.map(sol => ({
@@ -84,11 +99,12 @@ export class HomologacionAsignaturasComponent implements OnInit {
           rutaArchivo: '', // Para oficios
           comentarios: ''
         }));
-        console.log('📋 Solicitudes cargadas para secretaría:', this.solicitudes);
+        this.logger.debug('Solicitudes cargadas para secretaría:', this.solicitudes);
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes:', err);
-        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al cargar solicitudes:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -110,7 +126,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
   cargarSolicitudesAprobadas(): void {
     this.cargandoSolicitudesAprobadas = true;
 
-    this.homologacionService.getSecretariaApprovedRequests().subscribe({
+    this.homologacionService.getSecretariaApprovedRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (solicitudes) => {
         this.solicitudesAprobadas = solicitudes.map((solicitud) => ({
           id: solicitud.id_solicitud,
@@ -122,11 +140,12 @@ export class HomologacionAsignaturasComponent implements OnInit {
         }));
 
         this.cargandoSolicitudesAprobadas = false;
-        console.log('✅ Solicitudes de homologación aprobadas:', this.solicitudesAprobadas);
+        this.logger.debug('Solicitudes de homologación aprobadas:', this.solicitudesAprobadas);
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes aprobadas de homologación:', err);
-        this.snackBar.open('Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al cargar solicitudes aprobadas de homologación:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
         this.cargandoSolicitudesAprobadas = false;
       }
     });
@@ -147,11 +166,15 @@ export class HomologacionAsignaturasComponent implements OnInit {
     this.limpiarEstado();
 
     // Buscar la solicitud original por ID
-    this.homologacionService.getSecretariaRequests().subscribe({
+    this.homologacionService.getSecretariaRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
-        console.log('✅ Solicitud seleccionada:', this.selectedSolicitud);
-        console.log('🧹 Estado limpiado para nueva solicitud');
+        this.logger.debug('Solicitud seleccionada:', this.selectedSolicitud);
+      },
+      error: (err) => {
+        this.logger.error('Error al cargar solicitud seleccionada:', err);
       }
     });
   }
@@ -171,14 +194,13 @@ export class HomologacionAsignaturasComponent implements OnInit {
     if (!this.selectedSolicitud) return;
 
     this.loading = true;
-    console.log('📄 Generando documento:', request);
-    console.log('👤 Solicitud seleccionada:', this.selectedSolicitud);
-    console.log('👤 Usuario de la solicitud:', this.selectedSolicitud.objUsuario);
-    console.log('👤 Datos del estudiante en request:', request.datosSolicitud);
+    this.logger.log('Generando documento:', request);
 
-    this.documentGeneratorService.generarDocumento(request).subscribe({
+    this.documentGeneratorService.generarDocumento(request).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (blob) => {
-        console.log('✅ Documento generado exitosamente');
+        this.logger.log('Documento generado exitosamente');
 
         // Generar nombre de archivo
         const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
@@ -193,8 +215,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('❌ Error al generar documento:', err);
-        this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al generar documento:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al generar documento', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
     });
@@ -206,7 +229,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
   onCancelarGeneracion(): void {
     this.limpiarEstado();
     this.selectedSolicitud = undefined;
-    console.log('❌ Generación de documento cancelada');
+    this.logger.debug('Generación de documento cancelada');
   }
 
   /**
@@ -232,18 +255,21 @@ export class HomologacionAsignaturasComponent implements OnInit {
     }
 
     this.subiendoPDF = true;
-    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+    this.logger.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
 
     // Usar el servicio para subir el PDF con idSolicitud
-    this.homologacionService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+    this.homologacionService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
-        console.log('✅ Archivo PDF subido exitosamente:', response);
+        this.logger.log('Archivo PDF subido exitosamente:', response);
         this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
         this.subiendoPDF = false;
       },
       error: (err) => {
-        console.error('❌ Error al subir archivo PDF:', err);
-        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.logger.error('Error al subir archivo PDF:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
     });
@@ -259,14 +285,16 @@ export class HomologacionAsignaturasComponent implements OnInit {
     }
 
     this.enviandoPDF = true;
-    console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
+    this.logger.log('Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
 
     // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
-    this.homologacionService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+    this.homologacionService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
-        console.log('✅ Estado de solicitud actualizado a APROBADA');
-        console.log('✅ PDF enviado al estudiante exitosamente');
-        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.logger.log('Estado de solicitud actualizado a APROBADA');
+        this.logger.log('PDF enviado al estudiante exitosamente');
+        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
 
         // Limpiar el estado
@@ -278,8 +306,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
         this.cargarSolicitudes();
       },
       error: (err: any) => {
-        console.error('❌ Error al actualizar estado de solicitud:', err);
-        this.snackBar.open('Error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+            this.logger.error('Error al actualizar estado de solicitud:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al enviar al estudiante', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
       }
     });
@@ -296,34 +325,34 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
     // Paso 1: Subir PDF
     this.subiendoPDF = true;
-    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
-    console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
-    console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
+    this.logger.log('Subiendo archivo PDF:', this.archivoPDF.name);
 
     // Usar el servicio para subir el PDF con idSolicitud
-    this.homologacionService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+    this.homologacionService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
-        console.log('✅ Archivo PDF subido exitosamente:', response);
+        this.logger.log('Archivo PDF subido exitosamente:', response);
         this.subiendoPDF = false;
 
-        // Paso 2: Enviar al estudiante (cambiar estado)
         this.enviandoPDF = true;
-        console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud?.id_solicitud);
+        this.logger.log('Enviando PDF al estudiante:', this.selectedSolicitud?.id_solicitud);
 
-        // Verificar que la solicitud sigue seleccionada
         if (!this.selectedSolicitud) {
-          console.error('❌ selectedSolicitud es undefined');
+          this.logger.error('selectedSolicitud es undefined');
           this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
           this.enviandoPDF = false;
           return;
         }
 
         // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
-        this.homologacionService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+        this.homologacionService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
           next: () => {
-            console.log('✅ Estado de solicitud actualizado a APROBADA');
-            console.log('✅ PDF enviado al estudiante exitosamente');
-            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+            this.logger.log('Estado de solicitud actualizado a APROBADA');
+            this.logger.log('PDF enviado al estudiante exitosamente');
+            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
 
             // Limpiar el estado
@@ -335,15 +364,17 @@ export class HomologacionAsignaturasComponent implements OnInit {
             this.cargarSolicitudes();
           },
           error: (err: any) => {
-            console.error('❌ Error al actualizar estado de solicitud:', err);
-            this.snackBar.open('PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+            this.logger.error('Error al actualizar estado de solicitud:', err);
+            const mensaje = this.errorHandler.extraerMensajeError(err);
+            this.snackBar.open(mensaje || 'PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
           }
         });
       },
       error: (err) => {
-        console.error('❌ Error al subir archivo PDF:', err);
-        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.logger.error('Error al subir archivo PDF:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
     });
@@ -366,6 +397,6 @@ export class HomologacionAsignaturasComponent implements OnInit {
     this.enviandoPDF = false;
     this.documentoHabilitado = false;
     this.loading = false;
-    console.log('🧹 Estado del componente limpiado');
+    this.logger.debug('🧹 Estado del componente limpiado');
   }
 }

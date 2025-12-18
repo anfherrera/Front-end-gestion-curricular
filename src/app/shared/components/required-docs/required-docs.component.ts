@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,20 +14,36 @@ export interface Documento {
   opcional?: boolean;
 }
 
+/**
+ * Componente para mostrar la documentación requerida según el programa del estudiante
+ * Maneja lógica específica para programas como Telemática, Sistemas, etc.
+ */
 @Component({
   selector: 'app-required-docs',
   standalone: true,
   imports: [CommonModule, MatCardModule, MatIconModule],
   templateUrl: './required-docs.component.html',
-  styleUrls: ['./required-docs.component.css']
+  styleUrls: ['./required-docs.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RequiredDocsComponent {
+  /** Lista de documentos requeridos */
   @Input() requiredFiles: Documento[] = [];
+  
+  /** Archivos que son mutuamente exclusivos */
   @Input() exclusiveFiles: string[] = [];
+  
+  /** Archivos opcionales */
   @Input() optionalFiles: string[] = [];
+  
+  /** Archivos ya subidos por el estudiante */
   @Input() archivos: Archivo[] = [];
+  
+  /** Nombre del programa del estudiante */
   @Input() programaEstudiante: string = '';
-  @Input() esPazYSalvo: boolean = false; // Indica si es para Paz y Salvo
+  
+  /** Indica si es para el proceso de Paz y Salvo */
+  @Input() esPazYSalvo: boolean = false;
 
   get esTelematica(): boolean {
     if (!this.programaEstudiante) return false;

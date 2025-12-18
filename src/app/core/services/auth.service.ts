@@ -6,7 +6,12 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { UserRole } from '../enums/roles.enum';
 import { ApiService } from './api.service';
 import { ActivityMonitorService } from './activity-monitor.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
+/**
+ * Servicio de autenticación y gestión de sesión
+ * Maneja tokens JWT, información de usuario, roles y expiración de sesión
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'token';
@@ -22,7 +27,8 @@ export class AuthService {
     private router: Router,
     private apiService: ApiService,
     private activityMonitor: ActivityMonitorService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private snackBar?: MatSnackBar
   ) {
     this.restoreRoleFromStorage(); // restaura rol al recargar la página
     this.setupActivityMonitoring(); // configura el monitoreo de actividad
@@ -38,6 +44,11 @@ export class AuthService {
   }
 
   // ===== TOKEN =====
+  
+  /**
+   * Establece el token JWT y configura la expiración automática
+   * @param token Token JWT recibido del servidor
+   */
   setToken(token: string): void {
     const storage = this.safeLocalStorage();
     if (!storage) return;
@@ -52,11 +63,18 @@ export class AuthService {
     this.startActivityMonitoring(); // inicia el monitoreo de actividad
   }
 
+  /**
+   * Obtiene el token JWT almacenado
+   * @returns Token JWT o null si no existe
+   */
   getToken(): string | null {
     const storage = this.safeLocalStorage();
     return storage ? storage.getItem(this.TOKEN_KEY) : null;
   }
 
+  /**
+   * Limpia el token y cancela el timer de expiración
+   */
   clearToken(): void {
     const storage = this.safeLocalStorage();
     if (storage) {
@@ -68,6 +86,11 @@ export class AuthService {
   }
 
   // ===== USUARIO =====
+  
+  /**
+   * Almacena la información del usuario en localStorage
+   * @param usuario Objeto con la información del usuario
+   */
   setUsuario(usuario: any): void {
     const storage = this.safeLocalStorage();
     if (storage) {
@@ -75,6 +98,11 @@ export class AuthService {
     }
   }
 
+  /**
+   * Obtiene la información del usuario almacenada
+   * Sincroniza el rol del usuario con el almacenado en localStorage
+   * @returns Objeto con la información del usuario o null si no existe
+   */
   getUsuario(): any | null {
     const storage = this.safeLocalStorage();
     if (!storage) return null;
@@ -104,6 +132,12 @@ export class AuthService {
   }
 
   // ===== ROL =====
+  
+  /**
+   * Establece el rol del usuario actual
+   * Normaliza el nombre del rol y lo almacena en localStorage
+   * @param role Nombre del rol (puede ser en diferentes formatos)
+   */
   setRole(role: string): void {
     let normalizedRole: UserRole;
 
@@ -127,6 +161,10 @@ export class AuthService {
     this.roleSubject.next(normalizedRole);
   }
 
+  /**
+   * Obtiene el rol actual del usuario
+   * @returns Rol del usuario o null si no está autenticado
+   */
   getRole(): UserRole | null {
     return this.roleSubject.value;
   }
@@ -142,10 +180,22 @@ export class AuthService {
   }
 
   // ===== AUTENTICACIÓN =====
+  
+  /**
+   * Realiza el proceso de login
+   * @param correo Correo electrónico del usuario
+   * @param password Contraseña del usuario
+   * @returns Observable con la respuesta del servidor
+   */
   login(correo: string, password: string): Observable<any> {
     return this.apiService.login(correo, password);
   }
 
+  /**
+   * Verifica si el usuario está autenticado
+   * Comprueba la existencia y validez del token
+   * @returns true si el usuario está autenticado y el token no ha expirado
+   */
   isAuthenticated(): boolean {
     const token = this.getToken();
     const storage = this.safeLocalStorage();
@@ -157,9 +207,18 @@ export class AuthService {
   }
 
   // ===== LOGOUT =====
+  
+  /**
+   * Cierra la sesión del usuario
+   * Limpia todos los datos almacenados y redirige al login
+   * @param showMessage Si es true, muestra un mensaje de sesión expirada
+   */
   logout(showMessage: boolean = false): void {
-    if (showMessage) {
-      alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+    if (showMessage && this.snackBar) {
+      this.snackBar.open('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'Cerrar', {
+        duration: 5000,
+        panelClass: ['warning-snackbar']
+      });
     }
     const storage = this.safeLocalStorage();
     if (storage) {

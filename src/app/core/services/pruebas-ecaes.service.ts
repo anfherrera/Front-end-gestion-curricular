@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from './logger.service';
 
 export interface FechaEcaes {
   idFechaEcaes: number;
@@ -83,7 +84,10 @@ export interface SolicitudEcaesResponse {
 export class PruebasEcaesService {
   private apiUrl = `${environment.apiUrl}/solicitudes-ecaes`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private logger: LoggerService
+  ) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -220,7 +224,7 @@ export class PruebasEcaesService {
     // URL directa al backend (CORS configurado)
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
     // URL de descarga ECAES
-    console.log('📁 Nombre del archivo:', nombreArchivo);
+    this.logger.log('Nombre del archivo:', nombreArchivo);
 
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -235,7 +239,7 @@ export class PruebasEcaesService {
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
     // URL de descarga por ID
-    console.log('📁 ID del documento:', idDocumento);
+    this.logger.log('ID del documento:', idDocumento);
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -252,8 +256,8 @@ export class PruebasEcaesService {
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
     // URL de descarga por ruta
-    console.log('📁 Ruta del documento:', rutaDocumento);
-    console.log('📁 Nombre extraído:', nombreArchivo);
+    this.logger.log('Ruta del documento:', rutaDocumento);
+    this.logger.debug('Nombre extraído:', nombreArchivo);
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -271,7 +275,7 @@ export class PruebasEcaesService {
       comentario: comentario
     };
 
-    console.log('💬 Añadiendo comentario ECAES:', body);
+    this.logger.debug('Añadiendo comentario ECAES:', body);
 
     return this.http.put(url, body, {
       headers: this.getAuthHeaders()

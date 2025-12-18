@@ -4,7 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
 import { formatearPeriodo } from '../../../core/utils/periodo.utils';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-periodo-actual-display',
@@ -77,13 +78,15 @@ import { Subscription } from 'rxjs';
 export class PeriodoActualDisplayComponent implements OnInit, OnDestroy {
   periodoActual: PeriodoAcademico | null = null;
   periodoFormateado: string = '';
-  private subscription?: Subscription;
+  private destroy$ = new Subject<void>();
 
   constructor(private periodosService: PeriodosAcademicosService) {}
 
   ngOnInit(): void {
     // Suscribirse al observable del período actual
-    this.subscription = this.periodosService.periodoActual$.subscribe(periodo => {
+    this.periodosService.periodoActual$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(periodo => {
       if (periodo) {
         this.periodoActual = periodo;
         this.periodoFormateado = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
@@ -105,13 +108,14 @@ export class PeriodoActualDisplayComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   cargarPeriodoActual(): void {
-    this.periodosService.getPeriodoActual().subscribe({
+    this.periodosService.getPeriodoActual().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (periodo) => {
         if (periodo) {
           this.periodoActual = periodo;

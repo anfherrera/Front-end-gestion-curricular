@@ -11,6 +11,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { NotificacionService } from '../../../core/services/notificacion.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -22,6 +24,8 @@ import {
   enrichNotificaciones
 } from '../../../core/utils/notificaciones.util';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-notificaciones',
@@ -61,11 +65,15 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     { valor: TipoSolicitud.CURSO_VERANO_INSCRIPCION, etiqueta: 'Cursos Verano - Inscripción' }
   ];
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private notificacionService: NotificacionService,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {}
 
   ngOnInit(): void {
@@ -73,7 +81,8 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // El servicio maneja el polling globalmente
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   cargarNotificaciones(): void {
@@ -107,7 +116,9 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         observable = this.notificacionService.obtenerTodas(usuarioId);
     }
 
-    observable.subscribe({
+    observable.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (notificaciones: Notificacion[]) => {
         // Enriquecer notificaciones con campos calculados
         const notificacionesEnriquecidas = enrichNotificaciones(notificaciones);
@@ -124,10 +135,12 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       },
       error: (error: HttpErrorResponse) => {
         this.isLoading = false;
+        this.logger.error('Error al cargar notificaciones:', error);
         
         // Si es 403, no mostrar error (puede ser normal)
         if (error.status !== 403) {
-          this.snackBar.open('Error al cargar notificaciones', 'Cerrar', { duration: 3000 });
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackBar.open(mensaje || 'Error al cargar notificaciones', 'Cerrar', { duration: 3000 });
         }
       }
     });
@@ -176,7 +189,9 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.notificacionService.marcarComoLeida(notificacion.id_notificacion).subscribe({
+    this.notificacionService.marcarComoLeida(notificacion.id_notificacion).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
         notificacion.leida = true;
         // Remover de la lista de no leídas si está ahí
@@ -185,7 +200,9 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         this.snackBar.open('Notificación marcada como leída', 'Cerrar', { duration: 2000 });
       },
       error: (error: HttpErrorResponse) => {
-        this.snackBar.open('Error al marcar notificación como leída', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al marcar notificación como leída:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al marcar notificación como leída', 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -197,7 +214,9 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.notificacionService.marcarTodasComoLeidas(usuarioId).subscribe({
+    this.notificacionService.marcarTodasComoLeidas(usuarioId).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
         this.todasLasNotificaciones.forEach(n => n.leida = true);
         this.notificacionesNoLeidas = [];
@@ -205,7 +224,9 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         this.snackBar.open('Todas las notificaciones marcadas como leídas', 'Cerrar', { duration: 2000 });
       },
       error: (error: HttpErrorResponse) => {
-        this.snackBar.open('Error al marcar notificaciones como leídas', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al marcar notificaciones como leídas:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al marcar notificaciones como leídas', 'Cerrar', { duration: 3000 });
       }
     });
   }

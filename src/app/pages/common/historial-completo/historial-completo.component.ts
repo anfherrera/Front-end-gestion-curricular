@@ -17,6 +17,8 @@ import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial, TipoS
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '../../../shared/pipes/utf-fix.pipe';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-historial-completo',
@@ -65,7 +67,9 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private historialService: HistorialSolicitudesService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {
     this.filtrosForm = this.fb.group({
       periodoAcademico: [''],
@@ -112,13 +116,17 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
       filtros.estadoActual = formValue.estadoActual;
     }
 
-    this.historialService.obtenerHistorialCompleto(filtros).subscribe({
+    this.historialService.obtenerHistorialCompleto(filtros).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
         this.historial = response;
         this.loading = false;
       },
       error: (error) => {
-        this.snackBar.open('Error al cargar el historial de solicitudes', 'Cerrar', {
+        this.logger.error('Error al cargar el historial de solicitudes:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al cargar el historial de solicitudes', 'Cerrar', {
           duration: 3000
         });
         this.loading = false;
@@ -214,7 +222,9 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
       filtros.estadoActual = formValue.estadoActual;
     }
 
-    this.historialService.exportarHistorialPDF(filtros).subscribe({
+    this.historialService.exportarHistorialPDF(filtros).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
         try {
           const { blob, filename } = response;
@@ -240,6 +250,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
             panelClass: ['success-snackbar']
           });
         } catch (error) {
+          this.logger.error('Error al procesar el archivo PDF:', error);
           this.snackBar.open('Error al procesar el archivo PDF', 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -250,6 +261,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.exportandoPDF = false;
+        this.logger.error('Error al exportar PDF:', err);
         
         let mensaje = 'Error al exportar PDF';
         if (err.status === 401) {
@@ -260,6 +272,11 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
           mensaje = 'Error del servidor al generar el PDF';
         } else if (err.status === 0) {
           mensaje = 'Error de conexión. Verifica tu conexión a internet';
+        } else {
+          const mensajeError = this.errorHandler.extraerMensajeError(err);
+          if (mensajeError && mensajeError !== 'Ocurrió un error inesperado') {
+            mensaje = mensajeError;
+          }
         }
         
         this.snackBar.open(mensaje, 'Cerrar', {
@@ -268,6 +285,16 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  /**
+   * TrackBy function para optimizar el rendimiento de *ngFor en la tabla
+   * @param index Índice del elemento
+   * @param solicitud Solicitud del historial
+   * @returns ID único de la solicitud
+   */
+  trackBySolicitudId(index: number, solicitud: any): number {
+    return solicitud.id_solicitud || index;
   }
 }
 

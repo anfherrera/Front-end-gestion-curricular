@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from './core/services/auth.service';
 import { PeriodosAcademicosService } from './core/services/periodos-academicos.service';
 import { formatearPeriodo } from './core/utils/periodo.utils';
@@ -15,7 +16,7 @@ import { formatearPeriodo } from './core/utils/periodo.utils';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Front-end-gestion-curricular';
-  private periodoSubscription?: Subscription;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
@@ -24,14 +25,12 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // 🔹 Restaura la sesión al cargar la app (si había token guardado)
     this.authService.restoreSession();
-    
-    // 🔹 Inicializa el período académico actual
     this.periodosService.inicializarPeriodoActual();
 
-    // 🔹 Suscribirse a cambios de período para mostrar notificaciones
-    this.periodoSubscription = this.periodosService.cambioPeriodo$.subscribe(cambio => {
+    this.periodosService.cambioPeriodo$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(cambio => {
       if (cambio && cambio.anterior && cambio.actual) {
         const periodoAnteriorTexto = cambio.anterior.nombrePeriodo || formatearPeriodo(cambio.anterior.valor);
         const periodoActualTexto = cambio.actual.nombrePeriodo || formatearPeriodo(cambio.actual.valor);
@@ -49,8 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.periodoSubscription) {
-      this.periodoSubscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

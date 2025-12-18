@@ -3,14 +3,22 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { SolicitudReingresoDTOPeticion, SolicitudReingresoDTORespuesta, CambioEstadoSolicitudDTOPeticion } from '../models/procesos.model';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from './logger.service';
 
+/**
+ * Servicio para gestionar las solicitudes de reingreso de estudiantes
+ * Proporciona métodos para crear, listar, aprobar, rechazar y gestionar solicitudes de reingreso
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class ReingresoEstudianteService {
   private apiUrl = `${environment.apiUrl}/solicitudes-reingreso`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private logger: LoggerService
+  ) {}
 
   private getAuthHeaders(isFile: boolean = false): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -24,6 +32,11 @@ export class ReingresoEstudianteService {
   // Métodos básicos
   // ================================
 
+  /**
+   * Crea una nueva solicitud de reingreso
+   * @param solicitud Datos de la solicitud de reingreso
+   * @returns Observable con la respuesta del servidor
+   */
   crearSolicitud(solicitud: SolicitudReingresoDTOPeticion): Observable<any> {
     return this.http.post(
       `${this.apiUrl}/crearSolicitud-Reingreso`,
@@ -32,6 +45,10 @@ export class ReingresoEstudianteService {
     );
   }
 
+  /**
+   * Lista todas las solicitudes de reingreso
+   * @returns Observable con el array de solicitudes
+   */
   listarSolicitudes(): Observable<SolicitudReingresoDTORespuesta[]> {
     return this.http.get<SolicitudReingresoDTORespuesta[]>(
       `${this.apiUrl}/listarSolicitudes-Reingreso`,
@@ -39,6 +56,13 @@ export class ReingresoEstudianteService {
     );
   }
 
+  /**
+   * Lista solicitudes de reingreso filtradas por rol y opcionalmente por usuario y período
+   * @param rol Rol del usuario (ESTUDIANTE, FUNCIONARIO, COORDINADOR, SECRETARIA)
+   * @param idUsuario ID del usuario (opcional)
+   * @param periodoAcademico Período académico para filtrar (opcional)
+   * @returns Observable con el array de solicitudes filtradas
+   */
   listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudReingresoDTORespuesta[]> {
     const headers = this.getAuthHeaders();
 
@@ -221,7 +245,7 @@ export class ReingresoEstudianteService {
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError((error: any) => {
-        console.error('Error obteniendo solicitudes procesadas (funcionario):', error);
+        this.logger.error('Error obteniendo solicitudes procesadas (funcionario)', error);
         return of([]);
       })
     );
@@ -243,7 +267,7 @@ export class ReingresoEstudianteService {
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError((error: any) => {
-        console.error('Error obteniendo solicitudes procesadas (coordinador):', error);
+        this.logger.error('Error obteniendo solicitudes procesadas (coordinador)', error);
         return of([]);
       })
     );
@@ -259,8 +283,7 @@ export class ReingresoEstudianteService {
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    // URL de descarga
-    console.log('📁 Nombre del archivo:', nombreArchivo);
+    this.logger.debug('Descargando archivo por nombre', { nombreArchivo, url });
 
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -274,8 +297,7 @@ export class ReingresoEstudianteService {
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    // URL de descarga por ID
-    console.log('📁 ID del documento:', idDocumento);
+    this.logger.debug('Descargando archivo por ID', { idDocumento, url });
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -291,9 +313,7 @@ export class ReingresoEstudianteService {
     // Extraer el nombre del archivo de la ruta si es necesario
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    // URL de descarga por ruta
-    console.log('📁 Ruta del documento:', rutaDocumento);
-    console.log('📁 Nombre extraído:', nombreArchivo);
+    this.logger.debug('Descargando archivo por ruta', { rutaDocumento, nombreArchivo, url });
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -311,7 +331,7 @@ export class ReingresoEstudianteService {
       comentario: comentario
     };
 
-    console.log('💬 Añadiendo comentario:', body);
+    this.logger.debug('Añadiendo comentario a documento', body);
 
     return this.http.put(url, body, {
       headers: this.getAuthHeaders()

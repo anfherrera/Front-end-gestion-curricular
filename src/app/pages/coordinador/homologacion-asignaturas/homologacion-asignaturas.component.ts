@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,6 +6,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
@@ -15,6 +17,8 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -33,7 +37,7 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['./homologacion-asignaturas.component.css']
 })
-export class HomologacionAsignaturasComponent implements OnInit {
+export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
 
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
@@ -44,18 +48,29 @@ export class HomologacionAsignaturasComponent implements OnInit {
   ESTADOS_SOLICITUD_LABELS = ESTADOS_SOLICITUD_LABELS;
   ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     public homologacionService: HomologacionAsignaturasService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   ngOnInit(): void {
     this.cargarSolicitudes();
   }
 
   cargarSolicitudes(): void {
-    this.homologacionService.getCoordinadorRequests().subscribe({
+    this.homologacionService.getCoordinadorRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
         this.solicitudes = sols.map(sol => ({
@@ -68,7 +83,11 @@ export class HomologacionAsignaturasComponent implements OnInit {
         }));
         if (sols.length) this.selectedSolicitud = sols[0];
       },
-      error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.logger.error('Error al cargar solicitudes:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -86,9 +105,14 @@ export class HomologacionAsignaturasComponent implements OnInit {
       return;
     }
     // Buscar la solicitud original por ID
-    this.homologacionService.getCoordinadorRequests().subscribe({
+    this.homologacionService.getCoordinadorRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
+      },
+      error: (err) => {
+        this.logger.error('Error al cargar solicitud seleccionada:', err);
       }
     });
   }
@@ -114,15 +138,18 @@ export class HomologacionAsignaturasComponent implements OnInit {
    */
   onComentarioAgregado(event: {documento: any, comentario: string}): void {
     if (event.documento.id_documento) {
-      this.homologacionService.agregarComentario(event.documento.id_documento, event.comentario).subscribe({
+      this.homologacionService.agregarComentario(event.documento.id_documento, event.comentario).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
         next: () => {
           this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
           // Recargar la solicitud para actualizar los comentarios
           this.cargarSolicitudes();
         },
         error: (error) => {
-          console.error('Error al añadir comentario:', error);
-          this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          this.logger.error('Error al añadir comentario:', error);
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', { duration: 3000 });
         }
       });
     }
@@ -134,14 +161,20 @@ export class HomologacionAsignaturasComponent implements OnInit {
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    this.homologacionService.approveAsCoordinador(this.selectedSolicitud.id_solicitud).subscribe({
+    this.homologacionService.approveAsCoordinador(this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
         this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
       },
-      error: (err) => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.logger.error('Error al aprobar solicitud:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -157,16 +190,24 @@ export class HomologacionAsignaturasComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe((motivo: string) => {
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((motivo: string) => {
       if (motivo) {
-        this.homologacionService.rejectAsCoordinador(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
+        this.homologacionService.rejectAsCoordinador(this.selectedSolicitud!.id_solicitud, motivo).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
           next: () => {
             this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
           },
-          error: (err) => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
+          error: (err) => {
+            this.logger.error('Error al rechazar solicitud:', err);
+            const mensaje = this.errorHandler.extraerMensajeError(err);
+            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', { duration: 3000 });
+          }
         });
       }
     });

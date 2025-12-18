@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
 import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
@@ -20,6 +22,8 @@ import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '.
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -42,7 +46,7 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']
 })
-export class ReingresoEstudianteComponent implements OnInit {
+export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
 
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
@@ -66,11 +70,15 @@ export class ReingresoEstudianteComponent implements OnInit {
   ESTADOS_SOLICITUD_LABELS = ESTADOS_SOLICITUD_LABELS;
   ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     public reingresoService: ReingresoEstudianteService,
     private documentGeneratorService: DocumentGeneratorService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {
     // Inicializar plantilla para reingreso
     this.template = {
@@ -95,8 +103,15 @@ export class ReingresoEstudianteComponent implements OnInit {
     this.cargarSolicitudesAprobadas();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarSolicitudes(): void {
-    this.reingresoService.getSecretariaRequests().subscribe({
+    this.reingresoService.getSecretariaRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
         this.solicitudes = sols.map(sol => ({
@@ -109,7 +124,11 @@ export class ReingresoEstudianteComponent implements OnInit {
         }));
         // No seleccionar ninguna solicitud por defecto
       },
-      error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.logger.error('Error al cargar solicitudes:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -124,7 +143,9 @@ export class ReingresoEstudianteComponent implements OnInit {
   cargarSolicitudesAprobadas(): void {
     this.cargandoSolicitudesAprobadas = true;
 
-    this.reingresoService.getSecretariaApprovedRequests().subscribe({
+    this.reingresoService.getSecretariaApprovedRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (solicitudes) => {
         this.solicitudesAprobadas = solicitudes.map((solicitud) => ({
           id: solicitud.id_solicitud,
@@ -138,8 +159,9 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.cargandoSolicitudesAprobadas = false;
       },
       error: (err) => {
-        console.error('Error al cargar solicitudes de reingreso aprobadas:', err);
-        this.snackBar.open('Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al cargar solicitudes de reingreso aprobadas:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
         this.cargandoSolicitudesAprobadas = false;
       }
     });
@@ -157,11 +179,16 @@ export class ReingresoEstudianteComponent implements OnInit {
     this.limpiarEstado();
 
     // Buscar la solicitud original por ID
-    this.reingresoService.getSecretariaRequests().subscribe({
+    this.reingresoService.getSecretariaRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
         // Solicitud seleccionada
         // Estado limpiado para nueva solicitud
+      },
+      error: (err) => {
+        this.logger.error('Error al cargar solicitud seleccionada:', err);
       }
     });
   }
@@ -183,7 +210,9 @@ export class ReingresoEstudianteComponent implements OnInit {
     this.loading = true;
     // Generando documento
 
-    this.documentGeneratorService.generarDocumento(request).subscribe({
+    this.documentGeneratorService.generarDocumento(request).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (blob) => {
         // Documento generado exitosamente
 
@@ -202,8 +231,9 @@ export class ReingresoEstudianteComponent implements OnInit {
         // Documento generado, estado de solicitud NO cambiado aún
       },
       error: (err: any) => {
-        console.error('Error al generar documento:', err);
-        this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al generar documento:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al generar documento', 'Cerrar', { duration: 3000 });
         this.loading = false;
       }
     });
@@ -241,22 +271,25 @@ export class ReingresoEstudianteComponent implements OnInit {
     }
 
     this.subiendoPDF = true;
-    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
-    console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
-    console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
+    this.logger.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+    this.logger.debug('🔍 selectedSolicitud:', this.selectedSolicitud);
+    this.logger.debug('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
-    console.log('📝 Nombre original del archivo:', this.archivoPDF.name);
+    this.logger.debug('📝 Nombre original del archivo:', this.archivoPDF.name);
 
     // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
-    this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+    this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
-        console.log('✅ Archivo PDF subido exitosamente:', response);
+        this.logger.log('Archivo PDF subido exitosamente:', response);
         this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
         this.subiendoPDF = false;
       },
       error: (err) => {
-        console.error('Error al subir archivo PDF:', err);
-        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.logger.error('Error al subir archivo PDF:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
     });
@@ -272,14 +305,16 @@ export class ReingresoEstudianteComponent implements OnInit {
     }
 
     this.enviandoPDF = true;
-    console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
+    this.logger.log('Enviando PDF al estudiante:', this.selectedSolicitud.id_solicitud);
 
     // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
-    this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+    this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
-        console.log('✅ Estado de solicitud actualizado a APROBADA');
-        console.log('✅ PDF enviado al estudiante exitosamente');
-        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.logger.log('Estado de solicitud actualizado a APROBADA');
+        this.logger.log('PDF enviado al estudiante exitosamente');
+        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
 
         // Limpiar el estado
@@ -291,8 +326,9 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.cargarSolicitudes();
       },
       error: (err: any) => {
-        console.error('❌ Error al actualizar estado de solicitud:', err);
-        this.snackBar.open('Error al enviar PDF al estudiante', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al actualizar estado de solicitud:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al enviar PDF al estudiante', 'Cerrar', { duration: 3000 });
         this.enviandoPDF = false;
       }
     });
@@ -309,36 +345,39 @@ export class ReingresoEstudianteComponent implements OnInit {
 
     // Paso 1: Subir PDF
     this.subiendoPDF = true;
-    console.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
-    console.log('🔍 selectedSolicitud:', this.selectedSolicitud);
-    console.log('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
+    this.logger.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+    this.logger.debug('🔍 selectedSolicitud:', this.selectedSolicitud);
+    this.logger.debug('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
-    console.log('📝 Nombre original del archivo:', this.archivoPDF.name);
+    this.logger.debug('📝 Nombre original del archivo:', this.archivoPDF.name);
 
     // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
-    this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).subscribe({
+    this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
-        console.log('✅ Archivo PDF subido exitosamente:', response);
+        this.logger.log('Archivo PDF subido exitosamente:', response);
         this.subiendoPDF = false;
 
         // Paso 2: Enviar al estudiante (cambiar estado)
         this.enviandoPDF = true;
-        console.log('📧 Enviando PDF al estudiante:', this.selectedSolicitud?.id_solicitud);
+        this.logger.log('Enviando PDF al estudiante:', this.selectedSolicitud?.id_solicitud);
 
-        // Verificar que la solicitud sigue seleccionada
         if (!this.selectedSolicitud) {
-          console.error('❌ selectedSolicitud es undefined');
+          this.logger.error('selectedSolicitud es undefined');
           this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
           this.enviandoPDF = false;
           return;
         }
 
         // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
-        this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+        this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
           next: () => {
-            console.log('✅ Estado de solicitud actualizado a APROBADA');
-            console.log('✅ PDF enviado al estudiante exitosamente');
-            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente ✅', 'Cerrar', { duration: 3000 });
+            this.logger.log('Estado de solicitud actualizado a APROBADA');
+            this.logger.log('PDF enviado al estudiante exitosamente');
+            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
 
             // Limpiar el estado
@@ -350,15 +389,17 @@ export class ReingresoEstudianteComponent implements OnInit {
             this.cargarSolicitudes();
           },
           error: (err: any) => {
-            console.error('❌ Error al actualizar estado de solicitud:', err);
-            this.snackBar.open('PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+            this.logger.error('Error al actualizar estado de solicitud:', err);
+            const mensaje = this.errorHandler.extraerMensajeError(err);
+            this.snackBar.open(mensaje || 'PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
             this.enviandoPDF = false;
           }
         });
       },
       error: (err) => {
-        console.error('Error al subir archivo PDF:', err);
-        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.logger.error('Error al subir archivo PDF:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', { duration: 5000 });
         this.subiendoPDF = false;
       }
     });
@@ -391,16 +432,18 @@ export class ReingresoEstudianteComponent implements OnInit {
     // Mostrar mensaje de carga
     this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
 
-    // ✅ PRIORIDAD 1: Intentar descargar por ID del documento (más confiable)
+    // Intentar descargar por ID del documento (más confiable)
     if (documento.id_documento && this.reingresoService.descargarArchivoPorId) {
-      console.log('📁 Intentando descargar por ID del documento:', documento.id_documento);
-      this.reingresoService.descargarArchivoPorId(documento.id_documento).subscribe({
+      this.logger.log('Intentando descargar por ID del documento:', documento.id_documento);
+      this.reingresoService.descargarArchivoPorId(documento.id_documento).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
         next: (blob: Blob) => {
-          console.log('✅ Documento descargado exitosamente por ID:', documento.id_documento);
+          this.logger.log('Documento descargado exitosamente por ID:', documento.id_documento);
           this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
         },
         error: (error: any) => {
-          console.warn('⚠️ Error al descargar por ID, intentando por ruta...', error);
+          this.logger.warn('Error al descargar por ID, intentando por ruta...', error);
           // Intentar por ruta como fallback
           this.intentarDescargaPorRuta(documento);
         }
@@ -408,16 +451,18 @@ export class ReingresoEstudianteComponent implements OnInit {
       return;
     }
 
-    // ✅ PRIORIDAD 2: Intentar descargar por ruta del documento
+    // Intentar descargar por ruta del documento
     if (documento.ruta_documento && this.reingresoService.descargarArchivoPorRuta) {
-      console.log('📁 Intentando descargar por ruta del documento:', documento.ruta_documento);
-      this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).subscribe({
+      this.logger.log('Intentando descargar por ruta del documento:', documento.ruta_documento);
+      this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
         next: (blob: Blob) => {
-          console.log('✅ Documento descargado exitosamente por ruta:', documento.ruta_documento);
+          this.logger.log('Documento descargado exitosamente por ruta:', documento.ruta_documento);
           this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
         },
         error: (error: any) => {
-          console.warn('⚠️ Error al descargar por ruta, intentando por nombre...', error);
+          this.logger.warn('Error al descargar por ruta, intentando por nombre...', error);
           // Intentar por nombre como último recurso
           this.intentarDescargaPorNombre(documento);
         }
@@ -425,7 +470,7 @@ export class ReingresoEstudianteComponent implements OnInit {
       return;
     }
 
-    // ✅ PRIORIDAD 3: Intentar descargar por nombre (fallback)
+    // Intentar descargar por nombre (fallback)
     this.intentarDescargaPorNombre(documento);
   }
 
@@ -438,13 +483,15 @@ export class ReingresoEstudianteComponent implements OnInit {
       return;
     }
 
-    this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).subscribe({
+    this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (blob: Blob) => {
-        console.log('✅ Documento descargado exitosamente por ruta:', documento.ruta_documento);
+        this.logger.log('✅ Documento descargado exitosamente por ruta:', documento.ruta_documento);
         this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
       },
       error: (error: any) => {
-        console.error('❌ Error al descargar por ruta:', error);
+        this.logger.error('Error al descargar por ruta:', error);
         this.intentarDescargaPorNombre(documento);
       }
     });
@@ -455,19 +502,21 @@ export class ReingresoEstudianteComponent implements OnInit {
    */
   private intentarDescargaPorNombre(documento: DocumentosDTORespuesta): void {
     if (!documento.nombre) {
-      console.error('❌ No hay nombre de archivo disponible');
+      this.logger.error('No hay nombre de archivo disponible');
       this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    console.log('📁 Intentando descargar por nombre del archivo:', documento.nombre);
-    this.reingresoService.descargarArchivo(documento.nombre).subscribe({
+    this.logger.log('Intentando descargar por nombre del archivo:', documento.nombre);
+    this.reingresoService.descargarArchivo(documento.nombre).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (blob: Blob) => {
-        console.log('✅ Documento descargado exitosamente por nombre:', documento.nombre);
+        this.logger.log('Documento descargado exitosamente por nombre:', documento.nombre);
         this.mostrarDocumentoEnVentana(blob, documento.nombre);
       },
       error: (error: any) => {
-        console.error('Error al descargar el documento:', error);
+        this.logger.error('Error al descargar el documento:', error);
 
         let mensajeError = `Error al descargar el documento: ${documento.nombre}`;
 
@@ -534,18 +583,26 @@ export class ReingresoEstudianteComponent implements OnInit {
 
     const contenido = `Oficio de reingreso para ${this.selectedSolicitud.objUsuario.nombre_completo}`;
 
-    this.reingresoService.generarOficio(this.selectedSolicitud.id_solicitud, contenido).subscribe({
+    this.reingresoService.generarOficio(this.selectedSolicitud.id_solicitud, contenido).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
         this.snackBar.open('Oficio generado correctamente ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
       },
-      error: (err) => this.snackBar.open('Error al generar oficio', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.logger.error('Error al generar oficio:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al generar oficio', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
   descargarOficio(idOficio: number, nombreArchivo: string): void {
-    console.log('📥 Descargando oficio:', idOficio);
-    this.reingresoService.descargarOficio(idOficio).subscribe({
+    this.logger.log('📥 Descargando oficio:', idOficio);
+    this.reingresoService.descargarOficio(idOficio).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -573,7 +630,9 @@ export class ReingresoEstudianteComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe((comentario: string) => {
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((comentario: string) => {
       if (comentario !== undefined) {
         // Usar el método existente para actualizar documentos
         const documentosActualizados = [{
@@ -581,7 +640,9 @@ export class ReingresoEstudianteComponent implements OnInit {
           comentario: comentario
         }];
 
-        this.reingresoService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).subscribe({
+        this.reingresoService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
           next: () => {
             this.snackBar.open('Comentario actualizado correctamente', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
@@ -597,14 +658,20 @@ export class ReingresoEstudianteComponent implements OnInit {
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
+    this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
         this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
       },
-      error: (err: any) => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
+      error: (err: any) => {
+        this.logger.error('Error al aprobar solicitud:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -620,16 +687,24 @@ export class ReingresoEstudianteComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe((motivo: string) => {
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((motivo: string) => {
       if (motivo) {
-        this.reingresoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
+        this.reingresoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
           next: () => {
             this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
           },
-          error: (err: any) => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
+          error: (err: any) => {
+            this.logger.error('Error al rechazar solicitud:', err);
+            const mensaje = this.errorHandler.extraerMensajeError(err);
+            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', { duration: 3000 });
+          }
         });
       }
     });
@@ -639,14 +714,14 @@ export class ReingresoEstudianteComponent implements OnInit {
   puedeAprobar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    console.log('🔍 Estado actual para aprobar (secretaria):', estado);
+    this.logger.debug('🔍 Estado actual para aprobar (secretaria):', estado);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 
   puedeRechazar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    console.log('🔍 Estado actual para rechazar (secretaria):', estado);
+    this.logger.debug('🔍 Estado actual para rechazar (secretaria):', estado);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 
@@ -672,6 +747,6 @@ export class ReingresoEstudianteComponent implements OnInit {
     this.enviandoPDF = false;
     this.documentoHabilitado = false;
     this.loading = false;
-    console.log('🧹 Estado del componente limpiado');
+    this.logger.debug('🧹 Estado del componente limpiado');
   }
 }

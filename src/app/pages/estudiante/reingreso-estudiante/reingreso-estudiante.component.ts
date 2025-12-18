@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { Subject, takeUntil } from 'rxjs';
 
 import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion, UsuarioDTOPeticion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -16,6 +17,8 @@ import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shar
 
 import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
 import { MatDialog } from '@angular/material/dialog';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 import { Solicitud } from '../../../core/models/procesos.model';
 
@@ -36,8 +39,10 @@ import { Solicitud } from '../../../core/models/procesos.model';
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']
 })
-export class ReingresoEstudianteComponent implements OnInit {
+export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
+
+  private destroy$ = new Subject<void>();
 
   documentosRequeridos = [
     { label: 'PM-FO-4-FOR-17 Solicitud de Reingreso V2', obligatorio: true },
@@ -59,7 +64,9 @@ export class ReingresoEstudianteComponent implements OnInit {
     private reingresoService: ReingresoEstudianteService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {}
 
   ngOnInit(): void {
@@ -67,9 +74,9 @@ export class ReingresoEstudianteComponent implements OnInit {
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
-      // Usuario cargado desde localStorage
+      this.logger.debug('Usuario cargado desde localStorage', this.usuario);
     } else {
-      console.warn('No se encontró usuario en localStorage');
+      this.logger.warn('No se encontró usuario en localStorage');
     }
 
     // Listar solicitudes existentes al cargar el componente
@@ -79,6 +86,11 @@ export class ReingresoEstudianteComponent implements OnInit {
     setTimeout(() => {
       this.verificarFuncionalidadComentarios();
     }, 2000);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onArchivosChange(archivos: Archivo[]) {
@@ -105,21 +117,31 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   onSolicitudEnviada() {
     if (!this.usuario) {
-      console.error('No se puede enviar solicitud: usuario no encontrado.');
+      this.logger.error('No se puede enviar solicitud: usuario no encontrado.');
+      this.snackBar.open('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.', 'Cerrar', {
+        duration: 4000,
+        panelClass: ['error-snackbar']
+      });
       return;
     }
 
     if (!this.fileUploadComponent) {
-      console.error('No se puede acceder al componente de archivos.');
+      this.logger.error('No se puede acceder al componente de archivos.');
+      this.snackBar.open('Error: No se puede acceder al componente de archivos.', 'Cerrar', {
+        duration: 4000,
+        panelClass: ['error-snackbar']
+      });
       return;
     }
 
-    // Iniciando proceso de envío de solicitud
+    this.logger.debug('Iniciando proceso de envío de solicitud');
 
     // Paso 1: Subir archivos al backend
-    this.fileUploadComponent.subirArchivosPendientes().subscribe({
+    this.fileUploadComponent.subirArchivosPendientes()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (archivosSubidos) => {
-        // Archivos subidos correctamente
+        this.logger.debug('Archivos subidos correctamente', archivosSubidos);
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
         // Obtener nombre completo del usuario
@@ -154,11 +176,13 @@ export class ReingresoEstudianteComponent implements OnInit {
           }))
         };
 
-        // Creando solicitud con archivos
+        this.logger.debug('Creando solicitud con archivos', solicitud);
 
-        this.reingresoService.crearSolicitud(solicitud).subscribe({
+        this.reingresoService.crearSolicitud(solicitud)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
           next: (resp) => {
-            // Solicitud creada en backend
+            this.logger.debug('Solicitud creada en backend', resp);
             this.listarSolicitudes();
 
             // Resetear el file upload
@@ -168,19 +192,22 @@ export class ReingresoEstudianteComponent implements OnInit {
             this.mostrarMensaje('¡Solicitud de reingreso enviada correctamente!', 'success');
           },
           error: (err) => {
-            console.error('Error al crear solicitud:', err);
+            this.logger.error('Error al crear solicitud', err);
+            const mensajeError = this.errorHandler.extraerMensajeError(err);
             if (err.status === 400) {
-              this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
-            }
-            if (err.status === 401) {
+              this.mostrarMensaje(mensajeError || 'Error de validación: revisa los datos de la solicitud', 'warning');
+            } else if (err.status === 401) {
               this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+            } else {
+              this.mostrarMensaje(mensajeError || 'Error al crear la solicitud. Por favor, inténtalo de nuevo.', 'error');
             }
           }
         });
       },
       error: (err) => {
-        console.error('Error al subir archivos:', err);
-        this.mostrarMensaje('Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        this.logger.error('Error al subir archivos', err);
+        const mensajeError = this.errorHandler.extraerMensajeError(err);
+        this.mostrarMensaje(mensajeError || 'Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
 
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
@@ -192,20 +219,23 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   listarSolicitudes() {
     if (!this.usuario) {
-      console.error("Usuario no encontrado en localStorage.");
+      this.logger.error("Usuario no encontrado en localStorage.");
       return;
     }
 
-    // Usuario encontrado
-    // Rol
-    // ID Usuario
+    this.logger.debug('Usuario encontrado', {
+      rol: this.usuario.rol?.nombre,
+      idUsuario: this.usuario.id_usuario
+    });
 
-    this.reingresoService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).subscribe({
+    this.reingresoService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (data) => {
-        // Respuesta del backend (raw)
+        this.logger.debug('Respuesta del backend (raw)', data);
 
         if (!data || !Array.isArray(data)) {
-          console.warn('La respuesta no es un array válido');
+          this.logger.warn('La respuesta no es un array válido', data);
           this.solicitudes = [];
           this.solicitudesCompletas = [];
           return;
@@ -232,17 +262,27 @@ export class ReingresoEstudianteComponent implements OnInit {
             esSeleccionado: sol.esSeleccionado || false
           };
 
-          // Solicitud transformada
+          this.logger.debug('Solicitud transformada', solicitudTransformada);
           return solicitudTransformada;
         });
 
-        // Solicitudes cargadas (transformadas)
+        this.logger.debug('Solicitudes cargadas (transformadas)', this.solicitudes.length);
       },
       error: (err) => {
-        console.error('Error al listar solicitudes', err);
-        console.error('Status:', err.status);
-        console.error('Message:', err.message);
-        console.error('Error completo:', err);
+        this.logger.error('Error al listar solicitudes', {
+          status: err.status,
+          message: err.message,
+          error: err
+        });
+        const mensajeError = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(
+          mensajeError || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.',
+          'Cerrar',
+          {
+            duration: 4000,
+            panelClass: ['error-snackbar']
+          }
+        );
       }
     });
   }
@@ -286,8 +326,10 @@ export class ReingresoEstudianteComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('Diálogo de comentarios cerrado');
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+      this.logger.debug('Diálogo de comentarios cerrado');
     });
   }
 
@@ -302,7 +344,7 @@ export class ReingresoEstudianteComponent implements OnInit {
    * Descargar oficio
    */
   descargarOficio(idOficio: number, nombreArchivo: string): void {
-    console.log('📥 Descargando oficio:', idOficio);
+    this.logger.debug('Descargando oficio', { idOficio, nombreArchivo });
 
     const documentoResolucion = this.encontrarDocumentoResolucion(idOficio);
 
@@ -319,9 +361,11 @@ export class ReingresoEstudianteComponent implements OnInit {
    * Obtener oficios y descargar
    */
   private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
-    this.reingresoService.obtenerOficios(idSolicitud).subscribe({
+    this.reingresoService.obtenerOficios(idSolicitud)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (oficios) => {
-        console.log('📄 Oficios obtenidos:', oficios);
+        this.logger.debug('Oficios obtenidos', oficios);
 
         if (!oficios || oficios.length === 0) {
           this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
@@ -332,7 +376,7 @@ export class ReingresoEstudianteComponent implements OnInit {
         const candidatos = this.construirCandidatosDescarga(oficioSeleccionado, idSolicitud);
 
         if (candidatos.length === 0) {
-          console.warn('⚠️ No se encontraron nombres válidos para el oficio, se usará el flujo antiguo.');
+          this.logger.warn('No se encontraron nombres válidos para el oficio, se usará el flujo antiguo.');
           this.descargarArchivoPorNombre(nombreArchivo, nombreArchivo, idSolicitud);
           return;
         }
@@ -349,7 +393,7 @@ export class ReingresoEstudianteComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('❌ Error al obtener oficios:', err);
+        this.logger.error('Error al obtener oficios', err);
 
         // Si no se pueden obtener oficios, intentar con nombres comunes
         this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
@@ -361,7 +405,7 @@ export class ReingresoEstudianteComponent implements OnInit {
    * Descargar archivo por nombre usando el endpoint de archivos
    */
   private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
-    console.log('📁 Descargando archivo por nombre:', nombreArchivo);
+    this.logger.debug('Descargando archivo por nombre', { nombreArchivo, nombreDescarga, idSolicitud });
 
     // Usar el endpoint de solicitudes de reingreso
     const url = `${environment.apiUrl}/solicitudes-reingreso/descargarOficio/${idSolicitud || 1}`;
@@ -376,15 +420,17 @@ export class ReingresoEstudianteComponent implements OnInit {
       headers: headers,
       responseType: 'blob',
       observe: 'response'
-    }).subscribe({
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (response) => {
-        console.log('✅ Archivo descargado exitosamente');
+        this.logger.debug('Archivo descargado exitosamente');
 
         // Obtener el nombre del archivo desde los headers de la respuesta
         const contentDisposition = response.headers.get('Content-Disposition');
         let nombreArchivoDescarga = nombreDescarga || nombreArchivo;
 
-        console.log('🔍 Content-Disposition header:', contentDisposition);
+        this.logger.debug('Content-Disposition header', contentDisposition);
 
         if (contentDisposition) {
           // Intentar diferentes patrones para extraer el nombre del archivo
@@ -398,25 +444,27 @@ export class ReingresoEstudianteComponent implements OnInit {
 
           if (matches && matches[1]) {
             nombreArchivoDescarga = decodeURIComponent(matches[1]);
-            console.log('📁 Nombre del archivo desde headers:', nombreArchivoDescarga);
+            this.logger.debug('Nombre del archivo desde headers', nombreArchivoDescarga);
           } else {
-            console.log('⚠️ No se pudo extraer el nombre del archivo del header Content-Disposition');
+            this.logger.warn('No se pudo extraer el nombre del archivo del header Content-Disposition');
           }
         } else {
-          console.log('⚠️ No se encontró el header Content-Disposition');
+          this.logger.warn('No se encontró el header Content-Disposition');
           // Usar el nombre del archivo que viene del método obtenerOficios
           nombreArchivoDescarga = nombreArchivo;
-          console.log('📁 Usando nombre del archivo del método obtenerOficios:', nombreArchivoDescarga);
+          this.logger.debug('Usando nombre del archivo del método obtenerOficios', nombreArchivoDescarga);
         }
 
         // Crear URL temporal y descargar
         const blob = response.body!;
 
         // Logging para diagnosticar el problema
-        console.log('📊 Tipo de contenido:', response.headers.get('Content-Type'));
-        console.log('📊 Tamaño del blob:', blob.size);
-        console.log('📊 Tipo del blob:', blob.type);
-        console.log('📊 Nombre de descarga:', nombreArchivoDescarga);
+        this.logger.debug('Información del archivo descargado', {
+          contentType: response.headers.get('Content-Type'),
+          blobSize: blob.size,
+          blobType: blob.type,
+          nombreDescarga: nombreArchivoDescarga
+        });
 
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -430,8 +478,9 @@ export class ReingresoEstudianteComponent implements OnInit {
         this.mostrarMensaje('Oficio descargado exitosamente', 'success');
       },
       error: (err) => {
-        console.error('❌ Error al descargar archivo:', err);
-        this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
+        this.logger.error('Error al descargar archivo', err);
+        const mensajeError = this.errorHandler.extraerMensajeError(err);
+        this.mostrarMensaje(mensajeError || 'Error al descargar archivo. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
@@ -543,15 +592,17 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   private descargarDocumentoResolucion(documento: DocumentosDTORespuesta, idSolicitud: number): void {
     const nombreDescarga = this.extraerNombreDesdeRuta(documento.nombre || documento.ruta_documento) || 'oficio_reingreso.pdf';
-    console.log('📄 Descargando documento de resolución:', documento);
+    this.logger.debug('Descargando documento de resolución', documento);
 
-    this.reingresoService.descargarArchivo(documento.nombre).subscribe({
+    this.reingresoService.descargarArchivo(documento.nombre)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (blob: Blob) => {
         this.descargarBlob(blob, nombreDescarga);
         this.mostrarMensaje('Oficio descargado exitosamente', 'success');
       },
       error: (err) => {
-        console.error('❌ Error al descargar documento de resolución por nombre:', err);
+        this.logger.error('Error al descargar documento de resolución por nombre', err);
         this.obtenerOficiosYDescargar(idSolicitud, nombreDescarga);
       }
     });
@@ -612,15 +663,17 @@ export class ReingresoEstudianteComponent implements OnInit {
   }
 
   private descargarOficioPorId(idOficio: number, nombreArchivo: string, onError: () => void): void {
-    console.log('📥 Intentando descargar oficio por ID:', idOficio);
-    this.reingresoService.descargarOficio(idOficio).subscribe({
+    this.logger.debug('Intentando descargar oficio por ID', { idOficio, nombreArchivo });
+    this.reingresoService.descargarOficio(idOficio)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (blob: Blob) => {
         const nombreFinal = nombreArchivo || `oficio_reingreso_${idOficio}.pdf`;
         this.descargarBlob(blob, nombreFinal);
         this.mostrarMensaje('Oficio descargado exitosamente', 'success');
       },
       error: (err) => {
-        console.error(`❌ Error al descargar oficio por ID ${idOficio}:`, err);
+        this.logger.error(`Error al descargar oficio por ID ${idOficio}`, err);
         onError();
       }
     });
@@ -628,22 +681,24 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   private descargarOficioPorCandidatos(candidatos: string[], nombreDescarga: string, idSolicitud: number, indice: number = 0): void {
     if (indice >= candidatos.length) {
-      console.warn('⚠️ Ninguno de los nombres candidatos funcionó, usando flujo alternativo.');
+      this.logger.warn('Ninguno de los nombres candidatos funcionó, usando flujo alternativo.');
       this.descargarArchivoPorNombre(nombreDescarga, nombreDescarga, idSolicitud);
       return;
     }
 
     const nombreActual = candidatos[indice];
-    console.log(`📥 Intentando descargar oficio usando nombre: ${nombreActual}`);
+    this.logger.debug('Intentando descargar oficio usando nombre', { nombreActual, indice, total: candidatos.length });
 
-    this.reingresoService.descargarArchivo(nombreActual).subscribe({
+    this.reingresoService.descargarArchivo(nombreActual)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (blob: Blob) => {
         const nombreFinal = nombreDescarga || this.extraerNombreDesdeRuta(nombreActual) || `oficio_${idSolicitud}.pdf`;
         this.descargarBlob(blob, nombreFinal);
         this.mostrarMensaje('Oficio descargado exitosamente', 'success');
       },
       error: (err) => {
-        console.error(`❌ Error al descargar usando "${nombreActual}". Probando siguiente opción...`, err);
+        this.logger.debug(`Error al descargar usando "${nombreActual}". Probando siguiente opción...`, err);
         this.descargarOficioPorCandidatos(candidatos, nombreDescarga, idSolicitud, indice + 1);
       }
     });
@@ -672,7 +727,7 @@ export class ReingresoEstudianteComponent implements OnInit {
    * Intentar descarga con nombres comunes
    */
   private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: string): void {
-    console.log('🔄 Intentando descarga con nombres comunes...');
+    this.logger.debug('Intentando descarga con nombres comunes', { idSolicitud, nombreArchivo });
 
     // Obtener información del usuario para generar nombres
     const usuario = this.usuario;
@@ -702,7 +757,7 @@ export class ReingresoEstudianteComponent implements OnInit {
     }
 
     const nombre = nombres[index];
-    console.log(`🧪 Probando nombre ${index + 1}/${nombres.length}: "${nombre}"`);
+    this.logger.debug(`Probando nombre ${index + 1}/${nombres.length}`, { nombre, index, total: nombres.length });
 
     this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
   }

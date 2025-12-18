@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,10 @@ import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component';
 import { FechaPipe } from '../../pipes/fecha.pipe';
 
+/**
+ * Componente de tabla para mostrar el estado de solicitudes
+ * Permite visualizar, seleccionar y realizar acciones sobre solicitudes
+ */
 @Component({
   selector: 'app-request-status-table',
   standalone: true,
@@ -23,7 +27,8 @@ import { FechaPipe } from '../../pipes/fecha.pipe';
     FechaPipe
   ],
   templateUrl: './request-status.component.html',
-  styleUrls: ['./request-status.component.css']
+  styleUrls: ['./request-status.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RequestStatusTableComponent implements OnInit {
   @Input() solicitudes: Solicitud[] = [];
@@ -38,6 +43,8 @@ export class RequestStatusTableComponent implements OnInit {
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
   selectedSolicitudId: number | null = null;
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     if (this.showOficio) {
@@ -55,6 +62,10 @@ export class RequestStatusTableComponent implements OnInit {
     this.verComentarios.emit(solicitudId);
   }
 
+  /**
+   * Maneja la selección/deselección de una solicitud
+   * @param solicitudId ID de la solicitud a seleccionar
+   */
   onSeleccionarSolicitud(solicitudId: number): void {
     // Si ya está seleccionada, deseleccionar
     if (this.selectedSolicitudId === solicitudId) {
@@ -64,18 +75,29 @@ export class RequestStatusTableComponent implements OnInit {
       this.selectedSolicitudId = solicitudId;
     }
 
+    // Marcar para detección de cambios con OnPush
+    this.cdr.markForCheck();
+
     // Emitir el ID de la solicitud seleccionada (o null si se deseleccionó)
     this.solicitudSeleccionada.emit(this.selectedSolicitudId);
   }
 
-  // Método para verificar si una solicitud está seleccionada
+  /**
+   * Verifica si una solicitud está seleccionada
+   * @param solicitudId ID de la solicitud a verificar
+   * @returns true si la solicitud está seleccionada
+   */
   isSelected(solicitudId: number): boolean {
     return this.selectedSolicitudId === solicitudId;
   }
 
-  // Método para resetear la selección (llamado desde el componente padre)
+  /**
+   * Resetea la selección de solicitudes
+   * Llamado desde el componente padre cuando se necesita limpiar la selección
+   */
   resetSelection(): void {
     this.selectedSolicitudId = null;
+    this.cdr.markForCheck();
   }
 
   onDescargarOficio(solicitudId: number): void {

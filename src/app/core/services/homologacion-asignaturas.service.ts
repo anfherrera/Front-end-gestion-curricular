@@ -3,14 +3,22 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { Solicitud, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from './logger.service';
 
+/**
+ * Servicio para gestionar las solicitudes de homologación de asignaturas
+ * Proporciona métodos para crear, listar, aprobar, rechazar y gestionar solicitudes de homologación
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class HomologacionAsignaturasService {
   private apiUrl = `${environment.apiUrl}/solicitudes-homologacion`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private logger: LoggerService
+  ) {}
 
   private getAuthHeaders(isFile: boolean = false): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -20,6 +28,11 @@ export class HomologacionAsignaturasService {
     });
   }
 
+  /**
+   * Crea una nueva solicitud de homologación de asignaturas
+   * @param solicitud Datos de la solicitud de homologación
+   * @returns Observable con la respuesta del servidor
+   */
   crearSolicitud(solicitud: any): Observable<any> {
     return this.http.post(
       `${this.apiUrl}/crearSolicitud-Homologacion`,
@@ -28,6 +41,11 @@ export class HomologacionAsignaturasService {
     );
   }
 
+  /**
+   * Lista las solicitudes de homologación de un usuario
+   * @param idUsuario ID del usuario
+   * @returns Observable con el array de solicitudes
+   */
   listarSolicitudes(idUsuario: number): Observable<any> {
     return this.http.get(
       //`${this.apiUrl}/listarPorRol/${idUsuario}`,
@@ -36,6 +54,13 @@ export class HomologacionAsignaturasService {
     );
   }
 
+  /**
+   * Lista solicitudes de homologación filtradas por rol y opcionalmente por usuario y período
+   * @param rol Rol del usuario (ESTUDIANTE, FUNCIONARIO, COORDINADOR, SECRETARIA)
+   * @param idUsuario ID del usuario (opcional)
+   * @param periodoAcademico Período académico para filtrar (opcional)
+   * @returns Observable con el array de solicitudes filtradas
+   */
   listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
     let params = new HttpParams().set('rol', rol);
     if (idUsuario) {
@@ -136,7 +161,7 @@ export class HomologacionAsignaturasService {
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError((error: any) => {
-        console.error('Error obteniendo solicitudes procesadas (funcionario):', error);
+        this.logger.error('Error obteniendo solicitudes procesadas (funcionario)', error);
         return of([]);
       })
     );
@@ -158,7 +183,7 @@ export class HomologacionAsignaturasService {
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError((error: any) => {
-        console.error('Error obteniendo solicitudes procesadas (coordinador):', error);
+        this.logger.error('Error obteniendo solicitudes procesadas (coordinador)', error);
         return of([]);
       })
     );
@@ -236,8 +261,7 @@ export class HomologacionAsignaturasService {
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    // URL de descarga
-    console.log('📁 Nombre del archivo:', nombreArchivo);
+    this.logger.debug('Descargando archivo por nombre', { nombreArchivo, url });
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -251,8 +275,7 @@ export class HomologacionAsignaturasService {
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    // URL de descarga por ID
-    console.log('📁 ID del documento:', idDocumento);
+    this.logger.debug('Descargando archivo por ID', { idDocumento, url });
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -268,9 +291,7 @@ export class HomologacionAsignaturasService {
     // Extraer el nombre del archivo de la ruta si es necesario
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    // URL de descarga por ruta
-    console.log('📁 Ruta del documento:', rutaDocumento);
-    console.log('📁 Nombre extraído:', nombreArchivo);
+    this.logger.debug('Descargando archivo por ruta', { rutaDocumento, nombreArchivo, url });
     
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
@@ -288,7 +309,7 @@ export class HomologacionAsignaturasService {
       comentario: comentario
     };
     
-    console.log('💬 Añadiendo comentario:', body);
+    this.logger.debug('Añadiendo comentario a documento', body);
     
     return this.http.put(url, body, {
       headers: this.getAuthHeaders()

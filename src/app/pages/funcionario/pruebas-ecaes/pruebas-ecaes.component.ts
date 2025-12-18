@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
@@ -18,6 +20,8 @@ import { RequestStatusTableComponent } from '../../../shared/components/request-
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
@@ -42,7 +46,8 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
 })
-export class PruebasEcaesFuncionarioComponent implements OnInit {
+export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   // Formulario para publicar fechas
   fechasForm: FormGroup;
@@ -66,7 +71,9 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     public pruebasEcaesService: PruebasEcaesService,
     private snackBar: MatSnackBar,
     private fb: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {
     this.fechasForm = this.fb.group({
       periodoAcademico: ['', Validators.required],
@@ -83,7 +90,9 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     this.cargarDatos();
     
     // Suscribirse a cambios en el período académico para detectar fechas existentes
-    this.fechasForm.get('periodoAcademico')?.valueChanges.subscribe(periodo => {
+    this.fechasForm.get('periodoAcademico')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(periodo => {
       // Solo buscar si el período realmente cambió y no estamos cargando fechas
       if (periodo && periodo !== this.periodoAnterior && !this.cargandoFechas) {
         this.periodoAnterior = periodo;
@@ -102,23 +111,30 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     this.cargarSolicitudesPendientes();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   /**
    * Carga los períodos académicos disponibles desde el backend
    */
   private cargarPeriodosAcademicos(): void {
     // Cargar todos los períodos académicos disponibles
-    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/todos`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/todos`).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
         if (response.success && response.data && response.data.length > 0) {
           this.periodosAcademicos = response.data;
-          console.log('📅 Todos los períodos cargados desde backend:', this.periodosAcademicos);
+          this.logger.log('Períodos académicos cargados:', this.periodosAcademicos);
         } else {
           // Si no hay datos, cargar períodos recientes
           this.cargarPeriodosRecientes();
         }
       },
       error: (error) => {
-        console.error('❌ Error al cargar todos los períodos:', error);
+        this.logger.error('Error al cargar períodos académicos:', error);
         // Fallback: cargar períodos recientes
         this.cargarPeriodosRecientes();
       }
@@ -129,18 +145,20 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
    * Carga los períodos académicos recientes como fallback
    */
   private cargarPeriodosRecientes(): void {
-    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/recientes`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/recientes`).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.periodosAcademicos = response.data;
-          console.log('📅 Períodos recientes cargados desde backend:', this.periodosAcademicos);
+          this.logger.log('Períodos recientes cargados:', this.periodosAcademicos);
         } else {
           // Fallback final: períodos hardcodeados
           this.cargarPeriodosFallback();
         }
       },
       error: (error) => {
-        console.error('❌ Error al cargar períodos recientes:', error);
+        this.logger.error('Error al cargar períodos recientes:', error);
         // Fallback final: períodos hardcodeados
         this.cargarPeriodosFallback();
       }
@@ -157,12 +175,14 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     for (let año = 2020; año <= 2030; año++) {
       this.periodosAcademicos.push(`${año}-1`, `${año}-2`);
     }
-    console.log('📅 Períodos fallback cargados (2020-2030):', this.periodosAcademicos);
-    this.snackBar.open('⚠️ Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.', 'Cerrar', { duration: 5000 });
+    this.logger.log('Períodos fallback cargados (2020-2030):', this.periodosAcademicos);
+    this.snackBar.open('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.', 'Cerrar', { duration: 5000 });
   }
 
   cargarSolicitudesPendientes(): void {
-    this.pruebasEcaesService.listarSolicitudesFuncionario().subscribe({
+    this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (solicitudes) => {
         // Transformar datos para RequestStatusTableComponent
         this.solicitudesPendientes = solicitudes.map(sol => ({
@@ -173,11 +193,12 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
           rutaArchivo: '',
           comentarios: ''
         }));
-        console.log('📋 Solicitudes ECAES cargadas:', this.solicitudesPendientes);
+        this.logger.log('Solicitudes ECAES cargadas:', this.solicitudesPendientes);
       },
       error: (error) => {
-        console.error('❌ Error al cargar solicitudes ECAES:', error);
-        this.snackBar.open('Error al cargar solicitudes ECAES', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al cargar solicitudes ECAES:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes ECAES', 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -195,9 +216,11 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
    */
   buscarFechasExistentes(periodoAcademico: string): void {
     this.cargandoFechas = true;
-    this.pruebasEcaesService.buscarFechasPorPeriodo(periodoAcademico).subscribe({
+    this.pruebasEcaesService.buscarFechasPorPeriodo(periodoAcademico).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (fechas) => {
-        console.log('📅 Fechas encontradas para período:', periodoAcademico, fechas);
+        this.logger.log('Fechas encontradas para período:', periodoAcademico, fechas);
         // Cargar fechas en el formulario
         this.cargarFechasEnFormulario(fechas);
         this.esModoEdicion = true;
@@ -208,15 +231,16 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
       error: (error) => {
         this.cargandoFechas = false;
         if (error.status === 404) {
-          console.log('📅 No hay fechas existentes para el período:', periodoAcademico);
+          this.logger.log('No hay fechas existentes para el período:', periodoAcademico);
           // No hay fechas, modo creación
           this.esModoEdicion = false;
           this.idFechaEcaesActual = null;
           // Limpiar solo las fechas, mantener el período
           this.limpiarSoloFechas();
         } else {
-          console.error('❌ Error al buscar fechas:', error);
-          this.snackBar.open('Error al buscar fechas existentes', 'Cerrar', { duration: 3000 });
+          this.logger.error('Error al buscar fechas:', error);
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackBar.open(mensaje || 'Error al buscar fechas existentes', 'Cerrar', { duration: 3000 });
         }
       }
     });
@@ -308,17 +332,19 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
       fechasData.idFechaEcaes = this.idFechaEcaesActual;
     }
 
-    console.log('📅 ' + (this.esModoEdicion ? 'Actualizando' : 'Publicando') + ' fechas ECAES:', fechasData);
+    this.logger.log((this.esModoEdicion ? 'Actualizando' : 'Publicando') + ' fechas ECAES:', fechasData);
 
     const operacion = this.esModoEdicion 
       ? this.pruebasEcaesService.actualizarFechasEcaes(fechasData)
       : this.pruebasEcaesService.publicarFechasEcaes(fechasData);
 
-    operacion.subscribe({
+    operacion.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
-        console.log('✅ Fechas ' + (this.esModoEdicion ? 'actualizadas' : 'publicadas') + ' exitosamente:', response);
+        this.logger.log('Fechas ' + (this.esModoEdicion ? 'actualizadas' : 'publicadas') + ' exitosamente:', response);
         this.snackBar.open(
-          `Fechas ${this.esModoEdicion ? 'actualizadas' : 'publicadas'} exitosamente ✅`, 
+          `Fechas ${this.esModoEdicion ? 'actualizadas' : 'publicadas'} exitosamente`, 
           'Cerrar', 
           { duration: 3000 }
         );
@@ -340,9 +366,10 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
         this.limpiarSoloFechas();
       },
       error: (error) => {
-        console.error('❌ Error al ' + (this.esModoEdicion ? 'actualizar' : 'publicar') + ' fechas:', error);
+        this.logger.error('Error al ' + (this.esModoEdicion ? 'actualizar' : 'publicar') + ' fechas:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
         this.snackBar.open(
-          `Error al ${this.esModoEdicion ? 'actualizar' : 'publicar'} las fechas: ${error.error?.message || error.message}`, 
+          mensaje || `Error al ${this.esModoEdicion ? 'actualizar' : 'publicar'} las fechas`, 
           'Cerrar', 
           { duration: 5000 }
         );
@@ -376,9 +403,15 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
   // Métodos para manejo de solicitudes
   // ================================
 
+  /**
+   * Muestra los comentarios de una solicitud
+   * Los comentarios se muestran automáticamente en el DocumentationViewerComponent
+   * @param solicitudId ID de la solicitud
+   */
   verComentarios(solicitudId: number): void {
-    console.log('Ver comentarios para solicitud:', solicitudId);
-    // TODO: Implementar lógica para mostrar comentarios
+    this.logger.log('Ver comentarios para solicitud:', solicitudId);
+    // Los comentarios se muestran automáticamente en el DocumentationViewerComponent
+    // cuando se selecciona una solicitud
   }
 
   onSolicitudSeleccionada(solicitudId: number | null): void {
@@ -389,21 +422,30 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     }
 
     // Buscar la solicitud original por ID
-    this.pruebasEcaesService.listarSolicitudesFuncionario().subscribe({
+    this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (solicitudes) => {
         this.selectedSolicitud = solicitudes.find(sol => sol.id_solicitud === solicitudId) || null;
-        console.log('📋 Solicitud ECAES seleccionada:', this.selectedSolicitud);
+        this.logger.log('Solicitud ECAES seleccionada:', this.selectedSolicitud);
       },
       error: (error) => {
-        console.error('❌ Error al cargar solicitud seleccionada:', error);
-        this.snackBar.open('Error al cargar solicitud seleccionada', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al cargar solicitud seleccionada:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al cargar solicitud seleccionada', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
+  /**
+   * Descarga el oficio de una solicitud ECAES
+   * @param id ID de la solicitud
+   * @param nombreArchivo Nombre del archivo a descargar
+   */
   descargarOficio(id: number, nombreArchivo: string): void {
-    console.log('Descargar oficio:', id, nombreArchivo);
-    // TODO: Implementar lógica para descargar oficio
+    this.logger.log('Descargar oficio:', id, nombreArchivo);
+    // La descarga se maneja automáticamente por el RequestStatusTableComponent
+    // cuando se emite el evento descargarOficio
   }
 
   /**
@@ -411,7 +453,9 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
    */
   onComentarioAgregado(event: {documento: any, comentario: string}): void {
     if (event.documento.id_documento) {
-      this.pruebasEcaesService.agregarComentario(event.documento.id_documento, event.comentario).subscribe({
+      this.pruebasEcaesService.agregarComentario(event.documento.id_documento, event.comentario).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
         next: () => {
           this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
           // Recargar la solicitud para actualizar los comentarios
@@ -422,12 +466,13 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
           }
         },
         error: (error) => {
-          console.error('Error al añadir comentario:', error);
-          this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          this.logger.error('Error al añadir comentario:', error);
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', { duration: 3000 });
         }
       });
     } else {
-      console.error('❌ No se pudo obtener el ID del documento para agregar comentario');
+      this.logger.error('No se pudo obtener el ID del documento para agregar comentario');
       this.snackBar.open('Error: No se pudo identificar el documento', 'Cerrar', { duration: 3000 });
     }
   }
@@ -442,13 +487,15 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
       return;
     }
 
-    console.log('✅ Aprobando solicitud ECAES:', this.selectedSolicitud.id_solicitud);
+    this.logger.log('Aprobando solicitud ECAES:', this.selectedSolicitud.id_solicitud);
 
     // Usar el método específico approveRequest
-    this.pruebasEcaesService.approveRequest(this.selectedSolicitud.id_solicitud).subscribe({
+    this.pruebasEcaesService.approveRequest(this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
-        console.log('✅ Solicitud ECAES aprobada exitosamente:', response);
-        this.snackBar.open('Solicitud marcada como Pre-registrada exitosamente ✅', 'Cerrar', { duration: 3000 });
+        this.logger.log('Solicitud ECAES aprobada exitosamente:', response);
+        this.snackBar.open('Solicitud marcada como Pre-registrada exitosamente', 'Cerrar', { duration: 3000 });
 
         // Recargar solicitudes después de la aprobación
         this.cargarSolicitudesPendientes();
@@ -457,8 +504,9 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
         this.selectedSolicitud = null;
       },
       error: (error) => {
-        console.error('❌ Error al aprobar solicitud ECAES:', error);
-        this.snackBar.open(`Error al aprobar solicitud: ${error.error?.message || error.message}`, 'Cerrar', { duration: 5000 });
+        this.logger.error('Error al aprobar solicitud ECAES:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', { duration: 5000 });
       }
     });
   }
@@ -469,13 +517,15 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
       return;
     }
 
-    console.log('❌ Rechazando solicitud ECAES:', this.selectedSolicitud.id_solicitud);
+    this.logger.log('Rechazando solicitud ECAES:', this.selectedSolicitud.id_solicitud);
 
     // Usar el método específico rejectRequest
-    this.pruebasEcaesService.rejectRequest(this.selectedSolicitud.id_solicitud, 'Solicitud rechazada por el funcionario').subscribe({
+    this.pruebasEcaesService.rejectRequest(this.selectedSolicitud.id_solicitud, 'Solicitud rechazada por el funcionario').pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
-        console.log('✅ Solicitud ECAES rechazada exitosamente:', response);
-        this.snackBar.open('Solicitud rechazada exitosamente ❌', 'Cerrar', { duration: 3000 });
+        this.logger.log('Solicitud ECAES rechazada exitosamente:', response);
+        this.snackBar.open('Solicitud rechazada exitosamente', 'Cerrar', { duration: 3000 });
 
         // Recargar solicitudes después del rechazo
         this.cargarSolicitudesPendientes();
@@ -484,8 +534,9 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
         this.selectedSolicitud = null;
       },
       error: (error) => {
-        console.error('❌ Error al rechazar solicitud ECAES:', error);
-        this.snackBar.open(`Error al rechazar solicitud: ${error.error?.message || error.message}`, 'Cerrar', { duration: 5000 });
+        this.logger.error('Error al rechazar solicitud ECAES:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', { duration: 5000 });
       }
     });
   }

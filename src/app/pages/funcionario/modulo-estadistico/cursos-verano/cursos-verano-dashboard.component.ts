@@ -17,7 +17,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Chart, ChartConfiguration, ChartData, ChartOptions, registerables } from 'chart.js';
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
@@ -106,7 +107,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   chartPrediccionesTemporales: Chart | null = null;
 
   // ===== SUBSCRIPCIONES =====
-  private subscriptions: Subscription[] = [];
+  private destroy$ = new Subject<void>();
 
   // ===== CONFIGURACIÓN DE COLORES =====
   private readonly colors = {
@@ -148,7 +149,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.destroy$.next();
+    this.destroy$.complete();
     this.destruirGraficos();
   }
 
@@ -226,7 +228,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
     const filtros = this.obtenerFiltrosActuales();
-    const subscription = this.estadisticasService.getCursosVeranoEstadisticas(filtros).subscribe({
+    this.estadisticasService.getCursosVeranoEstadisticas(filtros).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
         // Verificar que los datos se asignen correctamente
         if (response.predicciones?.demandaEstimadaProximoPeriodo) {
@@ -262,8 +266,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
-
-    this.subscriptions.push(subscription);
   }
 
   public cargarDatosDePrueba(): void {

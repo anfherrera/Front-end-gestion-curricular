@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
 import { SolicitudReingresoDTORespuesta, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
@@ -18,6 +20,8 @@ import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/compo
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -39,7 +43,7 @@ import { PeriodoFiltroSelectorComponent } from '../../../shared/components/perio
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['./reingreso-estudiante.component.css']
 })
-export class ReingresoEstudianteComponent implements OnInit {
+export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
 
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent - Pendientes
@@ -52,11 +56,20 @@ export class ReingresoEstudianteComponent implements OnInit {
   ESTADOS_SOLICITUD_LABELS = ESTADOS_SOLICITUD_LABELS;
   ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     public reingresoService: ReingresoEstudianteService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   ngOnInit(): void {
     this.cargarSolicitudes();
@@ -64,7 +77,9 @@ export class ReingresoEstudianteComponent implements OnInit {
   }
 
   cargarSolicitudes(): void {
-    this.reingresoService.getPendingRequests().subscribe({
+    this.reingresoService.getPendingRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
         this.solicitudes = sols.map(sol => ({
@@ -77,7 +92,11 @@ export class ReingresoEstudianteComponent implements OnInit {
         }));
         if (sols.length) this.selectedSolicitud = sols[0];
       },
-      error: (err) => this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.logger.error('Error al cargar solicitudes:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -95,9 +114,14 @@ export class ReingresoEstudianteComponent implements OnInit {
       return;
     }
     // Buscar la solicitud original por ID
-    this.reingresoService.getPendingRequests().subscribe({
+    this.reingresoService.getPendingRequests().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
+      },
+      error: (err) => {
+        this.logger.error('Error al cargar solicitud seleccionada:', err);
       }
     });
   }
@@ -123,15 +147,18 @@ export class ReingresoEstudianteComponent implements OnInit {
    */
   onComentarioAgregado(event: {documento: any, comentario: string}): void {
     if (event.documento.id_documento) {
-      this.reingresoService.agregarComentario(event.documento.id_documento, event.comentario).subscribe({
+      this.reingresoService.agregarComentario(event.documento.id_documento, event.comentario).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
         next: () => {
           this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
           // Recargar la solicitud para actualizar los comentarios
           this.cargarSolicitudes();
         },
         error: (error) => {
-          console.error('Error al añadir comentario:', error);
-          this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          this.logger.error('Error al añadir comentario:', error);
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', { duration: 3000 });
         }
       });
     }
@@ -142,14 +169,20 @@ export class ReingresoEstudianteComponent implements OnInit {
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    this.reingresoService.approveRequest(this.selectedSolicitud.id_solicitud).subscribe({
+    this.reingresoService.approveRequest(this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
         this.snackBar.open('Solicitud aprobada ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
       },
-      error: (err) => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.logger.error('Error al aprobar solicitud:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -165,16 +198,24 @@ export class ReingresoEstudianteComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe((motivo: string) => {
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((motivo: string) => {
       if (motivo) {
-        this.reingresoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
+        this.reingresoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
           next: () => {
             this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
           },
-          error: (err) => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
+          error: (err) => {
+            this.logger.error('Error al rechazar solicitud:', err);
+            const mensaje = this.errorHandler.extraerMensajeError(err);
+            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', { duration: 3000 });
+          }
         });
       }
     });
@@ -183,14 +224,20 @@ export class ReingresoEstudianteComponent implements OnInit {
   completarValidacion(): void {
     if (!this.selectedSolicitud) return;
 
-    this.reingresoService.completeValidation(this.selectedSolicitud.id_solicitud).subscribe({
+    this.reingresoService.completeValidation(this.selectedSolicitud.id_solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: () => {
         this.snackBar.open('Validación completada, enviando a coordinador ✅', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
       },
-      error: (err) => this.snackBar.open('Error al completar validación', 'Cerrar', { duration: 3000 })
+      error: (err) => {
+        this.logger.error('Error al completar validación:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al completar validación', 'Cerrar', { duration: 3000 });
+      }
     });
   }
 
@@ -198,7 +245,7 @@ export class ReingresoEstudianteComponent implements OnInit {
   puedeAprobar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    console.log('🔍 Estado actual para aprobar:', estado);
+    this.logger.debug('🔍 Estado actual para aprobar:', estado);
     // Para funcionario, puede aprobar cuando el estado es "Enviada" (como se mencionó en el contexto)
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
@@ -206,14 +253,14 @@ export class ReingresoEstudianteComponent implements OnInit {
   puedeRechazar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    console.log('🔍 Estado actual para rechazar:', estado);
+    this.logger.debug('🔍 Estado actual para rechazar:', estado);
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
 
   puedeCompletarValidacion(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    console.log('🔍 Estado actual para completar validación:', estado);
+    this.logger.debug('🔍 Estado actual para completar validación:', estado);
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
 
@@ -221,7 +268,9 @@ export class ReingresoEstudianteComponent implements OnInit {
    * Cargar solicitudes procesadas (historial) - Historial verdadero de todas las procesadas
    */
   cargarSolicitudesProcesadas(): void {
-    this.reingresoService.getSolicitudesProcesadasFuncionario(this.periodoAcademicoFiltro || undefined).subscribe({
+    this.reingresoService.getSolicitudesProcesadasFuncionario(this.periodoAcademicoFiltro || undefined).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
         this.solicitudesProcesadas = sols.map(solicitud => ({
@@ -242,8 +291,9 @@ export class ReingresoEstudianteComponent implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('Error al cargar solicitudes procesadas (funcionario):', err);
-        this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al cargar solicitudes procesadas (funcionario):', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
       }
     });
   }

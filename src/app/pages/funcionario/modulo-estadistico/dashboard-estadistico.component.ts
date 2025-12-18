@@ -13,7 +13,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Chart, registerables } from 'chart.js';
 import type { ChartConfiguration, ChartData } from 'chart.js';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
@@ -95,7 +96,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   chartDistribucion: Chart | null = null;
   
   // Subscriptions
-  private subscriptions: Subscription[] = [];
+  private destroy$ = new Subject<void>();
   
   // Flag para evitar recargas múltiples
   private chartsCreados = false;
@@ -126,7 +127,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.destroy$.next();
+    this.destroy$.complete();
     this.destruirCharts();
   }
 
@@ -164,39 +166,38 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       filtrosResumen.idPrograma = filtros.idPrograma;
     }
     
-    const subscription = this.estadisticasService.getResumenCompleto(filtrosResumen)
-      .subscribe({
-        next: (resumenAPI) => {
-          try {
-            // Convertir ResumenCompletoAPI a ResumenCompleto para compatibilidad
-            this.resumenCompleto = this.convertirResumenCompletoAPI(resumenAPI);
-            
-            this.generarKPIs();
-            
-            const primeraCarga = !this.chartsCreados;
-            if (primeraCarga) {
-              this.crearCharts();
-              this.chartsCreados = true;
-            } else {
-              this.actualizarCharts();
-            }
-            
-            this.loading = false;
-            this.error = false;
-            
-            if (primeraCarga) {
-              this.mostrarExito('Datos cargados correctamente desde el backend');
-            }
-          } catch (conversionError) {
-            this.cargarDatosConEndpointsAlternativos(filtros);
+    this.estadisticasService.getResumenCompleto(filtrosResumen).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (resumenAPI) => {
+        try {
+          // Convertir ResumenCompletoAPI a ResumenCompleto para compatibilidad
+          this.resumenCompleto = this.convertirResumenCompletoAPI(resumenAPI);
+          
+          this.generarKPIs();
+          
+          const primeraCarga = !this.chartsCreados;
+          if (primeraCarga) {
+            this.crearCharts();
+            this.chartsCreados = true;
+          } else {
+            this.actualizarCharts();
           }
-        },
-        error: (error) => {
+          
+          this.loading = false;
+          this.error = false;
+          
+          if (primeraCarga) {
+            this.mostrarExito('Datos cargados correctamente desde el backend');
+          }
+        } catch (conversionError) {
           this.cargarDatosConEndpointsAlternativos(filtros);
         }
-      });
-    
-    this.subscriptions.push(subscription);
+      },
+      error: (error) => {
+        this.cargarDatosConEndpointsAlternativos(filtros);
+      }
+    });
 
     // Cargar total de estudiantes desde el endpoint específico
     this.cargarTotalEstudiantes();
@@ -458,56 +459,54 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private cargarTotalEstudiantes(): void {
     this.loadingEstudiantes = true;
     
-    const subscription = this.estadisticasService.getTotalEstudiantes()
-      .subscribe({
-        next: (response) => {
-          this.totalEstudiantes = response.totalEstudiantes;
-          this.loadingEstudiantes = false;
-          
-          // Actualizar KPIs si ya están generados
-          if (this.kpis.length > 0) {
-            this.actualizarKPIEstudiantes();
-          }
-        },
-        error: (error) => {
-          this.loadingEstudiantes = false;
-          
-          // Usar valor por defecto en caso de error
-          this.totalEstudiantes = 0;
-          this.mostrarError('Error al cargar el total de estudiantes');
+    this.estadisticasService.getTotalEstudiantes().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response) => {
+        this.totalEstudiantes = response.totalEstudiantes;
+        this.loadingEstudiantes = false;
+        
+        // Actualizar KPIs si ya están generados
+        if (this.kpis.length > 0) {
+          this.actualizarKPIEstudiantes();
         }
-      });
-
-    this.subscriptions.push(subscription);
+      },
+      error: (error) => {
+        this.loadingEstudiantes = false;
+        
+        // Usar valor por defecto en caso de error
+        this.totalEstudiantes = 0;
+        this.mostrarError('Error al cargar el total de estudiantes');
+      }
+    });
   }
 
   /**
    * Carga los datos de estado de solicitudes para actualizar los KPIs correctos
    */
   private cargarDatosEstadoSolicitudes(): void {
-    const subscription = this.estadisticasService.getEstadoSolicitudesMejorado()
-      .subscribe({
-        next: (response) => {
-          this.actualizarKPIsConEstadoSolicitudes(response);
-        },
-        error: (error) => {
-          
-          // Usar valores reales si el endpoint falla
-          const datosFallback = {
-            totalSolicitudes: 50,
-            estados: {
-              APROBADA: { cantidad: 32, porcentaje: 64.0 },
-              ENVIADA: { cantidad: 9, porcentaje: 18.0 },
-              APROBADA_FUNCIONARIO: { cantidad: 15, porcentaje: 30.0 },
-              RECHAZADA: { cantidad: 5, porcentaje: 10.0 }
-            }
-          };
-          
-          this.actualizarKPIsConEstadoSolicitudes(datosFallback);
-        }
-      });
-
-    this.subscriptions.push(subscription);
+    this.estadisticasService.getEstadoSolicitudesMejorado().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response) => {
+        this.actualizarKPIsConEstadoSolicitudes(response);
+      },
+      error: (error) => {
+        
+        // Usar valores reales si el endpoint falla
+        const datosFallback = {
+          totalSolicitudes: 50,
+          estados: {
+            APROBADA: { cantidad: 32, porcentaje: 64.0 },
+            ENVIADA: { cantidad: 9, porcentaje: 18.0 },
+            APROBADA_FUNCIONARIO: { cantidad: 15, porcentaje: 30.0 },
+            RECHAZADA: { cantidad: 5, porcentaje: 10.0 }
+          }
+        };
+        
+        this.actualizarKPIsConEstadoSolicitudes(datosFallback);
+      }
+    });
   }
 
   /**
@@ -1558,7 +1557,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         // Si es cadena vacía, es período actual - obtener el período actual y enviarlo
         else if (periodoTrimmed === '') {
           // Obtener el período actual del servicio y enviarlo como filtro
-          const periodoActualSub = this.periodosService.getPeriodoActual().subscribe({
+          this.periodosService.getPeriodoActual().pipe(
+            takeUntil(this.destroy$)
+          ).subscribe({
             next: (periodoActual: PeriodoAcademico | null) => {
               if (periodoActual && periodoActual.valor) {
                 filtros.periodoAcademico = periodoActual.valor;
@@ -1576,7 +1577,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
               this.mostrarExito('Filtros aplicados correctamente');
             }
           });
-          this.subscriptions.push(periodoActualSub);
           return; // Salir temprano, el cargarDatos se llamará en el subscribe
         }
         // Si es un período específico, enviarlo
@@ -1622,7 +1622,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     
-    const subscription = this.estadisticasService.getEstadisticasProceso(proceso).subscribe({
+    this.estadisticasService.getEstadisticasProceso(proceso).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (data) => {
         this.estadisticasProceso = data;
         this.loading = false;
@@ -1632,8 +1634,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         this.mostrarError('Error al cargar estadísticas del proceso');
       }
     });
-
-    this.subscriptions.push(subscription);
   }
 
   /**

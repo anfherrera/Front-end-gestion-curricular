@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -12,6 +12,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
@@ -25,6 +27,8 @@ import { Archivo, Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-pruebas-ecaes',
@@ -49,7 +53,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
 })
-export class PruebasEcaesComponent implements OnInit {
+export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   // Datos de fechas
   fechasEcaes: FechaEcaes[] = [];
@@ -80,6 +84,8 @@ export class PruebasEcaesComponent implements OnInit {
   // Opciones de tipo de documento (se cargan desde el backend)
   tiposDocumento: { value: string, label: string }[] = [];
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private pruebasEcaesService: PruebasEcaesService,
     private archivosService: ArchivosService,
@@ -88,7 +94,9 @@ export class PruebasEcaesComponent implements OnInit {
     private dialog: MatDialog,
     private http: HttpClient,
     private notificacionesService: NotificacionesService,
-    private authService: AuthService
+    private authService: AuthService,
+    private logger: LoggerService,
+    private errorHandler: ErrorHandlerService
   ) {
     this.solicitudForm = this.fb.group({
       tipoDocumento: ['CC', Validators.required],
@@ -103,9 +111,9 @@ export class PruebasEcaesComponent implements OnInit {
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
-      console.log('👤 Usuario cargado desde localStorage:', this.usuario);
+      this.logger.log('👤 Usuario cargado desde localStorage:', this.usuario);
     } else {
-      console.warn('⚠️ No se encontró usuario en localStorage');
+      this.logger.warn('⚠️ No se encontró usuario en localStorage');
     }
 
     this.cargarTiposDocumento();
@@ -113,24 +121,31 @@ export class PruebasEcaesComponent implements OnInit {
     this.listarSolicitudes();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   /**
    * Carga los tipos de documento disponibles desde el backend
    */
   cargarTiposDocumento(): void {
-    this.http.get<any>(`${environment.apiUrl}/tipos-documento/todos`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/tipos-documento/todos`).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.tiposDocumento = response.data.map((tipo: any) => ({
             value: tipo.codigo,
             label: tipo.descripcion
           }));
-          console.log('📄 Tipos de documento cargados desde backend:', this.tiposDocumento);
+          this.logger.log('📄 Tipos de documento cargados desde backend:', this.tiposDocumento);
         } else {
           this.cargarTiposDocumentoFallback();
         }
       },
       error: (error) => {
-        console.error('❌ Error al cargar tipos de documento:', error);
+        this.logger.error('❌ Error al cargar tipos de documento:', error);
         this.cargarTiposDocumentoFallback();
       }
     });
@@ -149,12 +164,14 @@ export class PruebasEcaesComponent implements OnInit {
       { value: 'NIT', label: 'Número de Identificación Tributaria' },
       { value: 'NUIP', label: 'Número Único de Identificación Personal' }
     ];
-    console.log('📄 Tipos de documento fallback cargados:', this.tiposDocumento);
+    this.logger.log('📄 Tipos de documento fallback cargados:', this.tiposDocumento);
     this.snackBar.open('⚠️ Usando tipos de documento predeterminados. Verifique la conexión con el backend.', 'Cerrar', { duration: 5000 });
   }
 
   cargarFechasEcaes(): void {
-    this.pruebasEcaesService.listarFechasEcaes().subscribe({
+    this.pruebasEcaesService.listarFechasEcaes().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (fechas) => {
         this.fechasEcaes = fechas;
         if (fechas.length > 0) {
@@ -164,8 +181,9 @@ export class PruebasEcaesComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error al cargar fechas ECAES:', error);
-        this.snackBar.open('Error al cargar las fechas de ECAES', 'Cerrar', { duration: 3000 });
+        this.logger.error('Error al cargar fechas ECAES:', error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al cargar las fechas de ECAES', 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -238,7 +256,7 @@ export class PruebasEcaesComponent implements OnInit {
     }
 
     if (!this.usuario) {
-      console.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+      this.logger.error('❌ No se puede enviar solicitud: usuario no encontrado.');
       this.snackBar.open('Error: Usuario no encontrado. Inicie sesión nuevamente.', 'Cerrar', { duration: 3000 });
       return;
     }
@@ -246,18 +264,19 @@ export class PruebasEcaesComponent implements OnInit {
     this.enviandoSolicitud = true;
     const formValue = this.solicitudForm.value;
 
-    console.log('📤 Iniciando proceso de envío de solicitud...');
-    console.log('📁 Archivos a subir:', this.archivos);
+    this.logger.log('📤 Iniciando proceso de envío de solicitud...');
+    this.logger.log('📁 Archivos a subir:', this.archivos);
 
     // Paso 1: Subir archivos al backend
     this.subirArchivos().then(archivosSubidos => {
-      console.log('✅ Archivos subidos exitosamente:', archivosSubidos);
+      this.logger.log('✅ Archivos subidos exitosamente:', archivosSubidos);
 
       // Paso 2: Crear la solicitud con los archivos subidos
       this.crearSolicitudConArchivos(formValue, archivosSubidos);
     }).catch(error => {
-      console.error('❌ Error al subir archivos:', error);
-      this.snackBar.open('Error al subir los archivos. Intente nuevamente.', 'Cerrar', { duration: 5000 });
+      this.logger.error('❌ Error al subir archivos:', error);
+      const mensaje = this.errorHandler.extraerMensajeError(error);
+      this.snackBar.open(mensaje || 'Error al subir los archivos. Intente nuevamente.', 'Cerrar', { duration: 5000 });
       this.enviandoSolicitud = false;
     });
   }
@@ -267,13 +286,15 @@ export class PruebasEcaesComponent implements OnInit {
 
     for (const archivo of this.archivos) {
       try {
-        console.log(`📤 Subiendo archivo: ${archivo.nombre}`);
+        this.logger.log(`📤 Subiendo archivo: ${archivo.nombre}`);
 
         // Convertir el archivo del localStorage a File si es necesario
         const file = await this.convertirArchivoAFile(archivo);
 
-        const response = await this.archivosService.subirPDF(file).toPromise();
-        console.log(`✅ Archivo subido:`, response);
+        const response = await this.archivosService.subirPDF(file).pipe(
+          takeUntil(this.destroy$)
+        ).toPromise();
+        this.logger.log(`✅ Archivo subido:`, response);
 
         if (!response) {
           throw new Error(`No se recibió respuesta del servidor para el archivo ${archivo.nombre}`);
@@ -283,7 +304,7 @@ export class PruebasEcaesComponent implements OnInit {
   const r: any = response as any;
   const ruta = r.ruta_documento ?? r.rutaDocumento ?? r.ruta ?? r.path ?? r.url ?? r.data?.ruta_documento ?? r.data?.path ?? null;
 
-  console.log('🔎 Ruta detectada en respuesta:', ruta, ' (response keys):', Object.keys(r || {}));
+  this.logger.debug('🔎 Ruta detectada en respuesta:', ruta, ' (response keys):', Object.keys(r || {}));
 
         if (!ruta) {
           // Si la ruta no está presente, lanzamos un error claro para evitar enviar un body inválido
@@ -300,7 +321,7 @@ export class PruebasEcaesComponent implements OnInit {
           tipoDocumentoSolicitudPazYSalvo: 'ECAES'
         });
       } catch (error) {
-        console.error(`❌ Error al subir archivo ${archivo.nombre}:`, error);
+        this.logger.error(`❌ Error al subir archivo ${archivo.nombre}:`, error);
         throw error;
       }
     }
@@ -353,12 +374,14 @@ export class PruebasEcaesComponent implements OnInit {
       documentos: archivosSubidos
     };
 
-    console.log('📋 Creando solicitud con archivos subidos:', solicitud);
-    console.log('👤 Usuario completo:', this.usuario);
+    this.logger.log('📋 Creando solicitud con archivos subidos:', solicitud);
+    this.logger.debug('👤 Usuario completo:', this.usuario);
 
-    this.pruebasEcaesService.crearSolicitudEcaes(solicitud).subscribe({
+    this.pruebasEcaesService.crearSolicitudEcaes(solicitud).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response: SolicitudEcaesResponse) => {
-        console.log('✅ Solicitud creada en backend:', response);
+        this.logger.log('✅ Solicitud creada en backend:', response);
 
         // Actualizar notificaciones después de crear la solicitud
         const usuario = this.authService.getUsuario();
@@ -367,15 +390,17 @@ export class PruebasEcaesComponent implements OnInit {
         }
 
         // Actualizar el estado a "ENVIADA" (opcional, no bloquea el flujo)
-        this.pruebasEcaesService.actualizarEstadoSolicitud(response.id_solicitud, 'ENVIADA').subscribe({
+        this.pruebasEcaesService.actualizarEstadoSolicitud(response.id_solicitud, 'ENVIADA').pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
           next: () => {
-            console.log('✅ Estado actualizado a ENVIADA');
+            this.logger.log('✅ Estado actualizado a ENVIADA');
             this.snackBar.open('Solicitud enviada exitosamente ✅', 'Cerrar', { duration: 3000 });
             this.limpiarFormulario();
             this.listarSolicitudes(); // Recargar la lista de solicitudes
           },
           error: (error) => {
-            console.warn('⚠️ Error al actualizar estado (CORS o backend):', error);
+            this.logger.warn('⚠️ Error al actualizar estado (CORS o backend):', error);
             // No mostramos error al usuario, la solicitud se creó correctamente
             this.snackBar.open('Solicitud enviada exitosamente ✅', 'Cerrar', { duration: 3000 });
             this.limpiarFormulario();
@@ -384,9 +409,10 @@ export class PruebasEcaesComponent implements OnInit {
         });
       },
       error: (error) => {
-        console.error('Error al enviar solicitud:', error);
-        console.error('Error details:', error.error);
-        this.snackBar.open(`Error al enviar la solicitud: ${error.error?.message || error.message}`, 'Cerrar', { duration: 5000 });
+        this.logger.error('Error al enviar solicitud:', error);
+        this.logger.error('Error details:', error.error);
+        const mensaje = this.errorHandler.extraerMensajeError(error);
+        this.snackBar.open(mensaje || 'Error al enviar la solicitud', 'Cerrar', { duration: 5000 });
         this.enviandoSolicitud = false;
       }
     });
@@ -427,33 +453,36 @@ export class PruebasEcaesComponent implements OnInit {
 
   listarSolicitudes(): void {
     if (!this.usuario) {
-      console.error("❌ Usuario no encontrado en localStorage.");
+      this.logger.error("❌ Usuario no encontrado en localStorage.");
       return;
     }
 
-    console.log('🔍 Usuario encontrado:', this.usuario);
-    console.log('🔍 Rol:', this.usuario.rol.nombre);
-    console.log('🔍 ID Usuario:', this.usuario.id_usuario);
+    this.logger.debug('🔍 Usuario encontrado:', this.usuario);
+    this.logger.debug('🔍 Rol:', this.usuario.rol.nombre);
+    this.logger.debug('🔍 ID Usuario:', this.usuario.id_usuario);
 
     // Usar el endpoint específico por rol y usuario
-    this.pruebasEcaesService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).subscribe({
+    this.pruebasEcaesService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (data) => {
-        console.log('📡 Respuesta del backend (raw):', data);
-        console.log('📡 Tipo de respuesta:', typeof data);
-        console.log('📡 Es array:', Array.isArray(data));
-        console.log('📡 Longitud:', data?.length);
+        this.logger.debug('📡 Respuesta del backend (raw):', data);
+        this.logger.debug('📡 Tipo de respuesta:', typeof data);
+        this.logger.debug('📡 Es array:', Array.isArray(data));
+        this.logger.debug('📡 Longitud:', data?.length);
         this.procesarSolicitudes(data);
       },
       error: (err) => {
-        console.error('❌ Error al cargar solicitudes:', err);
-        this.snackBar.open('Error al cargar las solicitudes', 'Cerrar', { duration: 3000 });
+        this.logger.error('❌ Error al cargar solicitudes:', err);
+        const mensaje = this.errorHandler.extraerMensajeError(err);
+        this.snackBar.open(mensaje || 'Error al cargar las solicitudes', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
   procesarSolicitudes(data: SolicitudEcaesResponse[]): void {
     if (!data || !Array.isArray(data)) {
-      console.warn('⚠️ La respuesta no es un array válido');
+      this.logger.warn('⚠️ La respuesta no es un array válido');
       this.solicitudes = [];
       this.solicitudesCompletas = [];
       return;
@@ -463,7 +492,7 @@ export class PruebasEcaesComponent implements OnInit {
     this.solicitudesCompletas = data;
 
     this.solicitudes = data.map((sol: SolicitudEcaesResponse) => {
-      console.log('🔍 Procesando solicitud:', sol);
+      this.logger.debug('🔍 Procesando solicitud:', sol);
 
       const estados = sol.estadosSolicitud || [];
       const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
@@ -481,16 +510,16 @@ export class PruebasEcaesComponent implements OnInit {
         comentarios: ultimoEstado?.comentario || ''
       };
 
-      console.log('✅ Solicitud transformada:', solicitudTransformada);
+      this.logger.debug('✅ Solicitud transformada:', solicitudTransformada);
       return solicitudTransformada;
     });
 
-    console.log('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
+    this.logger.debug('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
   }
 
 
   descargarOficio(id: number, nombreArchivo: string): void {
-    console.log('Descargar oficio:', id, nombreArchivo);
+    this.logger.log('Descargar oficio:', id, nombreArchivo);
     // Implementar lógica para descargar oficio
   }
 
@@ -503,8 +532,10 @@ export class PruebasEcaesComponent implements OnInit {
       data: {}
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('Diálogo de información cerrado');
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(result => {
+      this.logger.debug('Diálogo de información cerrado');
     });
   }
 
@@ -588,10 +619,10 @@ export class PruebasEcaesComponent implements OnInit {
     // Obtener el comentario de rechazo del último estado
     const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
 
-    console.log('📋 Datos que se envían al diálogo:');
-    console.log('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
-    console.log('  - Documentos:', solicitudCompleta.documentos);
-    console.log('  - Comentario de rechazo:', comentarioRechazo);
+    this.logger.debug('📋 Datos que se envían al diálogo:');
+    this.logger.debug('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
+    this.logger.debug('  - Documentos:', solicitudCompleta.documentos);
+    this.logger.debug('  - Comentario de rechazo:', comentarioRechazo);
 
     const dialogRef = this.dialog.open(ComentariosDialogComponent, {
       width: '700px',
@@ -602,8 +633,10 @@ export class PruebasEcaesComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('Diálogo de comentarios cerrado');
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.logger.debug('Diálogo de comentarios cerrado');
     });
   }
 
