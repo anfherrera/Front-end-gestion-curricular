@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
@@ -20,6 +23,7 @@ import { NotificacionesService } from '../../../core/services/notificaciones.ser
 import { AuthService } from '../../../core/services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 import { Subject, takeUntil } from 'rxjs';
 
 import { Solicitud } from '../../../core/models/procesos.model';
@@ -29,11 +33,14 @@ import { Solicitud } from '../../../core/models/procesos.model';
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
     FileUploadComponent,
     RequiredDocsComponent,
     RequestStatusTableComponent
@@ -47,12 +54,12 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   documentosRequeridos = [
-    { label: 'Formulario de homologación', obligatorio: true },
+    { label: 'PM-FO-4-FOR-22 Solicitud homologación de materias', obligatorio: true },
     { label: 'Certificado de notas', obligatorio: true },
-    { label: 'Programa académico de la materia', obligatorio: false }
+    { label: 'Programa académico de la materia', obligatorio: true }
   ];
 
-  archivosExclusivos: string[] = ['Documento A', 'Documento B'];
+  archivosExclusivos: string[] = [];
 
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
@@ -60,6 +67,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
 
   usuario: any = null;
+  solicitudForm: FormGroup;
 
   constructor(
     private homologacionService: HomologacionAsignaturasService,
@@ -69,8 +77,16 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     private notificacionesService: NotificacionesService,
     private authService: AuthService,
     private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
-  ) {}
+    private errorHandler: ErrorHandlerService,
+    private periodosService: PeriodosAcademicosService,
+    private fb: FormBuilder
+  ) {
+    // Inicializar formulario con los campos de información de la solicitud
+    this.solicitudForm = this.fb.group({
+      programa_origen: ['', [Validators.maxLength(200)]],
+      programa_destino: ['', [Validators.maxLength(200)]]
+    });
+  }
 
   ngOnInit(): void {
     // Recuperamos usuario del localStorage
@@ -102,6 +118,83 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
   puedeEnviar(): boolean {
     return this.archivosActuales.length > 0 && !!this.usuario;
+  }
+
+  /**
+   * Obtener lista de documentos faltantes (solo informativo, no bloquea envío)
+   * @returns Array con nombres de documentos que no se han subido
+   */
+  obtenerDocumentosFaltantes(): string[] {
+    const faltantes: string[] = [];
+    
+    // Obtener documentos obligatorios
+    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
+    
+    // Verificar cada documento obligatorio
+    documentosObligatorios.forEach(doc => {
+      if (!this.archivoSubido(doc.label)) {
+        faltantes.push(doc.label);
+      }
+    });
+    
+    return faltantes;
+  }
+
+  /**
+   * Verificar si un archivo ha sido subido basándose en el nombre del documento
+   * @param nombreDocumento Nombre del documento requerido
+   * @returns true si el archivo fue subido, false en caso contrario
+   */
+  private archivoSubido(nombreDocumento: string): boolean {
+    const nombreNormalizado = this.normalizarNombre(nombreDocumento);
+    return this.archivosActuales.some(archivo => {
+      const nombreArchivo = this.normalizarNombre(archivo.nombre);
+      // Buscar coincidencias parciales (por si el nombre del archivo es ligeramente diferente)
+      return nombreArchivo.includes(nombreNormalizado) || 
+             nombreNormalizado.includes(nombreArchivo) ||
+             this.coincidenciaFuzzy(nombreArchivo, nombreNormalizado);
+    });
+  }
+
+  /**
+   * Normalizar nombre de archivo para comparación
+   * @param nombre Nombre a normalizar
+   * @returns Nombre normalizado (sin acentos, minúsculas, sin espacios ni caracteres especiales)
+   */
+  private normalizarNombre(nombre: string): string {
+    return nombre
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+      .replace(/\.[^/.]+$/, '') // Eliminar extensión
+      .replace(/[^a-z0-9]/g, ''); // Eliminar caracteres especiales y espacios
+  }
+
+  /**
+   * Verificar coincidencia aproximada entre nombres (fuzzy matching)
+   * Útil para detectar archivos con nombres ligeramente diferentes
+   * @param nombre1 Primer nombre
+   * @param nombre2 Segundo nombre
+   * @returns true si hay coincidencia aproximada
+   */
+  private coincidenciaFuzzy(nombre1: string, nombre2: string): boolean {
+    // Palabras clave comunes para cada tipo de documento
+    const palabrasClave: { [key: string]: string[] } = {
+      'pmfo4for22': ['pmfo4for22', 'pm-fo-4-for-22', 'solicitud', 'homologacion', 'homologación'],
+      'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
+      'programa': ['programa', 'academico', 'materia', 'asignatura', 'syllabus']
+    };
+    
+    // Buscar palabras clave en ambos nombres
+    for (const [clave, palabras] of Object.entries(palabrasClave)) {
+      if (nombre1.includes(clave) || nombre2.includes(clave)) {
+        return palabras.some(palabra => 
+          nombre1.includes(palabra) && nombre2.includes(palabra)
+        );
+      }
+    }
+    
+    return false;
   }
 
   /**
@@ -153,24 +246,37 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
                                'Usuario';
         const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
         
-  const solicitud = {
-    nombre_solicitud: `Solicitud Homologación - ${nombreFinal}`,
-    fecha_registro_solicitud: new Date().toISOString(),
-    objUsuario: {
-      id_usuario: this.usuario.id_usuario,
-      nombre_completo: this.usuario.nombre_completo,
-      codigo: this.usuario.codigo,
-      correo: this.usuario.correo || this.usuario.email_usuario,
-      // FIX: Agregar id_rol e id_programa como campos requeridos por el backend
-      id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
-      id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-      objPrograma: this.usuario.objPrograma || {
-        id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-        nombre_programa: this.usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
-      }
-    },
-          archivos: archivosSubidos
-  };
+        // Obtener período académico actual
+        const periodoActual = this.periodosService.getPeriodoActualValue();
+        const periodoAcademico = periodoActual?.valor || this.obtenerPeriodoActualFallback();
+        
+        // Obtener valores del formulario (pueden ser null o string vacío)
+        const programaOrigen = this.solicitudForm.get('programa_origen')?.value?.trim() || null;
+        const programaDestino = this.solicitudForm.get('programa_destino')?.value?.trim() || null;
+
+        const solicitud = {
+          nombre_solicitud: `Solicitud Homologación - ${nombreFinal}`,
+          fecha_registro_solicitud: new Date().toISOString(),
+          periodo_academico: periodoAcademico, // Obligatorio
+          fecha_ceremonia: null, // Opcional, se puede agregar un campo en el formulario si es necesario
+          objUsuario: {
+            id_usuario: this.usuario.id_usuario,
+            nombre_completo: this.usuario.nombre_completo,
+            codigo: this.usuario.codigo,
+            cedula: this.usuario.cedula || this.usuario.codigo, // Usar cedula si existe, sino codigo
+            correo: this.usuario.correo || this.usuario.email_usuario,
+            // FIX: Agregar id_rol e id_programa como campos requeridos por el backend
+            id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
+            id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
+            objPrograma: this.usuario.objPrograma || {
+              id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
+              nombre_programa: this.usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
+            }
+          },
+          archivos: archivosSubidos,
+          programa_origen: programaOrigen,
+          programa_destino: programaDestino
+        };
 
         this.logger.debug('Creando solicitud con archivos', solicitud);
 
@@ -250,7 +356,7 @@ listarSolicitudes() {
         return;
       }
 
-      // Guardar las solicitudes completas para usar esSeleccionado y comentarios
+      // Guardar las solicitudes completas para usar comentarios
       this.solicitudesCompletas = data;
 
       this.logger.debug('Estructura de datos del backend', {
@@ -272,8 +378,7 @@ listarSolicitudes() {
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
           estado: ultimoEstado?.estado_actual || 'Pendiente',
           rutaArchivo,
-          comentarios: ultimoEstado?.comentarios || '',
-          esSeleccionado: sol.esSeleccionado || false // Usar el campo esSeleccionado
+          comentarios: ultimoEstado?.comentarios || ''
         };
 
         this.logger.debug('Solicitud transformada', solicitudTransformada);
@@ -304,12 +409,23 @@ listarSolicitudes() {
   });
 }
 
-/**
- * Verificar si una solicitud está rechazada
- */
-esSolicitudRechazada(estado: string): boolean {
-  return estado === 'RECHAZADA' || estado === 'Rechazada';
-}
+  /**
+   * Obtener período académico actual como fallback
+   */
+  private obtenerPeriodoActualFallback(): string {
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = fecha.getMonth() + 1; // 0-11 -> 1-12
+    const semestre = mes <= 6 ? 1 : 2;
+    return `${año}-${semestre}`;
+  }
+
+  /**
+   * Verificar si una solicitud está rechazada
+   */
+  esSolicitudRechazada(estado: string): boolean {
+    return estado === 'RECHAZADA' || estado === 'Rechazada';
+  }
 
 /**
  * Obtener la solicitud completa por ID

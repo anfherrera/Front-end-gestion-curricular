@@ -8,6 +8,41 @@
     [programaEstudiante]="usuario?.objPrograma?.nombre || ''">
   </app-required-docs>
 
+  <!-- Formulario de Solicitud -->
+  <mat-card class="card-section">
+    <mat-card-title class="card-title">Información de la Solicitud</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="solicitudForm" class="solicitud-form">
+        <!-- Campos de programas -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field-full">
+            <mat-label>Programa Académico de Origen</mat-label>
+            <input matInput formControlName="programa_origen" maxlength="200" 
+                   placeholder="Ej: Ingeniería de Sistemas">
+            <mat-hint>Programa académico donde el estudiante cursó las asignaturas que desea homologar</mat-hint>
+            <mat-hint align="end">{{ solicitudForm.get('programa_origen')?.value?.length || 0 }}/200</mat-hint>
+            <mat-error *ngIf="solicitudForm.get('programa_origen')?.hasError('maxlength')">
+              El programa de origen no puede exceder 200 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field-full">
+            <mat-label>Programa Académico de Destino</mat-label>
+            <input matInput formControlName="programa_destino" maxlength="200" 
+                   placeholder="Ej: Ingeniería en Automática Industrial">
+            <mat-hint>Programa académico donde se homologarán las asignaturas</mat-hint>
+            <mat-hint align="end">{{ solicitudForm.get('programa_destino')?.value?.length || 0 }}/200</mat-hint>
+            <mat-error *ngIf="solicitudForm.get('programa_destino')?.hasError('maxlength')">
+              El programa de destino no puede exceder 200 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
   <!-- Subir Archivos -->
   <mat-card class="card-section">
     <mat-card-title class="card-title">Subir Archivos</mat-card-title>
@@ -19,6 +54,23 @@
       </app-file-upload>
 
       <div class="enviar-solicitud mt-4">
+        <!-- Mensaje informativo de documentos faltantes (NO bloquea el envío) -->
+        <div *ngIf="obtenerDocumentosFaltantes().length > 0 && archivosActuales.length > 0" 
+             class="validacion-mensaje-informativo">
+          <mat-icon color="primary">info</mat-icon>
+          <span>
+            <strong>Documentos sugeridos (no obligatorios):</strong>
+            <p class="mensaje-guia">
+              Los siguientes documentos aún no se han detectado en los archivos subidos. 
+              Puedes enviar la solicitud de todas formas, pero asegúrate de haber subido todos los documentos requeridos.
+              <strong>Nota:</strong> Si los archivos tienen nombres ligeramente diferentes, el sistema puede no detectarlos automáticamente.
+            </p>
+            <ul class="documentos-faltantes">
+              <li *ngFor="let doc of obtenerDocumentosFaltantes()">{{ doc }}</li>
+            </ul>
+          </span>
+        </div>
+        
         <button mat-raised-button color="primary"
                 class="btn-enviar"
                 [disabled]="!puedeEnviar()"

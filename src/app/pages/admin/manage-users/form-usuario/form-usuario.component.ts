@@ -161,6 +161,7 @@ export class FormUsuarioComponent implements OnInit {
     // FORMATO SIMPLE - SOLO IDs (backend actualizado)
     const usuarioData: any = {
       codigo: formValue.codigo,
+      cedula: formValue.codigo,  // Usar el mismo valor de codigo para cedula
       nombre_completo: formValue.nombre_completo,
       correo: formValue.correo,
       estado_usuario: formValue.estado_usuario === 1 || formValue.estado_usuario === true,

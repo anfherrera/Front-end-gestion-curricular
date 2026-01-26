@@ -19,6 +19,7 @@ import { ReingresoEstudianteService } from '../../../core/services/reingreso-est
 import { MatDialog } from '@angular/material/dialog';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 
 import { Solicitud } from '../../../core/models/procesos.model';
 
@@ -66,7 +67,8 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private http: HttpClient,
     private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
+    private periodosService: PeriodosAcademicosService
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +101,84 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   puedeEnviar(): boolean {
     return this.archivosActuales.length > 0 && !!this.usuario;
+  }
+
+  /**
+   * Obtener lista de documentos faltantes (solo informativo, no bloquea envío)
+   * @returns Array con nombres de documentos que no se han subido
+   */
+  obtenerDocumentosFaltantes(): string[] {
+    const faltantes: string[] = [];
+    
+    // Obtener documentos obligatorios
+    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
+    
+    // Verificar cada documento obligatorio
+    documentosObligatorios.forEach(doc => {
+      if (!this.archivoSubido(doc.label)) {
+        faltantes.push(doc.label);
+      }
+    });
+    
+    return faltantes;
+  }
+
+  /**
+   * Verificar si un archivo ha sido subido basándose en el nombre del documento
+   * @param nombreDocumento Nombre del documento requerido
+   * @returns true si el archivo fue subido, false en caso contrario
+   */
+  private archivoSubido(nombreDocumento: string): boolean {
+    const nombreNormalizado = this.normalizarNombre(nombreDocumento);
+    return this.archivosActuales.some(archivo => {
+      const nombreArchivo = this.normalizarNombre(archivo.nombre);
+      // Buscar coincidencias parciales (por si el nombre del archivo es ligeramente diferente)
+      return nombreArchivo.includes(nombreNormalizado) || 
+             nombreNormalizado.includes(nombreArchivo) ||
+             this.coincidenciaFuzzy(nombreArchivo, nombreNormalizado);
+    });
+  }
+
+  /**
+   * Normalizar nombre de archivo para comparación
+   * @param nombre Nombre a normalizar
+   * @returns Nombre normalizado (sin acentos, minúsculas, sin espacios ni caracteres especiales)
+   */
+  private normalizarNombre(nombre: string): string {
+    return nombre
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+      .replace(/\.[^/.]+$/, '') // Eliminar extensión
+      .replace(/[^a-z0-9]/g, ''); // Eliminar caracteres especiales y espacios
+  }
+
+  /**
+   * Verificar coincidencia aproximada entre nombres (fuzzy matching)
+   * Útil para detectar archivos con nombres ligeramente diferentes
+   * @param nombre1 Primer nombre
+   * @param nombre2 Segundo nombre
+   * @returns true si hay coincidencia aproximada
+   */
+  private coincidenciaFuzzy(nombre1: string, nombre2: string): boolean {
+    // Palabras clave comunes para cada tipo de documento
+    const palabrasClave: { [key: string]: string[] } = {
+      'pmfo4for17': ['pmfo4for17', 'pm-fo-4-for-17', 'solicitud', 'reingreso', 'reingreso v2'],
+      'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
+      'documento': ['documento', 'identidad', 'cedula', 'cédula', 'tarjeta', 'identidad'],
+      'carta': ['carta', 'motivacion', 'motivación', 'motivo']
+    };
+    
+    // Buscar palabras clave en ambos nombres
+    for (const [clave, palabras] of Object.entries(palabrasClave)) {
+      if (nombre1.includes(clave) || nombre2.includes(clave)) {
+        return palabras.some(palabra => 
+          nombre1.includes(palabra) && nombre2.includes(palabra)
+        );
+      }
+    }
+    
+    return false;
   }
 
   /**
@@ -145,18 +225,25 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
         // Obtener nombre completo del usuario
-        const nombreCompleto = this.usuario?.nombre_completo || 
-                               this.usuario?.nombre || 
+        const nombreCompleto = this.usuario?.nombre_completo ||
+                               this.usuario?.nombre ||
                                'Usuario';
         const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-        
+
+        // Obtener período académico actual
+        const periodoActual = this.periodosService.getPeriodoActualValue();
+        const periodoAcademico = periodoActual?.valor || this.obtenerPeriodoActualFallback();
+
         const solicitud: SolicitudReingresoDTOPeticion = {
           nombre_solicitud: `Solicitud Reingreso - ${nombreFinal}`,
           fecha_registro_solicitud: new Date(),
+          periodo_academico: periodoAcademico, // Obligatorio
+          fecha_ceremonia: null, // Opcional, se puede agregar un campo en el formulario si es necesario
           objUsuario: {
             id_usuario: this.usuario.id_usuario,
             nombre_completo: this.usuario.nombre_completo,
             codigo: this.usuario.codigo,
+            cedula: this.usuario.cedula || this.usuario.codigo, // Usar cedula si existe, sino codigo
             correo: this.usuario.correo || this.usuario.email_usuario,
             rol: this.usuario.rol,
             estado_usuario: this.usuario.estado_usuario,
@@ -241,7 +328,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           return;
         }
 
-        // Guardar las solicitudes completas para usar esSeleccionado y comentarios
+        // Guardar las solicitudes completas para usar comentarios
         this.solicitudesCompletas = data;
 
         this.solicitudes = data.map((sol: any) => {
@@ -258,8 +345,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
             fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
             estado: ultimoEstado?.estado_actual || 'Pendiente',
             rutaArchivo,
-            comentarios: ultimoEstado?.comentarios || '',
-            esSeleccionado: sol.esSeleccionado || false
+            comentarios: ultimoEstado?.comentarios || ''
           };
 
           this.logger.debug('Solicitud transformada', solicitudTransformada);
@@ -285,6 +371,17 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         );
       }
     });
+  }
+
+  /**
+   * Obtener período académico actual como fallback
+   */
+  private obtenerPeriodoActualFallback(): string {
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = fecha.getMonth() + 1; // 0-11 -> 1-12
+    const semestre = mes <= 6 ? 1 : 2;
+    return `${año}-${semestre}`;
   }
 
   /**

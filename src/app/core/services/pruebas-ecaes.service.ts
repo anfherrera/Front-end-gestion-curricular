@@ -18,11 +18,13 @@ export interface FechaEcaes {
 export interface SolicitudEcaesRequest {
   nombre_solicitud: string;
   fecha_registro_solicitud: string;
-  esSeleccionado: boolean;
+  periodo_academico: string; // Obligatorio, formato YYYY-P
+  fecha_ceremonia?: string | null; // Opcional
   objUsuario: {
     id_usuario: number;
     nombre_completo: string;
     codigo: string;
+    cedula: string; // Obligatorio
     correo: string;
     // El backend ahora espera identificadores en lugar de objetos anidados
     estado_usuario: boolean;
@@ -47,7 +49,8 @@ export interface SolicitudEcaesResponse {
   id_solicitud: number;
   nombre_solicitud: string;
   fecha_registro_solicitud: string;
-  esSeleccionado: boolean;
+  periodo_academico: string; // Obligatorio, formato YYYY-P
+  fecha_ceremonia?: string | null; // Opcional
   estadosSolicitud: Array<{
     id_estado: number | null;
     estado_actual: string;
@@ -63,6 +66,7 @@ export interface SolicitudEcaesResponse {
       nombre: string | null;
     };
     codigo: string;
+    cedula: string; // Obligatorio
     correo: string;
     estado_usuario: boolean;
     objPrograma: {

@@ -18,6 +18,23 @@
       </app-file-upload>
 
       <div class="enviar-solicitud mt-4">
+        <!-- Mensaje informativo de documentos faltantes (NO bloquea el envío) -->
+        <div *ngIf="obtenerDocumentosFaltantes().length > 0 && archivosActuales.length > 0" 
+             class="validacion-mensaje-informativo">
+          <mat-icon color="primary">info</mat-icon>
+          <span>
+            <strong>Documentos sugeridos (no obligatorios):</strong>
+            <p class="mensaje-guia">
+              Los siguientes documentos aún no se han detectado en los archivos subidos. 
+              Puedes enviar la solicitud de todas formas, pero asegúrate de haber subido todos los documentos requeridos.
+              <strong>Nota:</strong> Si los archivos tienen nombres ligeramente diferentes, el sistema puede no detectarlos automáticamente.
+            </p>
+            <ul class="documentos-faltantes">
+              <li *ngFor="let doc of obtenerDocumentosFaltantes()">{{ doc }}</li>
+            </ul>
+          </span>
+        </div>
+        
         <button mat-raised-button color="primary"
                 class="btn-enviar"
                 [disabled]="!puedeEnviar()"

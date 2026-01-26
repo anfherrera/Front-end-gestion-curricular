@@ -93,10 +93,31 @@ export interface SolicitudHomologacionDTORespuesta {
   id_solicitud: number;
   nombre_solicitud: string;
   fecha_registro_solicitud: string;
-  esSeleccionado?: boolean | null;
+  periodo_academico: string; // Obligatorio, formato YYYY-P
+  fecha_ceremonia?: string | null; // Opcional
   estadosSolicitud: EstadoSolicitud[];
   objUsuario: UsuarioHomologacion;
   documentos: DocumentoHomologacion[];
+  programa_origen?: string | null; // Opcional, máximo 200 caracteres
+  programa_destino?: string | null; // Opcional, máximo 200 caracteres
+}
+
+// ================================
+// Modelos para Homologación de Asignaturas (Request)
+// ================================
+
+export interface SolicitudHomologacionDTOPeticion {
+  id_solicitud?: number;
+  nombre_solicitud: string;
+  fecha_registro_solicitud: Date | string;
+  periodo_academico: string; // Obligatorio, formato YYYY-P
+  fecha_ceremonia?: Date | string | null; // Opcional
+  estado_actual?: EstadoSolicitudDTOPeticion;
+  objUsuario: UsuarioDTOPeticion;
+  documentos?: DocumentosDTOPeticion[];
+  archivos?: any[]; // Archivos subidos
+  programa_origen?: string | null; // Opcional, máximo 200 caracteres
+  programa_destino?: string | null; // Opcional, máximo 200 caracteres
 }
 
 // ================================
@@ -107,7 +128,8 @@ export interface SolicitudReingresoDTOPeticion {
   id_solicitud?: number;
   nombre_solicitud: string;
   fecha_registro_solicitud: Date;
-  esSeleccionado?: boolean | null;
+  periodo_academico: string; // Obligatorio, formato YYYY-P
+  fecha_ceremonia?: string | null; // Opcional
   estado_actual?: EstadoSolicitudDTOPeticion;
   objUsuario: UsuarioDTOPeticion;
   documentos?: DocumentosDTOPeticion[];
@@ -117,7 +139,8 @@ export interface SolicitudReingresoDTORespuesta {
   id_solicitud: number;
   nombre_solicitud: string;
   fecha_registro_solicitud: Date;
-  esSeleccionado?: boolean | null;
+  periodo_academico: string; // Obligatorio, formato YYYY-P
+  fecha_ceremonia?: string | null; // Opcional
   estadosSolicitud: EstadoSolicitudDTORespuesta[];
   objUsuario: UsuarioDTORespuesta;
   documentos: DocumentosDTORespuesta[];
@@ -151,6 +174,7 @@ export interface UsuarioDTOPeticion {
   nombre_completo: string;
   rol: Rol;
   codigo: string;
+  cedula: string; // Obligatorio, 5-20 caracteres, solo números
   correo: string;
   estado_usuario: boolean;
   id_rol?: number; // Campo requerido por el backend
@@ -163,6 +187,7 @@ export interface UsuarioDTORespuesta {
   nombre_completo: string;
   rol: Rol;
   codigo: string;
+  cedula: string; // Obligatorio
   correo: string;
   estado_usuario: boolean;
   objPrograma: Programa;

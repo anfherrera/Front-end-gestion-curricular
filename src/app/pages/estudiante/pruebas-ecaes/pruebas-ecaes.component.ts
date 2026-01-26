@@ -29,6 +29,7 @@ import { NotificacionesService } from '../../../core/services/notificaciones.ser
 import { AuthService } from '../../../core/services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 
 @Component({
   selector: 'app-pruebas-ecaes',
@@ -96,7 +97,8 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     private notificacionesService: NotificacionesService,
     private authService: AuthService,
     private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
+    private periodosService: PeriodosAcademicosService
   ) {
     this.solicitudForm = this.fb.group({
       tipoDocumento: ['CC', Validators.required],
@@ -353,14 +355,20 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     // Formato: "Solicitud ECAES - [nombre del estudiante]"
     const nombreSolicitud = `Solicitud ECAES - ${nombreFinal}`;
 
+    // Obtener período académico actual
+    const periodoActual = this.periodosService.getPeriodoActualValue();
+    const periodoAcademico = periodoActual?.valor || this.obtenerPeriodoActualFallback();
+    
     const solicitud = {
       nombre_solicitud: nombreSolicitud,
       fecha_registro_solicitud: new Date().toISOString(),
-      esSeleccionado: true,
+      periodo_academico: periodoAcademico, // Obligatorio
+      fecha_ceremonia: null, // Opcional, se puede agregar un campo en el formulario si es necesario
       objUsuario: {
         id_usuario: this.usuario.id_usuario,
         nombre_completo: this.usuario.nombre_completo,
         codigo: this.usuario.codigo,
+        cedula: this.usuario.cedula || this.usuario.codigo, // Usar cedula si existe, sino codigo
         correo: this.usuario.correo || this.usuario.email_usuario,
         estado_usuario: this.usuario.estado_usuario,
         // Enviar solo los identificadores que el backend ahora espera
@@ -638,6 +646,17 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.logger.debug('Diálogo de comentarios cerrado');
     });
+  }
+
+  /**
+   * Obtener período académico actual como fallback
+   */
+  private obtenerPeriodoActualFallback(): string {
+    const fecha = new Date();
+    const año = fecha.getFullYear();
+    const mes = fecha.getMonth() + 1; // 0-11 -> 1-12
+    const semestre = mes <= 6 ? 1 : 2;
+    return `${año}-${semestre}`;
   }
 
   /**
