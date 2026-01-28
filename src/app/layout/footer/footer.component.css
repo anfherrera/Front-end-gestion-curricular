@@ -1,13 +1,15 @@
+/* Footer - Sistema de Diseño TIC Universidad del Cauca */
 .footer-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: white;
-  color: #00138C;
-  border-top: 2px solid #e9ecef;
+  color: var(--color-primario, #000066);
+  border-top: 2px solid var(--primario-90, #E0E0FF);
   padding: 16px 24px;
   font-size: 0.85rem;
   font-weight: 400;
+  font-family: 'Open Sans', sans-serif;
   margin-top: auto;
 }
 
@@ -30,17 +32,18 @@
 }
 
 .contact a {
-  color: #00138C;
+  color: var(--color-primario, #000066);
   text-decoration: none;
 }
 
 .contact a:hover {
   text-decoration: underline;
+  color: var(--color-terciario, #1D72D3);
 }
 
 .footer-right mat-icon {
   font-size: 22px;
-  color: #00138C;
+  color: var(--color-primario, #000066);
   cursor: pointer;
 }
 
@@ -50,12 +53,12 @@
 }
 
 .social-icons a {
-  color: #00138C;
+  color: var(--color-primario, #000066);
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .social-icons a:hover {
-  color: #002776;
+  color: var(--color-terciario, #1D72D3);
   transform: scale(1.2);
 }
 
