@@ -65,6 +65,9 @@
           <mat-error *ngIf="esCampoInvalido('tipoDocumento')">
             {{ obtenerMensajeError('tipoDocumento') }}
           </mat-error>
+          <mat-error *ngIf="solicitudForm.get('tipoDocumento')?.hasError('tipoDocumentoInvalido')">
+            Solo se aceptan Cédula de Ciudadanía (CC) o Cédula de Extranjería (CE)
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">

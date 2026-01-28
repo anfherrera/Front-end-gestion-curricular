@@ -49,7 +49,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     { label: 'PM-FO-4-FOR-17 Solicitud de Reingreso V2', obligatorio: true },
     { label: 'Certificado de notas', obligatorio: true },
     { label: 'Documento de identidad', obligatorio: true },
-    { label: 'Carta de motivación', obligatorio: false }
+    { label: 'Carta de motivación', obligatorio: true }
   ];
 
   private readonly nombresDocumentosRequeridos = this.documentosRequeridos.map(doc => doc.label.toLowerCase().trim());

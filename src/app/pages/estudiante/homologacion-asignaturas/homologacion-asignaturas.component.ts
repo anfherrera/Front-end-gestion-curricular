@@ -100,7 +100,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
     // Listar solicitudes existentes al cargar el componente
     this.listarSolicitudes();
-    
+
     // Verificar funcionalidad de comentarios (para debugging)
     setTimeout(() => {
       this.verificarFuncionalidadComentarios();
@@ -126,17 +126,17 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
    */
   obtenerDocumentosFaltantes(): string[] {
     const faltantes: string[] = [];
-    
+
     // Obtener documentos obligatorios
     const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
-    
+
     // Verificar cada documento obligatorio
     documentosObligatorios.forEach(doc => {
       if (!this.archivoSubido(doc.label)) {
         faltantes.push(doc.label);
       }
     });
-    
+
     return faltantes;
   }
 
@@ -150,7 +150,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     return this.archivosActuales.some(archivo => {
       const nombreArchivo = this.normalizarNombre(archivo.nombre);
       // Buscar coincidencias parciales (por si el nombre del archivo es ligeramente diferente)
-      return nombreArchivo.includes(nombreNormalizado) || 
+      return nombreArchivo.includes(nombreNormalizado) ||
              nombreNormalizado.includes(nombreArchivo) ||
              this.coincidenciaFuzzy(nombreArchivo, nombreNormalizado);
     });
@@ -184,16 +184,16 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
       'programa': ['programa', 'academico', 'materia', 'asignatura', 'syllabus']
     };
-    
+
     // Buscar palabras clave en ambos nombres
     for (const [clave, palabras] of Object.entries(palabrasClave)) {
       if (nombre1.includes(clave) || nombre2.includes(clave)) {
-        return palabras.some(palabra => 
+        return palabras.some(palabra =>
           nombre1.includes(palabra) && nombre2.includes(palabra)
         );
       }
     }
-    
+
     return false;
   }
 
@@ -241,15 +241,15 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
         // Obtener nombre completo del usuario
-        const nombreCompleto = this.usuario?.nombre_completo || 
-                               this.usuario?.nombre || 
+        const nombreCompleto = this.usuario?.nombre_completo ||
+                               this.usuario?.nombre ||
                                'Usuario';
         const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-        
+
         // Obtener período académico actual
         const periodoActual = this.periodosService.getPeriodoActualValue();
         const periodoAcademico = periodoActual?.valor || this.obtenerPeriodoActualFallback();
-        
+
         // Obtener valores del formulario (pueden ser null o string vacío)
         const programaOrigen = this.solicitudForm.get('programa_origen')?.value?.trim() || null;
         const programaDestino = this.solicitudForm.get('programa_destino')?.value?.trim() || null;
@@ -316,7 +316,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
         this.logger.error('Error al subir archivos', err);
         const mensajeError = this.errorHandler.extraerMensajeError(err);
         this.mostrarMensaje(mensajeError || 'Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
-        
+
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
           this.fileUploadComponent.resetearEstadoCarga();
@@ -442,14 +442,14 @@ obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string |
     idSolicitud: solicitud.id_solicitud,
     estados: solicitud.estadosSolicitud
   });
-  
+
   if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
     this.logger.warn('No hay estados en la solicitud', solicitud.id_solicitud);
     return null;
   }
 
   // Buscar el último estado que sea RECHAZADA
-  const estadosRechazados = solicitud.estadosSolicitud.filter(estado => 
+  const estadosRechazados = solicitud.estadosSolicitud.filter(estado =>
     estado.estado_actual === 'RECHAZADA' || estado.estado_actual === 'Rechazada'
   );
 
@@ -462,12 +462,12 @@ obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string |
 
   // Obtener el último estado de rechazo
   const ultimoEstadoRechazo = estadosRechazados[estadosRechazados.length - 1];
-  
+
   this.logger.debug('Último estado de rechazo encontrado', {
     estado: ultimoEstadoRechazo,
     comentario: ultimoEstadoRechazo.comentario
   });
-  
+
   return ultimoEstadoRechazo.comentario || null;
 }
 
@@ -476,7 +476,7 @@ obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string |
  */
 verComentarios(solicitudId: number): void {
   const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-  
+
   if (!solicitudCompleta) {
     this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
     return;
@@ -517,12 +517,12 @@ verComentarios(solicitudId: number): void {
  */
 tieneComentarios(solicitudId: number): boolean {
   const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-  
+
   if (!solicitudCompleta || !solicitudCompleta.documentos) {
     return false;
   }
 
-  return solicitudCompleta.documentos.some(doc => 
+  return solicitudCompleta.documentos.some(doc =>
     doc.comentario && doc.comentario.trim().length > 0
   );
 }
@@ -535,14 +535,14 @@ verificarFuncionalidadComentarios(): void {
     solicitudesCompletas: this.solicitudesCompletas.length,
     solicitudesTransformadas: this.solicitudes.length
   });
-  
+
   // Buscar solicitudes rechazadas
-  const solicitudesRechazadas = this.solicitudes.filter(sol => 
+  const solicitudesRechazadas = this.solicitudes.filter(sol =>
     this.esSolicitudRechazada(sol.estado)
   );
-  
+
   this.logger.debug('Solicitudes rechazadas encontradas', solicitudesRechazadas);
-  
+
   solicitudesRechazadas.forEach(sol => {
     const tieneComentarios = this.tieneComentarios(sol.id);
     this.logger.debug(`Solicitud ${sol.id}`, {
@@ -558,7 +558,7 @@ verificarFuncionalidadComentarios(): void {
  */
 descargarOficio(idOficio: number, nombreArchivo: string): void {
   this.logger.debug('Descargando oficio', { idOficio, nombreArchivo });
-  
+
   // Primero intentar obtener los oficios disponibles para esta solicitud
   this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
 }
@@ -572,22 +572,22 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
     .subscribe({
     next: (oficios) => {
       this.logger.debug('Oficios obtenidos', oficios);
-      
+
       if (!oficios || oficios.length === 0) {
         this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
         return;
       }
-      
+
       // Tomar el primer oficio disponible
       const oficio = oficios[0];
       const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`;
-      
+
       // Intentar descargar usando el endpoint de archivos
       this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
     },
     error: (err) => {
       this.logger.error('Error al obtener oficios', err);
-      
+
       // Si no se pueden obtener oficios, intentar con nombres comunes
       this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
     }
@@ -599,16 +599,16 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
  */
 private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
   this.logger.debug('Descargando archivo por nombre', { nombreArchivo, nombreDescarga, idSolicitud });
-  
+
   // Usar el endpoint de solicitudes de homologación que acabamos de crear
   const url = `${environment.apiUrl}/solicitudes-homologacion/descargarOficio/${idSolicitud || 1}`;
-  
+
   // Crear headers con autorización
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders({
     'Authorization': `Bearer ${token}`
   });
-  
+
   this.http.get(url, {
     headers: headers,
     responseType: 'blob',
@@ -618,13 +618,13 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
     .subscribe({
     next: (response) => {
       this.logger.debug('Archivo descargado exitosamente');
-      
+
       // Obtener el nombre del archivo desde los headers de la respuesta
       const contentDisposition = response.headers.get('Content-Disposition');
       let nombreArchivoDescarga = nombreDescarga || nombreArchivo;
-      
+
       this.logger.debug('Content-Disposition header', contentDisposition);
-      
+
       if (contentDisposition) {
         // Intentar diferentes patrones para extraer el nombre del archivo
         let matches = contentDisposition.match(/filename="(.+)"/);
@@ -634,7 +634,7 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
         if (!matches) {
           matches = contentDisposition.match(/filename\*=UTF-8''(.+)/);
         }
-        
+
         if (matches && matches[1]) {
           nombreArchivoDescarga = decodeURIComponent(matches[1]);
           this.logger.debug('Nombre del archivo desde headers', nombreArchivoDescarga);
@@ -647,10 +647,10 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
         nombreArchivoDescarga = nombreArchivo;
         this.logger.debug('Usando nombre del archivo del método obtenerOficios', nombreArchivoDescarga);
       }
-      
+
       // Crear URL temporal y descargar
       const blob = response.body!;
-      
+
       // Logging para diagnosticar el problema
       this.logger.debug('Información del archivo descargado', {
         contentType: response.headers.get('Content-Type'),
@@ -658,7 +658,7 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
         blobType: blob.type,
         nombreDescarga: nombreArchivoDescarga
       });
-      
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -667,7 +667,7 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       this.mostrarMensaje('Oficio descargado exitosamente', 'success');
     },
     error: (err) => {
@@ -683,12 +683,12 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
  */
 private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: string): void {
   this.logger.debug('Intentando descarga con nombres comunes', { idSolicitud, nombreArchivo });
-  
+
   // Obtener información del usuario para generar nombres
   const usuario = this.usuario;
   const codigoUsuario = usuario?.codigo || usuario?.codigo_estudiante || 'SIN_CODIGO';
   const año = new Date().getFullYear();
-  
+
   // Nombres comunes a probar
   const nombresComunes = [
     `OFICIO_HOMOLOGACION_${codigoUsuario}_${año} (1).pdf`,
@@ -698,7 +698,7 @@ private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: st
     `oficio_${idSolicitud}.pdf`,
     `homologacion_${idSolicitud}.pdf`
   ];
-  
+
   this.probarNombresSecuencial(nombresComunes, 0, nombreArchivo, idSolicitud);
 }
 
@@ -710,10 +710,10 @@ private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga
     this.mostrarMensaje('No se encontró el archivo con los nombres probados', 'warning');
     return;
   }
-  
+
   const nombre = nombres[index];
   this.logger.debug(`Probando nombre ${index + 1}/${nombres.length}`, { nombre, index, total: nombres.length });
-  
+
   this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
 }
 
@@ -734,12 +734,12 @@ obtenerEstadoActual(solicitud: any): string {
  */
 private mostrarOficiosEnUI(oficios: any[]): void {
   this.logger.debug('Mostrando oficios en UI', oficios);
-  
+
   if (!oficios || oficios.length === 0) {
     this.mostrarMensaje('No hay oficios disponibles', 'info');
     return;
   }
-  
+
   this.mostrarMensaje(`Se encontraron ${oficios.length} oficio(s) disponible(s)`, 'success');
 }
 

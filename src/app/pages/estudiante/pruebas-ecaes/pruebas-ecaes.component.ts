@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -101,7 +101,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     private periodosService: PeriodosAcademicosService
   ) {
     this.solicitudForm = this.fb.group({
-      tipoDocumento: ['CC', Validators.required],
+      tipoDocumento: ['CC', [Validators.required, this.tipoDocumentoValido()]],
       numero_documento: ['', [Validators.required, Validators.minLength(6)]],
       fecha_expedicion: ['', Validators.required],
       fecha_nacimiento: ['', Validators.required]
@@ -114,6 +114,18 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
       this.logger.log('👤 Usuario cargado desde localStorage:', this.usuario);
+      
+      // Establecer valor por defecto del número de documento
+      // Usar cedula si existe, sino usar codigo como fallback
+      const cedulaUsuario = this.usuario.cedula || this.usuario.codigo || '';
+      if (cedulaUsuario) {
+        this.solicitudForm.patchValue({
+          numero_documento: cedulaUsuario
+        });
+        this.logger.log('📝 Número de documento establecido por defecto:', cedulaUsuario);
+      } else {
+        this.logger.warn('⚠️ No se encontró cédula ni código en el usuario');
+      }
     } else {
       this.logger.warn('⚠️ No se encontró usuario en localStorage');
     }
@@ -137,11 +149,22 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          this.tiposDocumento = response.data.map((tipo: any) => ({
-            value: tipo.codigo,
-            label: tipo.descripcion
-          }));
-          this.logger.log('📄 Tipos de documento cargados desde backend:', this.tiposDocumento);
+          // Filtrar solo los valores aceptados por el backend (CC y CE)
+          const valoresValidos = ['CC', 'CE'];
+          this.tiposDocumento = response.data
+            .filter((tipo: any) => valoresValidos.includes(tipo.codigo))
+            .map((tipo: any) => ({
+              value: tipo.codigo,
+              label: tipo.descripcion
+            }));
+          
+          // Si después del filtro no hay valores, usar fallback
+          if (this.tiposDocumento.length === 0) {
+            this.logger.warn('⚠️ El backend no devolvió valores válidos (CC o CE), usando fallback');
+            this.cargarTiposDocumentoFallback();
+          } else {
+            this.logger.log('📄 Tipos de documento cargados desde backend (filtrados):', this.tiposDocumento);
+          }
         } else {
           this.cargarTiposDocumentoFallback();
         }
@@ -155,19 +178,35 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   /**
    * Fallback con tipos de documento hardcodeados si el backend no está disponible
+   * Solo incluye los valores aceptados por el backend: CC y CE
    */
   private cargarTiposDocumentoFallback(): void {
     this.tiposDocumento = [
       { value: 'CC', label: 'Cédula de Ciudadanía' },
-      { value: 'TI', label: 'Tarjeta de Identidad' },
-      { value: 'CE', label: 'Cédula de Extranjería' },
-      { value: 'PA', label: 'Pasaporte' },
-      { value: 'RC', label: 'Registro Civil' },
-      { value: 'NIT', label: 'Número de Identificación Tributaria' },
-      { value: 'NUIP', label: 'Número Único de Identificación Personal' }
+      { value: 'CE', label: 'Cédula de Extranjería' }
     ];
-    this.logger.log('📄 Tipos de documento fallback cargados:', this.tiposDocumento);
-    this.snackBar.open('⚠️ Usando tipos de documento predeterminados. Verifique la conexión con el backend.', 'Cerrar', { duration: 5000 });
+    this.logger.warn('⚠️ Usando tipos de documento fallback (solo CC y CE)');
+  }
+
+  /**
+   * Validador personalizado para tipo de documento
+   * Solo acepta CC (Cédula de Ciudadanía) o CE (Cédula de Extranjería)
+   */
+  private tipoDocumentoValido(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const valoresValidos = ['CC', 'CE'];
+      
+      if (!valor) {
+        return null; // El validador required ya maneja esto
+      }
+      
+      if (!valoresValidos.includes(valor)) {
+        return { tipoDocumentoInvalido: true };
+      }
+      
+      return null;
+    };
   }
 
   cargarFechasEcaes(): void {
