@@ -20,7 +20,7 @@ import { RoleGuard } from './role.guard';
 import { AuthService } from '../services/auth.service';
 import { UserRole } from '../enums/roles.enum';
 
-describe('🔒 PRUEBAS DE SEGURIDAD - Guards', () => {
+describe(' PRUEBAS DE SEGURIDAD - Guards', () => {
   let router: jasmine.SpyObj<Router>;
   let authService: jasmine.SpyObj<AuthService>;
 

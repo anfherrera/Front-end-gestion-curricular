@@ -67,7 +67,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
     });
 
     it('EST-004: Debe obtener estadísticas globales con filtro de programa', (done) => {
-      const filtros: FiltroEstadisticas = { programa: 1 };
+      const filtros: FiltroEstadisticas = { idPrograma: 1 };
 
       service.getEstadisticasGlobales(filtros).subscribe(() => done());
 
@@ -100,7 +100,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
     it('EST-006: Debe obtener estadísticas globales con múltiples filtros', (done) => {
       const filtros: FiltroEstadisticas = {
         proceso: 'cursos-verano',
-        programa: 2,
+        idPrograma: 2,
         fechaInicio: '2025-06-01',
         fechaFin: '2025-08-31'
       };
@@ -230,7 +230,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
     it('EST-013: Debe aplicar filtros correctamente', (done) => {
       const filtros: FiltroEstadisticas = {
         proceso: 'paz-salvo',
-        programa: 1,
+        idPrograma: 1,
         fechaInicio: '2025-01-01',
         fechaFin: '2025-12-31'
       };
