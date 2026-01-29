@@ -1,12 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
 import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
@@ -52,7 +53,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
   constructor(
     public pazSalvoService: PazSalvoService,
     private documentGeneratorService: DocumentGeneratorService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private cdr: ChangeDetectorRef
   ) {
     // Inicializar plantilla para paz y salvo
@@ -90,7 +91,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }));
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+        this.snackbar.error('Error al cargar solicitudes');
       }
     });
   }
@@ -113,7 +114,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         }));
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
+        this.snackbar.error('Error al cargar historial de solicitudes procesadas');
       }
     });
   }
@@ -242,14 +243,14 @@ export class SecretariaPazSalvoComponent implements OnInit {
           this.cdr.detectChanges();
         }
         
-        this.snackBar.open('Error al cargar documentos', 'Cerrar', { duration: 3000 });
+        this.snackbar.error('Error al cargar documentos');
       }
     });
   }
 
   onTengoDocumento(): void {
     this.documentoHabilitado = true;
-    this.snackBar.open('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.', 'Cerrar', { duration: 3000 });
+    this.snackbar.info('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.');
   }
 
   /**
@@ -270,11 +271,11 @@ export class SecretariaPazSalvoComponent implements OnInit {
         // Marcar que el documento fue generado (SIN cambiar el estado de la solicitud)
         this.documentoGenerado = true;
 
-        this.snackBar.open('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
+        this.snackbar.success('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');
         this.loading = false;
       },
       error: (err: any) => {
-        this.snackBar.open('Error al generar documento', 'Cerrar', { duration: 3000 });
+        this.snackbar.error('Error al generar documento');
         this.loading = false;
       }
     });
@@ -295,9 +296,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
     const archivo = event.target.files[0];
     if (archivo && archivo.type === 'application/pdf') {
       this.archivoPDF = archivo;
-      this.snackBar.open(`Archivo PDF seleccionado: ${archivo.name}`, 'Cerrar', { duration: 3000 });
+      this.snackbar.info(`Archivo PDF seleccionado: ${archivo.name}`);
     } else {
-      this.snackBar.open('Por favor selecciona un archivo PDF válido', 'Cerrar', { duration: 3000 });
+      this.snackbar.warning('Por favor selecciona un archivo PDF válido');
     }
   }
 
@@ -306,7 +307,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
    */
   subirPDF(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
+      this.snackbar.warning('Por favor selecciona un archivo PDF');
       return;
     }
 
@@ -314,11 +315,11 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Usar el endpoint específico de Paz y Salvo para subir el oficio PDF
     this.pazSalvoService.subirOficioPdf(this.selectedSolicitud.id_solicitud, this.archivoPDF).subscribe({
       next: (response) => {
-        this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
+        this.snackbar.success('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.');
         this.subiendoPDF = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.snackbar.error('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'));
         this.subiendoPDF = false;
       }
     });
@@ -329,7 +330,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
    */
   enviarPDFAlEstudiante(): void {
     if (!this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona una solicitud', 'Cerrar', { duration: 3000 });
+      this.snackbar.warning('Por favor selecciona una solicitud');
       return;
     }
 
@@ -337,7 +338,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
     // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
     this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackbar.success('PDF enviado al estudiante y solicitud aprobada exitosamente');
         this.enviandoPDF = false;
 
         // Limpiar el estado
@@ -350,7 +351,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.cargarSolicitudesProcesadas();
       },
       error: (err: any) => {
-        this.snackBar.open('Error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+        this.snackbar.error('Error al enviar al estudiante');
         this.enviandoPDF = false;
       }
     });
@@ -361,7 +362,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
    */
   enviarDocumento(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
+      this.snackbar.warning('Por favor selecciona un archivo PDF');
       return;
     }
 
@@ -376,7 +377,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.enviandoPDF = true;
         // Verificar que la solicitud sigue seleccionada
         if (!this.selectedSolicitud) {
-          this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
+          this.snackbar.error('Error: Solicitud no encontrada');
           this.enviandoPDF = false;
           return;
         }
@@ -384,7 +385,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
         this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
           next: () => {
-            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
+            this.snackbar.success('Documento enviado al estudiante y solicitud aprobada exitosamente');
             this.enviandoPDF = false;
 
             // Limpiar el estado
@@ -397,13 +398,13 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.cargarSolicitudesProcesadas();
           },
           error: (err: any) => {
-            this.snackBar.open('PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+            this.snackbar.error('PDF subido pero error al enviar al estudiante');
             this.enviandoPDF = false;
           }
         });
       },
       error: (err) => {
-        this.snackBar.open('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+        this.snackbar.error('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'));
         this.subiendoPDF = false;
       }
     });

@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
@@ -11,6 +12,16 @@ import { PreinscripcionDialogComponent } from './shared/components/preinscripcio
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Sistema de Diseño TIC: notificaciones en superior derecha, 5 segundos, estilo info por defecto
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+      useValue: {
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        duration: 5000,
+        panelClass: ['snackbar-info'],
+      },
+    },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),

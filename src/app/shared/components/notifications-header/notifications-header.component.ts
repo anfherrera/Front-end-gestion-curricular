@@ -8,10 +8,11 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 
 import { NotificacionService } from '../../../core/services/notificacion.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Notificacion, NotificacionesResponse } from '../../../core/models/notificaciones.model';
 import { 
@@ -55,7 +56,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     private notificacionService: NotificacionService,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -133,7 +134,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         
         if (error.status !== 403) {
-          this.snackBar.open('Error al cargar notificaciones', 'Cerrar', { duration: 3000 });
+          this.snackbar.error('Error al cargar notificaciones');
         }
       }
     });
@@ -150,10 +151,10 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
         this.totalNoLeidas = 0;
         this.notificaciones = [];
         this.cdr.detectChanges();
-        this.snackBar.open('Notificaciones marcadas como leídas', 'Cerrar', { duration: 2000 });
+        this.snackbar.success('Notificaciones marcadas como leídas');
       },
       error: (error) => {
-        this.snackBar.open('Error al marcar notificaciones como leídas', 'Cerrar', { duration: 3000 });
+        this.snackbar.error('Error al marcar notificaciones como leídas');
       }
     });
   }
@@ -247,7 +248,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   crearNotificacionPrueba(): void {
-    this.snackBar.open('La creación de notificaciones se realiza desde el backend', 'Cerrar', { duration: 3000 });
+    this.snackbar.info('La creación de notificaciones se realiza desde el backend');
   }
 
   private iniciarPollingContador(userId: number, intervalo: number = 30000): void {

@@ -1,5 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* ===== OVERRIDES TEMA ANGULAR MATERIAL - Sistema de Diseño TIC ===== */
+/* Sobrescribe colores del tema prebuilt para usar colores institucionales */
+:root {
+  --mat-primary: #000066;
+  --mat-primary-container: #E0E0FF;
+  --mat-on-primary: #FFFFFF;
+  --mat-on-primary-container: #000066;
+  --mat-secondary: #9D0311;
+  --mat-secondary-container: #FFDAD6;
+  --mat-on-secondary: #FFFFFF;
+  --mat-on-secondary-container: #690007;
+  --mat-tertiary: #1D72D3;
+  --mat-error: #FF6D0A;
+  --mat-on-error: #FFFFFF;
+  --mat-error-container: #FFDBCC;
+  --mat-on-error-container: #361000;
+}
+
 /* ===== VARIABLES DE COLORES INSTITUCIONALES - Sistema de Diseño TIC ===== */
 :root {
   /* Colores Principales */
@@ -486,66 +504,190 @@ mat-icon {
 
 /* ===== ESTILOS PARA SNACKBARS/NOTIFICACIONES - Sistema de Diseño TIC ===== */
 /* Las notificaciones deben ubicarse en la parte superior derecha con duración de 5 segundos */
+/* Soporta: snackbar-success, success-snackbar (ambas convenciones usadas en el proyecto) */
 
-.snackbar-success {
+/* ÉXITO - Verde institucional */
+.snackbar-success,
+.success-snackbar {
   background-color: var(--notif-exito-fondo) !important;
   color: var(--notif-exito-texto) !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
   border-left: 4px solid var(--notif-exito-borde) !important;
   border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(36, 147, 55, 0.25) !important;
 }
 
-.snackbar-success .mdc-snackbar__label {
+.snackbar-success .mdc-snackbar__label,
+.snackbar-success .mat-mdc-snack-bar-label,
+.success-snackbar .mdc-snackbar__label,
+.success-snackbar .mat-mdc-snack-bar-label {
   color: var(--notif-exito-texto) !important;
+  font-weight: 600 !important;
 }
 
-.snackbar-error {
+.snackbar-success .mat-mdc-button,
+.success-snackbar .mat-mdc-button {
+  color: var(--notif-exito-borde) !important;
+  font-weight: 600 !important;
+}
+
+/* ERROR - Naranja institucional (NO rojo según TIC) */
+.snackbar-error,
+.error-snackbar {
   background-color: var(--notif-error-fondo) !important;
   color: var(--notif-error-texto) !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
   border-left: 4px solid var(--notif-error-borde) !important;
   border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(141, 56, 0, 0.25) !important;
 }
 
-.snackbar-error .mdc-snackbar__label {
+.snackbar-error .mdc-snackbar__label,
+.snackbar-error .mat-mdc-snack-bar-label,
+.error-snackbar .mdc-snackbar__label,
+.error-snackbar .mat-mdc-snack-bar-label {
   color: var(--notif-error-texto) !important;
+  font-weight: 600 !important;
 }
 
-.snackbar-warning {
+.snackbar-error .mat-mdc-button,
+.error-snackbar .mat-mdc-button {
+  color: var(--notif-error-borde) !important;
+  font-weight: 600 !important;
+}
+
+/* ADVERTENCIA */
+.snackbar-warning,
+.warning-snackbar {
   background-color: var(--notif-error-fondo) !important;
   color: var(--notif-error-texto) !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
   border-left: 4px solid var(--color-error) !important;
   border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(255, 109, 10, 0.25) !important;
 }
 
-.snackbar-warning .mdc-snackbar__label {
+.snackbar-warning .mdc-snackbar__label,
+.snackbar-warning .mat-mdc-snack-bar-label,
+.warning-snackbar .mdc-snackbar__label,
+.warning-snackbar .mat-mdc-snack-bar-label {
   color: var(--notif-error-texto) !important;
+  font-weight: 600 !important;
 }
 
-.snackbar-info {
+.snackbar-warning .mat-mdc-button,
+.warning-snackbar .mat-mdc-button {
+  color: var(--color-error) !important;
+  font-weight: 600 !important;
+}
+
+/* INFORMACIÓN */
+.snackbar-info,
+.info-snackbar {
   background-color: var(--notif-info-fondo) !important;
   color: var(--notif-info-texto) !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
   border-left: 4px solid var(--notif-info-borde) !important;
   border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0, 83, 160, 0.25) !important;
 }
 
-.snackbar-info .mdc-snackbar__label {
+.snackbar-info .mdc-snackbar__label,
+.snackbar-info .mat-mdc-snack-bar-label,
+.info-snackbar .mdc-snackbar__label,
+.info-snackbar .mat-mdc-snack-bar-label {
   color: var(--notif-info-texto) !important;
+  font-weight: 600 !important;
+}
+
+.snackbar-info .mat-mdc-button,
+.info-snackbar .mat-mdc-button {
+  color: var(--notif-info-borde) !important;
+  font-weight: 600 !important;
 }
 
 /* Notificación de seguridad - Sistema de Diseño TIC */
 .snackbar-security {
   background-color: var(--notif-seguridad-fondo) !important;
   color: var(--notif-seguridad-texto) !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
   border-left: 4px solid var(--notif-seguridad-borde) !important;
   border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(55, 61, 146, 0.25) !important;
 }
 
-.snackbar-security .mdc-snackbar__label {
+.snackbar-security .mdc-snackbar__label,
+.snackbar-security .mat-mdc-snack-bar-label {
   color: var(--notif-seguridad-texto) !important;
+  font-weight: 600 !important;
+}
+
+/* Forzar estilos en el contenedor MDC de Angular Material */
+.mat-mdc-snack-bar-container.snackbar-success,
+.mat-mdc-snack-bar-container.success-snackbar,
+.mat-mdc-snack-bar-container.snackbar-error,
+.mat-mdc-snack-bar-container.error-snackbar,
+.mat-mdc-snack-bar-container.snackbar-warning,
+.mat-mdc-snack-bar-container.warning-snackbar,
+.mat-mdc-snack-bar-container.snackbar-info,
+.mat-mdc-snack-bar-container.info-snackbar {
+  --mdc-snackbar-container-color: transparent !important;
+  --mdc-snackbar-supporting-text-color: inherit !important;
+}
+
+/* Fondo en la superficie MDC del snackbar */
+.mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface,
+.mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface {
+  background-color: var(--notif-exito-fondo) !important;
+  border-left: 4px solid var(--notif-exito-borde) !important;
+}
+
+.mat-mdc-snack-bar-container.snackbar-error .mdc-snackbar__surface,
+.mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__surface {
+  background-color: var(--notif-error-fondo) !important;
+  border-left: 4px solid var(--notif-error-borde) !important;
+}
+
+.mat-mdc-snack-bar-container.snackbar-warning .mdc-snackbar__surface,
+.mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__surface {
+  background-color: var(--notif-error-fondo) !important;
+  border-left: 4px solid var(--color-error) !important;
+}
+
+.mat-mdc-snack-bar-container.snackbar-info .mdc-snackbar__surface,
+.mat-mdc-snack-bar-container.info-snackbar .mdc-snackbar__surface {
+  background-color: var(--notif-info-fondo) !important;
+  border-left: 4px solid var(--notif-info-borde) !important;
+}
+
+.mat-mdc-snack-bar-container.snackbar-success .mat-mdc-snack-bar-label,
+.mat-mdc-snack-bar-container.success-snackbar .mat-mdc-snack-bar-label {
+  color: var(--notif-exito-texto) !important;
+}
+
+.mat-mdc-snack-bar-container.snackbar-error .mat-mdc-snack-bar-label,
+.mat-mdc-snack-bar-container.error-snackbar .mat-mdc-snack-bar-label {
+  color: var(--notif-error-texto) !important;
+}
+
+.mat-mdc-snack-bar-container.snackbar-warning .mat-mdc-snack-bar-label,
+.mat-mdc-snack-bar-container.warning-snackbar .mat-mdc-snack-bar-label {
+  color: var(--notif-error-texto) !important;
+}
+
+.mat-mdc-snack-bar-container.snackbar-info .mat-mdc-snack-bar-label,
+.mat-mdc-snack-bar-container.info-snackbar .mat-mdc-snack-bar-label {
+  color: var(--notif-info-texto) !important;
 }
 
 .periodo-cambio-notification {

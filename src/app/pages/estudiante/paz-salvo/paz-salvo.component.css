@@ -1,11 +1,11 @@
-/* Contenedor principal */
+/* Contenedor principal - Sistema de Diseño TIC */
 .homologacion-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: #f5f7fa;
-  font-family: 'Roboto', sans-serif;
+  background-color: var(--color-fondo, #FFFBFF);
+  font-family: 'Open Sans', 'Titillium Web', sans-serif;
 }
 
 /* Tarjetas */
@@ -22,15 +22,16 @@
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
-/* Títulos de tarjetas */
+/* Títulos de tarjetas - Color primario TIC */
 .card-title {
   font-size: 1.2rem;
   font-weight: bold;
-  background-color: #00138C;
+  background-color: var(--color-primario, #000066);
   color: #fff;
   padding: 14px 16px;
   display: block;
-  border-bottom: 3px solid #001060;
+  border-bottom: 3px solid var(--color-primario-dark, #07184A);
+  font-family: 'Titillium Web', sans-serif;
 }
 
 /* Contenido de la tarjeta */
@@ -69,23 +70,24 @@ mat-card-content {
 }
 
 .required-list li:hover {
-  background-color: rgba(0, 19, 140, 0.05);
+  background-color: rgba(0, 0, 102, 0.05);
 }
 
-/* Botón Enviar Solicitud */
+/* Botón Enviar Solicitud - Color primario TIC */
 .btn-enviar {
-  background-color: #00138C !important;
+  background-color: var(--color-primario, #000066) !important;
   color: white !important;
   border: none;
-  border-radius: 4px;
+  border-radius: 100px;
   padding: 12px 24px;
-  font-weight: 500;
+  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,102,0.2);
 }
 
 .btn-enviar:hover:not(:disabled) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light, #5056AC) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
@@ -96,21 +98,21 @@ mat-card-content {
 }
 
 .btn-enviar:disabled {
-  background-color: #d3d3d3 !important;
-  color: #888888 !important;
+  background-color: #C8C5D0 !important;
+  color: #46464F !important;
   cursor: not-allowed;
   opacity: 0.5;
   transform: none;
   box-shadow: none;
 }
 
-/* Iconos de checklist (opcional, para futuros estados) */
+/* Iconos de checklist - Colores TIC */
 .icon-success {
-  color: #2e7d32; /* verde */
+  color: var(--notif-exito-borde, #249337);
 }
 
 .icon-pending {
-  color: #c62828;
+  color: var(--color-error, #FF6D0A);
   font-weight: 500;
 }
 
@@ -172,9 +174,9 @@ mat-card-content {
 .trabajo-grado-section {
   margin-top: 24px;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: var(--primario-90, #E0E0FF);
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario, #000066);
 }
 
 .section-title {
@@ -182,13 +184,14 @@ mat-card-content {
   align-items: center;
   gap: 8px;
   margin: 0 0 20px 0;
-  color: #00138C;
+  color: var(--color-primario, #000066);
   font-size: 1.1rem;
   font-weight: 600;
+  font-family: 'Titillium Web', sans-serif;
 }
 
 .section-title mat-icon {
-  color: #00138C;
+  color: var(--color-primario, #000066);
 }
 
 .info-telematica {
@@ -196,15 +199,15 @@ mat-card-content {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background-color: #e3f2fd;
+  background-color: var(--notif-info-fondo, #D6E2FF);
   border-radius: 8px;
-  border-left: 4px solid #00138C;
-  color: #00138C;
+  border-left: 4px solid var(--color-primario, #000066);
+  color: var(--notif-info-texto, #003062);
   margin-top: 16px;
 }
 
 .info-telematica mat-icon {
-  color: #00138C;
+  color: var(--color-primario, #000066);
   margin-top: 2px;
 }
 
