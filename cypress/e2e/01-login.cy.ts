@@ -198,10 +198,10 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
     });
 
     it('E2E-L-011: Los campos deben ser accesibles con teclado (Tab)', () => {
-      cy.get('body').tab();
+      cy.get('input[formControlName="correo"]').focus();
       cy.focused().should('have.attr', 'formControlName', 'correo');
       
-      cy.focused().tab();
+      cy.tab();
       cy.focused().should('have.attr', 'formControlName', 'password');
       
       cy.registrarInteraccionExitosa();

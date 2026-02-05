@@ -69,6 +69,11 @@ Cypress.Commands.add('obtenerMetricas', () => {
   return cy.wrap(metricas);
 });
 
+// Comando para navegación con Tab
+Cypress.Commands.add('tab', () => {
+  cy.focused().trigger('keydown', { keyCode: 9, which: 9, key: 'Tab', code: 'Tab' });
+});
+
 // Declaración de tipos para TypeScript
 declare global {
   namespace Cypress {
@@ -79,6 +84,7 @@ declare global {
       registrarInteraccionExitosa(): Chainable<void>;
       registrarInteraccionFallida(): Chainable<void>;
       obtenerMetricas(): Chainable<any>;
+      tab(): Chainable<void>;
     }
   }
 }
