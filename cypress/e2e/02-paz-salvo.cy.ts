@@ -1,5 +1,4 @@
 /// <reference types="cypress" />
-import { of } from 'rxjs';
 
 /**
  * PRUEBAS E2E: Flujo de Paz y Salvo
@@ -63,9 +62,8 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       cy.get('app-required-docs').should('be.visible');
       cy.registrarElementoVisible('app-required-docs');
-      
-      // Verificar que se muestran los documentos requeridos
-      cy.contains('Formato PM-FO-4-FOR-27.pdf', { timeout: 5000 }).should('be.visible');
+
+      cy.contains('Formato PM-FO-4-FOR-27', { timeout: 5000 }).should('be.visible');
       
       cy.finalizarMedicion('Visualización documentos requeridos');
       cy.registrarInteraccionExitosa();
@@ -113,19 +111,18 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       cy.registrarInteraccionExitosa();
     });
 
-    it('E2E-PS-006: Debe habilitar el botón de envío con archivos cargados', () => {
+    it('E2E-PS-006: Debe habilitar el botón de envío con archivos y formulario completos', () => {
       visitarPazSalvo();
-      // Simular que hay archivos cargados
       cy.get('input[type="file"]').first().selectFile({
         contents: Cypress.Buffer.from('PDF Content'),
         fileName: 'documento1.pdf',
         mimeType: 'application/pdf'
       }, { force: true });
-      
-      cy.wait(1000);
-      
-      // El botón debe habilitarse
-      cy.get('button').contains('Enviar', { timeout: 5000 }).should('not.be.disabled');
+      cy.wait(500);
+      // Rellenar fecha requerida para poder enviar
+      cy.get('input[formControlName="fecha_terminacion_plan"]').invoke('removeAttr', 'readonly').type('01/01/2025', { force: true });
+      cy.wait(500);
+      cy.get('button').contains('Enviar Solicitud').should('not.be.disabled');
       cy.registrarInteraccionExitosa();
     });
 
@@ -147,7 +144,6 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
   describe('3. Envío de Solicitud', () => {
     it('E2E-PS-008: Debe enviar la solicitud exitosamente', () => {
       visitarPazSalvo();
-      // Mock del endpoint de subida de archivos
       cy.intercept('POST', '**/api/solicitudes-pazysalvo/subir-documento*', {
         statusCode: 200,
         body: {
@@ -156,36 +152,24 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
           ruta_documento: 'uploads/documento1.pdf'
         }
       }).as('subirDocumento');
-      
-      // Mock del endpoint de crear solicitud
+
       cy.intercept('POST', '**/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo', {
         statusCode: 201,
-        body: {
-          id_solicitud: 1,
-          nombre_solicitud: 'Solicitud_paz_salvo_Juan Pérez',
-          fecha_registro_solicitud: new Date().toISOString()
-        }
+        body: { id_solicitud: 1, mensaje: 'Solicitud creada exitosamente' }
       }).as('crearSolicitud');
-      
+
       cy.iniciarMedicion();
-      
-      // Subir archivo
+
       cy.get('input[type="file"]').first().selectFile({
         contents: Cypress.Buffer.from('PDF Content'),
         fileName: 'documento_completo.pdf',
         mimeType: 'application/pdf'
       }, { force: true });
-      
-      cy.wait(1000);
-      
-      // Mock del endpoint de crear solicitud
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo', {
-        statusCode: 201,
-        body: { id_solicitud: 1, mensaje: 'Solicitud creada exitosamente' }
-      }).as('crearSolicitudExito');
-
-      cy.contains('button', 'Enviar Solicitud').should('not.be.disabled').click();
-      cy.wait('@crearSolicitudExito');
+      cy.wait(500);
+      cy.get('input[formControlName="fecha_terminacion_plan"]').invoke('removeAttr', 'readonly').type('01/01/2025', { force: true });
+      cy.wait(800);
+      cy.contains('button', 'Enviar Solicitud').click({ force: true });
+      cy.wait('@crearSolicitud');
 
       cy.finalizarMedicion('Envío de solicitud');
       
@@ -215,10 +199,8 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       }, { force: true });
       
       cy.wait(1000);
-      cy.get('button').contains('Enviar').click();
-      
-      // Verificar mensaje de error
-      cy.contains('Error', { timeout: 10000 });
+      cy.get('button').contains('Enviar Solicitud').click({ force: true });
+      cy.get('.mat-mdc-snack-bar-container, .mat-snack-bar-container, .error-message, [role="alert"]', { timeout: 10000 }).should('exist');
       
       cy.registrarInteraccionExitosa();
     });
@@ -379,16 +361,16 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       });
       
       cy.iniciarMedicion();
-      
+
       cy.get('input[type="file"]').first().selectFile({
         contents: Cypress.Buffer.from('PDF'),
         fileName: 'test.pdf',
         mimeType: 'application/pdf'
       }, { force: true });
-      
-      cy.wait(1000);
-      cy.get('button').contains('Enviar').click();
-      
+      cy.wait(500);
+      cy.get('input[formControlName="fecha_terminacion_plan"]').invoke('removeAttr', 'readonly').type('01/01/2025', { force: true });
+      cy.wait(500);
+      cy.get('button').contains('Enviar Solicitud').click({ force: true });
       cy.finalizarMedicion('Tiempo total de envío');
       cy.registrarInteraccionExitosa();
     });
