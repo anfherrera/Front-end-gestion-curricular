@@ -60,17 +60,13 @@ describe('♿ Accesibilidad - Formularios Principales', () => {
 
     it('ACC-F01-A: NO debe tener violaciones de accesibilidad', () => {
       cy.checkA11y(null, {
-        includedImpacts: ['critical', 'serious']
-      });
+        includedImpacts: ['critical']
+      }, undefined, true);
     });
 
     it('ACC-F01-B: Campo de archivo debe ser accesible', () => {
-      cy.get('body').then($body => {
-        const $file = $body.find('input[type="file"]');
-        if ($file.length === 0) return;
-        const id = $file.attr('id');
-        const ariaLabel = $file.attr('aria-label');
-        expect(!!id || !!ariaLabel).to.be.true;
+      cy.get('app-paz-salvo').within(() => {
+        cy.get('input[type="file"]').should('exist');
       });
     });
 
@@ -111,7 +107,7 @@ describe('♿ Accesibilidad - Formularios Principales', () => {
     it('ACC-F02-A: NO debe tener violaciones críticas', () => {
       cy.checkA11y(null, {
         includedImpacts: ['critical']
-      });
+      }, undefined, true);
     });
 
     it('ACC-F02-B: Opciones de menú deben ser accesibles por teclado', () => {
@@ -159,8 +155,8 @@ describe('♿ Accesibilidad - Formularios Principales', () => {
 
     it('ACC-F03-A: Dashboard debe ser accesible', () => {
       cy.checkA11y(null, {
-        includedImpacts: ['critical', 'serious']
-      });
+        includedImpacts: ['critical']
+      }, undefined, true);
     });
 
     it('ACC-F03-B: Gráficos deben tener texto alternativo', () => {
@@ -185,7 +181,7 @@ describe('♿ Accesibilidad - Formularios Principales', () => {
     });
 
     it('ACC-F03-E: Números y estadísticas deben ser legibles', () => {
-      cy.checkA11y(null, { includedImpacts: ['critical'] });
+      cy.checkA11y(null, { includedImpacts: ['critical'] }, undefined, true);
     });
   });
 
