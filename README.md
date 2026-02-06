@@ -1,6 +1,17 @@
-# Sistema de Gestión Curricular - Universidad del Cauca
+# Sistema de Atención a Estudiantes de Pregrado - Universidad del Cauca
 
-Aplicación web para gestión de procesos académicos: Paz y Salvo, Cursos Intersemestrales y Módulo Estadístico.
+Aplicación web para la atención y gestión de procesos académicos de estudiantes de pregrado.
+
+## Procesos que se realizan
+
+- **Paz y Salvo** – Solicitud y aprobación de documentos académicos (estudiante, funcionario, coordinador, secretaria).
+- **Cursos intersemestrales** – Oferta de cursos de verano, preinscripción, inscripción y seguimiento de solicitudes.
+- **Módulo estadístico** – Dashboard y análisis de datos (coordinador, funcionario).
+- **Reingreso de estudiante** – Solicitud y flujo de aprobación de reingreso (estudiante, funcionario, coordinador, secretaria).
+- **Homologación de asignaturas** – Solicitud y validación de homologaciones (estudiante, funcionario, coordinador, secretaria).
+- **Pruebas ECAES** – Gestión de solicitudes y documentación de pruebas ECAES (estudiante, funcionario).
+- **Historial de solicitudes** – Consulta del historial completo de solicitudes por proceso.
+- **Administración** – Usuarios, roles, docentes, programas, periodos académicos y configuración de procesos.
 
 ## Requisitos
 
