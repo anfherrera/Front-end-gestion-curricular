@@ -6,6 +6,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -33,6 +34,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     MatNativeDateModule,
     MatButtonModule,
     MatIconModule,
+    MatCardModule,
     MatSnackBarModule,
     MatTableModule,
     MatExpansionModule,
@@ -209,6 +211,46 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       return ultimoEstado.estado_actual;
     }
     return 'Pendiente';
+  }
+
+  /**
+   * Formatear fecha en formato corto (DD/MM/YYYY)
+   */
+  formatearFechaCorta(fecha: string | Date | null | undefined): string {
+    if (!fecha) return '-';
+
+    try {
+      const date = new Date(fecha);
+      if (isNaN(date.getTime())) {
+        return '-';
+      }
+
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch (error) {
+      this.logger.warn('Error al formatear fecha:', fecha, error);
+      return '-';
+    }
+  }
+
+  /**
+   * Obtener el label descriptivo del tipo de documento
+   */
+  obtenerTipoDocumentoLabel(tipoDocumento: string | null | undefined): string {
+    if (!tipoDocumento) return '-';
+
+    const tipos: { [key: string]: string } = {
+      CC: 'Cédula de Ciudadanía',
+      CE: 'Cédula de Extranjería',
+      TI: 'Tarjeta de Identidad',
+      PA: 'Pasaporte',
+      RC: 'Registro Civil'
+    };
+
+    return tipos[tipoDocumento.toUpperCase()] || tipoDocumento;
   }
 
   /**

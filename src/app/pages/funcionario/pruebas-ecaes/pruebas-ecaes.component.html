@@ -152,6 +152,36 @@
     title="Documentación Adjunta"
     icon="description">
 
+    <!-- Información de la Solicitud ECAES -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Información de la Solicitud
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Tipo de Documento:</span>
+            <span class="info-value">{{ obtenerTipoDocumentoLabel(selectedSolicitud?.tipoDocumento) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Número de Documento:</span>
+            <span class="info-value">{{ selectedSolicitud?.numero_documento || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Expedición:</span>
+            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud?.fecha_expedicion) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Nacimiento:</span>
+            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud?.fecha_nacimiento) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <app-documentation-viewer
       [documentos]="selectedSolicitud.documentos || []"
       [solicitudId]="selectedSolicitud.id_solicitud"

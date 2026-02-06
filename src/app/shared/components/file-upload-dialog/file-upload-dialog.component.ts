@@ -34,7 +34,9 @@ export class FileUploadComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['reset'] && changes['reset'].currentValue) {
       this.archivos = [];
-      this.notificarCambio();
+      // Emitir en el siguiente tick para evitar NG0100 (ExpressionChangedAfterItHasBeenCheckedError):
+      // el padre no debe ver [archivos] pasar a [] en el mismo ciclo de detección.
+      setTimeout(() => this.notificarCambio(), 0);
     }
   }
 

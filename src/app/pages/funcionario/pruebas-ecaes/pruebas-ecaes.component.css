@@ -322,3 +322,63 @@
   color: white;
 }
 
+/* ================================
+   Información de la solicitud
+   ================================ */
+
+.info-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.info-card mat-card-header {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 8px 8px 0 0;
+}.info-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.info-card mat-card-title mat-icon {
+  color: #00138C;
+}
+
+.info-card mat-card-content {
+  padding: 24px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #333;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
