@@ -1,17 +1,5 @@
 /**
- * ==========================================
- * PRUEBAS DE ACCESIBILIDAD - NAVEGACIÓN POR TECLADO
- * ==========================================
- * 
- * Objetivo: Validar que todas las funcionalidades sean accesibles por teclado
- * 
- * Aspectos evaluados:
- * - Navegación con Tab / Shift+Tab
- * - Activación con Enter / Space
- * - Escape para cerrar diálogos
- * - Flechas para navegación en listas
- * - Focus visible en elementos interactivos
- * - Trap de foco en modales
+ * Pruebas de accesibilidad: navegación por teclado (Tab, Enter, Escape, foco, modales).
  */
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';

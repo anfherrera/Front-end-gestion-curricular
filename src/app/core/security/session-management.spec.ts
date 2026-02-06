@@ -1,15 +1,5 @@
 /**
- * ==========================================
- * 🔒 PRUEBAS DE SEGURIDAD - MANEJO DE SESIONES
- * ==========================================
- * 
- * Objetivo: Validar gestión segura de sesiones y prevención de secuestro
- * 
- * Aspectos evaluados:
- * - Expiración automática de sesiones
- * - Logout por inactividad
- * - Almacenamiento seguro de tokens
- * - Limpieza de datos sensibles al cerrar sesión
+ * Pruebas de seguridad: manejo de sesiones (expiración, inactividad, tokens, limpieza).
  */
 
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
@@ -20,7 +10,7 @@ import { ActivityMonitorService } from '../services/activity-monitor.service';
 import { UserRole } from '../enums/roles.enum';
 import { of } from 'rxjs';
 
-describe('🔒 PRUEBAS DE SEGURIDAD - Manejo de Sesiones', () => {
+describe('Seguridad - Manejo de sesiones', () => {
   let authService: AuthService;
   let router: jasmine.SpyObj<Router>;
   let apiService: jasmine.SpyObj<ApiService>;

@@ -1,16 +1,5 @@
 /**
- * ==========================================
- * 🔒 PRUEBAS DE SEGURIDAD - AUTH & ROLE GUARDS
- * ==========================================
- * 
- * Objetivo: Validar control de acceso y autorización por roles
- * 
- * Aspectos evaluados:
- * - Prevención de acceso no autenticado
- * - Validación de roles y permisos
- * - Redirección correcta según autorización
- * - Manejo de tokens expirados
- * - Prevención de escalada de privilegios
+ * Pruebas de seguridad: guards de autenticación y roles (acceso, redirección, tokens).
  */
 
 import { TestBed } from '@angular/core/testing';
@@ -20,7 +9,7 @@ import { RoleGuard } from './role.guard';
 import { AuthService } from '../services/auth.service';
 import { UserRole } from '../enums/roles.enum';
 
-describe(' PRUEBAS DE SEGURIDAD - Guards', () => {
+describe('Seguridad - Guards', () => {
   let router: jasmine.SpyObj<Router>;
   let authService: jasmine.SpyObj<AuthService>;
 

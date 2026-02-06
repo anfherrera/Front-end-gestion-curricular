@@ -1,21 +1,11 @@
 /// <reference types="cypress" />
 
 /**
- * ============================================================
- * PRUEBAS E2E DE SEGURIDAD - DEMO PARA SUSTENTACIÓN
- * ============================================================
- *
- * Objetivo: Verificar control de acceso y protección de rutas
- *
- * - Sin autenticación, las rutas protegidas redirigen a login
- * - Con sesión válida, se permite el acceso
- * - Tras cerrar sesión (o sin token), no se puede acceder a rutas protegidas
- *
+ * Pruebas E2E de seguridad: rutas protegidas, redireccion a login, cierre de sesion.
  * Ejecutar: npm run test:seguridad:e2e
- * O: npx cypress run --spec "cypress/e2e/seguridad/demo-seguridad.cy.ts"
  */
 
-describe('🔒 SEGURIDAD - Control de acceso y rutas protegidas', () => {
+describe('Seguridad - control de acceso', () => {
 
   describe('SEC-E2E-01: Redirección a login sin autenticación', () => {
     beforeEach(() => {

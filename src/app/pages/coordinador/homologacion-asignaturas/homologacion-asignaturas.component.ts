@@ -165,7 +165,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();

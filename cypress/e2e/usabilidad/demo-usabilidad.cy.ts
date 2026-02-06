@@ -1,34 +1,23 @@
 /// <reference types="cypress" />
 
 /**
- * ============================================================
- * PRUEBAS DE USABILIDAD - DEMO PARA SUSTENTACIÓN
- * ============================================================
- *
- * Este archivo agrupa escenarios de usabilidad medibles para
- * presentar en la sustentación del trabajo de grado:
- *
- * - Tiempos de carga y respuesta
- * - Visibilidad y claridad de elementos
- * - Fluidez de navegación
- * - Feedback al usuario (mensajes, validaciones)
- *
+ * Pruebas E2E de usabilidad.
+ * Criterios: tiempos de carga, visibilidad, validaciones, navegación, feedback.
  * Ejecutar: npm run test:usabilidad:e2e
- * O: npx cypress run --spec "cypress/e2e/usabilidad/demo-usabilidad.cy.ts"
  */
 
-describe('📊 USABILIDAD - Métricas para Sustentación', () => {
+describe('Usabilidad - metricas', () => {
   after(() => {
     cy.obtenerMetricas().then((m: any) => {
       cy.task('log', '\n' + '═'.repeat(60));
-      cy.task('log', '📊 RESUMEN DE USABILIDAD - SUSTENTACIÓN');
+      cy.task('log', 'Resumen usabilidad');
       cy.task('log', '═'.repeat(60));
-      cy.task('log', `✅ Elementos verificados como visibles: ${m.elementosVisibles?.length ?? 0}`);
-      cy.task('log', `🎯 Interacciones exitosas registradas: ${m.interaccionesExitosas ?? 0}`);
-      cy.task('log', `⏱️  Mediciones de tiempo: ${m.tiemposRespuesta?.length ?? 0}`);
+      cy.task('log', `Elementos visibles: ${m.elementosVisibles?.length ?? 0}`);
+      cy.task('log', `Interacciones: ${m.interaccionesExitosas ?? 0}`);
+      cy.task('log', `Mediciones tiempo: ${m.tiemposRespuesta?.length ?? 0}`);
       if (m.tiemposRespuesta?.length) {
         const promedio = m.tiemposRespuesta.reduce((a: number, b: any) => a + (b.duracion || 0), 0) / m.tiemposRespuesta.length;
-        cy.task('log', `⏱️  Tiempo promedio de respuesta: ${promedio.toFixed(0)} ms`);
+        cy.task('log', `Tiempo promedio (ms): ${promedio.toFixed(0)}`);
       }
       cy.task('log', '═'.repeat(60) + '\n');
     });

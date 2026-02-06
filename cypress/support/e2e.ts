@@ -44,7 +44,7 @@ Cypress.Commands.add('finalizarMedicion', (nombre: string) => {
         const medicion = win.performance.getEntriesByName(nombre)[0];
         if (medicion) {
           metricas.tiemposRespuesta.push({ nombre, duracion: medicion.duration });
-          cy.task('log', `⏱️ ${nombre}: ${medicion.duration.toFixed(2)}ms`);
+          cy.task('log', `${nombre}: ${medicion.duration.toFixed(2)}ms`);
         }
       }
     } catch (e) {

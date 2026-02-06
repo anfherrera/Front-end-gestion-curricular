@@ -1,16 +1,5 @@
 /**
- * ==========================================
- * 🔒 PRUEBAS DE SEGURIDAD - JWT INTERCEPTOR
- * ==========================================
- * 
- * Objetivo: Validar seguridad del sistema de autenticación mediante JWT
- * 
- * Aspectos evaluados:
- * - Validación de token JWT
- * - Detección y manejo de tokens expirados
- * - Prevención de acceso no autorizado
- * - Manejo correcto de headers de seguridad
- * - Protección contra ataques CSRF
+ * Pruebas de seguridad: interceptor JWT (token, expiración, headers, CSRF).
  */
 
 import { TestBed } from '@angular/core/testing';
@@ -20,7 +9,7 @@ import { Router } from '@angular/router';
 import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
 
-describe('🔒 PRUEBAS DE SEGURIDAD - JWT Interceptor', () => {
+describe('Seguridad - JWT Interceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
   let authService: jasmine.SpyObj<AuthService>;

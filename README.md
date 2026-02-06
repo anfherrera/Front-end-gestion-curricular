@@ -1,8 +1,8 @@
-# 🎓 Sistema de Gestión Curricular - Universidad del Cauca
+# Sistema de Gestión Curricular - Universidad del Cauca
 
 Sistema web para gestión de procesos académicos administrativos.
 
-## 📋 Módulos Principales
+## Módulos principales
 
 1. **Paz y Salvo** - Solicitud y aprobación de documentos académicos
 2. **Cursos Intersemestrales** - Gestión de cursos de verano
@@ -10,7 +10,7 @@ Sistema web para gestión de procesos académicos administrativos.
 
 ---
 
-## 🚀 Inicio Rápido
+## Inicio rápido
 
 ### Requisitos Previos
 - Node.js 18+
@@ -30,7 +30,7 @@ Navegar a `http://localhost:4200/`
 
 ---
 
-## 🧪 Pruebas (~580 pruebas totales)
+## Pruebas (~580 pruebas totales)
 
 ### Ejecutar Todas las Pruebas + Cobertura
 ```bash
@@ -54,51 +54,50 @@ npm run test:accesibilidad:e2e:open
 npm run test:e2e:open
 ```
 
-**📚 Documentación completa**: Ver `DOCUMENTACION-COMPLETA-PRUEBAS.md`  
-**⚡ Guía rápida**: Ver `GUIA-RAPIDA-PRUEBAS.md`
+Documentación: `DOCUMENTACION-COMPLETA-PRUEBAS.md`. Guía rápida: `GUIA-RAPIDA-PRUEBAS.md`.
 
 ---
 
-## 📊 Resumen de Pruebas
+## Resumen de pruebas
 
 | Tipo | Cantidad | Cobertura |
 |------|----------|-----------|
-| Unitarias | **199** | Servicios y componentes core |
+| Unitarias | 199 | Servicios y componentes core |
 | Integración | 8 | Interacción entre módulos |
 | Funcionales (E2E) | 60 | Flujos completos de usuario |
-| Aceptación (BDD) | **23** | Historias de usuario |
-| Usabilidad | **93** | Experiencia de usuario |
-| 🔒 **Seguridad** | **128** | **OWASP Top 10** |
-| ♿ **Accesibilidad** | **90** | **WCAG 2.1 AA** |
-| **TOTAL** | **~580** | ✅ **100% éxito** |
+| Aceptación (BDD) | 23 | Historias de usuario |
+| Usabilidad | 93 | Experiencia de usuario |
+| Seguridad | 128 | OWASP Top 10 |
+| Accesibilidad | 90 | WCAG 2.1 AA |
+| Total | ~580 | Todas las suites pasan |
 
 ---
 
-## 🔒 Seguridad
+## Seguridad
 
-- ✅ JWT con validación de expiración
-- ✅ Guards basados en roles (5 roles)
-- ✅ Prevención de XSS y SQL Injection
-- ✅ Manejo seguro de sesiones
-- ✅ Logout automático por inactividad (30 min)
+- JWT con validación de expiración
+- Guards basados en roles (5 roles)
+- Prevención de XSS y SQL Injection
+- Manejo seguro de sesiones
+- Logout automático por inactividad (30 min)
 
-**Estándar**: OWASP Top 10
-
----
-
-## ♿ Accesibilidad
-
-- ✅ WCAG 2.1 Level AA
-- ✅ Navegación por teclado completa
-- ✅ ARIA attributes en formularios
-- ✅ Contraste de colores 4.5:1
-- ✅ Responsive (móvil, tablet, desktop)
-
-**Herramientas**: axe-core, Cypress
+Estándar: OWASP Top 10
 
 ---
 
-## 🏗️ Arquitectura
+## Accesibilidad
+
+- WCAG 2.1 Level AA
+- Navegación por teclado completa
+- ARIA en formularios
+- Contraste 4.5:1
+- Responsive (móvil, tablet, desktop)
+
+Herramientas: axe-core, Cypress
+
+---
+
+## Arquitectura
 
 ```
 src/
@@ -118,7 +117,7 @@ src/
 
 ---
 
-## 🛠️ Tecnologías
+## Tecnologías
 
 ### Frontend
 - **Angular 16+** - Framework principal
@@ -139,7 +138,7 @@ src/
 
 ---
 
-## 📦 Scripts Disponibles
+## Scripts disponibles
 
 ### Desarrollo
 ```bash
@@ -161,17 +160,17 @@ npm run test:seguridad-accesibilidad        # Seguridad + Accesibilidad
 
 ---
 
-## 📚 Documentación
+## Documentación
 
 | Archivo | Descripción |
 |---------|-------------|
-| `DOCUMENTACION-COMPLETA-PRUEBAS.md` | 📖 Documentación técnica completa |
-| `GUIA-RAPIDA-PRUEBAS.md` | ⚡ Guía rápida de comandos |
-| `reporte-usabilidad.md` | 📊 Reporte final de pruebas |
+| `DOCUMENTACION-COMPLETA-PRUEBAS.md` | Documentación técnica de pruebas |
+| `GUIA-RAPIDA-PRUEBAS.md` | Guía rápida de comandos |
+| `reporte-usabilidad.md` | Reporte de pruebas de usabilidad |
 
 ---
 
-## 👥 Roles del Sistema
+## Roles del sistema
 
 1. **ADMIN** - Gestión de usuarios y configuración
 2. **ESTUDIANTE** - Solicitudes y consultas
@@ -181,7 +180,7 @@ npm run test:seguridad-accesibilidad        # Seguridad + Accesibilidad
 
 ---
 
-## 🎯 Cobertura de Código
+## Cobertura de código
 
 ### Módulos Críticos (100%)
 - `app/core/guards` - **100%**
@@ -198,7 +197,7 @@ npm run test:seguridad-accesibilidad        # Seguridad + Accesibilidad
 
 ---
 
-## 🚀 Despliegue
+## Despliegue
 
 ### Build de Producción
 ```bash
@@ -213,7 +212,7 @@ Los artefactos se generan en `dist/front-end-gestion-curricular/browser/`
 
 ---
 
-## 📞 Soporte
+## Soporte
 
 Para más información sobre Angular CLI:
 - [Angular CLI Reference](https://angular.dev/tools/cli)
@@ -221,16 +220,14 @@ Para más información sobre Angular CLI:
 
 ---
 
-## ✅ Estado del Proyecto
+## Estado del proyecto
 
-- [x] 505 pruebas implementadas
+- [x] Pruebas unitarias, E2E, seguridad y accesibilidad
 - [x] Seguridad (OWASP Top 10)
 - [x] Accesibilidad (WCAG 2.1 AA)
-- [x] Cobertura de código > 90% en módulos críticos
-- [x] Documentación completa
-- [x] CI/CD ready
-
-**Estado**: ✅ **COMPLETO Y VALIDADO**
+- [x] Cobertura alta en módulos críticos
+- [x] Documentación de pruebas
+- [x] Listo para CI/CD
 
 ---
 

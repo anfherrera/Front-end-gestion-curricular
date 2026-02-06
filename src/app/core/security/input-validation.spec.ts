@@ -1,23 +1,12 @@
 /**
- * ==========================================
- * 🔒 PRUEBAS DE SEGURIDAD - VALIDACIÓN DE INPUTS
- * ==========================================
- * 
- * Objetivo: Prevenir ataques XSS, inyección SQL, y validar datos de entrada
- * 
- * Aspectos evaluados:
- * - Sanitización de inputs HTML
- * - Validación de emails y formatos
- * - Prevención de XSS
- * - Validación de tamaño de archivos
- * - Validación de tipos de archivos permitidos
+ * Pruebas de seguridad: validación de inputs (sanitización, emails, XSS, archivos).
  */
 
 import { TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 
-describe('🔒 PRUEBAS DE SEGURIDAD - Validación de Inputs', () => {
+describe('Seguridad - Validación de inputs', () => {
   let formBuilder: FormBuilder;
   let sanitizer: DomSanitizer;
 

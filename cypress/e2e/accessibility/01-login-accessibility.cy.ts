@@ -1,14 +1,8 @@
 /**
- * ==========================================
- * ♿ PRUEBAS E2E DE ACCESIBILIDAD - LOGIN
- * ==========================================
- * 
- * Objetivo: Validar accesibilidad completa del formulario de login
- * 
- * Herramientas: Cypress + axe-core (WCAG 2.1 Level AA)
+ * Pruebas E2E de accesibilidad en login (axe-core, teclado, labels, contraste).
  */
 
-describe('♿ Accesibilidad - Login', () => {
+describe('Accesibilidad - login', () => {
   
   beforeEach(() => {
     cy.visit('/login');
@@ -258,7 +252,7 @@ describe('♿ Accesibilidad - Login', () => {
     it('ACC-A10-A: Generar reporte completo de violaciones', () => {
       cy.checkA11y(null, { includedImpacts: ['critical'] }, (violations) => {
         if (violations.length > 0) {
-          cy.task('log', '\n♿ REPORTE - Violaciones críticas: ' + violations.length);
+          cy.task('log', '\nReporte violaciones criticas: ' + violations.length);
         }
       });
     });

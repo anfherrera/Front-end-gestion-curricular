@@ -310,7 +310,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
     // Paso 1: Subir archivos al backend
     this.subirArchivos().then(archivosSubidos => {
-      this.logger.log('✅ Archivos subidos exitosamente:', archivosSubidos);
+      this.logger.log('Archivos subidos exitosamente:', archivosSubidos);
 
       // Paso 2: Crear la solicitud con los archivos subidos
       this.crearSolicitudConArchivos(formValue, archivosSubidos);
@@ -335,7 +335,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         const response = await this.archivosService.subirPDF(file).pipe(
           takeUntil(this.destroy$)
         ).toPromise();
-        this.logger.log(`✅ Archivo subido:`, response);
+        this.logger.log('Archivo subido:', response);
 
         if (!response) {
           throw new Error(`No se recibió respuesta del servidor para el archivo ${archivo.nombre}`);
@@ -428,7 +428,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (response: SolicitudEcaesResponse) => {
-        this.logger.log('✅ Solicitud creada en backend:', response);
+        this.logger.log('Solicitud creada en backend:', response);
 
         // Actualizar notificaciones después de crear la solicitud
         const usuario = this.authService.getUsuario();
@@ -441,15 +441,15 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {
-            this.logger.log('✅ Estado actualizado a ENVIADA');
-            this.snackBar.open('Solicitud enviada exitosamente ✅', 'Cerrar', { duration: 3000 });
+            this.logger.log('Estado actualizado a ENVIADA');
+            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', { duration: 3000 });
             this.limpiarFormulario();
             this.listarSolicitudes(); // Recargar la lista de solicitudes
           },
           error: (error) => {
             this.logger.warn('⚠️ Error al actualizar estado (CORS o backend):', error);
             // No mostramos error al usuario, la solicitud se creó correctamente
-            this.snackBar.open('Solicitud enviada exitosamente ✅', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', { duration: 3000 });
             this.limpiarFormulario();
             this.listarSolicitudes();
           }
@@ -557,7 +557,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         comentarios: ultimoEstado?.comentario || ''
       };
 
-      this.logger.debug('✅ Solicitud transformada:', solicitudTransformada);
+      this.logger.debug('Solicitud transformada:', solicitudTransformada);
       return solicitudTransformada;
     });
 

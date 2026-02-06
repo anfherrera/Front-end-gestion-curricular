@@ -379,16 +379,15 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
   // Generar reporte al final
   after(() => {
     cy.obtenerMetricas().then((metricas) => {
-      cy.task('log', '\n📊 MÉTRICAS - FLUJO DE PAZ Y SALVO');
+      cy.task('log', '\nMetricas - Paz y Salvo');
       cy.task('log', '═'.repeat(50));
-      cy.task('log', `✅ Elementos verificados: ${metricas.elementosVisibles.length}`);
-      cy.task('log', `🎯 Interacciones exitosas: ${metricas.interaccionesExitosas}`);
-      cy.task('log', `⏱️  Mediciones realizadas: ${metricas.tiemposRespuesta.length}`);
-      
+      cy.task('log', `Elementos verificados: ${metricas.elementosVisibles.length}`);
+      cy.task('log', `Interacciones: ${metricas.interaccionesExitosas}`);
+      cy.task('log', `Mediciones: ${metricas.tiemposRespuesta.length}`);
       if (metricas.tiemposRespuesta.length > 0) {
-        const promedio = metricas.tiemposRespuesta.reduce((a: any, b: any) => 
+        const promedio = metricas.tiemposRespuesta.reduce((a: any, b: any) =>
           a + (b.duracion || 0), 0) / metricas.tiemposRespuesta.length;
-        cy.task('log', `⏱️  Tiempo promedio: ${promedio.toFixed(2)}ms`);
+        cy.task('log', `Tiempo promedio (ms): ${promedio.toFixed(2)}`);
       }
     });
   });

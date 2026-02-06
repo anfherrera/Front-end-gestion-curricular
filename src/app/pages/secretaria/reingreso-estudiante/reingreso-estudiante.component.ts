@@ -475,7 +475,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ NUEVO: Método helper para intentar descarga por ruta
+   * Método helper para intentar descarga por ruta
    */
   private intentarDescargaPorRuta(documento: DocumentosDTORespuesta): void {
     if (!documento.ruta_documento || !this.reingresoService.descargarArchivoPorRuta) {
@@ -487,7 +487,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (blob: Blob) => {
-        this.logger.log('✅ Documento descargado exitosamente por ruta:', documento.ruta_documento);
+        this.logger.log('Documento descargado exitosamente por ruta:', documento.ruta_documento);
         this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
       },
       error: (error: any) => {
@@ -498,7 +498,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ NUEVO: Método helper para intentar descarga por nombre (último recurso)
+   * Método helper para intentar descarga por nombre (último recurso)
    */
   private intentarDescargaPorNombre(documento: DocumentosDTORespuesta): void {
     if (!documento.nombre) {
@@ -534,7 +534,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ NUEVO: Método helper para mostrar documento en ventana
+   * Método helper para mostrar documento en ventana
    */
   private mostrarDocumentoEnVentana(blob: Blob, nombreDocumento: string): void {
     // Crear URL única del blob para evitar cache
@@ -587,7 +587,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Oficio generado correctamente ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Oficio generado correctamente', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
       },
       error: (err) => {
@@ -662,7 +662,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada definitivamente ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();

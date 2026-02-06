@@ -1,17 +1,5 @@
 /**
- * ==========================================
- * PRUEBAS DE ACCESIBILIDAD - FORMULARIOS
- * ==========================================
- * 
- * Objetivo: Validar cumplimiento de WCAG 2.1 en formularios
- * 
- * Aspectos evaluados:
- * - Todos los campos tienen labels asociados
- * - Inputs tienen placeholder o hint descriptivo
- * - Mensajes de error son claros y accesibles
- * - Orden de tabulación lógico
- * - ARIA attributes correctos
- * - Contraste de colores adecuado
+ * Pruebas de accesibilidad: formularios (labels, ARIA, tabulación, errores).
  */
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';

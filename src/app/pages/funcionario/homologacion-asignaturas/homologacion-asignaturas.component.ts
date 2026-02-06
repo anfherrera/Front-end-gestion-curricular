@@ -162,7 +162,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {
-            this.snackBar.open('Solicitud aprobada y documentos actualizados ✅', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud aprobada y documentos actualizados', 'Cerrar', { duration: 3000 });
             this.cargarSolicitudes();
             // Limpiar la selección para actualizar el card de documentación
             this.selectedSolicitud = null;

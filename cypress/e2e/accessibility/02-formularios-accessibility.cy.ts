@@ -1,15 +1,8 @@
 /**
- * ==========================================
- * ♿ PRUEBAS E2E DE ACCESIBILIDAD - FORMULARIOS PRINCIPALES
- * ==========================================
- * 
- * Objetivo: Validar accesibilidad de formularios de procesos principales
- * - Paz y Salvo
- * - Cursos Intersemestrales
- * - Módulo Estadístico
+ * Pruebas E2E de accesibilidad en formularios (Paz y Salvo, Cursos, Modulo estadistico).
  */
 
-describe('♿ Accesibilidad - Formularios Principales', () => {
+describe('Accesibilidad - formularios', () => {
 
   // =====================================
   // PAZ Y SALVO - ACCESIBILIDAD

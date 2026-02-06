@@ -173,7 +173,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
@@ -228,7 +228,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Validación completada, enviando a coordinador ✅', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Validación completada, enviando a coordinador', 'Cerrar', { duration: 3000 });
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
