@@ -48,14 +48,18 @@ src/app/
 | `npm run test:accesibilidad` | Solo pruebas de accesibilidad |
 | `npm run test:e2e` | E2E con Cypress (headless) |
 | `npm run test:e2e:open` | E2E con interfaz gráfica |
+| `npm run test:usabilidad:e2e` | E2E de usabilidad |
+| `npm run test:seguridad:e2e` | E2E de seguridad |
 | `npm run test:seguridad-accesibilidad` | Seguridad + accesibilidad |
+| `npm run test:reporte` | Genera reporte de usabilidad en `reporte-usabilidad.md` |
 
-Cobertura generada en `coverage/front-end-gestion-curricular/index.html`
+Cobertura: `coverage/front-end-gestion-curricular/index.html`
 
-## Documentación
+## Configuración
 
-- `docs/USABILIDAD-SUSTENTACION.md` - Pruebas de usabilidad y comandos
-- `docs/SEGURIDAD-SUSTENTACION.md` - Pruebas de seguridad y comandos
+La API usa por defecto `http://localhost:5000/api`. Si el backend corre en otra URL, editar `src/environments/environment.ts` (desarrollo) y `environment.production.ts` (producción).
+
+Para usar proxy hacia el backend: `npm run start:proxy` (requiere `proxy.conf.json`).
 
 ## Roles
 
