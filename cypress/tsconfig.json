@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "isolatedModules": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["cypress", "node"],
+    "typeRoots": [
+      "../node_modules/@types",
+      "../node_modules/cypress/types"
+    ]
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}

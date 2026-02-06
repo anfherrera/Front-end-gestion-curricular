@@ -160,7 +160,7 @@ describe('PazSalvoComponent', () => {
 
     expect(pazSalvoService.listarSolicitudesPorRol).toHaveBeenCalledWith('ESTUDIANTE', mockUsuario.id_usuario);
     expect(component.solicitudes.length).toBe(1);
-    expect(component.solicitudes[0].estado).toBe('PENDIENTE');
+    expect(component.solicitudes[0].estado as string).toBe('PENDIENTE');
     expect(component.solicitudesCompletas[0].documentos.length).toBe(1);
   }));
 

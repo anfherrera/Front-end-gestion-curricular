@@ -770,7 +770,7 @@ export class DetallesInscripcionDialogComponent {
             <mat-icon class="info-icon">book</mat-icon>
             <div class="info-text">
               <strong>Curso:</strong>
-              <span>{{ data.curso.nombre | utfFix }}</span>
+              <span>{{ (data.curso?.nombre_curso || data.curso?.nombre || 'No especificado') | utfFix }}</span>
             </div>
           </div>
         </div>

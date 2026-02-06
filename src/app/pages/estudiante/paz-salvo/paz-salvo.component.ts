@@ -394,12 +394,13 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Muestra un mensaje bonito usando SnackBar
+   * Muestra un mensaje usando SnackBar - Sistema de Diseño TIC
+   * Notificaciones en parte superior derecha, duración 5 segundos
    */
   private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
     const config = {
-      duration: tipo === 'success' ? 4000 : 6000,
-      horizontalPosition: 'center' as const,
+      duration: 5000, // 5 segundos según Sistema de Diseño TIC
+      horizontalPosition: 'end' as const,   // Superior derecha según TIC
       verticalPosition: 'top' as const,
       panelClass: [`snackbar-${tipo}`]
     };

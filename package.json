@@ -15,6 +15,7 @@
     "test:accesibilidad:e2e:open": "cypress open --e2e --browser chrome",
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
+    "test:usabilidad:e2e": "cypress run --spec \"cypress/e2e/usabilidad/**/*.cy.ts\"",
     "test:all": "npm run test:usabilidad && npm run test:e2e",
     "test:seguridad-accesibilidad": "npm run test:seguridad && npm run test:accesibilidad && npm run test:accesibilidad:e2e",
     "test:reporte": "node scripts/generar-reporte-usabilidad.js",
