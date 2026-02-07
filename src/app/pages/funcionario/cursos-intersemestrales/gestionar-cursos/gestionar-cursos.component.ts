@@ -21,6 +21,7 @@ import { ErrorHandlerService } from '../../../../shared/components/error-handler
 import { CursoDialogComponent } from './curso-dialog.component';
 import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -159,10 +160,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.materias = []; // Array vacío en lugar de datos de prueba
-        this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
 
@@ -174,10 +172,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.docentes = []; // Array vacío en lugar de datos de prueba
-        this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -423,7 +418,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           .subscribe({
             next: (cursoActualizado) => {
               // Curso actualizado
-              this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', { duration: 3000 });
+              this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
               this.cargarDatos();
             },
             error: (err) => {
@@ -431,7 +426,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
             }
           });
       } else {
-        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       }
     } else {
       // Crear nuevo curso
@@ -459,7 +454,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           .subscribe({
             next: (nuevoCurso) => {
               // Curso creado
-              this.snackBar.open('Curso creado exitosamente', 'Cerrar', { duration: 3000 });
+              this.snackBar.open('Curso creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
               this.cargarDatos();
             },
             error: (err) => {
@@ -467,7 +462,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
             }
           });
       } else {
-        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       }
     }
   }
@@ -484,7 +479,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         .subscribe({
           next: () => {
             // Curso eliminado
-            this.snackBar.open('Curso eliminado exitosamente', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Curso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
             // Recargar datos inmediatamente
             this.cargarDatos();
           },
@@ -500,7 +495,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
               mensajeError = 'Error interno del servidor';
             }
             
-            this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
+            this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
             // Recargar datos incluso si hay error para sincronizar
             this.cargarDatos();
           }
@@ -644,10 +639,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(urlBlob);
         
-        this.snackBar.open('PDF exportado correctamente', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open('PDF exportado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (err) => {
         let mensajeError = 'Error al exportar el PDF';
@@ -662,10 +654,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           mensajeError = 'Error interno del servidor al generar el PDF';
         }
         
-        this.snackBar.open(mensajeError, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

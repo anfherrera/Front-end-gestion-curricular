@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-ajustes',
@@ -77,10 +78,7 @@ export class AjustesComponent implements OnInit {
     const ajustes = this.ajustesForm.value;
     localStorage.setItem('ajustes_usuario', JSON.stringify(ajustes));
     
-    this.snackBar.open('Ajustes guardados exitosamente', 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
+    this.snackBar.open('Ajustes guardados exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
   }
 
   resetearAjustes(): void {
@@ -96,21 +94,15 @@ export class AjustesComponent implements OnInit {
       });
       localStorage.removeItem('ajustes_usuario');
       
-      this.snackBar.open('Ajustes restaurados a los valores por defecto', 'Cerrar', {
-        duration: 3000
-      });
+      this.snackBar.open('Ajustes restaurados a los valores por defecto', 'Cerrar', snackbarConfig());
     }
   }
 
   cambiarContrasena(): void {
-    this.snackBar.open('Funcionalidad de cambio de contraseña próximamente', 'Cerrar', {
-      duration: 3000
-    });
+    this.snackBar.open('Funcionalidad de cambio de contraseña próximamente', 'Cerrar', snackbarConfig());
   }
 
   exportarDatos(): void {
-    this.snackBar.open('Funcionalidad de exportación de datos próximamente', 'Cerrar', {
-      duration: 3000
-    });
+    this.snackBar.open('Funcionalidad de exportación de datos próximamente', 'Cerrar', snackbarConfig());
   }
 }

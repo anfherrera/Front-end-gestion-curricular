@@ -12,6 +12,7 @@ import { MatCardModule } from '@angular/material/card';
 
 import { ProgramasService } from '../../../../core/services/programas.service';
 import { ProgramaDTOPeticion } from '../../../../core/models/programa.interface';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-form-programa',
@@ -81,7 +82,7 @@ export class FormProgramaComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar los datos del programa', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar los datos del programa', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.router.navigate(['/admin/programas']);
         this.loading = false;
       }
@@ -91,7 +92,7 @@ export class FormProgramaComponent implements OnInit {
   guardar(): void {
     if (this.programaForm.invalid) {
       this.programaForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -112,12 +113,12 @@ export class FormProgramaComponent implements OnInit {
   crearPrograma(data: ProgramaDTOPeticion): void {
     this.programasService.crearPrograma(data).subscribe({
       next: () => {
-        this.snackBar.open('Programa creado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Programa creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.router.navigate(['/admin/programas']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el programa';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -126,12 +127,12 @@ export class FormProgramaComponent implements OnInit {
   actualizarPrograma(data: ProgramaDTOPeticion): void {
     this.programasService.actualizarPrograma(data).subscribe({
       next: () => {
-        this.snackBar.open('Programa actualizado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Programa actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.router.navigate(['/admin/programas']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el programa';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });

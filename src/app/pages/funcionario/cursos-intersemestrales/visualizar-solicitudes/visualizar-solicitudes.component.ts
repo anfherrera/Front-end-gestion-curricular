@@ -7,6 +7,7 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { descargarBlob } from '../../../../core/utils/download.util';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 
 @Component({
@@ -355,10 +356,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
         // Descargar el archivo
         descargarBlob(response.blob, nombreArchivo);
         
-        this.snackBar.open('Excel descargado exitosamente', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open('Excel descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         
         this.exportando = false;
       },
@@ -374,17 +372,11 @@ export class VisualizarSolicitudesComponent implements OnInit {
             } catch {
               // Si no se puede parsear, usar el mensaje por defecto
             }
-            this.snackBar.open(`${mensajeError}`, 'Cerrar', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
+            this.snackBar.open(`${mensajeError}`, 'Cerrar', snackbarConfig(['error-snackbar']));
           });
         } else {
           mensajeError = error.message || mensajeError;
-          this.snackBar.open(`${mensajeError}`, 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open(`${mensajeError}`, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
         
         this.exportando = false;

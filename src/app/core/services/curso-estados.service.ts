@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
+import { COLORS } from '../design-system/design-tokens';
 
 export interface EstadoCurso {
   value: string;
@@ -31,42 +32,42 @@ export class CursoEstadosService {
     {
       value: 'Borrador',
       label: 'Borrador',
-      color: '#6c757d',
+      color: COLORS.neutralText,
       icon: 'edit',
       descripcion: 'Curso en edición, no visible para estudiantes'
     },
     {
       value: 'Abierto',
       label: 'Abierto',
-      color: '#ffc107',
+      color: COLORS.primary,
       icon: 'lock_open',
       descripcion: 'Curso configurado, listo para publicar'
     },
     {
       value: 'Publicado',
       label: 'Publicado',
-      color: '#17a2b8',
+      color: COLORS.tertiary,
       icon: 'visibility',
       descripcion: 'Curso visible para estudiantes, pueden solicitar curso nuevo'
     },
     {
       value: 'Preinscripción',
       label: 'Preinscripción',
-      color: '#28a745',
+      color: COLORS.success,
       icon: 'assignment',
       descripcion: 'Período de preinscripciones abierto'
     },
     {
       value: 'Inscripción',
       label: 'Inscripción',
-      color: '#fd7e14',
+      color: COLORS.primary,
       icon: 'person_add',
       descripcion: 'Período de inscripciones abierto'
     },
     {
       value: 'Cerrado',
       label: 'Cerrado',
-      color: '#dc3545',
+      color: COLORS.error,
       icon: 'lock',
       descripcion: 'Curso finalizado, solo consulta'
     }

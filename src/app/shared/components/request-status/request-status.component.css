@@ -69,8 +69,8 @@ button[mat-icon-button][color="primary"] mat-icon {
 
 /* Estilo para botón seleccionado (checkbox style) */
 button[mat-icon-button][color="primary"].selected {
-  background-color: #249337;
-  border-color: #249337;
+  background-color: var(--notif-exito-borde);
+  border-color: var(--notif-exito-borde);
 }
 
 button[mat-icon-button][color="primary"].selected:hover {

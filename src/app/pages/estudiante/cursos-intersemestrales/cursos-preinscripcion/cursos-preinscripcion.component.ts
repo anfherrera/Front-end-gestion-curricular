@@ -9,6 +9,7 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-cursos-preinscripcion',
@@ -80,7 +81,7 @@ export class CursosPreinscripcionComponent implements OnInit {
 
   onAccionCurso(event: { accion: string; curso: Curso }) {
     if (!this.usuario?.id_usuario) {
-      this.snackBar.open('Error: Usuario no autenticado', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Error: Usuario no autenticado', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -91,7 +92,7 @@ export class CursosPreinscripcionComponent implements OnInit {
     );
     
     if (!cursoOriginal) {
-      this.snackBar.open('Error: Curso no encontrado', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Error: Curso no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 

@@ -15,6 +15,7 @@ import { ApiService } from '../../core/services/api.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { interval, Subscription } from 'rxjs';
 import { getLoginCooldownRemainingSeconds } from '../../core/interceptors/login-rate-limit.interceptor';
+import { snackbarConfig } from '../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-login',
@@ -139,20 +140,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 
             // Mostrar mensaje de éxito
-            this.snackBar.open(`¡Bienvenido, ${response.usuario.nombre_completo}!`, 'Cerrar', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
-            });
+            this.snackBar.open(`¡Bienvenido, ${response.usuario.nombre_completo}!`, 'Cerrar', snackbarConfig(['success-snackbar']));
 
             // Redirigir a la página de home
             this.router.navigate(['/welcome']);
           } else {
             this.logger.error('Respuesta inválida del servidor:', response);
             this.errorMensaje = 'Error: respuesta del servidor inválida.';
-            this.snackBar.open('Error en la respuesta del servidor', 'Cerrar', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
+            this.snackBar.open('Error en la respuesta del servidor', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
 
           this.cargando = false;
@@ -183,10 +178,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           }
 
           this.errorMensaje = errorMessage;
-          this.snackBar.open(errorMessage, 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+this.snackBar.open(errorMessage, 'Cerrar', snackbarConfig(['error-snackbar']));
           
           this.cargando = false;
         }
@@ -197,10 +189,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.loginForm.get(key)?.markAsTouched();
       });
       
-      this.snackBar.open('Por favor, completa todos los campos correctamente', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['warning-snackbar']
-      });
+      this.snackBar.open('Por favor, completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
     }
   }
 

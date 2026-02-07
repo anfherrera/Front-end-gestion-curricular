@@ -19,6 +19,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 import { UtfFixPipe } from '../../../shared/pipes/utf-fix.pipe';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-historial-completo',
@@ -126,9 +127,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al cargar el historial de solicitudes:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al cargar el historial de solicitudes', 'Cerrar', {
-          duration: 3000
-        });
+        this.snackBar.open(mensaje || 'Error al cargar el historial de solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -245,16 +244,10 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
           
-          this.snackBar.open('PDF exportado exitosamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
+          this.snackBar.open('PDF exportado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         } catch (error) {
           this.logger.error('Error al procesar el archivo PDF:', error);
-          this.snackBar.open('Error al procesar el archivo PDF', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('Error al procesar el archivo PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
         } finally {
           this.exportandoPDF = false;
         }
@@ -279,10 +272,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
           }
         }
         
-        this.snackBar.open(mensaje, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

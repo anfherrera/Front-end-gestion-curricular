@@ -14,6 +14,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { RouterModule } from '@angular/router';
 import { UsuariosService } from '../../../core/services/usuarios.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
 
 @Component({
@@ -62,7 +63,7 @@ export class ManageUsersComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cargar usuarios', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar usuarios', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -109,19 +110,13 @@ export class ManageUsersComponent implements OnInit {
         usuario.estado_usuario = response.estado_usuario;
         
         // Mostrar mensaje de éxito
-        this.snackBar.open(`Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.snackBar.open(`Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (error: any) => {
         this.loading = false;
         
         // Mostrar mensaje de error
-        this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['snackbar-error']
-        });
+        this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -136,10 +131,7 @@ export class ManageUsersComponent implements OnInit {
     this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
       next: () => {
         this.loading = false;
-        this.snackBar.open('Usuario eliminado exitosamente', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.snackBar.open('Usuario eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarUsuarios();
       },
       error: (error: HttpErrorResponse) => {
@@ -151,22 +143,13 @@ export class ManageUsersComponent implements OnInit {
         // Determinar el tipo de error para mostrar el color correcto
         if (this.errorHandler.esErrorDependencias(error)) {
           // Error de dependencias (400) - Naranja/Advertencia
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 6000,
-            panelClass: ['snackbar-warning']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
         } else if (error.status === 404) {
           // No encontrado
-          this.snackBar.open('Usuario no encontrado', 'Cerrar', { 
-            duration: 3000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open('Usuario no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else {
           // Otros errores
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 4000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });

@@ -6,6 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 
 import { Solicitud } from '../../../core/models/procesos.model';
+import { COLORS_BY_STATE, ICONS_BY_STATE, COLORS } from '../../../core/design-system/design-tokens';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component';
 import { FechaPipe } from '../../pipes/fecha.pipe';
@@ -125,50 +126,12 @@ export class RequestStatusTableComponent implements OnInit {
   }
 
   getEstadoIcon(estado: string): string {
-    const estadoUpper = estado.toUpperCase();
-    switch (estadoUpper) {
-      case 'APROBADA':
-      case 'APROBADA_FUNCIONARIO':
-      case 'APROBADA_COORDINADOR':
-        return 'check_circle';
-      case 'RECHAZADA':
-        return 'cancel';
-      case 'ENVIADA':
-        return 'send';
-      case 'EN_REVISION_SECRETARIA':
-      case 'EN_REVISION_FUNCIONARIO':
-      case 'EN_REVISION_COORDINADOR':
-      case 'EN REVISIÓN':
-        return 'hourglass_top';
-      case 'PRE_REGISTRADO':
-      case 'PRE-REGISTRADO':
-      case 'PREREGISTRADO':
-        return 'info';
-      default: return 'info';
-    }
+    const key = estado.toUpperCase().replace(/\s/g, '_').replace(/Í/g, 'I');
+    return ICONS_BY_STATE[key] ?? ICONS_BY_STATE[estado.toUpperCase()] ?? 'info';
   }
 
   getEstadoColor(estado: string): string {
-    const estadoUpper = estado.toUpperCase();
-    switch (estadoUpper) {
-      case 'APROBADA':
-      case 'APROBADA_FUNCIONARIO':
-      case 'APROBADA_COORDINADOR':
-        return 'green';
-      case 'RECHAZADA':
-        return 'red';
-      case 'ENVIADA':
-        return 'blue';
-      case 'EN_REVISION_SECRETARIA':
-      case 'EN_REVISION_FUNCIONARIO':
-      case 'EN_REVISION_COORDINADOR':
-      case 'EN REVISIÓN':
-        return 'orange';
-      case 'PRE_REGISTRADO':
-      case 'PRE-REGISTRADO':
-      case 'PREREGISTRADO':
-        return '#1976d2';
-      default: return 'gray';
-    }
+    const key = estado.toUpperCase().replace(/\s/g, '_').replace(/Í/g, 'I');
+    return COLORS_BY_STATE[key] ?? COLORS_BY_STATE[estado.toUpperCase()] ?? COLORS.neutralText;
   }
 }

@@ -22,6 +22,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Chart, ChartConfiguration, ChartData, ChartOptions, registerables } from 'chart.js';
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { environment } from '../../../../../environments/environment';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { 
@@ -495,7 +496,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
             this.snackBar.open(
               `Carga optimizada ${mejora.toFixed(1)}% más rápida (${tiempoOptimizada.toFixed(0)}ms vs ${tiempoCompleta.toFixed(0)}ms)`, 
               'Cerrar', 
-              { duration: 5000, panelClass: ['success-snackbar'] }
+              snackbarConfig(['success-snackbar'])
             );
           },
           error: (error) => {
@@ -1153,10 +1154,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
   }
 
   // ===== MÉTODOS PARA PREDICCIONES Y RECOMENDACIONES =====
@@ -1277,23 +1275,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
           
-          this.snackBar.open('Reporte PDF descargado exitosamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
+          this.snackBar.open('Reporte PDF descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         } else {
-          this.snackBar.open('El archivo PDF está vacío o corrupto', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('El archivo PDF está vacío o corrupto', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       },
       error: (error: any) => {
         
-        this.snackBar.open('Error al exportar el reporte PDF', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('Error al exportar el reporte PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -1329,23 +1318,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
           
-          this.snackBar.open('Reporte Excel descargado exitosamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
+          this.snackBar.open('Reporte Excel descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         } else {
-          this.snackBar.open('El archivo Excel está vacío o corrupto', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('El archivo Excel está vacío o corrupto', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       },
       error: (error: any) => {
         
-        this.snackBar.open('Error al exportar el reporte Excel', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('Error al exportar el reporte Excel', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

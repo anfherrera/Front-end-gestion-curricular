@@ -10,6 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ApiService } from '../../../../core/services/api.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 export interface FormProcesoDialogData {
   proceso: any | null;
@@ -71,7 +72,7 @@ export class FormProcesoDialogComponent implements OnInit {
   guardar(): void {
     if (this.procesoForm.invalid) {
       this.procesoForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -92,12 +93,12 @@ export class FormProcesoDialogComponent implements OnInit {
   crearProceso(data: any): void {
     this.apiService.post('procesos/crearProceso', data).subscribe({
       next: () => {
-        this.snackBar.open('Proceso creado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Proceso creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.dialogRef.close(true);
       },
       error: (err: any) => {
         const mensaje = err.error?.mensaje || 'Error al crear el proceso';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -106,12 +107,12 @@ export class FormProcesoDialogComponent implements OnInit {
   actualizarProceso(data: any): void {
     this.apiService.put('procesos/actualizarProceso', data).subscribe({
       next: () => {
-        this.snackBar.open('Proceso actualizado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Proceso actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.dialogRef.close(true);
       },
       error: (err: any) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el proceso';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });

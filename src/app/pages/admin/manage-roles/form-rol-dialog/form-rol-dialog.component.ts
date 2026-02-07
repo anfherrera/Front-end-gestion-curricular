@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { RolesAdminService } from '../../../../core/services/roles-admin.service';
 import { RolDTOPeticion, RolDTORespuesta } from '../../../../core/models/rol.interface';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 export interface FormRolDialogData {
   rol: RolDTORespuesta | null;
@@ -65,7 +66,7 @@ export class FormRolDialogComponent implements OnInit {
   guardar(): void {
     if (this.rolForm.invalid) {
       this.rolForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -86,12 +87,12 @@ export class FormRolDialogComponent implements OnInit {
   crearRol(data: RolDTOPeticion): void {
     this.rolesService.crearRol(data).subscribe({
       next: () => {
-        this.snackBar.open('Rol creado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Rol creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.dialogRef.close(true);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el rol';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -100,12 +101,12 @@ export class FormRolDialogComponent implements OnInit {
   actualizarRol(data: RolDTOPeticion): void {
     this.rolesService.actualizarRol(data).subscribe({
       next: () => {
-        this.snackBar.open('Rol actualizado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Rol actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.dialogRef.close(true);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el rol';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });

@@ -25,6 +25,7 @@ import {
 } from '../../../core/utils/notificaciones.util';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoggerService } from '../../../core/services/logger.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
@@ -89,7 +90,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     const usuario = this.authService.getUsuario();
     const usuarioId = usuario?.id_usuario || usuario?.id;
     if (!usuarioId) {
-      this.snackBar.open('No se pudo obtener la información del usuario', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No se pudo obtener la información del usuario', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -140,7 +141,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         // Si es 403, no mostrar error (puede ser normal)
         if (error.status !== 403) {
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(mensaje || 'Error al cargar notificaciones', 'Cerrar', { duration: 3000 });
+          this.snackBar.open(mensaje || 'Error al cargar notificaciones', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });
@@ -197,12 +198,12 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         // Remover de la lista de no leídas si está ahí
         this.notificacionesNoLeidas = this.notificacionesNoLeidas.filter(n => n.id_notificacion !== notificacion.id_notificacion);
         this.aplicarFiltros();
-        this.snackBar.open('Notificación marcada como leída', 'Cerrar', { duration: 2000 });
+        this.snackBar.open('Notificación marcada como leída', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (error: HttpErrorResponse) => {
         this.logger.error('Error al marcar notificación como leída:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al marcar notificación como leída', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al marcar notificación como leída', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -221,12 +222,12 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         this.todasLasNotificaciones.forEach(n => n.leida = true);
         this.notificacionesNoLeidas = [];
         this.aplicarFiltros();
-        this.snackBar.open('Todas las notificaciones marcadas como leídas', 'Cerrar', { duration: 2000 });
+        this.snackBar.open('Todas las notificaciones marcadas como leídas', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (error: HttpErrorResponse) => {
         this.logger.error('Error al marcar notificaciones como leídas:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al marcar notificaciones como leídas', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al marcar notificaciones como leídas', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

@@ -14,6 +14,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { RolesAdminService } from '../../../core/services/roles-admin.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { RolDTORespuesta, RolDTOPeticion } from '../../../core/models/rol.interface';
 import { FormRolDialogComponent } from './form-rol-dialog/form-rol-dialog.component';
 import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
@@ -63,7 +64,7 @@ export class ManageRolesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar la lista de roles', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar la lista de roles', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -82,7 +83,7 @@ export class ManageRolesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('No se encontró el rol', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('No se encontró el rol', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -103,10 +104,7 @@ export class ManageRolesComponent implements OnInit {
     this.rolesService.eliminarRol(rol.id_rol).subscribe({
       next: () => {
         this.loading = false;
-        this.snackBar.open('Rol eliminado exitosamente', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.snackBar.open('Rol eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarRoles();
       },
       error: (error: HttpErrorResponse) => {
@@ -118,22 +116,13 @@ export class ManageRolesComponent implements OnInit {
         // Determinar el tipo de error
         if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
           // Error de dependencias (400) - Rol tiene usuarios asociados
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 6000,
-            panelClass: ['snackbar-warning']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
         } else if (error.status === 404) {
           // No encontrado
-          this.snackBar.open('Rol no encontrado', 'Cerrar', { 
-            duration: 3000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open('Rol no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else {
           // Otros errores
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 4000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });

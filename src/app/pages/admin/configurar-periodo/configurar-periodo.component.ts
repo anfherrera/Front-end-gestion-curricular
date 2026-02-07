@@ -10,6 +10,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PeriodosAcademicosService, PeriodoAcademico, PeriodoActivoConfig } from '../../../core/services/periodos-academicos.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { formatearPeriodo } from '../../../core/utils/periodo.utils';
 
 @Component({
@@ -78,9 +79,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.snackBar.open('Error al cargar la configuración actual', 'Cerrar', {
-          duration: 3000
-        });
+        this.snackBar.open('Error al cargar la configuración actual', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
 
@@ -103,18 +102,14 @@ export class ConfigurarPeriodoComponent implements OnInit {
       },
       error: (error) => {
         this.cargando = false;
-        this.snackBar.open('Error al cargar los períodos disponibles', 'Cerrar', {
-          duration: 3000
-        });
+        this.snackBar.open('Error al cargar los períodos disponibles', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
 
   guardarConfiguracion(): void {
     if (this.configForm.invalid) {
-      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', {
-        duration: 3000
-      });
+      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -133,7 +128,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
               ? 'Modo automático activado correctamente' 
               : `Período ${formatearPeriodo(periodoSeleccionado)} establecido correctamente`,
             'Cerrar',
-            { duration: 5000 }
+            snackbarConfig(['success-snackbar'])
           );
           // Recargar período actual
           this.periodosService.getPeriodoActual().subscribe();
@@ -141,9 +136,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
         this.guardando = false;
       },
       error: (error) => {
-        this.snackBar.open('Error al guardar la configuración', 'Cerrar', {
-          duration: 3000
-        });
+        this.snackBar.open('Error al guardar la configuración', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.guardando = false;
       }
     });

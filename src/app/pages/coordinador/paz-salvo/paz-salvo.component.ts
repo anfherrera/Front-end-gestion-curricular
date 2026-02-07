@@ -19,6 +19,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-paz-salvo-coordinador',
@@ -83,7 +84,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -136,7 +137,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
           this.cdr.detectChanges();
         }
         
-        this.snackBar.open('Error al cargar documentos', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar documentos', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -168,7 +169,7 @@ export class PazSalvoCoordinadorComponent implements OnInit {
         
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar historial de solicitudes procesadas', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -258,12 +259,12 @@ export class PazSalvoCoordinadorComponent implements OnInit {
     if (event.documento.id_documento) {
       this.pazSalvoService.agregarComentario(event.documento.id_documento, event.comentario).subscribe({
         next: () => {
-          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
           // Recargar la solicitud para actualizar los comentarios
           this.cargarSolicitudesPendientes();
         },
         error: (error) => {
-          this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Error al añadir comentario', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       });
     }
@@ -276,13 +277,13 @@ export class PazSalvoCoordinadorComponent implements OnInit {
 
     this.pazSalvoService.approveAsCoordinador(this.selectedSolicitud.id_solicitud).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarSolicitudesPendientes();
         this.cargarSolicitudesProcesadas();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
       },
-      error: () => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', { duration: 3000 })
+      error: () => this.snackBar.open('Error al aprobar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']))
     });
   }
 
@@ -302,13 +303,13 @@ export class PazSalvoCoordinadorComponent implements OnInit {
       if (motivo) {
         this.pazSalvoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).subscribe({
           next: () => {
-            this.snackBar.open('Paz y Salvo rechazado', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Paz y Salvo rechazado', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.cargarSolicitudesPendientes();
             this.cargarSolicitudesProcesadas();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
           },
-          error: () => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', { duration: 3000 })
+          error: () => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']))
         });
       }
     });

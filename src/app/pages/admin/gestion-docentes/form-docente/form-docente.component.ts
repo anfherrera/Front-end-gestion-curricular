@@ -12,6 +12,7 @@ import { MatCardModule } from '@angular/material/card';
 
 import { DocentesService } from '../../../../core/services/docentes.service';
 import { DocenteDTOPeticion } from '../../../../core/models/docente.interface';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-form-docente',
@@ -81,7 +82,7 @@ export class FormDocenteComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar los datos del docente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar los datos del docente', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.router.navigate(['/admin/docentes']);
         this.loading = false;
       }
@@ -91,7 +92,7 @@ export class FormDocenteComponent implements OnInit {
   guardar(): void {
     if (this.docenteForm.invalid) {
       this.docenteForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -112,12 +113,12 @@ export class FormDocenteComponent implements OnInit {
   crearDocente(data: DocenteDTOPeticion): void {
     this.docentesService.crearDocente(data).subscribe({
       next: () => {
-        this.snackBar.open('Docente creado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Docente creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.router.navigate(['/admin/docentes']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el docente';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -126,12 +127,12 @@ export class FormDocenteComponent implements OnInit {
   actualizarDocente(data: DocenteDTOPeticion): void {
     this.docentesService.actualizarDocente(data).subscribe({
       next: () => {
-        this.snackBar.open('Docente actualizado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Docente actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.router.navigate(['/admin/docentes']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el docente';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });

@@ -13,6 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { FormProcesoDialogComponent } from './form-proceso-dialog/form-proceso-dialog.component';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-manage-processes',
@@ -59,7 +60,7 @@ export class ManageProcessesComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cargar procesos', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar procesos', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -95,11 +96,11 @@ export class ManageProcessesComponent implements OnInit {
 
     this.apiService.put(`procesos/actualizarEstado/${proceso.id_proceso}`, { estado_proceso: nuevoEstado }).subscribe({
       next: () => {
-        this.snackBar.open(`Proceso ${mensaje}do exitosamente`, 'Cerrar', { duration: 3000 });
+        this.snackBar.open(`Proceso ${mensaje}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarProcesos();
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cambiar el estado del proceso', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cambiar el estado del proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -137,11 +138,11 @@ export class ManageProcessesComponent implements OnInit {
 
     this.apiService.delete(`procesos/eliminarProceso/${proceso.id_proceso}`).subscribe({
       next: () => {
-        this.snackBar.open('Proceso eliminado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Proceso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarProcesos();
       },
       error: (err: any) => {
-        this.snackBar.open('Error al eliminar el proceso', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al eliminar el proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

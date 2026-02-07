@@ -14,6 +14,7 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
 import { NotificacionesService } from '../../../../core/services/notificaciones.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-solicitudes',
@@ -77,10 +78,7 @@ export class SolicitudesComponent implements OnInit {
         this.materiasDisponibles = materias;
       },
       error: (error) => {
-        this.snackBar.open('Error al cargar las materias disponibles', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('Error al cargar las materias disponibles', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -127,10 +125,7 @@ export class SolicitudesComponent implements OnInit {
             this.notificacionesService.actualizarNotificaciones(this.usuario.id_usuario);
           }
           
-          this.snackBar.open('¡Solicitud enviada exitosamente!', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['success-snackbar']
-          });
+          this.snackBar.open('¡Solicitud enviada exitosamente!', 'Cerrar', snackbarConfig(['success-snackbar']));
         },
         error: (error) => {
           this.loading = false;
@@ -148,10 +143,7 @@ export class SolicitudesComponent implements OnInit {
             mensaje = 'No tienes permisos para realizar esta acción.';
           }
           
-          this.snackBar.open(mensaje, 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       });
     } else {
@@ -163,9 +155,7 @@ export class SolicitudesComponent implements OnInit {
     this.solicitudForm.reset();
     this.solicitudEnviada = false;
     this.loadUserData();
-    this.snackBar.open('Formulario limpiado', 'Cerrar', {
-      duration: 2000
-    });
+    this.snackBar.open('Formulario limpiado', 'Cerrar', snackbarConfig());
   }
 
   private markFormGroupTouched(): void {

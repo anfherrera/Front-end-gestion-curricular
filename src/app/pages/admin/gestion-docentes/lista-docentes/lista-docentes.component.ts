@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { DocentesService } from '../../../../core/services/docentes.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { DocenteDTORespuesta } from '../../../../core/models/docente.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 
@@ -62,7 +63,7 @@ export class ListaDocentesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar la lista de docentes', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar la lista de docentes', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -81,7 +82,7 @@ export class ListaDocentesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al buscar docentes', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al buscar docentes', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -103,10 +104,7 @@ export class ListaDocentesComponent implements OnInit {
       next: () => {
         this.loading = false;
         // Status 200 OK - Éxito
-        this.snackBar.open('Docente eliminado exitosamente', 'Cerrar', { 
-          duration: 4000,
-          panelClass: ['snackbar-success']
-        });
+        this.snackBar.open('Docente eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarDocentes();
       },
       error: (error: HttpErrorResponse) => {
@@ -118,28 +116,16 @@ export class ListaDocentesComponent implements OnInit {
         // Manejo de errores específicos
         if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
           // Error de dependencias (400) - Docente tiene cursos asignados
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 6000,
-            panelClass: ['snackbar-warning']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
         } else if (error.status === 409) {
           // Conflicto (respaldo para compatibilidad)
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 6000,
-            panelClass: ['snackbar-warning']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
         } else if (error.status === 404) {
           // Docente no encontrado
-          this.snackBar.open('Docente no encontrado', 'Cerrar', { 
-            duration: 4000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open('Docente no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else {
           // Otros errores (500, etc.)
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 4000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });

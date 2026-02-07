@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { ProgramasService } from '../../../../core/services/programas.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { ProgramaDTORespuesta } from '../../../../core/models/programa.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 
@@ -62,7 +63,7 @@ export class ListaProgramasComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar la lista de programas', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar la lista de programas', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -81,7 +82,7 @@ export class ListaProgramasComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al buscar programas', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al buscar programas', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -102,10 +103,7 @@ export class ListaProgramasComponent implements OnInit {
     this.programasService.eliminarPrograma(programa.id_programa).subscribe({
       next: () => {
         this.loading = false;
-        this.snackBar.open('Programa eliminado exitosamente', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.snackBar.open('Programa eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarProgramas();
       },
       error: (error: HttpErrorResponse) => {
@@ -117,22 +115,13 @@ export class ListaProgramasComponent implements OnInit {
         // Determinar el tipo de error
         if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
           // Error de dependencias (400) - Programa tiene usuarios asociados
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 6000,
-            panelClass: ['snackbar-warning']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
         } else if (error.status === 404) {
           // No encontrado
-          this.snackBar.open('Programa no encontrado', 'Cerrar', { 
-            duration: 3000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open('Programa no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else {
           // Otros errores
-          this.snackBar.open(`${mensaje}`, 'Cerrar', { 
-            duration: 4000,
-            panelClass: ['snackbar-error']
-          });
+          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });

@@ -9,6 +9,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { NotificacionesService } from '../../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-cursos-ofertados',
@@ -229,13 +230,13 @@ export class CursosOfertadosComponent implements OnInit {
 
   onAccionCurso(event: { accion: string; curso: Curso }) {
     if (!this.usuario?.id_usuario) {
-      this.snackBar!.open('Error: Usuario no autenticado', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Error: Usuario no autenticado', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
     const cursoVerano = this.cursosVerano.find((c: CursoOfertadoVerano) => c.id_curso.toString() === event.curso.codigo);
     if (!cursoVerano) {
-      this.snackBar!.open('Error: Curso no encontrado', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Error: Curso no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -248,7 +249,7 @@ export class CursosOfertadosComponent implements OnInit {
 
   private realizarPreinscripcion(curso: CursoOfertadoVerano) {
     if (curso.estado !== 'Preinscripción') {
-      this.snackBar!.open('Este curso no está en período de preinscripción', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Este curso no está en período de preinscripción', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -270,7 +271,7 @@ export class CursosOfertadosComponent implements OnInit {
         this.snackBar!.open(
           `Preinscripción exitosa en ${curso.nombre_curso}`, 
           'Cerrar', 
-          { duration: 5000 }
+          snackbarConfig(['success-snackbar'])
         );
         this.loadCursos(); // Recargar para actualizar cupos
       },
@@ -278,7 +279,7 @@ export class CursosOfertadosComponent implements OnInit {
         this.snackBar!.open(
           'Error al realizar la preinscripción. Inténtalo nuevamente.', 
           'Cerrar', 
-          { duration: 5000 }
+          snackbarConfig(['error-snackbar'])
         );
       }
     });
@@ -286,7 +287,7 @@ export class CursosOfertadosComponent implements OnInit {
 
   private realizarInscripcion(curso: CursoOfertadoVerano) {
     if (curso.estado !== 'Inscripción') {
-      this.snackBar!.open('Este curso no está en período de inscripción', 'Cerrar', { duration: 3000 });
+      this.snackBar!.open('Este curso no está en período de inscripción', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -307,7 +308,7 @@ export class CursosOfertadosComponent implements OnInit {
         this.snackBar!.open(
           `Inscripción exitosa en ${curso.nombre_curso}`, 
           'Cerrar', 
-          { duration: 5000 }
+          snackbarConfig(['success-snackbar'])
         );
         this.loadCursos(); // Recargar para actualizar cupos
       },
@@ -315,7 +316,7 @@ export class CursosOfertadosComponent implements OnInit {
         this.snackBar!.open(
           'Error al realizar la inscripción. Inténtalo nuevamente.', 
           'Cerrar', 
-          { duration: 5000 }
+          snackbarConfig(['error-snackbar'])
         );
       }
     });

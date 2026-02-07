@@ -18,6 +18,7 @@ import { RequiredDocsComponent } from "../../../shared/components/required-docs/
 import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -214,19 +215,13 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   onSolicitudEnviada() {
     if (!this.usuario) {
       this.logger.error('No se puede enviar solicitud: usuario no encontrado.');
-      this.snackBar.open('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.', 'Cerrar', {
-        duration: 4000,
-        panelClass: ['error-snackbar']
-      });
+      this.snackBar.open('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
     if (!this.fileUploadComponent) {
       this.logger.error('No se puede acceder al componente de archivos.');
-      this.snackBar.open('Error: No se puede acceder al componente de archivos.', 'Cerrar', {
-        duration: 4000,
-        panelClass: ['error-snackbar']
-      });
+      this.snackBar.open('Error: No se puede acceder al componente de archivos.', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -400,10 +395,7 @@ listarSolicitudes() {
       this.snackBar.open(
         mensajeError || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.',
         'Cerrar',
-        {
-          duration: 4000,
-          panelClass: ['error-snackbar']
-        }
+        snackbarConfig(['error-snackbar'])
       );
     }
   });

@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { HistorialSolicitudesService } from '../../../core/services/historial-solicitudes.service';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 interface HistorialEstado {
   id_estado: number;
@@ -110,9 +111,7 @@ export class DetalleSolicitudComponent implements OnInit {
         this.error = err.error?.error || 'Error al cargar el historial de la solicitud';
         this.loading = false;
         if (this.error) {
-          this.snackBar.open(this.error, 'Cerrar', {
-            duration: 5000
-          });
+          this.snackBar.open(this.error, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });
