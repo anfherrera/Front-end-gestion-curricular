@@ -211,6 +211,7 @@ export class EstadisticasService {
    *   - "2025 Primer Semestre" o "2025 Segundo Semestre"
    *   - "Primer Semestre 2025" o "Segundo Semestre 2025"
    * - idPrograma: Integer - ID del programa académico (ej: 1, 2, 3)
+   * - proceso: String - Tipo de proceso (Reingreso, Homologacion, Paz y Salvo, Cursos de Verano, ECAES)
    * 
    * Ejemplos de uso:
    * 1. Sin filtros (todas las estadísticas):
@@ -233,10 +234,10 @@ export class EstadisticasService {
    * - fechaGeneracion: Fecha de generación del resumen
    * - filtrosAplicados: Indica qué filtros se aplicaron (si hay)
    * 
-   * @param filtros Filtros opcionales: periodoAcademico (formato "YYYY-P" o variantes), idPrograma (número)
+   * @param filtros Filtros opcionales: periodoAcademico (formato "YYYY-P" o variantes), idPrograma (número), proceso (Reingreso, Homologacion, Paz y Salvo, Cursos de Verano, ECAES)
    * @returns Observable con el resumen completo de estadísticas en formato ResumenCompletoAPI
    */
-  getResumenCompleto(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<ResumenCompletoAPI> {
+  getResumenCompleto(filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}): Observable<ResumenCompletoAPI> {
     let params = new HttpParams();
     
     // Validar y agregar periodoAcademico solo si tiene valor válido
@@ -247,6 +248,11 @@ export class EstadisticasService {
     // Validar y agregar idPrograma solo si tiene valor válido
     if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    // Validar y agregar proceso solo si el usuario eligió uno
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      params = params.set('proceso', filtros.proceso.trim());
     }
     
     const options = params.keys().length > 0 ? { params } : {};
@@ -377,7 +383,7 @@ export class EstadisticasService {
    * GET /api/estadisticas/estudiantes-por-programa
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstudiantesPorPrograma(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstudiantesPorProgramaResponse> {
+  getEstudiantesPorPrograma(filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}): Observable<EstudiantesPorProgramaResponse> {
     let params = new HttpParams();
     
     if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
@@ -388,6 +394,10 @@ export class EstadisticasService {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      params = params.set('proceso', filtros.proceso.trim());
+    }
+    
     return this.http.get<EstudiantesPorProgramaResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTUDIANTES_POR_PROGRAMA, { params });
   }
 
@@ -396,7 +406,7 @@ export class EstadisticasService {
    * GET /api/estadisticas/estadisticas-por-proceso
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadisticasDetalladasPorProceso(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadisticasPorProcesoResponse> {
+  getEstadisticasDetalladasPorProceso(filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}): Observable<EstadisticasPorProcesoResponse> {
     let params = new HttpParams();
     
     // Agregar timestamp para evitar caché
@@ -410,6 +420,10 @@ export class EstadisticasService {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
     
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      params = params.set('proceso', filtros.proceso.trim());
+    }
+    
     return this.http.get<EstadisticasPorProcesoResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO, { params });
   }
 
@@ -418,7 +432,7 @@ export class EstadisticasService {
    * GET /api/estadisticas/estado-solicitudes
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadoSolicitudes(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadoSolicitudesResponse> {
+  getEstadoSolicitudes(filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}): Observable<EstadoSolicitudesResponse> {
     let params = new HttpParams();
     
     if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
@@ -427,6 +441,10 @@ export class EstadisticasService {
     
     if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      params = params.set('proceso', filtros.proceso.trim());
     }
     
     return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES, { params });
@@ -437,7 +455,7 @@ export class EstadisticasService {
    * GET /api/estadisticas/tendencias-comparativas
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getTendenciasComparativas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<TendenciasComparativasResponse> {
+  getTendenciasComparativas(filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}): Observable<TendenciasComparativasResponse> {
     let params = new HttpParams();
     
     if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
@@ -446,6 +464,10 @@ export class EstadisticasService {
     
     if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      params = params.set('proceso', filtros.proceso.trim());
     }
     
     return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS, { params });
@@ -519,7 +541,7 @@ export class EstadisticasService {
    * GET /api/estadisticas/por-programa
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadisticasPorProgramaMejoradas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadisticasPorProgramaMejoradasResponse> {
+  getEstadisticasPorProgramaMejoradas(filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}): Observable<EstadisticasPorProgramaMejoradasResponse> {
     let params = new HttpParams();
     
     if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
@@ -528,6 +550,10 @@ export class EstadisticasService {
     
     if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      params = params.set('proceso', filtros.proceso.trim());
     }
     
     return this.http.get<EstadisticasPorProgramaMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROGRAMA_MEJORADAS, { params });
@@ -538,7 +564,7 @@ export class EstadisticasService {
    * GET /api/estadisticas/por-periodo
    * @param filtros Filtros opcionales: periodoAcademico, idPrograma
    */
-  getEstadisticasPorPeriodoMejoradas(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<EstadisticasPorPeriodoMejoradasResponse> {
+  getEstadisticasPorPeriodoMejoradas(filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}): Observable<EstadisticasPorPeriodoMejoradasResponse> {
     let params = new HttpParams();
     
     if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
@@ -547,6 +573,10 @@ export class EstadisticasService {
     
     if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && !isNaN(filtros.idPrograma) && filtros.idPrograma > 0) {
       params = params.set('idPrograma', filtros.idPrograma.toString());
+    }
+    
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      params = params.set('proceso', filtros.proceso.trim());
     }
     
     return this.http.get<EstadisticasPorPeriodoMejoradasResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PERIODO_MEJORADAS, { params });

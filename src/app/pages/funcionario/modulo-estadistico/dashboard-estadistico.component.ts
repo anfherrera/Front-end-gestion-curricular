@@ -153,7 +153,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // El backend maneja automáticamente:
     // - Sin filtros: muestra todos los períodos
     // - Con periodoAcademico: filtra por ese período
-    const filtrosResumen: { periodoAcademico?: string; idPrograma?: number } = {};
+    // - Con proceso: filtra por tipo (Reingreso, Homologacion, Paz y Salvo, Cursos de Verano, ECAES)
+    const filtrosResumen: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {};
     
     // Solo agregar período si hay un valor válido (no 'todos' ni '')
     const tienePeriodo = filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '';
@@ -165,6 +166,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     const tienePrograma = filtros.idPrograma !== undefined && filtros.idPrograma !== null && filtros.idPrograma > 0;
     if (tienePrograma) {
       filtrosResumen.idPrograma = filtros.idPrograma;
+    }
+    
+    // Agregar proceso si el usuario eligió uno
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      filtrosResumen.proceso = filtros.proceso.trim();
     }
     
     this.estadisticasService.getResumenCompleto(filtrosResumen).pipe(
@@ -250,13 +256,13 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Carga datos usando endpoints alternativos cuando /estadisticas/globales falla
-   * Pasa los filtros a todos los endpoints
+   * Carga datos usando endpoints alternativos cuando /estadisticas/resumen-completo falla
+   * Pasa los filtros (periodoAcademico, idPrograma, proceso) a todos los endpoints
    */
   private cargarDatosConEndpointsAlternativos(filtros: FiltroEstadisticas = {}): void {
     
-    // Preparar filtros para los endpoints (solo periodoAcademico e idPrograma)
-    const filtrosResumen: { periodoAcademico?: string; idPrograma?: number } = {};
+    // Preparar filtros para los endpoints
+    const filtrosResumen: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {};
     
     if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
       filtrosResumen.periodoAcademico = filtros.periodoAcademico.trim();
@@ -264,6 +270,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     if (filtros.idPrograma !== undefined && filtros.idPrograma !== null && filtros.idPrograma > 0) {
       filtrosResumen.idPrograma = filtros.idPrograma;
+    }
+    
+    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
+      filtrosResumen.proceso = filtros.proceso.trim();
     }
     
     // Combinar datos de múltiples endpoints que funcionan, pasando los filtros
@@ -764,7 +774,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private async cargarDatosRealesProcesos(): Promise<any> {
     try {
       // Preparar filtros
-      const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+      const filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {};
       
       if (this.filtros.periodoAcademico && this.filtros.periodoAcademico.trim() !== '' && this.filtros.periodoAcademico !== 'todos') {
         filtros.periodoAcademico = this.filtros.periodoAcademico.trim();
@@ -772,6 +782,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       
       if (this.filtros.idPrograma !== undefined && this.filtros.idPrograma !== null && this.filtros.idPrograma > 0) {
         filtros.idPrograma = this.filtros.idPrograma;
+      }
+      
+      if (this.filtros.proceso && this.filtros.proceso.trim() !== '' && this.filtros.proceso !== 'Todos los procesos') {
+        filtros.proceso = this.filtros.proceso.trim();
       }
       
       // Usar el endpoint que funciona correctamente, pasando los filtros
@@ -818,6 +832,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       
       if (this.filtros.idPrograma !== undefined && this.filtros.idPrograma !== null && this.filtros.idPrograma > 0) {
         params.append('idPrograma', this.filtros.idPrograma.toString());
+      }
+      
+      if (this.filtros.proceso && this.filtros.proceso.trim() !== '' && this.filtros.proceso !== 'Todos los procesos') {
+        params.append('proceso', this.filtros.proceso.trim());
       }
       
       const queryString = params.toString();
@@ -1302,7 +1320,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     try {
       // Preparar filtros
-      const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+      const filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {};
       
       if (this.filtros.periodoAcademico && this.filtros.periodoAcademico.trim() !== '' && this.filtros.periodoAcademico !== 'todos') {
         filtros.periodoAcademico = this.filtros.periodoAcademico.trim();
@@ -1310,6 +1328,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       
       if (this.filtros.idPrograma !== undefined && this.filtros.idPrograma !== null && this.filtros.idPrograma > 0) {
         filtros.idPrograma = this.filtros.idPrograma;
+      }
+      
+      if (this.filtros.proceso && this.filtros.proceso.trim() !== '' && this.filtros.proceso !== 'Todos los procesos') {
+        filtros.proceso = this.filtros.proceso.trim();
       }
       
       const response = await this.estadisticasService.getEstadisticasPorProgramaMejoradas(filtros).toPromise();
