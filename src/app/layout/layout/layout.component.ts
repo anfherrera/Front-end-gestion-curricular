@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-layout',
@@ -13,7 +14,8 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
     RouterModule,
     HeaderComponent,
     FooterComponent,
-    SidebarComponent
+    SidebarComponent,
+    BreadcrumbComponent
   ]
   // 🔹 Quitar ViewEncapsulation.None para que no meta CSS global
 })

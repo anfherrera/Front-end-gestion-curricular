@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Archivo } from '../../../core/models/procesos.model';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Observable, of, forkJoin } from 'rxjs';
@@ -47,10 +48,7 @@ export class FileUploadComponent implements OnChanges {
     Array.from(input.files).forEach(file => {
       // Validaciones
       if (file.type !== 'application/pdf') {
-        this.snackBar.open('Solo se permiten archivos PDF', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['warning-snackbar']
-        });
+        this.snackBar.open('Solo se permiten archivos PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
         return;
       }
 
@@ -60,10 +58,7 @@ export class FileUploadComponent implements OnChanges {
         this.snackBar.open(
           `El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`,
           'Cerrar',
-          {
-            duration: 5000,
-            panelClass: ['warning-snackbar']
-          }
+          snackbarConfig(['warning-snackbar'])
         );
         return;
       }
@@ -74,10 +69,7 @@ export class FileUploadComponent implements OnChanges {
         this.snackBar.open(
           `El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`,
           'Cerrar',
-          {
-            duration: 3000,
-            panelClass: ['warning-snackbar']
-          }
+          snackbarConfig(['warning-snackbar'])
         );
         return;
       }
@@ -100,10 +92,7 @@ export class FileUploadComponent implements OnChanges {
             this.snackBar.open(
               `Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${this.archivosExclusivos.join(' o ')}`,
               'Cerrar',
-              {
-                duration: 5000,
-                panelClass: ['warning-snackbar']
-              }
+              snackbarConfig(['warning-snackbar'])
             );
             return;
           }

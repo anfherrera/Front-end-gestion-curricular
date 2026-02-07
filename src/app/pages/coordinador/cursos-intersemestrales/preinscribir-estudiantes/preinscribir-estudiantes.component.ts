@@ -15,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
 import { CursosIntersemestralesService, CursoOfertadoVerano, Preinscripcion, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
@@ -118,10 +119,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.cursos = [];
         this.cargando = false;
-        this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -153,10 +151,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           error: (err) => {
             this.solicitudesFiltradas = [];
             this.cargando = false;
-            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', { 
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
+            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         });
       },
@@ -183,10 +178,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           error: (err) => {
             this.solicitudesFiltradas = [];
             this.cargando = false;
-            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', { 
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
+            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         });
       }
@@ -228,10 +220,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   actualizarObservaciones(idSolicitud: number, observaciones: string): void {
     
     if (!idSolicitud) {
-      this.snackBar.open('Error: No se pudo identificar la preinscripción para guardar observaciones', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+      this.snackBar.open('Error: No se pudo identificar la preinscripción para guardar observaciones', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
     
@@ -250,16 +239,10 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].observaciones = observaciones;
         }
         
-        this.snackBar.open('Observaciones guardadas exitosamente', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open('Observaciones guardadas exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (err) => {
-        this.snackBar.open('Error al guardar las observaciones', 'Cerrar', { 
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('Error al guardar las observaciones', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -269,10 +252,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     // Usar el campo correcto del ID (id_solicitud o id_preinscripcion)
     const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
     if (!idSolicitud) {
-      this.snackBar.open('Error: No se pudo identificar la preinscripción', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+      this.snackBar.open('Error: No se pudo identificar la preinscripción', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
     
@@ -291,10 +271,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].estado = 'Aprobado';
         }
         
-        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`, 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`, 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (err) => {
         
@@ -312,10 +289,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para aprobar la preinscripción';
         }
         
-        this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open(`${errorMessage}`, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -354,10 +328,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
     
     if (!idSolicitud) {
-      this.snackBar.open('Error: No se pudo identificar la preinscripción para rechazar', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+      this.snackBar.open('Error: No se pudo identificar la preinscripción para rechazar', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
     
@@ -375,10 +346,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         }
         
         const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
-        this.snackBar.open(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`, 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`, 'Cerrar', snackbarConfig(['success-snackbar']));
 
         if (this.cursoSeleccionado?.id_curso) {
           this.cargarSolicitudesPorCurso(this.cursoSeleccionado.id_curso);
@@ -400,10 +368,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para rechazar la preinscripción';
         }
         
-        this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open(`${errorMessage}`, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -460,15 +425,15 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     const estadoUpper = estado.toUpperCase();
     if (estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_FUNCIONARIO') {
-      return '#4caf50'; // Verde
+      return '#249337'; // Verde
     } else if (estadoUpper === 'RECHAZADA' || estadoUpper === 'RECHAZADO') {
-      return '#f44336'; // Rojo
+      return '#FF6D0A'; // Rojo
     } else if (estadoUpper === 'ENVIADA' || estadoUpper === 'ENVIADO') {
       return '#2196f3'; // Azul
     } else if (estadoUpper === 'PENDIENTE') {
       return '#ff9800'; // Naranja
     }
-    return '#00138C'; // Azul oscuro por defecto
+    return '#000066'; // Azul oscuro por defecto
   }
 
   // Obtener nombre del docente de forma segura
@@ -588,7 +553,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       border-radius: 8px;
       padding: 16px;
       margin-bottom: 20px;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
     }
 
     .form-section {
@@ -596,7 +561,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       padding: 16px;
       background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
       border-radius: 8px;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
     }
 
     .form-section.historial {
@@ -605,7 +570,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
     .form-section h3 {
       margin: 0 0 16px 0;
-      color: #00138C;
+      color: #000066;
       font-size: 16px;
       font-weight: 600;
     }
@@ -872,15 +837,15 @@ export class DetallesPreinscripcionDialogComponent {
       display: flex;
       align-items: center;
       gap: 12px;
-      color: #00138C;
+      color: #000066;
       font-weight: 600;
       padding: 20px 24px;
-      border-bottom: 2px solid #00138C;
+      border-bottom: 2px solid #000066;
       margin: 0;
     }
 
     .title-icon {
-      color: #f44336;
+      color: #FF6D0A;
       font-size: 28px;
       width: 28px;
       height: 28px;
@@ -895,7 +860,7 @@ export class DetallesPreinscripcionDialogComponent {
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 24px;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
     }
 
@@ -904,24 +869,24 @@ export class DetallesPreinscripcionDialogComponent {
       align-items: center;
       gap: 8px;
       margin: 0 0 16px 0;
-      color: #00138C;
+      color: #000066;
       font-size: 16px;
       font-weight: 600;
     }
 
     .section-title.warning {
-      color: #f44336;
+      color: #FF6D0A;
     }
 
     .section-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
-      color: #00138C;
+      color: #000066;
     }
 
     .section-title.warning .section-icon {
-      color: #f44336;
+      color: #FF6D0A;
     }
 
     .student-info {
@@ -944,7 +909,7 @@ export class DetallesPreinscripcionDialogComponent {
 
     .info-label {
       font-weight: 600;
-      color: #00138C;
+      color: #000066;
       min-width: 80px;
       font-size: 14px;
     }
@@ -959,19 +924,19 @@ export class DetallesPreinscripcionDialogComponent {
       background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
       border-radius: 8px;
       padding: 20px;
-      border-left: 4px solid #f44336;
+      border-left: 4px solid #FF6D0A;
       box-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
     }
 
     .required-note {
-      color: #f44336;
+      color: #FF6D0A;
       font-size: 13px;
       margin: 0 0 16px 0;
       font-weight: 500;
       padding: 8px 12px;
       background: rgba(244, 67, 54, 0.1);
       border-radius: 4px;
-      border-left: 3px solid #f44336;
+      border-left: 3px solid #FF6D0A;
     }
 
     .full-width {
@@ -997,7 +962,7 @@ export class DetallesPreinscripcionDialogComponent {
     }
 
     .btn-reject {
-      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      background: linear-gradient(135deg, #FF6D0A 0%, #d32f2f 100%);
       color: white;
       border: none;
       box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);

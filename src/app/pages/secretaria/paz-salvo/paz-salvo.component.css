@@ -56,7 +56,7 @@
 .secretaria-container mat-card.card-section mat-card-title {
   font-size: 1.2rem;
   font-weight: bold;
-  background-color: #00138C; /* azul oscuro */
+  background-color: var(--color-primario); /* azul oscuro */
   color: #fff;
   padding: 14px 16px;
   display: block;
@@ -74,11 +74,11 @@
   padding: 16px;
   border-radius: 8px;
   margin-bottom: 20px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .info-solicitud h3 {
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 12px;
   font-size: 1.1rem;
 }
@@ -137,7 +137,7 @@
 .select-file-btn,
 .upload-btn,
 .send-btn {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
   border-radius: 4px;
@@ -150,7 +150,7 @@
 .select-file-btn:hover,
 .upload-btn:hover,
 .send-btn:hover {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
@@ -167,11 +167,11 @@
 }
 
 .send-btn {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
 }
 
 .send-btn:hover:not(:disabled) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
 }
 
 /* Iconos en botones */
@@ -191,9 +191,9 @@
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 16px;
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   margin-bottom: 24px;
-  color: #00138C;
+  color: var(--color-primario);
   line-height: 1.6;
   box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
 }
@@ -216,7 +216,7 @@
 /* Estilo para botón de seleccionar archivo */
 .select-file-btn {
   min-width: 160px;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
   border-radius: 4px;
@@ -227,7 +227,7 @@
 }
 
 .select-file-btn:hover {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
@@ -253,7 +253,7 @@
 ::ng-deep .pdf-upload-section .upload-btn,
 ::ng-deep .pdf-upload-section button[mat-raised-button].upload-btn {
   min-width: 180px !important;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
   border-radius: 4px !important;
@@ -265,7 +265,7 @@
 
 ::ng-deep .pdf-upload-section .upload-btn:hover:not(:disabled),
 ::ng-deep .pdf-upload-section button[mat-raised-button].upload-btn:hover:not(:disabled) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
 }
@@ -280,7 +280,7 @@
 ::ng-deep .pdf-upload-section .send-btn,
 ::ng-deep .pdf-upload-section button[mat-raised-button].send-btn {
   min-width: 180px !important;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
   border-radius: 4px !important;
@@ -292,7 +292,7 @@
 
 ::ng-deep .pdf-upload-section .send-btn:hover:not(:disabled),
 ::ng-deep .pdf-upload-section button[mat-raised-button].send-btn:hover:not(:disabled) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
 }
@@ -350,13 +350,13 @@
 }
 
 .document-actions:hover {
-  border-color: #00138C;
+  border-color: var(--color-primario);
   background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
 }
 
 .enable-document-btn {
   min-width: 200px;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
   border-radius: 8px;
@@ -372,7 +372,7 @@
 }
 
 .enable-document-btn:hover {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 19, 140, 0.4);
 }

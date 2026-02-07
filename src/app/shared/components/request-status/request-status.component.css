@@ -22,7 +22,7 @@ mat-row:hover {
 
 mat-header-cell {
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 13px;
 }
 
@@ -50,16 +50,16 @@ button[mat-icon-button]:hover {
 
 /* Mejorar botón de seleccionar */
 button[mat-icon-button][color="primary"] {
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
   border-radius: 4px;
-  border: 2px solid #00138C;
+  border: 2px solid var(--color-primario);
   transition: all 0.2s ease-in-out;
 }
 
 button[mat-icon-button][color="primary"]:hover {
-  background-color: #001a99;
-  border-color: #001a99;
+  background-color: var(--color-primario-light);
+  border-color: var(--color-primario-light);
   transform: scale(1.05);
 }
 
@@ -69,8 +69,8 @@ button[mat-icon-button][color="primary"] mat-icon {
 
 /* Estilo para botón seleccionado (checkbox style) */
 button[mat-icon-button][color="primary"].selected {
-  background-color: #4caf50;
-  border-color: #4caf50;
+  background-color: #249337;
+  border-color: #249337;
 }
 
 button[mat-icon-button][color="primary"].selected:hover {

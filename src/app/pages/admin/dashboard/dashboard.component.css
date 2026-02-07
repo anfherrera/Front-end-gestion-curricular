@@ -21,14 +21,14 @@
   margin: 0 0 8px 0;
   font-size: 32px;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .header-section h1 mat-icon {
   font-size: 36px;
   width: 36px;
   height: 36px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .subtitle {
@@ -88,7 +88,7 @@
 }
 
 .stat-card mat-card-title {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
   font-weight: 600;
 }
 
@@ -105,14 +105,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
 }
 
 .stat-number {
   font-size: 48px;
   font-weight: bold;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 8px;
 }
 
@@ -145,7 +145,7 @@ mat-card-actions button mat-icon {
 
 .actions-section h2 {
   margin-bottom: 16px;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 24px;
   font-weight: 600;
 }

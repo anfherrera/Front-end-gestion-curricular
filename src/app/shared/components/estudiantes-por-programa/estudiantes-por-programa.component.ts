@@ -106,7 +106,7 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
       max-height: 600px;
       display: flex;
       flex-direction: column;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -116,7 +116,7 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
     }
 
     .estudiantes-por-programa-card mat-card-header {
-      background: linear-gradient(135deg, #00138C, #001a99);
+      background: linear-gradient(135deg, #000066, #5056AC);
       margin: -16px -16px 16px -16px;
       padding: 16px;
       border-radius: 8px 8px 0 0;
@@ -177,7 +177,7 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
       background: #f8f9fa;
       border-radius: 8px;
       transition: all 0.3s ease;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
     }
 
     .programa-item:hover {
@@ -223,7 +223,7 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
       font-size: 1.4rem;
       font-weight: bold;
       line-height: 1;
-      color: #00138C;
+      color: #000066;
     }
 
     .programa-cantidad .label {

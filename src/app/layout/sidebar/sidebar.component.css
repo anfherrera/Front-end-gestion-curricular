@@ -134,7 +134,7 @@
 }
 
 .sidebar-link.logout-item mat-icon {
-  color: #f44336;
+  color: var(--color-error);
 }
 
 /* Para centrar un poco mejor el contenido */

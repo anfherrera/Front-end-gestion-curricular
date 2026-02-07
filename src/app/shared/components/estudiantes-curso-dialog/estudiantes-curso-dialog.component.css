@@ -9,7 +9,7 @@
   align-items: center;
   padding: 20px 24px;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border-bottom: 2px solid #00138C;
+  border-bottom: 2px solid var(--color-primario);
   border-radius: 8px 8px 0 0;
 }
 
@@ -20,11 +20,11 @@
   margin: 0;
   font-size: 22px;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .dialog-header mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 28px;
   width: 28px;
   height: 28px;
@@ -32,7 +32,7 @@
 
 .btn-cerrar {
   margin-left: auto;
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .btn-cerrar:hover {
@@ -53,21 +53,21 @@
 }
 
 .loading-container p {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 16px;
   font-weight: 500;
   margin: 0;
 }
 
 .error-container {
-  color: #f44336;
+  color: var(--color-error);
 }
 
 .error-icon {
   font-size: 64px;
   width: 64px;
   height: 64px;
-  color: #f44336;
+  color: var(--color-error);
 }
 
 .error-container p {
@@ -78,7 +78,7 @@
 
 .error-container button {
   margin-top: 8px;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
 }
 
@@ -100,8 +100,8 @@
   margin: 0 0 20px 0;
   font-size: 20px;
   font-weight: 600;
-  color: #00138C;
-  border-bottom: 2px solid #00138C;
+  color: var(--color-primario);
+  border-bottom: 2px solid var(--color-primario);
   padding-bottom: 12px;
 }
 
@@ -134,7 +134,7 @@
 .stat .valor {
   font-size: 28px;
   font-weight: 700;
-  color: #00138C;
+  color: var(--color-primario);
   line-height: 1.2;
 }
 
@@ -153,7 +153,7 @@
 }
 
 .tabla-estudiantes th {
-  background: #00138C !important;
+  background: var(--color-primario) !important;
   color: white !important;
   padding: 14px 12px;
   text-align: left;
@@ -164,7 +164,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  border-bottom: 2px solid #001a99;
+  border-bottom: 2px solid var(--color-primario-light);
 }
 
 .tabla-estudiantes td {
@@ -210,14 +210,14 @@
 }
 
 .correo-link {
-  color: #00138C;
+  color: var(--color-primario);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .correo-link:hover {
-  color: #001a99;
+  color: var(--color-primario-light);
   text-decoration: underline;
 }
 
@@ -239,7 +239,7 @@
   font-size: 72px;
   width: 72px;
   height: 72px;
-  color: #00138C;
+  color: var(--color-primario);
   opacity: 0.3;
 }
 
@@ -270,8 +270,8 @@ mat-dialog-actions button {
 }
 
 mat-dialog-actions button[mat-button] {
-  color: #00138C;
-  border-color: #00138C;
+  color: var(--color-primario);
+  border-color: var(--color-primario);
 }
 
 mat-dialog-actions button[mat-button]:hover {
@@ -279,14 +279,14 @@ mat-dialog-actions button[mat-button]:hover {
 }
 
 mat-dialog-actions button[mat-raised-button] {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2);
   transition: all 0.2s ease;
 }
 
 mat-dialog-actions button[mat-raised-button]:hover:not([disabled]) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
 }
@@ -313,7 +313,7 @@ mat-dialog-actions button[mat-raised-button][disabled] {
 
 /* Mejoras adicionales para consistencia */
 .tabla-estudiantes td strong {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 600;
 }
 

@@ -116,7 +116,7 @@ import { Subject, takeUntil } from 'rxjs';
     }
 
     .filters-header h3 {
-      color: #00138C;
+      color: #000066;
       margin: 0 0 8px 0;
       font-size: 1.3rem;
       font-weight: 600;
@@ -225,24 +225,24 @@ import { Subject, takeUntil } from 'rxjs';
 
     /* Estilos específicos para el botón TODOS */
     .todos-chip {
-      border: 2px solid #00138C !important;
+      border: 2px solid #000066 !important;
     }
 
     .todos-chip:not(.todos-selected) {
       background: transparent !important;
-      color: #00138C !important;
+      color: #000066 !important;
     }
 
     .todos-chip:not(.todos-selected) mat-icon {
-      color: #00138C !important;
+      color: #000066 !important;
     }
 
     .todos-chip:not(.todos-selected) .count {
-      color: #00138C !important;
+      color: #000066 !important;
     }
 
     .todos-chip.todos-selected {
-      background: #00138C !important;
+      background: #000066 !important;
       color: white !important;
     }
 
@@ -267,7 +267,7 @@ import { Subject, takeUntil } from 'rxjs';
       background: white;
       border-radius: 8px;
       padding: 20px;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
     }
 
@@ -286,7 +286,7 @@ import { Subject, takeUntil } from 'rxjs';
 
     .info-header h4 {
       margin: 0;
-      color: #00138C;
+      color: #000066;
       font-size: 1.1rem;
       font-weight: 600;
     }
@@ -310,7 +310,7 @@ import { Subject, takeUntil } from 'rxjs';
     }
 
     .stat strong {
-      color: #00138C;
+      color: #000066;
       font-weight: 600;
     }
 

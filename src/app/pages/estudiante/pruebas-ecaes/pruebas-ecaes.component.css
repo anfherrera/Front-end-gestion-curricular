@@ -45,7 +45,7 @@
 
 /* Header de la tabla mejorado */
 .header-row {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
 }
 
 .header-cell {
@@ -96,7 +96,7 @@
 
 .fecha-cell {
   padding: 18px 24px !important;
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 700;
   text-align: center;
   width: 35%;
@@ -183,7 +183,7 @@
 }
 
 .btn-enviar {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%) !important;
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%) !important;
   color: white !important;
   padding: 16px 32px !important;
   font-size: 1.1rem !important;
@@ -300,7 +300,7 @@
 }
 
 .mat-mdc-option.mdc-list-item--selected {
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
 }
 
@@ -322,7 +322,7 @@
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 16px;
 }
 

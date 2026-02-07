@@ -96,7 +96,7 @@ export interface ComentariosDialogData {
 
     h2[mat-dialog-title] {
       background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-      color: #00138C;
+      color: #000066;
       padding: 28px 32px;
       margin: -24px -24px 0 -24px;
       font-size: 1.4rem;
@@ -105,7 +105,7 @@ export interface ComentariosDialogData {
       display: flex;
       align-items: center;
       gap: 14px;
-      border-bottom: 2px solid #00138C;
+      border-bottom: 2px solid #000066;
     }
 
     mat-dialog-content {
@@ -126,7 +126,7 @@ export interface ComentariosDialogData {
     .rechazo-card {
       background-color: #fff;
       border: 1px solid #ffcdd2;
-      border-left: 4px solid #f44336;
+      border-left: 4px solid #FF6D0A;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(244, 67, 54, 0.1);
       overflow: hidden;
@@ -173,16 +173,16 @@ export interface ComentariosDialogData {
       align-items: center;
       gap: 12px;
       font-size: 1.1rem;
-      color: #00138C;
+      color: #000066;
       margin: 36px 0 24px 0;
       font-weight: 600;
       font-family: 'Roboto', sans-serif;
       padding-bottom: 16px;
-      border-bottom: 2px solid #00138C;
+      border-bottom: 2px solid #000066;
     }
 
     .seccion-titulo mat-icon {
-      color: #00138C;
+      color: #000066;
       font-size: 22px;
       width: 22px;
       height: 22px;
@@ -205,7 +205,7 @@ export interface ComentariosDialogData {
       align-items: center;
       gap: 12px;
       font-size: 1rem;
-      color: #00138C;
+      color: #000066;
       font-weight: 600;
       font-family: 'Roboto', sans-serif;
       padding: 20px 24px;
@@ -215,7 +215,7 @@ export interface ComentariosDialogData {
     }
 
     .documento-nombre mat-icon {
-      color: #00138C;
+      color: #000066;
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -230,7 +230,7 @@ export interface ComentariosDialogData {
     }
     
     .comentario-icon {
-      color: #00138C;
+      color: #000066;
       margin-top: 4px;
       font-size: 20px;
       width: 20px;
@@ -282,7 +282,7 @@ export interface ComentariosDialogData {
     }
 
     mat-dialog-actions button {
-      background-color: #00138C !important;
+      background-color: #000066 !important;
       color: white !important;
       border-radius: 6px;
       padding: 10px 24px;
@@ -294,7 +294,7 @@ export interface ComentariosDialogData {
     }
 
     mat-dialog-actions button:hover {
-      background-color: #001a99 !important;
+      background-color: #5056AC !important;
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
     }

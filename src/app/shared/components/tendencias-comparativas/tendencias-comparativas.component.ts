@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { TendenciasComparativasResponse, CrecimientoTemporal, ComparativaProcesos, ComparativaProgramas, ResumenEstrategico } from '../../../core/models/estadisticas.model';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-tendencias-comparativas',
@@ -147,19 +148,13 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
    * Muestra mensaje de éxito
    */
   private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['success-snackbar']));
   }
 
   /**
    * Muestra mensaje de error
    */
   private mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
   }
 }

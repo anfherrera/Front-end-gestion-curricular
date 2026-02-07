@@ -40,7 +40,7 @@
 }
 
 .welcome-title {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 2.2rem;
   font-weight: 700;
   margin: 0 0 10px 0;
@@ -48,7 +48,7 @@
 }
 
 .welcome-subtitle {
-  color: #001a99;
+  color: var(--color-primario-light);
   font-size: 1.4rem;
   font-weight: 600;
   margin: 0 0 8px 0;
@@ -73,7 +73,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .info-card:hover {
@@ -82,7 +82,7 @@
 }
 
 .info-card mat-card-header {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -126,7 +126,7 @@
 }
 
 .info-card strong {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 600;
 }
 
@@ -139,7 +139,7 @@
 }
 
 .continue-btn {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   font-size: 1.1rem !important;
   font-weight: 600 !important;
@@ -150,7 +150,7 @@
 }
 
 .continue-btn:hover {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 20px rgba(0, 19, 140, 0.4) !important;
 }

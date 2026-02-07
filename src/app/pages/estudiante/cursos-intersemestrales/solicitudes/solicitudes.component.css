@@ -35,7 +35,7 @@
   padding: 32px;
   background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
   border-radius: 12px;
-  border: 2px solid #4caf50;
+  border: 2px solid #249337;
   margin-top: 20px;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .success-icon {
-  color: #4caf50 !important;
+  color: #249337 !important;
 }
 
 .success-message p {
@@ -94,20 +94,20 @@ mat-form-field textarea {
 
 /* Estados de validación */
 mat-form-field.mat-form-field-invalid .mat-form-field-outline {
-  color: #f44336;
+  color: var(--color-error);
 }
 
 mat-form-field.mat-form-field-valid .mat-form-field-outline {
-  color: #4caf50;
+  color: #249337;
 }
 
 /* Iconos de los campos de formulario - Color azul de la app */
 mat-form-field mat-icon[matSuffix] {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 mat-form-field.mat-focused mat-icon[matSuffix] {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 /* Outline del form field con color azul */
@@ -116,5 +116,5 @@ mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
-  color: #00138C;
+  color: var(--color-primario);
 }

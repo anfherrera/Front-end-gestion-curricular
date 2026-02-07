@@ -15,7 +15,7 @@
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .header-content {
@@ -65,7 +65,7 @@
   gap: 10px;
   font-size: 2.2rem;
   font-weight: 700;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 10px;
 }
 
@@ -144,7 +144,7 @@
 }
 
 .filters-card mat-card-header {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -247,13 +247,13 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.5rem;
   font-weight: 600;
 }
 
 .section-title mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* KPIs */
@@ -272,7 +272,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   transition: all 0.3s ease;
   overflow: hidden;
 }
@@ -283,7 +283,7 @@
 }
 
 .kpi-card.total-solicitudes {
-  border-left-color: #00138C;
+  border-left-color: var(--color-primario);
 }
 
 .kpi-card.materias-unicas {
@@ -299,7 +299,7 @@
 }
 
 .kpi-card mat-card-header {
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -316,7 +316,7 @@
 .kpi-value {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 0.5rem;
 }
 
@@ -363,7 +363,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   transition: all 0.3s ease;
 }
 
@@ -376,7 +376,7 @@
 }
 
 .chart-card mat-card-header {
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -491,7 +491,7 @@
   font-size: 2rem;
   font-weight: bold;
   text-align: center;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* Recomendaciones */
@@ -554,11 +554,11 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .resumen-card mat-card-header {
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -595,7 +595,7 @@
 .resumen-valor {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .confiabilidad {
@@ -675,7 +675,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 500;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .tendencia-datos {
@@ -697,7 +697,7 @@
 
 .dato-valor {
   font-weight: 500;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* Iconos de Tendencia */
@@ -841,7 +841,7 @@
 
 /* Estilos para Mat-Badge */
 .mat-badge-content {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
 }
 
@@ -871,7 +871,7 @@
 
 .materia-nombre, .programa-nombre {
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
@@ -890,7 +890,7 @@
 
 .tendencia-mes {
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
@@ -932,7 +932,7 @@
 }
 
 .demanda-actual {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 500;
 }
 
@@ -948,7 +948,7 @@
 
 .mes-pico {
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
@@ -1093,15 +1093,15 @@
 }
 
 .tab-button.active {
-  border-bottom-color: #00138C;
-  color: #00138C;
+  border-bottom-color: var(--color-primario);
+  color: var(--color-primario);
   font-weight: bold;
   background: #f8f9fa;
 }
 
 .tab-button:hover {
   background-color: #f8f9fa;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .tab-button:first-child {
@@ -1129,7 +1129,7 @@
 .chart-loading i {
   margin-right: 10px;
   font-size: 1.5em;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* ===== MEJORAS PARA GRÁFICAS ===== */
@@ -1166,8 +1166,8 @@ canvas {
   }
   
   .tab-button.active {
-    border-bottom-color: #00138C;
-    border-left: 3px solid #00138C;
+    border-bottom-color: var(--color-primario);
+    border-left: 3px solid var(--color-primario);
   }
 }
 
@@ -1268,13 +1268,13 @@ canvas {
 
 .prediccion-temporal-card .mes-pico {
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
 
 .prediccion-temporal-card .demanda-actual {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 500;
   font-size: 1rem;
 }
@@ -1315,7 +1315,7 @@ canvas {
 
 .recomendacion-titulo {
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
@@ -1522,7 +1522,7 @@ canvas {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -1531,12 +1531,12 @@ canvas {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   overflow: hidden;
 }
 
 .tendencias-temporales-section .chart-header {
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
   padding: 1rem 1.5rem;
   display: flex;
@@ -1558,7 +1558,7 @@ canvas {
   margin: 0.5rem 0;
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   transition: all 0.3s ease;
 }
 
@@ -1570,7 +1570,7 @@ canvas {
 
 .tendencias-temporales-section .tendencia-mes {
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.1rem;
   flex: 1;
 }
@@ -1629,13 +1629,13 @@ canvas {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   margin: 0 0 2rem 0;
   overflow: hidden;
 }
 
 .resumen-recomendaciones-card mat-card-header {
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
   padding: 1.5rem;
   border-bottom: none;
@@ -1840,7 +1840,7 @@ canvas {
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  border-left: 5px solid #00138C;
+  border-left: 5px solid var(--color-primario);
   overflow: hidden;
   transition: all 0.3s ease;
   position: relative;
@@ -1882,7 +1882,7 @@ canvas {
 .rec-card h3 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #00138C;
+  color: var(--color-primario);
   margin: 0;
   line-height: 1.4;
 }
@@ -1905,7 +1905,7 @@ canvas {
 
 .rec-card .btn-expandir:hover {
   background: #f8f9fa;
-  border-color: #00138C;
+  border-color: var(--color-primario);
   transform: scale(1.1);
 }
 
@@ -1927,7 +1927,7 @@ canvas {
   padding: 1.25rem;
   background: linear-gradient(135deg, #f8f9fa, #ffffff);
   border-radius: 10px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -1935,7 +1935,7 @@ canvas {
   display: block;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1965,7 +1965,7 @@ canvas {
 
 .rec-card .seccion ul li::before {
   content: "•";
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: bold;
   font-size: 1.2rem;
   position: absolute;
@@ -1993,7 +1993,7 @@ canvas {
 
 .rec-card .checklist-item:hover {
   background: #f8f9fa;
-  border-color: #00138C;
+  border-color: var(--color-primario);
   transform: translateX(4px);
 }
 
@@ -2046,7 +2046,7 @@ canvas {
   padding: 1rem;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 3px solid #00138C;
+  border-left: 3px solid var(--color-primario);
 }
 
 .rec-field h4 {
@@ -2099,7 +2099,7 @@ canvas {
   border-radius: 20px;
   font-weight: 600;
   font-size: 0.9rem;
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
 }
 

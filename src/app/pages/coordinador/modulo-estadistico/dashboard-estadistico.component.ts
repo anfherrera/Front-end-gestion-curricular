@@ -29,6 +29,7 @@ import { EstadisticasPorProcesoComponent } from '../../../shared/components/esta
 import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { 
   ResumenCompleto,
   ResumenCompletoAPI,
@@ -592,10 +593,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
      const datosSimulados = {
        totalSolicitudes: 46,
        estados: {
-         Aprobada: { cantidad: 21, porcentaje: 45.65, color: "#28a745", icono: "fas fa-check-circle" },
-         Enviada: { cantidad: 9, porcentaje: 19.57, color: "#ffc107", icono: "fas fa-paper-plane" },
-         "En Proceso": { cantidad: 11, porcentaje: 23.91, color: "#17a2b8", icono: "fas fa-clock" },
-         Rechazada: { cantidad: 5, porcentaje: 10.87, color: "#dc3545", icono: "fas fa-times-circle" }
+         Aprobada: { cantidad: 21, porcentaje: 45.65, color: "#249337", icono: "check_circle" },
+         Enviada: { cantidad: 9, porcentaje: 19.57, color: "#1D72D3", icono: "send" },
+         "En Proceso": { cantidad: 11, porcentaje: 23.91, color: "#1D72D3", icono: "schedule" },
+         Rechazada: { cantidad: 5, porcentaje: 10.87, color: "#FF6D0A", icono: "cancel" }
        }
      };
      this.actualizarKPIsConEstadoSolicitudes(datosSimulados);
@@ -965,7 +966,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         backgroundColor: [
           '#ff9800', // Naranja - Paz y Salvo
           '#8e24aa', // Púrpura - Reingreso
-          '#4caf50', // Verde - Homologación
+          '#249337', // Verde - Homologación
           '#2196f3'  // Azul - Cursos de Verano
         ],
         borderWidth: 3,
@@ -1082,11 +1083,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         {
           label: 'Aprobadas',
           data: aprobadasMensual,
-          borderColor: '#4caf50',
+          borderColor: '#249337',
           backgroundColor: 'rgba(76, 175, 80, 0.1)',
           tension: 0.4,
           fill: true,
-          pointBackgroundColor: '#4caf50',
+          pointBackgroundColor: '#249337',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: 6
@@ -1201,11 +1202,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         {
           label: 'Aprobadas',
           data: aprobadasMensual,
-          borderColor: '#4caf50',
+          borderColor: '#249337',
           backgroundColor: 'rgba(76, 175, 80, 0.1)',
           tension: 0.4,
           fill: true,
-          pointBackgroundColor: '#4caf50',
+          pointBackgroundColor: '#249337',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: 6
@@ -1233,7 +1234,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             titleColor: '#fff',
             bodyColor: '#fff',
-            borderColor: '#00138C',
+            borderColor: '#000066',
             borderWidth: 1,
             callbacks: {
               title: function(context) {
@@ -1251,7 +1252,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             title: {
               display: true,
               text: 'Meses',
-              color: '#00138C',
+              color: '#000066',
               font: {
                 weight: 'bold'
               }
@@ -1265,7 +1266,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
             title: {
               display: true,
               text: 'Cantidad',
-              color: '#00138C',
+              color: '#000066',
               font: {
                 weight: 'bold'
               }
@@ -1345,7 +1346,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         backgroundColor: [
           '#2196f3', // Azul - Sistemas
           '#ff9800', // Naranja - Electrónica
-          '#4caf50', // Verde - Automática
+          '#249337', // Verde - Automática
           '#9c27b0'  // Púrpura - Telemática
         ],
         borderColor: [
@@ -1449,7 +1450,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         backgroundColor: [
           '#2196f3', // Azul - Sistemas
           '#ff9800', // Naranja - Electrónica
-          '#4caf50', // Verde - Automática
+          '#249337', // Verde - Automática
           '#9c27b0'  // Púrpura - Telemática
         ],
         borderColor: [
@@ -1750,20 +1751,14 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    * Muestra un mensaje de éxito
    */
   private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['success-snackbar']));
   }
 
   /**
    * Muestra un mensaje de error
    */
   private mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
   }
 
   /**

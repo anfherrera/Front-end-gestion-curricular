@@ -49,7 +49,6 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   isLoading = false;
   private refreshInterval?: any;
   private notificacionesSubscription?: Subscription;
-  private notificacionesCargadas = false; // Flag para saber si ya se cargaron
 
 
   constructor(
@@ -126,7 +125,6 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
         this.notificaciones = notificacionesEnriquecidas;
         this.totalNoLeidas = notificacionesEnriquecidas.length;
-        this.notificacionesCargadas = true;
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -201,15 +199,13 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
 
   actualizarManual(): void {
-    if (!this.notificacionesCargadas) {
-      this.cargarNotificaciones();
-    }
+    // Siempre recargar al hacer clic en el ícono para datos actualizados
+    this.cargarNotificaciones();
   }
 
   onMenuOpened(): void {
-    if (!this.notificacionesCargadas) {
-      this.cargarNotificaciones();
-    }
+    // Siempre cargar al abrir para sincronizar con el contador (evitar estado inconsistente)
+    this.cargarNotificaciones();
   }
 
   getIconoPorTipo(tipoNotificacion: string): string {

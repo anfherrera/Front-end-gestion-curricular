@@ -60,29 +60,31 @@ export function getIconByTipoSolicitud(tipoSolicitud: string): string {
  * Obtiene el color por tipo de solicitud
  */
 export function getColorByTipoSolicitud(tipoSolicitud: string): string {
+  // Colores institucionales - Sistema de Diseño TIC Universidad del Cauca
   const colores: { [key: string]: string } = {
-    'CURSO_VERANO_PREINSCRIPCION': '#1abc9c',
-    'CURSO_VERANO_INSCRIPCION': '#16a085',
-    'ECAES': '#f57c00',
-    'REINGRESO': '#388e3c',
-    'HOMOLOGACION': '#7b1fa2',
-    'PAZ_Y_SALVO': '#d32f2f'
+    'CURSO_VERANO_PREINSCRIPCION': '#1D72D3',
+    'CURSO_VERANO_INSCRIPCION': '#000066',
+    'ECAES': '#FF6D0A',
+    'REINGRESO': '#249337',
+    'HOMOLOGACION': '#9D0311',
+    'PAZ_Y_SALVO': '#1D72D3'
   };
-  return colores[tipoSolicitud] || '#666666';
+  return colores[tipoSolicitud] || '#454444';
 }
 
 /**
  * Obtiene el color por tipo de notificación
  */
 export function getColorByTipoNotificacion(tipoNotificacion: string): string {
+  // Colores institucionales - Sistema de Diseño TIC Universidad del Cauca
   const colores: { [key: string]: string } = {
-    'NUEVA_SOLICITUD': '#2196f3',
-    'CAMBIO_ESTADO': '#ff9800',
-    'APROBADA': '#4caf50',
-    'RECHAZADA': '#f44336',
-    'ENVIADA': '#9c27b0'
+    'NUEVA_SOLICITUD': '#1D72D3',
+    'CAMBIO_ESTADO': '#FF6D0A',
+    'APROBADA': '#249337',
+    'RECHAZADA': '#FF6D0A',
+    'ENVIADA': '#1D72D3'
   };
-  return colores[tipoNotificacion] || '#666666';
+  return colores[tipoNotificacion] || '#454444';
 }
 
 /**

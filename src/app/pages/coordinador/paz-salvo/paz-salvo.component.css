@@ -56,7 +56,7 @@
 .coordinador-container mat-card-title {
   font-size: 1.2rem;
   font-weight: bold;
-  background-color: #00138C; /* azul oscuro */
+  background-color: var(--color-primario); /* azul oscuro */
   color: #fff;
   padding: 14px 16px;
   display: block;
@@ -130,7 +130,7 @@
 }
 
 .botones-acciones button {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
   border-radius: 4px;
@@ -141,7 +141,7 @@
 }
 
 .botones-acciones button:hover {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
@@ -162,14 +162,14 @@
 }
 
 .acciones-container button[mat-icon-button][color="primary"] {
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
   border-radius: 4px;
   transition: all 0.2s ease-in-out;
 }
 
 .acciones-container button[mat-icon-button][color="primary"]:hover {
-  background-color: #001a99;
+  background-color: var(--color-primario-light);
   transform: scale(1.05);
 }
 
@@ -184,12 +184,12 @@
 }
 
 .estado-aprobado {
-  color: #4caf50;
+  color: #249337;
   font-weight: 500;
 }
 
 .estado-rechazado {
-  color: #f44336;
+  color: var(--color-error);
   font-weight: 500;
 }
 

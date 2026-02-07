@@ -24,11 +24,11 @@
   margin: 0;
   font-size: 28px;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .header-section h2 mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 32px;
   width: 32px;
   height: 32px;
@@ -88,12 +88,12 @@ mat-card {
 
 /* Icono de código (badge) - Azul */
 ::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo_docente"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* Icono de nombre (person) - Azul */
 ::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_docente"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* Efecto hover en iconos */

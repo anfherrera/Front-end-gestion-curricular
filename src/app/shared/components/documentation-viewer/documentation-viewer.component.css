@@ -135,7 +135,7 @@
   position: absolute;
   top: -8px;
   right: -8px;
-  background-color: #f44336;
+  background-color: var(--color-error);
   color: white;
   border-radius: 50%;
   width: 20px;

@@ -83,7 +83,7 @@ export interface ComentarioDialogData {
   `,
   styles: [`
     .dialog-header {
-      background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+      background: linear-gradient(135deg, #000066 0%, #5056AC 100%);
       color: white;
       padding: 28px 24px 24px 24px;
       margin: -24px -24px 0 -24px;
@@ -134,7 +134,7 @@ export interface ComentarioDialogData {
       padding: 16px 20px;
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
       border-radius: 12px;
-      border-left: 5px solid #00138C;
+      border-left: 5px solid #000066;
       box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
       transition: all 0.2s ease-in-out;
     }
@@ -145,7 +145,7 @@ export interface ComentarioDialogData {
     }
     
     .document-icon {
-      color: #00138C;
+      color: #000066;
       font-size: 1.4rem;
       width: 1.4rem;
       height: 1.4rem;
@@ -153,7 +153,7 @@ export interface ComentarioDialogData {
     
     .document-name {
       font-weight: 600;
-      color: #00138C;
+      color: #000066;
       font-size: 1rem;
       letter-spacing: 0.3px;
     }
@@ -184,7 +184,7 @@ export interface ComentarioDialogData {
     }
     
     mat-hint.warning {
-      color: #f44336;
+      color: #FF6D0A;
       font-weight: 500;
     }
     
@@ -209,7 +209,7 @@ export interface ComentarioDialogData {
     }
     
     .confirm-btn {
-      background-color: #00138C !important;
+      background-color: #000066 !important;
       color: white !important;
       padding: 8px 20px;
       border-radius: 4px;
@@ -221,7 +221,7 @@ export interface ComentarioDialogData {
     }
     
     .confirm-btn:hover:not(:disabled) {
-      background-color: #001a99 !important;
+      background-color: #5056AC !important;
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(0, 19, 140, 0.4);
     }

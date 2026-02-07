@@ -8,6 +8,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../comentario-dialog/comentario-dialog.component';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 // Interfaz genérica para documentos
 interface DocumentoGenerico {
@@ -74,10 +75,10 @@ export class DocumentationViewerComponent implements OnInit {
     // verDocumento() llamado
     
     // Mostrar mensaje de carga
-    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
+    this.snackBar.open('Descargando documento...', 'Cerrar', snackbarConfig());
 
     if (!this.servicio) {
-      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -144,12 +145,12 @@ export class DocumentationViewerComponent implements OnInit {
    */
   private intentarDescargaPorNombre(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
     if (!documento.nombre) {
-      this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
     if (!this.servicio?.descargarArchivo) {
-      this.snackBar.open('Error: Método de descarga no disponible', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Error: Método de descarga no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -163,7 +164,7 @@ export class DocumentationViewerComponent implements OnInit {
         const errorMessage = error.status === 404 
           ? 'El archivo no se encontró en el servidor. Verifique que el documento existe.'
           : (error.error?.message || error.message || 'Error desconocido');
-        this.snackBar.open('Error al descargar documento: ' + errorMessage, 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Error al descargar documento: ' + errorMessage, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -211,7 +212,7 @@ export class DocumentationViewerComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     }, 5000);
 
-    this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
+    this.snackBar.open('Documento abierto correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
   }
 
   /**
@@ -222,7 +223,7 @@ export class DocumentationViewerComponent implements OnInit {
     
     if (!documento.comentario || documento.comentario.trim().length === 0) {
       // Documento sin comentarios
-      this.snackBar.open('Este documento no tiene comentarios', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Este documento no tiene comentarios', 'Cerrar', snackbarConfig());
       return;
     }
 
@@ -281,7 +282,7 @@ export class DocumentationViewerComponent implements OnInit {
     // agregarComentario() llamado
     
     if (!documento.id_documento) {
-      this.snackBar.open('No hay ID de documento disponible', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No hay ID de documento disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -305,20 +306,20 @@ export class DocumentationViewerComponent implements OnInit {
       }
 
       if (!comentario.trim()) {
-        this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', snackbarConfig(['warning-snackbar']));
         return;
       }
 
 
       // Mostrar mensaje de carga
-      this.snackBar.open('Agregando comentario...', 'Cerrar', { duration: 2000 });
+      this.snackBar.open('Agregando comentario...', 'Cerrar', snackbarConfig());
 
       // Usar el servicio con endpoint genérico
       if (this.servicio && this.servicio.agregarComentario) {
         this.servicio.agregarComentario(documento.id_documento, comentario.trim()).subscribe({
           next: (result: any) => {
             // Comentario agregado exitosamente
-            this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
             // Emitir evento para que el componente padre actualice la vista
             this.comentarioAgregado.emit({
               documento: documento,
@@ -326,11 +327,11 @@ export class DocumentationViewerComponent implements OnInit {
             });
           },
           error: (error: any) => {
-            this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', { duration: 5000 });
+            this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         });
       } else {
-        this.snackBar.open('Error: Servicio no disponible', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error: Servicio no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

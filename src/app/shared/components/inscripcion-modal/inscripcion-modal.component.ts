@@ -8,6 +8,7 @@ import { ArchivosService } from '../../../core/services/archivos.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../material.imports';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 export interface InscripcionModalData {
   preinscripcion: PreinscripcionSeguimiento;
@@ -85,7 +86,7 @@ export class InscripcionModalComponent implements OnInit {
       if (file.type !== 'application/pdf') {
         // Tipo de archivo incorrecto
         this.errorArchivo = 'Solo se permiten archivos PDF';
-        this.snackBar.open('Solo se permiten archivos PDF', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solo se permiten archivos PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
         return;
       }
       
@@ -99,7 +100,7 @@ export class InscripcionModalComponent implements OnInit {
         this.snackBar.open(
           `El archivo es muy grande (${fileSizeMB} MB). El límite máximo es 15 MB.`, 
           'Cerrar', 
-          { duration: 5000 }
+          snackbarConfig(['warning-snackbar'])
         );
         return;
       }
@@ -111,12 +112,12 @@ export class InscripcionModalComponent implements OnInit {
 
   onSubmit() {
     if (this.inscripcionForm.invalid) {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
     if (!this.archivoSeleccionado) {
-      this.snackBar.open('Debes subir el comprobante de pago (PDF)', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Debes subir el comprobante de pago (PDF)', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -243,7 +244,7 @@ export class InscripcionModalComponent implements OnInit {
         this.snackBar.open(
           'Error al crear la preinscripción. Por favor, inténtalo de nuevo.',
           'Cerrar',
-          { duration: 5000, panelClass: ['error-snackbar'] }
+          snackbarConfig(['error-snackbar'])
         );
       }
     });
@@ -260,7 +261,7 @@ export class InscripcionModalComponent implements OnInit {
         this.snackBar.open(
           'Error al aprobar la preinscripción. Por favor, inténtalo de nuevo.',
           'Cerrar',
-          { duration: 5000, panelClass: ['error-snackbar'] }
+          snackbarConfig(['error-snackbar'])
         );
       }
     });
@@ -304,7 +305,7 @@ export class InscripcionModalComponent implements OnInit {
           mensajeError = 'No tienes permisos para realizar esta acción.';
         }
         
-        this.snackBar.open(mensajeError, 'Cerrar', { duration: 8000 });
+        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -330,7 +331,7 @@ export class InscripcionModalComponent implements OnInit {
         this.snackBar.open(
           `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 
           'Cerrar', 
-          { duration: 5000 }
+          snackbarConfig(['success-snackbar'])
         );
         this.dialogRef.close(true); // Cerrar modal con éxito
       },
@@ -342,7 +343,7 @@ export class InscripcionModalComponent implements OnInit {
         }
         
         this.cargando = false;
-        this.snackBar.open('Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.', 'Cerrar', { duration: 8000 });
+        this.snackBar.open('Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.', 'Cerrar', snackbarConfig(['warning-snackbar']));
         this.dialogRef.close(true); // Aún cerrar el modal ya que la inscripción se creó
       }
     });

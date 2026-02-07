@@ -1,0 +1,112 @@
+/**
+ * Sistema de Diseño TIC - Universidad del Cauca
+ * Tokens de diseño (variables CSS)
+ * Documento: Sistema de Diseño UX-UI, División TIC, 2024
+ */
+
+/* ===== ANGULAR MATERIAL OVERRIDES ===== */
+:root {
+  --mat-primary: #000066;
+  --mat-primary-container: #E0E0FF;
+  --mat-on-primary: #FFFFFF;
+  --mat-on-primary-container: #000066;
+  --mat-secondary: #9D0311;
+  --mat-secondary-container: #FFDAD6;
+  --mat-on-secondary: #FFFFFF;
+  --mat-on-secondary-container: #690007;
+  --mat-tertiary: #1D72D3;
+  --mat-error: #FF6D0A;
+  --mat-on-error: #FFFFFF;
+  --mat-error-container: #FFDBCC;
+  --mat-on-error-container: #361000;
+}
+
+/* ===== COLORES INSTITUCIONALES ===== */
+:root {
+  /* Principales */
+  --color-primario: #000066;
+  --color-primario-light: #5056AC;
+  --color-primario-dark: #07184A;
+  
+  /* Secundarios */
+  --color-secundario: #9D0311;
+  --color-secundario-light: #DB141C;
+  --color-secundario-dark: #690007;
+  
+  /* Destacados */
+  --color-error: #FF6D0A;
+  --color-terciario: #1D72D3;
+  --color-seguridad: #E0E0FF;
+  --color-accesibilidad: #249300;
+  
+  /* Neutros */
+  --color-neutro-texto: #454444;
+  --color-neutro-hover: #F6F6F6;
+  --color-fondo: #FFFBFF;
+  
+  /* Paleta tonal primario */
+  --primario-90: #E0E0FF;
+  --primario-80: #BEC2FF;
+  --primario-70: #9DA3FE;
+  --primario-60: #828AE3;
+  --primario-50: #6970C7;
+  --primario-40: #5056AB;
+  --primario-30: #373D92;
+  --primario-20: #1E257B;
+  
+  /* Paleta tonal secundario */
+  --secundario-90: #FFDAD6;
+  --secundario-80: #FFB4AB;
+  --secundario-70: #FE897F;
+  --secundario-60: #FF554C;
+  --secundario-50: #DB3A35;
+  --secundario-40: #B82021;
+  
+  /* Notificaciones */
+  --notif-exito-fondo: #D8EFD1;
+  --notif-exito-borde: #249337;
+  --notif-exito-titulo: #249337;
+  --notif-exito-texto: #103717;
+  
+  --notif-info-fondo: #D6E2FF;
+  --notif-info-borde: #0053A0;
+  --notif-info-titulo: #0053A0;
+  --notif-info-texto: #003062;
+  
+  --notif-error-fondo: #FFDBCC;
+  --notif-error-borde: #8D3800;
+  --notif-error-titulo: #8D3800;
+  --notif-error-texto: #361000;
+  
+  --notif-seguridad-fondo: #E0E0FF;
+  --notif-seguridad-borde: #373D92;
+  --notif-seguridad-titulo: #373D92;
+  --notif-seguridad-texto: #1E257B;
+}
+
+/* ===== TIPOGRAFÍA (Tabla Desarrollo - pág. 26) ===== */
+:root {
+  --font-display: 'Titillium Web', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+  
+  --text-h1-size: 32px;
+  --text-h1-line: 41px;
+  --text-h2-size: 22px;
+  --text-h2-line: 30px;
+  --text-h3-size: 18px;
+  --text-h3-line: 22.5px;
+  --text-body-size: 14px;
+  --text-body-line: 26px;
+  --text-body2-size: 12px;
+  --text-body2-line: 21px;
+  --text-button-size: 12px;
+  --text-button-line: 19px;
+}
+
+/* ===== MIGA DE PAN (pág. 49) ===== */
+:root {
+  --breadcrumb-font: 'Open Sans', sans-serif;
+  --breadcrumb-size: 14px;
+  --breadcrumb-weight: 300;
+  --breadcrumb-color: #A7A6B0;
+}

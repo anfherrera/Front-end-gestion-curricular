@@ -22,6 +22,7 @@ import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } 
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -95,7 +96,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -151,14 +152,14 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       ).subscribe({
         next: () => {
-          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
           // Recargar la solicitud para actualizar los comentarios
           this.cargarSolicitudes();
         },
         error: (error) => {
           this.logger.error('Error al añadir comentario:', error);
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       });
     }
@@ -173,7 +174,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
@@ -181,7 +182,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al aprobar solicitud:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -206,7 +207,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {
-            this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud rechazada', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.cargarSolicitudes();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
@@ -214,7 +215,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           error: (err) => {
             this.logger.error('Error al rechazar solicitud:', err);
             const mensaje = this.errorHandler.extraerMensajeError(err);
-            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', { duration: 3000 });
+            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         });
       }
@@ -228,7 +229,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Validación completada, enviando a coordinador', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Validación completada, enviando a coordinador', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
@@ -236,7 +237,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al completar validación:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al completar validación', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al completar validación', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -293,7 +294,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes procesadas (funcionario):', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar historial de solicitudes procesadas', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar historial de solicitudes procesadas', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

@@ -165,7 +165,7 @@ interface ProcesoData {
       max-height: 600px;
       display: flex;
       flex-direction: column;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -175,7 +175,7 @@ interface ProcesoData {
     }
 
     .estadisticas-por-proceso-card mat-card-header {
-      background: linear-gradient(135deg, #00138C, #001a99);
+      background: linear-gradient(135deg, #000066, #5056AC);
       margin: -16px -16px 16px -16px;
       padding: 16px;
       border-radius: 8px 8px 0 0;
@@ -235,7 +235,7 @@ interface ProcesoData {
       border-radius: 8px;
       padding: 12px;
       transition: all 0.3s ease;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       height: fit-content;
       display: flex;
       flex-direction: column;
@@ -249,7 +249,7 @@ interface ProcesoData {
     }
 
     .proceso-reingreso { border-left-color: #8e24aa; }
-    .proceso-homologacion { border-left-color: #4caf50; }
+    .proceso-homologacion { border-left-color: #249337; }
     .proceso-cursos { border-left-color: #2196f3; }
     .proceso-ecaes { border-left-color: #00bcd4; }
     .proceso-paz { border-left-color: #ff9800; }
@@ -297,7 +297,7 @@ interface ProcesoData {
     .total-solicitudes {
       font-size: 1.1rem;
       font-weight: bold;
-      color: #00138C;
+      color: #000066;
     }
 
     .label {
@@ -345,8 +345,8 @@ interface ProcesoData {
       color: #6c757d;
     }
 
-    .stat-item.aprobadas mat-icon { color: #4caf50; }
-    .stat-item.rechazadas mat-icon { color: #f44336; }
+    .stat-item.aprobadas mat-icon { color: #249337; }
+    .stat-item.rechazadas mat-icon { color: #FF6D0A; }
     .stat-item.en-proceso mat-icon { color: #ff9800; }
     .stat-item.enviadas mat-icon { color: #ffc107; }
     .stat-item.porcentaje mat-icon { color: #2196f3; }

@@ -8,6 +8,7 @@ import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports
 import { MatDialog } from '@angular/material/dialog';
 import { InscripcionModalComponent } from '../../../../shared/components/inscripcion-modal/inscripcion-modal.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -270,7 +271,7 @@ export class VerSolicitudComponent implements OnInit {
 
     const comentario = this.getComentarioEstadoActual(solicitud);
     if (!comentario) {
-      this.snackBar.open('No hay un motivo registrado para esta solicitud.', 'Cerrar', { duration: 4000 });
+      this.snackBar.open('No hay un motivo registrado para esta solicitud.', 'Cerrar', snackbarConfig());
       return;
     }
 
@@ -582,7 +583,7 @@ export class VerSolicitudComponent implements OnInit {
     .motivo-dialog__encabezado--rechazo {
       background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
       color: #b71c1c;
-      border-left-color: #f44336;
+      border-left-color: #FF6D0A;
     }
 
     .motivo-dialog__encabezado mat-icon {

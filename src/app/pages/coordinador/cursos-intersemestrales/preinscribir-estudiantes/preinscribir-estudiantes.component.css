@@ -9,7 +9,7 @@
 }
 
 .filtro-section h3 {
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 16px;
   font-size: 18px;
   font-weight: 600;
@@ -39,11 +39,11 @@
 }
 
 .preinscripciones-section h3 {
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 20px;
   font-size: 18px;
   font-weight: 600;
-  border-bottom: 2px solid #00138C;
+  border-bottom: 2px solid var(--color-primario);
   padding-bottom: 8px;
 }
 
@@ -64,7 +64,7 @@
   width: 48px;
   height: 48px;
   margin-bottom: 16px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .table-container {
@@ -79,7 +79,7 @@
 }
 
 .preinscripciones-table th {
-  background: #00138C !important;
+  background: var(--color-primario) !important;
   color: white !important;
   font-weight: 600;
   text-transform: uppercase;
@@ -122,7 +122,7 @@
   padding: 8px 12px;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   border-radius: 6px;
-  border-left: 3px solid #00138C;
+  border-left: 3px solid var(--color-primario);
   margin: 4px 0;
 }
 
@@ -145,7 +145,7 @@
 /* Estilos para el badge de estado */
 .estado-badge {
   display: inline-block;
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
   padding: 4px 12px;
   border-radius: 16px;
@@ -179,7 +179,7 @@
 
 .action-icon {
   font-size: 18px;
-  color: #00138C;
+  color: var(--color-primario);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,7 +202,7 @@
 }
 
 .curso-info h4 {
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 16px;
   font-size: 16px;
   font-weight: 600;
@@ -221,11 +221,11 @@
   padding: 8px 12px;
   background: white;
   border-radius: 6px;
-  border-left: 3px solid #00138C;
+  border-left: 3px solid var(--color-primario);
 }
 
 .info-item strong {
-  color: #00138C;
+  color: var(--color-primario);
   min-width: 120px;
   font-size: 13px;
 }
@@ -266,7 +266,7 @@
 }
 
 ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
@@ -274,12 +274,12 @@
 }
 
 ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* Estilos para mat-chip - FORZAR ESTILOS */
 ::ng-deep .mat-mdc-chip {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
   border-width: 0 !important;
@@ -303,7 +303,7 @@
 
 /* Forzar estilos en TODOS los chips */
 ::ng-deep mat-chip {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
   outline: none !important;
@@ -316,7 +316,7 @@
 
 /* Estilos específicos para chips de estado en la tabla */
 ::ng-deep .preinscripciones-table .mat-mdc-chip {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
   border-radius: 16px !important;
@@ -356,7 +356,7 @@
 }
 
 ::ng-deep .preinscripciones-table th {
-  background: #00138C !important;
+  background: var(--color-primario) !important;
   color: white !important;
 }
 
@@ -399,7 +399,7 @@
 ::ng-deep .preinscripciones-table .observaciones-cell {
   color: #333 !important;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
-  border-left: 3px solid #00138C !important;
+  border-left: 3px solid var(--color-primario) !important;
   border-radius: 6px !important;
   padding: 8px 12px !important;
 }
@@ -418,7 +418,7 @@
 
 /* Estilos adicionales para chips de estado */
 ::ng-deep .preinscripciones-table mat-chip {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
 }
@@ -437,7 +437,7 @@
 
 /* Forzar estilos en todos los elementos del chip */
 ::ng-deep .preinscripciones-table [style*="background-color"] {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
 }
 
@@ -447,11 +447,11 @@
 
 /* Estilos para el icono del ojo en acciones - FORZAR */
 ::ng-deep .preinscripciones-table .mat-mdc-icon-button {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .preinscripciones-table .mat-mdc-icon-button .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover {
@@ -459,29 +459,29 @@
 }
 
 ::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover .mat-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 /* Forzar color en TODOS los iconos de la tabla */
 ::ng-deep .preinscripciones-table mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .preinscripciones-table button mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .preinscripciones-table .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 /* Estilos específicos para botones de acción */
 ::ng-deep .preinscripciones-table button[mat-icon-button] {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .preinscripciones-table button[mat-icon-button] .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .preinscripciones-table button[mat-icon-button]:hover {
@@ -489,7 +489,7 @@
 }
 
 ::ng-deep .preinscripciones-table button[mat-icon-button]:hover .mat-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 /* ===== ESTILOS PARA LOS BOTONES DE ACCIÓN ===== */
@@ -505,7 +505,7 @@
 
 /* Botón Ver - Azul sólido consistente con la aplicación */
 .btn-ver {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
   border-radius: 6px !important;
@@ -531,7 +531,7 @@
 }
 
 .btn-ver:hover:not(:disabled) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
 }
@@ -567,7 +567,7 @@
 
 /* Botón Aprobar - Verde consistente */
 .btn-aprobar {
-  background-color: #4caf50 !important;
+  background-color: #249337 !important;
   color: white !important;
   border: none !important;
   border-radius: 6px !important;
@@ -629,7 +629,7 @@
 
 /* Botón Rechazar - Rojo consistente */
 .btn-rechazar {
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
   color: white !important;
   border: none !important;
   border-radius: 6px !important;
@@ -691,7 +691,7 @@
 
 /* Forzar estilos en todos los botones de la tabla usando ::ng-deep */
 ::ng-deep .preinscripciones-table .btn-ver {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
   border-radius: 6px !important;
@@ -702,13 +702,13 @@
 }
 
 ::ng-deep .preinscripciones-table .btn-ver:hover {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
 }
 
 ::ng-deep .preinscripciones-table .btn-aprobar {
-  background-color: #4caf50 !important;
+  background-color: #249337 !important;
   color: white !important;
   border: none !important;
   border-radius: 6px !important;
@@ -725,7 +725,7 @@
 }
 
 ::ng-deep .preinscripciones-table .btn-rechazar {
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
   color: white !important;
   border: none !important;
   border-radius: 6px !important;
@@ -752,19 +752,19 @@
 
 /* Forzar estilos en todos los botones mat-raised-button */
 ::ng-deep .preinscripciones-table button[mat-raised-button].btn-ver {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none !important;
 }
 
 ::ng-deep .preinscripciones-table button[mat-raised-button].btn-aprobar {
-  background-color: #4caf50 !important;
+  background-color: #249337 !important;
   color: white !important;
   border: none !important;
 }
 
 ::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar {
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
   color: white !important;
   border: none !important;
 }
@@ -785,30 +785,30 @@
 
 /* Forzar estilos para Material Design button states */
 ::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver {
-  --mdc-filled-button-container-color: #00138C !important;
+  --mdc-filled-button-container-color: var(--color-primario) !important;
   --mdc-filled-button-label-text-color: white !important;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
 }
 
 ::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar {
-  --mdc-filled-button-container-color: #4caf50 !important;
+  --mdc-filled-button-container-color: #249337 !important;
   --mdc-filled-button-label-text-color: white !important;
-  background-color: #4caf50 !important;
+  background-color: #249337 !important;
   color: white !important;
 }
 
 ::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar {
-  --mdc-filled-button-container-color: #f44336 !important;
+  --mdc-filled-button-container-color: var(--color-error) !important;
   --mdc-filled-button-label-text-color: white !important;
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
   color: white !important;
 }
 
 /* Forzar estilos para hover states de Material Design */
 ::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-ver:hover {
   --mdc-filled-button-hover-state-layer-color: rgba(255, 255, 255, 0.08) !important;
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
 }
 
 ::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-aprobar:hover {
@@ -1156,8 +1156,8 @@
 
 .btn-danger {
   color: #fff;
-  background-color: #f44336;
-  border-color: #f44336;
+  background-color: var(--color-error);
+  border-color: var(--color-error);
   box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
 }
 
@@ -1280,20 +1280,20 @@ button[mat-raised-button].btn-rechazar * {
 
 /* Botón Ver - Azul */
 .acciones-container button[mat-icon-button][style*="00138C"] {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .acciones-container button[mat-icon-button][style*="00138C"]:hover {
   background-color: rgba(0, 19, 140, 0.1) !important;
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 .acciones-container button[mat-icon-button][style*="00138C"] mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .acciones-container button[mat-icon-button][style*="00138C"]:hover mat-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 /* Botón Aprobar - Verde */
@@ -1316,7 +1316,7 @@ button[mat-raised-button].btn-rechazar * {
 
 /* Botón Rechazar - Rojo */
 .acciones-container button[mat-icon-button][style*="f44336"] {
-  color: #f44336 !important;
+  color: var(--color-error) !important;
 }
 
 .acciones-container button[mat-icon-button][style*="f44336"]:hover {
@@ -1325,7 +1325,7 @@ button[mat-raised-button].btn-rechazar * {
 }
 
 .acciones-container button[mat-icon-button][style*="f44336"] mat-icon {
-  color: #f44336 !important;
+  color: var(--color-error) !important;
 }
 
 .acciones-container button[mat-icon-button][style*="f44336"]:hover mat-icon {

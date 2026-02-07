@@ -24,6 +24,7 @@ import { ApprovedRequestsSectionComponent } from '../../../shared/components/app
 import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -127,7 +128,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -161,7 +162,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes de reingreso aprobadas:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar las solicitudes aprobadas', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar las solicitudes aprobadas', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.cargandoSolicitudesAprobadas = false;
       }
     });
@@ -198,7 +199,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
    */
   onTengoDocumento(): void {
     this.documentoHabilitado = true;
-    this.snackBar.open('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.', 'Cerrar', { duration: 3000 });
+    this.snackBar.open('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.', 'Cerrar', snackbarConfig(['success-snackbar']));
   }
 
   /**
@@ -225,7 +226,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         // Marcar que el documento fue generado (SIN cambiar el estado aún)
         this.documentoGenerado = true;
 
-        this.snackBar.open('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.loading = false;
 
         // Documento generado, estado de solicitud NO cambiado aún
@@ -233,7 +234,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         this.logger.error('Error al generar documento:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al generar documento', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al generar documento', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -255,9 +256,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     const archivo = event.target.files[0];
     if (archivo && archivo.type === 'application/pdf') {
       this.archivoPDF = archivo;
-      this.snackBar.open(`Archivo PDF seleccionado: ${archivo.name}`, 'Cerrar', { duration: 3000 });
+      this.snackBar.open(`Archivo PDF seleccionado: ${archivo.name}`, 'Cerrar', snackbarConfig());
     } else {
-      this.snackBar.open('Por favor selecciona un archivo PDF válido', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor selecciona un archivo PDF válido', 'Cerrar', snackbarConfig(['warning-snackbar']));
     }
   }
 
@@ -266,7 +267,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
    */
   subirPDF(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -283,13 +284,13 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.logger.log('Archivo PDF subido exitosamente:', response);
-        this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.subiendoPDF = false;
       },
       error: (err) => {
         this.logger.error('Error al subir archivo PDF:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.subiendoPDF = false;
       }
     });
@@ -300,7 +301,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
    */
   enviarPDFAlEstudiante(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor sube un archivo PDF primero', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor sube un archivo PDF primero', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -314,7 +315,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       next: () => {
         this.logger.log('Estado de solicitud actualizado a APROBADA');
         this.logger.log('PDF enviado al estudiante exitosamente');
-        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.enviandoPDF = false;
 
         // Limpiar el estado
@@ -328,7 +329,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         this.logger.error('Error al actualizar estado de solicitud:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al enviar PDF al estudiante', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al enviar PDF al estudiante', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.enviandoPDF = false;
       }
     });
@@ -339,7 +340,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
    */
   enviarDocumento(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -365,7 +366,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
         if (!this.selectedSolicitud) {
           this.logger.error('selectedSolicitud es undefined');
-          this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', snackbarConfig(['error-snackbar']));
           this.enviandoPDF = false;
           return;
         }
@@ -377,7 +378,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           next: () => {
             this.logger.log('Estado de solicitud actualizado a APROBADA');
             this.logger.log('PDF enviado al estudiante exitosamente');
-            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.enviandoPDF = false;
 
             // Limpiar el estado
@@ -391,7 +392,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           error: (err: any) => {
             this.logger.error('Error al actualizar estado de solicitud:', err);
             const mensaje = this.errorHandler.extraerMensajeError(err);
-            this.snackBar.open(mensaje || 'PDF subido pero error al enviar al estudiante', 'Cerrar', { duration: 3000 });
+            this.snackBar.open(mensaje || 'PDF subido pero error al enviar al estudiante', 'Cerrar', snackbarConfig(['error-snackbar']));
             this.enviandoPDF = false;
           }
         });
@@ -399,7 +400,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al subir archivo PDF:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.subiendoPDF = false;
       }
     });
@@ -430,7 +431,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   verDocumento(documento: DocumentosDTORespuesta): void {
     // Mostrar mensaje de carga
-    this.snackBar.open('Descargando documento...', 'Cerrar', { duration: 2000 });
+    this.snackBar.open('Descargando documento...', 'Cerrar', snackbarConfig());
 
     // Intentar descargar por ID del documento (más confiable)
     if (documento.id_documento && this.reingresoService.descargarArchivoPorId) {
@@ -503,7 +504,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   private intentarDescargaPorNombre(documento: DocumentosDTORespuesta): void {
     if (!documento.nombre) {
       this.logger.error('No hay nombre de archivo disponible');
-      this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -528,7 +529,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           mensajeError = 'Error interno del servidor al descargar el archivo';
         }
 
-        this.snackBar.open(mensajeError, 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -575,7 +576,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       window.URL.revokeObjectURL(url);
     }, 5000);
 
-    this.snackBar.open('Documento abierto correctamente', 'Cerrar', { duration: 3000 });
+    this.snackBar.open('Documento abierto correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
   }
 
   generarOficio(): void {
@@ -587,13 +588,13 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Oficio generado correctamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Oficio generado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarSolicitudes();
       },
       error: (err) => {
         this.logger.error('Error al generar oficio:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al generar oficio', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al generar oficio', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -613,9 +614,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
 
-        this.snackBar.open('Oficio descargado correctamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Oficio descargado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
-      error: (err) => this.snackBar.open('Error al descargar oficio', 'Cerrar', { duration: 3000 })
+      error: (err) => this.snackBar.open('Error al descargar oficio', 'Cerrar', snackbarConfig(['error-snackbar']))
     });
   }
 
@@ -644,11 +645,11 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {
-            this.snackBar.open('Comentario actualizado correctamente', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Comentario actualizado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.cargarSolicitudes();
           },
           error: (err: any) => {
-            this.snackBar.open('Error al añadir comentario', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Error al añadir comentario', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         });
       }
@@ -662,7 +663,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
@@ -670,7 +671,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         this.logger.error('Error al aprobar solicitud:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -695,7 +696,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {
-            this.snackBar.open('Solicitud rechazada', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud rechazada', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.cargarSolicitudes();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
@@ -703,7 +704,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           error: (err: any) => {
             this.logger.error('Error al rechazar solicitud:', err);
             const mensaje = this.errorHandler.extraerMensajeError(err);
-            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', { duration: 3000 });
+            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         });
       }

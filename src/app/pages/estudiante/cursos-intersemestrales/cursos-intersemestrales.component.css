@@ -16,11 +16,11 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-bottom: 4px solid #00138C;
+  border-bottom: 4px solid var(--color-primario);
 }
 
 .header h1 {
-  color: #00138C;
+  color: var(--color-primario);
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
@@ -35,7 +35,7 @@
 .notificaciones-btn {
   position: relative;
   background-color: #f5f5f5;
-  color: #00138C;
+  color: var(--color-primario);
   border-radius: 8px;
   transition: all 0.3s ease;
 }
@@ -74,14 +74,14 @@
 .menu-item:hover .menu-content {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border-color: #00138C;
+  border-color: var(--color-primario);
 }
 
 .menu-item.active .menu-content {
   background: white;
-  color: #00138C;
-  border-color: #00138C;
-  border-bottom: 4px solid #00138C;
+  color: var(--color-primario);
+  border-color: var(--color-primario);
+  border-bottom: 4px solid var(--color-primario);
 }
 
 .menu-icon {
@@ -89,7 +89,7 @@
   font-size: 24px;
   width: 24px;
   height: 24px;
-  color: #00138C;
+  color: var(--color-primario);
   transition: all 0.3s ease;
 }
 
@@ -189,7 +189,7 @@
 
 .info-icon {
   font-size: 3.5rem;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 1.5rem;
   width: 4rem;
   height: 4rem;
@@ -202,7 +202,7 @@
 }
 
 .info-content h2 {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -240,7 +240,7 @@
 }
 
 .option-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 2rem;
   width: 2.5rem;
   height: 2.5rem;
@@ -259,7 +259,7 @@
 }
 
 .option-text h3 {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.8rem;
@@ -274,7 +274,7 @@
 }
 
 .info-footer {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 500;
   font-size: 1rem;
   margin: 0;

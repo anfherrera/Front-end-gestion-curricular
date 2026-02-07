@@ -15,7 +15,7 @@
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .header-content {
@@ -49,7 +49,7 @@
   gap: 10px;
   font-size: 2.2rem;
   font-weight: 700;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 10px;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .filters-card mat-card-header {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -114,12 +114,12 @@
 
 .error-icon {
   font-size: 4rem;
-  color: #f44336;
+  color: var(--color-error);
   margin-bottom: 20px;
 }
 
 .error-container h3 {
-  color: #f44336;
+  color: var(--color-error);
   margin-bottom: 10px;
 }
 
@@ -150,12 +150,12 @@
   gap: 10px;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 20px;
   padding: 16px;
   background: white;
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
@@ -180,7 +180,7 @@
 }
 
 .kpi-primary {
-  border-left-color: #00138C;
+  border-left-color: var(--color-primario);
 }
 
 .kpi-success {
@@ -220,7 +220,7 @@
 }
 
 .kpi-primary .kpi-icon {
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
 }
 
@@ -324,7 +324,7 @@
 }
 
 .chart-card mat-card-header {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -393,12 +393,12 @@
 }
 
 .stat-icon.approved {
-  color: #4caf50;
+  color: #249337;
   background: #e8f5e8;
 }
 
 .stat-icon.rejected {
-  color: #f44336;
+  color: var(--color-error);
   background: #ffebee;
 }
 
@@ -538,12 +538,12 @@
   gap: 10px;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 20px;
 }
 
 .predicciones-section .section-title mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 2rem;
   width: 2rem;
   height: 2rem;
@@ -552,13 +552,13 @@
 /* Tarjeta de Predicción Global */
 .prediccion-global-card {
   background: linear-gradient(135deg, #ffffff, #f8f9fa);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
 .prediccion-global-card mat-card-header {
-  background: linear-gradient(135deg, #00138C, #001a99);
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
   color: white;
   padding: 15px 20px;
   border-radius: 8px 8px 0 0;
@@ -616,7 +616,7 @@
   font-size: 3rem;
   width: 3rem;
   height: 3rem;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .prediccion-metadata {
@@ -698,7 +698,7 @@
 }
 
 .metodologia-info mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.2rem;
   width: 1.2rem;
   height: 1.2rem;
@@ -810,11 +810,11 @@
   font-size: 1.2rem;
   width: 1.2rem;
   height: 1.2rem;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .prediccion-item .item-valores strong {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .prediccion-item .item-modelo {
@@ -866,11 +866,11 @@
 
 /* Snackbar Styles */
 .success-snackbar {
-  background-color: #4caf50 !important;
+  background-color: #249337 !important;
   color: white !important;
 }
 
 .error-snackbar {
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
   color: white !important;
 }

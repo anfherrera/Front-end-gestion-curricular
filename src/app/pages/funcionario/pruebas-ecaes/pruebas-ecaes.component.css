@@ -68,7 +68,7 @@
 .fecha-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 19, 140, 0.15);
-  border-color: #00138C;
+  border-color: var(--color-primario);
 }
 
 .fecha-label {
@@ -102,7 +102,7 @@
 
 /* Estilos específicos para el datepicker */
 .mat-datepicker-toggle {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .mat-datepicker-toggle:hover {
@@ -120,7 +120,7 @@
 }
 
 .btn-publicar {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%) !important;
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%) !important;
   color: white !important;
   padding: 16px 32px !important;
   font-size: 1.1rem !important;
@@ -173,7 +173,7 @@
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 16px;
 }
 
@@ -268,7 +268,7 @@
 }
 
 .botones-acciones button[color="primary"] {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%) !important;
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%) !important;
   color: white !important;
   box-shadow: 0 4px 12px rgba(0, 19, 140, 0.3) !important;
 }
@@ -279,7 +279,7 @@
 }
 
 .botones-acciones button[color="warn"] {
-  background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%) !important;
+  background: linear-gradient(135deg, var(--color-secundario-light) 0%, var(--color-error) 100%) !important;
   color: white !important;
   box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3) !important;
 }
@@ -318,7 +318,7 @@
 }
 
 .mat-mdc-option.mdc-list-item--selected {
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
 }
 
@@ -347,7 +347,7 @@
 }
 
 .info-card mat-card-title mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .info-card mat-card-content {

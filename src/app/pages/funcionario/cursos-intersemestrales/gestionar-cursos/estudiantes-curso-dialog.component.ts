@@ -12,6 +12,7 @@ import {
   RespuestaEstudiantesCurso,
   EstudianteCurso 
 } from '../../../../core/services/cursos-intersemestrales.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-estudiantes-curso-dialog',
@@ -70,22 +71,13 @@ export class EstudiantesCursoDialogComponent implements OnInit {
         
         if (err.status === 403) {
           this.error = 'No tienes permisos para ver esta información';
-          this.snackBar.open('No tienes permisos para ver esta información', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('No tienes permisos para ver esta información', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else if (err.status === 404) {
           this.error = 'Curso no encontrado';
-          this.snackBar.open('Curso no encontrado', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('Curso no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else {
           this.error = 'Error al cargar los estudiantes';
-          this.snackBar.open('Error al cargar los estudiantes', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('Error al cargar los estudiantes', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });
@@ -96,17 +88,17 @@ export class EstudiantesCursoDialogComponent implements OnInit {
     
     const estadoLower = estado.toLowerCase();
     if (estadoLower.includes('aprobada') || estadoLower.includes('validado')) {
-      return '#4caf50';
+      return '#249337'; // COLORS.success
     } else if (estadoLower.includes('enviada')) {
-      return '#2196f3';
+      return '#1D72D3'; // COLORS.tertiary
     } else if (estadoLower.includes('rechazada') || estadoLower.includes('rechazado')) {
-      return '#f44336';
+      return '#FF6D0A'; // COLORS.error
     }
     return '#ff9800';
   }
 
   getTipoColor(tipo: string): string {
-    return tipo === 'Inscrito' ? '#4caf50' : '#ff9800';
+    return tipo === 'Inscrito' ? '#249337' : '#ff9800';
   }
 
   cerrar(): void {

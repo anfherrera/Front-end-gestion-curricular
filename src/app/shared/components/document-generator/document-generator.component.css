@@ -10,13 +10,13 @@
 /* Información de la solicitud */
 .solicitud-info-card {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
 }
 
 .solicitud-info-card mat-card-header {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -80,7 +80,7 @@
 }
 
 .document-form-card mat-card-header {
-  background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
   color: white;
   margin: -16px -16px 24px -16px;
   padding: 20px;
@@ -153,7 +153,7 @@
 
 /* Estilo para botón principal */
 .form-actions button[mat-raised-button][color="primary"] {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
   border-radius: 4px;
@@ -164,7 +164,7 @@
 }
 
 .form-actions button[mat-raised-button][color="primary"]:hover:not(:disabled) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
@@ -252,7 +252,7 @@ mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline-thick {
@@ -272,68 +272,68 @@ mat-card-title mat-icon {
 
 /* Iconos de los campos de formulario */
 mat-form-field mat-icon[matSuffix] {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 mat-form-field.mat-focused mat-icon[matSuffix] {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 /* Icono del calendario (datepicker toggle) - Usando ::ng-deep para penetrar la encapsulación */
 ::ng-deep mat-datepicker-toggle {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep mat-datepicker-toggle mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep mat-datepicker-toggle:hover {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 ::ng-deep mat-datepicker-toggle:hover mat-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 ::ng-deep mat-datepicker-toggle:hover .mat-datepicker-toggle-default-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle mat-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 /* Asegurar que el icono del datepicker sea azul en todos los estados */
 ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 ::ng-deep .document-generator-container mat-form-field.mat-focused mat-datepicker-toggle mat-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 
 ::ng-deep .document-generator-container mat-form-field.mat-focused mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: #001a99 !important;
+  color: var(--color-primario-light) !important;
 }
 

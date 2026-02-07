@@ -11,6 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CursosIntersemestralesService, CreateCursoDTO, UpdateCursoDTO, Salon } from '../../../../core/services/cursos-intersemestrales.service';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '../../../../core/utils/periodo.utils';
 
 export interface CursoDialogData {
@@ -258,11 +259,11 @@ export interface CursoDialogData {
     }
 
     .form-section h3 {
-      color: #00138C;
+      color: #000066;
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 20px;
-      border-bottom: 3px solid #00138C;
+      border-bottom: 3px solid #000066;
       padding-bottom: 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -318,7 +319,7 @@ export interface CursoDialogData {
     }
 
     ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
-      color: #00138C;
+      color: #000066;
     }
 
     ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
@@ -326,16 +327,16 @@ export interface CursoDialogData {
     }
 
     ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-      color: #00138C;
+      color: #000066;
     }
 
     /* Estilos para date picker */
     ::ng-deep .mat-datepicker-toggle {
-      color: #00138C !important;
+      color: #000066 !important;
     }
 
     ::ng-deep .mat-datepicker-toggle:hover {
-      color: #001a99 !important;
+      color: #5056AC !important;
     }
 
     ::ng-deep .mat-datepicker-content {
@@ -345,7 +346,7 @@ export interface CursoDialogData {
     }
 
     ::ng-deep .mat-calendar-header {
-      background-color: #00138C;
+      background-color: #000066;
       color: white !important;
     }
 
@@ -393,23 +394,23 @@ export interface CursoDialogData {
 
     ::ng-deep .mat-calendar-body-cell:hover:not(.mat-calendar-body-disabled) {
       background-color: rgba(0, 19, 140, 0.1) !important;
-      color: #00138C !important;
+      color: #000066 !important;
     }
 
     ::ng-deep .mat-calendar-body-selected {
-      background-color: #00138C !important;
+      background-color: #000066 !important;
       color: white !important;
     }
 
     ::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-      border-color: #00138C !important;
-      color: #00138C !important;
+      border-color: #000066 !important;
+      color: #000066 !important;
     }
 
     /* Estilos para el panel de selección de mes/año */
     ::ng-deep .mat-calendar-table-header th {
       background-color: #f8f9fa !important;
-      color: #00138C !important;
+      color: #000066 !important;
       font-weight: 600 !important;
     }
 
@@ -431,11 +432,11 @@ export interface CursoDialogData {
 
     ::ng-deep .mat-calendar-table .mat-calendar-body-cell:hover {
       background-color: rgba(0, 19, 140, 0.1) !important;
-      color: #00138C !important;
+      color: #000066 !important;
     }
 
     ::ng-deep .mat-calendar-table .mat-calendar-body-selected {
-      background-color: #00138C !important;
+      background-color: #000066 !important;
       color: white !important;
     }
 
@@ -450,27 +451,27 @@ export interface CursoDialogData {
 
     ::ng-deep .mat-calendar-content .mat-calendar-body-cell:hover {
       background-color: rgba(0, 19, 140, 0.1) !important;
-      color: #00138C !important;
+      color: #000066 !important;
     }
 
     ::ng-deep .mat-calendar-content .mat-calendar-body-selected {
-      background-color: #00138C !important;
+      background-color: #000066 !important;
       color: white !important;
     }
 
     ::ng-deep .mat-calendar-table-header {
       background-color: #f8f9fa;
-      color: #00138C;
+      color: #000066;
       font-weight: 600;
     }
 
     ::ng-deep .mat-calendar-body-selected {
-      background-color: #00138C !important;
+      background-color: #000066 !important;
       color: white !important;
     }
 
     ::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-      border-color: #00138C !important;
+      border-color: #000066 !important;
     }
 
     ::ng-deep .mat-calendar-body-cell:hover:not(.mat-calendar-body-disabled) {
@@ -502,25 +503,25 @@ export interface CursoDialogData {
     }
 
     .dialog-actions button[color="primary"] {
-      background: linear-gradient(135deg, #00138C 0%, #001a99 100%) !important;
+      background: linear-gradient(135deg, #000066 0%, #5056AC 100%) !important;
       color: white !important;
       border: none !important;
     }
 
     .dialog-actions button[color="primary"]:hover {
-      background: linear-gradient(135deg, #001a99 0%, #0022b3 100%) !important;
+      background: linear-gradient(135deg, #5056AC 0%, #0022b3 100%) !important;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 19, 140, 0.3);
     }
 
     .dialog-actions button:not([color="primary"]) {
       background: white !important;
-      color: #00138C !important;
-      border: 2px solid #00138C !important;
+      color: #000066 !important;
+      border: 2px solid #000066 !important;
     }
 
     .dialog-actions button:not([color="primary"]):hover {
-      background: #00138C !important;
+      background: #000066 !important;
       color: white !important;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 19, 140, 0.2);
@@ -528,7 +529,7 @@ export interface CursoDialogData {
 
     /* Título del dialog */
     ::ng-deep .mat-mdc-dialog-title {
-      background: linear-gradient(135deg, #00138C 0%, #001a99 100%);
+      background: linear-gradient(135deg, #000066 0%, #5056AC 100%);
       color: white !important;
       padding: 20px 24px;
       margin: -24px -24px 0 -24px;
@@ -605,12 +606,12 @@ export interface CursoDialogData {
     }
 
     .form-container::-webkit-scrollbar-thumb {
-      background: #00138C;
+      background: #000066;
       border-radius: 4px;
     }
 
     .form-container::-webkit-scrollbar-thumb:hover {
-      background: #001a99;
+      background: #5056AC;
     }
 
     /* Estilos para información de solo lectura */
@@ -635,7 +636,7 @@ export interface CursoDialogData {
     }
 
     .info-item strong {
-      color: #00138C;
+      color: #000066;
       min-width: 100px;
       margin-right: 16px;
       font-weight: 600;
@@ -648,21 +649,21 @@ export interface CursoDialogData {
       gap: 12px;
       padding: 16px;
       background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       border-radius: 8px;
       margin: 16px 0;
       box-shadow: 0 2px 4px rgba(0, 19, 140, 0.1);
     }
 
     .duracion-info mat-icon {
-      color: #00138C;
+      color: #000066;
       font-size: 24px;
       width: 24px;
       height: 24px;
     }
 
     .duracion-info span {
-      color: #00138C;
+      color: #000066;
       font-size: 14px;
     }
 
@@ -719,7 +720,7 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.snackBar.open('Error al cargar la lista de salones', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar la lista de salones', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.cargandoSalones = false;
       }
     });
@@ -831,10 +832,7 @@ export class CursoDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.snackBar.open('No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', { 
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('No se pudieron cargar los períodos académicos. Verifica la conexión con el backend.', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -892,7 +890,7 @@ export class CursoDialogComponent implements OnInit {
           .subscribe({
             next: (cursoActualizado) => {
               // Curso actualizado
-              this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', { duration: 3000 });
+              this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
               this.dialogRef.close('guardado');
             },
             error: (err: any) => {
@@ -906,10 +904,7 @@ export class CursoDialogComponent implements OnInit {
                 errorMessage = 'Datos inválidos enviados al servidor';
               }
               
-              this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
-                duration: 5000, 
-                panelClass: ['error-snackbar'] 
-              });
+              this.snackBar.open(`${errorMessage}`, 'Cerrar', snackbarConfig(['error-snackbar']));
               // Cerrar dialog incluso si hay error para que se actualice la lista
               this.dialogRef.close('guardado');
             }
@@ -938,10 +933,7 @@ export class CursoDialogComponent implements OnInit {
         // Validar formato del período académico antes de enviar
         const periodoAcademico = formValue.periodoAcademico || '';
         if (!validarPeriodo(periodoAcademico)) {
-          this.snackBar.open('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', { 
-            duration: 5000, 
-            panelClass: ['error-snackbar'] 
-          });
+          this.snackBar.open('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', snackbarConfig(['error-snackbar']));
           return;
         }
         
@@ -985,7 +977,7 @@ export class CursoDialogComponent implements OnInit {
           .subscribe({
             next: (nuevoCurso) => {
               // Curso creado
-              this.snackBar.open('Curso creado exitosamente', 'Cerrar', { duration: 3000 });
+              this.snackBar.open('Curso creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
               this.dialogRef.close('guardado');
             },
             error: (err: any) => {
@@ -1022,17 +1014,14 @@ export class CursoDialogComponent implements OnInit {
                 errorMessage = 'Datos inválidos enviados al servidor. Verifica que todos los campos sean correctos.';
               }
               
-              this.snackBar.open(`${errorMessage}`, 'Cerrar', { 
-                duration: 7000, 
-                panelClass: ['error-snackbar'] 
-              });
+              this.snackBar.open(`${errorMessage}`, 'Cerrar', snackbarConfig(['error-snackbar']));
               
               // NO cerrar el dialog si hay error, para que el usuario pueda corregir
             }
           });
       }
     } else {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
     }
   }
 

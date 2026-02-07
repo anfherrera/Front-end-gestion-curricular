@@ -10,7 +10,7 @@
 .additional-info-card {
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-bottom: 4px solid #00138C;
+  border-bottom: 4px solid var(--color-primario);
   background: white;
 }
 
@@ -25,7 +25,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #00138C;
+  background: var(--color-primario);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,14 +47,14 @@
 
 .user-info-header h2 {
   margin: 0;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 1.8rem;
   font-weight: 700;
 }
 
 .role-chip {
   background-color: white !important;
-  color: #00138C !important;
+  color: var(--color-primario) !important;
   font-weight: 600;
   font-size: 0.85rem;
   border: none !important;
@@ -76,11 +76,11 @@
   padding: 16px;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .info-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 24px;
   width: 24px;
   height: 24px;
@@ -140,14 +140,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 600;
   font-size: 1.1rem;
   margin: 0;
 }
 
 .additional-info-card mat-card-title mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 20px;
   width: 20px;
   height: 20px;

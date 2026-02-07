@@ -20,7 +20,7 @@
 .card-title {
   font-size: 1.25rem;
   font-weight: bold;
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: #fff;
   padding: 14px 16px;
   display: block;
@@ -36,7 +36,7 @@
   padding: 12px;
   background-color: #e3f2fd;
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .info-text {
@@ -69,11 +69,11 @@
   padding: 12px;
   background-color: #cfe2ff;
   border-radius: 6px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .info-ayuda-sistemas strong {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 600;
 }
 
@@ -134,7 +134,7 @@
 
 .required-list mat-icon {
   font-size: 20px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .icon-success,
@@ -194,7 +194,7 @@
   padding: 16px;
   background-color: #f5f5f5;
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .info-nota {
@@ -209,12 +209,12 @@
 }
 
 .info-nota strong {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 600;
 }
 
 .info-nota a {
-  color: #00138C;
+  color: var(--color-primario);
   text-decoration: none;
   font-weight: 500;
 }

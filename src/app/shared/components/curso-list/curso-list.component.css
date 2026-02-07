@@ -96,7 +96,7 @@ span.en-espera {
   justify-content: center;
   padding: 4px 10px;
   border-radius: 12px;
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
   font-weight: 600;
   font-size: 0.85em;
@@ -121,7 +121,7 @@ button {
 
 /* Iconos específicos */
 .preinscribir-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
   font-size: 24px;
 }
 
@@ -130,7 +130,7 @@ button {
 }
 
 .inscribir-icon {
-  color: #4caf50 !important;
+  color: #249337 !important;
   font-size: 24px;
 }
 

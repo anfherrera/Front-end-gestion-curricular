@@ -322,16 +322,17 @@ export class NotificacionesService {
    * Obtiene el color por tipo de notificación (compatible con código existente)
    */
   getColorTipo(tipoNotificacion: string): string {
+    // Colores institucionales - Sistema de Diseño TIC Universidad del Cauca
     const colores: { [key: string]: string } = {
-      'APROBADA': '#4caf50',
-      'RECHAZADA': '#f44336',
-      'ENVIADA': '#2196f3',
-      'CAMBIO_ESTADO': '#ff9800',
-      'NUEVA_SOLICITUD': '#2196f3',
-      'URGENTE': '#e91e63',
-      'INFORMACION': '#2196f3'
+      'APROBADA': '#249337',
+      'RECHAZADA': '#FF6D0A',
+      'ENVIADA': '#1D72D3',
+      'CAMBIO_ESTADO': '#FF6D0A',
+      'NUEVA_SOLICITUD': '#1D72D3',
+      'URGENTE': '#9D0311',
+      'INFORMACION': '#1D72D3'
     };
-    return colores[tipoNotificacion] || '#666666';
+    return colores[tipoNotificacion] || '#454444';
   }
 
   /**

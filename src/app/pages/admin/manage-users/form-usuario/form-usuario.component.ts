@@ -16,6 +16,7 @@ import { RolesAdminService } from '../../../../core/services/roles-admin.service
 import { ProgramasService } from '../../../../core/services/programas.service';
 import { UsuarioDTOPeticion } from '../../../../core/models/usuario.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-form-usuario',
@@ -97,7 +98,7 @@ export class FormUsuarioComponent implements OnInit {
         this.roles = corregirEncodingObjeto(data);
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cargar roles', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar roles', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -108,7 +109,7 @@ export class FormUsuarioComponent implements OnInit {
         this.programas = corregirEncodingObjeto(data);
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cargar programas', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar programas', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -138,10 +139,10 @@ export class FormUsuarioComponent implements OnInit {
         this.loading = false;
         
         // Mostrar mensaje informativo
-        this.snackBar.open('Usuario cargado correctamente. Modifique los campos que desee actualizar.', 'Cerrar', { duration: 4000 });
+        this.snackBar.open('Usuario cargado correctamente. Modifique los campos que desee actualizar.', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cargar usuario', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al cargar usuario', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.router.navigate(['/admin/manage-users']);
         this.loading = false;
       }
@@ -151,7 +152,7 @@ export class FormUsuarioComponent implements OnInit {
   guardar(): void {
     if (this.usuarioForm.invalid) {
       this.usuarioForm.markAllAsTouched();
-      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -186,7 +187,7 @@ export class FormUsuarioComponent implements OnInit {
     } else {
       // Al crear, validar que la contraseña esté presente
       if (!formValue.password || formValue.password.trim() === '') {
-        this.snackBar.open('La contraseña es obligatoria al crear un usuario', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('La contraseña es obligatoria al crear un usuario', 'Cerrar', snackbarConfig(['warning-snackbar']));
         this.loading = false;
         return;
       }
@@ -198,12 +199,12 @@ export class FormUsuarioComponent implements OnInit {
     this.usuariosService.crearUsuario(data).subscribe({
       next: (response) => {
         // Usuario creado
-        this.snackBar.open('Usuario creado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Usuario creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
-        this.snackBar.open('Error: ' + mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Error: ' + mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });
@@ -213,12 +214,12 @@ export class FormUsuarioComponent implements OnInit {
     this.usuariosService.actualizarUsuario(data).subscribe({
       next: (response) => {
         // Usuario actualizado
-        this.snackBar.open('Usuario actualizado exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Usuario actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         this.router.navigate(['/admin/manage-users']);
       },
       error: (err: any) => {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
-        this.snackBar.open('Error: ' + mensaje, 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Error: ' + mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loading = false;
       }
     });

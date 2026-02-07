@@ -8,6 +8,7 @@
     </app-sidebar>
 
     <div class="main-content" [class.sidebar-closed]="!isSidebarOpen">
+      <app-breadcrumb></app-breadcrumb>
       <router-outlet></router-outlet>
     </div>
   </div>

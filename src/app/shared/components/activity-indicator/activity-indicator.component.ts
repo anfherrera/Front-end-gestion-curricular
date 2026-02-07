@@ -46,7 +46,7 @@ import { AuthService } from '../../../core/services/auth.service';
       font-size: 18px;
       width: 18px;
       height: 18px;
-      color: #4caf50;
+      color: var(--notif-exito-borde);
       transition: color 0.3s ease;
     }
 
@@ -55,7 +55,7 @@ import { AuthService } from '../../../core/services/auth.service';
     }
 
     .inactive-icon {
-      color: #dc3545 !important;
+      color: var(--color-error) !important;
     }
 
     .warning-text {

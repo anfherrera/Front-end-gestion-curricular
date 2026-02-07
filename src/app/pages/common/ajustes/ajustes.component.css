@@ -9,7 +9,7 @@
 .settings-card {
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-bottom: 4px solid #00138C;
+  border-bottom: 4px solid var(--color-primario);
   background: white;
 }
 
@@ -26,14 +26,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 600;
   font-size: 1.1rem;
   margin: 0;
 }
 
 .settings-card mat-card-title mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -54,7 +54,7 @@
   padding: 16px;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #00138C;
+  border-left: 4px solid var(--color-primario);
 }
 
 .setting-info {

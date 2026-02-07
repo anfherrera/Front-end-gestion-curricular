@@ -22,6 +22,7 @@ import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { PromptDialogComponent, PromptDialogData } from '../../../../shared/components/prompt-dialog/prompt-dialog.component';
+import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -127,10 +128,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.snackBar.open(
             'No hay cursos disponibles para inscripción en este momento.', 
             'Cerrar', 
-            { 
-              duration: 5000,
-              panelClass: ['warning-snackbar']
-            }
+            snackbarConfig(['warning-snackbar'])
           );
         }
         this.cargando = false;
@@ -144,10 +142,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.snackBar.open(
           mensajeError || 'Error al cargar los cursos. Verifique su conexión o contacte al administrador.', 
           'Cerrar', 
-          { 
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          }
+          snackbarConfig(['error-snackbar'])
         );
         this.cargando = false;
       }
@@ -183,10 +178,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.snackBar.open(
             'No hay estudiantes elegibles para este curso. Todos los estudiantes deben tener preinscripción aprobada y pago validado.', 
             'Cerrar', 
-            { 
-              duration: 5000,
-              panelClass: ['info-snackbar']
-            }
+            snackbarConfig()
           );
         }
         
@@ -202,10 +194,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.snackBar.open(
           mensajeError || 'Error al cargar los estudiantes elegibles', 
           'Cerrar', 
-          { 
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          }
+          snackbarConfig(['error-snackbar'])
         );
       }
     });
@@ -257,10 +246,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   confirmarInscripcion(estudiante: EstudianteElegible): void {
     // Verificar que id_solicitud existe (campo principal)
     if (!estudiante.id_solicitud) {
-      this.snackBar.open('Error: No se encontró ID de solicitud para el estudiante', 'Cerrar', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+      this.snackBar.open('Error: No se encontró ID de solicitud para el estudiante', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
     
@@ -296,10 +282,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       .subscribe({
       next: (response) => {
         this.logger.debug('Inscripción aceptada exitosamente', response);
-        this.snackBar.open('Inscripción aceptada exitosamente', 'Cerrar', {
-          duration: 4000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open('Inscripción aceptada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         // Recargar la lista de estudiantes y estadísticas
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
@@ -332,10 +315,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(motivo => {
         if (!motivo || motivo.trim() === '') {
-          this.snackBar.open('Debe ingresar un motivo para rechazar la inscripción', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['warning-snackbar']
-          });
+          this.snackBar.open('Debe ingresar un motivo para rechazar la inscripción', 'Cerrar', snackbarConfig(['warning-snackbar']));
           return;
         }
         
@@ -349,10 +329,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
             this.snackBar.open(
               `Inscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`,
               'Cerrar',
-              {
-                duration: 5000,
-                panelClass: ['info-snackbar']
-              }
+              snackbarConfig(['success-snackbar'])
             );
             
             if (this.cursoSeleccionado) {
@@ -397,10 +374,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       mensaje = this.errorHandler.extraerMensajeError(error) || mensaje;
     }
     
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
   }
 
   // Obtener nombre del docente de forma segura
@@ -536,12 +510,12 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       padding: 16px;
       background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
       border-radius: 8px;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
     }
 
     .form-section h3 {
       margin: 0 0 16px 0;
-      color: #00138C;
+      color: #000066;
       font-size: 16px;
       font-weight: 600;
     }
@@ -638,7 +612,7 @@ export class DetallesInscripcionDialogComponent {
       case 'Inscripcion_Completada':
         return '#28a745'; // Verde
       case 'Pago_Validado':
-        return '#00138C'; // Azul
+        return '#000066'; // Azul
       case 'Sin inscripción formal':
         return '#ffc107'; // Amarillo
       case 'Rechazado':
@@ -654,10 +628,7 @@ export class DetallesInscripcionDialogComponent {
     try {
       // Verificar si hay archivo de pago disponible en los datos del estudiante
       if (!this.data.estudiante.archivoPago || !this.data.estudiante.archivoPago.nombre) {
-        this.snackBar.open('No se encontró el archivo de comprobante', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['warning-snackbar']
-        });
+        this.snackBar.open('No se encontró el archivo de comprobante', 'Cerrar', snackbarConfig(['warning-snackbar']));
         return;
       }
       
@@ -667,10 +638,7 @@ export class DetallesInscripcionDialogComponent {
       const idParaDescarga = this.data.estudiante.id_inscripcion || this.data.estudiante.id_solicitud;
       
       if (!idParaDescarga) {
-        this.snackBar.open('Error: No se encontró ID para descargar comprobante', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open('Error: No se encontró ID para descargar comprobante', 'Cerrar', snackbarConfig(['error-snackbar']));
         return;
       }
       
@@ -690,15 +658,9 @@ export class DetallesInscripcionDialogComponent {
             window.URL.revokeObjectURL(downloadUrl);
             document.body.removeChild(a);
             
-            this.snackBar.open('Comprobante descargado exitosamente', 'Cerrar', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
-            });
+            this.snackBar.open('Comprobante descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
           } else {
-            this.snackBar.open('Error: El archivo PDF está vacío o corrupto', 'Cerrar', {
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
+            this.snackBar.open('Error: El archivo PDF está vacío o corrupto', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         },
         error: (error: any) => {
@@ -707,19 +669,13 @@ export class DetallesInscripcionDialogComponent {
           this.snackBar.open(
             mensajeError || 'Error al descargar el comprobante de pago',
             'Cerrar',
-            {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            }
+            snackbarConfig(['error-snackbar'])
           );
         }
       });
     } catch (error) {
       this.logger.error('Error de conexión al descargar comprobante', error);
-      this.snackBar.open('Error de conexión', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackbar']));
     }
   }
 
@@ -800,7 +756,7 @@ export class DetallesInscripcionDialogComponent {
     }
 
     .dialog-header {
-      background: linear-gradient(135deg, #00138C 0%, #0024CC 100%);
+      background: linear-gradient(135deg, #000066 0%, #5056AC 100%);
       color: white;
       padding: 20px;
       display: flex;
@@ -846,7 +802,7 @@ export class DetallesInscripcionDialogComponent {
     }
 
     .info-icon {
-      color: #00138C;
+      color: #000066;
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -859,7 +815,7 @@ export class DetallesInscripcionDialogComponent {
     }
 
     .info-text strong {
-      color: #00138C;
+      color: #000066;
       font-size: 14px;
       font-weight: 600;
     }
@@ -903,12 +859,12 @@ export class DetallesInscripcionDialogComponent {
     }
 
     .btn-confirmar {
-      background: #00138C;
+      background: #000066;
       color: white;
     }
 
     .btn-confirmar:hover {
-      background: #0024CC;
+      background: #5056AC;
     }
 
     .btn-cancelar mat-icon,

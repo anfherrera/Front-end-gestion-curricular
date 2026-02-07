@@ -26,7 +26,7 @@
 .card-title {
   font-size: 1.2rem;
   font-weight: bold;
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: #fff;
   padding: 14px 16px;
   display: block;
@@ -57,7 +57,7 @@ mat-card-content {
 }
 
 .btn-enviar {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
   border-radius: 4px;
@@ -68,7 +68,7 @@ mat-card-content {
 }
 
 .btn-enviar:hover:not(:disabled) {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }

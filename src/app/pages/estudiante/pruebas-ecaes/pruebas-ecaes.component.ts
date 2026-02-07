@@ -30,6 +30,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-pruebas-ecaes',
@@ -224,7 +225,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al cargar fechas ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al cargar las fechas de ECAES', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar las fechas de ECAES', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -287,18 +288,18 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   enviarSolicitud(): void {
     if (this.solicitudForm.invalid) {
-      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
     if (this.archivos.length === 0) {
-      this.snackBar.open('Debe adjuntar al menos un archivo', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Debe adjuntar al menos un archivo', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
     if (!this.usuario) {
       this.logger.error('❌ No se puede enviar solicitud: usuario no encontrado.');
-      this.snackBar.open('Error: Usuario no encontrado. Inicie sesión nuevamente.', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Error: Usuario no encontrado. Inicie sesión nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -317,7 +318,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     }).catch(error => {
       this.logger.error('❌ Error al subir archivos:', error);
       const mensaje = this.errorHandler.extraerMensajeError(error);
-      this.snackBar.open(mensaje || 'Error al subir los archivos. Intente nuevamente.', 'Cerrar', { duration: 5000 });
+      this.snackBar.open(mensaje || 'Error al subir los archivos. Intente nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
       this.enviandoSolicitud = false;
     });
   }
@@ -442,14 +443,14 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         ).subscribe({
           next: () => {
             this.logger.log('Estado actualizado a ENVIADA');
-            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.limpiarFormulario();
             this.listarSolicitudes(); // Recargar la lista de solicitudes
           },
           error: (error) => {
             this.logger.warn('⚠️ Error al actualizar estado (CORS o backend):', error);
             // No mostramos error al usuario, la solicitud se creó correctamente
-            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.limpiarFormulario();
             this.listarSolicitudes();
           }
@@ -459,7 +460,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         this.logger.error('Error al enviar solicitud:', error);
         this.logger.error('Error details:', error.error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al enviar la solicitud', 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje || 'Error al enviar la solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
         this.enviandoSolicitud = false;
       }
     });
@@ -522,7 +523,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('❌ Error al cargar solicitudes:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar las solicitudes', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar las solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -654,12 +655,12 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
 
     if (!solicitudCompleta) {
-      this.snackBar.open('No se encontró la información de la solicitud', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No se encontró la información de la solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
     if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
-      this.snackBar.open('No hay documentos asociados a esta solicitud', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No hay documentos asociados a esta solicitud', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 

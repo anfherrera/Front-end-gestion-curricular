@@ -132,7 +132,7 @@ import { Subscription } from 'rxjs';
       max-height: 600px;
       display: flex;
       flex-direction: column;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -142,7 +142,7 @@ import { Subscription } from 'rxjs';
     }
 
     .estadisticas-por-estado-card mat-card-header {
-      background: linear-gradient(135deg, #00138C, #001a99);
+      background: linear-gradient(135deg, #000066, #5056AC);
       margin: -16px -16px 16px -16px;
       padding: 16px;
       border-radius: 8px 8px 0 0;
@@ -193,7 +193,7 @@ import { Subscription } from 'rxjs';
     }
 
     .error-message p {
-      color: #f44336;
+      color: #FF6D0A;
       font-size: 0.9rem;
     }
 
@@ -232,7 +232,7 @@ import { Subscription } from 'rxjs';
       padding: 12px 16px;
       background: #f8f9fa;
       border-radius: 8px;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
     }
 
     .total-label {
@@ -244,7 +244,7 @@ import { Subscription } from 'rxjs';
     .total-value {
       font-size: 1.5rem;
       font-weight: bold;
-      color: #00138C;
+      color: #000066;
     }
 
     .total-text {
@@ -353,7 +353,7 @@ import { Subscription } from 'rxjs';
       margin: 0 0 16px 0;
       font-size: 1.1rem;
       font-weight: 600;
-      color: #00138C;
+      color: #000066;
     }
 
     .analisis-grid {
@@ -366,7 +366,7 @@ import { Subscription } from 'rxjs';
       background: linear-gradient(135deg, #f8fafc, #f1f5f9);
       padding: 16px;
       border-radius: 10px;
-      border-left: 4px solid #00138C;
+      border-left: 4px solid #000066;
       text-align: center;
     }
 
@@ -380,7 +380,7 @@ import { Subscription } from 'rxjs';
     .analisis-valor {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #00138C;
+      color: #000066;
     }
 
 
@@ -524,29 +524,29 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
   }
 
   /**
-   * Obtiene el icono por defecto según el estado
+   * Obtiene el icono según el estado - Material Icons (Sistema de Diseño TIC)
    */
   private getDefaultIcon(estadoKey: string): string {
     const iconMap: { [key: string]: string } = {
-      'APROBADA': 'fas fa-check-circle',
-      'ENVIADA': 'fas fa-paper-plane',
-      'EN_PROCESO': 'fas fa-clock',
-      'RECHAZADA': 'fas fa-times-circle'
+      'APROBADA': 'check_circle',
+      'ENVIADA': 'send',
+      'EN_PROCESO': 'schedule',
+      'RECHAZADA': 'cancel'
     };
-    return iconMap[estadoKey] || 'fas fa-info-circle';
+    return iconMap[estadoKey] || 'info';
   }
 
   /**
-   * Obtiene el color por defecto según el estado
+   * Obtiene el color según el estado - Colores institucionales (Sistema de Diseño TIC)
    */
   private getDefaultColor(estadoKey: string): string {
     const colorMap: { [key: string]: string } = {
-      'APROBADA': '#4CAF50',
-      'ENVIADA': '#2196F3',
-      'EN_PROCESO': '#17a2b8',
-      'RECHAZADA': '#F44336'
+      'APROBADA': '#249337',
+      'ENVIADA': '#1D72D3',
+      'EN_PROCESO': '#1D72D3',
+      'RECHAZADA': '#FF6D0A'
     };
-    return colorMap[estadoKey] || '#6c757d';
+    return colorMap[estadoKey] || '#454444';
   }
 
   /**
@@ -567,8 +567,8 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
   }
 
   getIconName(icono: string): string {
-    // Convertir iconos de FontAwesome a Material Icons
-    const iconMap: { [key: string]: string } = {
+    // Material Icons por defecto; compatibilidad con FontAwesome si se recibe del backend
+    const faToMat: { [key: string]: string } = {
       'fas fa-check-circle': 'check_circle',
       'fas fa-paper-plane': 'send',
       'fas fa-times-circle': 'cancel',
@@ -577,8 +577,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
       'fas fa-exclamation-circle': 'warning',
       'fas fa-info-circle': 'info'
     };
-    
-    return iconMap[icono] || 'help_outline';
+    return faToMat[icono] || icono || 'help_outline';
   }
 
 

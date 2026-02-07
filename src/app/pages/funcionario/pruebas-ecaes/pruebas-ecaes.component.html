@@ -164,19 +164,19 @@
         <div class="info-grid">
           <div class="info-item">
             <span class="info-label">Tipo de Documento:</span>
-            <span class="info-value">{{ obtenerTipoDocumentoLabel(selectedSolicitud?.tipoDocumento) }}</span>
+            <span class="info-value">{{ obtenerTipoDocumentoLabel(selectedSolicitud.tipoDocumento) }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">Número de Documento:</span>
-            <span class="info-value">{{ selectedSolicitud?.numero_documento || '-' }}</span>
+            <span class="info-value">{{ selectedSolicitud.numero_documento || '-' }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">Fecha de Expedición:</span>
-            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud?.fecha_expedicion) }}</span>
+            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud.fecha_expedicion) }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">Fecha de Nacimiento:</span>
-            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud?.fecha_nacimiento) }}</span>
+            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud.fecha_nacimiento) }}</span>
           </div>
         </div>
       </mat-card-content>

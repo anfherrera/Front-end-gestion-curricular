@@ -11,6 +11,7 @@ import {
   CondicionSolicitudVerano 
 } from '../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 export interface PreinscripcionDialogData {
   curso: CursoOfertadoVerano;
@@ -102,10 +103,7 @@ export class PreinscripcionDialogComponent implements OnInit {
       this.cursosService.crearPreinscripcion(payload).subscribe({
         next: (response) => {
           this.loading = false;
-          this.snackBar.open('¡Preinscripción enviada exitosamente!', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['success-snackbar']
-          });
+          this.snackBar.open('¡Preinscripción enviada exitosamente!', 'Cerrar', snackbarConfig(['success-snackbar']));
           this.dialogRef.close(true);
         },
         error: (error) => {
@@ -126,10 +124,7 @@ export class PreinscripcionDialogComponent implements OnInit {
             mensaje = 'Error del servidor. Inténtalo más tarde.';
           }
           
-          this.snackBar.open(mensaje, 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       });
     } else {

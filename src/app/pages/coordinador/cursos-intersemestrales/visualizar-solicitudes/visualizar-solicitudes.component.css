@@ -70,11 +70,11 @@ app-card-container {
 }
 
 .solicitudes-section h3 {
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 20px;
   font-size: 18px;
   font-weight: 600;
-  border-bottom: 2px solid #00138C;
+  border-bottom: 2px solid var(--color-primario);
   padding-bottom: 8px;
 }
 
@@ -95,7 +95,7 @@ app-card-container {
   width: 48px;
   height: 48px;
   margin-bottom: 16px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .table-container {
@@ -111,7 +111,7 @@ app-card-container {
 }
 
 .solicitudes-table th {
-  background: #00138C !important;
+  background: var(--color-primario) !important;
   color: white !important;
   font-weight: 600;
   font-size: 12px;
@@ -259,7 +259,7 @@ app-card-container {
 
 .estado-badge {
   display: inline-block;
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
   padding: 4px 12px;
   border-radius: 16px;

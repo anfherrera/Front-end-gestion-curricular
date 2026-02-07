@@ -11,7 +11,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: #00138c;
+  background-color: var(--color-primario);
   color: #fff;
   padding: 6px 14px;
   font-size: 14px;
@@ -112,7 +112,7 @@
 /* Estado activo/foco del botón eliminar */
 .col-accion button:active,
 .col-accion button:focus {
-  background-color: #00138c !important; /* Azul de fondo */
+  background-color: var(--color-primario) !important; /* Azul de fondo */
   border-radius: 50%;
 }
 

@@ -12,6 +12,7 @@ import {
   RespuestaEstudiantesCurso,
   EstudianteCurso 
 } from '../../../core/services/cursos-intersemestrales.service';
+import { COLORS, snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-estudiantes-curso-dialog',
@@ -71,41 +72,26 @@ export class EstudiantesCursoDialogComponent implements OnInit {
         
         if (err.status === 403) {
           this.error = 'No tienes permisos para ver esta información';
-          this.snackBar.open('No tienes permisos para ver esta información', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('No tienes permisos para ver esta información', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else if (err.status === 404) {
           this.error = 'Curso no encontrado';
-          this.snackBar.open('Curso no encontrado', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('Curso no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
         } else {
           this.error = 'Error al cargar los estudiantes';
-          this.snackBar.open('Error al cargar los estudiantes', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open('Error al cargar los estudiantes', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });
   }
 
   getEstadoColor(estado: string | null | undefined): string {
-    if (!estado || estado === 'Sin inscripción') return '#9e9e9e';
-    
-    const estadoUpper = estado.toUpperCase();
-    if (estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_FUNCIONARIO' || estadoUpper === 'PAGO_VALIDADO') {
-      return '#4caf50'; // Verde
-    } else if (estadoUpper === 'RECHAZADA' || estadoUpper === 'RECHAZADO' || estadoUpper === 'PAGO_RECHAZADO') {
-      return '#f44336'; // Rojo
-    } else if (estadoUpper === 'ENVIADA' || estadoUpper === 'ENVIADO') {
-      return '#2196f3'; // Azul
-    } else if (estadoUpper === 'PENDIENTE') {
-      return '#ff9800'; // Naranja
-    }
-    return '#00138C'; // Azul oscuro por defecto
+    if (!estado || estado === 'Sin inscripción') return COLORS.neutralText;
+    const u = estado.toUpperCase();
+    if (u.includes('APROBADA') || u.includes('VALIDADO')) return COLORS.success;
+    if (u.includes('RECHAZAD')) return COLORS.error;
+    if (u.includes('ENVIAD')) return COLORS.tertiary;
+    if (u.includes('PENDIENTE')) return COLORS.error;
+    return COLORS.primary;
   }
 
   cerrar(): void {
@@ -115,10 +101,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   // Exportar estudiantes a PDF
   exportarEstudiantesPDF(): void {
     if (!this.data.idCurso) {
-      this.snackBar.open('Error: No se pudo identificar el curso', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+      this.snackBar.open('Error: No se pudo identificar el curso', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
@@ -135,10 +118,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(urlBlob);
         
-        this.snackBar.open('PDF exportado correctamente', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open('PDF exportado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (err) => {
         let mensajeError = 'Error al exportar el PDF';
@@ -153,10 +133,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
           mensajeError = 'Error interno del servidor al generar el PDF';
         }
         
-        this.snackBar.open(mensajeError, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

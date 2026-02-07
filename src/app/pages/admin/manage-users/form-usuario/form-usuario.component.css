@@ -24,11 +24,11 @@
   margin: 0;
   font-size: 28px;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .header-section h2 mat-icon {
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 32px;
   width: 32px;
   height: 32px;
@@ -37,7 +37,7 @@
 .usuario-id-badge {
   font-size: 13px;
   font-weight: 500;
-  color: #00138C;
+  color: var(--color-primario);
   background: #e8eaf6;
   padding: 6px 16px;
   border-radius: 16px;
@@ -129,31 +129,31 @@ mat-card {
 
 /* Todos los iconos - Azul consistente */
 ::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_completo"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .form-container mat-form-field:has(input[formcontrolname="correo"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .form-container mat-form-field:has(input[formcontrolname="password"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="id_rol"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="id_programa"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="estado_usuario"]) mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* Efecto hover en iconos */
@@ -221,11 +221,11 @@ mat-spinner {
 
 /* Mejoras visuales adicionales */
 ::ng-deep .form-container .mat-mdc-select-arrow {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 ::ng-deep .form-container .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 /* Estados de error más claros */

@@ -16,14 +16,14 @@
   font-size: 32px;
   width: 32px;
   height: 32px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .dialog-header h2 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .dialog-content {
@@ -40,7 +40,7 @@
 
 /* Iconos con color */
 ::ng-deep .dialog-content mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
   margin-right: 8px;
   transition: transform 0.2s ease;
 }

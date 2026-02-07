@@ -23,6 +23,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
@@ -178,7 +179,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       this.periodosAcademicos.push(`${año}-1`, `${año}-2`);
     }
     this.logger.log('Períodos fallback cargados (2020-2030):', this.periodosAcademicos);
-    this.snackBar.open('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.', 'Cerrar', { duration: 5000 });
+    this.snackBar.open('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.', 'Cerrar', snackbarConfig(['warning-snackbar']));
   }
 
   cargarSolicitudesPendientes(): void {
@@ -200,7 +201,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al cargar solicitudes ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al cargar solicitudes ECAES', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar solicitudes ECAES', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -268,7 +269,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         this.esModoEdicion = true;
         this.idFechaEcaesActual = fechas.idFechaEcaes;
         this.cargandoFechas = false;
-        this.snackBar.open('Fechas existentes cargadas. Puede editarlas.', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Fechas existentes cargadas. Puede editarlas.', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (error) => {
         this.cargandoFechas = false;
@@ -282,7 +283,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         } else {
           this.logger.error('Error al buscar fechas:', error);
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(mensaje || 'Error al buscar fechas existentes', 'Cerrar', { duration: 3000 });
+          this.snackBar.open(mensaje || 'Error al buscar fechas existentes', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
     });
@@ -351,7 +352,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   publicarFechas(): void {
     if (this.fechasForm.invalid) {
-      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -388,7 +389,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         this.snackBar.open(
           `Fechas ${this.esModoEdicion ? 'actualizadas' : 'publicadas'} exitosamente`, 
           'Cerrar', 
-          { duration: 3000 }
+          snackbarConfig(['success-snackbar'])
         );
         
         // Mantener el modo de edición si se actualizó
@@ -413,7 +414,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         this.snackBar.open(
           mensaje || `Error al ${this.esModoEdicion ? 'actualizar' : 'publicar'} las fechas`, 
           'Cerrar', 
-          { duration: 5000 }
+          snackbarConfig(['error-snackbar'])
         );
         this.publicandoFechas = false;
       }
@@ -474,7 +475,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al cargar solicitud seleccionada:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al cargar solicitud seleccionada', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje || 'Error al cargar solicitud seleccionada', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -499,7 +500,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       ).subscribe({
         next: () => {
-          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
           // Recargar la solicitud para actualizar los comentarios
           this.cargarSolicitudesPendientes();
           // Recargar la solicitud seleccionada para obtener los comentarios actualizados
@@ -510,12 +511,12 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.logger.error('Error al añadir comentario:', error);
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', { duration: 3000 });
+          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       });
     } else {
       this.logger.error('No se pudo obtener el ID del documento para agregar comentario');
-      this.snackBar.open('Error: No se pudo identificar el documento', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('Error: No se pudo identificar el documento', 'Cerrar', snackbarConfig(['error-snackbar']));
     }
   }
 
@@ -525,7 +526,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) {
-      this.snackBar.open('No hay solicitud seleccionada', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No hay solicitud seleccionada', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -537,7 +538,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.logger.log('Solicitud ECAES aprobada exitosamente:', response);
-        this.snackBar.open('Solicitud marcada como Pre-registrada exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud marcada como Pre-registrada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
 
         // Recargar solicitudes después de la aprobación
         this.cargarSolicitudesPendientes();
@@ -548,14 +549,14 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al aprobar solicitud ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
 
   rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) {
-      this.snackBar.open('No hay solicitud seleccionada', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No hay solicitud seleccionada', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
 
@@ -567,7 +568,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.logger.log('Solicitud ECAES rechazada exitosamente:', response);
-        this.snackBar.open('Solicitud rechazada exitosamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Solicitud rechazada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
 
         // Recargar solicitudes después del rechazo
         this.cargarSolicitudesPendientes();
@@ -578,7 +579,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al rechazar solicitud ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', { duration: 5000 });
+        this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

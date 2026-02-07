@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #00138C;
+  color: var(--color-primario);
   margin-bottom: 20px;
 }
 
@@ -28,7 +28,7 @@
 
 .curso-info h3 {
   margin: 0 0 16px 0;
-  color: #00138C;
+  color: var(--color-primario);
   font-size: 20px;
   font-weight: 600;
 }
@@ -46,7 +46,7 @@
 }
 
 .curso-details strong {
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 600;
 }
 
@@ -101,9 +101,9 @@ mat-dialog-actions button[color="primary"] {
 
 /* Estados de validación */
 mat-form-field.mat-form-field-invalid .mat-form-field-outline {
-  color: #f44336;
+  color: var(--color-error);
 }
 
 mat-form-field.mat-form-field-valid .mat-form-field-outline {
-  color: #4caf50;
+  color: #249337;
 }

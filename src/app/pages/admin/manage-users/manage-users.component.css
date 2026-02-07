@@ -36,14 +36,14 @@
   margin: 0;
   font-size: 28px;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .header-section h2 mat-icon {
   font-size: 32px;
   width: 32px;
   height: 32px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .search-section {
@@ -75,7 +75,7 @@
 }
 
 ::ng-deep .search-section mat-icon[matprefix] {
-  color: #00138C;
+  color: var(--color-primario);
   margin-right: 8px;
 }
 
@@ -108,14 +108,14 @@ mat-table {
 }
 
 ::ng-deep .table-container .mat-mdc-header-row {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   font-weight: 600;
 }
 
 ::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
   color: white !important;
   font-weight: 600 !important;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   border-bottom: 2px solid #3949ab !important;
 }
 
@@ -141,7 +141,7 @@ mat-table {
 ::ng-deep .actions-column .mat-mdc-mini-fab {
   width: 36px !important;
   height: 36px !important;
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   transition: background-color 0.2s ease !important;
   margin: 0 4px !important;
 }
@@ -167,7 +167,7 @@ mat-table {
 }
 
 ::ng-deep .actions-column .mat-mdc-mini-fab.btn-estado-inactivo {
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
 }
 
 ::ng-deep .actions-column .mat-mdc-mini-fab.btn-estado-inactivo:hover {
@@ -176,7 +176,7 @@ mat-table {
 
 /* Botón de eliminar (warn) */
 ::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn {
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
 }
 
 ::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn:hover {
@@ -319,7 +319,7 @@ mat-table {
 /* === ESTILOS PARA NOTIFICACIONES (SNACKBAR) === */
 
 ::ng-deep .snackbar-success {
-  background-color: #4caf50 !important;
+  background-color: #249337 !important;
   color: white !important;
 }
 
@@ -329,7 +329,7 @@ mat-table {
 }
 
 ::ng-deep .snackbar-error {
-  background-color: #f44336 !important;
+  background-color: var(--color-error) !important;
   color: white !important;
 }
 
@@ -383,7 +383,7 @@ mat-table {
   font-size: 64px;
   width: 64px;
   height: 64px;
-  color: #f44336;
+  color: var(--color-error);
 }
 
 .empty-container mat-icon {

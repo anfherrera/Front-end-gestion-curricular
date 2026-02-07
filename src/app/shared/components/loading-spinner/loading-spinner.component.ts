@@ -41,7 +41,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     }
 
     .loading-message {
-      color: #00138C;
+      color: var(--color-primario);
       font-weight: 500;
       margin: 0;
       text-align: center;

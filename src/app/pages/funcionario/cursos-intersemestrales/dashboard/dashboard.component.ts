@@ -125,7 +125,7 @@ export class DashboardFuncionarioComponent implements OnInit, OnDestroy {
 
   getTipoSolicitudColor(tipo: string): string {
     // Todos los tipos usan el azul principal de la app
-    return '#00138C';
+    return '#000066';
   }
 
   // Cachear para no recalcular en cada detección de cambios

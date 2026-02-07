@@ -27,14 +27,14 @@
   font-size: 32px;
   width: 32px;
   height: 32px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 h1 {
   margin: 0;
   font-size: 28px;
   font-weight: 600;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .header-actions {
@@ -57,46 +57,46 @@ h1 {
 
 /* Íconos de las pestañas en azul */
 .mat-mdc-tab-group mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .mat-mdc-tab-label mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .mat-mdc-tab-label .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .mat-mdc-tab .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .mat-mdc-tab-label-container .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 /* Pestaña activa - íconos también en azul */
 .mat-mdc-tab-label-active mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .mat-mdc-tab-label-active .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .mat-mdc-tab-label-active .mat-mdc-tab-label-content .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 /* Para todas las pestañas */
 .mat-mdc-tab-label-content mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .tab-badge {
   margin-left: 8px;
-  background: #00138C;
+  background: var(--color-primario);
   color: white;
   border-radius: 12px;
   padding: 2px 8px;
@@ -143,11 +143,11 @@ h1 {
 
 /* Forzar color azul en todos los íconos de las notificaciones */
 .notificacion-card mat-icon:not(.tipo-icon) {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .notificacion-card .actions-section mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .notificacion-card:hover {
@@ -156,7 +156,7 @@ h1 {
 }
 
 .notificacion-card.unread {
-  border-left-color: #00138C;
+  border-left-color: var(--color-primario);
   background-color: #f0f4ff;
 }
 
@@ -166,7 +166,7 @@ h1 {
 }
 
 .notificacion-card.urgent.unread {
-  border-left-color: #00138C;
+  border-left-color: var(--color-primario);
   background-color: #f0f4ff;
 }
 
@@ -194,7 +194,7 @@ h1 {
   right: -4px;
   width: 12px;
   height: 12px;
-  background: #00138C;
+  background: var(--color-primario);
   border-radius: 50%;
   border: 2px solid white;
 }
@@ -239,19 +239,19 @@ mat-card-subtitle {
 }
 
 .actions-section mat-icon-button {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .actions-section mat-icon-button .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .urgent-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .urgent-icon.mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 /* Contenido del card */
@@ -284,14 +284,14 @@ mat-card-subtitle {
   font-size: 18px;
   width: 18px;
   height: 18px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .accion-section {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #00138C;
+  color: var(--color-primario);
   font-weight: 500;
   font-size: 14px;
   margin-top: 12px;
@@ -303,23 +303,23 @@ mat-card-subtitle {
   font-size: 18px;
   width: 18px;
   height: 18px;
-  color: #00138C;
+  color: var(--color-primario);
 }
 
 .actions-section mat-icon-button mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .actions-section mat-icon-button .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .actions-section .mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 .notificacion-card .actions-section mat-icon {
-  color: #00138C !important;
+  color: var(--color-primario) !important;
 }
 
 /* Estado vacío */

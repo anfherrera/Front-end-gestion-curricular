@@ -77,14 +77,14 @@
 
 /* Mejorar botones de acciones en tabla de documentos */
 .acciones-container button[mat-icon-button] {
-  background-color: #00138C;
+  background-color: var(--color-primario);
   color: white;
   border-radius: 4px;
   transition: all 0.2s ease-in-out;
 }
 
 .acciones-container button[mat-icon-button]:hover {
-  background-color: #001a99;
+  background-color: var(--color-primario-light);
   transform: scale(1.05);
 }
 
@@ -125,7 +125,7 @@
 
 /* Mejorar botones de acción principales */
 .botones-acciones button {
-  background-color: #00138C !important;
+  background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
   border-radius: 4px;
@@ -136,7 +136,7 @@
 }
 
 .botones-acciones button:hover {
-  background-color: #001a99 !important;
+  background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
