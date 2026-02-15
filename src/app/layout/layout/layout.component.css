@@ -12,7 +12,7 @@
   align-items: stretch;
 }
 
-/* 🔹 Sidebar host: no fijamos ancho ni fondo aquí */
+/* Sidebar host: no fijamos ancho ni fondo aquí */
 app-sidebar {
   flex: 0 0 auto; /* ancho lo define el nav interno */
   display: block;

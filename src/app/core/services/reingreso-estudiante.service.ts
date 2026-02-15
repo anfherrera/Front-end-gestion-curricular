@@ -292,8 +292,8 @@ export class ReingresoEstudianteService {
   }
 
   /**
-   * NUEVO: Descargar archivo PDF por ID de documento
-   * Este método es más confiable que usar el nombre del archivo
+   * Descargar archivo PDF por ID de documento.
+   * Este método es más confiable que usar el nombre del archivo.
    */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
@@ -306,8 +306,8 @@ export class ReingresoEstudianteService {
   }
 
   /**
-   * NUEVO: Descargar archivo PDF por ruta del documento
-   * Usa la ruta almacenada en la base de datos
+   * Descargar archivo PDF por ruta del documento.
+   * Usa la ruta almacenada en la base de datos.
    */
   descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
     // Extraer el nombre del archivo de la ruta si es necesario

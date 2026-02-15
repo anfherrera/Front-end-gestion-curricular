@@ -120,7 +120,7 @@ export class DocumentationViewerComponent implements OnInit {
   }
 
   /**
-   * NUEVO: Método helper para intentar descarga por ruta
+   * Método helper para intentar descarga por ruta.
    */
   private intentarDescargaPorRuta(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
     const docHomologacion = documento as DocumentoHomologacion;
@@ -141,7 +141,7 @@ export class DocumentationViewerComponent implements OnInit {
   }
 
   /**
-   * NUEVO: Método helper para intentar descarga por nombre (último recurso)
+   * Método helper para intentar descarga por nombre (último recurso).
    */
   private intentarDescargaPorNombre(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
     if (!documento.nombre) {

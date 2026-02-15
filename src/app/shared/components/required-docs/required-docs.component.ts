@@ -12,6 +12,8 @@ export interface Documento {
   label: string;
   obligatorio: boolean;
   opcional?: boolean;
+  /** URL para descargar el formato del documento (ej. en Reingreso: PM-FO-4-FOR-17) */
+  formatoDisponibleUrl?: string;
 }
 
 /**

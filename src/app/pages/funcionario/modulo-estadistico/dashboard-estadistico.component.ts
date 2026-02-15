@@ -881,11 +881,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     // Mapeo explícito de colores por proceso (cada uno único y distintivo)
     const coloresPorProceso: {[key: string]: string} = {
-      'Cursos de Verano': '#2196F3',      // 🔵 Azul
-      'Paz y Salvo': '#FF9800',           // 🟠 Naranja
-      'Reingreso': '#4CAF50',             // 🟢 Verde
-      'ECAES': '#F44336',                 // 🔴 Rojo
-      'Homologación': '#9C27B0'           // 🟣 Morado
+      'Cursos de Verano': '#2196F3',      // Azul
+      'Paz y Salvo': '#FF9800',           // Naranja
+      'Reingreso': '#4CAF50',             // Verde
+      'ECAES': '#F44336',                 // Rojo
+      'Homologación': '#9C27B0'           // Morado
     };
     
     // Asignar colores según el nombre del proceso

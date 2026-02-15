@@ -31,9 +31,19 @@
 
     <ul class="required-list">
       <!-- Documentos obligatorios para todos -->
-      <li *ngFor="let doc of documentosObligatorios">
+      <li *ngFor="let doc of documentosObligatorios" class="required-list-item-with-link">
         <mat-icon>description</mat-icon>
-        {{ doc.label }} <span class="asterisco-obligatorio">*</span>
+        <span class="required-list-label">
+          {{ doc.label }} <span class="asterisco-obligatorio">*</span>
+          <ng-container *ngIf="doc.formatoDisponibleUrl">
+            <span class="formato-disponible-wrap">
+              <span class="formato-disponible-texto">Formato disponible en:</span>
+              <a [href]="doc.formatoDisponibleUrl" target="_blank" rel="noopener noreferrer" class="formato-disponible-link" title="Abrir formato en nueva pestaña">
+                <mat-icon class="formato-disponible-icon">download</mat-icon> Descargar formato
+              </a>
+            </span>
+          </ng-container>
+        </span>
       </li>
 
       <!-- Archivos exclusivos (solo para Sistemas, Electrónica, Automática) -->

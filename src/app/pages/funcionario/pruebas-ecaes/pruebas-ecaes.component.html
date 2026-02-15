@@ -1,6 +1,28 @@
 <div class="pruebas-ecaes-funcionario-container">
 
-  <!-- 📌 Primera Sección: Publicar Fechas -->
+  <!-- Primera Sección: Pre-Registros Pendientes -->
+  <app-card-container title="Pre-Registros Pendientes" icon="pending_actions">
+
+    <!-- Mensaje cuando no hay solicitudes -->
+    <div class="sin-solicitudes" *ngIf="solicitudesPendientes.length === 0">
+      <mat-icon>info</mat-icon>
+      <p>No hay solicitudes pre-registro pendientes.</p>
+    </div>
+
+    <!-- Tabla de solicitudes pendientes -->
+    <app-request-status-table
+      *ngIf="solicitudesPendientes.length > 0"
+      [solicitudes]="solicitudesPendientes"
+      [showOficio]="false"
+      [showComentarios]="true"
+      [showSeleccionar]="true"
+      (verComentarios)="verComentarios($event)"
+      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+    </app-request-status-table>
+
+  </app-card-container>
+
+  <!-- Segunda Sección: Publicar Fechas -->
   <app-card-container title="Publicar fechas" icon="event">
 
     <form [formGroup]="fechasForm" class="fechas-form">
@@ -124,29 +146,7 @@
 
   </app-card-container>
 
-  <!-- 📌 Segunda Sección: Solicitudes Pre-Registro Pendientes -->
-  <app-card-container title="Pre-Registros Pendientes" icon="pending_actions">
-
-    <!-- Mensaje cuando no hay solicitudes -->
-    <div class="sin-solicitudes" *ngIf="solicitudesPendientes.length === 0">
-      <mat-icon>info</mat-icon>
-      <p>No hay solicitudes pre-registro pendientes.</p>
-    </div>
-
-    <!-- Tabla de solicitudes pendientes -->
-    <app-request-status-table
-      *ngIf="solicitudesPendientes.length > 0"
-      [solicitudes]="solicitudesPendientes"
-      [showOficio]="false"
-      [showComentarios]="true"
-      [showSeleccionar]="true"
-      (verComentarios)="verComentarios($event)"
-      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
-    </app-request-status-table>
-
-  </app-card-container>
-
-  <!-- 📌 Tercera Sección: Documentación Adjunta -->
+  <!-- Tercera Sección: Documentación Adjunta -->
   <app-card-container
     *ngIf="selectedSolicitud"
     title="Documentación Adjunta"
@@ -206,7 +206,7 @@
 
   </app-card-container>
 
-  <!-- 📌 Botones de acción para la solicitud -->
+  <!-- Botones de acción para la solicitud -->
   <div class="botones-acciones" *ngIf="selectedSolicitud">
     <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
       Marcar como Pre-registrada

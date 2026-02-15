@@ -1,0 +1,150 @@
+.formatos-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.formatos-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--color-primario) 0%, #5056AC 100%);
+  color: white;
+  border-radius: 4px 4px 0 0;
+}
+
+mat-card-header mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+mat-card-content {
+  padding: 24px;
+}
+
+.info-section {
+  margin-bottom: 32px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border-left: 4px solid var(--color-primario);
+}
+
+.info-section h3 {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.info-section mat-icon {
+  color: var(--color-primario);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.formatos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.formato-block {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.formato-proceso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  color: var(--color-primario);
+  font-size: 1.1rem;
+}
+
+.formato-proceso mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.formato-valores {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.valor-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.valor-fila .label {
+  font-size: 0.9rem;
+  color: #666;
+  min-width: 140px;
+}
+
+.valor-fila .valor {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.link-preview {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--color-primario);
+  word-break: break-all;
+}
+
+.edit-form {
+  margin-top: 8px;
+}
+
+.edit-form .full-width {
+  width: 100%;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .formatos-container {
+    padding: 16px;
+  }
+
+  .valor-fila {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

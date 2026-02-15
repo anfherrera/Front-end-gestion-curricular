@@ -17,7 +17,7 @@ import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcru
     SidebarComponent,
     BreadcrumbComponent
   ]
-  // 🔹 Quitar ViewEncapsulation.None para que no meta CSS global
+  // Quitar ViewEncapsulation.None para que no meta CSS global
 })
 export class LayoutComponent {
   /** Estado del sidebar */

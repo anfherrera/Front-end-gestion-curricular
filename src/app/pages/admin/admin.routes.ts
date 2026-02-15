@@ -64,6 +64,12 @@ export const AdminRoutes: Routes = [
     loadComponent: () =>
       import('./configurar-periodo/configurar-periodo.component').then(m => m.ConfigurarPeriodoComponent)
   },
+  // Administración de Formatos Institucionales
+  {
+    path: 'formatos-institucionales',
+    loadComponent: () =>
+      import('./formatos-institucionales/formatos-institucionales.component').then(m => m.FormatosInstitucionalesComponent)
+  },
   // Redirección por defecto
   {
     path: '',

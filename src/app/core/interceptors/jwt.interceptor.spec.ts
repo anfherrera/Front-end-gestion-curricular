@@ -108,7 +108,7 @@ describe('Seguridad - JWT Interceptor', () => {
 
       httpClient.get('/api/test').subscribe();
 
-      // NUEVO COMPORTAMIENTO: NO cierra sesión automáticamente
+      // Comportamiento: NO cierra sesión automáticamente
       expect(authService.logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
       
@@ -247,7 +247,7 @@ describe('Seguridad - JWT Interceptor', () => {
       httpClient.get('/api/test1').subscribe();
       httpClient.get('/api/test2').subscribe();
 
-      // NUEVO COMPORTAMIENTO: NO cierra sesión automáticamente
+      // Comportamiento: NO cierra sesión automáticamente
       expect(authService.logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
       

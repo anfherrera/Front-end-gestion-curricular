@@ -180,7 +180,7 @@ export class ApiEndpoints {
     ESTADISTICAS_FILTRADAS: `${this.BASE_URL}/estadisticas/filtradas`,
     RESUMEN_COMPLETO: `${this.BASE_URL}/estadisticas/resumen-completo`,
     
-    // ===== NUEVOS ENDPOINTS DEL BACKEND =====
+    // ===== Endpoints del backend =====
     POR_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porPeriodoEstadoPrograma`,
     POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
     POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`,
@@ -195,10 +195,10 @@ export class ApiEndpoints {
     ESTADISTICAS_POR_PROGRAMA_MEJORADAS: `${this.BASE_URL}/estadisticas/por-programa`,
     ESTADISTICAS_POR_PERIODO_MEJORADAS: `${this.BASE_URL}/estadisticas/por-periodo`,
     
-    // ===== NUEVO ENDPOINT - TENDENCIAS Y COMPARATIVAS =====
+    // ===== Endpoint - tendencias y comparativas =====
     TENDENCIAS_COMPARATIVAS: `${this.BASE_URL}/estadisticas/tendencias-comparativas`,
     
-    // ===== NUEVO ENDPOINT - CURSOS DE VERANO =====
+    // ===== Endpoint - cursos de verano =====
     CURSOS_VERANO: `${this.BASE_URL}/estadisticas/cursos-verano`,
     
     // ===== ENDPOINTS OPTIMIZADOS - CURSOS DE VERANO =====

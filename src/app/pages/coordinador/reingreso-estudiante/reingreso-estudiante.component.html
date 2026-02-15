@@ -1,6 +1,6 @@
 <div class="coordinador-container">
 
-  <!-- 📌 Contenedor de solicitudes usando componente genérico -->
+  <!-- Contenedor de solicitudes usando componente genérico -->
   <app-card-container
     title="Solicitudes de Reingreso Pendientes de Revisión"
     icon="assignment">
@@ -16,7 +16,7 @@
 
   </app-card-container>
 
-  <!-- 📌 Documentación de la solicitud seleccionada -->
+  <!-- Documentación de la solicitud seleccionada -->
   <app-card-container
     *ngIf="selectedSolicitud"
     title="Documentación Adjunta"
@@ -33,7 +33,7 @@
 
   </app-card-container>
 
-  <!-- 📌 Botones de acción para la solicitud -->
+  <!-- Botones de acción para la solicitud -->
   <div class="botones-acciones" *ngIf="selectedSolicitud">
     <button mat-raised-button color="primary"
             [disabled]="!puedeAprobar()"

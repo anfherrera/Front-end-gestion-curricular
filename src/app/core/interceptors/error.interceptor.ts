@@ -7,7 +7,7 @@ import { LoggerService } from '../services/logger.service';
 import { catchError, throwError } from 'rxjs';
 
 /**
- * 🚨 Error Interceptor
+ * Error Interceptor
  * 
  * Maneja errores HTTP relacionados con autenticación y autorización:
  * - 401 Unauthorized: Token ausente, inválido o expirado → Redirigir a login

@@ -276,7 +276,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.logger.debug('🔍 selectedSolicitud:', this.selectedSolicitud);
     this.logger.debug('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
-    this.logger.debug('📝 Nombre original del archivo:', this.archivoPDF.name);
+    this.logger.debug('Nombre original del archivo:', this.archivoPDF.name);
 
     // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
     this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
@@ -350,7 +350,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.logger.debug('🔍 selectedSolicitud:', this.selectedSolicitud);
     this.logger.debug('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
-    this.logger.debug('📝 Nombre original del archivo:', this.archivoPDF.name);
+    this.logger.debug('Nombre original del archivo:', this.archivoPDF.name);
 
     // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
     this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(

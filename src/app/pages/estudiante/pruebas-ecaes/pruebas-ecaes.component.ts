@@ -123,12 +123,12 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         this.solicitudForm.patchValue({
           numero_documento: cedulaUsuario
         });
-        this.logger.log('📝 Número de documento establecido por defecto:', cedulaUsuario);
+        this.logger.log('Número de documento establecido por defecto:', cedulaUsuario);
       } else {
-        this.logger.warn('⚠️ No se encontró cédula ni código en el usuario');
+        this.logger.warn('No se encontró cédula ni código en el usuario');
       }
     } else {
-      this.logger.warn('⚠️ No se encontró usuario en localStorage');
+      this.logger.warn('No se encontró usuario en localStorage');
     }
 
     this.cargarTiposDocumento();
@@ -161,17 +161,17 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
           
           // Si después del filtro no hay valores, usar fallback
           if (this.tiposDocumento.length === 0) {
-            this.logger.warn('⚠️ El backend no devolvió valores válidos (CC o CE), usando fallback');
+            this.logger.warn('El backend no devolvió valores válidos (CC o CE), usando fallback');
             this.cargarTiposDocumentoFallback();
           } else {
-            this.logger.log('📄 Tipos de documento cargados desde backend (filtrados):', this.tiposDocumento);
+            this.logger.log('Tipos de documento cargados desde backend (filtrados):', this.tiposDocumento);
           }
         } else {
           this.cargarTiposDocumentoFallback();
         }
       },
       error: (error) => {
-        this.logger.error('❌ Error al cargar tipos de documento:', error);
+        this.logger.error('Error al cargar tipos de documento:', error);
         this.cargarTiposDocumentoFallback();
       }
     });
@@ -186,7 +186,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       { value: 'CC', label: 'Cédula de Ciudadanía' },
       { value: 'CE', label: 'Cédula de Extranjería' }
     ];
-    this.logger.warn('⚠️ Usando tipos de documento fallback (solo CC y CE)');
+    this.logger.warn('Usando tipos de documento fallback (solo CC y CE)');
   }
 
   /**
@@ -298,7 +298,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     }
 
     if (!this.usuario) {
-      this.logger.error('❌ No se puede enviar solicitud: usuario no encontrado.');
+      this.logger.error('No se puede enviar solicitud: usuario no encontrado.');
       this.snackBar.open('Error: Usuario no encontrado. Inicie sesión nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
@@ -307,7 +307,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     const formValue = this.solicitudForm.value;
 
     this.logger.log('📤 Iniciando proceso de envío de solicitud...');
-    this.logger.log('📁 Archivos a subir:', this.archivos);
+    this.logger.log('Archivos a subir:', this.archivos);
 
     // Paso 1: Subir archivos al backend
     this.subirArchivos().then(archivosSubidos => {
@@ -316,7 +316,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       // Paso 2: Crear la solicitud con los archivos subidos
       this.crearSolicitudConArchivos(formValue, archivosSubidos);
     }).catch(error => {
-      this.logger.error('❌ Error al subir archivos:', error);
+      this.logger.error('Error al subir archivos:', error);
       const mensaje = this.errorHandler.extraerMensajeError(error);
       this.snackBar.open(mensaje || 'Error al subir los archivos. Intente nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
       this.enviandoSolicitud = false;
@@ -363,7 +363,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
           tipoDocumentoSolicitudPazYSalvo: 'ECAES'
         });
       } catch (error) {
-        this.logger.error(`❌ Error al subir archivo ${archivo.nombre}:`, error);
+        this.logger.error(`Error al subir archivo ${archivo.nombre}:`, error);
         throw error;
       }
     }
@@ -422,7 +422,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       documentos: archivosSubidos
     };
 
-    this.logger.log('📋 Creando solicitud con archivos subidos:', solicitud);
+    this.logger.log('Creando solicitud con archivos subidos:', solicitud);
     this.logger.debug('👤 Usuario completo:', this.usuario);
 
     this.pruebasEcaesService.crearSolicitudEcaes(solicitud).pipe(
@@ -448,7 +448,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
             this.listarSolicitudes(); // Recargar la lista de solicitudes
           },
           error: (error) => {
-            this.logger.warn('⚠️ Error al actualizar estado (CORS o backend):', error);
+            this.logger.warn('Error al actualizar estado (CORS o backend):', error);
             // No mostramos error al usuario, la solicitud se creó correctamente
             this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
             this.limpiarFormulario();
@@ -501,7 +501,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   listarSolicitudes(): void {
     if (!this.usuario) {
-      this.logger.error("❌ Usuario no encontrado en localStorage.");
+      this.logger.error("Usuario no encontrado en localStorage.");
       return;
     }
 
@@ -521,7 +521,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         this.procesarSolicitudes(data);
       },
       error: (err) => {
-        this.logger.error('❌ Error al cargar solicitudes:', err);
+        this.logger.error('Error al cargar solicitudes:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
         this.snackBar.open(mensaje || 'Error al cargar las solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
@@ -530,7 +530,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   procesarSolicitudes(data: SolicitudEcaesResponse[]): void {
     if (!data || !Array.isArray(data)) {
-      this.logger.warn('⚠️ La respuesta no es un array válido');
+      this.logger.warn('La respuesta no es un array válido');
       this.solicitudes = [];
       this.solicitudesCompletas = [];
       return;
@@ -562,7 +562,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       return solicitudTransformada;
     });
 
-    this.logger.debug('📋 Solicitudes cargadas (transformadas):', this.solicitudes);
+    this.logger.debug('Solicitudes cargadas (transformadas):', this.solicitudes);
   }
 
 
@@ -667,7 +667,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     // Obtener el comentario de rechazo del último estado
     const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
 
-    this.logger.debug('📋 Datos que se envían al diálogo:');
+    this.logger.debug('Datos que se envían al diálogo:');
     this.logger.debug('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
     this.logger.debug('  - Documentos:', solicitudCompleta.documentos);
     this.logger.debug('  - Comentario de rechazo:', comentarioRechazo);

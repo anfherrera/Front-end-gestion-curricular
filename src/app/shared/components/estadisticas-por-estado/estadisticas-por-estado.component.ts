@@ -338,7 +338,7 @@ import { Subscription } from 'rxjs';
       margin-left: auto;
     }
 
-    /* ===== NUEVOS ESTILOS PARA SECCIONES MEJORADAS ===== */
+    /* ===== Estilos para secciones mejoradas ===== */
     
     .analisis-section {
       margin-top: 24px;

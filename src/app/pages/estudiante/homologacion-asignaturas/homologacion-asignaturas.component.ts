@@ -18,6 +18,7 @@ import { RequiredDocsComponent } from "../../../shared/components/required-docs/
 import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
+import { FormatosInstitucionalesService } from '../../../core/services/formatos-institucionales.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
@@ -55,7 +56,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   documentosRequeridos = [
-    { label: 'PM-FO-4-FOR-22 Solicitud homologación de materias', obligatorio: true },
+    { label: 'PM-FO-4-FOR-22 Solicitud homologación de materias', obligatorio: true, formatoDisponibleUrl: '' as string },
     { label: 'Certificado de notas', obligatorio: true },
     { label: 'Programa académico de la materia', obligatorio: true }
   ];
@@ -72,6 +73,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
   constructor(
     private homologacionService: HomologacionAsignaturasService,
+    private formatosService: FormatosInstitucionalesService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private http: HttpClient,
@@ -90,6 +92,12 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const homologacion = this.formatosService.getHomologacion();
+    if (homologacion) {
+      this.documentosRequeridos[0].label = homologacion.nombre;
+      this.documentosRequeridos[0].formatoDisponibleUrl = homologacion.url;
+    }
+
     // Recuperamos usuario del localStorage
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {

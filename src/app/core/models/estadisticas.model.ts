@@ -203,13 +203,13 @@ export interface EstadoInfo {
  */
 export interface EstadoSolicitudesResponse {
   totalSolicitudes: number;
-  resumenPorEstado?: { [estado: string]: EstadoInfo };  // NUEVO: Campo actualizado del backend
+  resumenPorEstado?: { [estado: string]: EstadoInfo };  // Campo actualizado del backend
   estados?: { [estado: string]: EstadoInfo };           // Legacy: Mantener para compatibilidad
-  tasaResolucion?: number;                               // NUEVO: Tasa de resolución en nivel raíz
-  analisisComparativo?: any;                             // NUEVO: Análisis comparativo
+  tasaResolucion?: number;                               // Tasa de resolución en nivel raíz
+  analisisComparativo?: any;                             // Análisis comparativo
   fechaConsulta: string;
   descripcion?: string;
-  analisis?: {                    // NUEVO: Sección de análisis (legacy)
+  analisis?: {                    // Sección de análisis (legacy)
     solicitudesPendientes: number;
     solicitudesCompletadas: number;
     tasaResolucion: number;
@@ -237,7 +237,7 @@ export interface EstadisticasPorProgramaMejoradasResponse {
   porPrograma: { [programa: string]: ProgramaEstadisticasMejoradas };
   solicitudesPorPrograma?: { [programa: string]: number };  // Mapa directo de programa -> cantidad
   estudiantesPorPrograma?: { [programa: string]: number };  // Mapa directo de programa -> cantidad
-  analisis: {                     // NUEVO: Sección de análisis
+  analisis: {                     // Sección de análisis
     programaMasActivo: string;
     programaMasEficiente: string;
     eficienciaMaxima: number;
@@ -254,18 +254,18 @@ export interface PeriodoEstadisticasMejoradas {
   solicitudes: number;
   estudiantes: number;
   porcentaje: number;
-  eficiencia: number;             // NUEVO: Tasa de aprobación
-  tiempoPromedio: number;         // NUEVO: Días de procesamiento
-  procesos: { [proceso: string]: number };  // NUEVO: Distribución por proceso
-  color: string;                  // NUEVO: Color específico
-  icono: string;                  // NUEVO: Icono específico
+  eficiencia: number;             // Tasa de aprobación
+  tiempoPromedio: number;         // Días de procesamiento
+  procesos: { [proceso: string]: number };  // Distribución por proceso
+  color: string;                  // Color específico
+  icono: string;                  // Icono específico
 }
 
 export interface EstadisticasPorPeriodoMejoradasResponse {
   porMes: { [mes: string]: PeriodoEstadisticasMejoradas };
   mesesOrdenados?: Array<{ mes: string; total: number; aprobadas: number; [key: string]: any }>;  // Array ordenado de todos los meses
   todosLosMeses?: string[];  // Array con nombres de todos los meses (Enero a Diciembre)
-  tendencias: {                   // NUEVO: Sección de tendencias
+  tendencias: {                   // Sección de tendencias
     tendenciaGeneral: string;
     crecimientoPromedio: number;
     mesMasActivo: string;
@@ -280,14 +280,14 @@ export interface EstadisticasPorPeriodoMejoradasResponse {
 export interface CrecimientoTemporal {
   tendenciaSolicitudes?: string;  // Legacy: Mantener para compatibilidad
   tendenciaEstudiantes?: string;  // Legacy: Mantener para compatibilidad
-  tendencia?: string;              // NUEVO: Campo unificado según guía actualizada
+  tendencia?: string;              // Campo unificado según guía actualizada
   crecimientoSolicitudes: number;
   crecimientoEstudiantes: number;
   mesesAnalizados: number;
-  solicitudesPorMes?: { [mes: string]: number };  // NUEVO: Solicitudes por mes
-  estudiantesPorMes?: { [mes: string]: number };  // NUEVO: Estudiantes por mes
-  totalSolicitudes?: number;                       // NUEVO: Total de solicitudes
-  totalEstudiantes?: number;                       // NUEVO: Total de estudiantes
+  solicitudesPorMes?: { [mes: string]: number };  // Solicitudes por mes
+  estudiantesPorMes?: { [mes: string]: number };  // Estudiantes por mes
+  totalSolicitudes?: number;                       // Total de solicitudes
+  totalEstudiantes?: number;                       // Total de estudiantes
 }
 
 export interface ComparativaProcesos {
@@ -381,7 +381,7 @@ export interface PrediccionesCursosVerano {
   materiasConTendenciaDecreciente: MateriaPrediccion[];
   materiasEstables: MateriaPrediccion[];
   programasConTendenciaCreciente: ProgramaPrediccion[];
-  todasLasPrediccionesPorPrograma: ProgramaPrediccion[]; // NUEVO: Lista completa de todos los programas
+  todasLasPrediccionesPorPrograma: ProgramaPrediccion[]; // Lista completa de todos los programas
   programasConTendenciaDecreciente: ProgramaPrediccion[];
   prediccionesTemporales: PrediccionesTemporales;
   // recomendacionesFuturas ahora está en el nivel superior como 'recomendaciones'
@@ -420,7 +420,7 @@ export interface TendenciaTemporal {
 export interface EstadosSolicitudes {
   APROBADA: number;
   ENVIADA: number;
-  EN_PROCESO: number;  // NUEVO: Estado combinado (reemplaza APROBADA_FUNCIONARIO + APROBADA_COORDINADOR)
+  EN_PROCESO: number;  // Estado combinado (reemplaza APROBADA_FUNCIONARIO + APROBADA_COORDINADOR)
   RECHAZADA: number;
   // Legacy: Mantener para compatibilidad con versiones anteriores
   APROBADA_FUNCIONARIO?: number;
@@ -428,7 +428,7 @@ export interface EstadosSolicitudes {
 }
 
 /**
- * NUEVO: Interfaz para estados estructurados con información completa
+ * Interfaz para estados estructurados con información completa.
  */
 export interface EstadoSolicitudEstructurado {
   estado: string;
@@ -466,10 +466,10 @@ export interface CursosVeranoResponse {
   analisisPorPrograma: AnalisisPrograma[];
   tendenciasTemporales: TendenciaTemporal[];
   estadosSolicitudes: EstadosSolicitudes;  // Mapa simple: { APROBADA: 0, ENVIADA: 9, ... }
-  estadosSolicitudesEstructurados?: EstadosSolicitudesEstructurados;  // NUEVO: Mapa estructurado con porcentajes
+  estadosSolicitudesEstructurados?: EstadosSolicitudesEstructurados;  // Mapa estructurado con porcentajes
   recomendaciones: Recomendacion[];
   predicciones: PrediccionesCursosVerano;
-  todosLosMeses?: string[];  // NUEVO: Array con todos los meses (Enero-Diciembre)
+  todosLosMeses?: string[];  // Array con todos los meses (Enero-Diciembre)
 }
 
 // ===== INTERFACES PARA PREDICCIONES GLOBALES (DASHBOARD GENERAL) =====

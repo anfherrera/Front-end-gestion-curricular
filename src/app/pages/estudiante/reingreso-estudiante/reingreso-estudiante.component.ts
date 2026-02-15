@@ -16,6 +16,7 @@ import { RequiredDocsComponent } from "../../../shared/components/required-docs/
 import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
 
 import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
+import { FormatosInstitucionalesService } from '../../../core/services/formatos-institucionales.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { MatDialog } from '@angular/material/dialog';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -47,7 +48,11 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   documentosRequeridos = [
-    { label: 'PM-FO-4-FOR-17 Solicitud de Reingreso V2', obligatorio: true },
+    {
+      label: 'PM-FO-4-FOR-17 Solicitud de Reingreso V2',
+      obligatorio: true,
+      formatoDisponibleUrl: '' as string
+    },
     { label: 'Certificado de notas', obligatorio: true },
     { label: 'Documento de identidad', obligatorio: true },
     { label: 'Carta de motivación', obligatorio: true }
@@ -64,6 +69,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   constructor(
     private reingresoService: ReingresoEstudianteService,
+    private formatosService: FormatosInstitucionalesService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private http: HttpClient,
@@ -73,6 +79,12 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    const reingreso = this.formatosService.getReingreso();
+    if (reingreso) {
+      this.documentosRequeridos[0].label = reingreso.nombre;
+      this.documentosRequeridos[0].formatoDisponibleUrl = reingreso.url;
+    }
+
     // Recuperamos usuario del localStorage
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {

@@ -189,6 +189,53 @@
   color: #856404;
 }
 
+/* Enlace "Formato disponible en" (ej. Reingreso PM-FO-4-FOR-17) */
+.required-list-item-with-link .required-list-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.formato-disponible-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+
+.formato-disponible-texto {
+  font-size: 13px;
+  color: #555;
+}
+
+.formato-disponible-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-primario);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primario);
+  background-color: rgba(0, 19, 140, 0.06);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.formato-disponible-link:hover {
+  background-color: rgba(0, 19, 140, 0.12);
+  color: var(--color-primario);
+  text-decoration: none;
+}
+
+.formato-disponible-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
 .info-adicional {
   margin: 16px;
   padding: 16px;
