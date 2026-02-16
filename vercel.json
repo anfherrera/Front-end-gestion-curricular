@@ -1,5 +1,5 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/front-end-gestion-curricular",
+  "outputDirectory": "dist/front-end-gestion-curricular/browser",
   "framework": null
 }
