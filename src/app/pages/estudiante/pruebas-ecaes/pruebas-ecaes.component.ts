@@ -460,8 +460,14 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         this.logger.error('Error al enviar solicitud:', error);
         this.logger.error('Error details:', error.error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al enviar la solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
+        const textoCompleto = mensaje
+          ? `${mensaje} Debe corregir los datos y volver a adjuntar los documentos.`
+          : 'Error al enviar la solicitud. Debe volver a adjuntar los documentos.';
+        this.snackBar.open(textoCompleto, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.enviandoSolicitud = false;
+        // Limpiar archivos para evitar reutilizar rutas o referencias inválidas en el próximo intento.
+        // El backend puede invalidar archivos subidos cuando la creación falla (ej. validación).
+        this.archivos = [];
       }
     });
   }

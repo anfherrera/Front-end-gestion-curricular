@@ -22,7 +22,77 @@
 
   </app-card-container>
 
-  <!-- Segunda Sección: Publicar Fechas -->
+  <!-- Segunda Sección: Documentación Adjunta (visible al seleccionar una solicitud) -->
+  <app-card-container
+    *ngIf="selectedSolicitud"
+    title="Documentación Adjunta"
+    icon="description">
+
+    <!-- Información de la Solicitud ECAES -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Información de la Solicitud
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Tipo de Documento:</span>
+            <span class="info-value">{{ obtenerTipoDocumentoLabel(selectedSolicitud.tipoDocumento) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Número de Documento:</span>
+            <span class="info-value">{{ selectedSolicitud.numero_documento || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Expedición:</span>
+            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud.fecha_expedicion) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Nacimiento:</span>
+            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud.fecha_nacimiento) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <app-documentation-viewer
+      [documentos]="selectedSolicitud.documentos || []"
+      [solicitudId]="selectedSolicitud.id_solicitud"
+      [proceso]="'ecaes'"
+      [servicio]="pruebasEcaesService"
+      [puedeAgregarComentarios]="true"
+      (comentarioAgregado)="onComentarioAgregado($event)">
+    </app-documentation-viewer>
+
+  </app-card-container>
+
+  <!-- Mensaje cuando no hay solicitud seleccionada -->
+  <app-card-container
+    *ngIf="!selectedSolicitud && solicitudesPendientes.length > 0"
+    title="Documentación Adjunta"
+    icon="description">
+
+    <div class="sin-solicitudes">
+      <mat-icon>info</mat-icon>
+      <p>Seleccione una solicitud para ver su documentación adjunta.</p>
+    </div>
+
+  </app-card-container>
+
+  <!-- Botones de acción para la solicitud -->
+  <div class="botones-acciones" *ngIf="selectedSolicitud">
+    <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
+      Marcar como Pre-registrada
+    </button>
+    <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
+      Rechazar Solicitud
+    </button>
+  </div>
+
+  <!-- Tercera Sección: Publicar Fechas -->
   <app-card-container title="Publicar fechas" icon="event">
 
     <form [formGroup]="fechasForm" class="fechas-form">
@@ -145,75 +215,5 @@
     </form>
 
   </app-card-container>
-
-  <!-- Tercera Sección: Documentación Adjunta -->
-  <app-card-container
-    *ngIf="selectedSolicitud"
-    title="Documentación Adjunta"
-    icon="description">
-
-    <!-- Información de la Solicitud ECAES -->
-    <mat-card class="info-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>info</mat-icon>
-          Información de la Solicitud
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Tipo de Documento:</span>
-            <span class="info-value">{{ obtenerTipoDocumentoLabel(selectedSolicitud.tipoDocumento) }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Número de Documento:</span>
-            <span class="info-value">{{ selectedSolicitud.numero_documento || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Fecha de Expedición:</span>
-            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud.fecha_expedicion) }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Fecha de Nacimiento:</span>
-            <span class="info-value">{{ formatearFechaCorta(selectedSolicitud.fecha_nacimiento) }}</span>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <app-documentation-viewer
-      [documentos]="selectedSolicitud.documentos || []"
-      [solicitudId]="selectedSolicitud.id_solicitud"
-      [proceso]="'ecaes'"
-      [servicio]="pruebasEcaesService"
-      [puedeAgregarComentarios]="true"
-      (comentarioAgregado)="onComentarioAgregado($event)">
-    </app-documentation-viewer>
-
-  </app-card-container>
-
-  <!-- Mensaje cuando no hay solicitud seleccionada -->
-  <app-card-container
-    *ngIf="!selectedSolicitud && solicitudesPendientes.length > 0"
-    title="Documentación Adjunta"
-    icon="description">
-
-    <div class="sin-solicitudes">
-      <mat-icon>info</mat-icon>
-      <p>Seleccione una solicitud para ver su documentación adjunta.</p>
-    </div>
-
-  </app-card-container>
-
-  <!-- Botones de acción para la solicitud -->
-  <div class="botones-acciones" *ngIf="selectedSolicitud">
-    <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
-      Marcar como Pre-registrada
-    </button>
-    <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
-      Rechazar Solicitud
-    </button>
-  </div>
 
 </div>

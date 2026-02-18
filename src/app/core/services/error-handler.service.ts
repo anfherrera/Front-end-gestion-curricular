@@ -16,14 +16,21 @@ export class ErrorHandlerService {
    * @returns Mensaje de error limpio para mostrar al usuario
    */
   extraerMensajeError(error: any): string {
-    // Error de regla de negocio (400 BAD_REQUEST)
-    if (error.status === 400 && error.error?.mensaje) {
-      const mensajeCompleto = error.error.mensaje;
-      // Buscar el texto después de "Violación a regla de negocio: "
-      const match = mensajeCompleto.match(/Violación a regla de negocio: (.+)/);
-      return match ? match[1] : mensajeCompleto;
+    // Error 400 BAD_REQUEST: validación por campos (ej: { fecha_expedicion: "La fecha debe ser..." })
+    if (error.status === 400 && error.error && typeof error.error === 'object' && !Array.isArray(error.error)) {
+      if (error.error.mensaje) {
+        const mensajeCompleto = error.error.mensaje;
+        const match = mensajeCompleto.match(/Violación a regla de negocio: (.+)/);
+        return match ? match[1] : mensajeCompleto;
+      }
+      // Mensajes de validación por campo (clave: nombre del campo, valor: mensaje)
+      const mensajesCampo = (Object.values(error.error) as unknown[])
+        .filter((v): v is string => typeof v === 'string');
+      if (mensajesCampo.length > 0) {
+        return mensajesCampo.join('. ');
+      }
     }
-    
+
     // Error de conflicto (409 CONFLICT) - respaldo para compatibilidad
     if (error.status === 409 && error.error?.mensaje) {
       return error.error.mensaje;
