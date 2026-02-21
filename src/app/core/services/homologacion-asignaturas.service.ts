@@ -424,7 +424,39 @@ export class HomologacionAsignaturasService {
   // }
 
   /**
-   * Subir archivo PDF
+   * Subir resolución de homologación (solo vista secretaria).
+   * Endpoint: POST /api/solicitudes-homologacion/{idSolicitud}/subir-resolucion
+   */
+  subirResolucion(archivo: File, idSolicitud: number): Observable<any> {
+    const url = `${this.apiUrl}/${idSolicitud}/subir-resolucion`;
+
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    if (archivo.size > maxFileSize) {
+      return new Observable(observer => {
+        observer.error({
+          status: 413,
+          error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(archivo.size / (1024 * 1024)).toFixed(2)}MB` }
+        });
+      });
+    }
+
+    if (!archivo.name.toLowerCase().endsWith('.pdf')) {
+      return new Observable(observer => {
+        observer.error({
+          status: 415,
+          error: { message: 'Solo se permiten archivos PDF' }
+        });
+      });
+    }
+
+    const formData = new FormData();
+    formData.append('file', archivo);
+
+    return this.http.post(url, formData);
+  }
+
+  /**
+   * Subir archivo PDF (endpoint genérico; para homologación secretaria usar subirResolucion)
    */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
     const url = `${environment.apiUrl}/archivos/subir/pdf`;

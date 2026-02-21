@@ -1,6 +1,23 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
+const fs = require('fs');
+const path = require('path');
+
+// Usar Microsoft Edge (Chromium) como navegador para las pruebas si no hay Chrome
+if (!process.env.CHROME_BIN) {
+  const edgePaths = [
+    path.join(process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', 'Microsoft\\Edge\\Application\\msedge.exe'),
+    path.join(process.env.ProgramFiles || 'C:\\Program Files', 'Microsoft\\Edge\\Application\\msedge.exe')
+  ];
+  for (const edgePath of edgePaths) {
+    if (fs.existsSync(edgePath)) {
+      process.env.CHROME_BIN = edgePath;
+      break;
+    }
+  }
+}
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -33,7 +50,7 @@ module.exports = function (config) {
       ]
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     restartOnFileChange: true
   });
 };
