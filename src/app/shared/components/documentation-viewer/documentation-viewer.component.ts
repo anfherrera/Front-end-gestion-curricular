@@ -304,20 +304,8 @@ export class DocumentationViewerComponent implements OnInit {
           this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', snackbarConfig(['warning-snackbar']));
           return;
         }
-        this.snackBar.open('Agregando comentario...', 'Cerrar', snackbarConfig());
-        if (this.servicio && this.servicio.agregarComentario) {
-          this.servicio.agregarComentario(documento.id_documento, comentarioNuevo.trim()).subscribe({
-            next: () => {
-              this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-              this.comentarioAgregado.emit({ documento, comentario: comentarioNuevo.trim() });
-            },
-            error: (error: any) => {
-              this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', snackbarConfig(['error-snackbar']));
-            }
-          });
-        } else {
-          this.snackBar.open('Error: Servicio no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
-        }
+        // Solo emitir: el componente padre hace la llamada PUT (una sola vez). Si el viewer también llamara aquí, se duplicaría el comentario en backend.
+        this.comentarioAgregado.emit({ documento, comentario: comentarioNuevo.trim() });
       });
     };
 
