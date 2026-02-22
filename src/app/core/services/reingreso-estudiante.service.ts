@@ -322,6 +322,17 @@ export class ReingresoEstudianteService {
   }
 
   /**
+   * Obtener documento por ID (para mostrar comentarios actuales al añadir uno nuevo).
+   * GET /api/documentos/buscarPorId/{id}
+   */
+  buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string; [key: string]: any }> {
+    const url = `${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`;
+    return this.http.get<{ comentario?: string; [key: string]: any }>(url, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
    * Añadir comentario a un documento
    */
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {

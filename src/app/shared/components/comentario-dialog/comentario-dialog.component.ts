@@ -12,6 +12,8 @@ export interface ComentarioDialogData {
   descripcion: string;
   placeholder: string;
   nombreDocumento: string;
+  /** Comentarios ya existentes (solo lectura). Si está definido, se muestra arriba y solo se envía el "Nuevo comentario". */
+  comentarioHistorial?: string;
   comentarioInicial?: string;
   soloLectura?: boolean;
   textoConfirmacion?: string;
@@ -46,12 +48,19 @@ export interface ComentarioDialogData {
         </div>
       </div>
       
+      <!-- Comentarios anteriores (solo lectura), cuando se añade comentario acumulativo -->
+      <div *ngIf="data.comentarioHistorial != null && data.comentarioHistorial !== '' && !soloLectura" class="historial-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comentarios anteriores</mat-label>
+          <textarea matInput [value]="data.comentarioHistorial" readonly rows="4" class="comment-textarea historial-textarea"></textarea>
+        </mat-form-field>
+      </div>
       <mat-form-field appearance="outline" class="full-width comment-field form-field-animated">
-        <mat-label>Comentario</mat-label>
+        <mat-label>{{ (data.comentarioHistorial != null && data.comentarioHistorial !== '' && !soloLectura) ? 'Nuevo comentario' : 'Comentario' }}</mat-label>
         <textarea 
           matInput 
           [(ngModel)]="comentario"
-          [placeholder]="data.placeholder"
+          [placeholder]="(data.comentarioHistorial != null && data.comentarioHistorial !== '') ? 'Escribe tu comentario aquí...' : data.placeholder"
           [readonly]="soloLectura"
           rows="5"
           maxlength="500"
@@ -158,6 +167,13 @@ export interface ComentarioDialogData {
       letter-spacing: 0.3px;
     }
     
+    .historial-section {
+      margin-bottom: 8px;
+    }
+    .historial-textarea {
+      background-color: #f5f5f5;
+      cursor: default;
+    }
     .full-width {
       width: 100%;
       margin-top: 20px;
@@ -296,7 +312,8 @@ export class ComentarioDialogComponent {
     public dialogRef: MatDialogRef<ComentarioDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ComentarioDialogData
   ) {
-    this.comentario = data.comentarioInicial || '';
+    // Si hay historial para añadir comentario nuevo, el campo editable empieza vacío (solo se envía lo nuevo)
+    this.comentario = (data.comentarioHistorial != null && data.comentarioHistorial !== '') ? '' : (data.comentarioInicial || '');
     this.soloLectura = !!data.soloLectura;
     this.textoConfirmacion = data.textoConfirmacion || 'Añadir Comentario';
   }

@@ -276,64 +276,61 @@ export class DocumentationViewerComponent implements OnInit {
   }
 
   /**
-   * Agregar comentario usando endpoint genérico
+   * Agregar comentario usando endpoint genérico.
+   * Carga el documento actual (GET buscarPorId) para mostrar comentarios previos; al guardar envía solo el texto nuevo.
    */
   agregarComentario(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
-    // agregarComentario() llamado
-    
     if (!documento.id_documento) {
       this.snackBar.open('No hay ID de documento disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
-    // ID del documento
-    
-    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
-      width: '520px',
-      data: <ComentarioDialogData>{
-        titulo: 'Agregar comentario',
-        descripcion: 'Escribe las observaciones para el documento seleccionado.',
-        placeholder: 'Describe tu comentario',
-        nombreDocumento: documento.nombre,
-        textoConfirmacion: 'Guardar comentario'
-      }
-    });
+    const abrirDialogConHistorial = (comentarioActual: string) => {
+      const dialogRef = this.dialog.open(ComentarioDialogComponent, {
+        width: '520px',
+        data: <ComentarioDialogData>{
+          titulo: 'Agregar comentario',
+          descripcion: 'Escribe las observaciones para el documento seleccionado. Los comentarios anteriores se muestran arriba.',
+          placeholder: 'Describe tu comentario',
+          nombreDocumento: documento.nombre,
+          comentarioHistorial: comentarioActual || undefined,
+          textoConfirmacion: 'Guardar comentario'
+        }
+      });
 
-    dialogRef.afterClosed().subscribe((comentario: string | undefined) => {
-      if (comentario === undefined) {
-        // Usuario canceló el comentario
-        return;
-      }
+      dialogRef.afterClosed().subscribe((comentarioNuevo: string | undefined) => {
+        if (comentarioNuevo === undefined) return;
+        if (!comentarioNuevo.trim()) {
+          this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', snackbarConfig(['warning-snackbar']));
+          return;
+        }
+        this.snackBar.open('Agregando comentario...', 'Cerrar', snackbarConfig());
+        if (this.servicio && this.servicio.agregarComentario) {
+          this.servicio.agregarComentario(documento.id_documento, comentarioNuevo.trim()).subscribe({
+            next: () => {
+              this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+              this.comentarioAgregado.emit({ documento, comentario: comentarioNuevo.trim() });
+            },
+            error: (error: any) => {
+              this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', snackbarConfig(['error-snackbar']));
+            }
+          });
+        } else {
+          this.snackBar.open('Error: Servicio no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
+        }
+      });
+    };
 
-      if (!comentario.trim()) {
-        this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', snackbarConfig(['warning-snackbar']));
-        return;
-      }
-
-
-      // Mostrar mensaje de carga
-      this.snackBar.open('Agregando comentario...', 'Cerrar', snackbarConfig());
-
-      // Usar el servicio con endpoint genérico
-      if (this.servicio && this.servicio.agregarComentario) {
-        this.servicio.agregarComentario(documento.id_documento, comentario.trim()).subscribe({
-          next: (result: any) => {
-            // Comentario agregado exitosamente
-            this.snackBar.open('Comentario agregado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-            // Emitir evento para que el componente padre actualice la vista
-            this.comentarioAgregado.emit({
-              documento: documento,
-              comentario: comentario.trim()
-            });
-          },
-          error: (error: any) => {
-            this.snackBar.open('Error al agregar comentario: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar', snackbarConfig(['error-snackbar']));
-          }
-        });
-      } else {
-        this.snackBar.open('Error: Servicio no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
-    });
+    // Obtener documento actualizado para mostrar comentarios existentes (el backend concatena; solo enviamos lo nuevo)
+    if (this.servicio && typeof this.servicio.buscarDocumentoPorId === 'function') {
+      this.snackBar.open('Cargando comentarios...', 'Cerrar', snackbarConfig());
+      this.servicio.buscarDocumentoPorId(documento.id_documento).subscribe({
+        next: (doc: { comentario?: string }) => abrirDialogConHistorial(doc.comentario ?? ''),
+        error: () => abrirDialogConHistorial((documento as any).comentario ?? '')
+      });
+    } else {
+      abrirDialogConHistorial((documento as any).comentario ?? '');
+    }
   }
 
 }
