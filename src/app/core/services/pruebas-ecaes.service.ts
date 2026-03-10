@@ -26,7 +26,6 @@ export interface SolicitudEcaesRequest {
     codigo: string;
     cedula: string; // Obligatorio
     correo: string;
-    // El backend ahora espera identificadores en lugar de objetos anidados
     estado_usuario: boolean;
     id_rol?: number;
     id_programa?: number;
@@ -214,7 +213,7 @@ export class PruebasEcaesService {
     if (periodoAcademico) {
       params = params.set('periodoAcademico', periodoAcademico);
     }
-    
+
     return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitudes-Ecaes/Funcionario`, {
       params: params.keys().length > 0 ? params : undefined,
       headers: this.getAuthHeaders()
@@ -244,7 +243,7 @@ export class PruebasEcaesService {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
     // URL de descarga por ID
     this.logger.log('ID del documento:', idDocumento);
-    
+
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
       responseType: 'blob'
@@ -262,7 +261,7 @@ export class PruebasEcaesService {
     // URL de descarga por ruta
     this.logger.log('Ruta del documento:', rutaDocumento);
     this.logger.debug('Nombre extraído:', nombreArchivo);
-    
+
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
       responseType: 'blob'

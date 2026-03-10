@@ -256,7 +256,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     }
 
     this.subiendoPDF = true;
-    this.logger.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
+    this.logger.log('Subiendo archivo PDF:', this.archivoPDF.name);
 
     // Usar endpoint específico de homologación: subir-resolucion
     this.homologacionService.subirResolucion(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
@@ -398,6 +398,6 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     this.enviandoPDF = false;
     this.documentoHabilitado = false;
     this.loading = false;
-    this.logger.debug('🧹 Estado del componente limpiado');
+    this.logger.debug(' Estado del componente limpiado');
   }
 }

@@ -28,9 +28,7 @@ export class ReingresoEstudianteService {
     });
   }
 
-  // ================================
-  // Métodos básicos
-  // ================================
+
 
   /**
    * Crea una nueva solicitud de reingreso
@@ -68,11 +66,11 @@ export class ReingresoEstudianteService {
 
     let url: string;
     let params = new HttpParams();
-    
+
     if (periodoAcademico) {
       params = params.set('periodoAcademico', periodoAcademico);
     }
-    
+
     switch (rol.toLowerCase()) {
       case 'funcionario':
         url = `${this.apiUrl}/listarSolicitud-Reingreso/Funcionario`;
@@ -95,9 +93,9 @@ export class ReingresoEstudianteService {
         });
     }
 
-    return this.http.get<SolicitudReingresoDTORespuesta[]>(url, { 
+    return this.http.get<SolicitudReingresoDTORespuesta[]>(url, {
       params: params.keys().length > 0 ? params : undefined,
-      headers 
+      headers
     });
   }
 
@@ -116,13 +114,7 @@ export class ReingresoEstudianteService {
     );
   }
 
-  // ================================
-  // Métodos para Funcionario
-  // ================================
 
-  /**
-   * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
-   */
   getPendingRequests(): Observable<SolicitudReingresoDTORespuesta[]> {
     return this.listarSolicitudesPorRol('funcionario');
   }
@@ -158,13 +150,7 @@ export class ReingresoEstudianteService {
     }, { headers: this.getAuthHeaders() });
   }
 
-  // ================================
-  // Métodos para Coordinador
-  // ================================
 
-  /**
-   * Obtener solicitudes para coordinador (con último estado "APROBADA_FUNCIONARIO")
-   */
   getCoordinadorRequests(): Observable<SolicitudReingresoDTORespuesta[]> {
     return this.listarSolicitudesPorRol('coordinador');
   }
@@ -200,13 +186,7 @@ export class ReingresoEstudianteService {
     }, { headers: this.getAuthHeaders() });
   }
 
-  // ================================
-  // Métodos para Secretaría
-  // ================================
 
-  /**
-   * Obtener solicitudes para secretaría (con último estado "APROBADA_COORDINADOR")
-   */
   getSecretariaRequests(): Observable<SolicitudReingresoDTORespuesta[]> {
     return this.listarSolicitudesPorRol('secretaria');
   }
@@ -217,7 +197,7 @@ export class ReingresoEstudianteService {
    */
   getSecretariaApprovedRequests(periodoAcademico?: string): Observable<SolicitudReingresoDTORespuesta[]> {
     const url = `${this.apiUrl}/listarSolicitud-Reingreso/Secretaria/Aprobadas`;
-    
+
     let params = new HttpParams();
     if (periodoAcademico) {
       params = params.set('periodoAcademico', periodoAcademico);
@@ -229,19 +209,15 @@ export class ReingresoEstudianteService {
     });
   }
 
-  /**
-   * Obtener solicitudes ya procesadas por funcionario (historial)
-   * Estado: APROBADA_FUNCIONARIO (ya aprobadas por funcionario)
-   * Endpoint: /listarSolicitud-Reingreso/Funcionario/Aprobadas
-   */
+
   getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Observable<SolicitudReingresoDTORespuesta[]> {
     let params = new HttpParams();
     if (periodoAcademico) {
       params = params.set('periodoAcademico', periodoAcademico);
     }
-    
+
     return this.http.get<SolicitudReingresoDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-Reingreso/Funcionario/Aprobadas`, 
+      `${this.apiUrl}/listarSolicitud-Reingreso/Funcionario/Aprobadas`,
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError((error: any) => {
@@ -251,19 +227,15 @@ export class ReingresoEstudianteService {
     );
   }
 
-  /**
-   * Obtener solicitudes ya procesadas por coordinador (historial)
-   * Estado: APROBADA_COORDINADOR (ya aprobadas por coordinador)
-   * Endpoint: /listarSolicitud-Reingreso/Coordinador/Aprobadas
-   */
+
   getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Observable<SolicitudReingresoDTORespuesta[]> {
     let params = new HttpParams();
     if (periodoAcademico) {
       params = params.set('periodoAcademico', periodoAcademico);
     }
-    
+
     return this.http.get<SolicitudReingresoDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-Reingreso/Coordinador/Aprobadas`, 
+      `${this.apiUrl}/listarSolicitud-Reingreso/Coordinador/Aprobadas`,
       { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
     ).pipe(
       catchError((error: any) => {
@@ -273,13 +245,7 @@ export class ReingresoEstudianteService {
     );
   }
 
-  // ================================
-  // Métodos para archivos y documentos
-  // ================================
 
-  /**
-   * Descargar archivo PDF por nombre
-   */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
     // URL directa al backend (CORS configurado)
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
@@ -291,40 +257,31 @@ export class ReingresoEstudianteService {
     });
   }
 
-  /**
-   * Descargar archivo PDF por ID de documento.
-   * Este método es más confiable que usar el nombre del archivo.
-   */
+
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
     const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
     this.logger.debug('Descargando archivo por ID', { idDocumento, url });
-    
+
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
       responseType: 'blob'
     });
   }
 
-  /**
-   * Descargar archivo PDF por ruta del documento.
-   * Usa la ruta almacenada en la base de datos.
-   */
+
   descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
     // Extraer el nombre del archivo de la ruta si es necesario
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
     this.logger.debug('Descargando archivo por ruta', { rutaDocumento, nombreArchivo, url });
-    
+
     return this.http.get(url, {
       headers: this.getAuthHeaders(),
       responseType: 'blob'
     });
   }
 
-  /**
-   * Obtener documento por ID (para mostrar comentarios actuales al añadir uno nuevo).
-   * GET /api/documentos/buscarPorId/{id}
-   */
+
   buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string; [key: string]: any }> {
     const url = `${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`;
     return this.http.get<{ comentario?: string; [key: string]: any }>(url, {
@@ -332,9 +289,7 @@ export class ReingresoEstudianteService {
     });
   }
 
-  /**
-   * Añadir comentario a un documento
-   */
+
   agregarComentario(idDocumento: number, comentario: string): Observable<any> {
     const url = `${environment.apiUrl}/documentos/añadirComentario`;
     const body = {
@@ -396,9 +351,7 @@ export class ReingresoEstudianteService {
     }, { headers: this.getAuthHeaders() });
   }
 
-  /**
-   * Obtener oficios/resoluciones de una solicitud de reingreso
-   */
+
   obtenerOficios(idSolicitud: number): Observable<any[]> {
     const url = `${this.apiUrl}/obtenerOficios/${idSolicitud}`;
 
@@ -407,9 +360,7 @@ export class ReingresoEstudianteService {
     });
   }
 
-  /**
-   * Descargar oficio/resolución de reingreso
-   */
+
   descargarOficio(idSolicitud: number): Observable<Blob> {
     const url = `${this.apiUrl}/descargarOficio/${idSolicitud}`;
 
@@ -455,12 +406,6 @@ export class ReingresoEstudianteService {
       // Asociando archivo a solicitud
     }
 
-    // URL para subir archivo PDF
-    // Archivo a subir
-    // Tamaño del archivo
-
-    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
-    // Esto permite que el navegador establezca el Content-Type correcto: multipart/form-data
     return this.http.post(url, formData);
   }
 

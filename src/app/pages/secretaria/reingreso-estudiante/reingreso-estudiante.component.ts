@@ -57,13 +57,13 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   cargandoSolicitudesAprobadas: boolean = false;
 
-  // Nuevas propiedades para el flujo de PDF
+
   documentoGenerado: boolean = false;
   archivoPDF: File | null = null;
   subiendoPDF: boolean = false;
   enviandoPDF: boolean = false;
 
-  // Nueva propiedad para controlar la habilitación del generador de documentos
+
   documentoHabilitado: boolean = false;
 
   // Enums para estados
@@ -272,9 +272,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     }
 
     this.subiendoPDF = true;
-    this.logger.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
-    this.logger.debug('🔍 selectedSolicitud:', this.selectedSolicitud);
-    this.logger.debug('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
+    this.logger.log(' Subiendo archivo PDF:', this.archivoPDF.name);
+    this.logger.debug(' selectedSolicitud:', this.selectedSolicitud);
+    this.logger.debug(' id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
     this.logger.debug('Nombre original del archivo:', this.archivoPDF.name);
 
@@ -346,9 +346,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     // Paso 1: Subir PDF
     this.subiendoPDF = true;
-    this.logger.log('📤 Subiendo archivo PDF:', this.archivoPDF.name);
-    this.logger.debug('🔍 selectedSolicitud:', this.selectedSolicitud);
-    this.logger.debug('🔍 id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
+    this.logger.log(' Subiendo archivo PDF:', this.archivoPDF.name);
+    this.logger.debug(' selectedSolicitud:', this.selectedSolicitud);
+    this.logger.debug(' id_solicitud a enviar:', this.selectedSolicitud.id_solicitud);
 
     this.logger.debug('Nombre original del archivo:', this.archivoPDF.name);
 
@@ -600,7 +600,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   descargarOficio(idOficio: number, nombreArchivo: string): void {
-    this.logger.log('📥 Descargando oficio:', idOficio);
+    this.logger.log('Descargando oficio:', idOficio);
     this.reingresoService.descargarOficio(idOficio).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
@@ -748,6 +748,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.enviandoPDF = false;
     this.documentoHabilitado = false;
     this.loading = false;
-    this.logger.debug('🧹 Estado del componente limpiado');
+    this.logger.debug(' Estado del componente limpiado');
   }
 }

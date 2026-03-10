@@ -146,18 +146,13 @@ export class NotificacionesService {
       );
   }
 
-  // ===== MÉTODOS COMPATIBLES CON CÓDIGO EXISTENTE =====
 
-  /**
-   * Obtiene las notificaciones del header para un usuario específico
-   * Compatible con el código existente
-   */
   obtenerNotificacionesHeader(idUsuario: number): Observable<NotificacionesResponse> {
     return new Observable(observer => {
       this.obtenerNotificacionesNoLeidas(idUsuario).subscribe({
         next: (notificaciones) => {
           const notificacionesEnriquecidas = enrichNotificaciones(notificaciones);
-          
+
           // Calcular categorías
           const categorias = {
             CURSO_VERANO: 0,
@@ -254,11 +249,11 @@ export class NotificacionesService {
     return new Observable(observer => {
       const currentNotificaciones = this.notificacionesSubject.value;
       observer.next(currentNotificaciones?.totalNoLeidas || 0);
-      
+
       const subscription = this.notificaciones$.subscribe(response => {
         observer.next(response?.totalNoLeidas || 0);
       });
-      
+
       return () => subscription.unsubscribe();
     });
   }
@@ -268,11 +263,11 @@ export class NotificacionesService {
    */
   iniciarPolling(idUsuario: number, intervalo: number = 30000): void {
     this.currentUserId = idUsuario;
-    
+
     this.detenerPolling();
-    
+
     this.actualizarNotificaciones(idUsuario);
-    
+
     this.pollingSubscription = interval(intervalo).subscribe(() => {
       this.actualizarNotificaciones(idUsuario);
     });
@@ -347,7 +342,7 @@ export class NotificacionesService {
       idUsuario,
       esUrgente: false
     };
-    
+
     return this.crearNotificacion(notificacionPrueba);
   }
 

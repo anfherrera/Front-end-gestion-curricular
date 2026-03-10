@@ -1,4 +1,4 @@
-/* Header - Sistema de Diseño TIC Universidad del Cauca */
+
 .header-container {
   display: flex;
   justify-content: space-between;
@@ -98,7 +98,7 @@
   .periodo-text {
     display: none;
   }
-  
+
   .periodo-header {
     padding: 6px;
   }

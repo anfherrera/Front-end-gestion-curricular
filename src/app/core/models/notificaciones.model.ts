@@ -1,6 +1,4 @@
-/**
- * Modelos de datos para el sistema de notificaciones
- */
+
 
 export enum TipoSolicitud {
   ECAES = 'ECAES',
@@ -19,9 +17,7 @@ export enum TipoNotificacion {
   ENVIADA = 'ENVIADA'
 }
 
-/**
- * DTO para crear una notificación manualmente
- */
+
 export interface NotificacionDTOPeticion {
   id_notificacion?: number;
   tipoSolicitud: TipoSolicitud | string;
@@ -38,9 +34,7 @@ export interface NotificacionDTOPeticion {
   idCurso?: number;
 }
 
-/**
- * DTO de respuesta del servidor
- */
+
 export interface NotificacionDTORespuesta {
   id_notificacion: number;
   tipoSolicitud: string;
@@ -52,16 +46,16 @@ export interface NotificacionDTORespuesta {
   esUrgente: boolean;
   accion?: string;
   urlAccion?: string;
-  
+
   // Información del usuario
   idUsuario: number;
   nombreUsuario: string;
   emailUsuario: string;
-  
+
   // Información de la solicitud relacionada
   idSolicitud?: number;
   nombreSolicitud?: string;
-  
+
   // Información del curso relacionado
   idCurso?: number;
   nombreCurso?: string;
@@ -79,9 +73,7 @@ export interface Notificacion extends NotificacionDTORespuesta {
   color?: string;
 }
 
-/**
- * Respuesta del endpoint de notificaciones del header (compatible con código existente)
- */
+
 export interface NotificacionesResponse {
   totalNoLeidas: number;
   cursosVeranoNoLeidas: number;

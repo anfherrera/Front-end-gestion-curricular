@@ -143,9 +143,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     return this.ESTADOS_SOLICITUD_LABELS[estado as EstadosSolicitud] || estado;
   }
 
-  /**
-   * Manejar cuando se agrega un comentario desde el DocumentationViewerComponent
-   */
+
   onComentarioAgregado(event: {documento: any, comentario: string}): void {
     if (event.documento.id_documento) {
       this.reingresoService.agregarComentario(event.documento.id_documento, event.comentario).pipe(
@@ -265,9 +263,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
 
-  /**
-   * Cargar solicitudes procesadas (historial) - Historial verdadero de todas las procesadas
-   */
+
   cargarSolicitudesProcesadas(): void {
     this.reingresoService.getSolicitudesProcesadasFuncionario(this.periodoAcademicoFiltro || undefined).pipe(
       takeUntil(this.destroy$)
@@ -299,9 +295,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Manejar cambio de período académico en el filtro
-   */
+
   onPeriodoChange(periodo: string): void {
     // Si es "todos", enviar null/undefined para que el backend muestre todas las solicitudes
     if (periodo === 'todos' || !periodo) {
@@ -312,9 +306,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.cargarSolicitudesProcesadas();
   }
 
-  /**
-   * Obtener fecha de procesamiento (último estado APROBADA_FUNCIONARIO)
-   */
+
   getFechaProcesamiento(solicitud: SolicitudReingresoDTORespuesta): string {
     if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
       const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];

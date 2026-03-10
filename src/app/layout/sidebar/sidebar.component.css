@@ -1,7 +1,4 @@
-/* sidebar.component.css */
-/* Sidebar - Sistema de Diseño TIC Universidad del Cauca */
 
-/* Sidebar principal */
 .sidebar {
   width: 260px;
   background: linear-gradient(180deg, var(--color-primario, #000066) 0%, var(--color-primario-dark, #07184A) 100%);
@@ -152,16 +149,16 @@
     min-height: auto;
     position: relative;
   }
-  
+
   .sidebar.closed {
     width: 100%;
   }
-  
+
   .sidebar-link {
     padding: 12px 20px;
     font-size: 14px;
   }
-  
+
   .sidebar mat-icon {
     font-size: 20px;
   }

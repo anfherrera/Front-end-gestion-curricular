@@ -9,18 +9,18 @@ export class ActivityMonitorService implements OnDestroy {
   private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutos en milisegundos
   private readonly WARNING_TIME = 1 * 60 * 1000; // 1 minuto antes del logout
   private readonly THROTTLE_DELAY = 2000; // Throttle de 2 segundos para evitar exceso de eventos
-  
+
   private inactivityTimer: any;
   private warningTimer: any;
   private isWarningShown = false;
   private throttleTimer: any = null; // Timer para throttle
-  
+
   private activitySubject = new BehaviorSubject<boolean>(true);
   public activity$ = this.activitySubject.asObservable();
-  
+
   private warningSubject = new BehaviorSubject<boolean>(false);
   public warning$ = this.warningSubject.asObservable();
-  
+
   private logoutCallback: (() => void) | null = null;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -34,9 +34,7 @@ export class ActivityMonitorService implements OnDestroy {
     this.stopMonitoring();
   }
 
-  /**
-   * Inicia el monitoreo de actividad del usuario
-   */
+
   startMonitoring(): void {
     // Solo ejecutar en el navegador
     if (!isPlatformBrowser(this.platformId)) {
@@ -46,9 +44,7 @@ export class ActivityMonitorService implements OnDestroy {
     this.resetInactivityTimer();
   }
 
-  /**
-   * Detiene el monitoreo de actividad
-   */
+
   stopMonitoring(): void {
     // Solo ejecutar en el navegador
     if (!isPlatformBrowser(this.platformId)) {
@@ -58,16 +54,12 @@ export class ActivityMonitorService implements OnDestroy {
     this.clearTimers();
   }
 
-  /**
-   * Establece el callback que se ejecutará cuando expire la inactividad
-   */
+
   setLogoutCallback(callback: () => void): void {
     this.logoutCallback = callback;
   }
 
-  /**
-   * Reinicia el timer de inactividad (se llama cuando detecta actividad)
-   */
+
   resetInactivityTimer(): void {
     this.clearTimers();
     this.isWarningShown = false;
@@ -93,14 +85,14 @@ export class ActivityMonitorService implements OnDestroy {
       this.isWarningShown = true;
       this.warningSubject.next(true);
       this.activitySubject.next(false);
-      
+
       // Mostrar alerta al usuario
       const userConfirmed = confirm(
         'Tu sesión expirará en 1 minuto por inactividad.\n\n' +
         '¿Deseas continuar con la sesión?\n\n' +
         'Haz clic en "Aceptar" para mantener la sesión activa.'
       );
-      
+
       if (userConfirmed) {
         this.resetInactivityTimer();
       } else {
@@ -116,15 +108,13 @@ export class ActivityMonitorService implements OnDestroy {
     this.clearTimers();
     this.activitySubject.next(false);
     this.warningSubject.next(false);
-    
+
     if (this.logoutCallback) {
       this.logoutCallback();
     }
   }
 
-  /**
-   * Agrega los event listeners para detectar actividad
-   */
+
   private addEventListeners(): void {
     // Solo ejecutar en el navegador
     if (!isPlatformBrowser(this.platformId) || typeof document === 'undefined') {
@@ -158,19 +148,16 @@ export class ActivityMonitorService implements OnDestroy {
     });
   }
 
-  /**
-   * Se ejecuta cuando detecta actividad del usuario
-   * OPTIMIZADO: Con throttle para evitar llamadas excesivas
-   */
+
   private onUserActivity(): void {
     // Si ya hay un throttle activo, ignorar el evento
     if (this.throttleTimer) {
       return;
     }
-    
+
     // Ejecutar el reset
     this.resetInactivityTimer();
-    
+
     // Establecer throttle por 2 segundos
     this.throttleTimer = setTimeout(() => {
       this.throttleTimer = null;

@@ -102,9 +102,6 @@ export interface SolicitudHomologacionDTORespuesta {
   programa_destino?: string | null; // Opcional, máximo 200 caracteres
 }
 
-// ================================
-// Modelos para Homologación de Asignaturas (Request)
-// ================================
 
 export interface SolicitudHomologacionDTOPeticion {
   id_solicitud?: number;
@@ -151,9 +148,7 @@ export interface CambioEstadoSolicitudDTOPeticion {
   nuevoEstado: string;
 }
 
-// ================================
-// DTOs base que heredan los de reingreso
-// ================================
+
 
 export interface EstadoSolicitudDTOPeticion {
   id_estado?: number;
