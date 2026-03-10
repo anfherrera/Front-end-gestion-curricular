@@ -738,9 +738,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 
-  /**
-   * Limpiar estado del componente
-   */
+
   private limpiarEstado(): void {
     this.documentoGenerado = false;
     this.archivoPDF = null;
