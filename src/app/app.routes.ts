@@ -69,8 +69,8 @@ export const routes: Routes = [
           {
             path: 'cursos-intersemestrales',
             loadChildren: () =>
-              import('./pages/funcionario/cursos-intersemestrales/cursos-intersemestrales.routes')
-                .then(m => m.CursosIntersemestralesFuncionarioRoutes),
+              import('./pages/common/cursos-intersemestrales/cursos-intersemestrales.routes')
+                .then(m => m.CursosIntersemestralesGestionRoutes),
           },
           { path: 'reingreso-estudiante', loadComponent: () => import('./pages/funcionario/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
           { path: 'homologacion-asignaturas', loadComponent: () => import('./pages/funcionario/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
@@ -95,8 +95,8 @@ export const routes: Routes = [
           {
             path: 'cursos-intersemestrales',
             loadChildren: () =>
-              import('./pages/coordinador/cursos-intersemestrales/cursos-intersemestrales.routes')
-                .then(m => m.CursosIntersemestralesCoordinadorRoutes),
+              import('./pages/common/cursos-intersemestrales/cursos-intersemestrales.routes')
+                .then(m => m.CursosIntersemestralesGestionRoutes),
           },
         ]
       },

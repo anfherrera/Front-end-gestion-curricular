@@ -23,6 +23,8 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { PromptDialogComponent, PromptDialogData } from '../../../../shared/components/prompt-dialog/prompt-dialog.component';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { AuthService } from '../../../../core/services/auth.service';
+import { UserRole } from '../../../../core/enums/roles.enum';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -80,7 +82,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private http: HttpClient,
     private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
+    private authService: AuthService
   ) {
     this.filtroForm = this.fb.group({
       curso: ['', Validators.required]
@@ -114,7 +117,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     this.cargando = true;
     this.logger.debug('Cargando cursos para inscripción');
     
-    // Para funcionarios/coordinadores, usar el endpoint que obtiene todos los cursos
     // Usar getCursosPorEstado para obtener cursos en estado "Inscripción"
     // Sin período para mostrar TODOS los cursos de inscripción
     this.cursosService.getCursosPorEstado('Inscripción')
@@ -134,7 +136,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         }
         this.cargando = false;
       },
-      error: (err: any) => {
+      error: (err) => {
         this.logger.error('Error al cargar cursos del backend', err);
         this.cursos = [];
         
@@ -153,11 +155,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   cargarEstudiantesElegibles(cursoId: number): void {
     this.cargando = true;
     this.logger.debug('Cargando estudiantes elegibles para curso:', cursoId);
-    
-    // Buscar el curso seleccionado
     this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
     
-    // Usar el nuevo endpoint que filtra automáticamente estudiantes con pago validado
     this.cursosService.getEstudiantesElegibles(cursoId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -175,9 +174,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.estudiantesFiltrados = this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado');
         this.logger.debug('Estudiantes elegibles cargados para curso:', this.estudiantesFiltrados.length);
         
-        // Si no hay estudiantes elegibles, mostrar mensaje informativo
         if (this.estudiantesFiltrados.length === 0) {
-          // No hay estudiantes elegibles - todos deben tener preinscripción aprobada y pago validado
           this.estudiantesFiltrados = [];
           
           // Mostrar mensaje informativo al usuario
@@ -190,7 +187,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         
         this.cargando = false;
       },
-      error: (err: any) => {
+      error: (err) => {
         this.logger.error('Error al cargar estudiantes elegibles', err);
         this.estudiantesFiltrados = [];
         this.cargando = false;
@@ -261,7 +258,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     this.abrirModalConfirmacionInscripcion(estudiante);
   }
 
-  // Método para abrir modal de confirmación personalizado
   private abrirModalConfirmacionInscripcion(estudiante: EstudianteElegible): void {
     const dialogRef = this.dialog.open(ConfirmacionInscripcionDialogComponent, {
       width: '500px',
@@ -282,12 +278,13 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   // Método simple para aceptar inscripción usando el servicio
   aceptarInscripcion(estudiante: EstudianteElegible): void {
-    const observaciones = "Inscripción aceptada por funcionario/coordinador";
+    const rol = this.authService.getRole() === UserRole.COORDINADOR ? 'coordinador' : 'funcionario';
+    const observaciones = `Inscripción aceptada por ${rol}`;
     
     this.cursosService.aceptarInscripcion(estudiante.id_solicitud, observaciones)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-      next: (response: any) => {
+      next: (response) => {
         this.logger.debug('Inscripción aceptada exitosamente', response);
         this.snackBar.open('Inscripción aceptada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
         // Recargar la lista de estudiantes y estadísticas
@@ -296,7 +293,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
       },
-      error: (error: any) => {
+      error: (error) => {
         this.manejarErrorInscripcion(error);
       }
     });
@@ -330,7 +327,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
-          next: (response: any) => {
+          next: (response) => {
             const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
             this.logger.debug('Inscripción rechazada exitosamente', response);
             this.snackBar.open(
@@ -339,13 +336,12 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
               snackbarConfig(['success-snackbar'])
             );
             
-            // Refrescar la lista después del rechazo exitoso
             if (this.cursoSeleccionado) {
               this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
               this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
             }
           },
-          error: (error: any) => {
+          error: (error) => {
             this.manejarErrorInscripcion(error);
           }
         });
@@ -683,7 +679,7 @@ export class DetallesInscripcionDialogComponent {
       });
     } catch (error) {
       this.logger.error('Error de conexión al descargar comprobante', error);
-      this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackbar']));
+this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackbar']));
     }
   }
 
@@ -734,7 +730,7 @@ export class DetallesInscripcionDialogComponent {
             <mat-icon class="info-icon">book</mat-icon>
             <div class="info-text">
               <strong>Curso:</strong>
-              <span>{{ data.curso.nombre | utfFix }}</span>
+              <span>{{ (data.curso?.nombre_curso || data.curso?.nombre || 'No especificado') | utfFix }}</span>
             </div>
           </div>
         </div>
@@ -764,7 +760,7 @@ export class DetallesInscripcionDialogComponent {
     }
 
     .dialog-header {
-      background: linear-gradient(135deg, #000066 0%, #0024CC 100%);
+      background: linear-gradient(135deg, #000066 0%, #5056AC 100%);
       color: white;
       padding: 20px;
       display: flex;
@@ -872,7 +868,7 @@ export class DetallesInscripcionDialogComponent {
     }
 
     .btn-confirmar:hover {
-      background: #0024CC;
+      background: #5056AC;
     }
 
     .btn-cancelar mat-icon,

@@ -8,7 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-cursos-intersemestrales',
+  selector: 'app-cursos-intersemestrales-gestion',
   standalone: true,
   imports: [
     CommonModule, 
@@ -21,7 +21,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['./cursos-intersemestrales.component.css']
 })
-export class CursosIntersemestralesCoordinadorComponent implements OnInit, OnDestroy {
+export class CursosIntersemestralesGestionComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   opciones = [

@@ -13,7 +13,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
-  selector: 'app-dashboard-coordinador',
+  selector: 'app-dashboard-cursos-intersemestrales',
   standalone: true,
   imports: [
     CommonModule,
@@ -27,7 +27,7 @@ import { environment } from '../../../../../environments/environment';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardCoordinadorComponent implements OnInit, OnDestroy {
+export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   usuario: any = null;
@@ -256,4 +256,3 @@ export class DashboardCoordinadorComponent implements OnInit, OnDestroy {
     return curso.estado || 'Borrador';
   }
 }
-
