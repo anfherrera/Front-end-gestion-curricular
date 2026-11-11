@@ -190,7 +190,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url === `${ApiEndpoints.MODULO_ESTADISTICO.BASE}/periodo/${periodo}`);
+      // El backend recibe el período como query param: /estadisticas/periodo?periodoAcademico=...
+      const req = httpMock.expectOne((r) =>
+        r.url.endsWith('/estadisticas/periodo') && r.params.get('periodoAcademico') === periodo
+      );
       req.flush(mockEstadisticas);
       tick();
     }));

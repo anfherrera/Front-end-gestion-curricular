@@ -21,6 +21,9 @@ describe('PreinscribirEstudiantesComponent', () => {
   beforeEach(async () => {
     cursosServiceSpy = jasmine.createSpyObj('CursosIntersemestralesService', [
       'getCursosDisponibles',
+      'getCursosPorEstado',
+      'getCursoPorId',
+      'getPreinscripcionesPorCurso',
       'getSolicitudesCursoNuevo',
       'aprobarPreinscripcion',
       'rechazarPreinscripcion'
@@ -31,6 +34,8 @@ describe('PreinscribirEstudiantesComponent', () => {
 
     // Mockear los métodos que se llaman en ngOnInit
     cursosServiceSpy.getCursosDisponibles.and.returnValue(of([]));
+    cursosServiceSpy.getCursosPorEstado.and.returnValue(of([]));
+    cursosServiceSpy.getPreinscripcionesPorCurso.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [

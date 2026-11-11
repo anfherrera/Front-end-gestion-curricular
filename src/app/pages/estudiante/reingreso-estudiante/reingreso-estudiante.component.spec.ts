@@ -83,7 +83,8 @@ describe('ReingresoEstudianteComponent', () => {
   it('RE-E-001: Debe renderizar secciones principales', () => {
     expect(compiled.querySelector('app-required-docs')).toBeTruthy();
     expect(compiled.querySelector('app-file-upload')).toBeTruthy();
-    expect(compiled.querySelector('app-request-status-table')).toBeTruthy();
+    // Sin solicitudes, el seguimiento muestra el mensaje vacío en lugar de la tabla
+    expect(compiled.querySelector('.sin-solicitudes')).toBeTruthy();
   });
 
   it('RE-E-002: puedeEnviar debe ser false sin archivos', () => {

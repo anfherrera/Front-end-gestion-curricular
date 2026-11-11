@@ -14,7 +14,8 @@ describe('Seguridad - Guards', () => {
   let authService: jasmine.SpyObj<AuthService>;
 
   beforeEach(() => {
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    // authGuard lee router.url para no redirigir si ya está en /login
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate'], { url: '/funcionario/paz-salvo' });
     const authServiceSpy = jasmine.createSpyObj('AuthService', [
       'isAuthenticated',
       'getRole',

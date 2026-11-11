@@ -6,6 +6,7 @@ import { ManageUsersComponent } from './manage-users.component';
 import { UsuariosService } from '../../../core/services/usuarios.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { provideRouter } from '@angular/router';
 
 describe('ManageUsersComponent', () => {
   let component: ManageUsersComponent;
@@ -33,7 +34,8 @@ describe('ManageUsersComponent', () => {
       providers: [
         { provide: UsuariosService, useValue: usuariosServiceSpy },
         { provide: ErrorHandlerService, useValue: errorHandlerSpy },
-        { provide: MatSnackBar, useValue: snackBarSpy }
+        { provide: MatSnackBar, useValue: snackBarSpy },
+        provideRouter([])
       ]
     })
     .compileComponents();

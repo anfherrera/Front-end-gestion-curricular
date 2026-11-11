@@ -281,8 +281,9 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       expect(snackBar.open).toHaveBeenCalledWith(
         '¡Bienvenido, Test User!',
         'Cerrar',
+        // Configuración estándar del sistema de diseño (snackbarConfig)
         jasmine.objectContaining({
-          duration: 3000
+          panelClass: ['success-snackbar']
         })
       );
     }));

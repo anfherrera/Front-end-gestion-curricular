@@ -48,5 +48,3 @@ DOCUMENTACION-COMPLETA-PRUEBAS.md
 # Development-only configuration files
 proxy.conf.json
 
-# Test configuration (not needed for production build)
-tsconfig.spec.json

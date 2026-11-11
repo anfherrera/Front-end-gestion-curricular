@@ -237,9 +237,11 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
 
       service.getEstadisticasConFiltros(filtros).subscribe(() => done());
 
+      // El backend (/estadisticas/filtradas) recibe el proceso como "nombreProceso"
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/estadisticas') &&
-        request.params.has('proceso')
+        request.url.includes('/estadisticas/filtradas') &&
+        request.params.get('nombreProceso') === 'paz-salvo' &&
+        request.params.get('idPrograma') === '1'
       );
       req.flush({});
     });
@@ -430,8 +432,9 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
         done();
       });
 
+      // El backend recibe el período como query param: /estadisticas/periodo?periodoAcademico=...
       const req = httpMock.expectOne((request) =>
-        (request.url.includes('/modulo-estadistico/periodo') || request.url.includes('/estadisticas/periodo')) && request.url.includes(periodo)
+        request.url.includes('/estadisticas/periodo') && request.params.get('periodoAcademico') === periodo
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockEstadisticas);

@@ -98,6 +98,13 @@ describe('PruebasEcaesComponent', () => {
     fixture = TestBed.createComponent(PruebasEcaesComponent);
     component = fixture.componentInstance;
     compiled = fixture.nativeElement as HTMLElement;
+    // MatSnackBarModule (importado por el componente y sus hijos) registra su propio
+    // MatSnackBar en el inyector del componente: se espía la instancia que usa de verdad.
+    const snackBarReal = (component as any).snackBar as MatSnackBar;
+    if (!jasmine.isSpy(snackBarReal.open)) {
+      spyOn(snackBarReal, 'open');
+    }
+    snackBar = snackBarReal as jasmine.SpyObj<MatSnackBar>;
     fixture.detectChanges();
   });
 
@@ -110,9 +117,12 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('EC-016: Debe renderizar secciones principales (Fechas, Documentación, Seguimiento)', () => {
-    expect(compiled.querySelector('app-card-container')).toBeTruthy();
+    // Tres secciones: Fechas, Documentación Adjunta y Seguimiento de Solicitud
+    expect(compiled.querySelectorAll('app-card-container').length).toBe(3);
     expect(compiled.querySelector('app-file-upload')).toBeTruthy();
-    expect(compiled.querySelector('app-request-status-table')).toBeTruthy();
+    // Sin solicitudes, el seguimiento muestra el mensaje vacío en lugar de la tabla
+    expect(compiled.querySelector('.sin-solicitudes')).toBeTruthy();
+    expect(compiled.querySelector('app-request-status-table')).toBeNull();
   });
 
   it('EC-017: Debe cargar fechas ECAES y seleccionar primer período', fakeAsync(() => {

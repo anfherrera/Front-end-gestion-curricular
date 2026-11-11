@@ -20,6 +20,7 @@
     "test:all": "npm run test:usabilidad && npm run test:e2e",
     "test:seguridad-accesibilidad": "npm run test:seguridad && npm run test:accesibilidad && npm run test:accesibilidad:e2e",
     "test:reporte": "node scripts/generar-reporte-usabilidad.js",
+    "test:navegacion": "node scripts/prueba-navegacion.mjs",
     "serve:ssr:Front-end-gestion-curricular": "node dist/front-end-gestion-curricular/server/server.mjs"
   },
   "private": true,

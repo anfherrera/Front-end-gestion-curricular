@@ -183,15 +183,6 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   });
 
   /**
-   * HISTORIA DE USUARIO 5:
-   * Como estudiante,
-   * Quiero recibir notificaciones sobre mis preinscripciones,
-   * Para estar informado.
-   */
-  describe('HU-05: Recibir Notificaciones', () => {
-  });
-
-  /**
    * HISTORIA DE USUARIO 6:
    * Como estudiante,
    * Quiero marcar notificaciones como leídas,

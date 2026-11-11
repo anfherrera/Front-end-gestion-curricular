@@ -1,5 +1,7 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { PazSalvoService } from './paz-salvo.service';
 import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
 import { EstadisticasService } from './estadisticas.service';
@@ -36,11 +38,14 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
   };
 
   beforeEach(() => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getUsuario']);
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getUsuario', 'getToken']);
+    authServiceSpy.getToken.and.returnValue('mock-token');
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      // Con el JwtInterceptor real: es quien añade el token a las peticiones en la app
       providers: [
+        provideHttpClient(withInterceptors([JwtInterceptor])),
+        provideHttpClientTesting(),
         PazSalvoService,
         CursosIntersemestralesService,
         EstadisticasService,
@@ -215,7 +220,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       const reqMis = httpMock.expectOne((req) =>
-        req.url.includes('/preinscripciones/estudiante')
+        req.url.includes('/preinscripciones/usuario/1')
       );
       reqMis.flush([
         {
@@ -229,7 +234,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
 
       // VERIFICACIÓN: La preinscripción creada aparece en la lista
       expect(reqCrear.request.body.idCurso).toBe(1);
-      expect(reqMis.request.params.get('idEstudiante')).toBe('1');
+      expect(reqMis.request.method).toBe('GET');
     }));
   });
 

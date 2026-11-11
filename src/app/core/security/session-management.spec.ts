@@ -2,7 +2,7 @@
  * Pruebas de seguridad: manejo de sesiones (expiración, inactividad, tokens, limpieza).
  */
 
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick, discardPeriodicTasks } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
@@ -337,7 +337,10 @@ describe('Seguridad - Manejo de sesiones', () => {
 
     it('SEC-036-C: Debe restaurar sesión con timer correcto', fakeAsync(() => {
       const expTime = Date.now() + 1000; // expira en 1 segundo
+      // restoreSession solo restaura si hay token y expiración vigentes
+      const token = createValidToken(1);
       localStorageSpy.getItem.and.callFake((key: string) => {
+        if (key === 'token') return token;
         if (key === 'tokenExp') return expTime.toString();
         return null;
       });
@@ -348,6 +351,7 @@ describe('Seguridad - Manejo de sesiones', () => {
       tick(1500); // Avanzar 1.5 segundos
 
       expect(authService.logout).toHaveBeenCalled();
+      discardPeriodicTasks(); // monitoreo de actividad
     }));
   });
 

@@ -437,24 +437,10 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
           this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
         }
 
-        // Actualizar el estado a "ENVIADA" (opcional, no bloquea el flujo)
-        this.pruebasEcaesService.actualizarEstadoSolicitud(response.id_solicitud, 'ENVIADA').pipe(
-          takeUntil(this.destroy$)
-        ).subscribe({
-          next: () => {
-            this.logger.log('Estado actualizado a ENVIADA');
-            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-            this.limpiarFormulario();
-            this.listarSolicitudes(); // Recargar la lista de solicitudes
-          },
-          error: (error) => {
-            this.logger.warn('Error al actualizar estado (CORS o backend):', error);
-            // No mostramos error al usuario, la solicitud se creó correctamente
-            this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-            this.limpiarFormulario();
-            this.listarSolicitudes();
-          }
-        });
+        // El backend ya crea la solicitud en estado ENVIADA
+        this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.limpiarFormulario();
+        this.listarSolicitudes();
       },
       error: (error) => {
         this.logger.error('Error al enviar solicitud:', error);

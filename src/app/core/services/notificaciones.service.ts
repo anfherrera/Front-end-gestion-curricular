@@ -279,12 +279,8 @@ export class NotificacionesService {
 
   // ===== MANEJO DE ERRORES =====
 
+  // El 401 lo gestiona errorInterceptor (logout y redirección a /login).
   private handleError = (error: any): Observable<never> => {
-    if (error.status === 401) {
-      // Token expirado, redirigir al login
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-    }
     throw error;
   };
 }

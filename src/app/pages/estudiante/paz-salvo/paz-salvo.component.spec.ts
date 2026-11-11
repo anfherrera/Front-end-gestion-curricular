@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { PazSalvoComponent } from './paz-salvo.component';
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
 
 describe('PazSalvoComponent', () => {
   let component: PazSalvoComponent;
@@ -31,8 +32,10 @@ describe('PazSalvoComponent', () => {
       'listarSolicitudesPorRol',
       'crearSolicitudConFormulario',
       'descargarOficio',
-      'obtenerDocumentos'
+      'obtenerDocumentos',
+      'obtenerComentarios'
     ]);
+    const notificacionesServiceSpy = jasmine.createSpyObj('NotificacionesService', ['actualizarNotificaciones']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     const httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
@@ -43,7 +46,8 @@ describe('PazSalvoComponent', () => {
         { provide: PazSalvoService, useValue: pazSalvoServiceSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: MatDialog, useValue: dialogSpy },
-        { provide: HttpClient, useValue: httpClientSpy }
+        { provide: HttpClient, useValue: httpClientSpy },
+        { provide: NotificacionesService, useValue: notificacionesServiceSpy }
       ]
     }).compileComponents();
 
@@ -81,11 +85,27 @@ describe('PazSalvoComponent', () => {
     expect(compiled.querySelectorAll('.card-title').length).toBeGreaterThan(0);
   });
 
+  /** Completa el formulario obligatorio (fecha de terminación y, si aplica, trabajo de grado). */
+  function completarFormulario(): void {
+    component.solicitudForm.patchValue({
+      fecha_terminacion_plan: new Date('2025-06-30'),
+      titulo_trabajo_grado: 'Título de prueba',
+      director_trabajo_grado: 'Director de prueba'
+    });
+  }
+
   it('debe determinar si puede enviar según archivos y usuario', () => {
+    completarFormulario();
     component.archivosActuales = [];
     expect(component.puedeEnviar()).toBeFalse();
 
+    // Programa sin todos los documentos obligatorios: no puede enviar
     component.archivosActuales = [{ nombre: 'test.pdf' } as any];
+    expect(component.puedeEnviar()).toBeFalse();
+
+    // Telemática solo exige la cédula
+    component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
+    component.archivosActuales = [{ nombre: 'cedula.pdf' } as any];
     expect(component.puedeEnviar()).toBeTrue();
 
     component.usuario = null;
@@ -105,6 +125,7 @@ describe('PazSalvoComponent', () => {
       resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
     };
 
+    completarFormulario();
     component.archivosActuales = archivos as any;
     component.fileUploadComponent = fileUploadMock as any;
 
@@ -175,6 +196,12 @@ describe('PazSalvoComponent', () => {
     } as any;
 
     component.solicitudesCompletas = [solicitudCompleta];
+
+    // El componente pide los comentarios al backend antes de abrir el diálogo
+    pazSalvoService.obtenerComentarios.and.returnValue(of({
+      documentosConComentarios: [{ id: 1, nombre: 'doc.pdf', comentario: 'Falta firma' }],
+      comentarioRechazo: 'Corrige el documento'
+    } as any));
 
     dialog.open.and.returnValue({
       afterClosed: () => of(true)

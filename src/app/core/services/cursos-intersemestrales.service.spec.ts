@@ -479,7 +479,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/periodo/2025-1`);
+      // getCursosPorPeriodo delega en getCursosVerano: GET /cursos-verano?periodoAcademico=...
+      const req = httpMock.expectOne((r) =>
+        r.url === `${BASE_URL}/cursos-verano` && r.params.get('periodoAcademico') === '2025-1'
+      );
       expect(req.request.method).toBe('GET');
       req.flush(cursos);
     });
@@ -533,16 +536,28 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener preinscripciones por curso', (done) => {
-      const preinscripciones = [{ id_solicitud: 1 } as SolicitudCursoVerano];
+      // Formato del backend (PreinscripcionCurso); el servicio lo convierte a SolicitudCursoVerano
+      const respuestaBackend = [{
+        id_solicitud: 1,
+        id_preinscripcion: 10,
+        fecha_preinscripcion: '2025-06-01T10:00:00',
+        estado: 'ENVIADA',
+        objUsuario: { id_usuario: 7, nombre_completo: 'Estudiante Prueba', correo: 'prueba@unicauca.edu.co', codigo: '100' },
+        objCurso: { id_curso: 5 }
+      }];
 
       service.getPreinscripcionesPorCurso(5).subscribe((result) => {
-        expect(result).toEqual(preinscripciones);
+        expect(result.length).toBe(1);
+        expect(result[0].id_solicitud).toBe(1);
+        expect(result[0].nombre_solicitud).toBe('Preinscripción - Estudiante Prueba');
+        expect(result[0].objUsuario.id_usuario).toBe(7);
+        expect(result[0].tipoSolicitud).toBe('PREINSCRIPCION');
         done();
       });
 
       const req = httpMock.expectOne(`${BASE_URL}/preinscripciones/curso/5`);
       expect(req.request.method).toBe('GET');
-      req.flush(preinscripciones);
+      req.flush(respuestaBackend);
     });
 
     it('debe obtener inscripciones por curso específico', (done) => {

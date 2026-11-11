@@ -99,26 +99,19 @@ describe('Seguridad - JWT Interceptor', () => {
   // =====================================
   describe('SEC-002: Detección de Tokens Expirados', () => {
     
-    it('SEC-002-A: Debe detectar token expirado y continuar sin autenticación', () => {
+    it('SEC-002-A: Con token expirado no cierra sesión y deja que el backend lo valide', () => {
       const expiredToken = createExpiredToken();
       authService.getToken.and.returnValue(expiredToken);
 
-      // Espiar console.warn para verificar que se muestra el mensaje
-      spyOn(console, 'warn');
-
       httpClient.get('/api/test').subscribe();
 
-      // Comportamiento: NO cierra sesión automáticamente
+      // El interceptor JWT no cierra sesión: lo hace errorInterceptor al recibir el 401
       expect(authService.logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
-      
-      // Debe mostrar warning en consola
-      expect(console.warn).toHaveBeenCalledWith('Token expirado. Las peticiones se enviarán sin autenticación.');
-      expect(console.warn).toHaveBeenCalledWith('Por favor, cierre sesión y vuelva a iniciar sesión.');
 
-      // La petición debe continuar sin token
+      // El token se envía igualmente para que el backend responda 401
       const req = httpMock.expectOne('/api/test');
-      expect(req.request.headers.has('Authorization')).toBeFalse();
+      expect(req.request.headers.get('Authorization')).toBe(`Bearer ${expiredToken}`);
       req.flush({});
     });
 
@@ -241,18 +234,12 @@ describe('Seguridad - JWT Interceptor', () => {
       const expiredToken = createExpiredToken();
       authService.getToken.and.returnValue(expiredToken);
 
-      // Espiar console.warn
-      spyOn(console, 'warn');
-
       httpClient.get('/api/test1').subscribe();
       httpClient.get('/api/test2').subscribe();
 
-      // Comportamiento: NO cierra sesión automáticamente
+      // NO cierra sesión automáticamente (lo hace errorInterceptor ante el 401)
       expect(authService.logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
-      
-      // Debe mostrar warnings (uno por cada petición)
-      expect(console.warn).toHaveBeenCalled();
 
       const reqs = [
         httpMock.expectOne('/api/test1'),
@@ -260,8 +247,8 @@ describe('Seguridad - JWT Interceptor', () => {
       ];
 
       reqs.forEach(req => {
-        // Las peticiones continúan sin token de autorización
-        expect(req.request.headers.has('Authorization')).toBeFalse();
+        // Ambas peticiones llevan el token para que el backend lo valide
+        expect(req.request.headers.get('Authorization')).toBe(`Bearer ${expiredToken}`);
         req.flush({});
       });
     });
