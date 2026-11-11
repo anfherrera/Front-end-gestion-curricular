@@ -1811,8 +1811,6 @@ canvas {
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .alerta-critica-card .acciones-urgentes ul {
@@ -1947,8 +1945,6 @@ canvas {
   font-weight: 700;
   color: var(--color-primario);
   margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .rec-card .seccion p {

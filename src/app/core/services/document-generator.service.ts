@@ -260,7 +260,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `${request.datosDocumento.numeroDocumento || '8.4.3-55.6/408'}`,
+            text: `${request.datosDocumento.numeroDocumento || '_________________________'}`,
             bold: true,
             size: 24
           })
@@ -376,7 +376,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `${request.datosSolicitud.nombreEstudiante || 'MANUEL ALEJANDRO VALLEJO TRUJILLO'}, identificado (a) con la cedula de ciudadanía`,
+            text: `${request.datosSolicitud.nombreEstudiante || '_________________________'}, identificado (a) con la cedula de ciudadanía`,
             bold: true,
             size: 24
           })
@@ -386,7 +386,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `# ${request.datosSolicitud.cedula || '1061807618'} de Popayán, Cauca y código ${request.datosSolicitud.codigoEstudiante || '104614020656'}, puede optar al título`,
+            text: `# ${request.datosSolicitud.cedula || '_________________________'} de Popayán, Cauca y código ${request.datosSolicitud.codigoEstudiante || '_________________________'}, puede optar al título`,
             size: 24
           })
         ],
@@ -395,7 +395,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `de ${request.datosSolicitud.titulo || 'INGENIERO DE SISTEMAS'}, por haber cumplido con todos y cada uno de los`,
+            text: `de ${request.datosSolicitud.titulo || '_________________________'}, por haber cumplido con todos y cada uno de los`,
             bold: true,
             size: 24
           })
@@ -427,7 +427,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `trabajo de grado denominado "${request.datosSolicitud.tituloTrabajoGrado || 'Asistente virtual basado en ChatGPT para resolver preguntas en un curso en línea introductorio de ciencia de datos'}",`,
+            text: `trabajo de grado denominado "${request.datosSolicitud.tituloTrabajoGrado || '_________________________'}",`,
             size: 24
           })
         ],

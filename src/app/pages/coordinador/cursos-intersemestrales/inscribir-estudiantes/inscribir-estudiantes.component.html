@@ -23,7 +23,7 @@
 
   <!-- Lista de estudiantes elegibles -->
   <div *ngIf="cursoSeleccionado && !cargando" class="inscripciones-section">
-    <h3>👥 Estudiantes Elegibles para Inscripción en {{ cursoSeleccionado.nombre_curso | utfFix }}</h3>
+    <h3>Estudiantes elegibles para inscripción en {{ cursoSeleccionado.nombre_curso | utfFix }}</h3>
     
     <div *ngIf="estudiantesFiltrados.length === 0" class="no-data">
       <mat-icon>info</mat-icon>

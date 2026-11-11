@@ -278,10 +278,6 @@ export interface CursoDialogData {
       flex-shrink: 0;
     }
 
-    .form-section:nth-child(2) h3::before {
-      content: "📅";
-    }
-
     .form-section:nth-child(3) h3::before {
       content: "";
     }

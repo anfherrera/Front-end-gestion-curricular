@@ -3,9 +3,9 @@
   <div class="header-content">
     <div class="header-text">
       <div class="dashboard-title">
-        Dashboard de Cursos de Verano
+        Panel de cursos de verano
       </div>
-      <p class="dashboard-subtitle">Análisis y Predicciones de Demanda</p>
+      <p class="dashboard-subtitle">Análisis y proyección de la demanda</p>
       <div class="last-update" *ngIf="!loading">
         <mat-icon>schedule</mat-icon>
         Última actualización: {{ ultimaActualizacion | date:'short' }}
@@ -16,11 +16,11 @@
         <mat-icon [class.fa-spin]="loading">refresh</mat-icon>
         {{ loading ? 'Actualizando...' : 'Actualizar' }}
       </button>
-      <button mat-raised-button color="accent" (click)="exportarPDF()" [disabled]="loading || !data">
-        <mat-icon>description</mat-icon>
+      <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading || !data">
+        <mat-icon>picture_as_pdf</mat-icon>
         Exportar PDF
       </button>
-      <button mat-raised-button color="warn" (click)="exportarExcel()" [disabled]="loading || !data">
+      <button mat-stroked-button (click)="exportarExcel()" [disabled]="loading || !data">
         <mat-icon>table_chart</mat-icon>
         Exportar Excel
       </button>
@@ -639,19 +639,19 @@
         <div class="stats-grid">
           <div class="stat alta">
             <div class="numero">{{ estadisticasRecomendaciones.prioridadAlta || 0 }}</div>
-            <div class="label">🔴 ALTAS</div>
+            <div class="label">Prioridad alta</div>
           </div>
           <div class="stat media">
             <div class="numero">{{ estadisticasRecomendaciones.prioridadMedia || 0 }}</div>
-            <div class="label">🟡 MEDIAS</div>
+            <div class="label">Prioridad media</div>
           </div>
           <div class="stat baja">
             <div class="numero">{{ estadisticasRecomendaciones.prioridadBaja || 0 }}</div>
-            <div class="label">🟢 BAJAS</div>
+            <div class="label">Prioridad baja</div>
           </div>
           <div class="stat critica" *ngIf="estadisticasRecomendaciones.alertasCriticas > 0">
             <div class="numero">{{ estadisticasRecomendaciones.alertasCriticas }}</div>
-            <div class="label">CRÍTICAS</div>
+            <div class="label">Críticas</div>
           </div>
         </div>
       </mat-card-content>
@@ -663,7 +663,7 @@
         <h3>{{ alerta.titulo }}</h3>
         <p>{{ alerta.descripcion }}</p>
         <div class="acciones-urgentes">
-          <strong>🚨 ACCIONES URGENTES:</strong>
+          <strong>Acciones urgentes</strong>
           <ul>
             <li *ngFor="let accion of alerta.acciones">{{ accion }}</li>
           </ul>
@@ -680,7 +680,7 @@
         <mat-card-content>
           <div class="header">
             <span class="badge" [style.background]="getColorPrioridad(rec.prioridad)">
-              {{ getIconoPrioridad(rec.prioridad) }} {{ rec.prioridad }}
+              {{ etiquetaPrioridad(rec.prioridad) }}
             </span>
             <h3>{{ rec.titulo }}</h3>
             <button mat-icon-button class="btn-expandir" (click)="toggleExpandir(rec.id)">
@@ -692,14 +692,14 @@
           
           <!-- PROYECCIÓN -->
           <div class="seccion" *ngIf="rec.demandaActual">
-            <strong>PROYECCIÓN:</strong>
+            <strong>Proyección</strong>
             <p>{{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes 
                ({{ rec.porcentajeCrecimiento > 0 ? '+' : '' }}{{ rec.porcentajeCrecimiento }}%)</p>
           </div>
           
           <!-- RECURSOS -->
           <div class="seccion" *ngIf="rec.recursos">
-            <strong>RECURSOS NECESARIOS:</strong>
+            <strong>Recursos necesarios</strong>
             <ul>
               <li>{{ rec.recursos.docentes }} docente(s) especializado(s)</li>
               <li>{{ rec.recursos.aulas }} aula(s) o laboratorio(s)</li>
@@ -710,21 +710,19 @@
           
           <!-- ACCIONES -->
           <div class="seccion">
-            <strong>ACCIONES RECOMENDADAS:</strong>
-            <div class="checklist">
-              <div class="checklist-item" *ngFor="let accion of rec.acciones; let i = index">
-                <mat-checkbox [id]="rec.id + '_' + i">{{ accion }}</mat-checkbox>
-              </div>
-            </div>
+            <strong>Acciones recomendadas</strong>
+            <ul>
+              <li *ngFor="let accion of rec.acciones">{{ accion }}</li>
+            </ul>
           </div>
           
           <!-- DETALLES EXPANDIDOS -->
           <div *ngIf="estaExpandida(rec.id)" class="detalles-expandidos">
             
             <div class="seccion" *ngIf="rec.cronograma">
-              <strong>📅 CRONOGRAMA:</strong>
+              <strong>Cronograma</strong>
               <ul>
-                <li>⏰ Inicio gestión: {{ rec.cronograma.inicioGestion }}</li>
+                <li>Inicio gestión: {{ rec.cronograma.inicioGestion }}</li>
                 <li>Publicación oferta: {{ rec.cronograma.publicacionOferta }}</li>
                 <li>Contratación docentes: {{ rec.cronograma.contratacionDocentes }}</li>
                 <li>Inicio inscripciones: {{ rec.cronograma.inicioInscripciones }}</li>
@@ -732,7 +730,7 @@
             </div>
             
             <div class="seccion" *ngIf="rec.impacto">
-              <strong>💰 IMPACTO ESPERADO:</strong>
+              <strong>Impacto esperado</strong>
               <ul>
                 <li>Estudiantes atendidos: {{ rec.impacto.estudiantesAtendidos }}</li>
                 <li>Estudiantes beneficiados: {{ rec.impacto.estudiantesBeneficiados }}</li>
@@ -742,7 +740,7 @@
             </div>
             
             <div class="seccion justificacion">
-              <strong>JUSTIFICACIÓN:</strong>
+              <strong>Justificación</strong>
               <p>{{ rec.justificacion }}</p>
             </div>
             

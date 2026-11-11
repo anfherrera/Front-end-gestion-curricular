@@ -502,7 +502,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
       <!-- Historial de estados -->
       <div class="form-section historial" *ngIf="tieneHistorial">
-        <h3>📜 Historial de estados</h3>
+        <h3>Historial de estados</h3>
         <div class="timeline">
           <div 
             *ngFor="let estado of estadosOrdenados"

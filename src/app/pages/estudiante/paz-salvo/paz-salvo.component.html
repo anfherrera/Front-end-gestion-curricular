@@ -34,7 +34,7 @@
             <mat-form-field appearance="outline" class="form-field-full">
               <mat-label>Título del Trabajo de Grado</mat-label>
               <textarea matInput formControlName="titulo_trabajo_grado" rows="3" maxlength="500" 
-                        placeholder="Ej: Asistente virtual basado en ChatGPT para resolver preguntas en un curso en línea introductorio de ciencia de datos"></textarea>
+                        placeholder="Ej: Sistema de información para la gestión de prácticas académicas"></textarea>
               <mat-hint>{{ solicitudForm.get('titulo_trabajo_grado')?.value?.length || 0 }}/500 caracteres</mat-hint>
               <mat-error *ngIf="solicitudForm.get('titulo_trabajo_grado')?.hasError('required')">
                 El título del trabajo de grado es obligatorio
@@ -49,7 +49,7 @@
             <mat-form-field appearance="outline" class="form-field-full">
               <mat-label>Director del Trabajo de Grado</mat-label>
               <input matInput formControlName="director_trabajo_grado" maxlength="200" 
-                     placeholder="Ej: PhD. Carlos Alberto Cobos Lozada">
+                     placeholder="Ej: Mg. Nombre Apellido">
               <mat-hint>{{ solicitudForm.get('director_trabajo_grado')?.value?.length || 0 }}/200 caracteres</mat-hint>
               <mat-error *ngIf="solicitudForm.get('director_trabajo_grado')?.hasError('required')">
                 El director del trabajo de grado es obligatorio

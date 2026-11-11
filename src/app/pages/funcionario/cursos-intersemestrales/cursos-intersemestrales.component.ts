@@ -25,7 +25,7 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   opciones = [
-    { titulo: 'Dashboard', ruta: 'dashboard', icon: 'dashboard' },
+    { titulo: 'Resumen', ruta: 'dashboard', icon: 'dashboard' },
     { titulo: 'Gestionar Cursos', ruta: 'gestionar', icon: 'settings' },
     { titulo: 'Preinscribir Estudiantes', ruta: 'preinscribir', icon: 'person_add' },
     { titulo: 'Inscribir Estudiantes', ruta: 'inscribir', icon: 'how_to_reg' },

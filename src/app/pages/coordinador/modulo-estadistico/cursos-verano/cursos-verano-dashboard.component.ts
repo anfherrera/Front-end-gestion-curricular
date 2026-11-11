@@ -1192,16 +1192,16 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Obtiene el icono según la prioridad
+   * Etiqueta legible de la prioridad (Crítica, Alta, Media, Baja)
    */
-  getIconoPrioridad(prioridad: string): string {
-    const iconos: any = {
-      'CRITICA': '🔴',
-      'ALTA': '🔴',
-      'MEDIA': '🟡',
-      'BAJA': '🟢'
+  etiquetaPrioridad(prioridad: string): string {
+    const etiquetas: Record<string, string> = {
+      CRITICA: 'Crítica',
+      ALTA: 'Alta',
+      MEDIA: 'Media',
+      BAJA: 'Baja'
     };
-    return iconos[prioridad] || '⚪';
+    return etiquetas[(prioridad || '').toUpperCase()] || prioridad;
   }
 
   /**
