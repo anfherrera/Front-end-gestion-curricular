@@ -74,7 +74,7 @@ export const routes: Routes = [
           },
           { path: 'reingreso-estudiante', loadComponent: () => import('./pages/funcionario/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
           { path: 'homologacion-asignaturas', loadComponent: () => import('./pages/funcionario/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
-          { path: 'modulo-estadistico', loadComponent: () => import('./pages/funcionario/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
+          { path: 'modulo-estadistico', loadComponent: () => import('./pages/common/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
           { path: 'historial-completo', loadComponent: () => import('./pages/common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent) },
         ]
       },
@@ -90,7 +90,7 @@ export const routes: Routes = [
           { path: 'paz-salvo', loadComponent: () => import('./pages/coordinador/paz-salvo/paz-salvo.component').then(m => m.PazSalvoCoordinadorComponent) },
           { path: 'reingreso-estudiante', loadComponent: () => import('./pages/coordinador/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
           { path: 'homologacion-asignaturas', loadComponent: () => import('./pages/coordinador/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
-          { path: 'modulo-estadistico', loadComponent: () => import('./pages/coordinador/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
+          { path: 'modulo-estadistico', loadComponent: () => import('./pages/common/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
           { path: 'historial-completo', loadComponent: () => import('./pages/common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent) },
           {
             path: 'cursos-intersemestrales',
@@ -132,7 +132,7 @@ export const routes: Routes = [
       },
       { 
         path: 'decano/modulo-estadistico', 
-        loadComponent: () => import('./pages/funcionario/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent),
+        loadComponent: () => import('./pages/common/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent),
         canActivate: [authGuard, RoleGuard],
         data: { role: UserRole.DECANO }
       },
