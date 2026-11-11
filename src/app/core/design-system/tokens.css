@@ -43,7 +43,11 @@
   --color-neutro-texto: #454444;
   --color-neutro-hover: #F6F6F6;
   --color-fondo: #FFFBFF;
-  
+
+  /* Elevación: solo dos niveles, en lugar de sombras y degradados decorativos */
+  --sombra-1: 0 1px 3px rgba(0, 0, 0, 0.12);   /* tarjetas, tablas, campos */
+  --sombra-2: 0 4px 12px rgba(0, 0, 0, 0.14);  /* hover, menús, diálogos */
+
   /* Paleta tonal primario */
   --primario-90: #E0E0FF;
   --primario-80: #BEC2FF;

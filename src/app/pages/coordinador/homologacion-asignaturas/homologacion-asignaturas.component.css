@@ -134,18 +134,18 @@
   padding: 12px 24px;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: var(--sombra-1);
 }
 
 .botones-acciones button:hover {
   background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: var(--sombra-1);
 }
 
 .botones-acciones button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: var(--sombra-1);
 }
 
 /* Botón de rechazar con color diferente */

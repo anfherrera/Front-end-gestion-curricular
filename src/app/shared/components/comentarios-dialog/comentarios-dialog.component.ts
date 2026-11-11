@@ -95,7 +95,7 @@ export interface ComentariosDialogData {
     }
 
     h2[mat-dialog-title] {
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       color: #000066;
       padding: 28px 32px;
       margin: -24px -24px 0 -24px;
@@ -128,7 +128,7 @@ export interface ComentariosDialogData {
       border: 1px solid #ffcdd2;
       border-left: 4px solid #FF6D0A;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(244, 67, 54, 0.1);
+      box-shadow: var(--sombra-1);
       overflow: hidden;
     }
     
@@ -196,7 +196,7 @@ export interface ComentariosDialogData {
       background-color: #fff;
       border: 1px solid #e9ecef;
       border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--sombra-1);
       overflow: hidden;
     }
     
@@ -289,14 +289,14 @@ export interface ComentariosDialogData {
       font-weight: 500;
       font-family: 'Roboto', sans-serif;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2);
+      box-shadow: var(--sombra-1);
       font-size: 0.9rem;
     }
 
     mat-dialog-actions button:hover {
       background-color: #5056AC !important;
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
+      box-shadow: var(--sombra-1);
     }
 
     /* Divisor */

@@ -242,7 +242,7 @@ export interface CursoDialogData {
       max-height: 60vh;
       overflow-y: auto;
       padding: 20px 0;
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       border-radius: 8px;
       margin: 0 -24px;
       padding: 20px 24px;
@@ -254,7 +254,7 @@ export interface CursoDialogData {
       background: white;
       padding: 24px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+      box-shadow: var(--sombra-1);
       border: 1px solid #e3f2fd;
     }
 
@@ -338,7 +338,7 @@ export interface CursoDialogData {
     ::ng-deep .mat-datepicker-content {
       background-color: white;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 19, 140, 0.2);
+      box-shadow: var(--sombra-2);
     }
 
     ::ng-deep .mat-calendar-header {
@@ -481,7 +481,7 @@ export interface CursoDialogData {
       gap: 12px;
       padding: 24px 0;
       border-top: 2px solid #e3f2fd;
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       margin: 0 -24px;
       padding: 24px;
       border-radius: 0 0 8px 8px;
@@ -495,19 +495,19 @@ export interface CursoDialogData {
       text-transform: uppercase;
       letter-spacing: 0.5px;
       transition: all 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--sombra-1);
     }
 
     .dialog-actions button[color="primary"] {
-      background: linear-gradient(135deg, #000066 0%, #5056AC 100%) !important;
+      background: var(--color-primario) !important;
       color: white !important;
       border: none !important;
     }
 
     .dialog-actions button[color="primary"]:hover {
-      background: linear-gradient(135deg, #5056AC 0%, #0022b3 100%) !important;
+      background: var(--color-primario-light) !important;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 19, 140, 0.3);
+      box-shadow: var(--sombra-2);
     }
 
     .dialog-actions button:not([color="primary"]) {
@@ -520,12 +520,12 @@ export interface CursoDialogData {
       background: #000066 !important;
       color: white !important;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 19, 140, 0.2);
+      box-shadow: var(--sombra-2);
     }
 
     /* Título del dialog */
     ::ng-deep .mat-mdc-dialog-title {
-      background: linear-gradient(135deg, #000066 0%, #5056AC 100%);
+      background: var(--color-primario);
       color: white !important;
       padding: 20px 24px;
       margin: -24px -24px 0 -24px;
@@ -644,11 +644,11 @@ export interface CursoDialogData {
       align-items: center;
       gap: 12px;
       padding: 16px;
-      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      background: #e3f2fd;
       border-left: 4px solid #000066;
       border-radius: 8px;
       margin: 16px 0;
-      box-shadow: 0 2px 4px rgba(0, 19, 140, 0.1);
+      box-shadow: var(--sombra-1);
     }
 
     .duracion-info mat-icon {

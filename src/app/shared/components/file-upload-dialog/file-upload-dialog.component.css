@@ -23,7 +23,7 @@
   line-height: 1;
   text-transform: none;
   transition: background-color 0.3s ease, transform 0.1s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: var(--sombra-1);
 }
 
 .upload-btn:hover:enabled {
@@ -71,7 +71,7 @@
   border-radius: 6px;
   font-size: 14px;
   border: 1px solid #e9ecef;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: var(--sombra-1);
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 

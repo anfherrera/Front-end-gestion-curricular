@@ -126,7 +126,7 @@ import { Subscription } from 'rxjs';
       background-color: #fff;
       color: #333;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--sombra-2);
       position: relative;
       overflow: hidden;
       max-height: 600px;
@@ -138,11 +138,11 @@ import { Subscription } from 'rxjs';
 
     .estadisticas-por-estado-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      box-shadow: var(--sombra-2);
     }
 
     .estadisticas-por-estado-card mat-card-header {
-      background: linear-gradient(135deg, #000066, #5056AC);
+      background: var(--color-primario);
       margin: -16px -16px 16px -16px;
       padding: 16px;
       border-radius: 8px 8px 0 0;
@@ -272,7 +272,7 @@ import { Subscription } from 'rxjs';
     .estado-card:hover {
       background: #e9ecef;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--sombra-2);
     }
 
     .estado-header {
@@ -363,7 +363,7 @@ import { Subscription } from 'rxjs';
     }
 
     .analisis-item {
-      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      background: #f8fafc;
       padding: 16px;
       border-radius: 10px;
       border-left: 4px solid #000066;

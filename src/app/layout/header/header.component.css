@@ -7,7 +7,7 @@
   background-color: #fff;
   border-bottom: 4px solid var(--color-primario, #000066);
   height: 100px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-2);
   transition: all 0.3s ease;
   position: sticky;
   top: 0;
@@ -76,7 +76,7 @@
 .periodo-header:hover {
   background: var(--primario-80, #BEC2FF);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 102, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .periodo-icon {
@@ -139,7 +139,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primario, #000066) 0%, var(--color-primario-light, #5056AC) 100%);
+  background: var(--color-primario);
   display: flex;
   align-items: center;
   justify-content: center;

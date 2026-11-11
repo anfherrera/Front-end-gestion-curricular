@@ -539,7 +539,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     }
 
     .curso-info {
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       border-radius: 8px;
       padding: 16px;
       margin-bottom: 20px;
@@ -549,7 +549,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     .form-section {
       margin-bottom: 24px;
       padding: 16px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       border-radius: 8px;
       border-left: 4px solid #000066;
     }
@@ -846,12 +846,12 @@ export class DetallesPreinscripcionDialogComponent {
     }
 
     .info-section {
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 24px;
       border-left: 4px solid #000066;
-      box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+      box-shadow: var(--sombra-1);
     }
 
     .section-title {
@@ -911,11 +911,11 @@ export class DetallesPreinscripcionDialogComponent {
     }
 
     .form-section {
-      background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+      background: #fff5f5;
       border-radius: 8px;
       padding: 20px;
       border-left: 4px solid #FF6D0A;
-      box-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
+      box-shadow: var(--sombra-1);
     }
 
     .required-note {
@@ -952,15 +952,15 @@ export class DetallesPreinscripcionDialogComponent {
     }
 
     .btn-reject {
-      background: linear-gradient(135deg, #FF6D0A 0%, #DB141C 100%);
+      background: var(--color-error);
       color: white;
       border: none;
-      box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+      box-shadow: var(--sombra-1);
     }
 
     .btn-reject:hover:not(:disabled) {
-      background: linear-gradient(135deg, #DB141C 0%, #c62828 100%);
-      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+      background: var(--color-secundario-light);
+      box-shadow: var(--sombra-2);
       transform: translateY(-1px);
     }
 

@@ -5,7 +5,7 @@
 }
 
 .formatos-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-1);
 }
 
 mat-card-header {
@@ -13,7 +13,7 @@ mat-card-header {
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, var(--color-primario) 0%, #5056AC 100%);
+  background: var(--color-primario);
   color: white;
   border-radius: 4px 4px 0 0;
 }

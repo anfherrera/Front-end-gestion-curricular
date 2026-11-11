@@ -85,11 +85,11 @@
 }
 
 .dialog-actions button[color="primary"] {
-  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.3);
+  box-shadow: var(--sombra-1);
 }
 
 .dialog-actions button[color="primary"]:hover {
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
+  box-shadow: var(--sombra-2);
   transform: translateY(-1px);
 }
 

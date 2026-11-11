@@ -23,7 +23,7 @@ app-card-container {
 .filtro-periodo-section {
   margin-bottom: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: #f8f9fa;
   border-radius: 12px;
   border: 1px solid #e3f2fd;
 }
@@ -41,14 +41,14 @@ app-card-container {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2);
+  box-shadow: var(--sombra-1);
   transition: all 0.2s ease;
 }
 
 .btn-crear:hover {
   background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3);
+  box-shadow: var(--sombra-1);
 }
 
 .btn-crear mat-icon {
@@ -191,12 +191,12 @@ table {
   justify-content: center;
   padding: 6px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
+  background: var(--color-primario);
   color: white;
   font-weight: 700;
   font-size: 0.9rem;
   min-width: 32px;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.3);
+  box-shadow: var(--sombra-1);
   border: none;
 }
 
@@ -269,7 +269,7 @@ table {
   border-radius: 20px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
   transition: all 0.2s ease !important;
   border: none !important;
   outline: none !important;
@@ -279,7 +279,7 @@ table {
 
 .estado-chip:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
   background-color: var(--color-primario-light) !important;
   color: white !important;
 }

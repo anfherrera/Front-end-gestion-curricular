@@ -9,7 +9,7 @@
 .profile-card,
 .additional-info-card {
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-2);
   border-bottom: 4px solid var(--color-primario);
   background: white;
 }
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .user-initials-large {

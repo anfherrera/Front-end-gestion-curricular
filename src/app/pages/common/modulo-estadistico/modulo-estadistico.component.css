@@ -5,7 +5,7 @@
 .main-tabs {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
   overflow: hidden;
 }
 
@@ -39,7 +39,7 @@
 }
 
 ::ng-deep .mat-mdc-tab-header {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: #f8f9fa;
   border-bottom: 2px solid #dee2e6;
 }
 

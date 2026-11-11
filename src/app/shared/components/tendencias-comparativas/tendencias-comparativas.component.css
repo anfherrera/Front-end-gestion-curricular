@@ -8,14 +8,14 @@
 }
 
 .main-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: #f8fafc;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .main-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
   margin: -24px -24px 24px -24px;
   padding: 24px;
@@ -75,7 +75,7 @@
 .section-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border: 1px solid #e5e7eb;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
@@ -84,11 +84,11 @@
 
 .section-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--sombra-2);
 }
 
 .section-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   margin: -16px -16px 16px -16px;
   padding: 16px;
   border-radius: 12px 12px 0 0;
@@ -116,7 +116,7 @@
 .tendencia-item {
   text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  background: #f8fafc;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
 }
@@ -174,23 +174,23 @@
 }
 
 .mas-demandado {
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  background: #dbeafe;
   border-color: #3b82f6;
 }
 
 .mas-eficiente {
-  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  background: #dcfce7;
   border-color: #10b981;
 }
 
 .mas-activo {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: #f8f9fa;
   border-color: var(--color-primario);
   border: 2px solid var(--color-primario);
 }
 
 .mas-estudiantes {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: #f8f9fa;
   border-color: var(--color-primario);
   border: 2px solid var(--color-primario);
 }
@@ -299,7 +299,7 @@
   padding: 16px;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-1);
 }
 
 .metric-valor {

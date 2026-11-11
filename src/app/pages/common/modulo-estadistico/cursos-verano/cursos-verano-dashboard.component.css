@@ -14,7 +14,7 @@
   background: white;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
 }
 
@@ -86,7 +86,7 @@
   text-align: center;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   margin: 20px 0;
 }
 
@@ -118,7 +118,7 @@
   text-align: center;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   margin: 20px 0;
   border-left: 4px solid #dc3545;
 }
@@ -139,12 +139,12 @@
   margin-bottom: 30px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   background-color: #fff;
 }
 
 .filters-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
+  background: var(--color-primario);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -271,7 +271,7 @@
 .kpi-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
   transition: all 0.3s ease;
   overflow: hidden;
@@ -279,7 +279,7 @@
 
 .kpi-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .kpi-card.total-solicitudes {
@@ -299,7 +299,7 @@
 }
 
 .kpi-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -329,7 +329,7 @@
 .main-tabs {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   overflow: hidden;
 }
 
@@ -362,13 +362,13 @@
 .chart-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
   transition: all 0.3s ease;
 }
 
 .chart-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .chart-card.full-width {
@@ -376,7 +376,7 @@
 }
 
 .chart-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -410,14 +410,14 @@
 .estado-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   transition: all 0.3s ease;
   border-left: 4px solid;
 }
 
 .estado-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .estado-card.aprobada {
@@ -511,7 +511,7 @@
 .recomendacion-futura-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   transition: all 0.3s ease;
   border-left: 4px solid;
 }
@@ -519,7 +519,7 @@
 .recomendacion-card:hover,
 .recomendacion-futura-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .recomendacion-card.prioridad-alta,
@@ -553,12 +553,12 @@
 .resumen-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
 }
 
 .resumen-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -642,14 +642,14 @@
 .tendencia-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   transition: all 0.3s ease;
   border-left: 4px solid;
 }
 
 .tendencia-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .tendencia-card.creciente {
@@ -816,17 +816,17 @@
 /* Estilos para Mat-Expansion-Panel */
 .mat-expansion-panel {
   border-radius: 12px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: var(--sombra-2) !important;
   margin-bottom: 1rem;
 }
 
 .mat-expansion-panel-header {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+  background: #f8f9fa !important;
   border-radius: 12px 12px 0 0 !important;
 }
 
 .mat-expansion-panel-header:hover {
-  background: linear-gradient(135deg, #e9ecef, #dee2e6) !important;
+  background: #e9ecef !important;
 }
 
 .mat-expansion-panel-body {
@@ -908,7 +908,7 @@
 .prediccion-materia-item:hover, .prediccion-programa-item:hover {
   background: #e6f3ff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
 }
 
 .prediccion-temporal-item {
@@ -923,7 +923,7 @@
 .prediccion-temporal-item:hover {
   background: #d4edda;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.2);
+  box-shadow: var(--sombra-2);
 }
 
 .demanda-actual, .demanda-estimada, .variacion {
@@ -1054,7 +1054,7 @@
 .prediccion-programa-card:hover, .prediccion-temporal-card:hover {
   background: #e6f3ff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
 }
 
 .no-data {
@@ -1213,7 +1213,7 @@ canvas {
 .tendencia-card:hover {
   background: #e9ecef;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
 }
 
 /* Para las tarjetas de predicciones */
@@ -1239,7 +1239,7 @@ canvas {
 .prediccion-materia-card:hover, .prediccion-programa-card:hover {
   background: #e6f3ff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
 }
 
 /* Predicciones Temporales */
@@ -1263,7 +1263,7 @@ canvas {
 .prediccion-temporal-card:hover {
   background: #e6f3ff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
 }
 
 .prediccion-temporal-card .mes-pico {
@@ -1303,14 +1303,14 @@ canvas {
   background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: var(--sombra-1);
   border-left: 4px solid #007bff;
   transition: all 0.3s ease;
 }
 
 .recomendacion-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .recomendacion-titulo {
@@ -1401,7 +1401,7 @@ canvas {
   gap: 1rem;
   padding: 1.5rem;
   margin-top: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   border-radius: 12px;
   color: white;
   align-items: center;
@@ -1439,12 +1439,12 @@ canvas {
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .banner-recomendaciones .btn-ver-recomendaciones:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--sombra-1);
 }
 
 /* Call to Action de Recomendaciones */
@@ -1492,7 +1492,7 @@ canvas {
   background: #667eea;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--sombra-1);
 }
 
 /* Hide empty sections */
@@ -1530,13 +1530,13 @@ canvas {
 .tendencias-temporales-section .chart-container {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
   overflow: hidden;
 }
 
 .tendencias-temporales-section .chart-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
   padding: 1rem 1.5rem;
   display: flex;
@@ -1556,16 +1556,16 @@ canvas {
   align-items: center;
   padding: 1rem;
   margin: 0.5rem 0;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: #f8f9fa;
   border-radius: 8px;
   border-left: 4px solid var(--color-primario);
   transition: all 0.3s ease;
 }
 
 .tendencias-temporales-section .tendencia-item:hover {
-  background: linear-gradient(135deg, #e9ecef, #dee2e6);
+  background: #e9ecef;
   transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 19, 140, 0.1);
+  box-shadow: var(--sombra-2);
 }
 
 .tendencias-temporales-section .tendencia-mes {
@@ -1628,14 +1628,14 @@ canvas {
 .resumen-recomendaciones-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
   margin: 0 0 2rem 0;
   overflow: hidden;
 }
 
 .resumen-recomendaciones-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
   padding: 1.5rem;
   border-bottom: none;
@@ -1669,12 +1669,12 @@ canvas {
   text-align: center;
   border: 2px solid #e9ecef;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-1);
 }
 
 .stat:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--sombra-2);
 }
 
 .stat .numero {
@@ -1694,7 +1694,7 @@ canvas {
 /* Colores por prioridad */
 .stat.alta {
   border-color: #dc3545;
-  background: linear-gradient(135deg, #fff5f5, #ffffff);
+  background: #fff5f5;
 }
 
 .stat.alta .numero {
@@ -1707,7 +1707,7 @@ canvas {
 
 .stat.media {
   border-color: #ffc107;
-  background: linear-gradient(135deg, #fffbf0, #ffffff);
+  background: #fffbf0;
 }
 
 .stat.media .numero {
@@ -1720,7 +1720,7 @@ canvas {
 
 .stat.baja {
   border-color: #28a745;
-  background: linear-gradient(135deg, #f0f8f5, #ffffff);
+  background: #f0f8f5;
 }
 
 .stat.baja .numero {
@@ -1733,7 +1733,7 @@ canvas {
 
 .stat.critica {
   border-color: #ff6b6b;
-  background: linear-gradient(135deg, #ffefef, #ffffff);
+  background: #ffefef;
   animation: pulse-glow 2s infinite;
 }
 
@@ -1747,10 +1747,10 @@ canvas {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+    box-shadow: var(--sombra-1);
   }
   50% {
-    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+    box-shadow: var(--sombra-2);
   }
 }
 
@@ -1758,7 +1758,7 @@ canvas {
 .alerta-critica-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.15);
+  box-shadow: var(--sombra-2);
   border-left: 5px solid #dc3545;
   margin: 0 0 2rem 0;
   overflow: hidden;
@@ -1768,11 +1768,11 @@ canvas {
 @keyframes pulse-border-alert {
   0%, 100% {
     border-left-color: #dc3545;
-    box-shadow: 0 4px 20px rgba(220, 53, 69, 0.15);
+    box-shadow: var(--sombra-2);
   }
   50% {
     border-left-color: #ff6b7a;
-    box-shadow: 0 6px 25px rgba(220, 53, 69, 0.25);
+    box-shadow: var(--sombra-2);
   }
 }
 
@@ -1798,7 +1798,7 @@ canvas {
 }
 
 .alerta-critica-card .acciones-urgentes {
-  background: linear-gradient(135deg, #fff3cd, #ffffff);
+  background: #fff3cd;
   border: 2px solid #ffc107;
   border-radius: 10px;
   padding: 1.25rem;
@@ -1847,7 +1847,7 @@ canvas {
 .rec-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border-left: 5px solid var(--color-primario);
   overflow: hidden;
   transition: all 0.3s ease;
@@ -1856,7 +1856,7 @@ canvas {
 
 .rec-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .rec-card mat-card-content {
@@ -1884,7 +1884,7 @@ canvas {
   letter-spacing: 0.5px;
   color: white;
   width: fit-content;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-1);
 }
 
 .rec-card h3 {
@@ -1933,10 +1933,10 @@ canvas {
 .rec-card .seccion {
   margin-bottom: 1.5rem;
   padding: 1.25rem;
-  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  background: #f8f9fa;
   border-radius: 10px;
   border-left: 4px solid var(--color-primario);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-1);
 }
 
 .rec-card .seccion strong {
@@ -2039,7 +2039,7 @@ canvas {
 }
 
 .rec-card .seccion.justificacion {
-  background: linear-gradient(135deg, #e8f4fd, #ffffff);
+  background: #e8f4fd;
   border-left-color: #17a2b8;
 }
 
@@ -2105,7 +2105,7 @@ canvas {
   border-radius: 20px;
   font-weight: 600;
   font-size: 0.9rem;
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
 }
 
@@ -2113,7 +2113,7 @@ canvas {
 .no-data-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   padding: 3rem;
   text-align: center;
   border: 2px dashed #dee2e6;

@@ -76,7 +76,7 @@
 .filtro-section {
   margin-bottom: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: #f8f9fa;
   border-radius: 12px;
   border: 1px solid #e3f2fd;
 }
@@ -143,7 +143,7 @@
 .table-container {
   overflow-x: auto;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+  box-shadow: var(--sombra-1);
 }
 
 .inscripciones-table {
@@ -236,13 +236,13 @@
 
 .acciones-container button:hover {
   transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .curso-info {
   margin-top: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: #f8f9fa;
   border-radius: 12px;
   border: 1px solid #e3f2fd;
 }

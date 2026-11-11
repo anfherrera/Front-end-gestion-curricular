@@ -47,7 +47,7 @@
   cursor: pointer;
   border-radius: 16px;
   background-color: #ffffff; /* color sólido de tarjeta */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* sombra suave */
+  box-shadow: var(--sombra-2); /* sombra suave */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -64,7 +64,7 @@
 /* Hover: escala y sombra suave */
 .dashboard-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 /* Iconos dentro de las tarjetas */

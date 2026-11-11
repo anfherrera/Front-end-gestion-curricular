@@ -3,7 +3,7 @@
 .filtro-section {
   margin-bottom: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: #f8f9fa;
   border-radius: 12px;
   border: 1px solid #e3f2fd;
 }
@@ -70,7 +70,7 @@
 .table-container {
   overflow-x: auto;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+  box-shadow: var(--sombra-1);
 }
 
 .preinscripciones-table {
@@ -120,7 +120,7 @@
   max-width: 200px;
   word-wrap: break-word;
   padding: 8px 12px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: #f8f9fa;
   border-radius: 6px;
   border-left: 3px solid var(--color-primario);
   margin: 4px 0;
@@ -196,7 +196,7 @@
 .curso-info {
   margin-top: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: #f8f9fa;
   border-radius: 12px;
   border: 1px solid #e3f2fd;
 }
@@ -398,7 +398,7 @@
 
 ::ng-deep .preinscripciones-table .observaciones-cell {
   color: #333 !important;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+  background: #f8f9fa !important;
   border-left: 3px solid var(--color-primario) !important;
   border-radius: 6px !important;
   padding: 8px 12px !important;
@@ -519,7 +519,7 @@
   justify-content: center !important;
   gap: 6px !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
   text-transform: none !important;
   line-height: 1 !important;
 }
@@ -533,12 +533,12 @@
 .btn-ver:hover:not(:disabled) {
   background-color: var(--color-primario-light) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 .btn-ver:active:not(:disabled) {
   transform: translateY(0) !important;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 .btn-ver:disabled {
@@ -581,7 +581,7 @@
   justify-content: center !important;
   gap: 6px !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
   text-transform: none !important;
   line-height: 1 !important;
 }
@@ -595,12 +595,12 @@
 .btn-aprobar:hover:not(:disabled) {
   background-color: #45a049 !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 .btn-aprobar:active:not(:disabled) {
   transform: translateY(0) !important;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 .btn-aprobar:disabled {
@@ -643,7 +643,7 @@
   justify-content: center !important;
   gap: 6px !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
   text-transform: none !important;
   line-height: 1 !important;
 }
@@ -657,12 +657,12 @@
 .btn-rechazar:hover:not(:disabled) {
   background-color: #e53935 !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 .btn-rechazar:active:not(:disabled) {
   transform: translateY(0) !important;
-  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 .btn-rechazar:disabled {
@@ -698,13 +698,13 @@
   font-weight: 500 !important;
   text-transform: none !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 ::ng-deep .preinscripciones-table .btn-ver:hover {
   background-color: var(--color-primario-light) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 ::ng-deep .preinscripciones-table .btn-aprobar {
@@ -715,13 +715,13 @@
   font-weight: 500 !important;
   text-transform: none !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 ::ng-deep .preinscripciones-table .btn-aprobar:hover {
   background-color: #45a049 !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 ::ng-deep .preinscripciones-table .btn-rechazar {
@@ -732,13 +732,13 @@
   font-weight: 500 !important;
   text-transform: none !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 ::ng-deep .preinscripciones-table .btn-rechazar:hover {
   background-color: #e53935 !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
 }
 
 ::ng-deep .preinscripciones-table .btn-ver .mat-icon,
@@ -964,7 +964,7 @@
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
+  box-shadow: var(--sombra-1);
 }
 
 .modal-header {
@@ -1139,38 +1139,38 @@
   color: #fff;
   background-color: #6c757d;
   border-color: #6c757d;
-  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .btn-secondary:hover:not(:disabled) {
   color: #fff;
   background-color: #545b62;
   border-color: #4e555b;
-  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+  box-shadow: var(--sombra-1);
 }
 
 .btn-secondary:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .btn-danger {
   color: #fff;
   background-color: var(--color-error);
   border-color: var(--color-error);
-  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .btn-danger:hover:not(:disabled) {
   color: #fff;
   background-color: #e53935;
   border-color: #e53935;
-  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+  box-shadow: var(--sombra-1);
 }
 
 .btn-danger:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
+  box-shadow: var(--sombra-1);
 }
 
 .btn-danger:disabled {

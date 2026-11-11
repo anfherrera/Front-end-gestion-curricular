@@ -102,11 +102,11 @@ import { Subject, takeUntil } from 'rxjs';
   `,
   styles: [`
     .filters-container {
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0, 19, 140, 0.1);
+      box-shadow: var(--sombra-2);
       border: 1px solid #e3f2fd;
     }
 
@@ -157,7 +157,7 @@ import { Subject, takeUntil } from 'rxjs';
       gap: 8px;
       min-height: 36px;
       background: #ffffff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--sombra-1);
       font-size: 13px;
       position: relative;
       overflow: hidden;
@@ -211,7 +211,7 @@ import { Subject, takeUntil } from 'rxjs';
     }
 
     .estado-chip.selected {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--sombra-2);
       transform: translateY(-1px);
       border-color: currentColor;
       font-weight: 600;
@@ -268,7 +268,7 @@ import { Subject, takeUntil } from 'rxjs';
       border-radius: 8px;
       padding: 20px;
       border-left: 4px solid #000066;
-      box-shadow: 0 2px 8px rgba(0, 19, 140, 0.1);
+      box-shadow: var(--sombra-1);
     }
 
     .info-header {

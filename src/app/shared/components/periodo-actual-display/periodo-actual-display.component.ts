@@ -32,9 +32,9 @@ import { takeUntil } from 'rxjs/operators';
     }
 
     .periodo-card {
-      background: linear-gradient(135deg, #000066 0%, #1976d2 100%);
+      background: var(--color-primario);
       color: white;
-      box-shadow: 0 2px 8px rgba(0, 19, 140, 0.2);
+      box-shadow: var(--sombra-1);
     }
 
     .periodo-content {

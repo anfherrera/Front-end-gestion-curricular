@@ -10,7 +10,7 @@
   padding: 30px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-2);
   border-bottom: 4px solid var(--color-primario);
 }
 
@@ -37,7 +37,7 @@
 .stat-card {
   background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-2);
   transition: transform 0.3s ease;
   border-bottom: 4px solid var(--color-primario);
 }
@@ -81,7 +81,7 @@
 .progress-card {
   margin-bottom: 30px;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-2);
   background: white;
   border-bottom: 4px solid var(--color-primario);
 }
@@ -109,7 +109,7 @@
 
 .content-card {
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--sombra-2);
   background: white;
   border-bottom: 4px solid var(--color-primario);
 }
@@ -218,7 +218,7 @@ mat-chip {
   border-radius: 20px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
   transition: all 0.2s ease !important;
   border: none !important;
   outline: none !important;
@@ -228,7 +228,7 @@ mat-chip {
 
 mat-chip:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(0, 19, 140, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
   background-color: var(--color-primario-light) !important;
   color: white !important;
 }
@@ -276,7 +276,7 @@ mat-chip * {
   border: none !important;
   outline: none !important;
   border-radius: 20px !important;
-  box-shadow: 0 2px 4px rgba(0, 19, 140, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
   transition: all 0.2s ease !important;
 }
 

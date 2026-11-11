@@ -2,7 +2,7 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #f5f7fa;
   min-height: 100vh;
 }
 
@@ -14,7 +14,7 @@
   background: white;
   padding: 20px 24px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-1);
   animation: fadeInDown 0.4s ease;
 }
 
@@ -51,7 +51,7 @@
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-1);
   animation: fadeIn 0.4s ease 0.1s both;
 }
 
@@ -87,7 +87,7 @@
   background: white;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
   animation: fadeInUp 0.4s ease 0.2s both;
   border: 1px solid #e8eaf6;
 }
@@ -195,7 +195,7 @@ mat-table {
   font-weight: 600;
   text-align: center;
   text-transform: capitalize;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
   letter-spacing: 0.3px;
 }
@@ -203,117 +203,117 @@ mat-table {
 .badge-rol:hover,
 .badge-estado:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--sombra-2);
 }
 
 /* === BADGES DE ROL === */
 
 /* Administrador - Rojo */
 .badge-rol.rol-admin {
-  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+  background: #e53935;
   color: white;
-  box-shadow: 0 2px 8px rgba(229, 57, 53, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 .badge-rol.rol-admin:hover {
-  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.5);
+  box-shadow: var(--sombra-2);
 }
 
 /* Coordinador - Púrpura */
 .badge-rol.rol-coordinador {
-  background: linear-gradient(135deg, #8e24aa 0%, #6a1b9a 100%);
+  background: #8e24aa;
   color: white;
-  box-shadow: 0 2px 8px rgba(142, 36, 170, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 .badge-rol.rol-coordinador:hover {
-  box-shadow: 0 4px 12px rgba(142, 36, 170, 0.5);
+  box-shadow: var(--sombra-2);
 }
 
 /* Funcionario - Azul oscuro */
 .badge-rol.rol-funcionario {
-  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  background: #1e88e5;
   color: white;
-  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 .badge-rol.rol-funcionario:hover {
-  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.5);
+  box-shadow: var(--sombra-2);
 }
 
 /* Estudiante - Verde */
 .badge-rol.rol-estudiante {
-  background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+  background: #43a047;
   color: white;
-  box-shadow: 0 2px 8px rgba(67, 160, 71, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 .badge-rol.rol-estudiante:hover {
-  box-shadow: 0 4px 12px rgba(67, 160, 71, 0.5);
+  box-shadow: var(--sombra-2);
 }
 
 /* Secretaria - Naranja */
 .badge-rol.rol-secretaria {
-  background: linear-gradient(135deg, #fb8c00 0%, #ef6c00 100%);
+  background: #fb8c00;
   color: white;
-  box-shadow: 0 2px 8px rgba(251, 140, 0, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 .badge-rol.rol-secretaria:hover {
-  box-shadow: 0 4px 12px rgba(251, 140, 0, 0.5);
+  box-shadow: var(--sombra-2);
 }
 
 /* Docente - Azul cian */
 .badge-rol.rol-docente {
-  background: linear-gradient(135deg, #00acc1 0%, #00838f 100%);
+  background: #00acc1;
   color: white;
-  box-shadow: 0 2px 8px rgba(0, 172, 193, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 .badge-rol.rol-docente:hover {
-  box-shadow: 0 4px 12px rgba(0, 172, 193, 0.5);
+  box-shadow: var(--sombra-2);
 }
 
 /* Rol por defecto */
 .badge-rol.rol-default {
-  background: linear-gradient(135deg, #757575 0%, #616161 100%);
+  background: #757575;
   color: white;
-  box-shadow: 0 2px 8px rgba(117, 117, 117, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 /* === BADGES DE ESTADO === */
 
 /* Estado Activo - Verde brillante */
 .badge-estado.estado-activo {
-  background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+  background: #66bb6a;
   color: white;
-  box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+  box-shadow: var(--sombra-1);
   animation: pulse-green 2s infinite;
 }
 
 @keyframes pulse-green {
   0%, 100% {
-    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+    box-shadow: var(--sombra-1);
   }
   50% {
-    box-shadow: 0 2px 12px rgba(102, 187, 106, 0.6);
+    box-shadow: var(--sombra-2);
   }
 }
 
 .badge-estado.estado-activo:hover {
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.5);
+  box-shadow: var(--sombra-2);
   animation: none;
 }
 
 /* Estado Inactivo - Rojo brillante */
 .badge-estado.estado-inactivo {
-  background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
+  background: #ef5350;
   color: white;
-  box-shadow: 0 2px 8px rgba(239, 83, 80, 0.4);
+  box-shadow: var(--sombra-1);
 }
 
 .badge-estado.estado-inactivo:hover {
-  box-shadow: 0 4px 12px rgba(239, 83, 80, 0.5);
+  box-shadow: var(--sombra-2);
 }
 
 /* === ESTILOS PARA NOTIFICACIONES (SNACKBAR) === */
@@ -402,13 +402,13 @@ mat-table {
 
 /* Botón nuevo con estilo */
 button[color="primary"] {
-  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.3);
+  box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
   font-weight: 500;
 }
 
 button[color="primary"]:hover {
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
+  box-shadow: var(--sombra-2);
   transform: translateY(-2px);
 }
 

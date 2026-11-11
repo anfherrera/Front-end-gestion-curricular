@@ -48,11 +48,11 @@ import { TotalEstudiantesResponse } from '../../../core/models/estadisticas.mode
   `,
   styles: [`
     .estudiantes-kpi-card {
-      background: linear-gradient(135deg, #17a2b8, #138496);
+      background: #17a2b8;
       border: none;
       border-radius: 12px;
       color: white;
-      box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+      box-shadow: var(--sombra-2);
       position: relative;
       overflow: hidden;
     }
@@ -64,7 +64,7 @@ import { TotalEstudiantesResponse } from '../../../core/models/estadisticas.mode
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, #17a2b8, #138496, #20c997);
+      background: #17a2b8;
       animation: shimmer 2s infinite;
     }
 
@@ -82,7 +82,7 @@ import { TotalEstudiantesResponse } from '../../../core/models/estadisticas.mode
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+      box-shadow: var(--sombra-2);
     }
 
     .kpi-icon mat-icon {

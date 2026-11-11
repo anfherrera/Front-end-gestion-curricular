@@ -14,7 +14,7 @@
   background: white;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
 }
 
@@ -65,12 +65,12 @@
   margin-bottom: 30px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   background-color: #fff;
 }
 
 .filters-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
+  background: var(--color-primario);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -156,7 +156,7 @@
   background: white;
   border-radius: 8px;
   border-left: 4px solid var(--color-primario);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--sombra-1);
 }
 
 .kpis-grid {
@@ -169,14 +169,14 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   background-color: #fff;
   border-left: 4px solid;
 }
 
 .kpi-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--sombra-2);
 }
 
 .kpi-primary {
@@ -216,37 +216,37 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+  background: #f5f5f5;
 }
 
 .kpi-primary .kpi-icon {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
 }
 
 .kpi-success .kpi-icon {
-  background: linear-gradient(135deg, #28a745, #20c997);
+  background: #28a745;
   color: white;
 }
 
 .kpi-warning .kpi-icon {
-  background: linear-gradient(135deg, #ffc107, #fd7e14);
-  color: white;
+  background: #ffc107;
+  color: #3d2c00; /* blanco sobre amarillo no tiene contraste suficiente */
 }
 
 .kpi-error .kpi-icon {
-  background: linear-gradient(135deg, #dc3545, #e83e8c);
+  background: #dc3545;
   color: white;
 }
 
 .kpi-info .kpi-icon {
-  background: linear-gradient(135deg, #17a2b8, #138496);
+  background: #17a2b8;
   color: white;
 }
 
 
 .kpi-secondary .kpi-icon {
-  background: linear-gradient(135deg, #6f42c1, #6610f2);
+  background: #6f42c1;
   color: white;
 }
 
@@ -314,17 +314,17 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   background-color: #fff;
 }
 
 .chart-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--sombra-2);
 }
 
 .chart-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-light) 100%);
+  background: var(--color-primario);
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
@@ -558,14 +558,14 @@
 
 /* Tarjeta de Predicción Global */
 .prediccion-global-card {
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  background: var(--mat-on-primary);
   border-left: 4px solid var(--color-primario);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
   margin-bottom: 20px;
 }
 
 .prediccion-global-card mat-card-header {
-  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-light));
+  background: var(--color-primario);
   color: white;
   padding: 15px 20px;
   border-radius: 8px 8px 0 0;
@@ -727,12 +727,12 @@
 .predicciones-card {
   background: white;
   border-left: 4px solid #28a745;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
 }
 
 .predicciones-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
   transform: translateY(-2px);
 }
 

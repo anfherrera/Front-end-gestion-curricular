@@ -512,7 +512,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     .form-section {
       margin-bottom: 24px;
       padding: 16px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      background: #f8f9fa;
       border-radius: 8px;
       border-left: 4px solid #000066;
     }
@@ -760,7 +760,7 @@ this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackb
     }
 
     .dialog-header {
-      background: linear-gradient(135deg, #000066 0%, #5056AC 100%);
+      background: var(--color-primario);
       color: white;
       padding: 20px;
       display: flex;
@@ -791,7 +791,7 @@ this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackb
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--sombra-1);
     }
 
     .info-item {

@@ -42,14 +42,14 @@
   border-radius: 12px;
   background-color: #ffffff;
   overflow: hidden;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra-2);
   padding: 16px;
   transition: transform 0.2s ease-in-out;
 }
 
 .card-section:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--sombra-2);
 }
 
 .card-title {
@@ -161,13 +161,13 @@
   padding: 12px 24px;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: var(--sombra-1);
 }
 
 .botones-acciones button:hover {
   background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: var(--sombra-1);
 }
 
 .botones-acciones button[color="warn"] {

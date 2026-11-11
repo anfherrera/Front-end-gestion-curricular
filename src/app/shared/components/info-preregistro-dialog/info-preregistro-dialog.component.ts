@@ -60,7 +60,7 @@ import { MatIconModule } from '@angular/material/icon';
       align-items: center;
       gap: 12px;
       padding: 24px 24px 16px 24px;
-      background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+      background: #1976d2;
       color: white;
       margin: -24px -24px 0 -24px;
     }

@@ -100,7 +100,7 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
       background-color: #fff;
       color: #333;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--sombra-2);
       position: relative;
       overflow: hidden;
       max-height: 600px;
@@ -112,11 +112,11 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
 
     .estudiantes-por-programa-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      box-shadow: var(--sombra-2);
     }
 
     .estudiantes-por-programa-card mat-card-header {
-      background: linear-gradient(135deg, #000066, #5056AC);
+      background: var(--color-primario);
       margin: -16px -16px 16px -16px;
       padding: 16px;
       border-radius: 8px 8px 0 0;

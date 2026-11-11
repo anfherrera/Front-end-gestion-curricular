@@ -575,13 +575,13 @@ export class VerSolicitudComponent implements OnInit {
       gap: 12px;
       padding: 12px 16px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      background: #e3f2fd;
       color: #0d47a1;
       border-left: 4px solid #2196f3;
     }
 
     .motivo-dialog__encabezado--rechazo {
-      background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+      background: #ffebee;
       color: #b71c1c;
       border-left-color: #FF6D0A;
     }

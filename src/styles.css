@@ -111,7 +111,7 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .hover-scale {
@@ -127,7 +127,7 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(0, 0, 102, 0.3);
+  box-shadow: var(--sombra-2);
 }
 
 /* Animaciones para botones */
@@ -160,7 +160,7 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 
 .card-animated:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-2);
 }
 
 /* Animaciones para iconos */
@@ -252,13 +252,13 @@ p, span, a, li, td, th, label, input, textarea, select, button {
   font-weight: 600 !important;
   font-family: 'Open Sans', sans-serif !important;
   font-size: 14px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 102, 0.2) !important;
+  box-shadow: var(--sombra-1) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .mat-mdc-raised-button.mat-primary:hover {
   background-color: var(--color-primario-light) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 102, 0.3) !important;
+  box-shadow: var(--sombra-1) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -437,7 +437,7 @@ mat-icon {
   font-size: 14px !important;
   border-left: 4px solid var(--notif-exito-borde) !important;
   border-radius: 4px !important;
-  box-shadow: 0 4px 12px rgba(36, 147, 55, 0.25) !important;
+  box-shadow: var(--sombra-2) !important;
 }
 
 .snackbar-success .mdc-snackbar__label,
@@ -464,7 +464,7 @@ mat-icon {
   font-size: 14px !important;
   border-left: 4px solid var(--notif-error-borde) !important;
   border-radius: 4px !important;
-  box-shadow: 0 4px 12px rgba(141, 56, 0, 0.25) !important;
+  box-shadow: var(--sombra-2) !important;
 }
 
 .snackbar-error .mdc-snackbar__label,
@@ -491,7 +491,7 @@ mat-icon {
   font-size: 14px !important;
   border-left: 4px solid var(--color-error) !important;
   border-radius: 4px !important;
-  box-shadow: 0 4px 12px rgba(255, 109, 10, 0.25) !important;
+  box-shadow: var(--sombra-2) !important;
 }
 
 .snackbar-warning .mdc-snackbar__label,
@@ -518,7 +518,7 @@ mat-icon {
   font-size: 14px !important;
   border-left: 4px solid var(--notif-info-borde) !important;
   border-radius: 4px !important;
-  box-shadow: 0 4px 12px rgba(0, 83, 160, 0.25) !important;
+  box-shadow: var(--sombra-2) !important;
 }
 
 .snackbar-info .mdc-snackbar__label,
@@ -544,7 +544,7 @@ mat-icon {
   font-size: 14px !important;
   border-left: 4px solid var(--notif-seguridad-borde) !important;
   border-radius: 4px !important;
-  box-shadow: 0 4px 12px rgba(55, 61, 146, 0.25) !important;
+  box-shadow: var(--sombra-2) !important;
 }
 
 .snackbar-security .mdc-snackbar__label,
@@ -612,7 +612,7 @@ mat-icon {
 }
 
 .periodo-cambio-notification {
-  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-terciario) 100%) !important;
+  background: var(--color-primario) !important;
   color: white !important;
   font-weight: 500 !important;
   border-left: 4px solid #fff !important;
@@ -690,13 +690,13 @@ mat-icon {
 .card-tic {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 102, 0.1);
+  box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
 }
 
 .card-tic:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 102, 0.15);
+  box-shadow: var(--sombra-2);
 }
 
 .card-tic-title {
