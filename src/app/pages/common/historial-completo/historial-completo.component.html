@@ -96,7 +96,7 @@
 
     <!-- Tabla de Solicitudes -->
     <div *ngIf="!loading && historial" class="tabla-container">
-      <table mat-table [dataSource]="historial.solicitudes" class="historial-table">
+      <table mat-table [dataSource]="historial.solicitudes" [trackBy]="trackBySolicitudId" class="historial-table">
         
         <!-- Columna ID -->
         <ng-container matColumnDef="id_solicitud">
@@ -168,7 +168,7 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackBySolicitudId"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
 
       <!-- Mensaje cuando no hay solicitudes -->

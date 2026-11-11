@@ -135,7 +135,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     });
     
     // Cargar programas disponibles
-    this.programasDisponibles = this.estadisticasService.getProgramasDisponibles();
+    this.estadisticasService.getProgramasDisponibles()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(programas => this.programasDisponibles = programas);
     
     // Cargar primero las tendencias temporales de forma optimizada para una carga más rápida
     this.cargarTendenciasTemporalesOptimizadas();
@@ -272,155 +274,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
-  }
-
-  public cargarDatosDePrueba(): void {
-    this.data = {
-      fechaConsulta: new Date().toISOString(),
-      descripcion: 'Datos de prueba para cursos de verano',
-      resumen: {
-        totalSolicitudes: 9,
-        materiasUnicas: 3,
-        programasParticipantes: 4,
-        tasaAprobacion: 44.44
-      },
-      topMaterias: [
-        { nombre: 'Programación Avanzada', solicitudes: 4, porcentaje: 44.44 },
-        { nombre: 'Base de Datos', solicitudes: 3, porcentaje: 33.33 },
-        { nombre: 'Redes de Computadores', solicitudes: 2, porcentaje: 22.22 }
-      ],
-      analisisPorPrograma: [
-        { nombre: 'Ingeniería de Sistemas', solicitudes: 4, porcentaje: 44.44 },
-        { nombre: 'Ingeniería Electrónica', solicitudes: 3, porcentaje: 33.33 },
-        { nombre: 'Ingeniería Civil', solicitudes: 1, porcentaje: 11.11 },
-        { nombre: 'Ingeniería Industrial', solicitudes: 1, porcentaje: 11.11 }
-      ],
-      tendenciasTemporales: [
-        { mes: 'Enero', solicitudes: 2, porcentaje: 22.22 },
-        { mes: 'Febrero', solicitudes: 3, porcentaje: 33.33 },
-        { mes: 'Marzo', solicitudes: 4, porcentaje: 44.44 }
-      ],
-      estadosSolicitudes: {
-        APROBADA: 4,
-        ENVIADA: 2,
-        EN_PROCESO: 2,
-        RECHAZADA: 1
-      },
-      recomendaciones: [
-        {
-          tipo: 'PROGRAMA_DEMANDA',
-          titulo: 'Enfocar oferta en Ingeniería de Sistemas',
-          descripcion: 'Este programa representa 44.44% de las solicitudes',
-          prioridad: 'ALTA',
-          acciones: [
-            'Priorizar cursos que beneficien a este programa',
-            'Aumentar oferta de cupos para este programa',
-            'Evaluar demanda específica por materia'
-          ]
-        },
-        {
-          tipo: 'BAJA_APROBACION',
-          titulo: 'Mejorar criterios de selección',
-          descripcion: 'Tasa de aprobación del 44.44%',
-          prioridad: 'MEDIA',
-          acciones: [
-            'Revisar criterios de selección para cursos de verano',
-            'Analizar causas de rechazo',
-            'Mejorar comunicación de requisitos'
-          ]
-        }
-      ],
-      predicciones: {
-        demandaEstimadaProximoPeriodo: 11,
-        materiasConTendenciaCreciente: [
-          {
-            nombre: 'Programación Avanzada',
-            demandaActual: 4,
-            demandaEstimada: 6,
-            tendencia: 'CRECIENTE',
-            variacion: 2,
-            porcentajeVariacion: 50
-          },
-          {
-            nombre: 'Base de Datos',
-            demandaActual: 3,
-            demandaEstimada: 4,
-            tendencia: 'CRECIENTE',
-            variacion: 1,
-            porcentajeVariacion: 33.33
-          }
-        ],
-        materiasConTendenciaDecreciente: [
-          {
-            nombre: 'Redes de Computadores',
-            demandaActual: 2,
-            demandaEstimada: 1,
-            tendencia: 'DECRECIENTE',
-            variacion: -1,
-            porcentajeVariacion: -50
-          }
-        ],
-        materiasEstables: [],
-        programasConTendenciaCreciente: [
-          {
-            nombre: 'Ingeniería de Sistemas',
-            demandaActual: 4,
-            demandaEstimada: 6,
-            tendencia: 'CRECIENTE',
-            variacion: 2,
-            porcentajeVariacion: 50
-          }
-        ],
-        todasLasPrediccionesPorPrograma: [
-          {
-            nombre: 'Ingeniería de Sistemas',
-            demandaActual: 4,
-            demandaEstimada: 6,
-            tendencia: 'CRECIENTE',
-            variacion: 2,
-            porcentajeVariacion: 50
-          },
-          {
-            nombre: 'Ingeniería Electrónica',
-            demandaActual: 3,
-            demandaEstimada: 4,
-            tendencia: 'CRECIENTE',
-            variacion: 1,
-            porcentajeVariacion: 33.33
-          },
-          {
-            nombre: 'Ingeniería Automática',
-            demandaActual: 2,
-            demandaEstimada: 2,
-            tendencia: 'ESTABLE',
-            variacion: 0,
-            porcentajeVariacion: 0
-          },
-          {
-            nombre: 'Tecnología Telemática',
-            demandaActual: 2,
-            demandaEstimada: 1,
-            tendencia: 'DECRECIENTE',
-            variacion: -1,
-            porcentajeVariacion: -50
-          }
-        ],
-        programasConTendenciaDecreciente: [],
-        prediccionesTemporales: {
-          mesPico: 'Marzo',
-          demandaActualMesPico: 4,
-          demandaEstimadaMesPico: 6,
-          mesesRecomendados: ['Marzo', 'Abril', 'Mayo']
-        },
-        confiabilidad: 'ALTA',
-        fechaPrediccion: new Date().toISOString()
-      }
-    };
-
-    // Crear gráficos con datos de prueba
-    setTimeout(() => {
-      this.crearGraficos();
-    }, 100);
   }
 
   actualizarDatos(): void {

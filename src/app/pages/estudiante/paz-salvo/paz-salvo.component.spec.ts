@@ -29,7 +29,7 @@ describe('PazSalvoComponent', () => {
   beforeEach(async () => {
     const pazSalvoServiceSpy = jasmine.createSpyObj('PazSalvoService', [
       'listarSolicitudesPorRol',
-      'sendRequest',
+      'crearSolicitudConFormulario',
       'descargarOficio',
       'obtenerDocumentos'
     ]);
@@ -55,7 +55,7 @@ describe('PazSalvoComponent', () => {
     window.localStorage.setItem('usuario', JSON.stringify(mockUsuario));
 
     pazSalvoService.listarSolicitudesPorRol.and.returnValue(of([]));
-    pazSalvoService.sendRequest.and.returnValue(of({} as any));
+    pazSalvoService.crearSolicitudConFormulario.and.returnValue(of({} as any));
 
     fixture = TestBed.createComponent(PazSalvoComponent);
     component = fixture.componentInstance;
@@ -65,7 +65,7 @@ describe('PazSalvoComponent', () => {
 
   afterEach(() => {
     pazSalvoService.listarSolicitudesPorRol.calls.reset();
-    pazSalvoService.sendRequest.calls.reset();
+    pazSalvoService.crearSolicitudConFormulario.calls.reset();
     snackBar.open.calls.reset();
     dialog.open.calls.reset();
     window.localStorage.clear();
@@ -114,7 +114,7 @@ describe('PazSalvoComponent', () => {
     tick();
     tick();
 
-    expect(pazSalvoService.sendRequest).toHaveBeenCalledWith(mockUsuario.id_usuario, archivos);
+    expect(pazSalvoService.crearSolicitudConFormulario).toHaveBeenCalledWith(mockUsuario.id_usuario, archivos as any, jasmine.any(Object));
     expect(mostrarSpy).toHaveBeenCalledWith(jasmine.stringMatching('Solicitud de paz y salvo'), 'success');
     expect(fileUploadMock.resetearEstadoCarga).not.toHaveBeenCalled();
     expect(component.resetFileUpload).toBeFalse();

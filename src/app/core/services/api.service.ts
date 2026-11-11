@@ -85,10 +85,6 @@ export class ApiService {
     return this.http.get(ApiEndpoints.PROCESOS.BY_ESTADO(estado));
   }
 
-  getProcesosByUsuario(usuarioId: string): Observable<any> {
-    return this.http.get(ApiEndpoints.PROCESOS.BY_USUARIO(usuarioId));
-  }
-
   updateProceso(id: string, proceso: any): Observable<any> {
     return this.http.put(ApiEndpoints.PROCESOS.UPDATE(id), proceso);
   }

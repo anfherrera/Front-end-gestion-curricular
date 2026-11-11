@@ -114,7 +114,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
-      this.logger.log('👤 Usuario cargado desde localStorage:', this.usuario);
+      this.logger.log('Usuario cargado desde localStorage:', this.usuario);
       
       // Establecer valor por defecto del número de documento
       // Usar cedula si existe, sino usar codigo como fallback
@@ -306,7 +306,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     this.enviandoSolicitud = true;
     const formValue = this.solicitudForm.value;
 
-    this.logger.log('📤 Iniciando proceso de envío de solicitud...');
+    this.logger.log('Iniciando proceso de envío de solicitud...');
     this.logger.log('Archivos a subir:', this.archivos);
 
     // Paso 1: Subir archivos al backend
@@ -328,7 +328,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
     for (const archivo of this.archivos) {
       try {
-        this.logger.log(`📤 Subiendo archivo: ${archivo.nombre}`);
+        this.logger.log(`Subiendo archivo: ${archivo.nombre}`);
 
         // Convertir el archivo del localStorage a File si es necesario
         const file = await this.convertirArchivoAFile(archivo);
@@ -346,7 +346,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
   const r: any = response as any;
   const ruta = r.ruta_documento ?? r.rutaDocumento ?? r.ruta ?? r.path ?? r.url ?? r.data?.ruta_documento ?? r.data?.path ?? null;
 
-  this.logger.debug('🔎 Ruta detectada en respuesta:', ruta, ' (response keys):', Object.keys(r || {}));
+  this.logger.debug('Ruta detectada en respuesta:', ruta, ' (response keys):', Object.keys(r || {}));
 
         if (!ruta) {
           // Si la ruta no está presente, lanzamos un error claro para evitar enviar un body inválido
@@ -423,7 +423,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     };
 
     this.logger.log('Creando solicitud con archivos subidos:', solicitud);
-    this.logger.debug('👤 Usuario completo:', this.usuario);
+    this.logger.debug('Usuario completo:', this.usuario);
 
     this.pruebasEcaesService.crearSolicitudEcaes(solicitud).pipe(
       takeUntil(this.destroy$)
@@ -511,19 +511,19 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.logger.debug('🔍 Usuario encontrado:', this.usuario);
-    this.logger.debug('🔍 Rol:', this.usuario.rol.nombre);
-    this.logger.debug('🔍 ID Usuario:', this.usuario.id_usuario);
+    this.logger.debug('Usuario encontrado:', this.usuario);
+    this.logger.debug('Rol:', this.usuario.rol.nombre);
+    this.logger.debug('ID Usuario:', this.usuario.id_usuario);
 
     // Usar el endpoint específico por rol y usuario
     this.pruebasEcaesService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
       next: (data) => {
-        this.logger.debug('📡 Respuesta del backend (raw):', data);
-        this.logger.debug('📡 Tipo de respuesta:', typeof data);
-        this.logger.debug('📡 Es array:', Array.isArray(data));
-        this.logger.debug('📡 Longitud:', data?.length);
+        this.logger.debug('Respuesta del backend (raw):', data);
+        this.logger.debug('Tipo de respuesta:', typeof data);
+        this.logger.debug('Es array:', Array.isArray(data));
+        this.logger.debug('Longitud:', data?.length);
         this.procesarSolicitudes(data);
       },
       error: (err) => {
@@ -546,7 +546,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     this.solicitudesCompletas = data;
 
     this.solicitudes = data.map((sol: SolicitudEcaesResponse) => {
-      this.logger.debug('🔍 Procesando solicitud:', sol);
+      this.logger.debug('Procesando solicitud:', sol);
 
       const estados = sol.estadosSolicitud || [];
       const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;

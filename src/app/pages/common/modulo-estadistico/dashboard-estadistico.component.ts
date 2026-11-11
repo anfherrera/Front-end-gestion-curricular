@@ -97,6 +97,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // Charts
   chartProcesos: Chart | null = null;
   chartTendencia: Chart | null = null;
+  tendenciaSinDatos = false;
   chartDistribucion: Chart | null = null;
   
   // Subscriptions
@@ -144,7 +145,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   private inicializarDatos(): void {
     this.procesosDisponibles = this.estadisticasService.getProcesosDisponibles();
-    this.programasDisponibles = this.estadisticasService.getProgramasDisponibles();
+    this.estadisticasService.getProgramasDisponibles()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(programas => this.programasDisponibles = programas);
   }
 
   /**
@@ -514,75 +517,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Genera datos de prueba para el dashboard
-   */
-  private generarDatosDePrueba(): ResumenCompleto {
-    return {
-      estadisticasGlobales: {
-        totalSolicitudes: 36, // 10 + 9 + 8 + 9 = 36
-        solicitudesAprobadas: 17, // 4 + 5 + 4 + 4 = 17
-        solicitudesRechazadas: 3, // 2 + 0 + 0 + 1 = 3
-        solicitudesEnProceso: 9, // 3 + 2 + 2 + 2 = 9
-        solicitudesEnviadas: 7, // 1 + 2 + 2 + 2 = 7
-        totalEstudiantes: 7, // Valor real del backend
-        totalProgramas: 4 // Valor real del backend
-      },
-      estadisticasPorProceso: [
-        {
-          nombreProceso: 'paz-salvo',
-          totalSolicitudes: 10,
-          aprobadas: 4,
-          rechazadas: 2,
-          enProceso: 3,
-          enviadas: 1,
-          pendientes: 0,
-          porcentajeAprobacion: 40.0,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        },
-        {
-          nombreProceso: 'reingreso-estudiante',
-          totalSolicitudes: 9,
-          aprobadas: 5,
-          rechazadas: 0,
-          enProceso: 2,
-          enviadas: 2,
-          pendientes: 0,
-          porcentajeAprobacion: 55.6,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        },
-        {
-          nombreProceso: 'homologacion-asignaturas',
-          totalSolicitudes: 8,
-          aprobadas: 4,
-          rechazadas: 0,
-          enProceso: 2,
-          enviadas: 2,
-          pendientes: 0,
-          porcentajeAprobacion: 50.0,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        },
-        {
-          nombreProceso: 'cursos-de-verano',
-          totalSolicitudes: 9,
-          aprobadas: 4,
-          rechazadas: 1,
-          enProceso: 2,
-          enviadas: 2,
-          pendientes: 0,
-          porcentajeAprobacion: 44.4,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        }
-      ],
-      estadisticasPorPrograma: [],
-      ultimaActualizacion: new Date().toISOString()
-    };
-  }
-
-  /**
    * Genera los KPIs con datos del backend (resumenCompleto)
    */
   private generarKPIs(): void {
@@ -939,8 +873,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // Cargar datos reales del backend
     const datosReales = await this.cargarDatosRealesTendencia();
     
-    if (!datosReales || !datosReales.porMes) {
-      this.crearChartTendenciaFallback();
+    // Sin datos mensuales del backend no se dibuja nada inventado: la vista muestra un aviso.
+    this.tendenciaSinDatos = !datosReales || !datosReales.porMes;
+    if (this.tendenciaSinDatos) {
       return;
     }
     // El endpoint /por-periodo devuelve todos los meses (Enero-Diciembre), incluso con 0
@@ -1047,147 +982,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     try {
       this.chartTendencia = new Chart(ctx, config);
-    } catch (error) {
-    }
-  }
-
-  /**
-   * Crea el gráfico de tendencia con datos de fallback
-   */
-  private crearChartTendenciaFallback(): void {
-    const ctx = document.getElementById('chartTendencia') as HTMLCanvasElement;
-    if (!ctx) {
-      return;
-    }
-
-    this.destruirChart('chartTendencia');
-
-    // Generar datos de tendencia basados en los datos reales del backend
-    const totalSolicitudes = this.resumenCompleto?.estadisticasGlobales.totalSolicitudes || 46;
-    const totalAprobadas = this.resumenCompleto?.estadisticasGlobales.solicitudesAprobadas || 21;
-    
-    // Crear tendencia mensual simulada basada en los datos reales
-    const meses = ['Julio', 'Agosto', 'Septiembre'];
-    const factorVariacion = 0.2; // 20% de variación
-    
-    const solicitudesMensual = meses.map((_, index) => {
-      const base = totalSolicitudes / 3; // Distribución base para 3 meses
-      const variacion = (Math.random() - 0.5) * factorVariacion * base;
-      return Math.round(base + variacion);
-    });
-    
-    const aprobadasMensual = meses.map((_, index) => {
-      const base = totalAprobadas / 3; // Distribución base para 3 meses
-      const variacion = (Math.random() - 0.5) * factorVariacion * base;
-      return Math.round(base + variacion);
-    });
-    const data: ChartData<'line'> = {
-      labels: meses,
-      datasets: [
-        {
-          label: 'Solicitudes',
-          data: solicitudesMensual,
-          borderColor: '#2196f3',
-          backgroundColor: 'rgba(33, 150, 243, 0.1)',
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: '#2196f3',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          pointRadius: 6
-        },
-        {
-          label: 'Aprobadas',
-          data: aprobadasMensual,
-          borderColor: '#249337',
-          backgroundColor: 'rgba(76, 175, 80, 0.1)',
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: '#249337',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          pointRadius: 6
-        }
-      ]
-    };
-
-    const config: ChartConfiguration<'line'> = {
-      type: 'line',
-      data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              usePointStyle: true,
-              padding: 20
-            }
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#000066',
-            borderWidth: 1,
-            callbacks: {
-              title: function(context) {
-                return `Período: ${context[0].label}`;
-              },
-              label: function(context) {
-                return `${context.dataset.label}: ${context.parsed.y}`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Meses',
-              color: '#000066',
-              font: {
-                weight: 'bold'
-              }
-            },
-            grid: {
-              color: 'rgba(0, 19, 140, 0.1)'
-            }
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Cantidad',
-              color: '#000066',
-              font: {
-                weight: 'bold'
-              }
-            },
-            grid: {
-              color: 'rgba(0, 19, 140, 0.1)'
-            },
-            beginAtZero: true
-          }
-        },
-        interaction: {
-          mode: 'nearest',
-          axis: 'x',
-          intersect: false
-        },
-        animation: {
-          duration: 0, // Sin animación para mejor rendimiento
-          easing: 'linear'
-        }
-      }
-    };
-
-    try {
-    this.chartTendencia = new Chart(ctx, config);
     } catch (error) {
     }
   }

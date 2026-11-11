@@ -243,10 +243,6 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     return this.notificaciones.some(n => n.esUrgente);
   }
 
-  crearNotificacionPrueba(): void {
-    this.snackbar.info('La creación de notificaciones se realiza desde el backend');
-  }
-
   private iniciarPollingContador(userId: number, intervalo: number = 30000): void {
     this.refreshInterval = setInterval(() => {
       this.actualizarContador();

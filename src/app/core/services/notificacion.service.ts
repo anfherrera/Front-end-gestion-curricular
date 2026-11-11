@@ -90,28 +90,6 @@ export class NotificacionService {
   }
 
   /**
-   * Obtener notificaciones urgentes de un usuario
-   * GET /api/notificaciones/usuario/{idUsuario}/urgentes
-   */
-  obtenerUrgentes(idUsuario: number): Observable<Notificacion[]> {
-    return this.http.get<Notificacion[]>(
-      `${this.apiUrl}/usuario/${idUsuario}/urgentes`,
-      { headers: this.getHeaders() }
-    ).pipe(
-      map(notificaciones => {
-        // Convertir fechaCreacion de string a Date si es necesario
-        return notificaciones.map(notif => ({
-          ...notif,
-          fechaCreacion: typeof notif.fechaCreacion === 'string' 
-            ? new Date(notif.fechaCreacion) 
-            : notif.fechaCreacion
-        }));
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  /**
    * Marcar notificación como leída
    * PUT /api/notificaciones/{idNotificacion}/marcar-leida
    */

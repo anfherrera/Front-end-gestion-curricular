@@ -278,7 +278,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * TrackBy function para optimizar el rendimiento de *ngFor en la tabla
+   * trackBy de la tabla de Material (se pasa como [trackBy] en <table mat-table>)
    * @param index Índice del elemento
    * @param solicitud Solicitud del historial
    * @returns ID único de la solicitud

@@ -203,9 +203,10 @@
             <mat-card-title>Tendencia Mensual</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="chart-container">
+            <div class="chart-container" [hidden]="tendenciaSinDatos">
               <canvas id="chartTendencia"></canvas>
             </div>
+            <p *ngIf="tendenciaSinDatos" class="sin-datos">No hay datos mensuales disponibles para los filtros seleccionados.</p>
           </mat-card-content>
         </mat-card>
 

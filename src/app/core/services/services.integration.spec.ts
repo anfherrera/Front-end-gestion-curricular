@@ -121,7 +121,10 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       ];
 
       // PASO 1: Crear solicitud
-      pazSalvoService.sendRequest(1, mockArchivos).subscribe();
+      pazSalvoService.crearSolicitudConFormulario(1, mockArchivos, {
+        nombre_solicitud: 'Paz y Salvo',
+        fecha_registro_solicitud: new Date().toISOString()
+      }).subscribe();
       tick();
 
       const reqCrear = httpMock.expectOne((req) =>

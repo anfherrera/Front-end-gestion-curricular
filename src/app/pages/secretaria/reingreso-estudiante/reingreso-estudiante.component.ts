@@ -715,14 +715,14 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   puedeAprobar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    this.logger.debug('🔍 Estado actual para aprobar (secretaria):', estado);
+    this.logger.debug('Estado actual para aprobar (secretaria):', estado);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 
   puedeRechazar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    this.logger.debug('🔍 Estado actual para rechazar (secretaria):', estado);
+    this.logger.debug('Estado actual para rechazar (secretaria):', estado);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 

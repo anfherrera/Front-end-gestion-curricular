@@ -181,19 +181,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush(respuesta);
     });
 
-    it('debe obtener solicitudes del usuario autenticado', (done) => {
-      const respuesta: SolicitudCursoVerano[] = [];
-
-      service.getSolicitudesUsuario(1).subscribe((data) => {
-        expect(data).toEqual(respuesta);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/solicitudes/1`);
-      expect(req.request.method).toBe('GET');
-      req.flush(respuesta);
-    });
-
     it('debe obtener el seguimiento de una solicitud', (done) => {
       const respuesta = { id_solicitud: 99 } as SolicitudCursoVerano;
 
@@ -586,32 +573,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
   });
 
   describe('Notificaciones', () => {
-    it('debe obtener notificaciones de usuario', (done) => {
-      const notificaciones = [{ id_notificacion: 1, tipoSolicitud: 'Preinscripción' }] as any;
-
-      service.getNotificacionesUsuario(1).subscribe((result) => {
-        expect(result).toEqual(notificaciones);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/usuario/1`);
-      expect(req.request.method).toBe('GET');
-      req.flush(notificaciones);
-    });
-
-    it('debe obtener notificaciones no leídas', (done) => {
-      const notificaciones = [{ id_notificacion: 1, leida: false }] as any;
-
-      service.getNotificacionesNoLeidas(1).subscribe((result) => {
-        expect(result).toEqual(notificaciones);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/usuario/1/no-leidas`);
-      expect(req.request.method).toBe('GET');
-      req.flush(notificaciones);
-    });
-
     it('debe obtener dashboard de notificaciones', (done) => {
       const notificaciones = [{ id_notificacion: 1 }] as any;
 

@@ -72,14 +72,6 @@ export class PazSalvoService {
   }
 
   /**
-   * Obtener solicitudes para estudiante
-   * Usa el endpoint /porRol con parámetros
-   */
-  getStudentRequests(studentId: number, periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
-    return this.listarSolicitudesPorRol('ESTUDIANTE', studentId, periodoAcademico);
-  }
-
-  /**
    * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
    */
   getPendingRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
@@ -215,42 +207,6 @@ export class PazSalvoService {
         return of({ mensaje: 'Error al obtener comentarios' });
       })
     );
-  }
-
-  sendRequest(studentId: number, archivos: Archivo[]): Observable<Solicitud> {
-    const usuario = this.authService.getUsuario();
-    if (!usuario) throw new Error('Usuario no autenticado');
-
-    // Obtener nombre completo del usuario
-    const nombreCompleto = usuario.nombre_completo || 
-                          usuario.nombre || 
-                          'Usuario';
-    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-    
-    const body = {
-      nombre_solicitud: `Solicitud Paz y Salvo - ${nombreFinal}`,
-      fecha_registro_solicitud: new Date().toISOString(),
-      objUsuario: { 
-        id_usuario: usuario.id_usuario,
-        nombre_completo: usuario.nombre_completo || "Usuario",
-        codigo: usuario.codigo || "104612345678",
-        correo: usuario.email_usuario || "usuario@unicauca.edu.co",
-        id_rol: usuario.id_rol || usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
-        id_programa: usuario.id_programa || usuario.objPrograma?.id_programa || 1, // Programa por defecto
-        objPrograma: usuario.objPrograma || {
-          id_programa: usuario.id_programa || usuario.objPrograma?.id_programa || 1,
-          nombre_programa: usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
-        }
-      },
-      archivos: archivos
-    };
-
-    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
-      .pipe(
-        catchError(error => {
-          throw error;
-        })
-      );
   }
 
   /**

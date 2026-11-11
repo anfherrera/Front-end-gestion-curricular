@@ -189,29 +189,6 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
    * Para estar informado.
    */
   describe('HU-05: Recibir Notificaciones', () => {
-    it('ACEP-CI-005: DADO que mi preinscripción fue aprobada, CUANDO consulto notificaciones, ENTONCES veo aviso', fakeAsync(() => {
-      // GIVEN: Preinscripción aprobada genera notificación
-      const mockNotificaciones: any[] = [
-        {
-          id: 1,
-          mensaje: 'Preinscripción APROBADA para Cálculo',
-          leida: false
-        }
-      ];
-
-      // WHEN: Consulto notificaciones
-      service.getNotificacionesUsuario(mockEstudiante.id_usuario).subscribe((notif) => {
-        // THEN: Veo la notificación
-        expect(notif.length).toBe(1);
-        expect(notif[0].mensaje).toContain('APROBADA');
-        expect(notif[0].leida).toBe(false);
-      });
-      tick();
-
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/usuario/${mockEstudiante.id_usuario}`);
-      req.flush(mockNotificaciones);
-      tick();
-    }));
   });
 
   /**

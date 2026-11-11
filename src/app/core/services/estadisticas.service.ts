@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, delay, map, catchError, shareReplay } from 'rxjs';
+import { Observable, of, map, catchError, shareReplay } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { ProgramasService } from './programas.service';
 import { esErrorDeAcceso } from '../utils/http-error.utils';
@@ -11,7 +11,6 @@ import {
   ResumenCompleto,
   ResumenCompletoAPI,
   FiltroEstadisticas,
-  FiltrosDashboard,
   EstadisticasGlobalesAPI,
   TotalEstudiantesResponse,
   EstudiantesPorProgramaResponse,
@@ -774,200 +773,16 @@ export class EstadisticasService {
   }
 
   /**
-   * Obtiene la lista de programas disponibles basados en los datos del backend
+   * Programas para los filtros, desde el catálogo real (/api/programas/listarProgramas).
+   * Si el backend falla, devuelve una lista vacía (el filtro queda en "Todos los programas").
    */
-  getProgramasDisponibles(): any[] {
-    return [
-      { id: 1, nombre: 'Ingenieria de Sistemas' },
-      { id: 2, nombre: 'Ingenieria Electronica y Telecomunicaciones' },
-      { id: 3, nombre: 'Ingenieria Automatica Industrial' },
-      { id: 4, nombre: 'Tecnologia en Telematica' }
-    ];
-  }
-
-  /**
-   * Obtiene resumen completo con filtros aplicados
-   */
-  getResumenCompletoConFiltros(filtros: FiltrosDashboard): Observable<ResumenCompleto> {
-    
-    // Simular delay de red
-    return of(this.generarResumenCompletoConFiltros(filtros)).pipe(delay(1000));
-  }
-
-  /**
-   * Genera resumen completo con filtros aplicados (mock)
-   */
-  private generarResumenCompletoConFiltros(filtros: FiltrosDashboard): ResumenCompleto {
-    const resumenBase = this.generarDatosMock();
-    
-    // Aplicar filtros
-    let estadisticasGlobales = { ...resumenBase.estadisticasGlobales };
-    let estadisticasPorProceso = [...resumenBase.estadisticasPorProceso];
-    let estadisticasPorPrograma = [...resumenBase.estadisticasPorPrograma];
-
-    // Filtrar por proceso
-    if (filtros.proceso) {
-      estadisticasPorProceso = estadisticasPorProceso.filter(
-        proceso => proceso.nombreProceso === filtros.proceso
-      );
-      
-      // Recalcular estadísticas globales basadas en el proceso filtrado
-      if (estadisticasPorProceso.length > 0) {
-        const procesoFiltrado = estadisticasPorProceso[0];
-        estadisticasGlobales = {
-          totalSolicitudes: procesoFiltrado.totalSolicitudes,
-          solicitudesAprobadas: procesoFiltrado.aprobadas,
-          solicitudesRechazadas: procesoFiltrado.rechazadas,
-          solicitudesEnviadas: procesoFiltrado.enviadas || 0, // Campo obligatorio
-          solicitudesEnProceso: procesoFiltrado.enProceso,
-          totalEstudiantes: Math.floor(procesoFiltrado.totalSolicitudes * 2.6), // Aproximación
-          totalProgramas: 1
-        };
-      }
-    }
-
-    // Filtrar por programa
-    if (filtros.idPrograma) {
-      const programaFiltrado = estadisticasPorPrograma.find(
-        programa => programa.idPrograma === filtros.idPrograma
-      );
-      
-      if (programaFiltrado) {
-        // Ajustar estadísticas basadas en el programa filtrado
-        const factor = programaFiltrado.totalSolicitudes / estadisticasGlobales.totalSolicitudes;
-        estadisticasGlobales = {
-          totalSolicitudes: Math.floor(estadisticasGlobales.totalSolicitudes * factor),
-          solicitudesAprobadas: Math.floor(estadisticasGlobales.solicitudesAprobadas * factor),
-          solicitudesRechazadas: Math.floor(estadisticasGlobales.solicitudesRechazadas * factor),
-          solicitudesEnviadas: Math.floor(estadisticasGlobales.solicitudesEnviadas * factor), // Campo obligatorio
-          solicitudesEnProceso: Math.floor(estadisticasGlobales.solicitudesEnProceso * factor),
-          totalEstudiantes: Math.floor(estadisticasGlobales.totalEstudiantes * factor),
-          totalProgramas: 1
-        };
-      }
-    }
-
-    // Filtro por rango de fechas eliminado - usar periodoAcademico en su lugar
-    // El filtro por periodoAcademico se maneja en el backend
-
-    return {
-      estadisticasGlobales,
-      estadisticasPorProceso,
-      estadisticasPorPrograma,
-      ultimaActualizacion: new Date().toISOString()
-    };
-  }
-
-  /**
-   * Genera datos mock para pruebas (temporal)
-   */
-  private generarDatosMock(): ResumenCompleto {
-    return {
-      estadisticasGlobales: {
-        totalSolicitudes: 1247,
-        solicitudesAprobadas: 892,
-        solicitudesRechazadas: 156,
-        solicitudesEnviadas: 120, // Campo obligatorio
-        solicitudesEnProceso: 199,
-        totalEstudiantes: 3241,
-        totalProgramas: 5
-      },
-      estadisticasPorProceso: [
-        {
-          nombreProceso: 'reingreso',
-          totalSolicitudes: 245,
-          aprobadas: 180,
-          rechazadas: 35,
-          enProceso: 30,
-          pendientes: 0,
-          porcentajeAprobacion: 73.5,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        },
-        {
-          nombreProceso: 'homologacion',
-          totalSolicitudes: 312,
-          aprobadas: 245,
-          rechazadas: 42,
-          enProceso: 25,
-          pendientes: 0,
-          porcentajeAprobacion: 78.5,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        },
-        {
-          nombreProceso: 'cursos-intersemestrales',
-          totalSolicitudes: 456,
-          aprobadas: 298,
-          rechazadas: 58,
-          enProceso: 100,
-          pendientes: 0,
-          porcentajeAprobacion: 65.4,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        },
-        {
-          nombreProceso: 'pruebas-ecaes',
-          totalSolicitudes: 134,
-          aprobadas: 89,
-          rechazadas: 21,
-          enProceso: 24,
-          pendientes: 0,
-          porcentajeAprobacion: 66.4,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        },
-        {
-          nombreProceso: 'paz-salvo',
-          totalSolicitudes: 100,
-          aprobadas: 80,
-          rechazadas: 0,
-          enProceso: 20,
-          pendientes: 0,
-          porcentajeAprobacion: 80.0,
-          tendenciaMensual: [],
-          distribucionPorPrograma: []
-        }
-      ],
-      estadisticasPorPrograma: [
-        {
-          idPrograma: 1,
-          nombrePrograma: 'Ingeniería de Sistemas',
-          totalSolicitudes: 320,
-          distribucionPorProceso: [],
-          tendenciaAnual: []
-        },
-        {
-          idPrograma: 2,
-          nombrePrograma: 'Ingeniería Civil',
-          totalSolicitudes: 280,
-          distribucionPorProceso: [],
-          tendenciaAnual: []
-        },
-        {
-          idPrograma: 3,
-          nombrePrograma: 'Ingeniería Electrónica',
-          totalSolicitudes: 245,
-          distribucionPorProceso: [],
-          tendenciaAnual: []
-        },
-        {
-          idPrograma: 4,
-          nombrePrograma: 'Ingeniería Mecánica',
-          totalSolicitudes: 200,
-          distribucionPorProceso: [],
-          tendenciaAnual: []
-        },
-        {
-          idPrograma: 5,
-          nombrePrograma: 'Ingeniería Industrial',
-          totalSolicitudes: 202,
-          distribucionPorProceso: [],
-          tendenciaAnual: []
-        }
-      ],
-      ultimaActualizacion: new Date().toISOString()
-    };
+  getProgramasDisponibles(): Observable<{ id: number; nombre: string }[]> {
+    return this.programasService.listarProgramas().pipe(
+      map(programas => (programas || [])
+        .map(p => ({ id: p.id_programa, nombre: p.nombre_programa }))
+        .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))),
+      catchError(() => of([]))
+    );
   }
 
   /**

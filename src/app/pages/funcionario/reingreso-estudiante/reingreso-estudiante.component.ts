@@ -244,7 +244,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   puedeAprobar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    this.logger.debug('🔍 Estado actual para aprobar:', estado);
+    this.logger.debug('Estado actual para aprobar:', estado);
     // Para funcionario, puede aprobar cuando el estado es "Enviada" (como se mencionó en el contexto)
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
@@ -252,14 +252,14 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   puedeRechazar(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    this.logger.debug('🔍 Estado actual para rechazar:', estado);
+    this.logger.debug('Estado actual para rechazar:', estado);
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
 
   puedeCompletarValidacion(): boolean {
     if (!this.selectedSolicitud) return false;
     const estado = this.getEstadoActual(this.selectedSolicitud);
-    this.logger.debug('🔍 Estado actual para completar validación:', estado);
+    this.logger.debug('Estado actual para completar validación:', estado);
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
 

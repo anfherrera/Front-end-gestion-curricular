@@ -777,11 +777,6 @@ export class CursosIntersemestralesService {
     return this.http.post<SolicitudCursoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCIONES, payload);
   }
 
-  // Obtener solicitudes de un usuario
-  getSolicitudesUsuario(idUsuario: number): Observable<SolicitudCursoVerano[]> {
-    return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/solicitudes/${idUsuario}`);
-  }
-
   // Seguimiento de solicitud
   getSeguimientoSolicitud(idSolicitud: number): Observable<SolicitudCursoVerano> {
     return this.http.get<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/seguimiento/${idSolicitud}`);
@@ -844,16 +839,6 @@ export class CursosIntersemestralesService {
 
   // ====== NOTIFICACIONES ======
   
-  // Obtener notificaciones de usuario
-  getNotificacionesUsuario(idUsuario: number): Observable<Notificacion[]> {
-    return this.http.get<Notificacion[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/usuario/${idUsuario}`);
-  }
-
-  // Obtener notificaciones no leídas
-  getNotificacionesNoLeidas(idUsuario: number): Observable<Notificacion[]> {
-    return this.http.get<Notificacion[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/usuario/${idUsuario}/no-leidas`);
-  }
-
   // Obtener dashboard de notificaciones
   getDashboardNotificaciones(idUsuario: number): Observable<Notificacion[]> {
     return this.http.get<Notificacion[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/dashboard/${idUsuario}`);
@@ -1305,20 +1290,9 @@ export class CursosIntersemestralesService {
 
 
 
-  // Obtener solicitudes de curso nuevo del usuario
-  getSolicitudesCursoNuevoUsuario(idUsuario: number): Observable<SolicitudCursoNuevo[]> {
-    return this.http.get<SolicitudCursoNuevo[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO_USUARIO(idUsuario));
-  }
-
   // ====== MÉTODOS LEGACY (para compatibilidad) ======
   getSolicitudes(): Observable<Solicitud[]> {
     return this.http.get<Solicitud[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE);
-  }
-
-  getSolicitudEstudiante(estudianteId: number): Observable<Solicitud> {
-    return this.http.get<Solicitud>(
-      `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/estudiante/${estudianteId}`
-    );
   }
 
   crearSolicitud(payload: CreateSolicitudDTO): Observable<Solicitud> {
@@ -1528,11 +1502,6 @@ export class CursosIntersemestralesService {
   // Obtener estadísticas del curso
   obtenerEstadisticasCurso(idCurso: number): Observable<any> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/curso/${idCurso}/estadisticas`;
-    return this.http.get<any>(endpoint);
-  }
-
-  verificarPreinscripcionesUsuario(idUsuario: number, idCurso: number): Observable<any> {
-    const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${idUsuario}/curso/${idCurso}`;
     return this.http.get<any>(endpoint);
   }
 

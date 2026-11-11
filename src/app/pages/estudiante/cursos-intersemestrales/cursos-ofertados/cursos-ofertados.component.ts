@@ -130,39 +130,6 @@ export class CursosOfertadosComponent implements OnInit {
     });
   }
 
-  private loadDatosPrueba() {
-    this.cursos = [
-      {
-        codigo: 'MAT-101',
-        nombre: 'Matemáticas Básicas',
-        docente: 'Dr. Juan Pérez',
-        cupos: 30,
-        creditos: 3,
-        espacio: 'Aula 201',
-        estado: 'Disponible'
-      },
-      {
-        codigo: 'FIS-102',
-        nombre: 'Física General',
-        docente: 'Dra. María García',
-        cupos: 25,
-        creditos: 4,
-        espacio: 'Laboratorio 1',
-        estado: 'Disponible'
-      },
-      {
-        codigo: 'QUI-103',
-        nombre: 'Química Orgánica',
-        docente: 'Dr. Carlos López',
-        cupos: 20,
-        creditos: 3,
-        espacio: 'Aula 305',
-        estado: 'Disponible'
-      }
-    ];
-    this.cargando = false;
-  }
-
   private mapCursosToLegacy(cursosVerano: CursoOfertadoVerano[]): Curso[] {
     return cursosVerano.map(curso => ({
       codigo: curso.codigo_curso || curso.id_curso.toString(),

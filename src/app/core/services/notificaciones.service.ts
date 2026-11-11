@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, interval, Subscription, of } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import {
@@ -46,21 +46,6 @@ export class NotificacionesService {
   }
 
   /**
-   * Obtener todas las notificaciones de un usuario
-   */
-  obtenerNotificacionesPorUsuario(idUsuario: number): Observable<NotificacionDTORespuesta[]> {
-    return this.http.get<NotificacionDTORespuesta[]>(`${this.apiUrl}/usuario/${idUsuario}`)
-      .pipe(
-        catchError((error) => {
-          if (error.status === 403) {
-            return of([]);
-          }
-          return this.handleError(error);
-        })
-      );
-  }
-
-  /**
    * Obtener notificaciones no leídas de un usuario
    */
   obtenerNotificacionesNoLeidas(idUsuario: number): Observable<NotificacionDTORespuesta[]> {
@@ -74,22 +59,6 @@ export class NotificacionesService {
           return this.handleError(error);
         })
       );
-  }
-
-  /**
-   * Obtener notificaciones urgentes de un usuario
-   */
-  obtenerNotificacionesUrgentes(idUsuario: number): Observable<NotificacionDTORespuesta[]> {
-    return this.http.get<NotificacionDTORespuesta[]>(`${this.apiUrl}/usuario/${idUsuario}/urgentes`)
-      .pipe(catchError(this.handleError));
-  }
-
-  /**
-   * Contar notificaciones no leídas
-   */
-  contarNotificacionesNoLeidas(idUsuario: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/usuario/${idUsuario}/contar-no-leidas`)
-      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -259,21 +228,6 @@ export class NotificacionesService {
   }
 
   /**
-   * Inicia el polling de notificaciones (compatible con código existente)
-   */
-  iniciarPolling(idUsuario: number, intervalo: number = 30000): void {
-    this.currentUserId = idUsuario;
-
-    this.detenerPolling();
-
-    this.actualizarNotificaciones(idUsuario);
-
-    this.pollingSubscription = interval(intervalo).subscribe(() => {
-      this.actualizarNotificaciones(idUsuario);
-    });
-  }
-
-  /**
    * Detiene el polling de notificaciones
    */
   detenerPolling(): void {
@@ -281,13 +235,6 @@ export class NotificacionesService {
       this.pollingSubscription.unsubscribe();
       this.pollingSubscription = undefined;
     }
-  }
-
-  /**
-   * Marca todas las notificaciones como leídas (alias para compatibilidad)
-   */
-  marcarTodasLeidas(idUsuario: number): Observable<any> {
-    return this.marcarNotificacionesComoLeidas(idUsuario);
   }
 
   /**
@@ -328,22 +275,6 @@ export class NotificacionesService {
       'INFORMACION': '#1D72D3'
     };
     return colores[tipoNotificacion] || '#454444';
-  }
-
-  /**
-   * Crea una notificación de prueba para un usuario (compatible con código existente)
-   */
-  crearNotificacionPrueba(idUsuario: number): Observable<any> {
-    const notificacionPrueba: NotificacionDTOPeticion = {
-      tipoSolicitud: 'ECAES',
-      tipoNotificacion: 'NUEVA_SOLICITUD',
-      titulo: 'Notificación de prueba',
-      mensaje: 'Esta es una notificación de prueba generada automáticamente.',
-      idUsuario,
-      esUrgente: false
-    };
-
-    return this.crearNotificacion(notificacionPrueba);
   }
 
   // ===== MANEJO DE ERRORES =====

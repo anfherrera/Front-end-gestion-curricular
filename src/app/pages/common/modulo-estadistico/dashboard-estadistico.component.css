@@ -353,6 +353,13 @@
   height: auto;
 }
 
+.sin-datos {
+  margin: 20px 0;
+  padding: 40px 16px;
+  text-align: center;
+  color: #666;
+}
+
 /* Process Details */
 .process-details-section {
   margin-bottom: 40px;

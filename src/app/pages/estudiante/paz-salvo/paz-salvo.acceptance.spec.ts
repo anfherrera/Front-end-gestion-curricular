@@ -66,7 +66,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       ];
 
       // WHEN: Envío la solicitud
-      service.sendRequest(idUsuario, archivos).subscribe((response) => {
+      service.crearSolicitudConFormulario(idUsuario, archivos, {
+        nombre_solicitud: 'Paz y Salvo',
+        fecha_registro_solicitud: new Date().toISOString()
+      }).subscribe((response) => {
         // THEN: Se crea exitosamente
         expect(response).toBeTruthy();
       });
@@ -74,8 +77,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
 
       const req = httpMock.expectOne((r) => r.url.includes('/crearSolicitud-PazYSalvo'));
       expect(req.request.method).toBe('POST');
-      expect(req.request.body.objUsuario.id_usuario).toBe(idUsuario);
-      expect(req.request.body.archivos).toEqual(archivos);
+      expect(req.request.body.idUsuario).toBe(idUsuario);
       req.flush({ id_solicitud: 1, mensaje: 'Solicitud creada' });
       tick();
     }));

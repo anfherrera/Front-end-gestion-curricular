@@ -157,20 +157,6 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
   });
 
   describe('3. Métodos Específicos de Listado', () => {
-    it('PZS-008: getStudentRequests debe llamar a listarSolicitudesPorRol', (done) => {
-      spyOn(service, 'listarSolicitudesPorRol').and.returnValue(
-        new Observable(observer => {
-          observer.next([]);
-          observer.complete();
-        })
-      );
-      
-      service.getStudentRequests(1).subscribe(() => {
-        expect(service.listarSolicitudesPorRol).toHaveBeenCalledWith('ESTUDIANTE', 1);
-        done();
-      });
-    });
-
     it('PZS-009: getPendingRequests debe obtener solicitudes de funcionario', (done) => {
       const mockSolicitudes: SolicitudHomologacionDTORespuesta[] = [];
       
@@ -211,56 +197,47 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       authService.getUsuario.and.returnValue(mockUsuario);
     });
 
+    const datosFormulario = {
+      nombre_solicitud: 'Paz y Salvo',
+      fecha_registro_solicitud: '2026-11-11T00:00:00.000Z'
+    };
+
     it('PZS-012: Debe enviar solicitud correctamente', (done) => {
-      const mockArchivos: any[] = [
-        { nombre: 'doc.pdf', fecha: new Date().toISOString() }
-      ];
-      
-      service.sendRequest(1, mockArchivos).subscribe((response) => {
+      service.crearSolicitudConFormulario(1, [], datosFormulario).subscribe((response) => {
         expect(response).toBeTruthy();
         done();
       });
-      
+
       const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-PazYSalvo`);
       expect(req.request.method).toBe('POST');
-      expect(req.request.body.objUsuario.id_usuario).toBe(1);
-      expect(req.request.body.archivos).toEqual(mockArchivos);
-      
+      expect(req.request.body.idUsuario).toBe(1);
+
       req.flush({ id: 1 });
     });
 
     it('PZS-013: Debe lanzar error si usuario no está autenticado', () => {
       authService.getUsuario.and.returnValue(null);
-      
+
       expect(() => {
-        service.sendRequest(1, []);
+        service.crearSolicitudConFormulario(1, [], datosFormulario);
       }).toThrowError('Usuario no autenticado');
     });
 
-    it('PZS-014: Debe incluir datos completos del usuario en la solicitud', (done) => {
-      const mockArchivos: Archivo[] = [];
-      
-      service.sendRequest(1, mockArchivos).subscribe(() => done());
-      
+    it('PZS-014: No debe enviar datos del usuario (el backend los toma del token)', (done) => {
+      service.crearSolicitudConFormulario(1, [], datosFormulario).subscribe(() => done());
+
       const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-PazYSalvo`);
-      const body = req.request.body;
-      
-      expect(body.objUsuario.nombre_completo).toBe('Test User');
-      expect(body.objUsuario.codigo).toBe('123456');
-      expect(body.objUsuario.correo).toBe('test@unicauca.edu.co');
-      expect(body.objUsuario.id_rol).toBe(1);
-      expect(body.objUsuario.id_programa).toBe(1);
-      
+      expect(req.request.body.objUsuario).toBeUndefined();
+
       req.flush({ id: 1 });
     });
 
-    it('PZS-015: Debe generar nombre de solicitud automáticamente', (done) => {
-      service.sendRequest(1, []).subscribe(() => done());
-      
+    it('PZS-015: Debe generar nombre de solicitud con el nombre del estudiante', (done) => {
+      service.crearSolicitudConFormulario(1, [], datosFormulario).subscribe(() => done());
+
       const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-PazYSalvo`);
-      expect(req.request.body.nombre_solicitud).toContain('Solicitud_paz_salvo_');
-      expect(req.request.body.nombre_solicitud).toContain('Test User');
-      
+      expect(req.request.body.nombre_solicitud).toBe('Solicitud Paz y Salvo - Test User');
+
       req.flush({ id: 1 });
     });
   });
@@ -506,7 +483,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
 
     it('PZS-034: Debe manejar error 500 del servidor', (done) => {
       authService.getUsuario.and.returnValue(mockUsuario);
-      service.sendRequest(1, []).subscribe({
+      service.crearSolicitudConFormulario(1, [], { nombre_solicitud: 'Paz y Salvo', fecha_registro_solicitud: '2026-11-11' }).subscribe({
         error: (error) => {
           expect(error.status).toBe(500);
           done();
