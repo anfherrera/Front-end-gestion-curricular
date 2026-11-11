@@ -87,7 +87,6 @@ export class ApiEndpoints {
       COMPLETAR_INSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/completar`,
       ACEPTAR_INSCRIPCION: (idPreinscripcion: number) => `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/aceptar`,
       RECHAZAR_INSCRIPCION: (idPreinscripcion: number) => `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/rechazar`,
-      DEBUG_INSCRIPCION: (idPreinscripcion: number) => `${this.BASE_URL}/cursos-intersemestrales/debug/inscripcion/${idPreinscripcion}`,
       
       // Nuevos endpoints de permisos
       PERMISOS_ESTADO: (estado: string, rol: string) => `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,

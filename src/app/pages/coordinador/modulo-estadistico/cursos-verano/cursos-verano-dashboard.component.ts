@@ -23,7 +23,7 @@ import { Chart, ChartConfiguration, ChartData, ChartOptions, registerables } fro
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
-import { environment } from '../../../../../environments/environment';
+import { esErrorDeAcceso, mensajeErrorDeAcceso } from '../../../../core/utils/http-error.utils';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { 
   CursosVeranoResponse, 
@@ -76,7 +76,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   loading = true;
   error: string | null = null;
   ultimaActualizacion: Date = new Date();
-  private intervalId: any;
 
   // ===== FILTROS =====
   filtrosForm: FormGroup | null = null;
@@ -146,22 +145,13 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       this.cargarDatos();
     }, 100);
     
-    // Actualizar cada 30 segundos (con filtros aplicados)
-    this.intervalId = setInterval(() => {
-      this.filtrosAplicados = this.obtenerFiltrosActuales();
-      this.cargarDatos();
-    }, 30000);
+    // Sin auto-refresco: el usuario puede refrescar con el botón "Actualizar datos"
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
     this.destruirGraficos();
-    
-    // Limpiar el intervalo de actualización automática
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
   }
 
   // ===== MÉTODOS DE CARGA DE DATOS =====
@@ -228,6 +218,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
+        // 401/403: cargarDatos() ya muestra el mensaje; no reintentar
+        if (esErrorDeAcceso(error)) {
+          return;
+        }
         // Fallback: cargar datos completos
         this.cargarDatos();
       }
@@ -272,7 +266,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }, 200);
       },
       error: (error: any) => {
-        this.error = 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.';
+        this.error = esErrorDeAcceso(error)
+          ? mensajeErrorDeAcceso(error)
+          : 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.';
         this.loading = false;
       }
     });
@@ -460,22 +456,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.cambiarTab(pestana);
     // Scroll suave al inicio
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  verificarConexionBackend(): void {
-    // Hacer una llamada directa para verificar la conexión
-    fetch(`${environment.apiUrl}/estadisticas/cursos-verano`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-      })
-      .then(data => {
-      })
-      .catch(error => {
-      });
   }
 
   /**
@@ -1290,8 +1270,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        
-        this.snackBar.open('Error al exportar el reporte PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackBar.open(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : 'Error al exportar el reporte PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -1333,8 +1312,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        
-        this.snackBar.open('Error al exportar el reporte Excel', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackBar.open(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : 'Error al exportar el reporte Excel', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }

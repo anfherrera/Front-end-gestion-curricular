@@ -16,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService, CursoOfertadoVerano, Inscripcion, EstudianteElegible, AceptarInscripcionResponse, RechazarInscripcionResponse, DebugInscripcionResponse } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, CursoOfertadoVerano, Inscripcion, EstudianteElegible, AceptarInscripcionResponse, RechazarInscripcionResponse } from '../../../../core/services/cursos-intersemestrales.service';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 import { LoggerService } from '../../../../core/services/logger.service';

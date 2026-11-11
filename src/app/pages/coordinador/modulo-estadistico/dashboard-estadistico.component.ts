@@ -14,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Chart, registerables } from 'chart.js';
 import type { ChartConfiguration, ChartData } from 'chart.js';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
@@ -22,7 +22,9 @@ import * as XLSX from 'xlsx';
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
 import { ApiEndpoints } from '../../../core/utils/api-endpoints';
-import { environment } from '../../../../environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, firstValueFrom, forkJoin, of } from 'rxjs';
+import { esErrorDeAcceso, mensajeErrorDeAcceso } from '../../../core/utils/http-error.utils';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { EstudiantesPorProgramaComponent } from '../../../shared/components/estudiantes-por-programa/estudiantes-por-programa.component';
 import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
@@ -74,7 +76,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // Estados del componente
   loading = false;
   error = false;
-  
+  errorMensaje: string | null = null;
+
   // Datos del dashboard
   resumenCompleto: ResumenCompleto | null = null;
   estadisticasProceso: EstadisticasProceso | null = null;
@@ -101,6 +104,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   
   // Flag para evitar recargas múltiples
   private chartsCreados = false;
+
+  // Catálogo nombre de programa -> id_programa real
+  private idsProgramaPorNombre = new Map<string, number>();
 
   constructor(
     private estadisticasService: EstadisticasService,
@@ -148,7 +154,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   cargarDatos(filtros: FiltroEstadisticas = {}): void {
     this.loading = true;
     this.error = false;
-    
+    this.errorMensaje = null;
+
     // Siempre usar getResumenCompleto (soporta filtros y sin filtros)
     // El backend maneja automáticamente:
     // - Sin filtros: muestra todos los períodos
@@ -173,7 +180,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       filtrosResumen.proceso = filtros.proceso.trim();
     }
     
-    this.estadisticasService.getResumenCompleto(filtrosResumen).pipe(
+    // Primero el catálogo de programas (en caché tras la primera vez) para resolver ids reales
+    this.estadisticasService.getIdsProgramaPorNombre().pipe(
+      switchMap(ids => {
+        this.idsProgramaPorNombre = ids;
+        return this.estadisticasService.getResumenCompleto(filtrosResumen);
+      }),
       takeUntil(this.destroy$)
     ).subscribe({
       next: (resumenAPI) => {
@@ -202,6 +214,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
+        // 401/403: los endpoints alternativos fallarían igual; informar en vez de mostrar ceros
+        if (esErrorDeAcceso(error)) {
+          this.manejarErrorDeAcceso(error);
+          return;
+        }
         this.cargarDatosConEndpointsAlternativos(filtros);
       }
     });
@@ -210,6 +227,13 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     this.cargarTotalEstudiantes();
   }
   
+  /**
+   * Id real del programa según el catálogo del backend (null si no aparece).
+   */
+  private resolverIdPrograma(nombrePrograma: string): number | null {
+    return this.idsProgramaPorNombre.get(EstadisticasService.normalizarNombrePrograma(nombrePrograma)) ?? null;
+  }
+
   /**
    * Convierte ResumenCompletoAPI a ResumenCompleto para compatibilidad
    */
@@ -231,8 +255,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     });
     
     // Convertir porPrograma desde estadisticasGlobales.porPrograma
-    const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(resumenAPI.estadisticasGlobales?.porPrograma || {}).map((nombrePrograma, index) => ({
-      idPrograma: index + 1,
+    const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(resumenAPI.estadisticasGlobales?.porPrograma || {}).map(nombrePrograma => ({
+      idPrograma: this.resolverIdPrograma(nombrePrograma),
       nombrePrograma,
       totalSolicitudes: resumenAPI.estadisticasGlobales.porPrograma[nombrePrograma] || 0,
       distribucionPorProceso: [],
@@ -276,102 +300,76 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       filtrosResumen.proceso = filtros.proceso.trim();
     }
     
-    // Combinar datos de múltiples endpoints que funcionan, pasando los filtros
-    const estadoSolicitudes$ = this.estadisticasService.getEstadoSolicitudes(filtrosResumen);
-    const estadisticasPorProceso$ = this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosResumen);
-    const estudiantesPorPrograma$ = this.estadisticasService.getEstudiantesPorPrograma(filtrosResumen);
-    const porPeriodo$ = this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosResumen);
-    
-    // Combinar todas las respuestas
-    let estadoSolicitudes: any = null;
-    let estadisticasPorProceso: any = null;
-    let estudiantesPorPrograma: any = null;
-    let porPeriodo: any = null;
-    let errores: string[] = [];
-    let completados = 0;
-    const total = 4;
-    
-    const checkComplete = () => {
-      completados++;
-      if (completados === total) {
-        // Construir resumenCompleto con los datos obtenidos
-        try {
-          this.construirResumenDesdeEndpointsAlternativos(
-            estadoSolicitudes,
-            estadisticasPorProceso,
-            estudiantesPorPrograma,
-            porPeriodo
-          );
-          
-          this.generarKPIs();
-          
-          // Solo crear gráficos si no se han creado antes
-          const primeraCarga = !this.chartsCreados;
-          if (primeraCarga) {
-            this.crearCharts();
-            this.chartsCreados = true;
-          } else {
-            // Si los gráficos ya existen, solo actualizarlos
-            this.actualizarCharts();
-          }
-          
-          this.loading = false;
-          this.error = false;
-          
-          if (errores.length > 0) {
-            this.mostrarError(`Datos cargados parcialmente. Algunos endpoints fallaron: ${errores.join(', ')}`);
-          } else if (primeraCarga) {
-            this.mostrarExito('Datos cargados usando endpoints alternativos');
-          }
-        } catch (error) {
-          this.loading = false;
-          this.error = true;
-          this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
+    // Cada endpoint se protege con catchError para que un fallo individual
+    // no cancele el forkJoin; los errores se registran para decidir después.
+    const errores: { endpoint: string; error: unknown }[] = [];
+    const tolerante = <T>(peticion$: Observable<T>, endpoint: string): Observable<T | null> =>
+      peticion$.pipe(
+        catchError(error => {
+          errores.push({ endpoint, error });
+          return of(null);
+        })
+      );
+
+    forkJoin({
+      ids: this.estadisticasService.getIdsProgramaPorNombre(),
+      estadoSolicitudes: tolerante(this.estadisticasService.getEstadoSolicitudes(filtrosResumen), 'estado-solicitudes'),
+      estadisticasPorProceso: tolerante(this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosResumen), 'estadisticas-por-proceso'),
+      estudiantesPorPrograma: tolerante(this.estadisticasService.getEstudiantesPorPrograma(filtrosResumen), 'estudiantes-por-programa'),
+      porPeriodo: tolerante(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosResumen), 'por-periodo')
+    }).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(({ ids, estadoSolicitudes, estadisticasPorProceso, estudiantesPorPrograma, porPeriodo }) => {
+      // 401/403: informar en vez de construir un dashboard en ceros
+      const errorDeAcceso = errores.map(e => e.error).find(esErrorDeAcceso);
+      if (errorDeAcceso) {
+        this.manejarErrorDeAcceso(errorDeAcceso);
+        return;
+      }
+
+      // Todos los endpoints fallaron: no hay datos que mostrar
+      if (errores.length === 4) {
+        this.loading = false;
+        this.error = true;
+        this.mostrarError('No se pudieron cargar las estadísticas. Por favor, inténtalo de nuevo.');
+        return;
+      }
+
+      this.idsProgramaPorNombre = ids;
+
+      // Construir resumenCompleto con los datos obtenidos
+      try {
+        this.construirResumenDesdeEndpointsAlternativos(
+          estadoSolicitudes,
+          estadisticasPorProceso,
+          estudiantesPorPrograma,
+          porPeriodo
+        );
+
+        this.generarKPIs();
+
+        // Solo crear gráficos si no se han creado antes
+        const primeraCarga = !this.chartsCreados;
+        if (primeraCarga) {
+          this.crearCharts();
+          this.chartsCreados = true;
+        } else {
+          // Si los gráficos ya existen, solo actualizarlos
+          this.actualizarCharts();
         }
-      }
-    };
-    
-    estadoSolicitudes$.subscribe({
-      next: (data) => {
-        estadoSolicitudes = data;
-        checkComplete();
-      },
-      error: (error) => {
-        errores.push('estado-solicitudes');
-        checkComplete();
-      }
-    });
-    
-    estadisticasPorProceso$.subscribe({
-      next: (data) => {
-        estadisticasPorProceso = data;
-        checkComplete();
-      },
-      error: (error) => {
-        errores.push('estadisticas-por-proceso');
-        checkComplete();
-      }
-    });
-    
-    estudiantesPorPrograma$.subscribe({
-      next: (data) => {
-        estudiantesPorPrograma = data;
-        checkComplete();
-      },
-      error: (error) => {
-        errores.push('estudiantes-por-programa');
-        checkComplete();
-      }
-    });
-    
-    porPeriodo$.subscribe({
-      next: (data) => {
-        porPeriodo = data;
-        checkComplete();
-      },
-      error: (error) => {
-        errores.push('por-periodo');
-        checkComplete();
+
+        this.loading = false;
+        this.error = false;
+
+        if (errores.length > 0) {
+          this.mostrarError(`Datos cargados parcialmente. Algunos endpoints fallaron: ${errores.map(e => e.endpoint).join(', ')}`);
+        } else if (primeraCarga) {
+          this.mostrarExito('Datos cargados usando endpoints alternativos');
+        }
+      } catch (error) {
+        this.loading = false;
+        this.error = true;
+        this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
       }
     });
   }
@@ -440,8 +438,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     
     // Construir estadísticas por programa desde estudiantesPorPrograma
     const programasData = estudiantesPorPrograma?.estudiantesPorPrograma || {};
-    const estadisticasPorProgramaArray: EstadisticasPrograma[] = Object.keys(programasData).map((nombrePrograma, index) => ({
-      idPrograma: index + 1,
+    const estadisticasPorProgramaArray: EstadisticasPrograma[] = Object.keys(programasData).map(nombrePrograma => ({
+      idPrograma: this.resolverIdPrograma(nombrePrograma),
       nombrePrograma,
       totalSolicitudes: 0, // No disponible desde este endpoint
       distribucionPorProceso: [],
@@ -486,131 +484,26 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingEstudiantes = false;
-        
+
         // Usar valor por defecto en caso de error
         this.totalEstudiantes = 0;
-        this.mostrarError('Error al cargar el total de estudiantes');
-      }
-    });
-  }
-
-  /**
-   * Carga los datos de estado de solicitudes para actualizar los KPIs correctos
-   */
-  private cargarDatosEstadoSolicitudes(): void {
-    this.estadisticasService.getEstadoSolicitudesMejorado().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (response) => {
-        this.actualizarKPIsConEstadoSolicitudes(response);
-      },
-      error: (error) => {
-        
-        // Usar valores reales si el endpoint falla
-        const datosFallback = {
-          totalSolicitudes: 50,
-          estados: {
-            APROBADA: { cantidad: 32, porcentaje: 64.0 },
-            ENVIADA: { cantidad: 9, porcentaje: 18.0 },
-            APROBADA_FUNCIONARIO: { cantidad: 15, porcentaje: 30.0 },
-            RECHAZADA: { cantidad: 5, porcentaje: 10.0 }
-          }
-        };
-        
-        this.actualizarKPIsConEstadoSolicitudes(datosFallback);
-      }
-    });
-  }
-
-  /**
-   * Actualiza los KPIs con los datos correctos del endpoint de estado de solicitudes
-   */
-  private actualizarKPIsConEstadoSolicitudes(data: any): void {
-    if (!data || !data.estados) {
-      return;
-    }
-    // Verificar cada estado individualmente
-    const estados = data.estados;
-    // VERIFICACIÓN DETALLADA DEL ESTADO "ENVIADA"
-    // CALCULAR totalSolicitudes sumando todos los estados
-    // El backend envía: APROBADA, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA
-    const aprobadas = (estados.APROBADA?.cantidad || 0) + (estados.APROBADA_FUNCIONARIO?.cantidad || 0);
-    const enviadas = estados.ENVIADA?.cantidad || 0;
-    const enProceso = estados.APROBADA_FUNCIONARIO?.cantidad || 0; // Las aprobadas por funcionario están "en proceso"
-    const rechazadas = estados.RECHAZADA?.cantidad || 0;
-    
-    const totalCalculado = aprobadas + enviadas + enProceso + rechazadas;
-
-    const kpis = {
-      totalSolicitudes: totalCalculado,
-      aprobadas: aprobadas,
-      enviadas: enviadas,
-      enProceso: enProceso,
-      rechazadas: rechazadas
-    };
-    // Actualizar cada KPI
-    this.actualizarKPI('Total Solicitudes', kpis.totalSolicitudes);
-    this.actualizarKPI('Aprobadas', kpis.aprobadas);
-    this.actualizarKPI('Enviadas', kpis.enviadas);
-    this.actualizarKPI('En Proceso', kpis.enProceso);
-    this.actualizarKPI('Rechazadas', kpis.rechazadas);
-    this.kpis.forEach(kpi => {
-    });
-  }
-
-  /**
-   * Actualiza un KPI específico por título
-   */
-  private actualizarKPI(titulo: string, valor: number): void {
-    const kpi = this.kpis.find(k => k.titulo === titulo);
-    if (kpi) {
-      kpi.valor = valor;
-    } else {
-    }
-  }
-
-  /**
-   * Método temporal para verificar la conexión del endpoint
-   */
-  verificarEndpoint(): void {
-    // Hacer una llamada directa para verificar
-    fetch(`${environment.apiUrl}/estadisticas/estado-solicitudes`)
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        // Verificar estructura de datos
-        if (data.estados) {
-          
-          // Verificar cada estado
-          Object.entries(data.estados).forEach(([nombre, info]: [string, any]) => {
-          });
-
-          // FORZAR ACTUALIZACIÓN DE KPIs CON DATOS CORRECTOS
-          this.actualizarKPIsConEstadoSolicitudes(data);
-        } else {
+        // Si es 401/403, el mensaje ya lo muestra cargarDatos()
+        if (!esErrorDeAcceso(error)) {
+          this.mostrarError('Error al cargar el total de estudiantes');
         }
-      })
-      .catch(error => {
-           });
-   }
+      }
+    });
+  }
 
-   /**
-    * Método temporal para forzar la actualización de KPIs
-    */
-   forzarActualizacionKPIs(): void {
-     // Simular datos del backend con la estructura correcta
-     const datosSimulados = {
-       totalSolicitudes: 46,
-       estados: {
-         Aprobada: { cantidad: 21, porcentaje: 45.65, color: "#249337", icono: "check_circle" },
-         Enviada: { cantidad: 9, porcentaje: 19.57, color: "#1D72D3", icono: "send" },
-         "En Proceso": { cantidad: 11, porcentaje: 23.91, color: "#1D72D3", icono: "schedule" },
-         Rechazada: { cantidad: 5, porcentaje: 10.87, color: "#FF6D0A", icono: "cancel" }
-       }
-     };
-     this.actualizarKPIsConEstadoSolicitudes(datosSimulados);
-   }
+  /**
+   * Error 401/403: no mostrar el dashboard en ceros, sino un mensaje claro.
+   */
+  private manejarErrorDeAcceso(error: HttpErrorResponse): void {
+    this.loading = false;
+    this.error = true;
+    this.errorMensaje = mensajeErrorDeAcceso(error);
+    this.mostrarError(this.errorMensaje);
+  }
 
   /**
    * Actualiza el KPI de estudiantes con el valor real del endpoint
@@ -824,27 +717,22 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
    */
   private async cargarDatosRealesTendencia(): Promise<any> {
     try {
-      // Preparar filtros
-      const params = new URLSearchParams();
-      
+      // Preparar filtros (HttpClient: pasa por el interceptor y envía el JWT)
+      const filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {};
+
       if (this.filtros.periodoAcademico && this.filtros.periodoAcademico.trim() !== '' && this.filtros.periodoAcademico !== 'todos') {
-        params.append('periodoAcademico', this.filtros.periodoAcademico.trim());
+        filtros.periodoAcademico = this.filtros.periodoAcademico.trim();
       }
-      
+
       if (this.filtros.idPrograma !== undefined && this.filtros.idPrograma !== null && this.filtros.idPrograma > 0) {
-        params.append('idPrograma', this.filtros.idPrograma.toString());
+        filtros.idPrograma = this.filtros.idPrograma;
       }
-      
+
       if (this.filtros.proceso && this.filtros.proceso.trim() !== '' && this.filtros.proceso !== 'Todos los procesos') {
-        params.append('proceso', this.filtros.proceso.trim());
+        filtros.proceso = this.filtros.proceso.trim();
       }
-      
-      const queryString = params.toString();
-      const url = `${environment.apiUrl}/estadisticas/por-periodo${queryString ? `?${queryString}` : ''}`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      return data;
+
+      return await firstValueFrom(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtros));
     } catch (error) {
       return null;
     }
@@ -1852,7 +1740,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.loading = false;
-          this.mostrarError('Error al exportar el reporte PDF');
+          this.mostrarError(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : 'Error al exportar el reporte PDF');
         }
       });
     } catch (error) {
@@ -1916,7 +1804,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         },
         error: (error: any) => {
           this.loading = false;
-          this.mostrarError('Error al exportar el reporte Excel');
+          this.mostrarError(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : 'Error al exportar el reporte Excel');
         }
       });
     } catch (error) {

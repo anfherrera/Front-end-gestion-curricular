@@ -100,7 +100,7 @@
   <div *ngIf="error && !loading" class="error-container">
     <mat-icon class="error-icon">error</mat-icon>
     <h3>Error al cargar las estadísticas</h3>
-    <p>No se pudieron cargar los datos del dashboard. Por favor, inténtalo de nuevo.</p>
+    <p>{{ errorMensaje || 'No se pudieron cargar los datos del dashboard. Por favor, inténtalo de nuevo.' }}</p>
     <button mat-raised-button color="primary" (click)="cargarDatos()">
       <mat-icon>refresh</mat-icon>
       Reintentar

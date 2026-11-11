@@ -663,19 +663,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush(condiciones);
     });
 
-    it('debe obtener todas las solicitudes', (done) => {
-      const solicitudes = [{ id_solicitud: 1 } as SolicitudCursoVerano];
-
-      service.getTodasLasSolicitudes().subscribe((result) => {
-        expect(result).toEqual(solicitudes);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/solicitudes-curso-nuevo`);
-      expect(req.request.method).toBe('GET');
-      req.flush(solicitudes);
-    });
-
     it('debe obtener solicitudes para visualizar', (done) => {
       const solicitudes = [{ id: 1 }];
 

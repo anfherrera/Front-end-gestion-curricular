@@ -1,4 +1,4 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../services/logger.service';
@@ -43,45 +43,42 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
       // Dejar que el error interceptor lo maneje cuando el backend responda
     }
 
-    // Detectar si la petición es multipart/form-data (subida de archivos)
-    const isFormData = req.body instanceof FormData;
-
     // Agregar token JWT en el header Authorization
     // Formato: Authorization: Bearer <token>
-    const headers: any = {
-      Authorization: `Bearer ${token}`
-    };
-
-    // Solo agregar Content-Type si NO es FormData
-    // (el navegador lo establece automáticamente para FormData)
-    if (!isFormData) {
-      headers['Content-Type'] = 'application/json; charset=utf-8';
-      headers['Accept'] = 'application/json';
-      headers['Accept-Charset'] = 'utf-8';
-    }
-
-    const clonedReq = req.clone({
-      setHeaders: headers
-    });
-
-    return next(clonedReq);
+    // Se aplica a TODAS las peticiones (JSON, blob/descargas PDF-Excel, texto, FormData)
+    return next(req.clone({
+      setHeaders: { Authorization: `Bearer ${token}`, ...defaultContentHeaders(req) }
+    }));
   }
 
   // Peticiones sin token (pero que no son login)
   // El backend responderá con 401 si requiere autenticación
-  const isFormData = req.body instanceof FormData;
-  
-  // Solo agregar Content-Type si NO es FormData
-  if (!isFormData) {
-    const clonedReq = req.clone({
-      setHeaders: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Accept': 'application/json',
-        'Accept-Charset': 'utf-8'
-      }
-    });
-    return next(clonedReq);
+  return next(req.clone({ setHeaders: defaultContentHeaders(req) }));
+};
+
+/**
+ * Headers JSON por defecto, sin pisar los que la petición ya trae.
+ * - FormData: el navegador fija el Content-Type (con boundary).
+ * - Descargas (responseType blob/text/arraybuffer): se respeta el Accept del servicio
+ *   (p. ej. application/pdf), en lugar de forzar application/json.
+ */
+function defaultContentHeaders(req: HttpRequest<unknown>): Record<string, string> {
+  if (req.body instanceof FormData) {
+    return {};
   }
 
-  return next(req);
-};
+  const headers: Record<string, string> = {};
+
+  if (!req.headers.has('Content-Type')) {
+    headers['Content-Type'] = 'application/json; charset=utf-8';
+  }
+
+  if (req.responseType === 'json') {
+    if (!req.headers.has('Accept')) {
+      headers['Accept'] = 'application/json';
+    }
+    headers['Accept-Charset'] = 'utf-8';
+  }
+
+  return headers;
+}

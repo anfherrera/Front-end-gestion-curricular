@@ -14,6 +14,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { HistorialSolicitudesService } from '../../../core/services/historial-solicitudes.service';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { ArchivosService } from '../../../core/services/archivos.service';
+import { mensajeDeError } from '../../../core/utils/http-error.utils';
 
 interface HistorialEstado {
   id_estado: number;
@@ -86,6 +88,7 @@ export class DetalleSolicitudComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private historialService: HistorialSolicitudesService,
+    private archivosService: ArchivosService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -154,8 +157,22 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   descargarDocumento(documento: Documento): void {
-    // Implementar descarga de documento
-    window.open(documento.ruta_documento, '_blank');
+    // HttpClient (blob) en lugar de window.open: así pasa por el interceptor y envía el JWT
+    this.archivosService.descargarPDF(documento.nombre_documento).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = documento.nombre_documento;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error) => {
+        this.snackBar.open(mensajeDeError(error, 'Error al descargar el documento'), 'Cerrar', snackbarConfig(['error-snackbar']));
+      }
+    });
   }
 
   volver(): void {

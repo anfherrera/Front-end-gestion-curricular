@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, CanActivateChild, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RoleGuard implements CanActivate {
+export class RoleGuard implements CanActivate, CanActivateChild {
 
   constructor(private authService: AuthService, private router: Router) {}
 
+  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    return this.canActivate(childRoute, state);
+  }
+
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const expectedRole = route.data['role']; // rol esperado desde la ruta
+    const expectedRole = this.findExpectedRole(route); // rol esperado desde la ruta (o un ancestro)
     const userRole = this.authService.getRole();
 
     if (!userRole) {
@@ -30,6 +34,16 @@ export class RoleGuard implements CanActivate {
     }
 
     return true;
+  }
+
+  private findExpectedRole(route: ActivatedRouteSnapshot): string | undefined {
+    let current: ActivatedRouteSnapshot | null = route;
+    while (current) {
+      const role = current.data?.['role'];
+      if (role) return role;
+      current = current.parent;
+    }
+    return undefined;
   }
 
   private normalizeRole(role: string | undefined | null): string {

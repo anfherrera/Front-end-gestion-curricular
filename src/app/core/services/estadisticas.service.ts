@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, delay, map, catchError } from 'rxjs';
+import { Observable, of, delay, map, catchError, shareReplay } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
-import { 
+import { ProgramasService } from './programas.service';
+import { esErrorDeAcceso } from '../utils/http-error.utils';
+import {
   EstadisticasGlobales, 
   EstadisticasProceso, 
   EstadisticasPrograma, 
@@ -28,7 +30,44 @@ import {
 })
 export class EstadisticasService {
 
-  constructor(private http: HttpClient) { }
+  /** Caché del catálogo nombre de programa → id_programa real (BD). */
+  private idsProgramaPorNombre$?: Observable<Map<string, number>>;
+
+  constructor(private http: HttpClient, private programasService: ProgramasService) { }
+
+  /**
+   * Normaliza un nombre de programa para compararlo (minúsculas, sin tildes ni espacios extra).
+   */
+  static normalizarNombrePrograma(nombre: string): string {
+    return (nombre || '')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Mapa nombre de programa (normalizado) → id_programa real, desde /api/programas/listarProgramas.
+   * Los endpoints de estadísticas devuelven `porPrograma` como { nombre: cantidad } sin el id,
+   * así que el id real se resuelve con este catálogo.
+   * Si falla, devuelve un mapa vacío (y no lo deja en caché para reintentar después).
+   */
+  getIdsProgramaPorNombre(): Observable<Map<string, number>> {
+    if (!this.idsProgramaPorNombre$) {
+      this.idsProgramaPorNombre$ = this.programasService.listarProgramas().pipe(
+        map(programas => new Map(
+          (programas || []).map(p => [EstadisticasService.normalizarNombrePrograma(p.nombre_programa), p.id_programa] as [string, number])
+        )),
+        catchError(() => {
+          this.idsProgramaPorNombre$ = undefined;
+          return of(new Map<string, number>());
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.idsProgramaPorNombre$;
+  }
 
   /**
    * Obtiene estadísticas globales del API real con filtros opcionales
@@ -135,7 +174,12 @@ export class EstadisticasService {
         if (error.message === 'USAR_ENDPOINTS_ALTERNATIVOS') {
           throw error;
         }
-        
+
+        // 401/403: propagar tal cual para que el componente informe al usuario
+        if (esErrorDeAcceso(error)) {
+          throw error;
+        }
+
         throw new Error('USAR_ENDPOINTS_ALTERNATIVOS');
       })
     );
@@ -1084,148 +1128,6 @@ export class EstadisticasService {
         'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       }
     });
-  }
-
-  /**
-   * Exporta reporte de texto usando fetch (método recomendado)
-   * @param filtros Filtros a aplicar en la exportación
-   */
-  async exportarPDFConFetch(filtros: FiltroEstadisticas = {}): Promise<void> {
-    const params = new URLSearchParams();
-    
-    if (filtros.proceso) {
-      params.append('proceso', filtros.proceso);
-    }
-    
-    if (filtros.idPrograma) {
-      params.append('idPrograma', filtros.idPrograma.toString());
-    }
-    
-    if (filtros.periodoAcademico) {
-      params.append('periodoAcademico', filtros.periodoAcademico);
-    }
-    
-    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
-
-    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
-    
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = 'estadisticas.txt'; // Cambiado a .txt
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
-      
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
-   * Exporta reporte de texto usando window.open() (método alternativo)
-   * @param filtros Filtros a aplicar en la exportación
-   */
-  exportarPDFDirecto(filtros: FiltroEstadisticas = {}): void {
-    const params = new URLSearchParams();
-    
-    if (filtros.proceso) {
-      params.append('proceso', filtros.proceso);
-    }
-    
-    if (filtros.idPrograma) {
-      params.append('idPrograma', filtros.idPrograma.toString());
-    }
-    
-    if (filtros.periodoAcademico) {
-      params.append('periodoAcademico', filtros.periodoAcademico);
-    }
-    
-    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
-
-    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF}?${params.toString()}`;
-    
-    // Abrir en nueva ventana para descarga directa
-    window.open(url, '_blank');
-  }
-
-  /**
-   * Exporta Excel usando fetch (método recomendado)
-   * @param filtros Filtros a aplicar en la exportación
-   */
-  async exportarExcelConFetch(filtros: FiltroEstadisticas = {}): Promise<void> {
-    const params = new URLSearchParams();
-    
-    if (filtros.proceso) {
-      params.append('proceso', filtros.proceso);
-    }
-    
-    if (filtros.idPrograma) {
-      params.append('idPrograma', filtros.idPrograma.toString());
-    }
-    
-    if (filtros.periodoAcademico) {
-      params.append('periodoAcademico', filtros.periodoAcademico);
-    }
-    
-    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
-
-    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
-    
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = 'estadisticas.xlsx';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
-      
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
-   * Exporta Excel usando window.open() (método alternativo)
-   * @param filtros Filtros a aplicar en la exportación
-   */
-  exportarExcelDirecto(filtros: FiltroEstadisticas = {}): void {
-    const params = new URLSearchParams();
-    
-    if (filtros.proceso) {
-      params.append('proceso', filtros.proceso);
-    }
-    
-    if (filtros.idPrograma) {
-      params.append('idPrograma', filtros.idPrograma.toString());
-    }
-    
-    if (filtros.periodoAcademico) {
-      params.append('periodoAcademico', filtros.periodoAcademico);
-    }
-    
-    // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
-
-    const url = `${ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL}?${params.toString()}`;
-    
-    // Abrir en nueva ventana para descarga directa
-    window.open(url, '_blank');
   }
 
   /**

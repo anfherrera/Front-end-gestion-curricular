@@ -23,7 +23,7 @@ export interface EstadisticasProceso {
 }
 
 export interface EstadisticasPrograma {
-  idPrograma: number;
+  idPrograma: number | null; // id real (catálogo de programas); null si no se pudo resolver
   nombrePrograma: string;
   totalSolicitudes: number;
   distribucionPorProceso: DistribucionProceso[];

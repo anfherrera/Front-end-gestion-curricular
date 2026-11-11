@@ -1,6 +1,10 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { snackbarConfig } from '../design-system/design-tokens';
+import { MENSAJE_SIN_PERMISOS } from '../utils/http-error.utils';
 import { AuthService } from '../services/auth.service';
 import { ActivityMonitorService } from '../services/activity-monitor.service';
 import { LoggerService } from '../services/logger.service';
@@ -18,6 +22,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const activityMonitor = inject(ActivityMonitorService);
   const logger = inject(LoggerService);
+  const snackBar = inject(MatSnackBar);
+  const platformId = inject(PLATFORM_ID);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -82,6 +88,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           const isPeriodosEndpoint = error.url?.includes('/periodos-academicos/');
           if (!isPeriodosEndpoint) {
             logger.warn(' Error 403: Acceso denegado - Usuario sin permisos');
+
+            // Mostrar "No tiene permisos" en lugar de un error genérico.
+            // setTimeout(0): se abre DESPUÉS del manejador de error del componente,
+            // de modo que reemplaza cualquier snackbar genérico que este haya mostrado.
+            if (isPlatformBrowser(platformId)) {
+              setTimeout(() => {
+                snackBar.open(MENSAJE_SIN_PERMISOS, 'Cerrar', snackbarConfig(['error-snackbar']));
+              }, 0);
+            }
           }
           // No hacer logout, solo dejar que el error se propague
           // El componente puede mostrar un mensaje de error apropiado

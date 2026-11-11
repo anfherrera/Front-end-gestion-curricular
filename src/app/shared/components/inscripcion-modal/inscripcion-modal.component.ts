@@ -9,6 +9,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../material.imports';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { mensajeDeError } from '../../../core/utils/http-error.utils';
 
 export interface InscripcionModalData {
   preinscripcion: PreinscripcionSeguimiento;
@@ -181,85 +182,27 @@ export class InscripcionModalComponent implements OnInit {
           p.objCurso?.id_curso === this.data.preinscripcion.cursoId
         ) || [];
         
-        if (preinscripciones && preinscripciones.length > 0) {
-          // Buscar una preinscripción aprobada
-          const preinscripcionAprobada = preinscripciones.find((p: any) => p.estado === 'Aprobado');
-          
-          if (preinscripcionAprobada) {
-            this.crearInscripcionDirecta();
-          } else {
-            this.procesarPreinscripcionesExistentes(preinscripciones);
-          }
+        // Solo se puede inscribir con una preinscripción ya APROBADA por un funcionario/coordinador.
+        // (El estudiante no puede aprobar preinscripciones: el backend exige Funcionario/Coordinador/Administrador.)
+        const preinscripcionAprobada = preinscripciones.find((p: any) => p.estado === 'Aprobado');
+
+        if (preinscripcionAprobada) {
+          this.crearInscripcionDirecta();
         } else {
-          this.crearNuevaPreinscripcion();
+          this.cargando = false;
+          this.snackBar.open(
+            preinscripciones.length > 0
+              ? 'Tu preinscripción aún no ha sido aprobada. Podrás inscribirte cuando un funcionario la apruebe.'
+              : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".',
+            'Cerrar',
+            snackbarConfig(['warning-snackbar'])
+          );
         }
       },
       error: (error) => {
-        // Continuando con flujo alternativo
-        this.crearNuevaPreinscripcion();
-      }
-    });
-  }
-
-  private procesarPreinscripcionesExistentes(preinscripciones: any[]): void {
-    // Buscar la preinscripción más reciente
-    const preinscripcionMasReciente = preinscripciones.reduce((latest, current) => {
-      const latestDate = new Date(latest.fecha || latest.createdAt || 0);
-      const currentDate = new Date(current.fecha || current.createdAt || 0);
-      return currentDate > latestDate ? current : latest;
-    });
-    
-    // Intentar aprobar la preinscripción más reciente
-    if (preinscripcionMasReciente.id_solicitud || preinscripcionMasReciente.id) {
-      const idParaAprobar = preinscripcionMasReciente.id_solicitud || preinscripcionMasReciente.id;
-      // Intentando aprobar preinscripción
-      this.aprobarPreinscripcion(idParaAprobar);
-    } else {
-      // No se pudo obtener ID para aprobar, creando nueva preinscripción
-      this.crearNuevaPreinscripcion();
-    }
-  }
-
-  private crearNuevaPreinscripcion(): void {
-    // Obtener nombre completo del usuario
-    const nombreCompleto = this.usuario?.nombre_completo || 
-                          this.usuario?.nombre || 
-                          'Usuario';
-    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-    
-    const preinscripcionPayload = {
-      idUsuario: this.usuario.id_usuario,
-      idCurso: this.data.preinscripcion.cursoId,
-      nombreSolicitud: `Solicitud Preinscripción - ${nombreFinal}`,
-      condicion: 'Primera_Vez' // Valor por defecto
-    };
-
-    this.cursosService.crearPreinscripcion(preinscripcionPayload).subscribe({
-      next: (preinscripcion) => {
-        // Ahora aprobar la preinscripción
-        this.aprobarPreinscripcion(preinscripcion.id_solicitud);
-      },
-      error: (error) => {
         this.cargando = false;
         this.snackBar.open(
-          'Error al crear la preinscripción. Por favor, inténtalo de nuevo.',
-          'Cerrar',
-          snackbarConfig(['error-snackbar'])
-        );
-      }
-    });
-  }
-
-  private aprobarPreinscripcion(preinscripcionId: number): void {
-    this.cursosService.aprobarPreinscripcion(preinscripcionId).subscribe({
-      next: (response) => {
-        // Ahora crear la inscripción
-        this.crearInscripcionDirecta();
-      },
-      error: (error) => {
-        this.cargando = false;
-        this.snackBar.open(
-          'Error al aprobar la preinscripción. Por favor, inténtalo de nuevo.',
+          mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.'),
           'Cerrar',
           snackbarConfig(['error-snackbar'])
         );

@@ -370,18 +370,6 @@ export interface RechazarInscripcionResponse {
   message: string;
 }
 
-export interface DebugInscripcionResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    preinscripcion_existe: boolean;
-    base_datos_conectada: boolean;
-    tipo_entidad?: string;
-    errores?: string[];
-    detalles?: any;
-  };
-}
-
 // Interfaz para las estadísticas del dashboard
 export interface DashboardEstadisticas {
   totalPreinscripciones: number;
@@ -914,11 +902,6 @@ export class CursosIntersemestralesService {
   // Crear solicitud de curso nuevo
   crearSolicitudCursoNuevo(payload: CreateSolicitudCursoNuevoDTO): Observable<SolicitudCursoNuevo> {
     return this.http.post<SolicitudCursoNuevo>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.SOLICITUDES_CURSO_NUEVO, payload);
-  }
-
-  // Obtener todas las solicitudes (para funcionarios)
-  getTodasLasSolicitudes(): Observable<SolicitudCursoVerano[]> {
-    return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/solicitudes-curso-nuevo`);
   }
 
   // Nuevo método para el endpoint actualizado de visualizar solicitudes
@@ -1546,11 +1529,6 @@ export class CursosIntersemestralesService {
   obtenerEstadisticasCurso(idCurso: number): Observable<any> {
     const endpoint = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/curso/${idCurso}/estadisticas`;
     return this.http.get<any>(endpoint);
-  }
-
-  debugInscripcion(idPreinscripcion: number): Observable<DebugInscripcionResponse> {
-    const endpoint = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DEBUG_INSCRIPCION(idPreinscripcion);
-    return this.http.get<DebugInscripcionResponse>(endpoint);
   }
 
   verificarPreinscripcionesUsuario(idUsuario: number, idCurso: number): Observable<any> {
