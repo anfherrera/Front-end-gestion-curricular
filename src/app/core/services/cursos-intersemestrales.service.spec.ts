@@ -370,19 +370,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush(periodosRecientes);
     });
 
-    it('debe obtener el período académico actual', (done) => {
-      const periodoActual = '2025-1';
-
-      service.getPeriodoActual().subscribe((result) => {
-        expect(result).toBe(periodoActual);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/actual`);
-      expect(req.request.method).toBe('GET');
-      req.flush(periodoActual);
-    });
-
     it('debe obtener períodos registrados', (done) => {
       const periodosRegistrados = ['2024-1', '2024-2', '2025-1'];
 
@@ -394,22 +381,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const req = httpMock.expectOne(`${BASE_URL}/periodos-registrados`);
       expect(req.request.method).toBe('GET');
       req.flush(periodosRegistrados);
-    });
-  });
-
-  describe('Filtrado de cursos', () => {
-
-    it('debe obtener estadísticas por período', (done) => {
-      const estadisticas = { totalCursos: 10, totalEstudiantes: 150 };
-
-      service.getEstadisticasPorPeriodo('2025-1').subscribe((result) => {
-        expect(result).toEqual(estadisticas);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/estadisticas/periodo/2025-1`);
-      expect(req.request.method).toBe('GET');
-      req.flush(estadisticas);
     });
   });
 
@@ -466,31 +437,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_ELEGIBLES(10));
       expect(req.request.method).toBe('GET');
       req.flush(estudiantesElegibles);
-    });
-  });
-
-  describe('Notificaciones', () => {
-    it('debe obtener dashboard de notificaciones', (done) => {
-      const notificaciones = [{ id_notificacion: 1 }] as any;
-
-      service.getDashboardNotificaciones(1).subscribe((result) => {
-        expect(result).toEqual(notificaciones);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/dashboard/1`);
-      expect(req.request.method).toBe('GET');
-      req.flush(notificaciones);
-    });
-
-    it('debe marcar notificación como leída', (done) => {
-      service.marcarNotificacionLeida(5).subscribe(() => {
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/notificaciones/5/marcar-leida`);
-      expect(req.request.method).toBe('PUT');
-      req.flush({});
     });
   });
 

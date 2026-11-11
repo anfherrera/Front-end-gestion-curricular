@@ -6,7 +6,6 @@ import { CursoListComponent, Curso } from '../../../../shared/components/curso-l
 import { PeriodoSelectorComponent } from '../../../../shared/components/periodo-selector/periodo-selector.component';
 import { CursosIntersemestralesService, CursoOfertadoVerano, CreatePreinscripcionDTO } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { NotificacionesService } from '../../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
@@ -34,7 +33,6 @@ export class CursosOfertadosComponent implements OnInit {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private notificacionesService: NotificacionesService,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute
   ) {}

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
 import { COLORS } from '../design-system/design-tokens';
 
 export interface EstadoCurso {
@@ -117,8 +116,6 @@ export class CursoEstadosService {
     }
   };
 
-  constructor(private cursosService: CursosIntersemestralesService) {}
-
   /**
    * Obtiene todos los estados disponibles
    */
@@ -204,13 +201,6 @@ export class CursoEstadosService {
     }
     
     return `El rol ${rol} no puede realizar la operación "${operacion}" en el estado ${estado}`;
-  }
-
-  /**
-   * Valida si un curso puede ser eliminado
-   */
-  puedeEliminar(estado: string, rol: string): boolean {
-    return this.tienePermiso(estado, rol, 'eliminar');
   }
 
 }

@@ -498,23 +498,6 @@ export class CursosIntersemestralesService {
     );
   }
 
-  // Obtener período académico actual
-  getPeriodoActual(): Observable<string> {
-    const url = ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL;
-    
-    return this.http.get<any>(url).pipe(
-      map(response => {
-        if (!response) return '';
-        const data = response.success ? response.data : response;
-        const periodo = data?.valor || data || '';
-        return periodo;
-      }),
-      catchError(error => {
-        return of('');
-      })
-    );
-  }
-
   // Obtener períodos que tienen cursos registrados
   getPeriodosRegistrados(): Observable<string[]> {
     return this.http.get<string[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/periodos-registrados`);
@@ -584,11 +567,6 @@ export class CursosIntersemestralesService {
         return of([]);
       })
     );
-  }
-
-  // Obtener estadísticas por período
-  getEstadisticasPorPeriodo(periodo: string): Observable<any> {
-    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/estadisticas/periodo/${periodo}`);
   }
 
   /**
@@ -733,16 +711,6 @@ export class CursosIntersemestralesService {
   }
 
   // ====== NOTIFICACIONES ======
-  
-  // Obtener dashboard de notificaciones
-  getDashboardNotificaciones(idUsuario: number): Observable<Notificacion[]> {
-    return this.http.get<Notificacion[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/dashboard/${idUsuario}`);
-  }
-
-  // Marcar notificación como leída
-  marcarNotificacionLeida(idNotificacion: number): Observable<void> {
-    return this.http.put<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/${idNotificacion}/marcar-leida`, {});
-  }
 
   // ====== SOLICITUD DE CURSO NUEVO ======
   
@@ -1155,30 +1123,11 @@ export class CursosIntersemestralesService {
 
 
 
-  crearSolicitud(payload: CreateSolicitudDTO): Observable<Solicitud> {
-    return this.http.post<Solicitud>(ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE, payload);
-  }
-
-  aprobarSolicitud(id: number): Observable<Solicitud> {
-    return this.http.put<Solicitud>(ApiEndpoints.CURSOS_INTERSEMESTRALES.APROBAR(id.toString()), {});
-  }
-
-  rechazarSolicitud(id: number, motivo?: string): Observable<Solicitud> {
-    return this.http.put<Solicitud>(
-      ApiEndpoints.CURSOS_INTERSEMESTRALES.RECHAZAR(id.toString()),
-      { motivo }
-    );
-  }
-
   // ====== INSCRIPCIONES LEGACY ======
 
   // Seguimiento de actividades (preinscripciones + inscripciones)
   getSeguimientoActividades(idUsuario: number): Observable<SeguimientoActividades> {
     return this.http.get<SeguimientoActividades>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/seguimiento/${idUsuario}`);
-  }
-
-  confirmarInscripcion(id: number): Observable<Inscripcion> {
-    return this.http.put<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}/confirmar`, {});
   }
 
 

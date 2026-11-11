@@ -4,21 +4,17 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTabsModule } from '@angular/material/tabs';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
-import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { PazSalvoBandejaComponent } from './paz-salvo-bandeja.component';
+import { aDocumentos, aFilaHistorial, aFilaTabla, estadoActual } from './paz-salvo-filas';
 
 /** Roles que revisan paz y salvo con esta pantalla. Secretaría tiene su propio flujo (oficio). */
 export type RolRevisionPazSalvo = 'funcionario' | 'coordinador';
@@ -47,21 +43,17 @@ interface ConfigRevision {
   imports: [
     CommonModule,
     MatSnackBarModule,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
-    MatTabsModule,
     CardContainerComponent,
-    RequestStatusTableComponent,
     DocumentationViewerComponent,
-    PeriodoFiltroSelectorComponent
+    PazSalvoBandejaComponent
   ],
   templateUrl: './paz-salvo-revision.component.html',
   styleUrls: ['./paz-salvo-revision.component.css']
 })
 export class PazSalvoRevisionComponent implements OnInit {
-  @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
+  @ViewChild('bandeja') bandeja?: PazSalvoBandejaComponent;
 
   rol: RolRevisionPazSalvo = 'funcionario';
   config!: ConfigRevision;
@@ -122,7 +114,7 @@ export class PazSalvoRevisionComponent implements OnInit {
     this.config.pendientes().subscribe({
       next: (sols) => {
         this.pendientesOriginales = sols;
-        this.solicitudes = sols.map(sol => this.aFilaTabla(sol));
+        this.solicitudes = sols.map(aFilaTabla);
       },
       error: () => {
         this.snackBar.open('Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
@@ -133,10 +125,7 @@ export class PazSalvoRevisionComponent implements OnInit {
   cargarSolicitudesProcesadas(): void {
     this.config.procesadas(this.periodoAcademicoFiltro || undefined).subscribe({
       next: (sols) => {
-        this.solicitudesProcesadas = sols.map(sol => ({
-          ...this.aFilaTabla(sol),
-          fechaProcesamiento: this.getFechaProcesamiento(sol)
-        }));
+        this.solicitudesProcesadas = sols.map(aFilaHistorial);
       },
       error: () => {
         this.snackBar.open('Error al cargar historial de solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
@@ -144,29 +133,8 @@ export class PazSalvoRevisionComponent implements OnInit {
     });
   }
 
-  /** Fila para RequestStatusTableComponent. La fecha va en ISO: el pipe `fecha` la formatea. */
-  private aFilaTabla(sol: SolicitudHomologacionDTORespuesta): Solicitud {
-    const ultimoEstado = sol.estadosSolicitud?.[sol.estadosSolicitud.length - 1];
-    return {
-      id: sol.id_solicitud,
-      nombre: sol.nombre_solicitud,
-      fecha: sol.fecha_registro_solicitud,
-      estado: (ultimoEstado?.estado_actual as SolicitudStatusEnum) || SolicitudStatusEnum.ENVIADA,
-      comentarios: ultimoEstado?.comentario || '',
-      archivos: sol.documentos?.map((doc: DocumentoHomologacion) => ({
-        id_documento: doc.id_documento,
-        nombre: doc.nombre,
-        ruta_documento: doc.ruta_documento,
-        fecha: doc.fecha_documento,
-        esValido: doc.esValido,
-        comentario: doc.comentario
-      })) || []
-    } as Solicitud;
-  }
-
-  onPeriodoChange(periodo: string): void {
-    // "todos" o vacío: el backend devuelve todas las solicitudes
-    this.periodoAcademicoFiltro = (periodo === 'todos' || !periodo) ? null : periodo;
+  onPeriodoChange(periodo: string | null): void {
+    this.periodoAcademicoFiltro = periodo;
     this.cargarSolicitudesProcesadas();
   }
 
@@ -189,14 +157,7 @@ export class PazSalvoRevisionComponent implements OnInit {
     this.pazSalvoService.obtenerDocumentosCoordinador(idSolicitud).subscribe({
       next: (documentos: any[]) => {
         if (this.selectedSolicitud?.id_solicitud !== idSolicitud) return;
-        this.selectedSolicitud.documentos = documentos.map(doc => ({
-          id_documento: doc.id,
-          nombre: doc.nombreArchivo || doc.nombre,
-          ruta_documento: doc.ruta,
-          fecha_documento: doc.fecha,
-          esValido: doc.esValido,
-          comentario: doc.comentario
-        }));
+        this.selectedSolicitud.documentos = aDocumentos(documentos);
         this.cdr.detectChanges();
       },
       error: () => {
@@ -213,21 +174,6 @@ export class PazSalvoRevisionComponent implements OnInit {
     return this.selectedSolicitud?.documentos ?? [];
   }
 
-  getEstadoActual(solicitud: SolicitudHomologacionDTORespuesta): string {
-    const estados = solicitud.estadosSolicitud;
-    return estados && estados.length > 0 ? estados[estados.length - 1].estado_actual : 'Pendiente';
-  }
-
-  /** Fecha del último estado (cuando se procesó). */
-  getFechaProcesamiento(solicitud: SolicitudHomologacionDTORespuesta): string {
-    const estados = solicitud.estadosSolicitud;
-    const ultimo = estados && estados.length > 0 ? estados[estados.length - 1] : null;
-    if (!ultimo?.fecha_registro_estado) return '';
-    return new Date(ultimo.fecha_registro_estado).toLocaleString('es-ES', {
-      year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-    });
-  }
-
   obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
     const rechazos = (solicitud.estadosSolicitud || []).filter(e =>
       e.estado_actual === 'RECHAZADA' || e.estado_actual === 'Rechazada'
@@ -237,7 +183,7 @@ export class PazSalvoRevisionComponent implements OnInit {
 
   estaRechazada(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     return estado === 'RECHAZADA' || estado === 'Rechazada';
   }
 
@@ -317,7 +263,7 @@ export class PazSalvoRevisionComponent implements OnInit {
     this.cargarSolicitudesPendientes();
     this.cargarSolicitudesProcesadas();
     this.selectedSolicitud = null;
-    this.requestStatusTable?.resetSelection();
+    this.bandeja?.resetSelection();
   }
 
   private mostrarErrorAprobacion(err: any): void {

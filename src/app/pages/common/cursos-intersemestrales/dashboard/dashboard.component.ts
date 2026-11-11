@@ -7,7 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { CursosIntersemestralesService, SolicitudCursoVerano, CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -30,14 +30,12 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
   private destroy$ = new Subject<void>();
   
   usuario: any = null;
-  solicitudesPendientes: SolicitudCursoVerano[] = [];
   cursosActivos: CursoOfertadoVerano[] = [];
   
   // Estadísticas del backend
   estadisticas: DashboardEstadisticas | null = null;
   
   // Variables para el template (se actualizan desde el backend)
-  totalSolicitudesPendientes = 0;
   totalCursosActivos = 0;
   preinscripcionesPendientes = 0;
   inscripcionesPendientes = 0;
@@ -173,10 +171,6 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
 
   getEstadoColor(estado: string | undefined): string {
     return this.cursoEstadosService.getColorEstado(estado || 'Borrador');
-  }
-
-  getIconoEstado(estado: string | undefined): string {
-    return this.cursoEstadosService.getIconoEstado(estado || 'Borrador');
   }
 
   // TrackBy functions para optimizar ngFor

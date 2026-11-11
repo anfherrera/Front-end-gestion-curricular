@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -80,7 +79,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private http: HttpClient,
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService,
     private authService: AuthService
@@ -610,21 +608,6 @@ export class DetallesInscripcionDialogComponent {
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService
   ) {}
-
-  getEstadoColor(estado: string): string {
-    switch (estado) {
-      case 'Inscripcion_Completada':
-        return '#28a745'; // Verde
-      case 'Pago_Validado':
-        return '#000066'; // Azul
-      case 'Sin inscripción formal':
-        return '#ffc107'; // Amarillo
-      case 'Rechazado':
-        return '#dc3545'; // Rojo
-      default:
-        return '#6c757d'; // Gris
-    }
-  }
 
   async descargarComprobante(): Promise<void> {
     this.logger.debug('Descargando comprobante de pago');

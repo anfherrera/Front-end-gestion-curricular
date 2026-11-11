@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpResponse, HttpHeaders } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { PazSalvoService } from './paz-salvo.service';
 import { AuthService } from './auth.service';
+import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { environment } from '../../../environments/environment';
 
@@ -25,11 +26,14 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
   };
 
   beforeEach(() => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getUsuario']);
-    
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getUsuario', 'getToken']);
+    authServiceSpy.getToken.and.returnValue('mock-token');
+
+    // Con el JwtInterceptor real: es quien añade el token en la app
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(withInterceptors([JwtInterceptor])),
+        provideHttpClientTesting(),
         PazSalvoService,
         { provide: AuthService, useValue: authServiceSpy }
       ]
@@ -266,15 +270,6 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       req.flush({ success: true });
     });
 
-    it('PZS-018: Debe completar validación y enviar a coordinador', (done) => {
-      service.completeValidation(1).subscribe(() => done());
-      
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);
-      expect(req.request.body.nuevoEstado).toBe('EN_REVISION_COORDINADOR');
-      
-      req.flush({ success: true });
-    });
-
     it('PZS-019: Debe aprobar como coordinador', (done) => {
       service.approveAsCoordinador(1).subscribe(() => done());
       
@@ -293,26 +288,18 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       req.flush({ success: true });
     });
 
-    it('PZS-021: Debe actualizar estado con comentario opcional', (done) => {
-      service.actualizarEstadoSolicitud(1, 'PENDIENTE', 'Comentario de prueba').subscribe(() => done());
-      
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);
-      expect(req.request.body.comentario).toBe('Comentario de prueba');
-      
-      req.flush({ success: true });
-    });
   });
 
   describe('6. Gestión de Archivos', () => {
-    it('PZS-022: Debe subir archivo PDF correctamente', (done) => {
+    it('PZS-022: Debe subir documento PDF sin asociarlo a una solicitud', (done) => {
       const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
       
-      service.subirArchivoPDF(file).subscribe((response) => {
+      service.subirDocumento(file).subscribe((response) => {
         expect(response).toBeTruthy();
         done();
       });
       
-      const req = httpMock.expectOne(`${environment.apiUrl}/archivos/subir/pdf`);
+      const req = httpMock.expectOne(`${apiUrl}/subir-documento`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body instanceof FormData).toBe(true);
       
@@ -323,7 +310,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       const largeContent = new Array(11 * 1024 * 1024).fill('a').join('');
       const largeFile = new File([largeContent], 'large.pdf', { type: 'application/pdf' });
       
-      service.subirArchivoPDF(largeFile).subscribe({
+      service.subirDocumento(largeFile).subscribe({
         error: (error) => {
           expect(error.status).toBe(413);
           expect(error.error.message).toContain('demasiado grande');
@@ -335,7 +322,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-024: Debe rechazar archivos que no sean PDF', (done) => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
       
-      service.subirArchivoPDF(file).subscribe({
+      service.subirDocumento(file).subscribe({
         error: (error) => {
           expect(error.status).toBe(415);
           expect(error.error.message).toContain('Solo se permiten archivos PDF');
@@ -381,35 +368,17 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-028: Debe descargar oficio como Blob', (done) => {
       const mockBlob = new Blob(['content'], { type: 'application/pdf' });
       
-      service.descargarOficio(1).subscribe((blob) => {
+      service.descargarOficioPorSolicitud(1).subscribe((blob: any) => {
         expect(blob instanceof Blob).toBe(true);
+        expect(blob.filename).toBe('oficio.pdf');
         done();
       });
-      
+
       const req = httpMock.expectOne(`${apiUrl}/descargarOficio/1`);
       expect(req.request.responseType).toBe('blob');
-      req.flush(mockBlob);
+      req.flush(mockBlob, { headers: { 'Content-Disposition': 'attachment; filename="oficio.pdf"' } });
     });
 
-    it('PZS-029: Debe generar documento con parámetros correctos', (done) => {
-      service.generarDocumento(1, 'PS-001', '2025-10-24', 'Sin observaciones').subscribe((result) => {
-        expect(result.blob).toBeTruthy();
-        expect(result.filename).toContain('PS-001');
-        done();
-      });
-      
-      const req = httpMock.expectOne(`${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/1`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body instanceof FormData).toBe(true);
-      
-      const mockBlob = new Blob(['content'], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-      const mockResponse = new HttpResponse({
-        body: mockBlob,
-        headers: new HttpHeaders({ 'Content-Disposition': 'attachment; filename="PAZ_SALVO_PS-001.docx"' })
-      });
-      
-      req.event(mockResponse);
-    });
   });
 
   describe('8. Comentarios y Validaciones', () => {

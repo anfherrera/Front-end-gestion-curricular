@@ -582,13 +582,6 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
 
 
   /**
-   * Obtiene las claves de un objeto para iterar
-   */
-  getObjectKeys(obj: any): string[] {
-    return obj ? Object.keys(obj) : [];
-  }
-
-  /**
    * Formatea un número como porcentaje
    */
   formatPorcentaje(valor: number): string {

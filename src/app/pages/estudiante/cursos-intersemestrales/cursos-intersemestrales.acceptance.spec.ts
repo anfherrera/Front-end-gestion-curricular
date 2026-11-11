@@ -183,31 +183,6 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   });
 
   /**
-   * HISTORIA DE USUARIO 6:
-   * Como estudiante,
-   * Quiero marcar notificaciones como leídas,
-   * Para mantener mi bandeja organizada.
-   */
-  describe('HU-06: Marcar Notificaciones Leídas', () => {
-    it('ACEP-CI-006: DADO que tengo notificaciones, CUANDO marco como leída, ENTONCES se actualiza', fakeAsync(() => {
-      // GIVEN: Notificación no leída
-      const notificacionId = 1;
-
-      // WHEN: Marco como leída
-      service.marcarNotificacionLeida(notificacionId).subscribe((response) => {
-        // THEN: Se actualiza correctamente
-        expect(response).toBeTruthy();
-      });
-      tick();
-
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/notificaciones/${notificacionId}/marcar-leida`);
-      expect(req.request.method).toBe('PUT');
-      req.flush({ mensaje: 'Notificación marcada como leída' });
-      tick();
-    }));
-  });
-
-  /**
    * HISTORIA DE USUARIO 7:
    * Como administrador,
    * Quiero crear nuevos cursos intersemestrales,

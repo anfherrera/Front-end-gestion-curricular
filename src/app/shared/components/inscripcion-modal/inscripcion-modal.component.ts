@@ -4,7 +4,6 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CursosIntersemestralesService, CreateInscripcionDTO, PreinscripcionSeguimiento } from '../../../core/services/cursos-intersemestrales.service';
-import { ArchivosService } from '../../../core/services/archivos.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../material.imports';
@@ -34,7 +33,6 @@ export class InscripcionModalComponent implements OnInit {
     private dialogRef: MatDialogRef<InscripcionModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: InscripcionModalData,
     private cursosService: CursosIntersemestralesService,
-    private archivosService: ArchivosService,
     private authService: AuthService,
     private snackBar: MatSnackBar,
     private notificacionesService: NotificacionesService
@@ -123,56 +121,11 @@ export class InscripcionModalComponent implements OnInit {
     }
 
     this.cargando = true;
-
-    // Obtener nombre completo del usuario
-    const nombreCompleto = this.usuario?.nombre_completo || 
-                          this.usuario?.nombre || 
-                          'Usuario';
-    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-
-    // Crear el payload para la inscripción
-    const payload: CreateInscripcionDTO = {
-      idUsuario: this.usuario.id_usuario,
-      idCurso: this.data.preinscripcion.cursoId,
-      nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`
-    };
-    
-    // Payload alternativo para debugging
-    const payloadAlternativo = {
-      estudianteId: this.usuario.id_usuario,
-      cursoId: this.data.preinscripcion.cursoId,
-      periodoId: 1, // Valor por defecto ya que no está en PreinscripcionSeguimiento
-      tipoSolicitud: 'Inscripcion',
-      nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`,
-      idUsuario: this.usuario.id_usuario,
-      idCurso: this.data.preinscripcion.cursoId
-    };
-    
-    // Payload alternativo
-
-    // Creando inscripción con payload
-    // Datos de la preinscripción
-    // Usuario actual
-    // Formulario válido
-    // Archivo seleccionado
-
-    // Intentar con payload más completo
-    const payloadCompleto = {
-      ...payload,
-      estudianteId: this.usuario.id_usuario,
-      cursoId: this.data.preinscripcion.cursoId,
-      periodoId: 1, // Valor por defecto ya que no está en PreinscripcionSeguimiento
-      tipoSolicitud: 'Inscripcion'
-    };
-    
-    // Payload completo
-    
-    // Realizar diagnóstico completo antes de proceder
-    this.realizarDiagnosticoCompleto();
+    this.verificarPreinscripcionAprobada();
   }
 
-  private realizarDiagnosticoCompleto(): void {
-    // Verificar todas las preinscripciones del usuario y filtrar por curso
+  /** Solo se puede inscribir quien tiene la preinscripción de este curso aprobada. */
+  private verificarPreinscripcionAprobada(): void {
     this.cursosService.getPreinscripcionesUsuario(this.usuario.id_usuario).subscribe({
       next: (todasPreinscripciones) => {
         // Filtrar preinscripciones para este curso específico
@@ -211,25 +164,16 @@ export class InscripcionModalComponent implements OnInit {
   }
 
   private crearInscripcionDirecta(): void {
-    // Obtener nombre completo del usuario
-    const nombreCompleto = this.usuario?.nombre_completo || 
-                          this.usuario?.nombre || 
-                          'Usuario';
-    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-    
-    const inscripcionPayload = {
+    const nombreUsuario = (this.usuario?.nombre_completo || this.usuario?.nombre || '').trim() || 'Usuario';
+    const inscripcionPayload: CreateInscripcionDTO = {
       idUsuario: this.usuario.id_usuario,
       idCurso: this.data.preinscripcion.cursoId,
-      nombreSolicitud: `Solicitud Inscripción - ${nombreFinal}`
+      nombreSolicitud: `Solicitud Inscripción - ${nombreUsuario}`
     };
-    
+
     this.cursosService.crearInscripcion(inscripcionPayload).subscribe({
-      next: (inscripcion) => {
-        // Subir el archivo PDF
-        this.subirArchivo(inscripcion.id_solicitud);
-      },
+      next: (inscripcion) => this.subirArchivo(inscripcion.id_solicitud),
       error: (error) => {
-        
         this.cargando = false;
         
         let mensajeError = 'Error al crear la inscripción. Por favor, inténtalo de nuevo.';

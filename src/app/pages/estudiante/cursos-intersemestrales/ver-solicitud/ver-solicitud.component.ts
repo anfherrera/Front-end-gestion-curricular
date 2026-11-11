@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursosIntersemestralesService, PreinscripcionSeguimiento, InscripcionSeguimiento, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -32,7 +31,6 @@ export class VerSolicitudComponent implements OnInit {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private router: Router,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {

@@ -11,9 +11,7 @@ import {
   CursosIntersemestralesService,
   CursoOfertadoVerano,
   Materia,
-  Usuario,
-  CreateCursoDTO,
-  UpdateCursoDTO
+  Usuario
 } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { EstadoFiltersComponent } from '../../../../shared/components/estado-filters/estado-filters.component';
@@ -259,72 +257,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Guardar curso (crear o actualizar)
-  guardarCurso() {
-    if (this.editando && this.cursoEditando) {
-      // Actualizar curso existente (solo campos editables)
-      if (this.edicionForm.valid) {
-        const formData = this.edicionForm.value;
-        const updateData: UpdateCursoDTO = {
-          cupo_estimado: formData.cupo_estimado,
-          espacio_asignado: formData.espacio_asignado,
-          estado: formData.estado
-        };
-        
-        this.cursosService.actualizarCurso(this.cursoEditando.id_curso, updateData)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (cursoActualizado) => {
-              // Curso actualizado
-              this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-              this.cargarDatos();
-            },
-            error: (err) => {
-              this.errorHandler.handleCursoError(err, 'actualizar curso');
-            }
-          });
-      } else {
-        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
-      }
-    } else {
-      // Crear nuevo curso
-      if (this.cursoForm.valid) {
-        const formData = this.cursoForm.value;
-        const createData: CreateCursoDTO = {
-          ...formData,
-          fecha_inicio: new Date(formData.fecha_inicio).toISOString(),
-          fecha_fin: new Date(formData.fecha_fin).toISOString()
-        };
-        
-        // Validar y normalizar el grupo si está presente
-        if (createData.grupo) {
-          const grupoUpper = String(createData.grupo).toUpperCase();
-          if (['A', 'B', 'C', 'D'].includes(grupoUpper)) {
-            createData.grupo = grupoUpper;
-          } else {
-            // Si no es válido, eliminar para que el backend use "A" por defecto
-            delete createData.grupo;
-          }
-        }
-        
-        this.cursosService.crearCurso(createData)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (nuevoCurso) => {
-              // Curso creado
-              this.snackBar.open('Curso creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-              this.cargarDatos();
-            },
-            error: (err) => {
-              this.errorHandler.handleCursoError(err, 'crear curso');
-            }
-          });
-      } else {
-        this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
-      }
-    }
-  }
-
   // Eliminar curso
   eliminarCurso(curso: CursoOfertadoVerano) {
     const mensaje = `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
@@ -420,11 +352,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     return this.cursoEstadosService.getColorEstado(estado);
   }
 
-  // Obtener icono del estado
-  getIconoEstado(estado: string): string {
-    return this.cursoEstadosService.getIconoEstado(estado);
-  }
-
   // Validar si se puede editar un curso
   puedeEditar(curso: CursoOfertadoVerano): boolean {
     // Por ahora usar lógica básica, después se puede mejorar con roles
@@ -435,11 +362,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   puedeEliminar(curso: CursoOfertadoVerano): boolean {
     // Solo se puede eliminar en estado Borrador
     return curso.estado === 'Borrador';
-  }
-
-  // Obtener estados permitidos para un curso
-  getEstadosPermitidos(estadoActual: string): string[] {
-    return this.cursoEstadosService.getEstadosPermitidos(estadoActual);
   }
 
   // Métodos para manejar filtros

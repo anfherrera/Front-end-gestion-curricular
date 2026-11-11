@@ -4,7 +4,7 @@ import { Observable, of, map, catchError, shareReplay } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { ProgramasService } from './programas.service';
 import {
-  EstadisticasProceso, ResumenCompletoAPI,
+  ResumenCompletoAPI,
   FiltroEstadisticas, TotalEstudiantesResponse,
   EstudiantesPorProgramaResponse,
   EstadisticasPorProcesoResponse,
@@ -57,29 +57,6 @@ export class EstadisticasService {
       );
     }
     return this.idsProgramaPorNombre$;
-  }
-
-  /**
-   * Obtiene estadísticas filtradas por período académico
-   * GET /api/estadisticas/periodo
-   * Query params:
-   * - periodoAcademico: "2025-1" (formato YYYY-P) O
-   * - fechaInicio: "yyyy-MM-dd"
-   * - fechaFin: "yyyy-MM-dd"
-   * @param periodo Período académico (ej: "2025-1") o objeto con fechaInicio y fechaFin
-   */
-  getEstadisticasPorPeriodo(periodo: string | { fechaInicio: string; fechaFin: string }): Observable<any> {
-    let params = new HttpParams();
-    
-    if (typeof periodo === 'string') {
-      params = params.set('periodoAcademico', periodo);
-    } else {
-      params = params.set('fechaInicio', periodo.fechaInicio);
-      params = params.set('fechaFin', periodo.fechaFin);
-    }
-    
-    // Usar el endpoint correcto según las instrucciones
-    return this.http.get<any>(ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PERIODO, { params });
   }
 
   /**

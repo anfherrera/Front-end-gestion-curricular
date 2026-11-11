@@ -462,13 +462,4 @@ export class EstadoFiltersComponent implements OnInit {
     return curso.estado || 'Borrador';
   }
 
-  // Método para limpiar filtros
-  limpiarFiltros(): void {
-    this.estadoSeleccionado = '';
-    this.estadoInfo = undefined;
-    this.cargandoFiltro = false;
-    this.aplicarFiltro();
-    this.estadoSeleccionadoChange.emit('');
-  }
-
 }

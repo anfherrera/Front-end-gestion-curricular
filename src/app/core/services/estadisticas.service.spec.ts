@@ -153,24 +153,5 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
     });
   });
 
-  describe('14. Estadísticas por Período', () => {
-    it('EST-027: Debe obtener estadísticas por período académico', (done) => {
-      const periodo = '2025-1';
-      const mockEstadisticas = { totalCursos: 50, totalEstudiantes: 500 };
-
-      service.getEstadisticasPorPeriodo(periodo).subscribe((result) => {
-        expect(result).toEqual(mockEstadisticas);
-        done();
-      });
-
-      // El backend recibe el período como query param: /estadisticas/periodo?periodoAcademico=...
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('/estadisticas/periodo') && request.params.get('periodoAcademico') === periodo
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush(mockEstadisticas);
-    });
-  });
-
 });
 

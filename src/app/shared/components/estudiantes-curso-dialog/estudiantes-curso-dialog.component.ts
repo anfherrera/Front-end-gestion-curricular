@@ -11,7 +11,7 @@ import {
   CursosIntersemestralesService,
   RespuestaEstudiantesCurso
 } from '../../../core/services/cursos-intersemestrales.service';
-import { COLORS, snackbarConfig } from '../../../core/design-system/design-tokens';
+import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
   selector: 'app-estudiantes-curso-dialog',
@@ -81,16 +81,6 @@ export class EstudiantesCursoDialogComponent implements OnInit {
         }
       }
     });
-  }
-
-  getEstadoColor(estado: string | null | undefined): string {
-    if (!estado || estado === 'Sin inscripción') return COLORS.neutralText;
-    const u = estado.toUpperCase();
-    if (u.includes('APROBADA') || u.includes('VALIDADO')) return COLORS.success;
-    if (u.includes('RECHAZAD')) return COLORS.error;
-    if (u.includes('ENVIAD')) return COLORS.tertiary;
-    if (u.includes('PENDIENTE')) return COLORS.error;
-    return COLORS.primary;
   }
 
   cerrar(): void {

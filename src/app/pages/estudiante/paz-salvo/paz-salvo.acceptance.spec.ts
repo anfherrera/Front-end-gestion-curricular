@@ -189,7 +189,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       const mockPDF = new Blob(['Oficio Oficial'], { type: 'application/pdf' });
 
       // WHEN: Descargo el oficio
-      service.descargarOficio(oficioId).subscribe((blob) => {
+      service.descargarOficioPorSolicitud(oficioId).subscribe((blob) => {
         // THEN: Obtengo documento oficial
         expect(blob).toBeTruthy();
         expect(blob.type).toBe('application/pdf');
@@ -197,7 +197,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       tick();
 
       const req = httpMock.expectOne((r) => r.url.includes('/descargarOficio/'));
-      req.flush(mockPDF);
+      req.flush(mockPDF, { headers: { 'Content-Disposition': 'attachment; filename="OFICIO_PAZ_SALVO.pdf"' } });
       tick();
     }));
   });

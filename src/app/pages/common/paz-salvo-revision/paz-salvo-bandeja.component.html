@@ -1,0 +1,49 @@
+<mat-tab-group>
+
+  <mat-tab label="Pendientes de Procesar">
+    <div class="tab-content">
+      <app-card-container title="Solicitudes Pendientes de Procesar">
+        <app-request-status-table
+          #tablaPendientes
+          [solicitudes]="pendientes"
+          [showOficio]="false"
+          [showComentarios]="false"
+          [showSeleccionar]="true"
+          (solicitudSeleccionada)="solicitudSeleccionada.emit($event)">
+        </app-request-status-table>
+
+        <p *ngIf="pendientes.length === 0" class="no-solicitudes">
+          No hay solicitudes pendientes de procesar
+        </p>
+      </app-card-container>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Historial - Ya Procesadas">
+    <div class="tab-content">
+      <app-card-container title="Solicitudes Procesadas">
+        <div class="filtro-periodo">
+          <app-periodo-filtro-selector
+            label="Filtrar por período académico"
+            [mostrarTodos]="true"
+            [incluirActual]="true"
+            [mostrarInfo]="false"
+            (periodoChange)="onPeriodoChange($event)">
+          </app-periodo-filtro-selector>
+        </div>
+
+        <app-request-status-table
+          [solicitudes]="procesadas"
+          [showOficio]="false"
+          [showComentarios]="false"
+          [showSeleccionar]="false">
+        </app-request-status-table>
+
+        <p *ngIf="procesadas.length === 0" class="no-solicitudes">
+          No hay solicitudes procesadas todavía
+        </p>
+      </app-card-container>
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

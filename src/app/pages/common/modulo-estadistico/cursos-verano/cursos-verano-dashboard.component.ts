@@ -19,7 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
@@ -98,18 +98,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   // ===== SUBSCRIPCIONES =====
   private destroy$ = new Subject<void>();
-
-  // ===== CONFIGURACIÓN DE COLORES =====
-  private readonly colors = {
-    primary: '#36A2EB',
-    secondary: '#FF6384',
-    success: '#4BC0C0',
-    warning: '#FFCE56',
-    danger: '#FF6384',
-    info: '#9966FF',
-    light: '#E7E9ED',
-    dark: '#343A40'
-  };
 
   constructor(
     private estadisticasService: EstadisticasService,
@@ -264,13 +252,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
-  }
-
-  actualizarDatos(): void {
-    // Aplicar filtros actuales al recargar
-    this.filtrosAplicados = this.obtenerFiltrosActuales();
-    this.cargarTendenciasTemporalesOptimizadas();
-    this.cargarDatos();
   }
 
   refrescarDatos(): void {
@@ -488,10 +469,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       case 'ESTABLE': return '#ffc107';
       default: return '#6c757d';
     }
-  }
-
-  mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
   }
 
   // ===== MÉTODOS PARA PREDICCIONES Y RECOMENDACIONES =====

@@ -149,25 +149,22 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
    */
   describe('HU-04: Filtrar por Período', () => {
     it('ACEP-EST-005: DADO que quiero ver un período específico, CUANDO aplico filtro, ENTONCES veo solo ese período', fakeAsync(() => {
-      // GIVEN: Quiero ver solo período 2025-01
-      const periodo = '2025-01';
+      // GIVEN: Quiero ver solo período 2025-1
+      const periodo = '2025-1';
       const mockEstadisticas: any = {
-        totalSolicitudes: 100,
-        solicitudesAprobadas: 80,
-        solicitudesPendientes: 15,
-        solicitudesRechazadas: 5
+        estadisticasGlobales: { totalSolicitudes: 100, totalAprobadas: 80, totalEnProceso: 15, totalRechazadas: 5 }
       };
 
-      // WHEN: Aplico filtro de período
-      service.getEstadisticasPorPeriodo(periodo).subscribe((stats) => {
+      // WHEN: Aplico filtro de período al resumen del panel
+      service.getResumenCompleto({ periodoAcademico: periodo }).subscribe((resumen: any) => {
         // THEN: Veo datos del período filtrado
-        expect(stats.totalSolicitudes).toBe(100);
+        expect(resumen.estadisticasGlobales.totalSolicitudes).toBe(100);
       });
       tick();
 
-      // El backend recibe el período como query param: /estadisticas/periodo?periodoAcademico=...
+      // El backend recibe el período como query param: /estadisticas/resumen-completo?periodoAcademico=...
       const req = httpMock.expectOne((r) =>
-        r.url.endsWith('/estadisticas/periodo') && r.params.get('periodoAcademico') === periodo
+        r.url === ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO && r.params.get('periodoAcademico') === periodo
       );
       req.flush(mockEstadisticas);
       tick();

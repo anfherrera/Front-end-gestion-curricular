@@ -1,10 +1,32 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map, switchMap, of } from 'rxjs';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
+type Solicitudes = Observable<SolicitudHomologacionDTORespuesta[]>;
+
+/** Respuesta de /obtenerComentarios: solo trae los comentarios que existen. */
+export interface ComentariosPazSalvo {
+  comentarioRechazo?: string;
+  documentosConComentarios?: Array<{ id: number; nombre: string; comentario: string }>;
+  mensaje?: string;
+}
+
+/** Bandejas por rol del endpoint listarSolicitud-PazYSalvo/{rol}. */
+const BANDEJA_POR_ROL: Record<string, string> = {
+  FUNCIONARIO: 'Funcionario',
+  COORDINADOR: 'Coordinador',
+  SECRETARIA: 'Secretaria',
+  SECRETARIO: 'Secretaria'
+};
+
+const TAMANO_MAXIMO_PDF = 10 * 1024 * 1024; // 10 MB
+
+/**
+ * Solicitudes de paz y salvo. El token lo añade JwtInterceptor a todas las peticiones.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -13,207 +35,81 @@ export class PazSalvoService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  private getAuthHeaders(isFile: boolean = false): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      ...(isFile ? {} : { 'Content-Type': 'application/json' }),
-      Authorization: token ? `Bearer ${token}` : ''
-    });
-  }
+  // ================================
+  // Listados
+  // ================================
 
-  // ================================
-  // Solicitudes
-  // ================================
-  
   /**
-   * Listar solicitudes por rol
-   * @param rol - "ESTUDIANTE", "FUNCIONARIO", "COORDINADOR", "SECRETARIA"
-   * @param idUsuario - ID del usuario (solo necesario para ESTUDIANTE)
-   * @param periodoAcademico - Período académico opcional (formato: "YYYY-P", ej: "2025-1"). Si no se envía, el backend usa el período actual.
+   * Solicitudes según el rol. El estudiante usa /porRol con su id; los demás roles, su bandeja.
+   * @param periodoAcademico formato "YYYY-P"; si no se envía, el backend usa el período actual.
    */
-  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Solicitudes {
     const rolUpper = rol.toUpperCase();
-    
-    // ESTUDIANTE usa el endpoint /porRol con parámetros
     if (rolUpper === 'ESTUDIANTE') {
-      let params = new HttpParams()
+      const params = this.paramsPeriodo(periodoAcademico)
         .set('rol', 'ESTUDIANTE')
         .set('idUsuario', idUsuario?.toString() || '');
-      
-      if (periodoAcademico) {
-        params = params.set('periodoAcademico', periodoAcademico);
-      }
-      
-      return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-        `${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`,
-        { params, headers: this.getAuthHeaders() }
-      );
+      return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`, { params });
     }
-    
-    // FUNCIONARIO, COORDINADOR, SECRETARIA usan endpoints específicos con mayúscula inicial
-    let endpoint = '';
-    if (rolUpper === 'FUNCIONARIO') {
-      endpoint = 'Funcionario';
-    } else if (rolUpper === 'COORDINADOR') {
-      endpoint = 'Coordinador';
-    } else if (rolUpper === 'SECRETARIA' || rolUpper === 'SECRETARIO') {
-      endpoint = 'Secretaria';
-    }
-    
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
+    return this.bandeja(BANDEJA_POR_ROL[rolUpper] ?? '', periodoAcademico);
+  }
+
+  /** Pendientes del funcionario (último estado ENVIADA). */
+  getPendingRequests(periodoAcademico?: string): Solicitudes {
+    return this.bandeja('Funcionario', periodoAcademico);
+  }
+
+  getCoordinatorRequests(periodoAcademico?: string): Solicitudes {
+    return this.bandeja('Coordinador', periodoAcademico);
+  }
+
+  /** Pendientes de secretaría (APROBADA_COORDINADOR). */
+  getSecretariaRequests(periodoAcademico?: string): Solicitudes {
+    return this.bandeja('Secretaria', periodoAcademico);
+  }
+
+  /** Historial del funcionario (APROBADA_FUNCIONARIO). Si falla, lista vacía. */
+  getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Solicitudes {
+    return this.historial('Funcionario', periodoAcademico);
+  }
+
+  /** Historial del coordinador (APROBADA_COORDINADOR). Si falla, lista vacía. */
+  getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Solicitudes {
+    return this.historial('Coordinador', periodoAcademico);
+  }
+
+  /** Historial de secretaría (APROBADA, ya enviadas al estudiante). Si falla, lista vacía. */
+  getSolicitudesProcesadasSecretaria(periodoAcademico?: string): Solicitudes {
+    return this.historial('Secretaria', periodoAcademico);
+  }
+
+  private bandeja(rol: string, periodoAcademico?: string): Solicitudes {
+    const params = this.paramsPeriodo(periodoAcademico);
     return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/${endpoint}`,
-      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
+      `${this.apiUrl}/listarSolicitud-PazYSalvo/${rol}`,
+      params.keys().length > 0 ? { params } : {}
     );
   }
 
-  /**
-   * Obtener solicitudes pendientes para funcionario (con último estado "Enviada")
-   */
-  getPendingRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/Funcionario`, 
-      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
-    );
+  private historial(rol: string, periodoAcademico?: string): Solicitudes {
+    return this.bandeja(`${rol}/Aprobadas`, periodoAcademico).pipe(catchError(() => of([])));
   }
 
-  /**
-   * Obtener solicitudes para coordinador
-   */
-  getCoordinatorRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/Coordinador`, 
-      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
-    );
+  private paramsPeriodo(periodoAcademico?: string): HttpParams {
+    const params = new HttpParams();
+    return periodoAcademico ? params.set('periodoAcademico', periodoAcademico) : params;
   }
 
-  /**
-   * Obtener solicitudes para secretaría (solo las aprobadas por coordinador)
-   * Estado: APROBADA_COORDINADOR (pendientes de procesar)
-   */
-  getSecretariaRequests(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria`, 
-      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
-    );
-  }
+  // ================================
+  // Crear solicitud y cambiar estado
+  // ================================
 
   /**
-   * Obtener solicitudes ya procesadas por funcionario (historial)
-   * Estado: APROBADA_FUNCIONARIO (ya aprobadas por funcionario)
-   */
-  getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/Funcionario/Aprobadas`, 
-      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
-    ).pipe(
-      catchError(error => {
-        return of([]);
-      })
-    );
-  }
-
-  /**
-   * Obtener solicitudes ya procesadas por coordinador (historial)
-   * Estado: APROBADA_COORDINADOR (ya aprobadas por coordinador)
-   */
-  getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/Coordinador/Aprobadas`, 
-      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
-    ).pipe(
-      catchError(error => {
-        return of([]);
-      })
-    );
-  }
-
-  /**
-   * Obtener solicitudes ya procesadas por secretaría (historial)
-   * Estado: APROBADA (ya enviadas al estudiante)
-   */
-  getSolicitudesProcesadasSecretaria(periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/Secretaria/Aprobadas`, 
-      { params: params.keys().length > 0 ? params : undefined, headers: this.getAuthHeaders() }
-    ).pipe(
-      catchError(error => {
-        return of([]);
-      })
-    );
-  }
-
-  /**
-   * Obtener comentarios filtrados de una solicitud
-   * Solo devuelve comentarios existentes (rechazo y documentos con comentarios)
-   */
-  obtenerComentarios(idSolicitud: number): Observable<{
-    comentarioRechazo?: string;
-    documentosConComentarios?: Array<{
-      id: number;
-      nombre: string;
-      comentario: string;
-    }>;
-    mensaje?: string;
-  }> {
-    return this.http.get<{
-      comentarioRechazo?: string;
-      documentosConComentarios?: Array<{
-        id: number;
-        nombre: string;
-        comentario: string;
-      }>;
-      mensaje?: string;
-    }>(`${this.apiUrl}/obtenerComentarios/${idSolicitud}`, { headers: this.getAuthHeaders() }).pipe(
-      catchError((error: any) => {
-        return of({ mensaje: 'Error al obtener comentarios' });
-      })
-    );
-  }
-
-  /**
-   * Crea una solicitud de paz y salvo con datos del formulario
-   * @param studentId ID del estudiante
-   * @param archivos Archivos subidos
-   * @param datosFormulario Datos del formulario (nombre_solicitud, fecha_registro_solicitud, periodo_academico, titulo_trabajo_grado, director_trabajo_grado)
+   * Crea la solicitud. Los documentos ya se subieron con subirDocumento; el backend los asocia.
    */
   crearSolicitudConFormulario(
-    studentId: number, 
-    archivos: Archivo[], 
+    studentId: number,
+    archivos: Archivo[],
     datosFormulario: {
       nombre_solicitud: string;
       fecha_registro_solicitud: string;
@@ -225,407 +121,175 @@ export class PazSalvoService {
     const usuario = this.authService.getUsuario();
     if (!usuario) throw new Error('Usuario no autenticado');
 
-    // Asegurar que el nombre_solicitud tenga el formato correcto
     let nombreSolicitud = datosFormulario.nombre_solicitud;
-    
-    // Si el nombre no incluye "Solicitud Paz y Salvo -", agregarlo
     if (!nombreSolicitud.includes('Solicitud Paz y Salvo -')) {
-      const nombreUsuario = usuario.nombre_completo || 
-                           usuario.nombre || 
-                           'Usuario';
-      const nombreFinal = nombreUsuario.trim() !== '' ? nombreUsuario.trim() : 'Usuario';
-      nombreSolicitud = `Solicitud Paz y Salvo - ${nombreFinal}`;
+      const nombreUsuario = (usuario.nombre_completo || usuario.nombre || '').trim() || 'Usuario';
+      nombreSolicitud = `Solicitud Paz y Salvo - ${nombreUsuario}`;
     }
-    
+
     const body: any = {
       idUsuario: studentId,
       nombre_solicitud: nombreSolicitud,
       fecha_registro_solicitud: datosFormulario.fecha_registro_solicitud
     };
-
-    // Agregar período académico si se proporciona
     if (datosFormulario.periodo_academico) {
       body.periodo_academico = datosFormulario.periodo_academico;
     }
+    const titulo = datosFormulario.titulo_trabajo_grado?.trim();
+    if (titulo) body.titulo_trabajo_grado = titulo;
+    const director = datosFormulario.director_trabajo_grado?.trim();
+    if (director) body.director_trabajo_grado = director;
 
-    // Agregar campos de trabajo de grado si se proporcionan (con trim para limpiar espacios)
-    if (datosFormulario.titulo_trabajo_grado) {
-      const tituloLimpio = datosFormulario.titulo_trabajo_grado.trim();
-      if (tituloLimpio.length > 0) {
-        body.titulo_trabajo_grado = tituloLimpio;
-      }
-    }
-
-    if (datosFormulario.director_trabajo_grado) {
-      const directorLimpio = datosFormulario.director_trabajo_grado.trim();
-      if (directorLimpio.length > 0) {
-        body.director_trabajo_grado = directorLimpio;
-      }
-    }
-
-    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body, { headers: this.getAuthHeaders() })
-      .pipe(
-        catchError(error => {
-          throw error;
-        })
-      );
+    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body);
   }
 
+  /** Funcionario aprueba. */
   approveRequest(requestId: number): Observable<any> {
-    const url = `${this.apiUrl}/actualizarEstadoSolicitud`;
-    const body = {
-      idSolicitud: requestId,
-      nuevoEstado: 'APROBADA_FUNCIONARIO'
-    };
-    
-    return this.http.put(url, body, { headers: this.getAuthHeaders() });
+    return this.cambiarEstado(requestId, 'APROBADA_FUNCIONARIO');
+  }
+
+  /** Aprobación del coordinador. */
+  approveAsCoordinador(requestId: number): Observable<any> {
+    return this.cambiarEstado(requestId, 'APROBADA_COORDINADOR');
+  }
+
+  /** Aprobación definitiva (secretaría, al enviar el oficio). */
+  approveDefinitively(idSolicitud: number): Observable<any> {
+    return this.cambiarEstado(idSolicitud, 'APROBADA');
   }
 
   rejectRequest(requestId: number, reason: string): Observable<any> {
-    const url = `${this.apiUrl}/actualizarEstadoSolicitud`;
-    const body = {
-      idSolicitud: requestId,
-      nuevoEstado: 'RECHAZADA',
-      comentario: reason
-    };
-    
-    return this.http.put(url, body, { headers: this.getAuthHeaders() });
+    return this.cambiarEstado(requestId, 'RECHAZADA', reason);
   }
 
-  completeValidation(requestId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
-      idSolicitud: requestId,
-      nuevoEstado: 'EN_REVISION_COORDINADOR'
-    }, { headers: this.getAuthHeaders() });
+  private cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<any> {
+    const body: any = { idSolicitud, nuevoEstado };
+    if (comentario !== undefined) body.comentario = comentario;
+    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, body);
   }
 
-  /**
-   * Obtener oficios/resoluciones de una solicitud
-   */
-  obtenerOficios(idSolicitud: number): Observable<any[]> {
-    const url = `${this.apiUrl}/obtenerOficios/${idSolicitud}`;
-    
-    return this.http.get<any[]>(url, {
-      headers: this.getAuthHeaders()
-    });
+  /** Marca cada documento como válido o no válido. */
+  actualizarEstadoDocumentos(idSolicitud: number, documentos: any[]): Observable<any> {
+    return this.http.put(`${this.apiUrl}/actualizarEstadoDocumentos`, { idSolicitud, documentos });
   }
 
-  /**
-   * Descargar oficio/resolución
-   */
-  descargarOficio(idOficio: number): Observable<Blob> {
-    const url = `${this.apiUrl}/descargarOficio/${idOficio}`;
-    
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob'
-    });
+  // ================================
+  // Comentarios
+  // ================================
+
+  obtenerComentarios(idSolicitud: number): Observable<ComentariosPazSalvo> {
+    return this.http.get<ComentariosPazSalvo>(`${this.apiUrl}/obtenerComentarios/${idSolicitud}`).pipe(
+      catchError(() => of({ mensaje: 'Error al obtener comentarios' }))
+    );
   }
 
-  /**
-   * Subir oficio PDF asociado a una solicitud (Secretaría)
-   * POST /api/solicitudes-pazysalvo/subir-oficio-pdf/{idSolicitud}
-   */
-  subirOficioPdf(idSolicitud: number, archivo: File): Observable<any> {
-    const url = `${this.apiUrl}/subir-oficio-pdf/${idSolicitud}`;
+  /** GET /api/documentos/buscarPorId/{id}: comentario actual antes de añadir otro (documentation-viewer). */
+  buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string; [key: string]: any }> {
+    return this.http.get<{ comentario?: string; [key: string]: any }>(`${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`);
+  }
+
+  agregarComentario(idDocumento: number, comentario: string): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/documentos/añadirComentario`, { idDocumento, comentario });
+  }
+
+  // ================================
+  // Documentos y oficios
+  // ================================
+
+  /** Sube un documento SIN asociarlo: el backend lo asocia al crear la solicitud. */
+  subirDocumento(archivo: File): Observable<any> {
+    const error = this.validarPdf(archivo);
+    if (error) return throwError(() => error);
+
     const formData = new FormData();
     formData.append('file', archivo);
+    return this.http.post(`${this.apiUrl}/subir-documento`, formData);
+  }
 
-    return this.http.post(url, formData);
+  /** Secretaría sube el oficio firmado en PDF. */
+  subirOficioPdf(idSolicitud: number, archivo: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', archivo);
+    return this.http.post(`${this.apiUrl}/subir-oficio-pdf/${idSolicitud}`, formData);
+  }
+
+  /** Documentos de la solicitud que ve secretaría (oficios). */
+  obtenerOficios(idSolicitud: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/obtenerOficios/${idSolicitud}`);
+  }
+
+  /** Documentos de la solicitud que revisa el coordinador. */
+  obtenerDocumentosCoordinador(idSolicitud: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`);
   }
 
   /**
-   * Descargar primer oficio/resolución detectado por solicitud (Funcionario)
-   * GET /api/solicitudes-pazysalvo/descargarOficio/{idSolicitud}
+   * Oficio de la solicitud. El nombre sale de Content-Disposition o, si no viene,
+   * del primer oficio de la solicitud. Queda en `blob.filename`.
    */
   descargarOficioPorSolicitud(idSolicitud: number): Observable<Blob> {
-    const url = `${this.apiUrl}/descargarOficio/${idSolicitud}`;
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob',
-      observe: 'response'
-    }).pipe(
-      switchMap((resp: any) => {
-        const parsed = this.parseFilenameFromHeaders(resp);
-        if (parsed) {
-          const blob: Blob = resp.body as Blob;
-          (blob as any).filename = parsed;
-          return new Observable<Blob>(observer => { observer.next(blob); observer.complete(); });
-        }
-        // Fallback: obtener nombre del primer oficio de la solicitud
+    return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob', observe: 'response' }).pipe(
+      switchMap(resp => {
+        const nombre = this.nombreDesdeCabeceras(resp);
+        if (nombre) return of(this.conNombre(resp.body!, nombre));
         return this.obtenerOficios(idSolicitud).pipe(
-          map((oficios: any[]) => {
-            const candidato = oficios?.[0]?.nombreArchivo || oficios?.[0]?.nombre || `oficio_${idSolicitud}.pdf`;
-            const blob: Blob = resp.body as Blob;
-            (blob as any).filename = candidato;
-            return blob;
-          })
+          map(oficios => this.conNombre(resp.body!, oficios?.[0]?.nombreArchivo || oficios?.[0]?.nombre || `oficio_${idSolicitud}.pdf`))
         );
       })
     );
   }
 
-  /**
-   * Subir documento SIN asociar a una solicitud específica (nuevo flujo)
-   * Los documentos se suben ANTES de crear la solicitud
-   */
-  subirDocumento(archivo: File): Observable<any> {
-    const url = `${environment.apiUrl}/solicitudes-pazysalvo/subir-documento`;
-    
-    // Validaciones del frontend
-    const maxFileSize = 10 * 1024 * 1024; // 10MB
-    if (archivo.size > maxFileSize) {
-      return new Observable(observer => {
-        observer.error({
-          status: 413,
-          error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(archivo.size / (1024 * 1024)).toFixed(2)}MB` }
-        });
-      });
-    }
-    
-    if (!archivo.name.toLowerCase().endsWith('.pdf')) {
-      return new Observable(observer => {
-        observer.error({
-          status: 415,
-          error: { message: 'Solo se permiten archivos PDF' }
-        });
-      });
-    }
-    
-    const formData = new FormData();
-    formData.append('file', archivo);
-    
-    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
-    return this.http.post(url, formData);
-  }
+  // Descargas que usa documentation-viewer (recibe el servicio como [servicio])
 
-  /**
-   * Subir archivo PDF usando endpoint genérico
-   */
-  subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<any> {
-    const url = `${environment.apiUrl}/archivos/subir/pdf`;
-    
-    // Validaciones del frontend
-    const maxFileSize = 10 * 1024 * 1024; // 10MB
-    if (archivo.size > maxFileSize) {
-      return new Observable(observer => {
-        observer.error({
-          status: 413,
-          error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(archivo.size / (1024 * 1024)).toFixed(2)}MB` }
-        });
-      });
-    }
-    
-    if (!archivo.name.toLowerCase().endsWith('.pdf')) {
-      return new Observable(observer => {
-        observer.error({
-          status: 415,
-          error: { message: 'Solo se permiten archivos PDF' }
-        });
-      });
-    }
-    
-    const formData = new FormData();
-    formData.append('file', archivo);
-    
-    // Agregar idSolicitud si se proporciona
-    if (idSolicitud) {
-      formData.append('idSolicitud', idSolicitud.toString());
-    }
-    
-    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
-    return this.http.post(url, formData);
-  }
-
-  // ================================
-  // Estados y Comentarios
-  // ================================
-  actualizarEstadoDocumentos(idSolicitud: number, documentos: any[]): Observable<any> {
-    const url = `${this.apiUrl}/actualizarEstadoDocumentos`;
-    
-    return this.http.put(url, {
-      idSolicitud: idSolicitud,
-      documentos: documentos
-    }, { headers: this.getAuthHeaders() });
-  }
-
-  /**
-   * Aprobar solicitud como coordinador
-   */
-  approveAsCoordinador(requestId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
-      idSolicitud: requestId,
-      nuevoEstado: 'APROBADA_COORDINADOR'
-    }, { headers: this.getAuthHeaders() });
-  }
-
-  /**
-   * Aprobar definitivamente la solicitud (usado por SECRETARIA)
-   */
-  approveDefinitively(idSolicitud: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
-      idSolicitud: idSolicitud,
-      nuevoEstado: 'APROBADA'
-    }, { headers: this.getAuthHeaders() });
-  }
-
-  actualizarEstadoSolicitud(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
-      idSolicitud: idSolicitud,
-      nuevoEstado: nuevoEstado,
-      comentario: comentario
-    }, { headers: this.getAuthHeaders() });
-  }
-
-  /**
-   * Descargar archivo PDF usando endpoint específico de Paz y Salvo
-   */
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
-    // USAR ENDPOINT ESPECÍFICO DE PAZ Y SALVO
-    const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
-    
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob',
-      observe: 'response'
-    }).pipe(
-      map((resp: any) => {
-        const filename = this.parseFilenameFromHeaders(resp) || nombreArchivo || 'oficio.pdf';
-        const blob: Blob = resp.body as Blob;
-        (blob as any).filename = filename;
-        return blob;
-      })
-    );
+    return this.descargarConNombre(this.urlDescargaPorNombre(nombreArchivo), nombreArchivo || 'oficio.pdf');
   }
 
-  /**
-   * Descargar archivo PDF por ID de documento.
-   * Este método es más confiable que usar el nombre del archivo.
-   */
+  /** Por id de documento: más confiable que por nombre. */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
-    const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob',
-      observe: 'response'
-    }).pipe(
-      map((resp: any) => {
-        const filename = this.parseFilenameFromHeaders(resp) || 'documento.pdf';
-        const blob: Blob = resp.body as Blob;
-        (blob as any).filename = filename;
-        return blob;
-      })
-    );
+    return this.descargarConNombre(`${environment.apiUrl}/documentos/${idDocumento}/descargar`, 'documento.pdf');
   }
 
-  /**
-   * Descargar archivo PDF por ruta del documento.
-   * Usa la ruta almacenada en la base de datos.
-   */
+  /** Por la ruta guardada en la base de datos. */
   descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
-    const url = `${environment.apiUrl}/solicitudes-pazysalvo/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
-    
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob',
-      observe: 'response'
-    }).pipe(
-      map((resp: any) => {
-        const filename = this.parseFilenameFromHeaders(resp) || nombreArchivo || 'documento.pdf';
-        const blob: Blob = resp.body as Blob;
-        (blob as any).filename = filename;
-        return blob;
-      })
+    return this.descargarConNombre(this.urlDescargaPorNombre(nombreArchivo), nombreArchivo || 'documento.pdf');
+  }
+
+  private urlDescargaPorNombre(nombreArchivo: string): string {
+    return `${this.apiUrl}/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
+  }
+
+  private descargarConNombre(url: string, nombrePorDefecto: string): Observable<Blob> {
+    return this.http.get(url, { responseType: 'blob', observe: 'response' }).pipe(
+      map(resp => this.conNombre(resp.body!, this.nombreDesdeCabeceras(resp) || nombrePorDefecto))
     );
   }
 
-  private parseFilenameFromHeaders(resp: any): string | null {
+  private conNombre(blob: Blob, nombre: string): Blob {
+    (blob as any).filename = nombre;
+    return blob;
+  }
+
+  private nombreDesdeCabeceras(resp: HttpResponse<Blob>): string | null {
     try {
-      const h = resp?.headers;
-      const cd: string = h?.get?.('Content-Disposition') || h?.get?.('content-disposition') || '';
-      if (!cd) return null;
-      const match = cd.match(/filename\*=UTF-8''([^;]+)|filename=\"?([^\";]+)\"?/i);
+      const cd = resp.headers?.get('Content-Disposition') || '';
+      const match = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
       const raw = match?.[1] || match?.[2];
-      if (!raw) return null;
-      return decodeURIComponent(raw);
+      return raw ? decodeURIComponent(raw) : null;
     } catch {
       return null;
     }
   }
 
-  /**
-   * Obtener documento por ID (para mostrar comentarios actuales al añadir uno nuevo).
-   * GET /api/documentos/buscarPorId/{id}
-   */
-  buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string; [key: string]: any }> {
-    const url = `${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`;
-    return this.http.get<{ comentario?: string; [key: string]: any }>(url, { headers: this.getAuthHeaders() });
-  }
-
-  /**
-   * Añadir comentario usando endpoint genérico
-   */
-  agregarComentario(idDocumento: number, comentario: string): Observable<any> {
-    // USAR ENDPOINT GENÉRICO CORRECTO
-    const url = `${environment.apiUrl}/documentos/añadirComentario`;
-    const body = {
-      idDocumento: idDocumento,
-      comentario: comentario
-    };
-    
-    return this.http.put(url, body, { headers: this.getAuthHeaders() });
-  }
-
-  /**
-   * Generar documento de Paz y Salvo usando endpoint específico (para secretaría)
-   */
-  generarDocumento(idSolicitud: number, numeroDocumento: string, fechaDocumento: string, observaciones?: string): Observable<{blob: Blob, filename: string}> {
-    const url = `${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/${idSolicitud}`;
-
-    // Crear FormData con los parámetros como indica el usuario
-    const formData = new FormData();
-    formData.append('numeroDocumento', numeroDocumento);
-    formData.append('fechaDocumento', fechaDocumento);
-    if (observaciones) {
-      formData.append('observaciones', observaciones);
+  private validarPdf(archivo: File): { status: number; error: { message: string } } | null {
+    if (archivo.size > TAMANO_MAXIMO_PDF) {
+      const mb = (archivo.size / (1024 * 1024)).toFixed(2);
+      return { status: 413, error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${mb}MB` } };
     }
-
-    // Llamar al endpoint específico de Paz y Salvo
-    return this.http.post(url, formData, {
-      headers: this.getAuthHeaders(true), // true para FormData
-      responseType: 'blob',
-      observe: 'response'
-    }).pipe(
-      // Procesar respuesta y crear archivo
-      map((response: any) => {
-        const blob = response.body!;
-        let filename = `PAZ_SALVO_${numeroDocumento}.docx`; // Fallback
-        
-        // Obtener nombre del archivo del header Content-Disposition
-        const contentDisposition = response.headers.get('Content-Disposition');
-        if (contentDisposition) {
-          const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-          if (filenameMatch) {
-            filename = filenameMatch[1];
-          }
-        }
-        
-        return { blob, filename };
-      })
-    );
+    if (!archivo.name.toLowerCase().endsWith('.pdf')) {
+      return { status: 415, error: { message: 'Solo se permiten archivos PDF' } };
+    }
+    return null;
   }
-
-  /**
-   * Obtener todos los documentos de una solicitud de Paz y Salvo
-   * Para coordinadores
-   */
-  obtenerDocumentosCoordinador(idSolicitud: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-
 }
