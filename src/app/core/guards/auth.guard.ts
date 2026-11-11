@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, CanActivateChild, Router } from '@angular/router';
 import { CanActivateFn } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class authGuard implements CanActivate{
+export class authGuard implements CanActivate, CanActivateChild {
   // const authService = inject(AuthService);
 
   // if (!authService.isAuthenticated()) {
@@ -15,6 +15,12 @@ export class authGuard implements CanActivate{
 
   // return true;
   constructor(private authService: AuthService, private router: Router) {}
+
+  // Necesario porque las rutas por rol usan canActivateChild: [authGuard, RoleGuard].
+  // Sin este método Angular no puede ejecutar el guard y cancela la navegación.
+  canActivateChild(): boolean {
+    return this.canActivate();
+  }
 
   canActivate(): boolean {
     if (this.authService.isAuthenticated()) {
