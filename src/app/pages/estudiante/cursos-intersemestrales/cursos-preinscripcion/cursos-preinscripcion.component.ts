@@ -8,7 +8,6 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
 @Component({

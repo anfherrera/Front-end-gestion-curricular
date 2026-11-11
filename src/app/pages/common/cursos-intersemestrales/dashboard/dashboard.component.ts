@@ -10,7 +10,6 @@ import { Subject, takeUntil } from 'rxjs';
 import { CursosIntersemestralesService, SolicitudCursoVerano, CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard-cursos-intersemestrales',
@@ -122,11 +121,6 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
     }).length;
   }
 
-
-  getTipoSolicitudColor(tipo: string): string {
-    // Todos los tipos usan el azul principal de la app
-    return '#000066';
-  }
 
   // Cachear para no recalcular en cada detección de cambios
   private fechasFormateadas = new Map<string, string>();

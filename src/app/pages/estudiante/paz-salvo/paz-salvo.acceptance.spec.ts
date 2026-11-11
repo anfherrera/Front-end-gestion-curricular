@@ -231,40 +231,46 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
   /**
    * HISTORIA DE USUARIO 7:
    * Como estudiante,
-   * Quiero ver el seguimiento de mi solicitud de paz y salvo,
-   * Para conocer su estado actual y próximos pasos.
+   * Quiero ver el seguimiento de mi solicitud y descargar el oficio,
+   * Para saber en qué estado está mi paz y salvo.
    */
   describe('HU-07: Seguimiento de Solicitud', () => {
-    it('ACEP-PS-007: DADO que soy estudiante con solicitud en proceso, CUANDO consulto seguimiento, ENTONCES veo estados y documento descargable', fakeAsync(() => {
-      // GIVEN: Estudiante con solicitud activa
-      const mockSolicitud = {
-        id: 1,
-        nombre: 'Solicitud Paz y Salvo',
-        fecha: '2025-01-10',
-        estado: 'APROBADA_COORDINADOR' as any,
-        archivos: [{ 
-          id_documento: 1,
-          nombre: 'oficio_paz_salvo_1.pdf',
-          ruta_documento: '/documentos/oficio_1.pdf',
-          fecha: '2025-01-10',
-          esValido: true
-        }]
-      };
+    it('ACEP-PS-007: DADO que soy estudiante con solicitud en proceso, CUANDO consulto seguimiento, ENTONCES veo mis solicitudes con sus estados', fakeAsync(() => {
+      // GIVEN: Estudiante con una solicitud aprobada por el coordinador
+      const mockSolicitudes: any[] = [{
+        id_solicitud: 1,
+        nombre_solicitud: 'Solicitud Paz y Salvo',
+        estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA_COORDINADOR' }]
+      }];
 
-      // WHEN: Estudiante consulta seguimiento
-      service.getRequestById(1).subscribe((solicitud) => {
-        // THEN: Ve solicitud y puede descargar documento
-        expect(solicitud).toBeTruthy();
-        expect(solicitud.archivos && solicitud.archivos.length).toBeGreaterThan(0);
-        expect(solicitud.archivos?.[0]?.nombre).toBeTruthy();
+      // WHEN: Consulto mis solicitudes
+      service.listarSolicitudesPorRol('ESTUDIANTE', mockEstudiante.id_usuario).subscribe((solicitudes) => {
+        // THEN: Veo la solicitud con su historial de estados
+        expect(solicitudes.length).toBe(1);
+        expect(solicitudes[0].estadosSolicitud?.at(-1)?.estado_actual).toBe('APROBADA_COORDINADOR');
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/listarSolicitud-PazYSalvo/1'));
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('/listarSolicitud-PazYSalvo/porRol') &&
+        r.params.get('rol') === 'ESTUDIANTE' &&
+        r.params.get('idUsuario') === String(mockEstudiante.id_usuario)
+      );
       expect(req.request.method).toBe('GET');
-      req.flush(mockSolicitud);
+      req.flush(mockSolicitudes);
+      tick();
+    }));
+
+    it('ACEP-PS-008: DADO que mi solicitud tiene oficio, CUANDO lo descargo, ENTONCES recibo el PDF con su nombre', fakeAsync(() => {
+      service.descargarOficioPorSolicitud(1).subscribe((blob: any) => {
+        expect(blob.filename).toBe('OFICIO_PAZ_SALVO_1.pdf');
+      });
+      tick();
+
+      const req = httpMock.expectOne((r) => r.url.includes('/descargarOficio/1'));
+      req.flush(new Blob(['%PDF']), { headers: { 'Content-Disposition': 'attachment; filename="OFICIO_PAZ_SALVO_1.pdf"' } });
       tick();
     }));
   });
-});
 
+});

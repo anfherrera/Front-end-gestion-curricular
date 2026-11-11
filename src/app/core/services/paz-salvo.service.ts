@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, catchError, map, switchMap, of } from 'rxjs';
-import { Solicitud, Archivo, Usuario, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
+import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -177,10 +177,6 @@ export class PazSalvoService {
     );
   }
 
-  getRequestById(requestId: number): Observable<Solicitud> {
-    return this.http.get<Solicitud>(`${this.apiUrl}/listarSolicitud-PazYSalvo/${requestId}`, { headers: this.getAuthHeaders() });
-  }
-
   /**
    * Obtener comentarios filtrados de una solicitud
    * Solo devuelve comentarios existentes (rechazo y documentos con comentarios)
@@ -301,21 +297,6 @@ export class PazSalvoService {
       idSolicitud: requestId,
       nuevoEstado: 'EN_REVISION_COORDINADOR'
     }, { headers: this.getAuthHeaders() });
-  }
-
-  generateOfficio(requestId: number): Observable<string> {
-    return this.http.get(`${this.apiUrl}/${requestId}/generar-oficio`, { headers: this.getAuthHeaders(), responseType: 'text' });
-  }
-
-  // ================================
-  // Archivos
-  // ================================
-  uploadFile(requestId: number, archivo: File): Observable<Archivo> {
-    const formData = new FormData();
-    formData.append('archivo', archivo);
-
-    // El JWT interceptor agrega automáticamente el token y NO establece Content-Type para FormData
-    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/subir-archivo`, formData);
   }
 
   /**
@@ -456,18 +437,6 @@ export class PazSalvoService {
     return this.http.post(url, formData);
   }
 
-  downloadFile(requestId: number, archivoNombre: string): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${requestId}/descargar-archivo/${archivoNombre}`, { headers: this.getAuthHeaders(), responseType: 'blob' });
-  }
-
-  approveDocument(requestId: number, archivoNombre: string): Observable<Archivo> {
-    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/aprobar-archivo`, { nombreArchivo: archivoNombre }, { headers: this.getAuthHeaders() });
-  }
-
-  rejectDocument(requestId: number, archivoNombre: string): Observable<Archivo> {
-    return this.http.post<Archivo>(`${this.apiUrl}/${requestId}/rechazar-archivo`, { nombreArchivo: archivoNombre }, { headers: this.getAuthHeaders() });
-  }
-
   // ================================
   // Estados y Comentarios
   // ================================
@@ -527,13 +496,6 @@ export class PazSalvoService {
         return blob;
       })
     );
-  }
-
-  /**
-   * Alias más semántico para descargar por nombre de archivo
-   */
-  descargarPorNombre(filename: string): Observable<Blob> {
-    return this.descargarArchivo(filename);
   }
 
   /**
@@ -657,31 +619,10 @@ export class PazSalvoService {
 
   /**
    * Obtener todos los documentos de una solicitud de Paz y Salvo
-   * Para funcionarios
-   */
-  obtenerDocumentos(idSolicitud: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/${idSolicitud}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Obtener todos los documentos de una solicitud de Paz y Salvo
    * Para coordinadores
    */
   obtenerDocumentosCoordinador(idSolicitud: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Asociar documentos huérfanos a una solicitud
-   */
-  asociarDocumentosHuerfanos(idSolicitud: number): Observable<any> {
-    const url = `${this.apiUrl}/asociar-documentos-huerfanos/${idSolicitud}`;
-    
-    return this.http.post(url, {}, {
       headers: this.getAuthHeaders()
     });
   }

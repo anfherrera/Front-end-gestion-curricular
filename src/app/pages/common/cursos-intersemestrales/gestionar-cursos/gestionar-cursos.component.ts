@@ -7,15 +7,15 @@ import { MatChipsModule } from '@angular/material/chips';
 import { Subject, takeUntil } from 'rxjs';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { 
-  CursosIntersemestralesService, 
-  CursoOfertadoVerano, 
-  Materia, 
-  Usuario, 
-  CreateCursoDTO, 
-  UpdateCursoDTO 
+import {
+  CursosIntersemestralesService,
+  CursoOfertadoVerano,
+  Materia,
+  Usuario,
+  CreateCursoDTO,
+  UpdateCursoDTO
 } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoEstadosService, EstadoCurso } from '../../../../core/services/curso-estados.service';
+import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { EstadoFiltersComponent } from '../../../../shared/components/estado-filters/estado-filters.component';
 import { ErrorHandlerService } from '../../../../shared/components/error-handler/error-handler.service';
 import { CursoDialogComponent } from './curso-dialog.component';
@@ -177,149 +177,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
   }
 
-  // DATOS DE PRUEBA - SOLO PARA DESARROLLO/EMERGENCIA
-  // Estos métodos YA NO SE USAN - Se cargan datos reales del backend
-  private getCursosPrueba(): CursoOfertadoVerano[] {
-    return [
-      {
-        id_curso: 1,
-        nombre_curso: 'Programación Avanzada',
-        codigo_curso: 'PROG-301',
-        descripcion: 'Curso de programación avanzada con enfoque en algoritmos',
-        fecha_inicio: new Date('2024-01-15'),
-        fecha_fin: new Date('2024-02-15'),
-        cupo_maximo: 25,
-        cupo_disponible: 20,
-        cupo_estimado: 25,
-        espacio_asignado: 'Lab 301',
-        estado: 'Abierto',
-        objMateria: {
-          id_materia: 1,
-          codigo: 'PROG',
-          nombre: 'Programación',
-          creditos: 4,
-          descripcion: 'Programación (PROG) - 4 créditos'
-        },
-        objDocente: {
-          id_usuario: 2,
-          nombre: 'María',
-          apellido: 'García',
-          email: 'maria.garcia@unicauca.edu.co',
-          telefono: '3007654321',
-          objRol: { id_rol: 2, nombre_rol: 'Docente' }
-        }
-      },
-      {
-        id_curso: 2,
-        nombre_curso: 'Bases de Datos',
-        codigo_curso: 'BD-201',
-        descripcion: 'Fundamentos de bases de datos relacionales',
-        fecha_inicio: new Date('2024-01-20'),
-        fecha_fin: new Date('2024-02-20'),
-        cupo_maximo: 30,
-        cupo_disponible: 25,
-        cupo_estimado: 30,
-        espacio_asignado: 'Aula 205',
-        estado: 'Publicado',
-        objMateria: {
-          id_materia: 2,
-          codigo: 'BD',
-          nombre: 'Bases de Datos',
-          creditos: 3,
-          descripcion: 'Bases de Datos (BD) - 3 créditos'
-        },
-        objDocente: {
-          id_usuario: 3,
-          nombre: 'Carlos',
-          apellido: 'López',
-          email: 'carlos.lopez@unicauca.edu.co',
-          telefono: '3009876543',
-          objRol: { id_rol: 2, nombre_rol: 'Docente' }
-        }
-      }
-    ];
-  }
-
-  // YA NO SE USA - Solo para emergencia si el backend falla
-  private getMateriasPrueba(): Materia[] {
-    return [
-      {
-        id_materia: 1,
-        codigo: 'PROG',
-        nombre: 'Programación',
-        creditos: 4,
-        descripcion: 'Programación (PROG) - 4 créditos'
-      },
-      {
-        id_materia: 2,
-        codigo: 'BD',
-        nombre: 'Bases de Datos',
-        creditos: 3,
-        descripcion: 'Bases de Datos (BD) - 3 créditos'
-      },
-      {
-        id_materia: 3,
-        codigo: 'MAT',
-        nombre: 'Matemáticas',
-        creditos: 3,
-        descripcion: 'Matemáticas (MAT) - 3 créditos'
-      },
-      {
-        id_materia: 4,
-        codigo: 'RED',
-        nombre: 'Redes de Computadores',
-        creditos: 4,
-        descripcion: 'Redes de Computadores (RED) - 4 créditos'
-      },
-      {
-        id_materia: 5,
-        codigo: 'IS',
-        nombre: 'Ingeniería de Software',
-        creditos: 4,
-        descripcion: 'Ingeniería de Software (IS) - 4 créditos'
-      }
-    ];
-  }
-
   // Método duplicado eliminado - ahora se usa cargarMateriasYDocentes()
-
-  // YA NO SE USA - Solo para emergencia si el backend falla
-  private getDocentesPrueba(): Usuario[] {
-    return [
-      {
-        id_usuario: 2,
-        nombre: 'María',
-        apellido: 'García',
-        email: 'maria.garcia@unicauca.edu.co',
-        telefono: '3007654321',
-        objRol: { id_rol: 2, nombre_rol: 'Docente' }
-      },
-      {
-        id_usuario: 3,
-        nombre: 'Carlos',
-        apellido: 'López',
-        email: 'carlos.lopez@unicauca.edu.co',
-        telefono: '3009876543',
-        objRol: { id_rol: 2, nombre_rol: 'Docente' }
-      },
-      {
-        id_usuario: 4,
-        nombre: 'Ana',
-        apellido: 'Martínez',
-        email: 'ana.martinez@unicauca.edu.co',
-        telefono: '3001234567',
-        objRol: { id_rol: 2, nombre_rol: 'Docente' }
-      },
-      {
-        id_usuario: 5,
-        nombre: 'Luis',
-        apellido: 'Rodríguez',
-        email: 'luis.rodriguez@unicauca.edu.co',
-        telefono: '3004567890',
-        objRol: { id_rol: 2, nombre_rol: 'Docente' }
-      }
-    ];
-  }
 
   // Abrir dialog para crear nuevo curso
   abrirDialogCrear() {
@@ -503,11 +361,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Formatear fecha para date picker
-  private formatearFechaParaInput(fecha: Date): Date {
-    return new Date(fecha);
-  }
-
   // Formatear fecha para mostrar
   formatearFecha(fecha: Date): string {
     return new Date(fecha).toLocaleDateString('es-ES');
@@ -584,11 +437,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     return curso.estado === 'Borrador';
   }
 
-  // Validar transición de estado
-  validarCambioEstado(estadoActual: string, nuevoEstado: string): boolean {
-    return this.cursoEstadosService.validarTransicionEstado(estadoActual, nuevoEstado);
-  }
-
   // Obtener estados permitidos para un curso
   getEstadosPermitidos(estadoActual: string): string[] {
     return this.cursoEstadosService.getEstadosPermitidos(estadoActual);
@@ -612,12 +460,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cursosFiltrados = [];
     // Recargar cursos con el nuevo filtro
     this.cargarDatos();
-  }
-
-  // Método para actualizar cursos en el filtro
-  actualizarCursosEnFiltro(): void {
-    // Este método se puede llamar después de crear/editar/eliminar cursos
-    // para actualizar el componente de filtros
   }
 
   // Exportar cursos a PDF

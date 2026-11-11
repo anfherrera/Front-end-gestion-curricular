@@ -289,30 +289,6 @@ export class CursosOfertadosComponent implements OnInit {
     });
   }
 
-  getAccionesDisponibles(curso: Curso): string[] {
-    const cursoVerano = this.cursosVerano.find((c: CursoOfertadoVerano) => c.id_curso.toString() === curso.codigo);
-    if (!cursoVerano) return [];
-
-    const acciones: string[] = [];
-    
-    switch (cursoVerano.estado) {
-      case 'Preinscripción':
-        acciones.push('preinscribir');
-        break;
-      case 'Inscripción':
-        acciones.push('inscribir');
-        break;
-      case 'Abierto':
-      case 'Publicado':
-        acciones.push('ver');
-        break;
-      default:
-        acciones.push('ver');
-    }
-
-    return acciones;
-  }
-
   cerrarMensajeInscripcion() {
     this.mostrarMensajeInscripcion = false;
     this.cursoIdDestino = undefined;

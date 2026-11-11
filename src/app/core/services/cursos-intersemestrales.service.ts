@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { Curso as CursoList } from '../../shared/components/curso-list/curso-list.component';
 import { AuthService } from './auth.service';
@@ -586,81 +586,6 @@ export class CursosIntersemestralesService {
     );
   }
 
-  /**
-   * Obtener todos los cursos (estudiantes)
-   * GET /api/cursos-intersemestrales/cursos-verano
-   * Query params opcionales:
-   * - periodoAcademico: "2025-1" o "2025-2"
-   * - idPrograma: ID del programa
-   */
-  getCursosVerano(periodoAcademico?: string, idPrograma?: number): Observable<CursoOfertadoVerano[]> {
-    let params = new HttpParams();
-    
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    if (idPrograma !== undefined && idPrograma !== null) {
-      params = params.set('idPrograma', idPrograma.toString());
-    }
-    
-    const url = `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano`;
-    const options = params.keys().length > 0 ? { params } : {};
-    
-    return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
-      map(cursos => cursos.map(curso => this.normalizarCurso(curso))),
-      catchError(error => {
-        return of([]);
-      })
-    );
-  }
-
-  /**
-   * Obtener cursos disponibles (estudiantes - solo visibles)
-   * GET /api/cursos-intersemestrales/cursos-verano/disponibles
-   * Query params opcionales:
-   * - periodoAcademico: "2025-1", "2025-2" o "todos"
-   * - idPrograma: ID del programa
-   * - todosLosPeriodos: true/false
-   */
-  getCursosVeranoDisponibles(periodoAcademico?: string, idPrograma?: number, todosLosPeriodos?: boolean): Observable<CursoOfertadoVerano[]> {
-    let params = new HttpParams();
-    
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-    
-    if (idPrograma !== undefined && idPrograma !== null) {
-      params = params.set('idPrograma', idPrograma.toString());
-    }
-    
-    if (todosLosPeriodos !== undefined) {
-      params = params.set('todosLosPeriodos', todosLosPeriodos.toString());
-    }
-    
-    const url = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES;
-    const options = params.keys().length > 0 ? { params } : {};
-    
-    return this.http.get<CursoOfertadoVerano[]>(url, options).pipe(
-      map(cursos => cursos.map(curso => this.normalizarCurso(curso))),
-      catchError(error => {
-        return of([]);
-      })
-    );
-  }
-
-  // Obtener cursos filtrados por período académico (método legacy - mantener para compatibilidad)
-  getCursosPorPeriodo(periodo: string): Observable<CursoOfertadoVerano[]> {
-    return this.getCursosVerano(periodo);
-  }
-
-  // Obtener cursos activos en una fecha específica
-  getCursosActivos(fecha: string): Observable<CursoOfertadoVerano[]> {
-    return this.http.get<CursoOfertadoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-activos/${fecha}`).pipe(
-      map(cursos => cursos.map(curso => this.normalizarCurso(curso)))
-    );
-  }
-
   // Obtener estadísticas por período
   getEstadisticasPorPeriodo(periodo: string): Observable<any> {
     return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/estadisticas/periodo/${periodo}`);
@@ -762,11 +687,6 @@ export class CursosIntersemestralesService {
     );
   }
 
-  // Consultar permisos para un estado y rol específico
-  getPermisosEstado(estado: string, rol: string): Observable<string[]> {
-    return this.http.get<string[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO(estado, rol));
-  }
-
   // Preinscripción a curso de verano
   crearPreinscripcion(payload: CreatePreinscripcionDTO): Observable<SolicitudCursoVerano> {
     return this.http.post<SolicitudCursoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES, payload);
@@ -777,22 +697,7 @@ export class CursosIntersemestralesService {
     return this.http.post<SolicitudCursoVerano>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCIONES, payload);
   }
 
-  // Seguimiento de solicitud
-  getSeguimientoSolicitud(idSolicitud: number): Observable<SolicitudCursoVerano> {
-    return this.http.get<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/seguimiento/${idSolicitud}`);
-  }
-
   // ====== FUNCIONARIOS - GESTIÓN DE SOLICITUDES ======
-  
-  // Obtener preinscripciones de un curso
-  getPreinscripcionesCurso(idCurso: number): Observable<SolicitudCursoVerano[]> {
-    return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/preinscripciones/${idCurso}`);
-  }
-
-  // Obtener inscripciones de un curso
-  getInscripcionesCurso(idCurso: number): Observable<SolicitudCursoVerano[]> {
-    return this.http.get<SolicitudCursoVerano[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/inscripciones/${idCurso}`);
-  }
 
   // Aprobar preinscripción
   aprobarPreinscripcion(id: number, comentarios?: string): Observable<any> {
@@ -825,16 +730,6 @@ export class CursosIntersemestralesService {
     const body = { observaciones };
     
     return this.http.put<any>(endpoint, body);
-  }
-
-  // Validar pago de inscripción
-  validarPagoInscripcion(id: number): Observable<SolicitudCursoVerano> {
-    return this.http.put<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/inscripciones/${id}/validar-pago`, {});
-  }
-
-  // Completar inscripción
-  completarInscripcion(id: number): Observable<SolicitudCursoVerano> {
-    return this.http.put<SolicitudCursoVerano>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/inscripciones/${id}/completar`, {});
   }
 
   // ====== NOTIFICACIONES ======
@@ -872,11 +767,6 @@ export class CursosIntersemestralesService {
   // Obtener todas las materias disponibles para solicitar (datos reales de la BD)
   getMateriasDisponibles(): Observable<Materia[]> {
     return this.http.get<Materia[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
-  }
-
-  // Método legacy para compatibilidad
-  getCursosDisponiblesParaSolicitud(): Observable<CursoDisponible[]> {
-    return this.http.get<CursoDisponible[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
   }
 
   // Obtener condiciones de solicitud (enum)
@@ -945,11 +835,6 @@ export class CursosIntersemestralesService {
   }
 
   // ====== GESTIÓN DE CURSOS (para funcionarios) ======
-  
-  // Obtener todos los cursos para gestión (legacy - usar getTodosLosCursosParaFuncionarios)
-  getTodosLosCursos(): Observable<CursoOfertadoVerano[]> {
-    return this.getTodosLosCursosParaFuncionarios();
-  }
 
   // Crear nuevo curso
   crearCurso(payload: CreateCursoDTO): Observable<CursoOfertadoVerano> {
@@ -1123,26 +1008,6 @@ export class CursosIntersemestralesService {
     );
   }
 
-  // Obtener inscripciones por curso específico
-  getInscripcionesPorCurso(idCurso: number): Observable<any[]> {
-    return this.http.get<any>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
-      map(response => {
-        // El backend devuelve { value: [...], Count: n }
-        let inscripciones = response;
-        if (response && response.value) {
-          inscripciones = response.value;
-        }
-        
-        // Filtrar inscripciones por curso
-        const inscripcionesFiltradas = inscripciones.filter((inscripcion: any) => 
-          inscripcion.cursoId === idCurso
-        );
-        
-        return inscripcionesFiltradas;
-      })
-    );
-  }
-
   /**
    * Obtener la lista completa de estudiantes (preinscritos e inscritos) de un curso
    * Solo accesible para funcionarios, coordinadores y administradores
@@ -1290,21 +1155,8 @@ export class CursosIntersemestralesService {
 
 
 
-  // ====== MÉTODOS LEGACY (para compatibilidad) ======
-  getSolicitudes(): Observable<Solicitud[]> {
-    return this.http.get<Solicitud[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE);
-  }
-
   crearSolicitud(payload: CreateSolicitudDTO): Observable<Solicitud> {
     return this.http.post<Solicitud>(ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE, payload);
-  }
-
-  actualizarSolicitud(id: number, payload: UpdateSolicitudDTO): Observable<Solicitud> {
-    return this.http.put<Solicitud>(ApiEndpoints.CURSOS_INTERSEMESTRALES.BY_ID(id.toString()), payload);
-  }
-
-  eliminarSolicitud(id: number): Observable<void> {
-    return this.http.delete<void>(ApiEndpoints.CURSOS_INTERSEMESTRALES.BY_ID(id.toString()));
   }
 
   aprobarSolicitud(id: number): Observable<Solicitud> {
@@ -1319,146 +1171,6 @@ export class CursosIntersemestralesService {
   }
 
   // ====== INSCRIPCIONES LEGACY ======
-  
-  // Obtener todas las inscripciones (para funcionarios)
-  getTodasLasInscripciones(): Observable<Inscripcion[]> {
-    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCIONES}`).pipe(
-      switchMap(inscripciones => {
-        // Obtener cursos para mapear correctamente
-        return this.getTodosLosCursosParaFuncionarios().pipe(
-          map(cursos => inscripciones.map(inscripcion => {
-            const curso = cursos.find((c: any) => c.id_curso === inscripcion.cursoId);
-            return {
-              id_inscripcion: inscripcion.id,
-              fecha_inscripcion: new Date(inscripcion.fecha),
-              estado: inscripcion.estado,
-              archivoPago: inscripcion.archivoPago ? {
-                id_documento: inscripcion.archivoPago.id_documento,
-                nombre: inscripcion.archivoPago.nombre,
-                url: inscripcion.archivoPago.url,
-                fecha: inscripcion.archivoPago.fecha
-              } : undefined,
-              objUsuario: inscripcion.usuario,
-              objCurso: curso || inscripcion.curso
-            };
-          }))
-        );
-      }),
-      catchError(error => {
-        // Intentar con endpoint alternativo
-        return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`).pipe(
-          switchMap(inscripciones => {
-            return this.getTodosLosCursosParaFuncionarios().pipe(
-              map(cursos => inscripciones.map(inscripcion => {
-                const curso = cursos.find((c: any) => c.id_curso === inscripcion.cursoId);
-                return {
-                  id_inscripcion: inscripcion.id,
-                  fecha_inscripcion: new Date(inscripcion.fecha),
-                  estado: inscripcion.estado,
-                  archivoPago: inscripcion.archivoPago ? {
-                    id_documento: inscripcion.archivoPago.id_documento,
-                    nombre: inscripcion.archivoPago.nombre,
-                    url: inscripcion.archivoPago.url,
-                    fecha: inscripcion.archivoPago.fecha
-                  } : undefined,
-                  objUsuario: inscripcion.usuario,
-                  objCurso: curso || inscripcion.curso
-                };
-              }))
-            );
-          })
-        );
-      })
-    );
-  }
-  
-  // Obtener inscripciones del usuario autenticado
-  getInscripciones(): Observable<Inscripcion[]> {
-    // Obtener el usuario autenticado
-    const usuario = this.authService.getUsuario();
-    if (!usuario?.id_usuario) {
-      return of([]); // Retornar array vacío si no hay usuario autenticado
-    }
-    
-    return this.http.get<any[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones-reales/${usuario.id_usuario}`).pipe(
-      switchMap(inscripciones => {
-        // Obtener cursos para mapear correctamente
-        return this.getCursosDisponibles().pipe(
-          map(cursos => inscripciones.map(inscripcion => {
-            const curso = cursos.find((c: any) => c.id_curso === inscripcion.cursoId);
-            return {
-              id_inscripcion: inscripcion.id,
-              fecha_inscripcion: new Date(inscripcion.fecha),
-              estado: inscripcion.estado,
-              archivoPago: inscripcion.archivoPago ? {
-                id_documento: inscripcion.archivoPago.id_documento,
-                nombre: inscripcion.archivoPago.nombre,
-                url: inscripcion.archivoPago.url,
-                fecha: inscripcion.archivoPago.fecha
-              } : undefined,
-              objUsuario: {
-                id_usuario: inscripcion.estudiante.id_usuario,
-                nombre: inscripcion.estudiante.nombre,
-                apellido: inscripcion.estudiante.apellido,
-                email: inscripcion.estudiante.email,
-                telefono: this.getTelefonoEstudiante(inscripcion.estudiante.id_usuario), // Mantener para compatibilidad
-                codigo_estudiante: inscripcion.estudiante.codigo_estudiante,
-                objRol: { id_rol: 1, nombre_rol: 'Estudiante' }
-              },
-              objCurso: curso || {
-                id_curso: inscripcion.cursoId,
-                nombre_curso: 'Curso no encontrado',
-                codigo_curso: 'N/A',
-                descripcion: 'Curso no disponible',
-                fecha_inicio: new Date(),
-                fecha_fin: new Date(),
-                cupo_maximo: 0,
-                cupo_estimado: 0,
-                cupo_disponible: 0,
-                espacio_asignado: 'N/A',
-                estado: 'Cerrado',
-                objMateria: { id_materia: 0, codigo: 'N/A', nombre: 'N/A', creditos: 0, descripcion: 'N/A' },
-                objDocente: { id_usuario: 0, nombre: 'N/A', apellido: 'N/A', email: 'N/A', telefono: 'N/A', objRol: { id_rol: 2, nombre_rol: 'Docente' } }
-              }
-            };
-          }))
-        );
-      })
-    );
-  }
-
-  // Métodos auxiliares para obtener datos de estudiantes
-  private getNombreEstudiante(estudianteId: number): string {
-    const nombres = ['Ana', 'Carlos', 'María', 'Pedro', 'Laura', 'Diego', 'Sofia', 'Andrés'];
-    return nombres[estudianteId % nombres.length] || 'Estudiante';
-  }
-
-  private getApellidoEstudiante(estudianteId: number): string {
-    const apellidos = ['González', 'Rodríguez', 'Martínez', 'López', 'García', 'Pérez', 'Sánchez', 'Ramírez'];
-    return apellidos[estudianteId % apellidos.length] || 'Estudiante';
-  }
-
-  private getEmailEstudiante(estudianteId: number): string {
-    const nombres = this.getNombreEstudiante(estudianteId).toLowerCase();
-    const apellidos = this.getApellidoEstudiante(estudianteId).toLowerCase();
-    return `${nombres}.${apellidos}@unicauca.edu.co`;
-  }
-
-  private getCodigoEstudiante(estudianteId: number): string {
-    return `10461234566${estudianteId}`;
-  }
-
-  private getTelefonoEstudiante(estudianteId: number): string {
-    return `300${String(estudianteId).padStart(7, '0')}`;
-  }
-
-  crearInscripcionLegacy(payload: CreateInscripcionLegacyDTO): Observable<Inscripcion> {
-    return this.http.post<Inscripcion>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones`, payload);
-  }
-
-  cancelarInscripcion(id: number): Observable<void> {
-    return this.http.delete<void>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/inscripciones/${id}`);
-  }
 
   // Seguimiento de actividades (preinscripciones + inscripciones)
   getSeguimientoActividades(idUsuario: number): Observable<SeguimientoActividades> {
@@ -1634,12 +1346,6 @@ export class CursosIntersemestralesService {
     };
   }
 
-  // Métodos nuevos para cursos de verano
-  getCursosOfertadosVerano(): Observable<CursoList[]> {
-    return this.getCursosDisponibles()
-      .pipe(map(cursos => cursos.map(curso => this.mapCursoVerano(curso))));
-  }
-
   // Métodos legacy (para compatibilidad)
   getCursosOfertados(): Observable<CursoList[]> {
     return this.http
@@ -1653,26 +1359,6 @@ export class CursosIntersemestralesService {
       .pipe(map(cursos => cursos.map(curso => this.mapCursoVerano(curso))));
   }
 
-
-  getCursosInscritos(): Observable<CursoList[]> {
-    return this.http
-      .get<CursoBackend[]>(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos/inscritos`)
-      .pipe(map(cursos => cursos.map(curso => this.mapCursoLegacy(curso))));
-  }
-
-  // ====== DOCUMENTOS ======
-  getDocumentos(solicitudId: number): Observable<any[]> {
-    return this.http.get<any[]>(ApiEndpoints.CURSOS_INTERSEMESTRALES.DOCUMENTOS(solicitudId.toString()));
-  }
-
-  uploadDocumento(solicitudId: number, archivo: File): Observable<any> {
-    const formData = new FormData();
-    formData.append('archivo', archivo);
-    return this.http.post<any>(
-      ApiEndpoints.CURSOS_INTERSEMESTRALES.UPLOAD_DOCUMENT(solicitudId.toString()),
-      formData
-    );
-  }
 
   /**
    * Subir comprobante de pago para inscripción a curso de verano
@@ -1690,22 +1376,6 @@ export class CursosIntersemestralesService {
     formData.append('idSolicitud', inscripcionId.toString());
     // Opcional: Ser explícito sobre el tipo (también funciona sin esto)
     formData.append('tipoSolicitud', 'curso-verano');
-
-    return this.http.post<any>(
-      ApiEndpoints.ARCHIVOS.SUBIR_PDF,
-      formData
-    );
-  }
-
-  /**
-   * Subir comprobante ANTES de crear inscripción (también funciona)
-   * El archivo se moverá automáticamente cuando se cree la inscripción
-   * @param archivo - Archivo PDF del comprobante de pago
-   * @returns Observable con la respuesta del servidor
-   */
-  subirComprobanteSinInscripcion(archivo: File): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', archivo);
 
     return this.http.post<any>(
       ApiEndpoints.ARCHIVOS.SUBIR_PDF,

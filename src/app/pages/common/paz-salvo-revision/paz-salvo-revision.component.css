@@ -65,39 +65,8 @@
 }
 
 /* Tabla de solicitudes */
-.tabla-solicitudes {
-  width: 100%;
-  margin-top: 8px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #e0e0e0;
-}
-
-.tabla-solicitudes th {
-  font-weight: 600;
-  background: #f0f0f0;
-}
-
-.tabla-solicitudes td,
-.tabla-solicitudes th {
-  padding: 8px 12px;
-}
 
 /* Archivos */
-.archivo-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-  padding: 8px 4px;
-  border-bottom: 1px solid #e0e0e0;
-  transition: background-color 0.15s ease-in-out;
-}
-
-.archivo-item:hover {
-  background-color: #f9f9f9;
-}
 
 .archivo-nombre {
   flex: 1;

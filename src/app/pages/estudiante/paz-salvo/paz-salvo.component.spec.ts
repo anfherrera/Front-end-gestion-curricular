@@ -31,8 +31,7 @@ describe('PazSalvoComponent', () => {
     const pazSalvoServiceSpy = jasmine.createSpyObj('PazSalvoService', [
       'listarSolicitudesPorRol',
       'crearSolicitudConFormulario',
-      'descargarOficio',
-      'obtenerDocumentos',
+      'descargarOficioPorSolicitud',
       'obtenerComentarios'
     ]);
     const notificacionesServiceSpy = jasmine.createSpyObj('NotificacionesService', ['actualizarNotificaciones']);
@@ -219,21 +218,27 @@ describe('PazSalvoComponent', () => {
     expect(data.comentarioRechazo).toBe('Corrige el documento');
   });
 
-  it('debe detectar si una solicitud está rechazada', () => {
-    expect(component.esSolicitudRechazada('RECHAZADA')).toBeTrue();
-    expect(component.esSolicitudRechazada('APROBADA')).toBeFalse();
+  it('debe descargar el oficio con el nombre que entrega el servicio', () => {
+    const blob = new Blob(['pdf'], { type: 'application/pdf' });
+    (blob as any).filename = 'OFICIO_PAZ_SALVO.pdf';
+    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(of(blob));
+    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje');
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:prueba');
+    spyOn(URL, 'revokeObjectURL');
+
+    component.descargarOficio(7, 'respaldo.pdf');
+
+    expect(pazSalvoService.descargarOficioPorSolicitud).toHaveBeenCalledWith(7);
+    expect(mostrarSpy).toHaveBeenCalledWith('Oficio descargado exitosamente', 'success');
   });
 
-  it('debe indicar si hay comentarios asociados a documentos', () => {
-    component.solicitudesCompletas = [
-      {
-        id_solicitud: 1,
-        documentos: [{ nombre: 'doc.pdf', comentario: 'Observación' }]
-      }
-    ] as any;
+  it('debe avisar cuando la solicitud no tiene oficio', () => {
+    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(throwError(() => ({ status: 404 })));
+    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje');
 
-    expect(component.tieneComentarios(1)).toBeTrue();
-    expect(component.tieneComentarios(2)).toBeFalse();
+    component.descargarOficio(7, 'respaldo.pdf');
+
+    expect(mostrarSpy).toHaveBeenCalledWith('No hay oficios disponibles para esta solicitud', 'warning');
   });
 
   describe('Usabilidad y funcionalidad adicional', () => {
@@ -247,55 +252,23 @@ describe('PazSalvoComponent', () => {
       expect(component['obtenerSolicitudCompleta'](3)).toBeUndefined();
     });
 
-    it('PS-012: Debe obtener comentario de rechazo correctamente', () => {
-      component.solicitudesCompletas = [{
-        id_solicitud: 1,
-        estadosSolicitud: [
-          { estado_actual: 'PENDIENTE', comentario: null },
-          { estado_actual: 'RECHAZADA', comentario: 'Documentos incompletos' }
-        ]
-      }] as any;
+    it('PS-012: Sistemas exige el formato PPH o TIH', () => {
+      component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Ingeniería de Sistemas' } };
+      component.archivosActuales = [{ nombre: 'Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf' } as any];
 
-      const comentario = component['obtenerComentarioRechazo'](component.solicitudesCompletas[0]);
-      expect(comentario).toBe('Documentos incompletos');
+      expect(component.obtenerDocumentosFaltantes()).toContain('Formato PPH o TIH (requerido para tu programa)');
+
+      component.archivosActuales = [...component.archivosActuales, { nombre: 'Formato TIH.pdf' } as any];
+      expect(component.obtenerDocumentosFaltantes()).not.toContain('Formato PPH o TIH (requerido para tu programa)');
     });
 
-    it('PS-013: Debe manejar solicitud sin estados correctamente', () => {
-      component.solicitudesCompletas = [{
-        id_solicitud: 1,
-        estadosSolicitud: []
-      }] as any;
+    it('PS-013: Telemática rechaza los formatos de trabajo de grado', () => {
+      component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
+      component.archivosActuales = [{ nombre: 'cedula.pdf' } as any, { nombre: 'Formato TI-G.pdf' } as any];
 
-      const comentario = component['obtenerComentarioRechazo'](component.solicitudesCompletas[0]);
-      expect(comentario).toBeNull();
+      expect(component.obtenerDocumentosFaltantes()).toEqual(['Los formatos TI-G/TI-H no aplican para tu programa (Telemática)']);
+      expect(component.puedeEnviar()).toBeFalse();
     });
-
-    it('PS-014: Debe obtener estado actual de una solicitud', () => {
-      const solicitud = {
-        estadosSolicitud: [
-          { estado_actual: 'PENDIENTE' },
-          { estado_actual: 'APROBADA' }
-        ]
-      };
-
-      expect(component['obtenerEstadoActual'](solicitud)).toBe('APROBADA');
-    });
-
-    it('PS-015: Debe manejar solicitud sin estados en obtenerEstadoActual', () => {
-      const solicitud = { estadosSolicitud: [] };
-      expect(component['obtenerEstadoActual'](solicitud)).toBe('Pendiente');
-    });
-
-    it('PS-016: Debe verificar funcionalidad de comentarios sin errores', fakeAsync(() => {
-      spyOn(console, 'log');
-      
-      component.solicitudes = [];
-      component.solicitudesCompletas = [];
-      
-      expect(() => {
-        component['verificarFuncionalidadComentarios']();
-      }).not.toThrow();
-    }));
 
     it('PS-017: Debe manejar listarSolicitudes sin usuario', () => {
       // Resetear el spy para limpiar llamadas anteriores

@@ -59,25 +59,22 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
    */
   describe('HU-01: Ver Estadísticas Globales', () => {
     it('ACEP-EST-001: DADO que soy coordinador, CUANDO accedo a estadísticas, ENTONCES veo resumen global', fakeAsync(() => {
-      // GIVEN: Soy coordinador del sistema
-      const mockEstadisticas: any = {
-        totalSolicitudes: 250,
-        solicitudesAprobadas: 180,
-        solicitudesPendientes: 50,
-        solicitudesRechazadas: 20,
-        porcentajeAprobacion: 72
+      // GIVEN: El sistema tiene solicitudes registradas
+      const mockResumen: any = {
+        estadisticasGlobales: { totalSolicitudes: 250, totalAprobadas: 180, totalRechazadas: 20, totalEnProceso: 50 }
       };
 
-      // WHEN: Consulto estadísticas globales
-      service.getEstadisticasGlobales().subscribe((stats) => {
-        // THEN: Veo todas las métricas principales
-        expect(stats.totalSolicitudes).toBe(250);
-        expect(stats.porcentajeAprobacion).toBe(72);
+      // WHEN: Consulto el resumen completo sin filtros
+      service.getResumenCompleto().subscribe((resumen: any) => {
+        // THEN: Veo las métricas globales
+        expect(resumen.estadisticasGlobales.totalSolicitudes).toBe(250);
+        expect(resumen.estadisticasGlobales.totalAprobadas).toBe(180);
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_GLOBALES);
-      req.flush(mockEstadisticas);
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO);
+      expect(req.request.params.keys().length).toBe(0);
+      req.flush(mockResumen);
       tick();
     }));
   });
@@ -89,46 +86,31 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
    * Para identificar cuellos de botella.
    */
   describe('HU-02: Estadísticas por Proceso', () => {
-    it('ACEP-EST-002: DADO que quiero analizar paz y salvo, CUANDO consulto ese proceso, ENTONCES veo métricas específicas', fakeAsync(() => {
+    it('ACEP-EST-002: DADO que quiero analizar paz y salvo, CUANDO filtro por ese proceso, ENTONCES el backend recibe el proceso', fakeAsync(() => {
       // GIVEN: Quiero analizar paz y salvo
-      const mockEstadisticas: any = {
-        totalSolicitudes: 75,
-        aprobadas: 60,
-        enProceso: 10,
-        rechazadas: 5
-      };
+      const mockProceso: any = { estadisticasPorProceso: { 'Paz y Salvo': { totalSolicitudes: 75, aprobadas: 60 } } };
 
-      // WHEN: Consulto estadísticas del proceso
-      service.getEstadisticasProceso('paz_salvo').subscribe((stats) => {
-        // THEN: Veo métricas del proceso
-        expect(stats.totalSolicitudes).toBe(75);
-        expect(stats.aprobadas).toBe(60);
+      // WHEN: Consulto las estadísticas filtradas por proceso
+      service.getEstadisticasDetalladasPorProceso({ proceso: 'Paz y Salvo' }).subscribe((stats: any) => {
+        // THEN: Veo las métricas del proceso
+        expect(stats.estadisticasPorProceso['Paz y Salvo'].totalSolicitudes).toBe(75);
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PROCESO('paz_salvo'));
-      req.flush(mockEstadisticas);
+      const req = httpMock.expectOne((r) =>
+        r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO && r.params.get('proceso') === 'Paz y Salvo'
+      );
+      req.flush(mockProceso);
       tick();
     }));
 
-    it('ACEP-EST-003: DADO que quiero analizar cursos, CUANDO consulto ese proceso, ENTONCES veo datos de cursos', fakeAsync(() => {
-      // GIVEN: Analizar cursos intersemestrales
-      const mockEstadisticas: any = {
-        totalSolicitudes: 150,
-        aprobadas: 120,
-        enProceso: 20,
-        rechazadas: 10
-      };
-
-      // WHEN: Consulto el proceso
-      service.getEstadisticasProceso('cursos_intersemestrales').subscribe((stats) => {
-        // THEN: Veo métricas de cursos
-        expect(stats.totalSolicitudes).toBe(150);
-      });
+    it('ACEP-EST-003: DADO que elijo "Todos los procesos", CUANDO consulto, ENTONCES no se envía filtro de proceso', fakeAsync(() => {
+      service.getEstadisticasDetalladasPorProceso({ proceso: 'Todos los procesos' }).subscribe();
       tick();
 
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PROCESO('cursos_intersemestrales'));
-      req.flush(mockEstadisticas);
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO);
+      expect(req.request.params.has('proceso')).toBeFalse();
+      req.flush({});
       tick();
     }));
   });
@@ -140,28 +122,21 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
    * Para evaluar el desempeño de mis estudiantes.
    */
   describe('HU-03: Estadísticas por Programa', () => {
-    it('ACEP-EST-004: DADO que soy coordinador de programa, CUANDO consulto estadísticas, ENTONCES solo veo mi programa', fakeAsync(() => {
+    it('ACEP-EST-004: DADO que soy coordinador de programa, CUANDO consulto estadísticas, ENTONCES se filtran por mi programa', fakeAsync(() => {
       // GIVEN: Soy coordinador de Ingeniería Electrónica
       const programaId = mockCoordinador.objPrograma.id_programa;
-      const mockEstadisticas: any = {
-        idPrograma: programaId,
-        nombrePrograma: 'Ingeniería Electrónica',
-        totalSolicitudes: 50,
-        aprobadas: 40,
-        enProceso: 8,
-        rechazadas: 2
-      };
 
-      // WHEN: Consulto estadísticas de MI programa
-      service.getEstadisticasPrograma(programaId).subscribe((stats) => {
-        // THEN: Solo veo datos de Ingeniería Electrónica
-        expect(stats.idPrograma).toBe(programaId);
-        expect(stats.nombrePrograma).toBe('Ingeniería Electrónica');
+      // WHEN: Consulto el resumen de MI programa
+      service.getResumenCompleto({ idPrograma: programaId }).subscribe((resumen: any) => {
+        // THEN: Recibo los datos de mi programa
+        expect(resumen.estadisticasGlobales.totalSolicitudes).toBe(50);
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_PROGRAMA(programaId));
-      req.flush(mockEstadisticas);
+      const req = httpMock.expectOne((r) =>
+        r.url === ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO && r.params.get('idPrograma') === String(programaId)
+      );
+      req.flush({ estadisticasGlobales: { totalSolicitudes: 50 } });
       tick();
     }));
   });
@@ -264,29 +239,30 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
   /**
    * HISTORIA DE USUARIO 7:
    * Como coordinador,
-   * Quiero ver estadísticas por tipo de proceso,
-   * Para comparar diferentes servicios.
+   * Quiero comparar los procesos entre sí,
+   * Para saber cuál concentra más solicitudes.
    */
   describe('HU-07: Estadísticas por Tipo de Proceso', () => {
-    it('ACEP-EST-008: DADO que quiero comparar procesos, CUANDO consulto por tipo, ENTONCES veo comparativa', fakeAsync(() => {
-      // GIVEN: Hay múltiples tipos de proceso
-      const mockEstadisticas: any = {
-        paz_salvo: { total: 50, aprobadas: 40 },
-        cursos: { total: 150, aprobadas: 130 },
-        homologaciones: { total: 30, aprobadas: 25 }
+    it('ACEP-EST-008: DADO que quiero comparar procesos, CUANDO consulto sin filtro, ENTONCES veo todos los procesos', fakeAsync(() => {
+      const mockComparativa: any = {
+        estadisticasPorProceso: {
+          'Paz y Salvo': { totalSolicitudes: 50 },
+          'Cursos de Verano': { totalSolicitudes: 150 },
+          'Homologación': { totalSolicitudes: 30 }
+        }
       };
 
-      // WHEN: Consulto por tipo de proceso
-      service.getEstadisticasPorProceso('paz_salvo').subscribe((stats) => {
-        // THEN: Puedo comparar entre procesos
-        expect(stats).toBeTruthy();
+      service.getEstadisticasDetalladasPorProceso().subscribe((stats: any) => {
+        expect(Object.keys(stats.estadisticasPorProceso).length).toBe(3);
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.POR_PROCESO && r.params.get('tipoProceso') === 'paz_salvo');
-      req.flush(mockEstadisticas.paz_salvo);
+      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO);
+      expect(req.request.params.has('proceso')).toBeFalse();
+      req.flush(mockComparativa);
       tick();
     }));
   });
+
 });
 

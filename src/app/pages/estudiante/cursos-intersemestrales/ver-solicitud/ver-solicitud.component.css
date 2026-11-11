@@ -256,54 +256,14 @@ td.mat-cell:last-child {
 }
 
 /* Información de acción no clickeable - Texto normal */
-.accion-info {
-  color: #333;
-  font-size: 14px;
-}
-
-.accion-icon {
-  display: none;
-}
 
 /* Mensaje de inscripción existente - Texto normal */
-.mensaje-inscripcion-existente {
-  color: #333;
-  font-size: 14px;
-}
-
-.mensaje-inscripcion-existente .icono-check {
-  display: none;
-}
 
 /* Mensaje de preinscripción pendiente - Texto normal */
-.mensaje-pendiente {
-  color: #333;
-  font-size: 14px;
-}
-
-.mensaje-pendiente .icono-pendiente {
-  display: none;
-}
 
 /* Mensaje de preinscripción rechazada - Texto normal */
-.mensaje-rechazado {
-  color: #333;
-  font-size: 14px;
-}
-
-.mensaje-rechazado .icono-rechazado {
-  display: none;
-}
 
 /* Mensaje de esperando apertura de inscripciones - Texto normal */
-.mensaje-esperando {
-  color: #333;
-  font-size: 14px;
-}
-
-.mensaje-esperando .icono-esperando {
-  display: none;
-}
 
 .motivo-container {
   margin-top: 0;
@@ -415,11 +375,6 @@ td.mat-cell:last-child {
   
   /* Responsive para acciones */
   .accion-btn {
-    font-size: 11px;
-    padding: 4px 8px;
-  }
-  
-  .accion-info {
     font-size: 11px;
     padding: 4px 8px;
   }

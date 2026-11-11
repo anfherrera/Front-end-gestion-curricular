@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
 import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
 import { COLORS } from '../design-system/design-tokens';
 
@@ -182,38 +181,6 @@ export class CursoEstadosService {
   }
 
   /**
-   * Consulta permisos del backend (fallback si hay diferencia)
-   */
-  getPermisosDelBackend(estado: string, rol: string): Observable<string[]> {
-    return this.cursosService.getPermisosEstado(estado, rol);
-  }
-
-  /**
-   * Valida si un botón debe estar habilitado según el estado y rol
-   */
-  validarBotonHabilitado(estado: string, rol: string, operacion: string): boolean {
-    return this.tienePermiso(estado, rol, operacion);
-  }
-
-  /**
-   * Obtiene estados filtrados para un rol específico
-   */
-  getEstadosParaRol(rol: string): EstadoCurso[] {
-    if (rol === 'ESTUDIANTE') {
-      // Estudiantes solo ven estados donde pueden realizar acciones
-      return this.estadosDisponibles.filter(estado => 
-        this.tienePermiso(estado.value, rol, 'ver') && 
-        (this.tienePermiso(estado.value, rol, 'preinscribirse') || 
-         this.tienePermiso(estado.value, rol, 'inscribirse') ||
-         this.tienePermiso(estado.value, rol, 'solicitar_curso_nuevo'))
-      );
-    }
-    
-    // Funcionarios y coordinadores ven todos los estados
-    return this.estadosDisponibles;
-  }
-
-  /**
    * Genera mensaje de error para transición inválida
    */
   getMensajeErrorTransicion(estadoActual: string, nuevoEstado: string): string {
@@ -240,38 +207,10 @@ export class CursoEstadosService {
   }
 
   /**
-   * Valida si un curso puede ser editado completamente
-   */
-  puedeEditarCompleto(estado: string, rol: string): boolean {
-    return this.tienePermiso(estado, rol, 'editar_completo');
-  }
-
-  /**
-   * Valida si un curso puede ser editado parcialmente
-   */
-  puedeEditarParcial(estado: string, rol: string): boolean {
-    return this.tienePermiso(estado, rol, 'editar_parcial');
-  }
-
-  /**
-   * Valida si se puede cambiar el estado de un curso
-   */
-  puedeCambiarEstado(estado: string, rol: string): boolean {
-    return this.tienePermiso(estado, rol, 'cambiar_estado');
-  }
-
-  /**
    * Valida si un curso puede ser eliminado
    */
   puedeEliminar(estado: string, rol: string): boolean {
     return this.tienePermiso(estado, rol, 'eliminar');
   }
 
-  /**
-   * Obtiene la descripción de un estado
-   */
-  getDescripcionEstado(estado: string): string {
-    const estadoInfo = this.getEstadoPorValor(estado);
-    return estadoInfo?.descripcion || 'Estado no definido';
-  }
 }

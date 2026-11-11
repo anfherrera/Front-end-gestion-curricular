@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { CursosIntersemestralesService, PreinscripcionSeguimiento, InscripcionSeguimiento, SeguimientoActividades, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, PreinscripcionSeguimiento, InscripcionSeguimiento, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatDialog } from '@angular/material/dialog';

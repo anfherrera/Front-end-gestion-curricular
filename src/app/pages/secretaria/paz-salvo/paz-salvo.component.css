@@ -69,24 +69,6 @@
 }
 
 /* Información de la solicitud */
-.info-solicitud {
-  background-color: #f8f9fa;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border-left: 4px solid var(--color-primario);
-}
-
-.info-solicitud h3 {
-  color: var(--color-primario);
-  margin-bottom: 12px;
-  font-size: 1.1rem;
-}
-
-.info-solicitud p {
-  margin: 8px 0;
-  color: #333;
-}
 
 /* Instrucciones */
 .instrucciones {
@@ -125,12 +107,6 @@
 .file-info p {
   margin: 4px 0;
   color: #333;
-}
-
-.upload-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-start;
 }
 
 /* Botones personalizados */
@@ -339,75 +315,8 @@
 }
 
 /* Estilos para el botón "Tengo un documento" */
-.document-actions {
-  margin-top: 24px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 2px dashed #dee2e6;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.document-actions:hover {
-  border-color: var(--color-primario);
-  background: #e3f2fd;
-}
-
-.enable-document-btn {
-  min-width: 200px;
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none;
-  border-radius: 8px;
-  padding: 16px 32px;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: var(--sombra-2);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 auto 16px auto;
-}
-
-.enable-document-btn:hover {
-  background-color: var(--color-primario-light) !important;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
-.enable-document-btn:active {
-  transform: translateY(0);
-  box-shadow: var(--sombra-2);
-}
-
-.enable-document-btn mat-icon {
-  font-size: 1.2rem;
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.action-description {
-  color: #6c757d;
-  font-size: 0.9rem;
-  margin: 0;
-  font-style: italic;
-  line-height: 1.4;
-}
 
 /* Responsive para el botón */
-@media (max-width: 768px) {
-  .enable-document-btn {
-    min-width: 160px;
-    padding: 12px 24px;
-    font-size: 0.9rem;
-  }
-
-  .document-actions {
-    padding: 16px;
-  }
-}
 
 /* Estilo específico para botón "Enviar al Estudiante" (color="accent") */
 ::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:not(:disabled) {

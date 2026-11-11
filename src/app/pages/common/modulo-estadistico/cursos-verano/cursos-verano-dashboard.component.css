@@ -495,54 +495,8 @@
 }
 
 /* Recomendaciones */
-.recomendaciones-section,
-.recomendaciones-futuras-section {
+.recomendaciones-section {
   margin-bottom: 2rem;
-}
-
-.recomendaciones-grid,
-.recomendaciones-futuras-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-.recomendacion-card,
-.recomendacion-futura-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: var(--sombra-2);
-  transition: all 0.3s ease;
-  border-left: 4px solid;
-}
-
-.recomendacion-card:hover,
-.recomendacion-futura-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
-.recomendacion-card.prioridad-alta,
-.recomendacion-futura-card.prioridad-alta {
-  border-left-color: #dc3545;
-}
-
-.recomendacion-card.prioridad-media,
-.recomendacion-futura-card.prioridad-media {
-  border-left-color: #ffc107;
-}
-
-.recomendacion-card.prioridad-baja,
-.recomendacion-futura-card.prioridad-baja {
-  border-left-color: #28a745;
-}
-
-.recomendacion-accion {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background: #f8f9fa;
-  border-radius: 6px;
-  font-size: 0.9rem;
 }
 
 /* Predicciones */
@@ -741,11 +695,6 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .recomendaciones-grid,
-  .recomendaciones-futuras-grid {
-    grid-template-columns: 1fr;
-  }
-
   .resumen-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -801,8 +750,6 @@
 .kpi-card,
 .chart-card,
 .estado-card,
-.recomendacion-card,
-.recomendacion-futura-card,
 .tendencia-card {
   animation: fadeIn 0.6s ease-out;
 }
@@ -896,35 +843,6 @@
 }
 
 /* Predicción Items */
-.prediccion-materia-item, .prediccion-programa-item {
-  padding: 15px;
-  margin: 10px 0;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background: #f0f8ff;
-  transition: all 0.3s ease;
-}
-
-.prediccion-materia-item:hover, .prediccion-programa-item:hover {
-  background: #e6f3ff;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
-.prediccion-temporal-item {
-  padding: 20px;
-  margin: 15px 0;
-  border: 2px solid #4CAF50;
-  border-radius: 10px;
-  background: #e8f5e8;
-  transition: all 0.3s ease;
-}
-
-.prediccion-temporal-item:hover {
-  background: #d4edda;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
 
 .demanda-actual, .demanda-estimada, .variacion {
   margin: 0.25rem 0;
@@ -1020,12 +938,6 @@
   height: auto !important;
   min-height: auto !important;
   padding: 20px;
-}
-
-.tendencias-temporales .card-body {
-  height: auto !important;
-  min-height: auto !important;
-  padding-bottom: 15px;
 }
 
 /* Ocultar áreas vacías */
@@ -1292,213 +1204,12 @@ canvas {
 }
 
 /* Recomendaciones Grid */
-.recomendaciones-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  width: 100%;
-}
-
-.recomendacion-card {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: var(--sombra-1);
-  border-left: 4px solid #007bff;
-  transition: all 0.3s ease;
-}
-
-.recomendacion-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
-.recomendacion-titulo {
-  font-weight: 600;
-  color: var(--color-primario);
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.recomendacion-descripcion {
-  color: #6c757d;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.4;
-}
-
-.recomendacion-acciones {
-  margin-top: 1rem;
-}
-
-.recomendacion-acciones strong {
-  color: #28a745;
-  font-weight: 600;
-  font-size: 0.95rem;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.lista-acciones {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.accion-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  margin-bottom: 0.25rem;
-  background: #f8f9fa;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.accion-item:hover {
-  background: #e9ecef;
-}
-
-.accion-item input[type="checkbox"] {
-  margin-top: 0.25rem;
-  cursor: pointer;
-}
-
-.accion-item span {
-  flex: 1;
-  color: #495057;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.lista-acciones-simple {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0 0 0;
-}
-
-.lista-acciones-simple li {
-  padding: 0.4rem 0;
-  color: #495057;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  border-left: 3px solid #28a745;
-  padding-left: 0.75rem;
-  margin-bottom: 0.25rem;
-}
-
-.lista-acciones-simple li:before {
-  content: "✓ ";
-  color: #28a745;
-  font-weight: bold;
-  margin-right: 0.5rem;
-}
 
 /* Banner Informativo de Recomendaciones */
-.banner-recomendaciones {
-  display: flex;
-  gap: 1rem;
-  padding: 1.5rem;
-  margin-top: 2rem;
-  background: #667eea;
-  border-radius: 12px;
-  color: white;
-  align-items: center;
-}
-
-.banner-recomendaciones .icono {
-  font-size: 3rem;
-  line-height: 1;
-}
-
-.banner-recomendaciones .contenido {
-  flex: 1;
-}
-
-.banner-recomendaciones h4 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.banner-recomendaciones p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 0.95rem;
-}
-
-.banner-recomendaciones .btn-ver-recomendaciones {
-  margin-top: 1rem;
-  background: white;
-  color: #667eea;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: var(--sombra-1);
-}
-
-.banner-recomendaciones .btn-ver-recomendaciones:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-1);
-}
 
 /* Call to Action de Recomendaciones */
-.cta-recomendaciones {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: #f8f9fa;
-  border: 2px dashed #667eea;
-  border-radius: 12px;
-  text-align: center;
-}
-
-.cta-recomendaciones .contenido-cta {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.cta-recomendaciones h4 {
-  color: #667eea;
-  margin: 0 0 1rem 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.cta-recomendaciones p {
-  color: #495057;
-  margin: 0 0 1.5rem 0;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.cta-recomendaciones .btn-outline-recomendaciones {
-  background: transparent;
-  border: 2px solid #667eea;
-  color: #667eea;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.cta-recomendaciones .btn-outline-recomendaciones:hover {
-  background: #667eea;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-1);
-}
 
 /* Hide empty sections */
-.hide-if-empty:empty {
-  display: none;
-}
 
 /* No Data Styling */
 .no-data {
@@ -1513,108 +1224,16 @@ canvas {
 }
 
 /* ===== TENDENCIAS TEMPORALES SECTION ===== */
-.tendencias-temporales-section {
-  margin: 2rem 0;
-}
-
-.tendencias-temporales-section .section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  color: var(--color-primario);
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.tendencias-temporales-section .chart-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: var(--sombra-2);
-  border-left: 4px solid var(--color-primario);
-  overflow: hidden;
-}
-
-.tendencias-temporales-section .chart-header {
-  background: var(--color-primario);
-  color: white;
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.tendencias-temporales-section .chart-content {
-  padding: 1.5rem;
-}
-
-.tendencias-temporales-section .tendencia-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  margin: 0.5rem 0;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid var(--color-primario);
-  transition: all 0.3s ease;
-}
-
-.tendencias-temporales-section .tendencia-item:hover {
-  background: #e9ecef;
-  transform: translateX(4px);
-  box-shadow: var(--sombra-2);
-}
-
-.tendencias-temporales-section .tendencia-mes {
-  font-weight: 600;
-  color: var(--color-primario);
-  font-size: 1.1rem;
-  flex: 1;
-}
-
-.tendencias-temporales-section .tendencia-solicitudes {
-  color: #6c757d;
-  font-size: 1rem;
-  margin-right: 1rem;
-}
-
-.tendencias-temporales-section .tendencia-porcentaje {
-  color: #28a745;
-  font-weight: 600;
-  font-size: 1rem;
-  background: rgba(40, 167, 69, 0.1);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-}
 
 /* Responsive para datos */
 @media (max-width: 768px) {
-  .materia-item, .programa-item, .tendencia-item,
-  .prediccion-materia-item, .prediccion-programa-item {
+  .materia-item, .programa-item, .tendencia-item {
     padding: 8px;
     margin: 3px 0;
   }
   
-  .prediccion-temporal-item {
-    padding: 15px;
-    margin: 10px 0;
-  }
-  
   .materia-nombre, .programa-nombre, .tendencia-mes, .mes-pico {
     font-size: 0.9rem;
-  }
-  
-  .tendencias-temporales-section .tendencia-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .tendencias-temporales-section .tendencia-solicitudes {
-    margin-right: 0;
   }
 }
 
@@ -1980,44 +1599,6 @@ canvas {
 }
 
 /* Checklist de Acciones */
-.rec-card .checklist {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.rec-card .checklist-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 0.75rem;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-
-.rec-card .checklist-item:hover {
-  background: #f8f9fa;
-  border-color: var(--color-primario);
-  transform: translateX(4px);
-}
-
-.rec-card .checklist-item mat-checkbox {
-  width: 100%;
-}
-
-.rec-card .checklist-item ::ng-deep .mat-checkbox-label {
-  color: #495057;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  flex: 1;
-}
-
-.rec-card .checklist-item ::ng-deep .mat-checkbox-checked .mat-checkbox-label {
-  color: #28a745;
-  text-decoration: line-through;
-}
 
 /* Detalles Expandidos */
 .rec-card .detalles-expandidos {
@@ -2045,68 +1626,6 @@ canvas {
 
 .rec-card .seccion.justificacion strong {
   color: #17a2b8;
-}
-
-.rec-field {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 3px solid var(--color-primario);
-}
-
-.rec-field h4 {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #6c757d;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.rec-field p, .rec-field ul {
-  margin: 0;
-  color: #333;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.rec-field ul {
-  padding-left: 1.5rem;
-  margin-top: 0.5rem;
-}
-
-.rec-field li {
-  margin-bottom: 0.5rem;
-}
-
-.rec-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: #e9ecef;
-  border-radius: 8px;
-  margin-top: 1rem;
-}
-
-.rec-actions mat-checkbox {
-  flex: 1;
-}
-
-.rec-actions button {
-  min-width: 120px;
-}
-
-.impacto-badge {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  background: var(--color-primario);
-  color: white;
 }
 
 /* Mensaje sin datos */

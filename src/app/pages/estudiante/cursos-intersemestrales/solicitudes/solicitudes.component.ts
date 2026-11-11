@@ -2,17 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { 
-  CursosIntersemestralesService, 
-  CursoDisponible, 
-  Materia,
+import {
+  CursosIntersemestralesService, Materia,
   CondicionSolicitudVerano,
-  CreateSolicitudCursoNuevoDTO 
+  CreateSolicitudCursoNuevoDTO
 } from '../../../../core/services/cursos-intersemestrales.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiEndpoints } from '../../../../core/utils/api-endpoints';
 import { NotificacionesService } from '../../../../core/services/notificaciones.service';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 
@@ -163,39 +160,6 @@ export class SolicitudesComponent implements OnInit {
       const control = this.solicitudForm.get(key);
       control?.markAsTouched();
     });
-  }
-
-  private loadMateriasDisponiblesPrueba(): void {
-    this.materiasDisponibles = [
-      {
-        id_materia: 1,
-        codigo: 'BD001',
-        nombre: 'Bases de Datos',
-        creditos: 3,
-        descripcion: 'Bases de Datos (BD001) - 3 créditos'
-      },
-      {
-        id_materia: 2,
-        codigo: 'PRO001',
-        nombre: 'Programación I',
-        creditos: 4,
-        descripcion: 'Programación I (PRO001) - 4 créditos'
-      },
-      {
-        id_materia: 3,
-        codigo: 'WEB001',
-        nombre: 'Desarrollo Web',
-        creditos: 3,
-        descripcion: 'Desarrollo Web (WEB001) - 3 créditos'
-      },
-      {
-        id_materia: 4,
-        codigo: 'IA001',
-        nombre: 'Inteligencia Artificial',
-        creditos: 4,
-        descripcion: 'Inteligencia Artificial (IA001) - 4 créditos'
-      }
-    ];
   }
 
   getCondicionDisplayName(condicion: CondicionSolicitudVerano): string {

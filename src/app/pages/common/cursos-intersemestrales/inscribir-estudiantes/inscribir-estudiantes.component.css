@@ -189,38 +189,6 @@
   font-size: 12px;
 }
 
-.comprobante-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.con-comprobante {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #4CAF50 !important;
-  font-weight: 500;
-  font-size: 13px;
-}
-
-.con-comprobante mat-icon {
-  color: #4CAF50 !important;
-}
-
-.sin-comprobante {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-primario) !important;
-  font-weight: 500;
-  font-size: 13px;
-}
-
-.sin-comprobante mat-icon {
-  color: var(--color-primario) !important;
-}
-
 /* Contenedor de acciones */
 .acciones-container {
   display: flex;
@@ -396,26 +364,8 @@
 }
 
 /* Estilos específicos para iconos de comprobante de pago */
-::ng-deep .inscripciones-table .con-comprobante mat-icon {
-  color: #4CAF50 !important;
-}
-
-::ng-deep .inscripciones-table .sin-comprobante mat-icon {
-  color: var(--color-primario) !important;
-}
 
 /* Forzar colores en toda la celda de comprobante */
-::ng-deep .inscripciones-table .comprobante-cell mat-icon {
-  color: inherit !important;
-}
-
-::ng-deep .inscripciones-table .comprobante-cell .con-comprobante mat-icon {
-  color: #4CAF50 !important;
-}
-
-::ng-deep .inscripciones-table .comprobante-cell .sin-comprobante mat-icon {
-  color: var(--color-primario) !important;
-}
 
 /* Estilos específicos para botones de acción */
 ::ng-deep .inscripciones-table button[mat-icon-button] {

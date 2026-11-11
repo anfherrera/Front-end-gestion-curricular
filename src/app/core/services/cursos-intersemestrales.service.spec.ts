@@ -181,18 +181,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush(respuesta);
     });
 
-    it('debe obtener el seguimiento de una solicitud', (done) => {
-      const respuesta = { id_solicitud: 99 } as SolicitudCursoVerano;
-
-      service.getSeguimientoSolicitud(99).subscribe((data) => {
-        expect(data.id_solicitud).toBe(99);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/seguimiento/99`);
-      expect(req.request.method).toBe('GET');
-      req.flush(respuesta);
-    });
   });
 
   describe('Gestión administrativa de cursos', () => {
@@ -227,23 +215,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush({});
     });
 
-    it('debe validar el pago de una inscripción', () => {
-      service.validarPagoInscripcion(3).subscribe();
-
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/inscripciones/3/validar-pago`);
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual({});
-      req.flush({ ok: true });
-    });
-
-    it('debe completar una inscripción', () => {
-      service.completarInscripcion(4).subscribe();
-
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-verano/inscripciones/4/completar`);
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual({});
-      req.flush({ ok: true });
-    });
   });
 
   describe('Inscripciones y comprobantes', () => {
@@ -291,35 +262,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       });
 
       const req = httpMock.expectOne(`${BASE_URL}/inscripciones/curso/1/estadisticas`);
-      expect(req.request.method).toBe('GET');
-      req.flush(respuesta);
-    });
-  });
-
-  describe('Gestión de documentos', () => {
-    it('debe subir un documento usando FormData', () => {
-      const file = new File(['contenido'], 'test.pdf', { type: 'application/pdf' });
-
-      service.uploadDocumento(5, file).subscribe((resp) => {
-        expect(resp).toEqual({ success: true });
-      });
-
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.UPLOAD_DOCUMENT('5'));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body instanceof FormData).toBe(true);
-      req.flush({ success: true });
-    });
-
-    it('debe obtener documentos relacionados a una solicitud', (done) => {
-      const respuesta = [{ id_documento: 1, nombre: 'doc.pdf' }];
-
-      service.getDocumentos(8).subscribe((docs) => {
-        expect(docs.length).toBe(1);
-        expect(docs[0].nombre).toBe('doc.pdf');
-        done();
-      });
-
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.DOCUMENTOS('8'));
       expect(req.request.method).toBe('GET');
       req.flush(respuesta);
     });
@@ -386,18 +328,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush({ message: 'No encontrado' }, { status: 404, statusText: 'Not Found' });
     });
 
-    it('debe propagar error 500 en getTodosLosCursos', (done) => {
-      service.getTodosLosCursos().subscribe({
-        next: () => fail('Debería fallar con 500'),
-        error: (error) => {
-          expect(error.status).toBe(500);
-          done();
-        }
-      });
-
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
-      req.flush({ message: 'Error interno' }, { status: 500, statusText: 'Internal Server Error' });
-    });
   });
 
   describe('Períodos Académicos', () => {
@@ -468,41 +398,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
   });
 
   describe('Filtrado de cursos', () => {
-    it('debe obtener cursos por período académico', (done) => {
-      const cursos = [buildCurso({ periodoAcademico: '2025-1' })];
-
-      service.getCursosPorPeriodo('2025-1').subscribe((result) => {
-        expect(result.length).toBe(1);
-        expect(result[0].id_curso).toBe(cursos[0].id_curso);
-        expect(result[0].periodoAcademico).toBe(cursos[0].periodoAcademico);
-        // El servicio normaliza y agrega periodo y grupo
-        done();
-      });
-
-      // getCursosPorPeriodo delega en getCursosVerano: GET /cursos-verano?periodoAcademico=...
-      const req = httpMock.expectOne((r) =>
-        r.url === `${BASE_URL}/cursos-verano` && r.params.get('periodoAcademico') === '2025-1'
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush(cursos);
-    });
-
-    it('debe obtener cursos activos en una fecha específica', (done) => {
-      const fecha = '2025-06-15';
-      const cursos = [buildCurso()];
-
-      service.getCursosActivos(fecha).subscribe((result) => {
-        expect(result.length).toBe(1);
-        expect(result[0].id_curso).toBe(cursos[0].id_curso);
-        expect(result[0].nombre_curso).toBe(cursos[0].nombre_curso);
-        // El servicio normaliza y agrega periodo y grupo
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/cursos-activos/${fecha}`);
-      expect(req.request.method).toBe('GET');
-      req.flush(cursos);
-    });
 
     it('debe obtener estadísticas por período', (done) => {
       const estadisticas = { totalCursos: 10, totalEstudiantes: 150 };
@@ -558,19 +453,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const req = httpMock.expectOne(`${BASE_URL}/preinscripciones/curso/5`);
       expect(req.request.method).toBe('GET');
       req.flush(respuestaBackend);
-    });
-
-    it('debe obtener inscripciones por curso específico', (done) => {
-      const inscripciones = [{ id: 1 }];
-
-      service.getInscripcionesPorCurso(5).subscribe((result) => {
-        expect(Array.isArray(result)).toBe(true);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/inscripciones`);
-      expect(req.request.method).toBe('GET');
-      req.flush(inscripciones);
     });
 
     it('debe obtener estudiantes elegibles para inscripción', (done) => {
@@ -694,18 +576,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush(docentes);
     });
 
-    it('debe consultar permisos por estado y rol', (done) => {
-      const permisos = ['ver', 'editar', 'eliminar'];
-
-      service.getPermisosEstado('Publicado', 'FUNCIONARIO').subscribe((result) => {
-        expect(result).toEqual(permisos);
-        done();
-      });
-
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO('Publicado','FUNCIONARIO'));
-      expect(req.request.method).toBe('GET');
-      req.flush(permisos);
-    });
   });
 });
 

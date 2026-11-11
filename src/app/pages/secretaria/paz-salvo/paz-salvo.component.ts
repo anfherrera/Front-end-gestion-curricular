@@ -194,7 +194,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
    * Cargar documentos usando el endpoint para secretaria
    */
   cargarDocumentos(idSolicitud: number): void {
-    const endpoint = `/api/solicitudes-pazysalvo/obtenerOficios/${idSolicitud}`;
     this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
       next: (documentos: any[]) => {
         // Actualizar los documentos de la solicitud seleccionada

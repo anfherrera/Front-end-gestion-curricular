@@ -72,11 +72,6 @@ span.cerrado {
   font-weight: bold;
 }
 
-span.en-espera {
-  color: orange;
-  font-weight: bold;
-}
-
 /* Estilos para badge de período */
 .periodo-badge {
   display: inline-block;

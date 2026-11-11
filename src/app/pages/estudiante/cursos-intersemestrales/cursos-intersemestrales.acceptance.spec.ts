@@ -254,37 +254,32 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
    * HISTORIA DE USUARIO 8:
    * Como estudiante,
    * Quiero ver el seguimiento de mis solicitudes de cursos,
-   * Para conocer el progreso y acciones disponibles.
+   * Para conocer el progreso de mis preinscripciones.
    */
   describe('HU-08: Seguimiento de Solicitudes', () => {
-    it('ACEP-CI-008: DADO que tengo solicitudes activas, CUANDO consulto seguimiento, ENTONCES veo progreso y acciones', fakeAsync(() => {
-      // GIVEN: Estudiante con solicitudes activas
-      const idSolicitud = 1;
-      const mockSeguimiento: any = {
+    it('ACEP-CI-008: DADO que tengo preinscripciones, CUANDO consulto seguimiento, ENTONCES veo cada curso con su estado', fakeAsync(() => {
+      // GIVEN: Estudiante con una preinscripción pendiente
+      const mockPreinscripciones: any[] = [{
         id_solicitud: 1,
         nombre_solicitud: 'Preinscripción Cálculo',
         estado: 'PENDIENTE',
-        objCursoOfertadoVerano: {
-          nombre_curso: 'Cálculo Diferencial',
-          estado: 'Preinscripción'
-        },
-        accionesDisponibles: ['ver_detalle', 'cancelar']
-      };
+        objCursoOfertadoVerano: { nombre_curso: 'Cálculo Diferencial', estado: 'Preinscripción' }
+      }];
 
-      // WHEN: Consulto seguimiento de solicitud
-      service.getSeguimientoSolicitud(idSolicitud).subscribe((seguimiento) => {
-        // THEN: Veo progreso y acciones disponibles
-        expect(seguimiento).toBeTruthy();
-        expect(seguimiento.objCursoOfertadoVerano).toBeTruthy();
-        expect(seguimiento.estado).toBeDefined();
+      // WHEN: Consulto mis preinscripciones
+      service.getPreinscripcionesUsuario(1).subscribe((preinscripciones) => {
+        // THEN: Veo el curso y su estado
+        expect(preinscripciones.length).toBe(1);
+        expect(preinscripciones[0].objCursoOfertadoVerano.nombre_curso).toBe('Cálculo Diferencial');
+        expect(preinscripciones[0].estado).toBe('PENDIENTE');
       });
       tick();
 
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/cursos-verano/seguimiento/${idSolicitud}`);
+      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/1`);
       expect(req.request.method).toBe('GET');
-      req.flush(mockSeguimiento);
+      req.flush(mockPreinscripciones);
       tick();
     }));
   });
-});
 
+});

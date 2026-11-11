@@ -48,19 +48,6 @@
   font-style: italic;
 }
 
-.acciones-vacio {
-  margin-top: 24px;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.acciones-vacio button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 app-curso-list {
   margin-top: 16px;
 }

@@ -452,14 +452,6 @@ app-card-container {
 }
 
 /* Observaciones */
-.observaciones-text {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #6c757d;
-  font-size: 13px;
-}
 
 /* Acciones */
 .acciones-container {
@@ -467,33 +459,6 @@ app-card-container {
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.btn-aprobar {
-  background-color: #28a745 !important;
-  color: white !important;
-  font-size: 12px;
-  padding: 6px 12px;
-  min-width: auto;
-  border-radius: 6px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.2s ease;
-  box-shadow: var(--sombra-1);
-}
-
-.btn-aprobar:hover {
-  background-color: #218838 !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
-
-.btn-aprobar mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
 }
 
 .btn-rechazar {
@@ -547,7 +512,6 @@ app-card-container {
     align-items: stretch;
   }
   
-  .btn-aprobar,
   .btn-rechazar {
     width: 100%;
   }

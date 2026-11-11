@@ -100,11 +100,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // PASO 2: Obtener estadísticas del proceso paz y salvo
-      estadisticasService.getEstadisticasProceso('paz_salvo').subscribe();
+      estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'paz_salvo' }).subscribe();
       tick();
 
       const reqEstadisticas = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/proceso/paz_salvo')
+        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'paz_salvo'
       );
       reqEstadisticas.flush({
         proceso: 'paz_salvo',
@@ -117,7 +117,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
 
       // VERIFICACIÓN: Ambos servicios completaron sus operaciones
       expect(reqPazSalvo.request.url).toContain('listarSolicitud-PazYSalvo');
-      expect(reqEstadisticas.request.url).toContain('estadisticas/proceso');
+      expect(reqEstadisticas.request.url).toContain('estadisticas-por-proceso');
     }));
 
     it('Debe crear solicitud Y actualizar estadísticas', fakeAsync(() => {
@@ -139,11 +139,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // PASO 2: Obtener estadísticas actualizadas
-      estadisticasService.getEstadisticasGlobales().subscribe();
+      estadisticasService.getResumenCompleto().subscribe();
       tick();
 
       const reqStats = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/globales')
+        req.url.includes('/estadisticas/resumen-completo')
       );
       reqStats.flush({
         totalSolicitudes: 51, // Incrementó en 1
@@ -154,7 +154,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // VERIFICACIÓN: La estadística refleja la nueva solicitud
-      expect(reqStats.request.url).toContain('globales');
+      expect(reqStats.request.url).toContain('resumen-completo');
     }));
   });
 
@@ -177,11 +177,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // PASO 2: Obtener estadísticas de cursos
-      estadisticasService.getEstadisticasProceso('cursos_intersemestrales').subscribe();
+      estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'cursos_intersemestrales' }).subscribe();
       tick();
 
       const reqStats = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/proceso/cursos_intersemestrales')
+        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'cursos_intersemestrales'
       );
       reqStats.flush({
         proceso: 'cursos_intersemestrales',
@@ -193,7 +193,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
 
       // VERIFICACIÓN: Ambos servicios funcionaron
       expect(reqCursos.request.url).toContain('cursos');
-      expect(reqStats.request.url).toContain('cursos_intersemestrales');
+      expect(reqStats.request.params.get('proceso')).toBe('cursos_intersemestrales');
     }));
 
     it('Debe crear preinscripción Y obtener mis preinscripciones', fakeAsync(() => {
@@ -244,11 +244,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
   describe('INTEG-003: PazSalvo + Cursos + Estadísticas', () => {
     it('Debe obtener estadísticas globales de TODOS los procesos', fakeAsync(() => {
       // PASO 1: Estadísticas globales
-      estadisticasService.getEstadisticasGlobales().subscribe();
+      estadisticasService.getResumenCompleto().subscribe();
       tick();
 
       const reqGlobal = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/globales')
+        req.url.includes('/estadisticas/resumen-completo')
       );
       reqGlobal.flush({
         totalSolicitudes: 150,
@@ -259,11 +259,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // PASO 2: Estadísticas de Paz y Salvo
-      estadisticasService.getEstadisticasProceso('paz_salvo').subscribe();
+      estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'paz_salvo' }).subscribe();
       tick();
 
       const reqPazSalvo = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/proceso/paz_salvo')
+        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'paz_salvo'
       );
       reqPazSalvo.flush({
         proceso: 'paz_salvo',
@@ -272,11 +272,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // PASO 3: Estadísticas de Cursos
-      estadisticasService.getEstadisticasProceso('cursos_intersemestrales').subscribe();
+      estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'cursos_intersemestrales' }).subscribe();
       tick();
 
       const reqCursos = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/proceso/cursos_intersemestrales')
+        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'cursos_intersemestrales'
       );
       reqCursos.flush({
         proceso: 'cursos_intersemestrales',
@@ -285,16 +285,16 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // VERIFICACIÓN: Todas las peticiones se completaron
-      expect(reqGlobal.request.url).toContain('globales');
-      expect(reqPazSalvo.request.url).toContain('paz_salvo');
-      expect(reqCursos.request.url).toContain('cursos_intersemestrales');
+      expect(reqGlobal.request.url).toContain('resumen-completo');
+      expect(reqPazSalvo.request.params.get('proceso')).toBe('paz_salvo');
+      expect(reqCursos.request.params.get('proceso')).toBe('cursos_intersemestrales');
     }));
 
     it('Debe verificar tokens en TODAS las peticiones HTTP', fakeAsync(() => {
       // Lanzar múltiples peticiones a diferentes servicios
       pazSalvoService.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe();
       cursosService.getCursosDisponibles().subscribe();
-      estadisticasService.getEstadisticasGlobales().subscribe();
+      estadisticasService.getResumenCompleto().subscribe();
       tick();
 
       // Verificar que TODAS tienen el token
@@ -379,7 +379,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // PASO 3: Ver estadísticas del proceso
-      estadisticasService.getEstadisticasProceso('cursos_intersemestrales').subscribe();
+      estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'cursos_intersemestrales' }).subscribe();
       tick();
       req = httpMock.expectOne((r) => r.url.includes('/estadisticas'));
       req.flush({ totalCursos: 1, estudiantesInscritos: 1 });

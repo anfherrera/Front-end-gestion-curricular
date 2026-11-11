@@ -7,10 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { 
-  CursosIntersemestralesService, 
-  RespuestaEstudiantesCurso,
-  EstudianteCurso 
+import {
+  CursosIntersemestralesService,
+  RespuestaEstudiantesCurso
 } from '../../../core/services/cursos-intersemestrales.service';
 import { COLORS, snackbarConfig } from '../../../core/design-system/design-tokens';
 

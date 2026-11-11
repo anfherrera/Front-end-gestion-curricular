@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
-import { TendenciasComparativasResponse, CrecimientoTemporal, ComparativaProcesos, ComparativaProgramas, ResumenEstrategico } from '../../../core/models/estadisticas.model';
+import { TendenciasComparativasResponse } from '../../../core/models/estadisticas.model';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
 @Component({
@@ -132,16 +132,6 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
    */
   getObjectKeys(obj: any): string[] {
     return obj ? Object.keys(obj) : [];
-  }
-
-  /**
-   * Verifica si los datos están disponibles para renderizar
-   */
-  verificarDatos(): void {
-    if (this.data) {
-    } else {
-      // No hay datos disponibles para verificar
-    }
   }
 
   /**

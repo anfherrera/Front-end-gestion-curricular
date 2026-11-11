@@ -1,10 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { PazSalvoService } from './paz-salvo.service';
 import { AuthService } from './auth.service';
-import { SolicitudHomologacionDTORespuesta, Archivo } from '../models/procesos.model';
+import { SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { environment } from '../../../environments/environment';
 
 describe('PazSalvoService - Pruebas Unitarias', () => {
@@ -364,20 +363,6 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       req.flush(mockBlob);
     });
 
-    it('PZS-026: Debe obtener documentos de solicitud', (done) => {
-      const mockDocumentos = [
-        { id: 1, nombre: 'doc1.pdf' },
-        { id: 2, nombre: 'doc2.pdf' }
-      ];
-      
-      service.obtenerDocumentos(1).subscribe((docs) => {
-        expect(docs.length).toBe(2);
-        done();
-      });
-      
-      const req = httpMock.expectOne(`${apiUrl}/obtenerDocumentos/1`);
-      req.flush(mockDocumentos);
-    });
   });
 
   describe('7. Oficios y Resoluciones', () => {
@@ -457,17 +442,6 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
   });
 
   describe('9. Manejo de Errores', () => {
-    it('PZS-032: Debe manejar error 404 en solicitud', (done) => {
-      service.getRequestById(999).subscribe({
-        error: (error) => {
-          expect(error.status).toBe(404);
-          done();
-        }
-      });
-      
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/999`);
-      req.flush({ message: 'No encontrado' }, { status: 404, statusText: 'Not Found' });
-    });
 
     it('PZS-033: Debe manejar error 401 (no autorizado)', (done) => {
       service.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe({
@@ -496,25 +470,6 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
   });
 
   describe('10. Métodos Auxiliares', () => {
-    it('PZS-035: Debe obtener solicitud por ID', (done) => {
-      const mockSolicitud: any = { id: 1, nombre: 'Test' };
-      
-      service.getRequestById(1).subscribe((solicitud: any) => {
-        expect(solicitud.id).toBe(1);
-        done();
-      });
-      
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/1`);
-      req.flush(mockSolicitud);
-    });
-
-    it('PZS-036: Debe asociar documentos huérfanos', (done) => {
-      service.asociarDocumentosHuerfanos(1).subscribe(() => done());
-      
-      const req = httpMock.expectOne(`${apiUrl}/asociar-documentos-huerfanos/1`);
-      expect(req.request.method).toBe('POST');
-      req.flush({ success: true });
-    });
 
     it('PZS-037: Debe obtener documentos como coordinador', (done) => {
       service.obtenerDocumentosCoordinador(1).subscribe((documentos) => {

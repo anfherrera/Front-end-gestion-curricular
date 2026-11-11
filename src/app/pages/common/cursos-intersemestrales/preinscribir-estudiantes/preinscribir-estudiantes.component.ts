@@ -14,7 +14,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService, CursoOfertadoVerano, Preinscripcion, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService, CursoOfertadoVerano, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
@@ -184,8 +184,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   verDetalles(solicitud: SolicitudCursoVerano): void {
-    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
-    
     this.solicitudSeleccionada = solicitud;
     this.observacionForm.patchValue({
       observaciones: solicitud.observaciones || ''
@@ -285,9 +283,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   rechazarSolicitud(solicitud: SolicitudCursoVerano): void {
-    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
-    
-    // Abrir modal para solicitar motivo de rechazo
     this.abrirModalRechazo(solicitud);
   }
 
@@ -308,10 +303,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.procesarRechazo(solicitud, result.motivo);
       }
     });
-  }
-
-  cancelarRechazo(): void {
-    // Ya no se necesita, el diálogo maneja su propio cierre
   }
 
   procesarRechazo(solicitud: SolicitudCursoVerano, motivo: string): void {

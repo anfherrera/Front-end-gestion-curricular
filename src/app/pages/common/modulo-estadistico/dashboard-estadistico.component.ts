@@ -18,7 +18,6 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
-import { ApiEndpoints } from '../../../core/utils/api-endpoints';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 import { esErrorDeAcceso, mensajeErrorDeAcceso } from '../../../core/utils/http-error.utils';
@@ -29,14 +28,10 @@ import { EstadisticasPorEstadoComponent } from '../../../shared/components/estad
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
-import { 
-  ResumenCompleto,
-  ResumenCompletoAPI,
-  EstadisticasProceso,
+import {
+  ResumenCompleto, EstadisticasProceso,
   EstadisticasPrograma,
-  FiltroEstadisticas,
-  FiltrosDashboard,
-  KPIData 
+  FiltroEstadisticas, KPIData
 } from '../../../core/models/estadisticas.model';
 
 Chart.register(...registerables);
@@ -1314,28 +1309,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     // Volver a cargar datos sin filtros
     this.cargarDatos();
     this.mostrarExito('Filtros limpiados correctamente');
-  }
-
-  /**
-   * Carga estadísticas de un proceso específico
-   */
-  onProcesoSeleccionado(proceso: string): void {
-    if (!proceso) return;
-
-    this.loading = true;
-    
-    this.estadisticasService.getEstadisticasProceso(proceso).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (data) => {
-        this.estadisticasProceso = data;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.loading = false;
-        this.mostrarError('Error al cargar estadísticas del proceso');
-      }
-    });
   }
 
   /**

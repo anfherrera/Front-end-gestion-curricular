@@ -10,22 +10,24 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { descargarBlob } from '../../../core/utils/download.util';
 import { Subject, takeUntil } from 'rxjs';
-import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 
-import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
-import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
-import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
-import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
-import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
-
+import { descargarBlob } from '../../../core/utils/download.util';
+import { Archivo, Solicitud, SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
+import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
+import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
+import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
+import { ComentariosDialogComponent, ComentariosDialogData } from '../../../shared/components/comentarios-dialog/comentarios-dialog.component';
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { Solicitud } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
+
+/** Programas cuyo paz y salvo exige trabajo de grado y el formato PPH o TIH. */
+const PROGRAMAS_CON_TRABAJO_DE_GRADO = ['sistemas', 'electronica', 'automatica', 'automatizacion'];
+
+/** Documentos obligatorios de los demás programas que no aplican a Telemática (nombres normalizados). */
+const DOCUMENTOS_NO_TELEMATICA = ['pmfo4for27', 'hojadevida', 'autorizacion', 'comprobante', 'trabajodegrado'];
 
 @Component({
   selector: 'app-paz-salvo',
@@ -50,9 +52,8 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./paz-salvo.component.css']
 })
 export class PazSalvoComponent implements OnInit, OnDestroy {
-  @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent
+  @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
-  // Subject para limpieza de suscripciones
   private destroy$ = new Subject<void>();
 
   solicitudes: Solicitud[] = [];
@@ -61,7 +62,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   resetFileUpload = false;
   usuario: any = null;
   solicitudForm: FormGroup;
-  requiereTrabajoGrado: boolean = false;
+  requiereTrabajoGrado = false;
   maxDate: Date = new Date();
 
   SolicitudStatusEnum = SolicitudStatusEnum;
@@ -78,16 +79,13 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     { label: 'Resultados de pruebas ECAES (opcional).pdf', obligatorio: false, opcional: true }
   ];
 
-  // Archivos exclusivos: Para programas de Sistemas, Electrónica y Automática (solo uno de estos dos)
-  // - PP-H (con guion) = Constancia para modalidad PRÁCTICA PROFESIONAL (va con PP-G)
-  // - PPH (sin guion) = Acta de sustentación para programas Sistemas, Electrónica, Automática
-  // Estos formatos también se suben a SIMCA Web, pero deben adjuntarse aquí también
+  // Sistemas, Electrónica y Automática adjuntan uno de estos dos (también se suben a SIMCA Web).
+  // PPH (sin guion) es el acta de sustentación; PP-H (con guion) es la constancia de práctica profesional.
   archivosExclusivos: string[] = [
     'Formato PPH.pdf',
     'Formato TIH.pdf'
   ];
 
-  // Archivos opcionales
   optionalFiles: string[] = [
     'Fotocopia de cédula (Solo para Tecnología en Telemática).pdf'
   ];
@@ -96,14 +94,11 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     private pazSalvoService: PazSalvoService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private notificacionesService: NotificacionesService,
     private authService: AuthService,
-    private fb: FormBuilder,
-    private periodosService: PeriodosAcademicosService
+    private fb: FormBuilder
   ) {
-    // Inicializar formulario simplificado
     this.solicitudForm = this.fb.group({
       fecha_terminacion_plan: [null, Validators.required],
       titulo_trabajo_grado: [''],
@@ -112,80 +107,46 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Recuperamos usuario del localStorage
     const usuarioLS = localStorage.getItem('usuario');
     if (usuarioLS) {
       this.usuario = JSON.parse(usuarioLS);
     }
 
-    // Determinar si requiere trabajo de grado
-    this.determinarRequisitosPrograma();
-
-    // Configurar validaciones condicionales del formulario
+    this.requiereTrabajoGrado = !this.esTelematica() && this.programaConTrabajoDeGrado();
     this.configurarValidacionesCondicionales();
-
-    // El período académico se asignará automáticamente en el backend
-
-    // Listar solicitudes existentes al cargar el componente
     this.listarSolicitudes();
-    
-    setTimeout(() => {
-      this.verificarFuncionalidadComentarios();
-    }, 2000);
-  }
-
-  /**
-   * Determina si el programa del estudiante requiere trabajo de grado
-   */
-  private determinarRequisitosPrograma(): void {
-    if (!this.usuario) {
-      this.requiereTrabajoGrado = false;
-      return;
-    }
-
-    const nombrePrograma = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
-    const programa = nombrePrograma.toLowerCase();
-    
-    // Telemática NO requiere trabajo de grado
-    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
-    
-    // Sistemas, Electrónica, Automática SÍ requieren trabajo de grado
-    this.requiereTrabajoGrado = !esTelematica && (
-      programa.includes('sistemas') ||
-      programa.includes('electrónica') ||
-      programa.includes('electronica') ||
-      programa.includes('automática') ||
-      programa.includes('automatica') ||
-      programa.includes('automatización') ||
-      programa.includes('automatizacion')
-    );
-  }
-
-  /**
-   * Configura las validaciones condicionales del formulario
-   */
-  private configurarValidacionesCondicionales(): void {
-    const tituloControl = this.solicitudForm.get('titulo_trabajo_grado');
-    const directorControl = this.solicitudForm.get('director_trabajo_grado');
-
-    if (this.requiereTrabajoGrado) {
-      // Si requiere trabajo de grado, hacer los campos obligatorios
-      tituloControl?.setValidators([Validators.required, Validators.maxLength(500)]);
-      directorControl?.setValidators([Validators.required, Validators.maxLength(200)]);
-    } else {
-      // Si no requiere trabajo de grado, solo validar longitud máxima si se completa
-      tituloControl?.setValidators([Validators.maxLength(500)]);
-      directorControl?.setValidators([Validators.maxLength(200)]);
-    }
-
-    tituloControl?.updateValueAndValidity();
-    directorControl?.updateValueAndValidity();
   }
 
   ngOnDestroy(): void {
-    // Limpiar todas las suscripciones
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /** Nombre del programa en minúsculas y sin tildes. */
+  private programaNormalizado(): string {
+    const nombre = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
+    return nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
+  private esTelematica(): boolean {
+    return this.programaNormalizado().includes('telematica');
+  }
+
+  private programaConTrabajoDeGrado(): boolean {
+    const programa = this.programaNormalizado();
+    return PROGRAMAS_CON_TRABAJO_DE_GRADO.some(p => programa.includes(p));
+  }
+
+  /** Título y director son obligatorios solo si el programa exige trabajo de grado. */
+  private configurarValidacionesCondicionales(): void {
+    const tituloControl = this.solicitudForm.get('titulo_trabajo_grado');
+    const directorControl = this.solicitudForm.get('director_trabajo_grado');
+    const requerido = this.requiereTrabajoGrado ? [Validators.required] : [];
+
+    tituloControl?.setValidators([...requerido, Validators.maxLength(500)]);
+    directorControl?.setValidators([...requerido, Validators.maxLength(200)]);
+    tituloControl?.updateValueAndValidity();
+    directorControl?.updateValueAndValidity();
   }
 
   onArchivosChange(archivos: Archivo[]) {
@@ -193,99 +154,64 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   }
 
   puedeEnviar(): boolean {
-    if (!this.usuario || this.archivosActuales.length === 0) {
+    if (!this.usuario || this.archivosActuales.length === 0 || !this.solicitudForm.valid) {
       return false;
     }
 
-    // Validar que el formulario sea válido
-    if (!this.solicitudForm.valid) {
-      return false;
-    }
-
-    // Validar campos específicos del formulario
     const formValue = this.solicitudForm.value;
-    
-    // La fecha de terminación del plan es obligatoria
     if (!formValue.fecha_terminacion_plan) {
       return false;
     }
 
-    const nombrePrograma = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
-    const programa = nombrePrograma.toLowerCase();
-    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
-    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática', 'automatización'].some(
-      p => programa.includes(p.toLowerCase())
-    );
-
-    // Si requiere trabajo de grado, validar que los campos estén completos
     if (this.requiereTrabajoGrado) {
-      const titulo = formValue.titulo_trabajo_grado?.trim() || '';
-      const director = formValue.director_trabajo_grado?.trim() || '';
-      
-      if (!titulo || titulo.length === 0) {
-        return false;
-      }
-      
-      if (!director || director.length === 0) {
+      if (!formValue.titulo_trabajo_grado?.trim() || !formValue.director_trabajo_grado?.trim()) {
         return false;
       }
     }
 
-    // Para Telemática, solo se requiere la cédula
-    if (esTelematica) {
-      const tieneFormatosIncorrectos = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('tig') || nombre.includes('tih') || 
-               nombre.includes('ppg') || nombre.includes('pph') ||
-               (nombre.includes('pp-h') && !nombre.includes('pph')) ||
-               nombre.includes('pmfo4for27') || nombre.includes('hoja de vida') ||
-               nombre.includes('autorizacion') || nombre.includes('autorización') ||
-               nombre.includes('comprobante') || nombre.includes('trabajo de grado');
-      });
+    return this.obtenerDocumentosFaltantes().length === 0;
+  }
 
-      if (tieneFormatosIncorrectos) {
-        return false;
-      }
-
-      // Para Telemática, solo la cédula es obligatoria
-      const tieneCedula = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('cedula') || nombre.includes('cédula');
-      });
-
-      if (!tieneCedula) {
-        return false;
-      }
-
-      return true; // Solo necesita la cédula
+  /** Documentos que faltan o que no aplican al programa del estudiante. */
+  obtenerDocumentosFaltantes(): string[] {
+    if (this.esTelematica()) {
+      return this.validarDocumentosTelematica();
     }
 
-    // Para otros programas, validar los documentos obligatorios
-    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
-    const todosObligatoriosSubidos = documentosObligatorios.every(doc => 
-      this.archivoSubido(doc.label)
-    );
+    const faltantes = this.documentosRequeridos
+      .filter(doc => doc.obligatorio && !this.archivoSubido(doc.label))
+      .map(doc => doc.label);
 
-    if (!todosObligatoriosSubidos) {
-      return false;
+    const tienePphOTih = this.archivosActuales
+      .map(a => this.normalizarNombre(a.nombre))
+      .some(n => n.includes('pph') || n.includes('tih'));
+    if (this.programaConTrabajoDeGrado() && !tienePphOTih) {
+      faltantes.push('Formato PPH o TIH (requerido para tu programa)');
     }
 
-    if (requiereArchivoExclusivo) {
-      const tienePPH = this.archivosActuales.some(a => 
-        this.normalizarNombre(a.nombre).includes('pph') && 
-        !this.normalizarNombre(a.nombre).includes('pp-h')
-      );
-      const tieneTIH = this.archivosActuales.some(a => 
-        this.normalizarNombre(a.nombre).includes('tih') && 
-        !this.normalizarNombre(a.nombre).includes('ti-h')
-      );
-      
-      if (!tienePPH && !tieneTIH) {
-        return false;
-      }
+    return faltantes;
+  }
+
+  /** Telemática solo exige la cédula; los formatos de trabajo de grado no aplican. */
+  private validarDocumentosTelematica(): string[] {
+    const errores: string[] = [];
+    const nombres = this.archivosActuales.map(a => this.normalizarNombre(a.nombre));
+
+    if (nombres.some(n => n.includes('tig') || n.includes('tih'))) {
+      errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
+    }
+    if (nombres.some(n => n.includes('ppg') || n.includes('pph'))) {
+      errores.push('Los formatos PP-G/PP-H no aplican para tu programa (Telemática)');
+    }
+    if (nombres.some(n => DOCUMENTOS_NO_TELEMATICA.some(d => n.includes(d)))) {
+      errores.push('Los documentos obligatorios (PM-FO-4-FOR-27, Autorización, Comprobante, Trabajo de grado) no aplican para tu programa (Telemática)');
     }
 
-    return true;
+    const faltantes = nombres.some(n => n.includes('cedula'))
+      ? []
+      : ['Fotocopia de cédula (obligatoria para Telemática)'];
+
+    return [...faltantes, ...errores];
   }
 
   private archivoSubido(nombreDocumento: string): boolean {
@@ -300,518 +226,192 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     return nombre
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[̀-ͯ]/g, '')
       .replace(/\.[^/.]+$/, '')
       .replace(/[^a-z0-9]/g, '');
   }
 
-  obtenerDocumentosFaltantes(): string[] {
-    const faltantes: string[] = [];
-    const errores: string[] = [];
-
-    const nombrePrograma = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
-    const programa = nombrePrograma.toLowerCase();
-    const esTelematica = programa.includes('telemática') || programa.includes('telematica');
-    const requiereArchivoExclusivo = ['sistemas', 'electrónica', 'electrónica y telecomunicaciones', 'automática', 'automatización'].some(
-      p => programa.includes(p.toLowerCase())
-    );
-
-    // Para Telemática, solo se requiere la cédula
-    if (esTelematica) {
-      const tieneTI = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('tig') || nombre.includes('ti-h');
-      });
-      const tienePP = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('ppg') || (nombre.includes('pp-h') && !nombre.includes('pph'));
-      });
-      const tienePPH = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('pph') && !nombre.includes('pp-h');
-      });
-      const tieneTIH = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('tih') && !nombre.includes('ti-h');
-      });
-      const tieneDocumentosObligatorios = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('pmfo4for27') || nombre.includes('hoja de vida') ||
-               nombre.includes('autorizacion') || nombre.includes('autorización') ||
-               nombre.includes('comprobante') || nombre.includes('trabajo de grado');
-      });
-
-      if (tieneTI) {
-        errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
-      }
-      if (tienePP) {
-        errores.push('Los formatos PP-G/PP-H no aplican para tu programa (Telemática)');
-      }
-      if (tienePPH || tieneTIH) {
-        errores.push('Los formatos PPH/TIH no aplican para tu programa (Telemática)');
-      }
-      if (tieneDocumentosObligatorios) {
-        errores.push('Los documentos obligatorios (PM-FO-4-FOR-27, Autorización, Comprobante, Trabajo de grado) no aplican para tu programa (Telemática)');
-      }
-
-      // Para Telemática, solo la cédula es obligatoria
-      const tieneCedula = this.archivosActuales.some(a => {
-        const nombre = this.normalizarNombre(a.nombre);
-        return nombre.includes('cedula') || nombre.includes('cédula');
-      });
-
-      if (!tieneCedula) {
-        faltantes.push('Fotocopia de cédula (obligatoria para Telemática)');
-      }
-
-      return [...faltantes, ...errores];
-    }
-
-    // Para otros programas, validar los documentos obligatorios
-    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
-    documentosObligatorios.forEach(doc => {
-      if (!this.archivoSubido(doc.label)) {
-        faltantes.push(doc.label);
-      }
-    });
-
-    if (requiereArchivoExclusivo) {
-      const tienePPH = this.archivosActuales.some(a => 
-        this.normalizarNombre(a.nombre).includes('pph') && 
-        !this.normalizarNombre(a.nombre).includes('pp-h')
-      );
-      const tieneTIH = this.archivosActuales.some(a => 
-        this.normalizarNombre(a.nombre).includes('tih') && 
-        !this.normalizarNombre(a.nombre).includes('ti-h')
-      );
-      
-      if (!tienePPH && !tieneTIH) {
-        faltantes.push('Formato PPH o TIH (requerido para tu programa)');
-      }
-    }
-
-    return [...faltantes, ...errores];
-  }
-
-  /**
-   * Muestra un mensaje usando SnackBar - Sistema de Diseño TIC
-   * Notificaciones en parte superior derecha, duración 5 segundos
-   */
   private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
-    const config = {
-      duration: 5000, // 5 segundos según Sistema de Diseño TIC
-      horizontalPosition: 'end' as const,   // Superior derecha según TIC
-      verticalPosition: 'top' as const,
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
       panelClass: [`snackbar-${tipo}`]
-    };
-
-    this.snackBar.open(mensaje, 'Cerrar', config);
+    });
   }
 
-listarSolicitudes() {
-  if (!this.usuario) {
-    return;
-  }
-  const rol = 'ESTUDIANTE';
-  const idUsuario = this.usuario.id_usuario;
-  this.pazSalvoService.listarSolicitudesPorRol(rol, idUsuario)
-    .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
-    .subscribe({
-    next: (data) => {
-      if (!data || !Array.isArray(data)) {
-        this.solicitudes = [];
-        this.solicitudesCompletas = [];
-        return;
-      }
-
-      // Guardar las solicitudes completas para usar esSeleccionado y comentarios
-      this.solicitudesCompletas = data;
-
-      if (data.length > 0) {
-        if (data[0].estadosSolicitud) {
-          data[0].estadosSolicitud.forEach((estado: any, index: number) => {
-          });
-        }
-      }
-
-      this.solicitudes = data.map((sol: any) => {
-        const estados = sol.estado_actual || sol.estadosSolicitud || [];
-        const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
-
-        // Buscar específicamente oficios PDF (subidos por secretaria)
-        const oficiosPDF = sol.documentos?.filter((doc: any) => {
-          if (!doc.nombre) return false;
-          const nombre = doc.nombre.toLowerCase();
-          const esPDF = nombre.endsWith('.pdf');
-          const esOficio = nombre.includes('oficio') || 
-                          nombre.includes('resolucion') || 
-                          nombre.includes('paz') ||
-                          nombre.includes('salvo') ||
-                          nombre.includes('aprobacion');
-          return esPDF && esOficio;
-        }) || [];
-        
-        const rutaArchivo = oficiosPDF.length > 0 ? oficiosPDF[0].nombre : '';
-        const solicitudTransformada = {
-          id: sol.id_solicitud,
-          nombre: sol.nombre_solicitud,
-          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-          estado: ultimoEstado?.estado_actual || 'Pendiente',
-          rutaArchivo,
-          comentarios: ultimoEstado?.comentarios || '',
-          esSeleccionado: sol.esSeleccionado || false // Usar el campo esSeleccionado
-        };
-        return solicitudTransformada;
-      });
-
-    },
-    error: (err) => {
-    }
-  });
-}
-
-
-
-
-  onSolicitudEnviada() {
+  listarSolicitudes() {
     if (!this.usuario) {
       return;
     }
+    this.pazSalvoService.listarSolicitudesPorRol('ESTUDIANTE', this.usuario.id_usuario)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          if (!Array.isArray(data)) {
+            this.solicitudes = [];
+            this.solicitudesCompletas = [];
+            return;
+          }
+          this.solicitudesCompletas = data;
+          this.solicitudes = data.map((sol: any) => this.aSolicitud(sol));
+        },
+        error: () => this.mostrarMensaje('No se pudieron cargar tus solicitudes', 'error')
+      });
+  }
 
-    if (!this.fileUploadComponent) {
+  /** Convierte la respuesta del backend en la fila de la tabla de seguimiento. */
+  private aSolicitud(sol: any): Solicitud {
+    const estados = sol.estado_actual || sol.estadosSolicitud || [];
+    const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
+
+    return {
+      id: sol.id_solicitud,
+      nombre: sol.nombre_solicitud,
+      fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+      estado: ultimoEstado?.estado_actual || 'Pendiente',
+      comentarios: ultimoEstado?.comentarios || ''
+    };
+  }
+
+  onSolicitudEnviada() {
+    if (!this.usuario || !this.fileUploadComponent) {
       return;
     }
-    // Paso 1: Subir documentos SIN asociar a solicitud
+
+    // 1. Se suben los documentos sin asociarlos; 2. se crea la solicitud y el backend los asocia.
     this.fileUploadComponent.subirArchivosPendientes()
-      .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-      next: (archivosSubidos) => {
-
-        // Paso 2: Preparar datos del formulario
-        const formValue = this.solicitudForm.value;
-        const fechaTerminacion = formValue.fecha_terminacion_plan instanceof Date
-          ? formValue.fecha_terminacion_plan.toISOString().split('T')[0]
-          : new Date(formValue.fecha_terminacion_plan).toISOString().split('T')[0];
-
-        // Paso 3: Crear la solicitud con los datos del formulario
-        // El backend espera: idUsuario, nombre_solicitud, fecha_registro_solicitud, periodo_academico (opcional),
-        // titulo_trabajo_grado (opcional), director_trabajo_grado (opcional)
-        // Obtener el nombre completo del usuario (puede estar en diferentes campos)
-        const nombreCompleto = this.usuario?.nombre_completo || 
-                               this.usuario?.nombre || 
-                               this.usuario?.nombreCompleto ||
-                               `${this.usuario?.primer_nombre || ''} ${this.usuario?.segundo_nombre || ''} ${this.usuario?.primer_apellido || ''} ${this.usuario?.segundo_apellido || ''}`.trim() ||
-                               'Usuario';
-        
-        // Asegurar que el nombre completo no esté vacío
-        const nombreFinal = nombreCompleto && nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-        
-        // Formato: "Solicitud Paz y Salvo - [nombre del estudiante]"
-        const nombreSolicitud = `Solicitud Paz y Salvo - ${nombreFinal}`;
-        
-        
-        const datosSolicitud: any = {
-          idUsuario: this.usuario.id_usuario,
-          nombre_solicitud: nombreSolicitud,
-          fecha_registro_solicitud: fechaTerminacion // Usar la fecha de terminación del plan
-        };
-
-        // Agregar campos de trabajo de grado solo si son requeridos y tienen valor
-        if (this.requiereTrabajoGrado) {
-          // Limpiar y validar título del trabajo de grado
-          const tituloTrabajo = formValue.titulo_trabajo_grado?.trim();
-          if (tituloTrabajo && tituloTrabajo.length > 0) {
-            datosSolicitud.titulo_trabajo_grado = tituloTrabajo;
-          }
-          
-          // Limpiar y validar director del trabajo de grado
-          const directorTrabajo = formValue.director_trabajo_grado?.trim();
-          if (directorTrabajo && directorTrabajo.length > 0) {
-            datosSolicitud.director_trabajo_grado = directorTrabajo;
-          }
-        }
-
-        this.pazSalvoService.crearSolicitudConFormulario(this.usuario.id_usuario, archivosSubidos, datosSolicitud)
-          .pipe(takeUntil(this.destroy$)) // Auto-unsubscribe
-          .subscribe({
-          next: (resp) => {
-            this.listarSolicitudes();
-
-            // Actualizar notificaciones después de crear la solicitud
-            const usuario = this.authService.getUsuario();
-            if (usuario?.id_usuario) {
-              this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
-            }
-
-            // Limpiar el formulario después de enviar exitosamente
-            this.solicitudForm.reset({
-              fecha_terminacion_plan: null,
-              titulo_trabajo_grado: '',
-              director_trabajo_grado: ''
+        next: (archivosSubidos) => {
+          this.pazSalvoService.crearSolicitudConFormulario(this.usuario.id_usuario, archivosSubidos, this.datosSolicitud())
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => this.despuesDeEnviar(),
+              error: (err) => {
+                if (err.status === 400) {
+                  this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
+                } else if (err.status === 401) {
+                  this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+                } else {
+                  this.mostrarMensaje('No se pudo enviar la solicitud. Inténtalo de nuevo.', 'error');
+                }
+              }
             });
-            this.archivosActuales = [];
+        },
+        error: () => {
+          this.mostrarMensaje('Error al subir documentos. Por favor, inténtalo de nuevo.', 'error');
+          this.fileUploadComponent?.resetearEstadoCarga();
+        }
+      });
+  }
 
-            setTimeout(() => {
-              this.resetFileUpload = true;
-              this.cdr.detectChanges(); // Forzar detección de cambios
-              setTimeout(() => {
-                this.resetFileUpload = false;
-                this.cdr.detectChanges(); // Forzar detección de cambios
-              }, 0);
-            }, 0);
+  /** Datos del formulario en el formato que espera el backend. */
+  private datosSolicitud(): any {
+    const formValue = this.solicitudForm.value;
+    const fecha = formValue.fecha_terminacion_plan instanceof Date
+      ? formValue.fecha_terminacion_plan
+      : new Date(formValue.fecha_terminacion_plan);
 
-            this.mostrarMensaje('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
-          },
-          error: (err) => {
-            if (err.status === 400) {
-              this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
-            }
-            if (err.status === 401) {
-              this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
-            }
+    const nombreCompleto = (this.usuario?.nombre_completo
+      || this.usuario?.nombre
+      || this.usuario?.nombreCompleto
+      || `${this.usuario?.primer_nombre || ''} ${this.usuario?.segundo_nombre || ''} ${this.usuario?.primer_apellido || ''} ${this.usuario?.segundo_apellido || ''}`
+    ).trim() || 'Usuario';
+
+    const datos: any = {
+      idUsuario: this.usuario.id_usuario,
+      nombre_solicitud: `Solicitud Paz y Salvo - ${nombreCompleto}`,
+      fecha_registro_solicitud: fecha.toISOString().split('T')[0]
+    };
+
+    if (this.requiereTrabajoGrado) {
+      const titulo = formValue.titulo_trabajo_grado?.trim();
+      const director = formValue.director_trabajo_grado?.trim();
+      if (titulo) datos.titulo_trabajo_grado = titulo;
+      if (director) datos.director_trabajo_grado = director;
+    }
+    return datos;
+  }
+
+  private despuesDeEnviar(): void {
+    this.listarSolicitudes();
+
+    const usuario = this.authService.getUsuario();
+    if (usuario?.id_usuario) {
+      this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
+    }
+
+    this.solicitudForm.reset({
+      fecha_terminacion_plan: null,
+      titulo_trabajo_grado: '',
+      director_trabajo_grado: ''
+    });
+    this.archivosActuales = [];
+
+    // Pulso en [reset] para que el componente de subida limpie su lista
+    setTimeout(() => {
+      this.resetFileUpload = true;
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.resetFileUpload = false;
+        this.cdr.detectChanges();
+      }, 0);
+    }, 0);
+
+    this.mostrarMensaje('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
+  }
+
+  private obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta | undefined {
+    return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
+  }
+
+  verComentarios(solicitudId: number): void {
+    const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
+    if (!solicitudCompleta) {
+      this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
+      return;
+    }
+
+    this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).subscribe({
+      next: (comentarios) => {
+        const documentos = comentarios.documentosConComentarios?.map(doc => ({
+          id: doc.id,
+          nombre: doc.nombre,
+          comentario: doc.comentario
+        })) || [];
+
+        this.dialog.open(ComentariosDialogComponent, {
+          width: '700px',
+          data: <ComentariosDialogData>{
+            titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
+            documentos,
+            comentarioRechazo: comentarios.comentarioRechazo || null,
+            mensaje: comentarios.mensaje || undefined
           }
         });
       },
+      error: () => this.mostrarMensaje('Error al cargar los comentarios', 'error')
+    });
+  }
+
+  /**
+   * Descarga el oficio de la solicitud. El servicio toma el nombre del encabezado
+   * Content-Disposition o, si no viene, del primer oficio de la solicitud.
+   */
+  descargarOficio(idSolicitud: number, nombreArchivo: string): void {
+    this.pazSalvoService.descargarOficioPorSolicitud(idSolicitud).subscribe({
+      next: (blob: Blob) => {
+        descargarBlob(blob, (blob as any).filename || nombreArchivo || `oficio_${idSolicitud}.pdf`);
+        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+      },
       error: (err) => {
-        this.mostrarMensaje('Error al subir documentos. Por favor, inténtalo de nuevo.', 'error');
-        
-        // Resetear el estado de carga del componente de subida
-        if (this.fileUploadComponent) {
-          this.fileUploadComponent.resetearEstadoCarga();
+        if (err.status === 404) {
+          this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
+        } else {
+          this.mostrarMensaje('Error al descargar el oficio: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
         }
       }
     });
   }
-
-/**
- * Verificar si una solicitud está rechazada
- */
-esSolicitudRechazada(estado: string): boolean {
-  return estado === 'RECHAZADA' || estado === 'Rechazada';
-}
-
-/**
- * Obtener la solicitud completa por ID
- */
-obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta | undefined {
-  return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
-}
-
-/**
- * Obtener el comentario de rechazo del último estado
- */
-obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
-  if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
-    return null;
-  }
-
-  // Buscar el último estado que sea RECHAZADA
-  const estadosRechazados = solicitud.estadosSolicitud.filter(estado => 
-    estado.estado_actual === 'RECHAZADA' || estado.estado_actual === 'Rechazada'
-  );
-  if (estadosRechazados.length === 0) {
-    return null;
-  }
-
-  // Obtener el último estado de rechazo
-  const ultimoEstadoRechazo = estadosRechazados[estadosRechazados.length - 1];
-  return ultimoEstadoRechazo.comentario || null;
-}
-
-/**
- * Ver comentarios de una solicitud rechazada
- */
-verComentarios(solicitudId: number): void {
-  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-  
-  if (!solicitudCompleta) {
-    this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
-    return;
-  }
-
-  this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).subscribe({
-    next: (comentarios) => {
-      // Mapear la respuesta del backend al formato esperado por el diálogo
-      const documentosConComentarios = comentarios.documentosConComentarios?.map(doc => ({
-        id: doc.id,
-        nombre: doc.nombre,
-        comentario: doc.comentario
-      })) || [];
-
-      const dialogRef = this.dialog.open(ComentariosDialogComponent, {
-        width: '700px',
-        data: <ComentariosDialogData>{
-          titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
-          documentos: documentosConComentarios,
-          comentarioRechazo: comentarios.comentarioRechazo || null,
-          mensaje: comentarios.mensaje || undefined
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(() => {
-        // No es necesario hacer nada al cerrar
-      });
-    },
-    error: (err) => {
-      this.mostrarMensaje('Error al cargar los comentarios', 'error');
-    }
-  });
-}
-
-/**
- * Verificar si una solicitud tiene comentarios
- */
-tieneComentarios(solicitudId: number): boolean {
-  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-  
-  if (!solicitudCompleta || !solicitudCompleta.documentos) {
-    return false;
-  }
-
-  return solicitudCompleta.documentos.some(doc => 
-    doc.comentario && doc.comentario.trim().length > 0
-  );
-}
-
-/**
- * Método de prueba para verificar el funcionamiento
- */
-verificarFuncionalidadComentarios(): void {
-  // Buscar solicitudes rechazadas
-  const solicitudesRechazadas = this.solicitudes.filter(sol => 
-    this.esSolicitudRechazada(sol.estado)
-  );
-  solicitudesRechazadas.forEach(sol => {
-    const tieneComentarios = this.tieneComentarios(sol.id);
-  });
-}
-
-
-/**
- * Descargar oficio
- */
-descargarOficio(idOficio: number, nombreArchivo: string): void {
-  // Usar el mismo flujo que homologación: obtener oficios primero
-  this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
-}
-
-/**
- * Obtener oficios y descargar
- */
-private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
-  this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
-    next: (oficios) => {
-      if (!oficios || oficios.length === 0) {
-        this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
-        return;
-      }
-      
-      // Tomar el primer oficio disponible
-      const oficio = oficios[0];
-      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`;
-      
-      // Intentar descargar usando el endpoint de archivos
-      this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
-    },
-    error: (err) => {
-      
-      // Si no se pueden obtener oficios, intentar con nombres comunes
-      this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
-    }
-  });
-}
-
-/**
- * Descargar archivo por nombre usando el endpoint de archivos
- */
-private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
-  const solicitudId = idSolicitud || 1;
-  this.pazSalvoService.descargarOficioPorSolicitud(solicitudId).subscribe({
-    next: (blob: any) => {
-      // Si el backend no envía nombre por headers, intentar obtenerlo desde la lista de oficios
-      if (!blob?.filename) {
-        this.pazSalvoService.obtenerOficios(solicitudId).subscribe({
-          next: (oficios) => {
-            const nombreLista = oficios?.[0]?.nombreArchivo || oficios?.[0]?.nombre;
-            const nombreArchivoDescarga = nombreLista || nombreDescarga || nombreArchivo || `oficio_${solicitudId}.pdf`;
-            descargarBlob(blob, nombreArchivoDescarga);
-            this.mostrarMensaje('Oficio descargado exitosamente', 'success');
-          },
-          error: () => {
-            const nombreArchivoDescarga = nombreDescarga || nombreArchivo || `oficio_${solicitudId}.pdf`;
-            descargarBlob(blob, nombreArchivoDescarga);
-            this.mostrarMensaje('Oficio descargado exitosamente', 'success');
-          }
-        });
-      } else {
-        const nombreArchivoDescarga = blob.filename as string;
-        descargarBlob(blob, nombreArchivoDescarga);
-        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
-      }
-    },
-    error: (err) => {
-      this.mostrarMensaje('Error al descargar archivo: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
-    }
-  });
-}
-
-/**
- * Intentar descarga con nombres comunes
- */
-private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: string): void {
-  // Obtener información del usuario para generar nombres
-  const usuario = this.usuario;
-  const codigoUsuario = usuario?.codigo || usuario?.codigo_estudiante || 'SIN_CODIGO';
-  const año = new Date().getFullYear();
-  
-  // Nombres comunes a probar
-  const nombresComunes = [
-    `OFICIO_PAZ_SALVO_${codigoUsuario}_${año} (1).pdf`,
-    `OFICIO_PAZ_SALVO_${codigoUsuario}_${año}.pdf`,
-    `oficio_paz_salvo_${codigoUsuario}_${año}.pdf`,
-    `paz_salvo_${codigoUsuario}_${año}.pdf`,
-    `oficio_${idSolicitud}.pdf`,
-    `paz_salvo_${idSolicitud}.pdf`
-  ];
-  
-  this.probarNombresSecuencial(nombresComunes, 0, nombreArchivo, idSolicitud);
-}
-
-/**
- * Probar nombres de archivo secuencialmente
- */
-private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga: string, idSolicitud: number): void {
-  if (index >= nombres.length) {
-    this.mostrarMensaje('No se encontró el archivo con los nombres probados', 'warning');
-    return;
-  }
-  
-  const nombre = nombres[index];
-  this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
-}
-
-
-/**
- * Obtener el estado actual de una solicitud
- */
-obtenerEstadoActual(solicitud: any): string {
-  if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-    const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-    return ultimoEstado.estado_actual;
-  }
-  return 'Pendiente';
-}
-
-/**
- * Mostrar oficios en la UI
- */
-private mostrarOficiosEnUI(oficios: any[]): void {
-  if (!oficios || oficios.length === 0) {
-    this.mostrarMensaje('No hay oficios disponibles', 'info');
-    return;
-  }
-  
-  this.mostrarMensaje(`Se encontraron ${oficios.length} oficio(s) disponible(s)`, 'success');
-}
-
 }

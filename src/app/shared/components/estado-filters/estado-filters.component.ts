@@ -462,13 +462,6 @@ export class EstadoFiltersComponent implements OnInit {
     return curso.estado || 'Borrador';
   }
 
-  // Método público para actualizar cursos desde el componente padre
-  actualizarCursos(cursos: CursoOfertadoVerano[]): void {
-    this.cursos = cursos;
-    this.calcularConteos();
-    this.aplicarFiltro();
-  }
-
   // Método para limpiar filtros
   limpiarFiltros(): void {
     this.estadoSeleccionado = '';
@@ -478,9 +471,4 @@ export class EstadoFiltersComponent implements OnInit {
     this.estadoSeleccionadoChange.emit('');
   }
 
-  // Método para actualizar conteos cuando cambien los cursos
-  actualizarConteos(): void {
-    // Actualizando conteos
-    this.calcularConteos();
-  }
 }
