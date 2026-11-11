@@ -719,23 +719,12 @@
           <!-- DETALLES EXPANDIDOS -->
           <div *ngIf="estaExpandida(rec.id)" class="detalles-expandidos">
             
-            <div class="seccion" *ngIf="rec.cronograma">
-              <strong>Cronograma</strong>
-              <ul>
-                <li>Inicio gestión: {{ rec.cronograma.inicioGestion }}</li>
-                <li>Publicación oferta: {{ rec.cronograma.publicacionOferta }}</li>
-                <li>Contratación docentes: {{ rec.cronograma.contratacionDocentes }}</li>
-                <li>Inicio inscripciones: {{ rec.cronograma.inicioInscripciones }}</li>
-              </ul>
-            </div>
-            
             <div class="seccion" *ngIf="rec.impacto">
               <strong>Impacto esperado</strong>
               <ul>
                 <li>Estudiantes atendidos: {{ rec.impacto.estudiantesAtendidos }}</li>
                 <li>Estudiantes beneficiados: {{ rec.impacto.estudiantesBeneficiados }}</li>
                 <li>Cobertura objetivo: {{ rec.impacto.tasaCoberturaObjetivo }}</li>
-                <li>Inversión estimada: {{ rec.impacto.inversionEstimada }}</li>
               </ul>
             </div>
             
