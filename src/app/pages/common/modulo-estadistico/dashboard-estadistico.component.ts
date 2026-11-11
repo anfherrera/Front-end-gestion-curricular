@@ -15,9 +15,6 @@ import { Chart, registerables } from 'chart.js';
 import type { ChartConfiguration, ChartData } from 'chart.js';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import * as XLSX from 'xlsx';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
