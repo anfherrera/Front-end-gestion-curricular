@@ -64,7 +64,7 @@ export const routes: Routes = [
         canActivateChild: [authGuard, RoleGuard],
         data: { role: UserRole.FUNCIONARIO },
         children: [
-          { path: 'paz-salvo', loadComponent: () => import('./pages/funcionario/paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent) },
+          { path: 'paz-salvo', data: { rolRevision: 'funcionario' }, loadComponent: () => import('./pages/common/paz-salvo-revision/paz-salvo-revision.component').then(m => m.PazSalvoRevisionComponent) },
           { path: 'pruebas-ecaes', loadComponent: () => import('./pages/funcionario/pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesFuncionarioComponent) },
           {
             path: 'cursos-intersemestrales',
@@ -87,7 +87,7 @@ export const routes: Routes = [
         canActivateChild: [authGuard, RoleGuard],
         data: { role: UserRole.COORDINADOR },
         children: [
-          { path: 'paz-salvo', loadComponent: () => import('./pages/coordinador/paz-salvo/paz-salvo.component').then(m => m.PazSalvoCoordinadorComponent) },
+          { path: 'paz-salvo', data: { rolRevision: 'coordinador' }, loadComponent: () => import('./pages/common/paz-salvo-revision/paz-salvo-revision.component').then(m => m.PazSalvoRevisionComponent) },
           { path: 'reingreso-estudiante', loadComponent: () => import('./pages/coordinador/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
           { path: 'homologacion-asignaturas', loadComponent: () => import('./pages/coordinador/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
           { path: 'modulo-estadistico', loadComponent: () => import('./pages/common/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },

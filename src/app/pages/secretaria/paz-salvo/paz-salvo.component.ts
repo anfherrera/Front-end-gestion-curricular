@@ -164,30 +164,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
-   * Verificar si la solicitud tiene oficios PDF (ya fue enviada al estudiante)
-   */
-  tieneOficiosPDF(solicitud: SolicitudHomologacionDTORespuesta): boolean {
-    if (!solicitud.documentos || solicitud.documentos.length === 0) {
-      return false;
-    }
-
-    // Buscar documentos que sean oficios/resoluciones (PDFs subidos por secretaria)
-    return solicitud.documentos.some(doc => {
-      if (!doc.nombre) return false;
-
-      const nombre = doc.nombre.toLowerCase();
-      const esPDF = nombre.endsWith('.pdf');
-      const esOficio = nombre.includes('oficio') ||
-                      nombre.includes('resolucion') ||
-                      nombre.includes('paz') ||
-                      nombre.includes('salvo') ||
-                      nombre.includes('aprobacion');
-
-      return esPDF && esOficio;
-    });
-  }
-
-  /**
    * Seleccionar solicitud (evento del RequestStatusTableComponent)
    */
   onSolicitudSeleccionada(solicitudId: number | null): void {
@@ -303,61 +279,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   /**
-   * Subir archivo PDF al servidor
-   */
-  subirPDF(): void {
-    if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackbar.warning('Por favor selecciona un archivo PDF');
-      return;
-    }
-
-    this.subiendoPDF = true;
-    // Usar el endpoint específico de Paz y Salvo para subir el oficio PDF
-    this.pazSalvoService.subirOficioPdf(this.selectedSolicitud.id_solicitud, this.archivoPDF).subscribe({
-      next: (response) => {
-        this.snackbar.success('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.');
-        this.subiendoPDF = false;
-      },
-      error: (err) => {
-        this.snackbar.error('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'));
-        this.subiendoPDF = false;
-      }
-    });
-  }
-
-  /**
-   * Enviar PDF al estudiante (cambia el estado a APROBADA)
-   */
-  enviarPDFAlEstudiante(): void {
-    if (!this.selectedSolicitud) {
-      this.snackbar.warning('Por favor selecciona una solicitud');
-      return;
-    }
-
-    this.enviandoPDF = true;
-    // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
-    this.pazSalvoService.approveDefinitively(this.selectedSolicitud.id_solicitud).subscribe({
-      next: () => {
-        this.snackbar.success('PDF enviado al estudiante y solicitud aprobada exitosamente');
-        this.enviandoPDF = false;
-
-        // Limpiar el estado
-        this.documentoGenerado = false;
-        this.archivoPDF = null;
-        this.selectedSolicitud = undefined;
-
-        // Recargar ambas listas
-        this.cargarSolicitudesPendientes();
-        this.cargarSolicitudesProcesadas();
-      },
-      error: (err: any) => {
-        this.snackbar.error('Error al enviar al estudiante');
-        this.enviandoPDF = false;
-      }
-    });
-  }
-
-  /**
    * Enviar documento (unifica subir PDF y enviar al estudiante)
    */
   enviarDocumento(): void {
@@ -408,13 +329,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.subiendoPDF = false;
       }
     });
-  }
-
-  /**
-   * Verificar si se puede enviar el PDF
-   */
-  puedeEnviarPDF(): boolean {
-    return this.documentoGenerado && this.archivoPDF !== null && !this.subiendoPDF && !this.enviandoPDF;
   }
 
   /**

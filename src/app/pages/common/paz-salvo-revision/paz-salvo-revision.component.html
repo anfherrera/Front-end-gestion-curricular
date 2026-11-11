@@ -1,4 +1,4 @@
-<div class="coordinador-container">
+<div class="paz-salvo-container">
 
   <!-- Pestañas para Pendientes y Procesadas -->
   <mat-tab-group>
@@ -83,9 +83,14 @@
 
   </app-card-container>
 
-  <!-- Botones de acción para la solicitud completa -->
+  <!-- Botones de acción para la solicitud -->
   <div class="botones-acciones" *ngIf="selectedSolicitud">
-    <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">Aprobar Definitivamente</button>
-    <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">Rechazar Paz y Salvo</button>
+    <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
+      {{ config.textoAprobar }}
+    </button>
+    <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
+      Rechazar Paz y Salvo
+    </button>
   </div>
+
 </div>
