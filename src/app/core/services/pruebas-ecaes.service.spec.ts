@@ -1,5 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { JwtInterceptor } from '../interceptors/jwt.interceptor';
+import { AuthService } from './auth.service';
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from './pruebas-ecaes.service';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
@@ -14,8 +17,11 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
   beforeEach(() => {
     const loggerSpyObj = jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      // Con el JwtInterceptor real: es quien añade el token en la app
       providers: [
+        provideHttpClient(withInterceptors([JwtInterceptor])),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', { getToken: 'mock-token' }) },
         PruebasEcaesService,
         { provide: LoggerService, useValue: loggerSpyObj }
       ]
@@ -90,7 +96,10 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
     });
 
     it('EC-005: Debe publicar fechas ECAES', (done) => {
-      const fechasData = { periodoAcademico: '2025-1', inscripcion_est_by_facultad: '2025-01-15' };
+      const fechasData = {
+        periodoAcademico: '2025-1', inscripcion_est_by_facultad: '2025-01-15', registro_recaudo_ordinario: '2025-02-01',
+        registro_recaudo_extraordinario: '2025-02-15', citacion: '2025-03-01', aplicacion: '2025-03-15', resultados_individuales: '2025-05-01'
+      };
       service.publicarFechasEcaes(fechasData).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/publicarFechasEcaes`);
       expect(req.request.method).toBe('POST');
@@ -99,7 +108,10 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
     });
 
     it('EC-006: Debe actualizar fechas ECAES', (done) => {
-      const fechasData = { idFechaEcaes: 1, periodoAcademico: '2025-1' };
+      const fechasData = {
+        idFechaEcaes: 1, periodoAcademico: '2025-1', inscripcion_est_by_facultad: '2025-01-15', registro_recaudo_ordinario: '2025-02-01',
+        registro_recaudo_extraordinario: '2025-02-15', citacion: '2025-03-01', aplicacion: '2025-03-15', resultados_individuales: '2025-05-01'
+      };
       service.actualizarFechasEcaes(fechasData).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/actualizarFechasEcaes`);
       expect(req.request.method).toBe('PUT');
@@ -164,15 +176,6 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
   });
 
   describe('4. Actualizar estado', () => {
-    it('EC-010: Debe actualizar estado de solicitud', (done) => {
-      service.actualizarEstadoSolicitud(1, 'ENVIADA').subscribe(() => done());
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body.idSolicitud).toBe(1);
-      expect(req.request.body.nuevoEstado).toBe('ENVIADA');
-      req.flush({});
-    });
-
     it('EC-011: Debe aprobar solicitud (PRE_REGISTRADO)', (done) => {
       service.approveRequest(1).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map, catchError, tap, distinctUntilChanged } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
@@ -62,26 +62,6 @@ export class PeriodosAcademicosService {
       }
       this.periodoAnterior = periodo;
     });
-  }
-
-  /**
-   * Obtiene los headers de autenticación
-   */
-  private getAuthHeaders(): HttpHeaders {
-    if (typeof window === 'undefined') {
-      return new HttpHeaders({ 'Content-Type': 'application/json' });
-    }
-    
-    const token = localStorage.getItem('token');
-    const headers: { [key: string]: string } = {
-      'Content-Type': 'application/json'
-    };
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    return new HttpHeaders(headers);
   }
 
   /**
@@ -156,7 +136,7 @@ export class PeriodosAcademicosService {
   getTodosLosPeriodos(): Observable<PeriodoAcademico[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.TODOS;
     
-    return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url).pipe(
       map(response => response.success ? response.data : []),
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
@@ -173,7 +153,7 @@ export class PeriodosAcademicosService {
   getPeriodosFuturos(): Observable<PeriodoAcademico[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.FUTUROS;
     
-    return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url).pipe(
       map(response => response.success ? response.data : []),
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
@@ -198,7 +178,7 @@ export class PeriodosAcademicosService {
   getPeriodosRecientes(): Observable<PeriodoAcademico[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES;
     
-    return this.http.get<{ success: boolean; data: PeriodoAcademico[] | string[] }>(url, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<{ success: boolean; data: PeriodoAcademico[] | string[] }>(url).pipe(
       map(response => {
         if (!response.success || !response.data) {
           return [];
@@ -238,7 +218,7 @@ export class PeriodosAcademicosService {
   getInfoPeriodo(periodo: string): Observable<PeriodoAcademico | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.INFO(periodo);
     
-    return this.http.get<{ success: boolean; data: PeriodoAcademico }>(url, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<{ success: boolean; data: PeriodoAcademico }>(url).pipe(
       map(response => response.success ? response.data : null),
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
@@ -255,7 +235,7 @@ export class PeriodosAcademicosService {
   getPeriodoActivoConfig(): Observable<PeriodoActivoConfig | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.ADMIN.PERIODO_ACTIVO;
     
-    return this.http.get<PeriodoActivoResponse>(url, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<PeriodoActivoResponse>(url).pipe(
       map(response => response.success ? response.data : null),
       catchError(error => {
         // Solo mostrar error si no es un error de conexión
@@ -273,7 +253,7 @@ export class PeriodosAcademicosService {
   setPeriodoActivo(periodoAcademico: string | null): Observable<PeriodoActivoConfig | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.ADMIN.PERIODO_ACTIVO;
     
-    return this.http.put<PeriodoActivoResponse>(url, { periodoAcademico }, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.put<PeriodoActivoResponse>(url, { periodoAcademico }).pipe(
       map(response => {
         if (response.success && response.data) {
           // Si se cambió el período, actualizar el período actual

@@ -195,7 +195,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe((motivo: string) => {
       if (motivo) {
-        this.homologacionService.rejectAsCoordinador(this.selectedSolicitud!.id_solicitud, motivo).pipe(
+        this.homologacionService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).pipe(
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {

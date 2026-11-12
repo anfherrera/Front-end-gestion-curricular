@@ -431,11 +431,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       next: (response: SolicitudEcaesResponse) => {
         this.logger.log('Solicitud creada en backend:', response);
 
-        // Actualizar notificaciones después de crear la solicitud
-        const usuario = this.authService.getUsuario();
-        if (usuario?.id_usuario) {
-          this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
-        }
+        this.notificacionesService.actualizarNotificaciones();
 
         // El backend ya crea la solicitud en estado ENVIADA
         this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));

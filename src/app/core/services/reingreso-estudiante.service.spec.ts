@@ -1,5 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { JwtInterceptor } from '../interceptors/jwt.interceptor';
+import { AuthService } from './auth.service';
 import { ReingresoEstudianteService } from './reingreso-estudiante.service';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
@@ -14,8 +17,11 @@ describe('ReingresoEstudianteService - Pruebas Unitarias', () => {
   beforeEach(() => {
     const loggerSpyObj = jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      // Con el JwtInterceptor real: es quien añade el token en la app
       providers: [
+        provideHttpClient(withInterceptors([JwtInterceptor])),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', { getToken: 'mock-token' }) },
         ReingresoEstudianteService,
         { provide: LoggerService, useValue: loggerSpyObj }
       ]
@@ -99,14 +105,6 @@ describe('ReingresoEstudianteService - Pruebas Unitarias', () => {
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(body);
       req.flush({ id_solicitud: 1 });
-    });
-
-    it('RE-011: actualizarEstadoSolicitud debe enviar PUT con cambioEstado', (done) => {
-      const cambio = { idSolicitud: 1, nuevoEstado: 'APROBADA_FUNCIONARIO' };
-      service.actualizarEstadoSolicitud(cambio as any).subscribe(() => done());
-      const req = httpMock.expectOne((r) => r.url.includes('actualizarEstadoSolicitud-Reingreso'));
-      expect(req.request.method).toBe('PUT');
-      req.flush({});
     });
 
     it('RE-012: approveRequest debe enviar APROBADA_FUNCIONARIO', (done) => {

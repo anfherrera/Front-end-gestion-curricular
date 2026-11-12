@@ -349,10 +349,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   private despuesDeEnviar(): void {
     this.listarSolicitudes();
 
-    const usuario = this.authService.getUsuario();
-    if (usuario?.id_usuario) {
-      this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
-    }
+    this.notificacionesService.actualizarNotificaciones();
 
     this.solicitudForm.reset({
       fecha_terminacion_plan: null,

@@ -196,7 +196,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe((motivo: string) => {
       if (motivo) {
-        this.reingresoService.rejectAsCoordinador(this.selectedSolicitud!.id_solicitud, motivo).pipe(
+        this.reingresoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).pipe(
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {

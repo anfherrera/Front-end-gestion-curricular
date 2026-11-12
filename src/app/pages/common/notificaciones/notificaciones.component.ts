@@ -14,7 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { NotificacionService } from '../../../core/services/notificacion.service';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Notificacion, TipoSolicitud } from '../../../core/models/notificaciones.model';
 import {
@@ -69,7 +69,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private notificacionService: NotificacionService,
+    private notificacionService: NotificacionesService,
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,

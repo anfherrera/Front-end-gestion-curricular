@@ -11,7 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 
-import { NotificacionService } from '../../../core/services/notificacion.service';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Notificacion, NotificacionesResponse } from '../../../core/models/notificaciones.model';
@@ -52,7 +52,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private notificacionService: NotificacionService,
+    private notificacionService: NotificacionesService,
     private authService: AuthService,
     private router: Router,
     private snackbar: SnackbarService,
@@ -66,6 +66,8 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     if (userId) {
       this.iniciarPollingContador(userId, 30000);
     }
+    // Al crear una solicitud el backend genera notificaciones: refrescar sin esperar al sondeo
+    this.notificacionesSubscription = this.notificacionService.cambios$.subscribe(() => this.actualizarContador());
   }
 
   ngOnDestroy(): void {

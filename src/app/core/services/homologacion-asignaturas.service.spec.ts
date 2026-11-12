@@ -1,5 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { JwtInterceptor } from '../interceptors/jwt.interceptor';
+import { AuthService } from './auth.service';
 import { HomologacionAsignaturasService } from './homologacion-asignaturas.service';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
@@ -12,8 +15,11 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
   beforeEach(() => {
     const loggerSpyObj = jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      // Con el JwtInterceptor real: es quien añade el token en la app
       providers: [
+        provideHttpClient(withInterceptors([JwtInterceptor])),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', { getToken: 'mock-token' }) },
         HomologacionAsignaturasService,
         { provide: LoggerService, useValue: loggerSpyObj }
       ]

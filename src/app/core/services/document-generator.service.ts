@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { DocumentRequest, DocumentTemplate } from '../../shared/components/document-generator/document-generator.component';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
@@ -14,21 +14,11 @@ export class DocumentGeneratorService {
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-  }
-
   /**
    * Obtener plantillas disponibles para un proceso específico
    */
   getTemplates(proceso: string): Observable<DocumentTemplate[]> {
-    return this.http.get<DocumentTemplate[]>(`${this.apiUrl}/templates/${proceso}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<DocumentTemplate[]>(`${this.apiUrl}/templates/${proceso}`);
   }
 
   /**
@@ -91,22 +81,13 @@ export class DocumentGeneratorService {
       const url = `${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`;
       // URL para generar Paz y Salvo
       
-      // Para FormData, no usar Content-Type (el navegador lo establece automáticamente)
-      const headers = new HttpHeaders({
-        'Authorization': this.getAuthHeaders().get('Authorization') || ''
-      });
-      
-      return this.http.post(url, formData, {
-        headers: headers,
-        responseType: 'blob'
-      });
+      return this.http.post(url, formData, { responseType: 'blob' });
     }
 
     // Para homologación y reingreso, usar el backend genérico
     if (request.tipoDocumento === 'OFICIO_HOMOLOGACION' || request.tipoDocumento === 'RESOLUCION_REINGRESO') {
       // Usando backend para generar documento
       return this.http.post(`${this.apiUrl}/generar`, request, {
-        headers: this.getAuthHeaders(),
         responseType: 'blob'
       });
     }
@@ -212,9 +193,7 @@ export class DocumentGeneratorService {
     const endpoint = `${environment.apiUrl}/solicitudes-homologacion/guardarOficio`;
     // Usando endpoint
 
-    return this.http.post(endpoint, formData, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.post(endpoint, formData);
   }
 
   /**

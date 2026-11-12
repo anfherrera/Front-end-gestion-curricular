@@ -290,11 +290,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       this.logger.debug('Solicitud creada en backend', resp);
       this.listarSolicitudes();
 
-      // Actualizar notificaciones después de crear la solicitud
-      const usuario = this.authService.getUsuario();
-      if (usuario?.id_usuario) {
-        this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
-      }
+      this.notificacionesService.actualizarNotificaciones();
 
       // Resetear el file upload
       this.resetFileUpload = true;

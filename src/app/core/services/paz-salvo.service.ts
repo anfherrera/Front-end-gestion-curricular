@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
 import { Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 import { nombreDeContentDisposition } from '../utils/download.util';
+import { SolicitudesBaseService, ValidezDocumento, validarPdf } from './base/solicitudes-base.service';
 
 type Solicitudes = Observable<SolicitudHomologacionDTORespuesta[]>;
 
@@ -40,12 +41,6 @@ export interface DocumentoSubidoPazSalvo {
 /** Blob descargado con el nombre de archivo que indicó el servidor. */
 export type BlobConNombre = Blob & { filename?: string };
 
-/** Validez de un documento al aprobar o rechazar. */
-export interface ValidezDocumento {
-  id_documento: number;
-  esValido: boolean;
-}
-
 const BANDEJA_POR_ROL: Record<string, string> = {
   FUNCIONARIO: 'Funcionario',
   COORDINADOR: 'Coordinador',
@@ -53,18 +48,18 @@ const BANDEJA_POR_ROL: Record<string, string> = {
   SECRETARIO: 'Secretaria'
 };
 
-const TAMANO_MAXIMO_PDF = 10 * 1024 * 1024; // 10 MB
-
 /**
  * Solicitudes de paz y salvo. El token lo añade JwtInterceptor a todas las peticiones.
  */
 @Injectable({
   providedIn: 'root'
 })
-export class PazSalvoService {
-  private apiUrl = `${environment.apiUrl}/solicitudes-pazysalvo`;
+export class PazSalvoService extends SolicitudesBaseService {
+  private readonly authService = inject(AuthService);
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor() {
+    super(`${environment.apiUrl}/solicitudes-pazysalvo`);
+  }
 
   // ================================
   // Listados
@@ -115,20 +110,11 @@ export class PazSalvoService {
   }
 
   private bandeja(rol: string, periodoAcademico?: string): Solicitudes {
-    const params = this.paramsPeriodo(periodoAcademico);
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(
-      `${this.apiUrl}/listarSolicitud-PazYSalvo/${rol}`,
-      params.keys().length > 0 ? { params } : {}
-    );
+    return this.listar<SolicitudHomologacionDTORespuesta>(`listarSolicitud-PazYSalvo/${rol}`, periodoAcademico);
   }
 
   private historial(rol: string, periodoAcademico?: string): Solicitudes {
-    return this.bandeja(`${rol}/Aprobadas`, periodoAcademico).pipe(catchError(() => of([])));
-  }
-
-  private paramsPeriodo(periodoAcademico?: string): HttpParams {
-    const params = new HttpParams();
-    return periodoAcademico ? params.set('periodoAcademico', periodoAcademico) : params;
+    return this.listarOVacio<SolicitudHomologacionDTORespuesta>(`listarSolicitud-PazYSalvo/${rol}/Aprobadas`, periodoAcademico);
   }
 
   // ================================
@@ -200,12 +186,6 @@ export class PazSalvoService {
     return this.cambiarEstado(requestId, 'RECHAZADA', reason);
   }
 
-  private cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<unknown> {
-    const body: { idSolicitud: number; nuevoEstado: string; comentario?: string } = { idSolicitud, nuevoEstado };
-    if (comentario !== undefined) body.comentario = comentario;
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, body);
-  }
-
   /** Marca cada documento como válido o no válido. */
   actualizarEstadoDocumentos(idSolicitud: number, documentos: ValidezDocumento[]): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoDocumentos`, { idSolicitud, documentos });
@@ -221,22 +201,13 @@ export class PazSalvoService {
     );
   }
 
-  /** GET /api/documentos/buscarPorId/{id}: comentario actual antes de añadir otro (documentation-viewer). */
-  buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string | null }> {
-    return this.http.get<{ comentario?: string | null }>(`${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`);
-  }
-
-  agregarComentario(idDocumento: number, comentario: string): Observable<unknown> {
-    return this.http.put(`${environment.apiUrl}/documentos/añadirComentario`, { idDocumento, comentario });
-  }
-
   // ================================
   // Documentos y oficios
   // ================================
 
   /** Sube un documento SIN asociarlo: el backend lo asocia al crear la solicitud. */
   subirDocumento(archivo: File): Observable<DocumentoSubidoPazSalvo> {
-    const error = this.validarPdf(archivo);
+    const error = validarPdf(archivo);
     if (error) return throwError(() => error);
 
     const formData = new FormData();
@@ -277,19 +248,20 @@ export class PazSalvoService {
     );
   }
 
-  // Descargas que usa documentation-viewer (recibe el servicio como [servicio])
+  // Descargas que usa documentation-viewer. Paz y salvo descarga por su propio endpoint
+  // y devuelve el nombre del archivo, por eso redefine las de la base.
 
-  descargarArchivo(nombreArchivo: string): Observable<BlobConNombre> {
+  override descargarArchivo(nombreArchivo: string): Observable<BlobConNombre> {
     return this.descargarConNombre(this.urlDescargaPorNombre(nombreArchivo), nombreArchivo || 'oficio.pdf');
   }
 
   /** Por id de documento: más confiable que por nombre. */
-  descargarArchivoPorId(idDocumento: number): Observable<BlobConNombre> {
-    return this.descargarConNombre(`${environment.apiUrl}/documentos/${idDocumento}/descargar`, 'documento.pdf');
+  override descargarArchivoPorId(idDocumento: number): Observable<BlobConNombre> {
+    return this.descargarConNombre(`${this.api}/documentos/${idDocumento}/descargar`, 'documento.pdf');
   }
 
   /** Por la ruta guardada en la base de datos. */
-  descargarArchivoPorRuta(rutaDocumento: string): Observable<BlobConNombre> {
+  override descargarArchivoPorRuta(rutaDocumento: string): Observable<BlobConNombre> {
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     return this.descargarConNombre(this.urlDescargaPorNombre(nombreArchivo), nombreArchivo || 'documento.pdf');
   }
@@ -310,16 +282,5 @@ export class PazSalvoService {
 
   private nombreDesdeCabeceras(resp: HttpResponse<Blob>): string | null {
     return nombreDeContentDisposition(resp.headers);
-  }
-
-  private validarPdf(archivo: File): { status: number; error: { message: string } } | null {
-    if (archivo.size > TAMANO_MAXIMO_PDF) {
-      const mb = (archivo.size / (1024 * 1024)).toFixed(2);
-      return { status: 413, error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${mb}MB` } };
-    }
-    if (!archivo.name.toLowerCase().endsWith('.pdf')) {
-      return { status: 415, error: { message: 'Solo se permiten archivos PDF' } };
-    }
-    return null;
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoggerService } from './logger.service';
+import { SolicitudesBaseService } from './base/solicitudes-base.service';
 
 export interface FechaEcaes {
   idFechaEcaes: number;
@@ -81,218 +81,56 @@ export interface SolicitudEcaesResponse {
   fecha_nacimiento: string;
 }
 
+/** Solicitudes y fechas de las pruebas ECAES (Saber Pro). */
 @Injectable({
   providedIn: 'root'
 })
-export class PruebasEcaesService {
-  private apiUrl = `${environment.apiUrl}/solicitudes-ecaes`;
-
-  constructor(
-    private http: HttpClient,
-    private logger: LoggerService
-  ) {}
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      Authorization: token ? `Bearer ${token}` : ''
-    });
+export class PruebasEcaesService extends SolicitudesBaseService {
+  constructor() {
+    super(`${environment.apiUrl}/solicitudes-ecaes`);
   }
 
-  /**
-   * Obtener todas las fechas de ECAES
-   */
+  // ---------- Fechas ----------
+
   listarFechasEcaes(): Observable<FechaEcaes[]> {
-    return this.http.get<FechaEcaes[]>(`${this.apiUrl}/listarFechasEcaes`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<FechaEcaes[]>(`${this.apiUrl}/listarFechasEcaes`);
   }
 
-  /**
-   * Crear solicitud de ECAES
-   */
+  buscarFechasPorPeriodo(periodoAcademico: string): Observable<FechaEcaes> {
+    return this.http.get<FechaEcaes>(`${this.apiUrl}/buscarFechasPorPeriodo/${encodeURIComponent(periodoAcademico)}`);
+  }
+
+  publicarFechasEcaes(fechas: Omit<FechaEcaes, 'idFechaEcaes'>): Observable<FechaEcaes> {
+    return this.http.post<FechaEcaes>(`${this.apiUrl}/publicarFechasEcaes`, fechas);
+  }
+
+  actualizarFechasEcaes(fechas: FechaEcaes): Observable<FechaEcaes> {
+    return this.http.put<FechaEcaes>(`${this.apiUrl}/actualizarFechasEcaes`, fechas);
+  }
+
+  // ---------- Solicitudes ----------
+
   crearSolicitudEcaes(solicitud: SolicitudEcaesRequest): Observable<SolicitudEcaesResponse> {
-    return this.http.post<SolicitudEcaesResponse>(`${this.apiUrl}/crearSolicitud-Ecaes`, solicitud, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.post<SolicitudEcaesResponse>(`${this.apiUrl}/crearSolicitud-Ecaes`, solicitud);
   }
 
-  /**
-   * Aprobar solicitud ECAES como funcionario
-   */
-  approveRequest(requestId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
-      idSolicitud: requestId,
-      nuevoEstado: 'PRE_REGISTRADO' // Cambiar directamente a PRE_REGISTRADO
-    }, { headers: this.getAuthHeaders() });
-  }
-
-  /**
-   * Rechazar solicitud ECAES
-   */
-  rejectRequest(requestId: number, reason?: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, {
-      idSolicitud: requestId,
-      nuevoEstado: 'Rechazada',
-      comentario: reason || 'Solicitud rechazada por el funcionario'
-    }, { headers: this.getAuthHeaders() });
-  }
-
-  /**
-   * Método genérico para actualizar estado (mantener para compatibilidad)
-   */
-  actualizarEstadoSolicitud(idSolicitud: number, nuevoEstado: string): Observable<any> {
-    const payload = {
-      idSolicitud: idSolicitud,
-      nuevoEstado: nuevoEstado
-    };
-    return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, payload, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  listarSolicitudesEcaes(): Observable<SolicitudEcaesResponse[]> {
-    return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitudes-Ecaes`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Listar solicitudes ECAES por rol y usuario
-   */
   listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudEcaesResponse[]> {
     let params = new HttpParams().set('rol', rol);
-    if (idUsuario) {
-      params = params.set('idUsuario', idUsuario.toString());
-    }
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-
-    const url = `${this.apiUrl}/listarSolicitud-ecaes/porRol`;
-
-    return this.http.get<SolicitudEcaesResponse[]>(url, {
-      params: params,
-      headers: this.getAuthHeaders()
-    });
+    if (idUsuario) params = params.set('idUsuario', idUsuario.toString());
+    if (periodoAcademico) params = params.set('periodoAcademico', periodoAcademico);
+    return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitud-ecaes/porRol`, { params });
   }
 
-
-  /**
-   * Publicar fechas de ECAES
-   */
-  publicarFechasEcaes(fechasData: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/publicarFechasEcaes`, fechasData, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Buscar fechas ECAES por período académico
-   */
-  buscarFechasPorPeriodo(periodoAcademico: string): Observable<FechaEcaes> {
-    return this.http.get<FechaEcaes>(`${this.apiUrl}/buscarFechasPorPeriodo/${encodeURIComponent(periodoAcademico)}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Actualizar fechas ECAES existentes
-   */
-  actualizarFechasEcaes(fechasData: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/actualizarFechasEcaes`, fechasData, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Listar solicitudes ECAES para funcionario
-   */
   listarSolicitudesFuncionario(periodoAcademico?: string): Observable<SolicitudEcaesResponse[]> {
-    let params = new HttpParams();
-    if (periodoAcademico) {
-      params = params.set('periodoAcademico', periodoAcademico);
-    }
-
-    return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitudes-Ecaes/Funcionario`, {
-      params: params.keys().length > 0 ? params : undefined,
-      headers: this.getAuthHeaders()
-    });
+    return this.listar<SolicitudEcaesResponse>('listarSolicitudes-Ecaes/Funcionario', periodoAcademico);
   }
 
-  /**
-   * Descargar archivo PDF por nombre
-   */
-  descargarArchivo(nombreArchivo: string): Observable<Blob> {
-    // URL directa al backend (CORS configurado)
-    const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    // URL de descarga ECAES
-    this.logger.log('Nombre del archivo:', nombreArchivo);
-
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob'
-    });
+  /** El funcionario aprueba: la solicitud pasa directamente a PRE_REGISTRADO. */
+  approveRequest(idSolicitud: number): Observable<unknown> {
+    return this.cambiarEstado(idSolicitud, 'PRE_REGISTRADO');
   }
 
-  /**
-   * Descargar archivo PDF por ID de documento.
-   * Este método es más confiable que usar el nombre del archivo.
-   */
-  descargarArchivoPorId(idDocumento: number): Observable<Blob> {
-    const url = `${environment.apiUrl}/documentos/${idDocumento}/descargar`;
-    // URL de descarga por ID
-    this.logger.log('ID del documento:', idDocumento);
-
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob'
-    });
-  }
-
-  /**
-   * Descargar archivo PDF por ruta del documento.
-   * Usa la ruta almacenada en la base de datos.
-   */
-  descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
-    // Extraer el nombre del archivo de la ruta si es necesario
-    const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
-    const url = `${environment.apiUrl}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`;
-    // URL de descarga por ruta
-    this.logger.log('Ruta del documento:', rutaDocumento);
-    this.logger.debug('Nombre extraído:', nombreArchivo);
-
-    return this.http.get(url, {
-      headers: this.getAuthHeaders(),
-      responseType: 'blob'
-    });
-  }
-
-  /**
-   * Obtener documento por ID (para mostrar comentarios actuales al añadir uno nuevo).
-   * GET /api/documentos/buscarPorId/{id}
-   */
-  buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string; [key: string]: any }> {
-    const url = `${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`;
-    return this.http.get<{ comentario?: string; [key: string]: any }>(url, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Añadir comentario a un documento
-   */
-  agregarComentario(idDocumento: number, comentario: string): Observable<any> {
-    const url = `${environment.apiUrl}/documentos/añadirComentario`;
-    const body = {
-      idDocumento: idDocumento,
-      comentario: comentario
-    };
-
-    this.logger.debug('Añadiendo comentario ECAES:', body);
-
-    return this.http.put(url, body, {
-      headers: this.getAuthHeaders()
-    });
+  rejectRequest(idSolicitud: number, motivo?: string): Observable<unknown> {
+    return this.cambiarEstado(idSolicitud, 'Rechazada', motivo || 'Solicitud rechazada por el funcionario');
   }
 }

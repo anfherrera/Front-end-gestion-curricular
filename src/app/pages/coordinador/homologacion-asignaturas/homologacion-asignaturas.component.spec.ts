@@ -15,7 +15,7 @@ describe('HomologacionAsignaturasComponent (Coordinador)', () => {
   let homologacionService: jasmine.SpyObj<HomologacionAsignaturasService>;
 
   beforeEach(async () => {
-    const homologacionServiceSpy = jasmine.createSpyObj('HomologacionAsignaturasService', ['getCoordinadorRequests', 'approveAsCoordinador', 'rejectAsCoordinador']);
+    const homologacionServiceSpy = jasmine.createSpyObj('HomologacionAsignaturasService', ['getCoordinadorRequests', 'approveAsCoordinador', 'rejectRequest']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     const loggerSpy = jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']);

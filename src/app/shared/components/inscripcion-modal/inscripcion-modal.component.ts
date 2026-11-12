@@ -150,7 +150,7 @@ export class InscripcionModalComponent implements OnInit {
     this.cursosService.crearInscripcion(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (inscripcion) => this.subirComprobante(inscripcion.id_solicitud, usuario),
+        next: (inscripcion) => this.subirComprobante(inscripcion.id_solicitud),
         error: (error: HttpErrorResponse) => {
           this.cargando = false;
           const mensaje = error.status === 400
@@ -162,22 +162,22 @@ export class InscripcionModalComponent implements OnInit {
   }
 
   /** La inscripción ya existe: aunque falle la subida, el modal se cierra con éxito. */
-  private subirComprobante(inscripcionId: number, usuario: UsuarioSesion): void {
+  private subirComprobante(inscripcionId: number): void {
     if (!this.archivoSeleccionado) return;
 
     this.cursosService.subirComprobantePago(this.archivoSeleccionado, inscripcionId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.terminar(usuario,
+        next: () => this.terminar(
           `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 'success-snackbar'),
-        error: () => this.terminar(usuario,
+        error: () => this.terminar(
           'Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.',
           'warning-snackbar')
       });
   }
 
-  private terminar(usuario: UsuarioSesion, mensaje: string, clase: string): void {
-    this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
+  private terminar(mensaje: string, clase: string): void {
+    this.notificacionesService.actualizarNotificaciones();
     this.cargando = false;
     this.snackBar.open(mensaje, 'Cerrar', snackbarConfig([clase]));
     this.dialogRef.close(true);

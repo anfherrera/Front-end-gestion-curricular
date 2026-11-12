@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificacionService } from '../../../core/services/notificacion.service';
+import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { Notificacion } from '../../../core/models/notificaciones.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { interval, Subscription } from 'rxjs';
@@ -21,7 +21,7 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
   private intervaloSubscription?: Subscription;
 
   constructor(
-    private notificacionService: NotificacionService,
+    private notificacionService: NotificacionesService,
     private authService: AuthService,
     private router: Router
   ) {}

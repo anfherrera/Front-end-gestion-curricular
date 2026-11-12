@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of, throwError, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiEndpoints } from '../utils/api-endpoints';
@@ -68,14 +68,6 @@ export class HistorialSolicitudesService {
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: token ? `Bearer ${token}` : ''
-    });
-  }
-
   /**
    * Obtener historial completo de todas las solicitudes procesadas
    * @param filtros Filtros opcionales para el historial
@@ -99,8 +91,7 @@ export class HistorialSolicitudesService {
     return this.http.get<HistorialResponse>(
       this.apiUrl,
       {
-        params: params.keys().length > 0 ? params : undefined,
-        headers: this.getAuthHeaders()
+        params: params.keys().length > 0 ? params : undefined
       }
     ).pipe(
       catchError(error => {
@@ -149,7 +140,7 @@ export class HistorialSolicitudesService {
    */
   obtenerHistorialSolicitud(id: number): Observable<any> {
     const url = ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(id);
-    return this.http.get<any>(url, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<any>(url).pipe(
       catchError(error => {
         throw error;
       })
@@ -191,14 +182,7 @@ export class HistorialSolicitudesService {
       params = params.set('idUsuario', filtros.idUsuario.toString());
     }
 
-    // Headers para descargar PDF (sin Content-Type para que el navegador lo maneje)
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Authorization': token ? `Bearer ${token}` : ''
-    });
-
     return this.http.get(url, {
-      headers,
       params: params.keys().length > 0 ? params : undefined,
       responseType: 'blob',
       observe: 'response' // Necesario para acceder a los headers

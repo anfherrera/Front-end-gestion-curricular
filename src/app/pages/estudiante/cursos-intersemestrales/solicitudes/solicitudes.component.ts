@@ -107,7 +107,7 @@ export class SolicitudesComponent implements OnInit {
           this.solicitudEnviada = true;
           this.solicitudForm.reset();
           this.loadUserData();
-          this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
+          this.notificacionesService.actualizarNotificaciones();
           this.snackBar.open('¡Solicitud enviada exitosamente!', 'Cerrar', snackbarConfig(['success-snackbar']));
         },
         error: (error: HttpErrorResponse) => {

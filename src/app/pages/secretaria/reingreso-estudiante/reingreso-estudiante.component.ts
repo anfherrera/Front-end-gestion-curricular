@@ -635,13 +635,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe((comentario: string) => {
       if (comentario !== undefined) {
-        // Usar el método existente para actualizar documentos
-        const documentosActualizados = [{
-          id_documento: documento.id_documento,
-          comentario: comentario
-        }];
-
-        this.reingresoService.actualizarEstadoDocumentos(this.selectedSolicitud!.id_solicitud, documentosActualizados).pipe(
+        this.reingresoService.agregarComentario(documento.id_documento, comentario).pipe(
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {
