@@ -130,7 +130,7 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
   /**
    * Obtiene las claves de un objeto para iterar
    */
-  getObjectKeys(obj: any): string[] {
+  getObjectKeys(obj: object | null | undefined): string[] {
     return obj ? Object.keys(obj) : [];
   }
 

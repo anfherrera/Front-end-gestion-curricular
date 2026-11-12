@@ -649,7 +649,7 @@
             <div class="numero">{{ estadisticasRecomendaciones.prioridadBaja || 0 }}</div>
             <div class="label">Prioridad baja</div>
           </div>
-          <div class="stat critica" *ngIf="estadisticasRecomendaciones.alertasCriticas > 0">
+          <div class="stat critica" *ngIf="(estadisticasRecomendaciones.alertasCriticas ?? 0) > 0">
             <div class="numero">{{ estadisticasRecomendaciones.alertasCriticas }}</div>
             <div class="label">Críticas</div>
           </div>
@@ -694,7 +694,7 @@
           <div class="seccion" *ngIf="rec.demandaActual">
             <strong>Proyección</strong>
             <p>{{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes 
-               ({{ rec.porcentajeCrecimiento > 0 ? '+' : '' }}{{ rec.porcentajeCrecimiento }}%)</p>
+               ({{ (rec.porcentajeCrecimiento ?? 0) > 0 ? '+' : '' }}{{ rec.porcentajeCrecimiento }}%)</p>
           </div>
           
           <!-- RECURSOS -->

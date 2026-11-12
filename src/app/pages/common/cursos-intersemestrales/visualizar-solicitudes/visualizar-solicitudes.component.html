@@ -5,7 +5,7 @@
     <mat-form-field appearance="outline" class="filtro-field">
       <mat-label>Filtrar por materia</mat-label>
       <mat-select formControlName="materia">
-        <mat-option *ngFor="let materia of materias" [value]="materia.id_materia">
+        <mat-option *ngFor="let materia of materias" [value]="materia.id">
           {{ materia.nombre | utfFix }}
         </mat-option>
       </mat-select>

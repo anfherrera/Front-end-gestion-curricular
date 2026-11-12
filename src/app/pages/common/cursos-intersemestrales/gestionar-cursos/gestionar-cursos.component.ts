@@ -7,12 +7,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { Subject, takeUntil } from 'rxjs';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import {
-  CursosIntersemestralesService,
-  CursoOfertadoVerano,
-  Materia,
-  Usuario
-} from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, Docente, Materia } from '../../../../core/models/cursos-intersemestrales.model';
+import { descargarBlob } from '../../../../core/utils/download.util';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { EstadoFiltersComponent } from '../../../../shared/components/estado-filters/estado-filters.component';
 import { ErrorHandlerService } from '../../../../shared/components/error-handler/error-handler.service';
@@ -20,6 +17,7 @@ import { CursoDialogComponent } from './curso-dialog.component';
 import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -44,7 +42,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   cursos: CursoOfertadoVerano[] = [];
   cursosFiltrados: CursoOfertadoVerano[] = [];
   materias: Materia[] = [];
-  docentes: Usuario[] = [];
+  docentes: Docente[] = [];
   cargando = true;
   estadoFiltro = '';
   periodoFiltro: string = 'todos'; // Filtro por período académico - Inicializar con 'todos' para mostrar todos los cursos por defecto
@@ -131,14 +129,13 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     
     
     // Cargar cursos del backend con filtro de período
-    this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).subscribe({
+    this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).pipe(takeUntil(this.destroy$)).subscribe({
       next: (cursos) => {
         this.cursos = cursos;
         this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
-        // Cursos cargados del backend
         this.cargando = false;
       },
-      error: (err) => {
+      error: () => {
         this.errorHandler.handleCargaError('cursos');
         this.cargando = false;
         // Mostrar mensaje de error sin datos de prueba
@@ -151,24 +148,22 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   cargarMateriasYDocentes() {
     // Cargar materias reales del backend
-    this.cursosService.getTodasLasMaterias().subscribe({
+    this.cursosService.getTodasLasMaterias().pipe(takeUntil(this.destroy$)).subscribe({
       next: (materias) => {
         this.materias = materias;
-        // Materias cargadas del backend
       },
-      error: (err) => {
+      error: () => {
         this.materias = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
 
     // Cargar docentes reales del backend
-    this.cursosService.getTodosLosDocentes().subscribe({
+    this.cursosService.getTodosLosDocentes().pipe(takeUntil(this.destroy$)).subscribe({
       next: (docentes) => {
         this.docentes = docentes;
-        // Docentes cargados del backend
       },
-      error: (err) => {
+      error: () => {
         this.docentes = []; // Array vacío en lugar de datos de prueba
         this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
@@ -200,8 +195,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      // Dialog cerrado
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'guardado') {
         this.cargarDatos();
       }
@@ -249,8 +243,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      // Dialog de editar cerrado
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'guardado') {
         this.cargarDatos();
       }
@@ -293,8 +286,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Formatear fecha para mostrar
-  formatearFecha(fecha: Date): string {
+  formatearFecha(fecha: Date | string): string {
     return new Date(fecha).toLocaleDateString('es-ES');
   }
 
@@ -326,25 +318,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   // Obtener nombre del docente de forma segura
   obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    if (!curso.objDocente) {
-      return 'Sin asignar';
-    }
-    
-    // Priorizar nombre_docente (estructura del backend)
-    if ((curso.objDocente as any).nombre_docente) {
-      return (curso.objDocente as any).nombre_docente;
-    }
-    
-    // Fallback a nombre y apellido (estructura legacy)
-    if (curso.objDocente.nombre && curso.objDocente.apellido) {
-      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
-    }
-    
-    if (curso.objDocente.nombre) {
-      return curso.objDocente.nombre;
-    }
-    
-    return 'Sin nombre';
+    return nombreDocente(curso);
   }
 
   // Obtener color del estado
@@ -391,18 +365,9 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       : undefined;
     
     
-    this.cursosService.exportarCursosPDF(periodoParam).subscribe({
+    this.cursosService.exportarCursosPDF(periodoParam).pipe(takeUntil(this.destroy$)).subscribe({
       next: (result) => {
-        // Crear enlace temporal para descargar el archivo
-        const urlBlob = window.URL.createObjectURL(result.blob);
-        const link = document.createElement('a');
-        link.href = urlBlob;
-        link.download = result.filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(urlBlob);
-        
+        descargarBlob(result.blob, result.filename);
         this.snackBar.open('PDF exportado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
       },
       error: (err) => {

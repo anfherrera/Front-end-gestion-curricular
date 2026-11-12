@@ -8,18 +8,18 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { Subscription } from 'rxjs';
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
-import { EstadisticasPorProcesoResponse } from '../../../core/models/estadisticas.model';
+import { EstadisticasPorProcesoResponse, ProcesoDetallado } from '../../../core/models/estadisticas.model';
 
 interface ProcesoData {
   nombre: string;
   nombreFormateado: string;
-  datos: any;
-  totalSolicitudes?: number;
-  aprobadas?: number;
-  rechazadas?: number;
-  enProceso?: number;
-  enviadas?: number;
-  porcentajeAprobacion?: number;
+  datos: ProcesoDetallado;
+  totalSolicitudes: number;
+  aprobadas: number;
+  rechazadas: number;
+  enProceso: number;
+  enviadas: number;
+  porcentajeAprobacion: number;
 }
 
 @Component({
@@ -119,7 +119,7 @@ interface ProcesoData {
               <div class="proceso-datos-raw" *ngIf="mostrarDatosRaw">
                 <mat-chip-set>
                   <mat-chip *ngFor="let key of getDatosKeys(proceso.datos)" 
-                           [matTooltip]="proceso.datos[key]">
+                           [matTooltip]="(proceso.datos[key] ?? '') + ''">
                     {{ key }}: {{ proceso.datos[key] }}
                   </mat-chip>
                 </mat-chip-set>
@@ -142,10 +142,6 @@ interface ProcesoData {
         <button mat-icon-button (click)="cargarDatos()" 
                 matTooltip="Actualizar datos">
           <mat-icon>refresh</mat-icon>
-        </button>
-        <button mat-icon-button (click)="limpiarCacheYRecargar()" 
-                matTooltip="Limpiar caché y recargar">
-          <mat-icon>cached</mat-icon>
         </button>
         <span class="spacer"></span>
         <small *ngIf="fechaConsulta" class="fecha-actualizacion">
@@ -445,15 +441,9 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
         next: (response: EstadisticasPorProcesoResponse) => {
           this.fechaConsulta = response.fechaConsulta;
           this.procesosData = this.procesarDatos(response.estadisticasPorProceso);
-          
-          // Validar que los números sumen correctamente
-          this.procesosData.forEach(proceso => {
-            this.validarNumerosProceso(proceso);
-          });
-          
           this.loading = false;
         },
-        error: (error) => {
+        error: () => {
           this.loading = false;
           this.error = 'Error al cargar estadísticas por proceso';
         }
@@ -462,24 +452,24 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
     this.subscription.add(sub);
   }
 
-  private procesarDatos(estadisticasPorProceso: { [proceso: string]: any }): ProcesoData[] {
+  private procesarDatos(estadisticasPorProceso: Record<string, ProcesoDetallado>): ProcesoData[] {
     return Object.entries(estadisticasPorProceso)
       .map(([nombre, datos]) => {
-        const enviadas = this.extraerEnviadas(datos);
-
+        const total = datos.totalSolicitudes || 0;
+        const aprobadas = datos.aprobadas || 0;
         return {
           nombre,
           nombreFormateado: this.formatearNombreProceso(nombre),
           datos,
-          totalSolicitudes: this.extraerTotalSolicitudes(datos),
-          aprobadas: this.extraerAprobadas(datos),
-          rechazadas: this.extraerRechazadas(datos),
-          enProceso: this.extraerEnProceso(datos),
-          enviadas: enviadas, // AGREGADO: Mapear campo enviadas
-          porcentajeAprobacion: this.calcularPorcentajeAprobacion(datos)
+          totalSolicitudes: total,
+          aprobadas,
+          rechazadas: datos.rechazadas || 0,
+          enProceso: datos.enProceso || 0,
+          enviadas: datos.enviadas || 0,
+          porcentajeAprobacion: total > 0 ? (aprobadas / total) * 100 : 0
         };
       })
-      .sort((a, b) => (b.totalSolicitudes || 0) - (a.totalSolicitudes || 0));
+      .sort((a, b) => b.totalSolicitudes - a.totalSolicitudes);
   }
 
   private formatearNombreProceso(nombre: string): string {
@@ -492,49 +482,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
     };
     
     return nombres[nombre.toLowerCase()] || nombre;
-  }
-
-  private extraerTotalSolicitudes(datos: any): number {
-    if (typeof datos === 'number') return datos;
-    if (datos?.totalSolicitudes) return datos.totalSolicitudes;
-    if (datos?.total) return datos.total;
-    return 0;
-  }
-
-  private extraerAprobadas(datos: any): number {
-    if (datos?.aprobadas) return datos.aprobadas;
-    if (datos?.approved) return datos.approved;
-    return 0;
-  }
-
-  private extraerRechazadas(datos: any): number {
-    if (datos?.rechazadas) return datos.rechazadas;
-    if (datos?.rejected) return datos.rejected;
-    return 0;
-  }
-
-  private extraerEnProceso(datos: any): number {
-    if (datos?.enProceso) return datos.enProceso;
-    if (datos?.pending) return datos.pending;
-    if (datos?.inProcess) return datos.inProcess;
-    return 0;
-  }
-
-  private extraerEnviadas(datos: any): number {
-    if (datos?.enviadas) return datos.enviadas;
-    if (datos?.sent) return datos.sent;
-    if (datos?.submitted) return datos.submitted;
-    return 0;
-  }
-
-  private calcularPorcentajeAprobacion(datos: any): number {
-    const total = this.extraerTotalSolicitudes(datos);
-    const aprobadas = this.extraerAprobadas(datos);
-    
-    if (total > 0) {
-      return (aprobadas / total) * 100;
-    }
-    return 0;
   }
 
   getProcesoClass(nombre: string): string {
@@ -561,48 +508,12 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
     return iconos[nombre.toLowerCase()] || 'description';
   }
 
-  getDatosKeys(datos: any): string[] {
-    if (typeof datos === 'object' && datos !== null) {
-      return Object.keys(datos).slice(0, 5); // Mostrar máximo 5 claves
-    }
-    return [];
-  }
-
-  /**
-   * Verifica que los números de un proceso sumen correctamente
-   */
-  validarNumerosProceso(proceso: any): boolean {
-    if (!proceso) return false;
-    
-    const suma = (proceso.aprobadas || 0) + (proceso.rechazadas || 0) + 
-                 (proceso.enProceso || 0) + (proceso.enviadas || 0);
-    const total = proceso.totalSolicitudes || 0;
-    return suma === total;
+  /** Hasta 5 campos del proceso, para la vista de datos detallados. */
+  getDatosKeys(datos: ProcesoDetallado): (keyof ProcesoDetallado)[] {
+    return (Object.keys(datos) as (keyof ProcesoDetallado)[]).slice(0, 5);
   }
 
   toggleDatosRaw(): void {
     this.mostrarDatosRaw = !this.mostrarDatosRaw;
-  }
-
-  /**
-   * Método temporal para limpiar caché y recargar datos
-   */
-  limpiarCacheYRecargar(): void {
-    
-    // Limpiar localStorage y sessionStorage
-    localStorage.clear();
-    sessionStorage.clear();
-    
-    // Limpiar caché del navegador si está disponible
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => {
-          caches.delete(name);
-        });
-      });
-    }
-    
-    // Recargar los datos
-    this.cargarDatos();
   }
 }

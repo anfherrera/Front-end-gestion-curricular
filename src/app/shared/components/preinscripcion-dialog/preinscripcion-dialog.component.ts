@@ -1,21 +1,28 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MATERIAL_IMPORTS } from '../material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { 
-  CursosIntersemestralesService, 
-  CursoOfertadoVerano,
-  CreatePreinscripcionDTO,
-  CondicionSolicitudVerano 
-} from '../../../core/services/cursos-intersemestrales.service';
+import { MATERIAL_IMPORTS } from '../material.imports';
+import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, CreatePreinscripcionDTO, CondicionSolicitudVerano } from '../../../core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { CONDICIONES_POR_DEFECTO, nombreCondicion, nombreDocente } from '../../../core/utils/cursos-verano.utils';
 
 export interface PreinscripcionDialogData {
   curso: CursoOfertadoVerano;
 }
+
+/** Mensajes según el código de error que envía el backend. */
+const ERRORES_POR_CODIGO: Record<string, string> = {
+  DUPLICATE_PREINSCRIPTION: 'Ya tienes una preinscripción activa para este curso.',
+  COURSE_NOT_AVAILABLE: 'Este curso no está disponible para preinscripción.',
+  NO_CUPOS_AVAILABLE: 'No hay cupos disponibles para este curso.'
+};
 
 @Component({
   selector: 'app-preinscripcion-dialog',
@@ -27,8 +34,10 @@ export interface PreinscripcionDialogData {
 export class PreinscripcionDialogComponent implements OnInit {
   preinscripcionForm!: FormGroup;
   loading = false;
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
   condiciones: CondicionSolicitudVerano[] = [];
+
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private fb: FormBuilder,
@@ -40,139 +49,72 @@ export class PreinscripcionDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.initForm();
-    this.loadUserData();
-    this.loadCondiciones();
-  }
-
-  private initForm(): void {
     this.preinscripcionForm = this.fb.group({
       nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
       codigo: ['', [Validators.required, Validators.minLength(5)]],
       condicion: ['', [Validators.required]]
     });
-  }
 
-  private loadUserData(): void {
     this.usuario = this.authService.getUsuario();
     if (this.usuario) {
-      const nombreCompleto = this.usuario.nombre_completo || `${this.usuario.nombre || ''} ${this.usuario.apellido || ''}`.trim();
-      const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || '';
       this.preinscripcionForm.patchValue({
-        nombreCompleto: nombreCompleto,
-        codigo: codigo
+        nombreCompleto: this.usuario.nombre_completo,
+        codigo: this.usuario.codigo || ''
       });
     }
-  }
 
-  private loadCondiciones(): void {
-    this.cursosService.getCondicionesSolicitud().subscribe({
-      next: (condiciones) => {
-        this.condiciones = condiciones;
-      },
-      error: (error) => {
-        this.condiciones = [
-          CondicionSolicitudVerano.Primera_Vez,
-          CondicionSolicitudVerano.Habilitacion,
-          CondicionSolicitudVerano.Repeticion
-        ];
-      }
-    });
+    this.cursosService.getCondicionesSolicitud()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (condiciones) => this.condiciones = condiciones,
+        error: () => this.condiciones = CONDICIONES_POR_DEFECTO
+      });
   }
 
   onSubmitPreinscripcion(): void {
-    if (this.preinscripcionForm.valid && this.usuario) {
-      this.loading = true;
-      
-      const formData = this.preinscripcionForm.value;
-      
-      // Obtener nombre completo del usuario
-      const nombreCompleto = this.usuario?.nombre_completo || 
-                            this.usuario?.nombre || 
-                            formData.nombreCompleto ||
-                            'Usuario';
-      const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
-      
-      const payload: CreatePreinscripcionDTO = {
-        idUsuario: this.usuario.id_usuario,
-        idCurso: this.data.curso.id_curso,
-        nombreSolicitud: `Solicitud Preinscripción - ${nombreFinal}`,
-        condicion: formData.condicion
-      };
+    if (!this.preinscripcionForm.valid || !this.usuario) {
+      this.preinscripcionForm.markAllAsTouched();
+      return;
+    }
 
-      this.cursosService.crearPreinscripcion(payload).subscribe({
-        next: (response) => {
+    this.loading = true;
+    const formData = this.preinscripcionForm.value;
+    const nombre = (this.usuario.nombre_completo || formData.nombreCompleto || '').trim() || 'Usuario';
+    const payload: CreatePreinscripcionDTO = {
+      idUsuario: this.usuario.id_usuario,
+      idCurso: this.data.curso.id_curso,
+      nombreSolicitud: `Solicitud Preinscripción - ${nombre}`,
+      condicion: formData.condicion
+    };
+
+    this.cursosService.crearPreinscripcion(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
           this.loading = false;
           this.snackBar.open('¡Preinscripción enviada exitosamente!', 'Cerrar', snackbarConfig(['success-snackbar']));
           this.dialogRef.close(true);
         },
-        error: (error) => {
+        error: (error: HttpErrorResponse) => {
           this.loading = false;
-          
-          // Manejar diferentes tipos de errores
-          let mensaje = 'Error al enviar la preinscripción. Inténtalo de nuevo.';
-          
-          if (error.error && error.error.codigo === 'DUPLICATE_PREINSCRIPTION') {
-            mensaje = 'Ya tienes una preinscripción activa para este curso.';
-          } else if (error.error && error.error.codigo === 'COURSE_NOT_AVAILABLE') {
-            mensaje = 'Este curso no está disponible para preinscripción.';
-          } else if (error.error && error.error.codigo === 'NO_CUPOS_AVAILABLE') {
-            mensaje = 'No hay cupos disponibles para este curso.';
-          } else if (error.status === 400) {
-            mensaje = 'Datos inválidos. Verifica la información e inténtalo de nuevo.';
-          } else if (error.status === 500) {
-            mensaje = 'Error del servidor. Inténtalo más tarde.';
-          }
-          
+          const mensaje = ERRORES_POR_CODIGO[error.error?.codigo]
+            ?? (error.status === 400 ? 'Datos inválidos. Verifica la información e inténtalo de nuevo.'
+              : error.status === 500 ? 'Error del servidor. Inténtalo más tarde.'
+              : 'Error al enviar la preinscripción. Inténtalo de nuevo.');
           this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       });
-    } else {
-      this.markFormGroupTouched();
-    }
   }
 
   onCancel(): void {
     this.dialogRef.close(false);
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.preinscripcionForm.controls).forEach(key => {
-      const control = this.preinscripcionForm.get(key);
-      control?.markAsTouched();
-    });
-  }
-
   getCondicionDisplayName(condicion: CondicionSolicitudVerano): string {
-    switch (condicion) {
-      case CondicionSolicitudVerano.Primera_Vez:
-        return 'Primera Vez';
-      case CondicionSolicitudVerano.Habilitacion:
-        return 'Habilitación';
-      case CondicionSolicitudVerano.Repeticion:
-        return 'Repetición';
-      default:
-        return condicion;
-    }
+    return nombreCondicion(condicion);
   }
 
   obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    if (!curso.objDocente) {
-      return 'Sin asignar';
-    }
-    
-    if ((curso.objDocente as any).nombre_docente) {
-      return (curso.objDocente as any).nombre_docente;
-    }
-    
-    if (curso.objDocente.nombre && curso.objDocente.apellido) {
-      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
-    }
-    
-    if (curso.objDocente.nombre) {
-      return curso.objDocente.nombre;
-    }
-    
-    return 'Sin nombre';
+    return nombreDocente(curso);
   }
 }

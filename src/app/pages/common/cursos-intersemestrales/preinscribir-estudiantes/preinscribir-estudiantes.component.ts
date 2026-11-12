@@ -12,13 +12,15 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService, CursoOfertadoVerano, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/models/cursos-intersemestrales.model';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
+import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
 
 @Component({
   selector: 'app-preinscribir-estudiantes',
@@ -111,12 +113,12 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     // Usar getCursosPorEstado para obtener cursos en estado "Preinscripción"
     // Sin período para mostrar TODOS los cursos de preinscripción
-    this.cursosService.getCursosPorEstado('Preinscripción').subscribe({
+    this.cursosService.getCursosPorEstado('Preinscripción').pipe(takeUntil(this.destroy$)).subscribe({
       next: (cursos) => {
         this.cursos = cursos;
         this.cargando = false;
       },
-      error: (err) => {
+      error: () => {
         this.cursos = [];
         this.cargando = false;
         this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', snackbarConfig(['error-snackbar']));
@@ -127,58 +129,30 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   cargarSolicitudesPorCurso(cursoId: number): void {
     this.cargando = true;
     
-    // Cargar información actualizada del curso específico
-    this.cursosService.getCursoPorId(cursoId).subscribe({
-      next: (curso) => {
-        this.cursoSeleccionado = curso;
-        
-        // Ahora cargar las preinscripciones para este curso
-        this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
-          next: (solicitudes) => {
-            // Completar objCursoOfertadoVerano con la información del curso seleccionado
-            solicitudes.forEach(solicitud => {
-              if (!solicitud.objCursoOfertadoVerano && this.cursoSeleccionado) {
-                solicitud.objCursoOfertadoVerano = this.cursoSeleccionado;
-              }
-            });
-            
-            this.solicitudes = solicitudes;
-            this.solicitudesFiltradas = this.solicitudes;
-            this.cargando = false;
-          },
-          error: (err) => {
-            this.solicitudesFiltradas = [];
-            this.cargando = false;
-            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', snackbarConfig(['error-snackbar']));
-          }
-        });
-      },
-      error: (err) => {
-        // Fallback: buscar el curso en la lista local
-        this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
-        
-        // Intentar cargar preinscripciones de todas formas
-        this.cursosService.getPreinscripcionesPorCurso(cursoId).subscribe({
-          next: (solicitudes) => {
-            // Completar objCursoOfertadoVerano con la información del curso seleccionado si está disponible
-            if (this.cursoSeleccionado) {
-              solicitudes.forEach(solicitud => {
-                if (!solicitud.objCursoOfertadoVerano) {
-                  solicitud.objCursoOfertadoVerano = this.cursoSeleccionado!;
-                }
-              });
+    // Curso actualizado (si falla, el de la lista) y después sus preinscripciones
+    this.cursosService.getCursoPorId(cursoId).pipe(
+      catchError(() => of(this.cursos.find(c => c.id_curso === cursoId) || null)),
+      tap(curso => this.cursoSeleccionado = curso),
+      switchMap(() => this.cursosService.getPreinscripcionesPorCurso(cursoId)),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (solicitudes) => {
+        const curso = this.cursoSeleccionado;
+        if (curso) {
+          solicitudes.forEach(solicitud => {
+            if (!solicitud.objCursoOfertadoVerano) {
+              solicitud.objCursoOfertadoVerano = curso;
             }
-            
-            this.solicitudes = solicitudes;
-            this.solicitudesFiltradas = this.solicitudes;
-            this.cargando = false;
-          },
-          error: (err) => {
-            this.solicitudesFiltradas = [];
-            this.cargando = false;
-            this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', snackbarConfig(['error-snackbar']));
-          }
-        });
+          });
+        }
+        this.solicitudes = solicitudes;
+        this.solicitudesFiltradas = solicitudes;
+        this.cargando = false;
+      },
+      error: () => {
+        this.solicitudesFiltradas = [];
+        this.cargando = false;
+        this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -202,15 +176,15 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result && result.observaciones !== undefined) {
-        const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
+        const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
         this.actualizarObservaciones(idSolicitud, result.observaciones);
       }
     });
   }
 
-  actualizarObservaciones(idSolicitud: number, observaciones: string): void {
+  actualizarObservaciones(idSolicitud: number | undefined, observaciones: string): void {
     
     if (!idSolicitud) {
       this.snackBar.open('Error: No se pudo identificar la preinscripción para guardar observaciones', 'Cerrar', snackbarConfig(['error-snackbar']));
@@ -218,12 +192,12 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     }
     
     
-    this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).subscribe({
-      next: (response) => {
+    this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
         
         // Actualizar localmente usando el ID correcto
         const index = this.solicitudesFiltradas.findIndex(s => {
-          const sId = (s as any).id_solicitud || (s as any).id_preinscripcion;
+          const sId = s.id_solicitud || s.id_preinscripcion;
           return sId === idSolicitud;
         });
         if (index !== -1) {
@@ -239,7 +213,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   aprobarSolicitud(solicitud: SolicitudCursoVerano): void {
-    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
+    const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
     
     if (!idSolicitud) {
       this.snackBar.open('Error: No se pudo identificar la preinscripción', 'Cerrar', snackbarConfig(['error-snackbar']));
@@ -247,12 +221,12 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     }
     
     
-    this.cursosService.aprobarPreinscripcion(idSolicitud).subscribe({
-      next: (response) => {
+    this.cursosService.aprobarPreinscripcion(idSolicitud).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
         
         // Actualizar estado localmente usando el ID correcto
         const index = this.solicitudesFiltradas.findIndex(s => {
-          const sId = (s as any).id_solicitud || (s as any).id_preinscripcion;
+          const sId = s.id_solicitud || s.id_preinscripcion;
           return sId === idSolicitud;
         });
         if (index !== -1) {
@@ -298,7 +272,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result && result.motivo) {
         this.procesarRechazo(solicitud, result.motivo);
       }
@@ -306,7 +280,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   procesarRechazo(solicitud: SolicitudCursoVerano, motivo: string): void {
-    const idSolicitud = (solicitud as any).id_solicitud || (solicitud as any).id_preinscripcion;
+    const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
     
     if (!idSolicitud) {
       this.snackBar.open('Error: No se pudo identificar la preinscripción para rechazar', 'Cerrar', snackbarConfig(['error-snackbar']));
@@ -314,12 +288,12 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     }
     
     
-    this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).subscribe({
+    this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
         
         // Actualizar estado localmente usando el ID correcto
         const index = this.solicitudesFiltradas.findIndex(s => {
-          const sId = (s as any).id_solicitud || (s as any).id_preinscripcion;
+          const sId = s.id_solicitud || s.id_preinscripcion;
           return sId === idSolicitud;
         });
         if (index !== -1) {
@@ -419,25 +393,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   // Obtener nombre del docente de forma segura
   obtenerNombreDocente(curso: CursoOfertadoVerano | null): string {
-    if (!curso || !curso.objDocente) {
-      return 'Sin asignar';
-    }
-    
-    // Priorizar nombre_docente (estructura del backend)
-    if ((curso.objDocente as any).nombre_docente) {
-      return (curso.objDocente as any).nombre_docente;
-    }
-    
-    // Fallback a nombre y apellido (estructura legacy)
-    if (curso.objDocente.nombre && curso.objDocente.apellido) {
-      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
-    }
-    
-    if (curso.objDocente.nombre) {
-      return curso.objDocente.nombre;
-    }
-    
-    return 'Sin nombre';
+    return nombreDocente(curso);
   }
 
 }
@@ -996,17 +952,10 @@ export class RechazoPreinscripcionDialogComponent {
   }
 
   getNombreCurso(): string {
-    // Intentar obtener el nombre del curso de diferentes fuentes
-    if (this.data.curso?.nombre_curso) {
-      return this.data.curso.nombre_curso;
-    }
-    if (this.data.solicitud.objCursoOfertadoVerano?.nombre_curso) {
-      return this.data.solicitud.objCursoOfertadoVerano.nombre_curso;
-    }
-    if ((this.data.solicitud as any).nombre_curso) {
-      return (this.data.solicitud as any).nombre_curso;
-    }
-    return 'N/A';
+    return this.data.curso?.nombre_curso
+      || this.data.solicitud.objCursoOfertadoVerano?.nombre_curso
+      || this.data.solicitud.objCurso?.nombre_curso
+      || 'N/A';
   }
 
   confirmarRechazo(): void {

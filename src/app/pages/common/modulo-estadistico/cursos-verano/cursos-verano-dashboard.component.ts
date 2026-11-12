@@ -17,7 +17,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import { Subject } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Chart, registerables } from 'chart.js';
 
@@ -25,9 +26,27 @@ import { EstadisticasService } from '../../../../core/services/estadisticas.serv
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { esErrorDeAcceso, mensajeErrorDeAcceso } from '../../../../core/utils/http-error.utils';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { descargarBlob } from '../../../../core/utils/download.util';
 import {
-  CursosVeranoResponse
+  AlertaCritica,
+  AnalisisPrograma,
+  CursosVeranoResponse,
+  EstadisticasRecomendaciones,
+  PrioridadRecomendacion,
+  Recomendacion,
+  TendenciaTemporal,
+  TopMateria
 } from '../../../../core/models/estadisticas.model';
+
+const ORDEN_PRIORIDAD: Record<PrioridadRecomendacion, number> = { CRITICA: 0, ALTA: 1, MEDIA: 2, BAJA: 3 };
+const COLOR_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
+  CRITICA: '#DC2626',
+  ALTA: '#EF4444',
+  MEDIA: '#F59E0B',
+  BAJA: '#10B981'
+};
+
+type FiltrosCursosVerano = { periodoAcademico?: string; idPrograma?: number };
 
 // Registrar todos los componentes de Chart.js
 Chart.register(...registerables);
@@ -58,7 +77,7 @@ Chart.register(...registerables);
     PeriodoFiltroSelectorComponent
   ],
   templateUrl: './cursos-verano-dashboard.component.html',
-  styleUrls: ['./cursos-verano-dashboard.component.css']
+  styleUrls: ['../dashboard-comun.css', './cursos-verano-dashboard.component.css']
 })
 export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   // ===== PROPIEDADES DE DATOS =====
@@ -69,32 +88,27 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   // ===== FILTROS =====
   filtrosForm: FormGroup | null = null;
-  programasDisponibles: any[] = [];
-  filtrosAplicados: { periodoAcademico?: string; idPrograma?: number } = {};
+  programasDisponibles: { id: number; nombre: string }[] = [];
+  filtrosAplicados: FiltrosCursosVerano = {};
 
-  // Propiedades para mapear datos del backend a las gráficas
-  tendenciasTemporalesData: any[] = [];
-  topMateriasData: any[] = [];
-  analisisProgramaData: any[] = [];
-  prediccionesData: any = {};
+  // Datos del backend para las gráficas
+  tendenciasTemporalesData: TendenciaTemporal[] = [];
+  topMateriasData: TopMateria[] = [];
+  analisisProgramaData: AnalisisPrograma[] = [];
 
-  // Control de navegación entre pestañas
-  activeTab: string = 'analisis-actual';
-  
-  // Propiedades para Predicciones y Recomendaciones
-  recomendaciones: any[] = [];
-  alertasCriticas: any[] = [];
-  estadisticasRecomendaciones: any = {};
+  activeTab = 'analisis-actual';
+
+  // Predicciones y recomendaciones
+  recomendaciones: Recomendacion[] = [];
+  alertasCriticas: AlertaCritica[] = [];
+  estadisticasRecomendaciones: Partial<EstadisticasRecomendaciones> = {};
   expandidas = new Set<string>();
-  totalRecomendaciones: number = 0;
+  totalRecomendaciones = 0;
 
-  // ===== PROPIEDADES DE GRÁFICOS =====
+  // ===== GRÁFICOS =====
   chartMaterias: Chart | null = null;
   chartProgramas: Chart | null = null;
   chartTendencias: Chart | null = null;
-  chartPrediccionesMaterias: Chart | null = null;
-  chartPrediccionesProgramas: Chart | null = null;
-  chartPrediccionesTemporales: Chart | null = null;
 
   // ===== SUBSCRIPCIONES =====
   private destroy$ = new Subject<void>();
@@ -139,13 +153,13 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   /**
    * Obtiene los filtros actuales del formulario
    */
-  obtenerFiltrosActuales(): { periodoAcademico?: string; idPrograma?: number } {
+  obtenerFiltrosActuales(): FiltrosCursosVerano {
     if (!this.filtrosForm) {
       return {};
     }
-    
+
     const formValue = this.filtrosForm.value;
-    const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
+    const filtros: FiltrosCursosVerano = {};
     
     if (formValue.periodoAcademico) {
       filtros.periodoAcademico = formValue.periodoAcademico;
@@ -187,7 +201,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    */
   cargarTendenciasTemporalesOptimizadas(): void {
     const filtros = this.obtenerFiltrosActuales();
-    this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).subscribe({
+    this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
         // Asignar solo los datos de tendencias temporales
         this.tendenciasTemporalesData = response.tendenciasTemporales || [];
@@ -216,18 +230,11 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (response) => {
-        // Verificar que los datos se asignen correctamente
-        if (response.predicciones?.demandaEstimadaProximoPeriodo) {
-        }
-        
-        // Verificar mapeo completo
-        // Asignar datos reales del backend
         this.data = response;
         this.tendenciasTemporalesData = response.tendenciasTemporales || [];
         this.topMateriasData = response.topMaterias || [];
         this.analisisProgramaData = response.analisisPorPrograma || [];
-        this.prediccionesData = response.predicciones || {};
-        
+
         this.recomendaciones = response.recomendaciones || [];
         if (response.predicciones) {
           this.alertasCriticas = response.predicciones.alertasCriticas || [];
@@ -421,36 +428,13 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ===== MÉTODOS DE GRÁFICOS =====
-
   // ===== MÉTODOS AUXILIARES =====
 
-  destruirGrafico(chartId: string): void {
-    const chartMap: { [key: string]: Chart | null } = {
-      'chartMaterias': this.chartMaterias,
-      'chartProgramas': this.chartProgramas,
-      'chartTendencias': this.chartTendencias,
-      'chartPrediccionesMaterias': this.chartPrediccionesMaterias,
-      'chartPrediccionesProgramas': this.chartPrediccionesProgramas,
-      'chartPrediccionesTemporales': this.chartPrediccionesTemporales
-    };
-
-    const chart = chartMap[chartId];
-    if (chart) {
-      chart.destroy();
-      chartMap[chartId] = null;
-    }
-  }
-
   destruirGraficos(): void {
-    Object.keys({
-      'chartMaterias': this.chartMaterias,
-      'chartProgramas': this.chartProgramas,
-      'chartTendencias': this.chartTendencias,
-      'chartPrediccionesMaterias': this.chartPrediccionesMaterias,
-      'chartPrediccionesProgramas': this.chartPrediccionesProgramas,
-      'chartPrediccionesTemporales': this.chartPrediccionesTemporales
-    }).forEach(chartId => this.destruirGrafico(chartId));
+    this.chartMaterias?.destroy();
+    this.chartProgramas?.destroy();
+    this.chartTendencias?.destroy();
+    this.chartMaterias = this.chartProgramas = this.chartTendencias = null;
   }
 
   getTendenciaIcon(tendencia: string): string {
@@ -477,12 +461,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    * Ordena las recomendaciones por prioridad
    */
   ordenarPorPrioridad(): void {
-    const orden: any = { 'CRITICA': 0, 'ALTA': 1, 'MEDIA': 2, 'BAJA': 3 };
-    this.recomendaciones.sort((a, b) => {
-      const prioridadA = orden[a.prioridad] !== undefined ? orden[a.prioridad] : 999;
-      const prioridadB = orden[b.prioridad] !== undefined ? orden[b.prioridad] : 999;
-      return prioridadA - prioridadB;
-    });
+    const orden = (r: Recomendacion) => ORDEN_PRIORIDAD[r.prioridad] ?? 999;
+    this.recomendaciones.sort((a, b) => orden(a) - orden(b));
   }
 
   /**
@@ -507,13 +487,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    * Obtiene el color según la prioridad
    */
   getColorPrioridad(prioridad: string): string {
-    const colores: any = {
-      'CRITICA': '#DC2626',
-      'ALTA': '#EF4444',
-      'MEDIA': '#F59E0B',
-      'BAJA': '#10B981'
-    };
-    return colores[prioridad] || '#6B7280';
+    return COLOR_PRIORIDAD[prioridad as PrioridadRecomendacion] || '#6B7280';
   }
 
   /**
@@ -532,7 +506,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   /**
    * TrackBy function para programas
    */
-  trackByProgramaId(index: number, programa: any): any {
+  trackByProgramaId(index: number, programa: { id: number }): number {
     return programa?.id || index;
   }
 
@@ -551,7 +525,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    * Genera un nombre de archivo dinámico basado en los filtros aplicados
    * Formato: estadisticas_cursos_verano_{periodo}_{programa}.{extension}
    */
-  generarNombreArchivo(extension: 'pdf' | 'xlsx', filtros: { periodoAcademico?: string; idPrograma?: number }): string {
+  generarNombreArchivo(extension: 'pdf' | 'xlsx', filtros: FiltrosCursosVerano): string {
     let nombre = 'estadisticas_cursos_verano';
     
     if (filtros.periodoAcademico) {
@@ -569,33 +543,27 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   exportarPDF(): void {
     const filtros = this.obtenerFiltrosActuales();
-    this.estadisticasService.exportarReporteCursosVerano(filtros).subscribe({
-      next: (blob: Blob) => {
-        // Verificar que sea un blob válido
+    this.exportar(this.estadisticasService.exportarReporteCursosVerano(filtros), this.generarNombreArchivo('pdf', filtros), 'PDF');
+  }
+
+  exportarExcel(): void {
+    const filtros = this.obtenerFiltrosActuales();
+    this.exportar(this.estadisticasService.exportarExcelCursosVerano(filtros), this.generarNombreArchivo('xlsx', filtros), 'Excel');
+  }
+
+  private exportar(peticion$: Observable<Blob>, nombreArchivo: string, formato: string): void {
+    peticion$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (blob) => {
         if (blob && blob.size > 0) {
-          // Crear URL del blob
-          const url = window.URL.createObjectURL(blob);
-          
-          // Crear enlace de descarga con nombre dinámico
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = this.generarNombreArchivo('pdf', filtros);
-          
-          // Simular clic para descargar
-          document.body.appendChild(link);
-          link.click();
-          
-          // Limpiar
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-          
-          this.snackBar.open('Reporte PDF descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          descargarBlob(blob, nombreArchivo);
+          this.snackBar.open(`Reporte ${formato} descargado exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
         } else {
-          this.snackBar.open('El archivo PDF está vacío o corrupto', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackBar.open(`El archivo ${formato} está vacío o corrupto`, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       },
-      error: (error: any) => {
-        this.snackBar.open(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : 'Error al exportar el reporte PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
+      error: (error: HttpErrorResponse) => {
+        const mensaje = esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : `Error al exportar el reporte ${formato}`;
+        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
   }
@@ -609,36 +577,4 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     return Math.round((cantidad / total) * 100 * 100) / 100;
   }
 
-  exportarExcel(): void {
-    const filtros = this.obtenerFiltrosActuales();
-    this.estadisticasService.exportarExcelCursosVerano(filtros).subscribe({
-      next: (blob: Blob) => {
-        // Verificar que sea un blob válido
-        if (blob && blob.size > 0) {
-          // Crear URL del blob
-          const url = window.URL.createObjectURL(blob);
-          
-          // Crear enlace de descarga con nombre dinámico
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = this.generarNombreArchivo('xlsx', filtros);
-          
-          // Simular clic para descargar
-          document.body.appendChild(link);
-          link.click();
-          
-          // Limpiar
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-          
-          this.snackBar.open('Reporte Excel descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-        } else {
-          this.snackBar.open('El archivo Excel está vacío o corrupto', 'Cerrar', snackbarConfig(['error-snackbar']));
-        }
-      },
-      error: (error: any) => {
-        this.snackBar.open(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : 'Error al exportar el reporte Excel', 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
-    });
-  }
 }

@@ -1,4 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, DestroyRef, Input, Output, EventEmitter, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,15 +13,14 @@ import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/mod
 import { ComentarioDialogComponent, ComentarioDialogData } from '../comentario-dialog/comentario-dialog.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 
-// Interfaz genérica para documentos
-interface DocumentoGenerico {
-  id_documento: number;
-  nombre: string;
-  ruta_documento: string;
-  fecha_documento?: Date | string;
-  fechaSubida?: Date | string;
-  esValido: boolean;
-  comentario?: string;
+type Documento = DocumentosDTORespuesta | DocumentoHomologacion;
+
+/** Lo que el visor usa del servicio de cada proceso para descargar documentos y leer comentarios. */
+export interface ServicioDocumentos {
+  descargarArchivo?(nombreArchivo: string): Observable<Blob>;
+  descargarArchivoPorId?(idDocumento: number): Observable<Blob>;
+  descargarArchivoPorRuta?(rutaDocumento: string): Observable<Blob>;
+  buscarDocumentoPorId?(idDocumento: number): Observable<{ comentario?: string | null }>;
 }
 
 @Component({
@@ -37,14 +39,16 @@ interface DocumentoGenerico {
   styleUrls: ['./documentation-viewer.component.css']
 })
 export class DocumentationViewerComponent implements OnInit {
-  @Input() documentos: (DocumentosDTORespuesta | DocumentoHomologacion)[] = [];
+  @Input() documentos: Documento[] = [];
   @Input() solicitudId?: number;
   @Input() proceso: 'homologacion' | 'reingreso' | 'paz-salvo' | 'ecaes' = 'homologacion';
-  @Input() servicio: any; // Servicio específico para descargar archivos
+  @Input() servicio?: ServicioDocumentos;
   @Input() puedeAgregarComentarios: boolean = false; // Controla si se muestra el botón de agregar comentarios
 
   @Output() verComentarios = new EventEmitter<DocumentosDTORespuesta>();
-  @Output() comentarioAgregado = new EventEmitter<{documento: any, comentario: string}>();
+  @Output() comentarioAgregado = new EventEmitter<{ documento: Documento; comentario: string }>();
+
+  private destroyRef = inject(DestroyRef);
 
   displayedColumns: string[] = ['nombre', 'fecha', 'acciones'];
 
@@ -71,7 +75,7 @@ export class DocumentationViewerComponent implements OnInit {
    * Ver documento usando endpoint genérico
    * Ahora intenta usar ID del documento primero, luego ruta, y finalmente nombre como fallback
    */
-  verDocumento(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+  verDocumento(documento: Documento): void {
     // verDocumento() llamado
     
     // Mostrar mensaje de carga
@@ -86,12 +90,12 @@ export class DocumentationViewerComponent implements OnInit {
     const docHomologacion = documento as DocumentoHomologacion;
     if (docHomologacion.id_documento && this.servicio.descargarArchivoPorId) {
       // Intentando descargar por ID del documento
-      this.servicio.descargarArchivoPorId(docHomologacion.id_documento).subscribe({
+      this.servicio.descargarArchivoPorId(docHomologacion.id_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (blob: Blob) => {
           // Documento descargado exitosamente por ID
           this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
         },
-        error: (error: any) => {
+        error: () => {
           // Intentar por ruta como fallback
           this.intentarDescargaPorRuta(documento);
         }
@@ -102,12 +106,12 @@ export class DocumentationViewerComponent implements OnInit {
     // PRIORIDAD 2: Intentar descargar por ruta del documento
     if (docHomologacion.ruta_documento && this.servicio.descargarArchivoPorRuta) {
       // Intentando descargar por ruta del documento
-      this.servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).subscribe({
+      this.servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (blob: Blob) => {
           // Documento descargado exitosamente por ruta
           this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
         },
-        error: (error: any) => {
+        error: () => {
           // Intentar por nombre como último recurso
           this.intentarDescargaPorNombre(documento);
         }
@@ -122,19 +126,19 @@ export class DocumentationViewerComponent implements OnInit {
   /**
    * Método helper para intentar descarga por ruta.
    */
-  private intentarDescargaPorRuta(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+  private intentarDescargaPorRuta(documento: Documento): void {
     const docHomologacion = documento as DocumentoHomologacion;
     if (!docHomologacion.ruta_documento || !this.servicio?.descargarArchivoPorRuta) {
       this.intentarDescargaPorNombre(documento);
       return;
     }
 
-    this.servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).subscribe({
+    this.servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob: Blob) => {
         // Documento descargado exitosamente por ruta
         this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
       },
-      error: (error: any) => {
+      error: () => {
         this.intentarDescargaPorNombre(documento);
       }
     });
@@ -143,7 +147,7 @@ export class DocumentationViewerComponent implements OnInit {
   /**
    * Método helper para intentar descarga por nombre (último recurso).
    */
-  private intentarDescargaPorNombre(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+  private intentarDescargaPorNombre(documento: Documento): void {
     if (!documento.nombre) {
       this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
@@ -155,12 +159,12 @@ export class DocumentationViewerComponent implements OnInit {
     }
 
     // Intentando descargar por nombre del archivo
-    this.servicio.descargarArchivo(documento.nombre).subscribe({
+    this.servicio.descargarArchivo(documento.nombre).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob: Blob) => {
         // Documento descargado exitosamente por nombre
         this.mostrarDocumentoEnVentana(blob, documento.nombre);
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         const errorMessage = error.status === 404 
           ? 'El archivo no se encontró en el servidor. Verifique que el documento existe.'
           : (error.error?.message || error.message || 'Error desconocido');
@@ -218,7 +222,7 @@ export class DocumentationViewerComponent implements OnInit {
   /**
    * Ver comentarios del documento
    */
-  verComentariosDocumento(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+  verComentariosDocumento(documento: Documento): void {
     // verComentariosDocumento() llamado
     
     if (!documento.comentario || documento.comentario.trim().length === 0) {
@@ -248,14 +252,14 @@ export class DocumentationViewerComponent implements OnInit {
   /**
    * Verificar si el documento tiene comentarios
    */
-  tieneComentarios(documento: DocumentosDTORespuesta | DocumentoHomologacion): boolean {
+  tieneComentarios(documento: Documento): boolean {
     return !!(documento.comentario && documento.comentario.trim().length > 0);
   }
 
   /**
    * Obtener el número de comentarios
    */
-  getNumeroComentarios(documento: DocumentosDTORespuesta | DocumentoHomologacion): number {
+  getNumeroComentarios(documento: Documento): number {
     return (documento.comentario && documento.comentario.trim().length > 0) ? 1 : 0;
   }
 
@@ -279,7 +283,7 @@ export class DocumentationViewerComponent implements OnInit {
    * Agregar comentario usando endpoint genérico.
    * Carga el documento actual (GET buscarPorId) para mostrar comentarios previos; al guardar envía solo el texto nuevo.
    */
-  agregarComentario(documento: DocumentosDTORespuesta | DocumentoHomologacion): void {
+  agregarComentario(documento: Documento): void {
     if (!documento.id_documento) {
       this.snackBar.open('No hay ID de documento disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
@@ -298,7 +302,7 @@ export class DocumentationViewerComponent implements OnInit {
         }
       });
 
-      dialogRef.afterClosed().subscribe((comentarioNuevo: string | undefined) => {
+      dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((comentarioNuevo: string | undefined) => {
         if (comentarioNuevo === undefined) return;
         if (!comentarioNuevo.trim()) {
           this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', snackbarConfig(['warning-snackbar']));
@@ -310,14 +314,14 @@ export class DocumentationViewerComponent implements OnInit {
     };
 
     // Obtener documento actualizado para mostrar comentarios existentes (el backend concatena; solo enviamos lo nuevo)
-    if (this.servicio && typeof this.servicio.buscarDocumentoPorId === 'function') {
+    if (this.servicio?.buscarDocumentoPorId) {
       this.snackBar.open('Cargando comentarios...', 'Cerrar', snackbarConfig());
-      this.servicio.buscarDocumentoPorId(documento.id_documento).subscribe({
-        next: (doc: { comentario?: string }) => abrirDialogConHistorial(doc.comentario ?? ''),
-        error: () => abrirDialogConHistorial((documento as any).comentario ?? '')
+      this.servicio.buscarDocumentoPorId(documento.id_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (doc) => abrirDialogConHistorial(doc.comentario ?? ''),
+        error: () => abrirDialogConHistorial(documento.comentario ?? '')
       });
     } else {
-      abrirDialogConHistorial((documento as any).comentario ?? '');
+      abrirDialogConHistorial(documento.comentario ?? '');
     }
   }
 

@@ -170,9 +170,36 @@ export interface EstudiantesPorProgramaResponse {
  * Interfaz para la respuesta del endpoint de estadísticas por proceso
  */
 export interface EstadisticasPorProcesoResponse {
-  estadisticasPorProceso: { [proceso: string]: any };
+  estadisticasPorProceso: { [proceso: string]: ProcesoDetallado };
+  resumenComparativo?: {
+    procesoMasEficiente: string;
+    procesoMasRapido: string;
+    eficienciaMaxima: number;
+    demandaMaxima: number;
+    tiempoMinimo: number;
+    totalProcesos: number;
+  };
   fechaConsulta: string;
   descripcion: string;
+}
+
+/** Un proceso en /estadisticas/estadisticas-por-proceso. */
+export interface ProcesoDetallado {
+  proceso: string;
+  descripcion?: string;
+  totalSolicitudes: number;
+  aprobadas: number;
+  rechazadas: number;
+  enProceso: number;
+  enviadas: number;
+  /** Porcentaje de aprobación. */
+  eficiencia?: number;
+  tiempoPromedio?: number;
+  tiempoMinimo?: number;
+  tiempoMaximo?: number;
+  tendencia?: string;
+  color?: string;
+  icono?: string;
 }
 
 /**
@@ -206,7 +233,6 @@ export interface EstadoSolicitudesResponse {
   resumenPorEstado?: { [estado: string]: EstadoInfo };  // Campo actualizado del backend
   estados?: { [estado: string]: EstadoInfo };           // Legacy: Mantener para compatibilidad
   tasaResolucion?: number;                               // Tasa de resolución en nivel raíz
-  analisisComparativo?: any;                             // Análisis comparativo
   fechaConsulta: string;
   descripcion?: string;
   analisis?: {                    // Sección de análisis (legacy)
@@ -251,19 +277,24 @@ export interface EstadisticasPorProgramaMejoradasResponse {
  * Interfaz para estadísticas por período mejoradas
  */
 export interface PeriodoEstadisticasMejoradas {
-  solicitudes: number;
-  estudiantes: number;
-  porcentaje: number;
+  mes?: string;
+  total: number;
+  aprobadas?: number;
+  rechazadas?: number;
+  enviadas?: number;
+  descripcion?: string;
+  /** Los meses sin solicitudes no traen porcentaje, tiempo ni procesos. */
+  porcentaje?: number;
   eficiencia: number;             // Tasa de aprobación
-  tiempoPromedio: number;         // Días de procesamiento
-  procesos: { [proceso: string]: number };  // Distribución por proceso
-  color: string;                  // Color específico
-  icono: string;                  // Icono específico
+  tiempoPromedio?: number;        // Días de procesamiento
+  procesos?: { [proceso: string]: number };  // Distribución por proceso
+  color: string;
+  icono: string;
 }
 
 export interface EstadisticasPorPeriodoMejoradasResponse {
   porMes: { [mes: string]: PeriodoEstadisticasMejoradas };
-  mesesOrdenados?: Array<{ mes: string; total: number; aprobadas: number; [key: string]: any }>;  // Array ordenado de todos los meses
+  mesesOrdenados?: PeriodoEstadisticasMejoradas[];  // Todos los meses, en orden
   todosLosMeses?: string[];  // Array con nombres de todos los meses (Enero a Diciembre)
   tendencias: {                   // Sección de tendencias
     tendenciaGeneral: string;
@@ -325,19 +356,6 @@ export interface TendenciasComparativasResponse {
   resumenEstrategico: ResumenEstrategico;
 }
 
-/**
- * Interfaz consolidada para todas las estadísticas
- */
-export interface EstadisticasCompletas {
-  totalEstudiantes: number;
-  estudiantesPorPrograma: { [programa: string]: number };
-  estadisticasPorProceso: { [proceso: string]: any };
-  estadoSolicitudes: { [estado: string]: EstadoInfo };
-  fechaConsulta: string;
-  loading: boolean;
-  error?: string;
-}
-
 // ===== MODELOS PARA CURSOS DE VERANO =====
 
 export interface MateriaPrediccion {
@@ -389,14 +407,8 @@ export interface PrediccionesCursosVerano {
   fechaPrediccion: string;
   // metodologia eliminado (campo técnico innecesario)
   // Nuevos campos para la pestaña de Recomendaciones
-  estadisticasRecomendaciones?: {
-    totalRecomendaciones: number;
-    prioridadAlta: number;
-    prioridadMedia: number;
-    prioridadBaja: number;
-    alertasCriticas: number;
-  };
-  alertasCriticas?: any[];
+  estadisticasRecomendaciones?: EstadisticasRecomendaciones;
+  alertasCriticas?: AlertaCritica[];
 }
 
 export interface TopMateria {
@@ -443,12 +455,56 @@ export interface EstadosSolicitudesEstructurados {
   RECHAZADA: EstadoSolicitudEstructurado;
 }
 
+export type PrioridadRecomendacion = 'CRITICA' | 'ALTA' | 'MEDIA' | 'BAJA';
+
 export interface Recomendacion {
+  id: string;
   tipo: string;
+  categoria?: string;
   titulo: string;
   descripcion: string;
-  prioridad: "ALTA" | "MEDIA" | "BAJA";
-  acciones: string[]; // Array de acciones recomendadas
+  prioridad: PrioridadRecomendacion;
+  acciones: string[];
+  justificacion?: string;
+  materia?: string;
+  demandaActual?: number;
+  demandaProyectada?: number;
+  crecimiento?: number;
+  porcentajeCrecimiento?: number;
+  impacto?: {
+    estudiantesAtendidos: number;
+    estudiantesBeneficiados: number;
+    tasaCoberturaObjetivo: string;
+  };
+  recursos?: {
+    docentes: number;
+    aulas: number;
+    laboratorios?: number;
+    gruposActuales?: number;
+    gruposRecomendados: number;
+    capacidadPorGrupo: number;
+  };
+}
+
+/** Alerta en predicciones.alertasCriticas. */
+export interface AlertaCritica {
+  id: string;
+  tipo: string;
+  categoria?: string;
+  titulo: string;
+  descripcion: string;
+  prioridad: PrioridadRecomendacion;
+  acciones: string[];
+  materia?: string;
+  crecimientoProyectado?: string;
+}
+
+export interface EstadisticasRecomendaciones {
+  totalRecomendaciones: number;
+  prioridadAlta: number;
+  prioridadMedia: number;
+  prioridadBaja: number;
+  alertasCriticas: number;
 }
 
 export interface ResumenCursosVerano {

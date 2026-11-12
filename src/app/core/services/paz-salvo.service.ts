@@ -4,6 +4,7 @@ import { Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
+import { nombreDeContentDisposition } from '../utils/download.util';
 
 type Solicitudes = Observable<SolicitudHomologacionDTORespuesta[]>;
 
@@ -15,6 +16,36 @@ export interface ComentariosPazSalvo {
 }
 
 /** Bandejas por rol del endpoint listarSolicitud-PazYSalvo/{rol}. */
+/** Documento como lo devuelven obtenerOficios y obtenerDocumentos/coordinador. */
+export interface DocumentoPazSalvoRespuesta {
+  /** En obtenerOficios el backend envía aquí el id de la solicitud, no el del documento. */
+  id: number;
+  nombre: string;
+  nombreArchivo?: string;
+  ruta?: string;
+  fecha?: string;
+  esValido?: boolean;
+  comentario?: string | null;
+}
+
+/** Respuesta de /subir-documento (el documento queda sin asociar). */
+export interface DocumentoSubidoPazSalvo {
+  success: boolean;
+  message: string;
+  documento_id: number;
+  nombre: string;
+  fecha: string;
+}
+
+/** Blob descargado con el nombre de archivo que indicó el servidor. */
+export type BlobConNombre = Blob & { filename?: string };
+
+/** Validez de un documento al aprobar o rechazar. */
+export interface ValidezDocumento {
+  id_documento: number;
+  esValido: boolean;
+}
+
 const BANDEJA_POR_ROL: Record<string, string> = {
   FUNCIONARIO: 'Funcionario',
   COORDINADOR: 'Coordinador',
@@ -127,7 +158,14 @@ export class PazSalvoService {
       nombreSolicitud = `Solicitud Paz y Salvo - ${nombreUsuario}`;
     }
 
-    const body: any = {
+    const body: {
+      idUsuario: number;
+      nombre_solicitud: string;
+      fecha_registro_solicitud: string;
+      periodo_academico?: string;
+      titulo_trabajo_grado?: string;
+      director_trabajo_grado?: string;
+    } = {
       idUsuario: studentId,
       nombre_solicitud: nombreSolicitud,
       fecha_registro_solicitud: datosFormulario.fecha_registro_solicitud
@@ -144,32 +182,32 @@ export class PazSalvoService {
   }
 
   /** Funcionario aprueba. */
-  approveRequest(requestId: number): Observable<any> {
+  approveRequest(requestId: number): Observable<unknown> {
     return this.cambiarEstado(requestId, 'APROBADA_FUNCIONARIO');
   }
 
   /** Aprobación del coordinador. */
-  approveAsCoordinador(requestId: number): Observable<any> {
+  approveAsCoordinador(requestId: number): Observable<unknown> {
     return this.cambiarEstado(requestId, 'APROBADA_COORDINADOR');
   }
 
   /** Aprobación definitiva (secretaría, al enviar el oficio). */
-  approveDefinitively(idSolicitud: number): Observable<any> {
+  approveDefinitively(idSolicitud: number): Observable<unknown> {
     return this.cambiarEstado(idSolicitud, 'APROBADA');
   }
 
-  rejectRequest(requestId: number, reason: string): Observable<any> {
+  rejectRequest(requestId: number, reason: string): Observable<unknown> {
     return this.cambiarEstado(requestId, 'RECHAZADA', reason);
   }
 
-  private cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<any> {
-    const body: any = { idSolicitud, nuevoEstado };
+  private cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<unknown> {
+    const body: { idSolicitud: number; nuevoEstado: string; comentario?: string } = { idSolicitud, nuevoEstado };
     if (comentario !== undefined) body.comentario = comentario;
     return this.http.put(`${this.apiUrl}/actualizarEstadoSolicitud`, body);
   }
 
   /** Marca cada documento como válido o no válido. */
-  actualizarEstadoDocumentos(idSolicitud: number, documentos: any[]): Observable<any> {
+  actualizarEstadoDocumentos(idSolicitud: number, documentos: ValidezDocumento[]): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/actualizarEstadoDocumentos`, { idSolicitud, documentos });
   }
 
@@ -184,11 +222,11 @@ export class PazSalvoService {
   }
 
   /** GET /api/documentos/buscarPorId/{id}: comentario actual antes de añadir otro (documentation-viewer). */
-  buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string; [key: string]: any }> {
-    return this.http.get<{ comentario?: string; [key: string]: any }>(`${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`);
+  buscarDocumentoPorId(idDocumento: number): Observable<{ comentario?: string | null }> {
+    return this.http.get<{ comentario?: string | null }>(`${environment.apiUrl}/documentos/buscarPorId/${idDocumento}`);
   }
 
-  agregarComentario(idDocumento: number, comentario: string): Observable<any> {
+  agregarComentario(idDocumento: number, comentario: string): Observable<unknown> {
     return this.http.put(`${environment.apiUrl}/documentos/añadirComentario`, { idDocumento, comentario });
   }
 
@@ -197,37 +235,37 @@ export class PazSalvoService {
   // ================================
 
   /** Sube un documento SIN asociarlo: el backend lo asocia al crear la solicitud. */
-  subirDocumento(archivo: File): Observable<any> {
+  subirDocumento(archivo: File): Observable<DocumentoSubidoPazSalvo> {
     const error = this.validarPdf(archivo);
     if (error) return throwError(() => error);
 
     const formData = new FormData();
     formData.append('file', archivo);
-    return this.http.post(`${this.apiUrl}/subir-documento`, formData);
+    return this.http.post<DocumentoSubidoPazSalvo>(`${this.apiUrl}/subir-documento`, formData);
   }
 
   /** Secretaría sube el oficio firmado en PDF. */
-  subirOficioPdf(idSolicitud: number, archivo: File): Observable<any> {
+  subirOficioPdf(idSolicitud: number, archivo: File): Observable<unknown> {
     const formData = new FormData();
     formData.append('file', archivo);
     return this.http.post(`${this.apiUrl}/subir-oficio-pdf/${idSolicitud}`, formData);
   }
 
   /** Documentos de la solicitud que ve secretaría (oficios). */
-  obtenerOficios(idSolicitud: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/obtenerOficios/${idSolicitud}`);
+  obtenerOficios(idSolicitud: number): Observable<DocumentoPazSalvoRespuesta[]> {
+    return this.http.get<DocumentoPazSalvoRespuesta[]>(`${this.apiUrl}/obtenerOficios/${idSolicitud}`);
   }
 
   /** Documentos de la solicitud que revisa el coordinador. */
-  obtenerDocumentosCoordinador(idSolicitud: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`);
+  obtenerDocumentosCoordinador(idSolicitud: number): Observable<DocumentoPazSalvoRespuesta[]> {
+    return this.http.get<DocumentoPazSalvoRespuesta[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`);
   }
 
   /**
    * Oficio de la solicitud. El nombre sale de Content-Disposition o, si no viene,
    * del primer oficio de la solicitud. Queda en `blob.filename`.
    */
-  descargarOficioPorSolicitud(idSolicitud: number): Observable<Blob> {
+  descargarOficioPorSolicitud(idSolicitud: number): Observable<BlobConNombre> {
     return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob', observe: 'response' }).pipe(
       switchMap(resp => {
         const nombre = this.nombreDesdeCabeceras(resp);
@@ -241,17 +279,17 @@ export class PazSalvoService {
 
   // Descargas que usa documentation-viewer (recibe el servicio como [servicio])
 
-  descargarArchivo(nombreArchivo: string): Observable<Blob> {
+  descargarArchivo(nombreArchivo: string): Observable<BlobConNombre> {
     return this.descargarConNombre(this.urlDescargaPorNombre(nombreArchivo), nombreArchivo || 'oficio.pdf');
   }
 
   /** Por id de documento: más confiable que por nombre. */
-  descargarArchivoPorId(idDocumento: number): Observable<Blob> {
+  descargarArchivoPorId(idDocumento: number): Observable<BlobConNombre> {
     return this.descargarConNombre(`${environment.apiUrl}/documentos/${idDocumento}/descargar`, 'documento.pdf');
   }
 
   /** Por la ruta guardada en la base de datos. */
-  descargarArchivoPorRuta(rutaDocumento: string): Observable<Blob> {
+  descargarArchivoPorRuta(rutaDocumento: string): Observable<BlobConNombre> {
     const nombreArchivo = rutaDocumento.split('/').pop() || rutaDocumento;
     return this.descargarConNombre(this.urlDescargaPorNombre(nombreArchivo), nombreArchivo || 'documento.pdf');
   }
@@ -260,26 +298,18 @@ export class PazSalvoService {
     return `${this.apiUrl}/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
   }
 
-  private descargarConNombre(url: string, nombrePorDefecto: string): Observable<Blob> {
+  private descargarConNombre(url: string, nombrePorDefecto: string): Observable<BlobConNombre> {
     return this.http.get(url, { responseType: 'blob', observe: 'response' }).pipe(
       map(resp => this.conNombre(resp.body!, this.nombreDesdeCabeceras(resp) || nombrePorDefecto))
     );
   }
 
-  private conNombre(blob: Blob, nombre: string): Blob {
-    (blob as any).filename = nombre;
-    return blob;
+  private conNombre(blob: Blob, nombre: string): BlobConNombre {
+    return Object.assign(blob, { filename: nombre });
   }
 
   private nombreDesdeCabeceras(resp: HttpResponse<Blob>): string | null {
-    try {
-      const cd = resp.headers?.get('Content-Disposition') || '';
-      const match = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
-      const raw = match?.[1] || match?.[2];
-      return raw ? decodeURIComponent(raw) : null;
-    } catch {
-      return null;
-    }
+    return nombreDeContentDisposition(resp.headers);
   }
 
   private validarPdf(archivo: File): { status: number; error: { message: string } } | null {

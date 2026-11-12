@@ -1,5 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,12 +9,24 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import {
-  CursosIntersemestralesService,
-  RespuestaEstudiantesCurso
-} from '../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
+import { RespuestaEstudiantesCurso } from '../../../core/models/cursos-intersemestrales.model';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { descargarBlob } from '../../../core/utils/download.util';
 
+const ERRORES_CARGA: Record<number, string> = {
+  403: 'No tienes permisos para ver esta información',
+  404: 'Curso no encontrado'
+};
+
+const ERRORES_EXPORTAR: Record<number, string> = {
+  401: 'Sesión expirada. Por favor, inicia sesión nuevamente',
+  403: 'No tienes permisos para exportar estudiantes',
+  404: 'Curso no encontrado',
+  500: 'Error interno del servidor al generar el PDF'
+};
+
+/** Preinscritos e inscritos de un curso, con exportación a PDF. */
 @Component({
   selector: 'app-estudiantes-curso-dialog',
   standalone: true,
@@ -33,7 +47,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   datos: RespuestaEstudiantesCurso | null = null;
   cargando = true;
   error: string | null = null;
-  
+
   displayedColumns: string[] = [
     'numero',
     'nombre_completo',
@@ -44,6 +58,8 @@ export class EstudiantesCursoDialogComponent implements OnInit {
     'estado_inscripcion',
     'correo'
   ];
+
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     public dialogRef: MatDialogRef<EstudiantesCursoDialogComponent>,
@@ -59,72 +75,42 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   cargarEstudiantes(): void {
     this.cargando = true;
     this.error = null;
-    
-    // El backend ahora maneja UTF-8 correctamente, los nombres con tildes se muestran correctamente
-    this.cursosService.getEstudiantesDelCurso(this.data.idCurso).subscribe({
-      next: (respuesta) => {
-        this.datos = respuesta;
-        this.cargando = false;
-      },
-      error: (err) => {
-        this.cargando = false;
-        
-        if (err.status === 403) {
-          this.error = 'No tienes permisos para ver esta información';
-          this.snackBar.open('No tienes permisos para ver esta información', 'Cerrar', snackbarConfig(['error-snackbar']));
-        } else if (err.status === 404) {
-          this.error = 'Curso no encontrado';
-          this.snackBar.open('Curso no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
-        } else {
-          this.error = 'Error al cargar los estudiantes';
-          this.snackBar.open('Error al cargar los estudiantes', 'Cerrar', snackbarConfig(['error-snackbar']));
+
+    this.cursosService.getEstudiantesDelCurso(this.data.idCurso)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (respuesta) => {
+          this.datos = respuesta;
+          this.cargando = false;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.cargando = false;
+          this.error = ERRORES_CARGA[err.status] ?? 'Error al cargar los estudiantes';
+          this.snackBar.open(this.error, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
-      }
-    });
+      });
   }
 
   cerrar(): void {
     this.dialogRef.close();
   }
 
-  // Exportar estudiantes a PDF
   exportarEstudiantesPDF(): void {
     if (!this.data.idCurso) {
       this.snackBar.open('Error: No se pudo identificar el curso', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
-    
-    this.cursosService.exportarEstudiantesPDF(this.data.idCurso).subscribe({
-      next: (result) => {
-        // Crear enlace temporal para descargar el archivo
-        const urlBlob = window.URL.createObjectURL(result.blob);
-        const link = document.createElement('a');
-        link.href = urlBlob;
-        link.download = result.filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(urlBlob);
-        
-        this.snackBar.open('PDF exportado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-      },
-      error: (err) => {
-        let mensajeError = 'Error al exportar el PDF';
-        
-        if (err.status === 401) {
-          mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente';
-        } else if (err.status === 403) {
-          mensajeError = 'No tienes permisos para exportar estudiantes';
-        } else if (err.status === 404) {
-          mensajeError = 'Curso no encontrado';
-        } else if (err.status === 500) {
-          mensajeError = 'Error interno del servidor al generar el PDF';
+    this.cursosService.exportarEstudiantesPDF(this.data.idCurso)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (archivo) => {
+          descargarBlob(archivo.blob, archivo.filename);
+          this.snackBar.open('PDF exportado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        },
+        error: (err: HttpErrorResponse) => {
+          this.snackBar.open(ERRORES_EXPORTAR[err.status] ?? 'Error al exportar el PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
         }
-        
-        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
-    });
+      });
   }
 }
-

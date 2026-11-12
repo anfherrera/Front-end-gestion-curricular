@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, OnInit, OnDestroy, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -13,9 +14,11 @@ import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angu
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService, CursoOfertadoVerano, EstudianteElegible } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, EstudianteElegible } from '../../../../core/models/cursos-intersemestrales.model';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -24,6 +27,8 @@ import { PromptDialogComponent, PromptDialogData } from '../../../../shared/comp
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
+import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
+import { descargarBlob } from '../../../../core/utils/download.util';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -57,7 +62,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   estudiantesElegibles: EstudianteElegible[] = [];
   estudiantesFiltrados: EstudianteElegible[] = [];
   cargando = false;
-  estadisticas: any = null;
   
   // Formularios
   filtroForm: FormGroup;
@@ -97,11 +101,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       .subscribe(cursoId => {
         if (cursoId) {
           this.cargarEstudiantesElegibles(cursoId);
-          this.cargarEstadisticas(cursoId);
         } else {
           this.estudiantesFiltrados = [];
           this.cursoSeleccionado = null;
-          this.estadisticas = null;
         }
       });
   }
@@ -162,7 +164,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         this.logger.debug('Estudiantes elegibles recibidos del backend:', estudiantes);
         
         // Normalizar estado: usar estado_inscripcion o, si no viene, estado_actual
-        const normalizados = estudiantes.map((e: any) => ({
+        const normalizados = estudiantes.map(e => ({
           ...e,
           estado_inscripcion: e.estado_inscripcion || e.estado_actual || null
         }));
@@ -197,23 +199,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           'Cerrar', 
           snackbarConfig(['error-snackbar'])
         );
-      }
-    });
-  }
-
-  cargarEstadisticas(idCurso: number): void {
-    this.logger.debug('Cargando estadísticas para curso:', idCurso);
-    
-    this.cursosService.obtenerEstadisticasCurso(idCurso)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-      next: (stats) => {
-        this.logger.debug('Estadísticas recibidas:', stats);
-        this.estadisticas = stats;
-      },
-      error: (error) => {
-        this.logger.warn('Error al cargar estadísticas del curso', error);
-        this.estadisticas = null;
       }
     });
   }
@@ -285,10 +270,9 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.logger.debug('Inscripción aceptada exitosamente', response);
         this.snackBar.open('Inscripción aceptada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-        // Recargar la lista de estudiantes y estadísticas
+        // Recargar la lista de estudiantes
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-          this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
         }
       },
       error: (error) => {
@@ -336,7 +320,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
             
             if (this.cursoSeleccionado) {
               this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-              this.cargarEstadisticas(this.cursoSeleccionado.id_curso);
             }
           },
           error: (error) => {
@@ -347,7 +330,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   }
 
   // Método para manejar errores específicos del backend
-  private manejarErrorInscripcion(error: any): void {
+  private manejarErrorInscripcion(error: HttpErrorResponse): void {
     this.logger.error('Error al procesar inscripción', error);
     
     let mensaje = 'Error al procesar la inscripción';
@@ -381,25 +364,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   // Obtener nombre del docente de forma segura
   obtenerNombreDocente(curso: CursoOfertadoVerano | null): string {
-    if (!curso || !curso.objDocente) {
-      return 'Sin asignar';
-    }
-    
-    // Priorizar nombre_docente (estructura del backend)
-    if ((curso.objDocente as any).nombre_docente) {
-      return (curso.objDocente as any).nombre_docente;
-    }
-    
-    // Fallback a nombre y apellido (estructura legacy)
-    if (curso.objDocente.nombre && curso.objDocente.apellido) {
-      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
-    }
-    
-    if (curso.objDocente.nombre) {
-      return curso.objDocente.nombre;
-    }
-    
-    return 'Sin nombre';
+    return nombreDocente(curso);
   }
 }
 
@@ -600,6 +565,8 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   `]
 })
 export class DetallesInscripcionDialogComponent {
+  private destroyRef = inject(DestroyRef);
+
   constructor(
     public dialogRef: MatDialogRef<DetallesInscripcionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible },
@@ -630,27 +597,19 @@ export class DetallesInscripcionDialogComponent {
       }
       
       // Usar el servicio de cursos intersemestrales
-      this.cursosService.descargarComprobantePago(idParaDescarga).subscribe({
+      this.cursosService.descargarComprobantePago(idParaDescarga).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (blob: Blob) => {
           this.logger.debug('Comprobante descargado exitosamente');
           
           // Verificar que el blob no esté vacío
           if (blob && blob.size > 0) {
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = nombreArchivo;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(downloadUrl);
-            document.body.removeChild(a);
-            
+            descargarBlob(blob, nombreArchivo);
             this.snackBar.open('Comprobante descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
           } else {
             this.snackBar.open('Error: El archivo PDF está vacío o corrupto', 'Cerrar', snackbarConfig(['error-snackbar']));
           }
         },
-        error: (error: any) => {
+        error: (error: HttpErrorResponse) => {
           this.logger.error('Error al descargar comprobante de pago', error);
           const mensajeError = this.errorHandler.extraerMensajeError(error);
           this.snackBar.open(
@@ -713,7 +672,7 @@ this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackb
             <mat-icon class="info-icon">book</mat-icon>
             <div class="info-text">
               <strong>Curso:</strong>
-              <span>{{ (data.curso?.nombre_curso || data.curso?.nombre || 'No especificado') | utfFix }}</span>
+              <span>{{ (data.curso?.nombre_curso || 'No especificado') | utfFix }}</span>
             </div>
           </div>
         </div>
@@ -875,7 +834,7 @@ this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackb
 export class ConfirmacionInscripcionDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ConfirmacionInscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible, curso: any }
+    @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible, curso: CursoOfertadoVerano | null }
   ) {}
 
   confirmar(): void {

@@ -1,9 +1,13 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CursosIntersemestralesService, CreateInscripcionDTO, PreinscripcionSeguimiento } from '../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
+import { CreateInscripcionDTO, PreinscripcionSeguimiento } from '../../../core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../material.imports';
@@ -11,9 +15,23 @@ import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { mensajeDeError } from '../../../core/utils/http-error.utils';
 
 export interface InscripcionModalData {
-  preinscripcion: PreinscripcionSeguimiento;
+  preinscripcion: Pick<PreinscripcionSeguimiento, 'cursoId' | 'curso' | 'estado' | 'estadoCurso'>;
 }
 
+const TAMANO_MAXIMO = 15 * 1024 * 1024; // 15 MB
+
+/** Mensajes por código HTTP al crear la inscripción (400 usa el mensaje del backend). */
+const ERRORES_INSCRIPCION: Record<number, string> = {
+  0: 'Error de conexión: No se puede conectar al servidor. Verifica que el backend esté ejecutándose en el puerto 5000.',
+  401: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
+  403: 'No tienes permisos para realizar esta acción.',
+  500: 'Error interno del servidor. Por favor, contacta al administrador.'
+};
+
+/**
+ * Inscripción a un curso con preinscripción aprobada: crea la inscripción y
+ * después sube el comprobante de pago.
+ */
 @Component({
   selector: 'app-inscripcion-modal',
   standalone: true,
@@ -25,8 +43,10 @@ export class InscripcionModalComponent implements OnInit {
   inscripcionForm!: FormGroup;
   archivoSeleccionado: File | null = null;
   cargando = false;
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
   errorArchivo: string | null = null;
+
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private fb: FormBuilder,
@@ -43,200 +63,127 @@ export class InscripcionModalComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.cargarDatosUsuario();
-  }
-
-  private cargarDatosUsuario() {
+  ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
-    // Usuario obtenido del AuthService
-    
-    if (this.usuario) {
-      // Intentar diferentes campos posibles para el nombre
-      const nombreCompleto = this.usuario.nombre_completo || this.usuario.nombreCompleto || this.usuario.nombres || this.usuario.nombre || this.usuario.first_name || '';
-      const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || this.usuario.documento || '';
-      
-      // Campos extraídos
-      
-      this.inscripcionForm.patchValue({
-        nombreCompleto: nombreCompleto || 'Usuario no identificado',
-        codigo: codigo || 'Sin código'
-      });
-      
-      // Formulario actualizado
-    } else {
-      // No se pudo obtener el usuario del AuthService
-      this.inscripcionForm.patchValue({
-        nombreCompleto: 'Usuario no identificado',
-        codigo: 'Sin código'
-      });
-    }
+    this.inscripcionForm.patchValue({
+      nombreCompleto: this.usuario?.nombre_completo || 'Usuario no identificado',
+      codigo: this.usuario?.codigo || 'Sin código'
+    });
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    // Archivo seleccionado
-    
-    // Limpiar error anterior
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     this.errorArchivo = null;
-    
-    if (file) {
-      // Validar que sea PDF
-      if (file.type !== 'application/pdf') {
-        // Tipo de archivo incorrecto
-        this.errorArchivo = 'Solo se permiten archivos PDF';
-        this.snackBar.open('Solo se permiten archivos PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
-        return;
-      }
-      
-      // Validar tamaño (máximo 15MB temporalmente)
-      const maxSize = 15 * 1024 * 1024; // 15MB en bytes (temporalmente aumentado)
-      
-      if (file.size > maxSize) {
-        // Archivo muy grande
-        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        this.errorArchivo = `El archivo es muy grande (${fileSizeMB} MB). El límite máximo es 15 MB.`;
-        this.snackBar.open(
-          `El archivo es muy grande (${fileSizeMB} MB). El límite máximo es 15 MB.`, 
-          'Cerrar', 
-          snackbarConfig(['warning-snackbar'])
-        );
-        return;
-      }
-      
-      this.archivoSeleccionado = file;
-      // Archivo válido seleccionado
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      this.rechazarArchivo('Solo se permiten archivos PDF');
+      return;
     }
+    if (file.size > TAMANO_MAXIMO) {
+      const mb = (file.size / (1024 * 1024)).toFixed(2);
+      this.rechazarArchivo(`El archivo es muy grande (${mb} MB). El límite máximo es 15 MB.`);
+      return;
+    }
+    this.archivoSeleccionado = file;
   }
 
-  onSubmit() {
+  private rechazarArchivo(mensaje: string): void {
+    this.errorArchivo = mensaje;
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['warning-snackbar']));
+  }
+
+  onSubmit(): void {
     if (this.inscripcionForm.invalid) {
       this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
-
     if (!this.archivoSeleccionado) {
       this.snackBar.open('Debes subir el comprobante de pago (PDF)', 'Cerrar', snackbarConfig(['warning-snackbar']));
       return;
     }
+    if (!this.usuario) return;
 
     this.cargando = true;
-    this.verificarPreinscripcionAprobada();
+    this.verificarPreinscripcionAprobada(this.usuario);
   }
 
-  /** Solo se puede inscribir quien tiene la preinscripción de este curso aprobada. */
-  private verificarPreinscripcionAprobada(): void {
-    this.cursosService.getPreinscripcionesUsuario(this.usuario.id_usuario).subscribe({
-      next: (todasPreinscripciones) => {
-        // Filtrar preinscripciones para este curso específico
-        const preinscripciones = todasPreinscripciones?.filter((p: any) => 
-          p.id_curso === this.data.preinscripcion.cursoId || 
-          p.cursoId === this.data.preinscripcion.cursoId ||
-          p.objCurso?.id_curso === this.data.preinscripcion.cursoId
-        ) || [];
-        
-        // Solo se puede inscribir con una preinscripción ya APROBADA por un funcionario/coordinador.
-        // (El estudiante no puede aprobar preinscripciones: el backend exige Funcionario/Coordinador/Administrador.)
-        const preinscripcionAprobada = preinscripciones.find((p: any) => p.estado === 'Aprobado');
-
-        if (preinscripcionAprobada) {
-          this.crearInscripcionDirecta();
-        } else {
+  /** Solo se puede inscribir quien tiene la preinscripción de este curso aprobada por un funcionario. */
+  private verificarPreinscripcionAprobada(usuario: UsuarioSesion): void {
+    this.cursosService.getPreinscripcionesUsuario(usuario.id_usuario)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (todas) => {
+          const delCurso = (todas || []).filter(p => p.cursoId === this.data.preinscripcion.cursoId);
+          if (delCurso.some(p => p.estado === 'Aprobado')) {
+            this.crearInscripcion(usuario);
+            return;
+          }
           this.cargando = false;
           this.snackBar.open(
-            preinscripciones.length > 0
+            delCurso.length > 0
               ? 'Tu preinscripción aún no ha sido aprobada. Podrás inscribirte cuando un funcionario la apruebe.'
               : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".',
             'Cerrar',
             snackbarConfig(['warning-snackbar'])
           );
+        },
+        error: (error) => {
+          this.cargando = false;
+          this.snackBar.open(
+            mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.'),
+            'Cerrar',
+            snackbarConfig(['error-snackbar'])
+          );
         }
-      },
-      error: (error) => {
-        this.cargando = false;
-        this.snackBar.open(
-          mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.'),
-          'Cerrar',
-          snackbarConfig(['error-snackbar'])
-        );
-      }
-    });
+      });
   }
 
-  private crearInscripcionDirecta(): void {
-    const nombreUsuario = (this.usuario?.nombre_completo || this.usuario?.nombre || '').trim() || 'Usuario';
-    const inscripcionPayload: CreateInscripcionDTO = {
-      idUsuario: this.usuario.id_usuario,
+  private crearInscripcion(usuario: UsuarioSesion): void {
+    const nombreUsuario = (usuario.nombre_completo || '').trim() || 'Usuario';
+    const payload: CreateInscripcionDTO = {
+      idUsuario: usuario.id_usuario,
       idCurso: this.data.preinscripcion.cursoId,
       nombreSolicitud: `Solicitud Inscripción - ${nombreUsuario}`
     };
 
-    this.cursosService.crearInscripcion(inscripcionPayload).subscribe({
-      next: (inscripcion) => this.subirArchivo(inscripcion.id_solicitud),
-      error: (error) => {
-        this.cargando = false;
-        
-        let mensajeError = 'Error al crear la inscripción. Por favor, inténtalo de nuevo.';
-        
-        if (error.status === 0) {
-          mensajeError = 'Error de conexión: No se puede conectar al servidor. Verifica que el backend esté ejecutándose en el puerto 5000.';
-        } else if (error.status === 500) {
-          mensajeError = 'Error interno del servidor. Por favor, contacta al administrador.';
-        } else if (error.status === 400) {
-          // Mostrar el mensaje específico del backend si está disponible
-          const backendMessage = error.error?.message || error.error?.error || 'Datos inválidos';
-          mensajeError = `Error del servidor: ${backendMessage}`;
-        } else if (error.status === 401) {
-          mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-        } else if (error.status === 403) {
-          mensajeError = 'No tienes permisos para realizar esta acción.';
+    this.cursosService.crearInscripcion(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (inscripcion) => this.subirComprobante(inscripcion.id_solicitud, usuario),
+        error: (error: HttpErrorResponse) => {
+          this.cargando = false;
+          const mensaje = error.status === 400
+            ? `Error del servidor: ${error.error?.message || error.error?.error || 'Datos inválidos'}`
+            : ERRORES_INSCRIPCION[error.status] ?? 'Error al crear la inscripción. Por favor, inténtalo de nuevo.';
+          this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
-        
-        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
-    });
+      });
   }
 
-  private subirArchivo(inscripcionId: number) {
+  /** La inscripción ya existe: aunque falle la subida, el modal se cierra con éxito. */
+  private subirComprobante(inscripcionId: number, usuario: UsuarioSesion): void {
     if (!this.archivoSeleccionado) return;
 
-    // Subiendo comprobante de pago para inscripción
-    // Archivo a subir
-
-    // Usar el método específico del servicio de cursos para subir comprobante de pago
-    this.cursosService.subirComprobantePago(this.archivoSeleccionado, inscripcionId).subscribe({
-      next: (resultado) => {
-        // Comprobante de pago subido exitosamente
-        // Archivo organizado en
-        
-        // Actualizar notificaciones después de crear la inscripción
-        if (this.usuario?.id_usuario) {
-          this.notificacionesService.actualizarNotificaciones(this.usuario.id_usuario);
-        }
-        
-        this.cargando = false;
-        this.snackBar.open(
-          `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 
-          'Cerrar', 
-          snackbarConfig(['success-snackbar'])
-        );
-        this.dialogRef.close(true); // Cerrar modal con éxito
-      },
-      error: (error) => {
-        
-        // Actualizar notificaciones incluso si falla la subida del archivo (la inscripción ya se creó)
-        if (this.usuario?.id_usuario) {
-          this.notificacionesService.actualizarNotificaciones(this.usuario.id_usuario);
-        }
-        
-        this.cargando = false;
-        this.snackBar.open('Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.', 'Cerrar', snackbarConfig(['warning-snackbar']));
-        this.dialogRef.close(true); // Aún cerrar el modal ya que la inscripción se creó
-      }
-    });
+    this.cursosService.subirComprobantePago(this.archivoSeleccionado, inscripcionId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.terminar(usuario,
+          `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 'success-snackbar'),
+        error: () => this.terminar(usuario,
+          'Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.',
+          'warning-snackbar')
+      });
   }
 
-  onCancelar() {
+  private terminar(usuario: UsuarioSesion, mensaje: string, clase: string): void {
+    this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
+    this.cargando = false;
+    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig([clase]));
+    this.dialogRef.close(true);
+  }
+
+  onCancelar(): void {
     this.dialogRef.close(false);
   }
 

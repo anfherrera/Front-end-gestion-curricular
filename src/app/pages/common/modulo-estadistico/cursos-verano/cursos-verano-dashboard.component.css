@@ -1,36 +1,3 @@
-/* Dashboard Container */
-.dashboard-container {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  background-color: #f5f7fa;
-  font-family: 'Roboto', sans-serif;
-  min-height: 100vh;
-}
-
-/* Header */
-.dashboard-header {
-  margin-bottom: 30px;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: var(--sombra-2);
-  border-left: 4px solid var(--color-primario);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.header-text {
-  text-align: center;
-  flex: 1;
-}
-
 .last-update {
   display: flex;
   align-items: center;
@@ -47,54 +14,7 @@
   height: 16px;
 }
 
-.header-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.header-actions button {
-  min-width: 140px;
-}
-
-.dashboard-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--color-primario);
-  margin-bottom: 10px;
-}
-
-.dashboard-subtitle {
-  color: #6c757d;
-  font-size: 1.1rem;
-  margin: 0;
-  font-weight: 500;
-}
-
 /* Loading y Error */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem;
-  text-align: center;
-  background: white;
-  border-radius: 12px;
-  box-shadow: var(--sombra-2);
-  margin: 20px 0;
-}
-
-.loading-container p {
-  margin-top: 1rem;
-  color: #6c757d;
-  font-size: 1.1rem;
-}
 
 .loading-indicator {
   display: flex;
@@ -135,21 +55,6 @@
 }
 
 /* Filtros */
-.filters-card {
-  margin-bottom: 30px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: var(--sombra-2);
-  background-color: #fff;
-}
-
-.filters-card mat-card-header {
-  background: var(--color-primario);
-  color: white;
-  margin: -16px -16px 16px -16px;
-  padding: 16px;
-  border-radius: 8px 8px 0 0;
-}
 
 .filters-card mat-card-title {
   color: white;
@@ -257,7 +162,12 @@
 }
 
 /* KPIs */
-.kpis-section {
+.kpis-section,
+.charts-section,
+.estados-section,
+.recomendaciones-section,
+.predicciones-resumen,
+.predicciones-charts {
   margin-bottom: 2rem;
 }
 
@@ -277,11 +187,6 @@
   overflow: hidden;
 }
 
-.kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--sombra-2);
-}
-
 .kpi-card.total-solicitudes {
   border-left-color: var(--color-primario);
 }
@@ -298,7 +203,8 @@
   border-left-color: #ffc107;
 }
 
-.kpi-card mat-card-header {
+.kpi-card mat-card-header,
+.chart-card mat-card-header {
   background: var(--color-primario);
   color: white;
   margin: -16px -16px 16px -16px;
@@ -325,14 +231,6 @@
   font-size: 0.9rem;
 }
 
-/* Tabs */
-.main-tabs {
-  background: white;
-  border-radius: 12px;
-  box-shadow: var(--sombra-2);
-  overflow: hidden;
-}
-
 .tab-content {
   padding: 2rem;
 }
@@ -344,9 +242,6 @@
 }
 
 /* Gráficos */
-.charts-section {
-  margin-bottom: 2rem;
-}
 
 .chart-row {
   display: grid;
@@ -375,13 +270,6 @@
   grid-column: 1 / -1;
 }
 
-.chart-card mat-card-header {
-  background: var(--color-primario);
-  color: white;
-  margin: -16px -16px 16px -16px;
-  padding: 16px;
-}
-
 .chart-card mat-card-title {
   display: flex;
   align-items: center;
@@ -390,16 +278,7 @@
   font-weight: 500;
 }
 
-.chart-container {
-  position: relative;
-  height: 300px;
-  width: 100%;
-}
-
 /* Estados */
-.estados-section {
-  margin-bottom: 2rem;
-}
 
 .estados-grid {
   display: grid;
@@ -494,15 +373,7 @@
   color: var(--color-primario);
 }
 
-/* Recomendaciones */
-.recomendaciones-section {
-  margin-bottom: 2rem;
-}
-
 /* Predicciones */
-.predicciones-resumen {
-  margin-bottom: 2rem;
-}
 
 .resumen-card {
   background: white;
@@ -577,10 +448,6 @@
   border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
-.predicciones-charts {
-  margin-bottom: 2rem;
-}
-
 /* Tendencias */
 .tendencias-section {
   margin-bottom: 2rem;
@@ -594,14 +461,20 @@
 }
 
 .tendencia-card {
-  background: white;
-  border-radius: 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
   box-shadow: var(--sombra-2);
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
   transition: all 0.3s ease;
-  border-left: 4px solid;
 }
 
 .tendencia-card:hover {
+  background: #e9ecef;
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
@@ -657,14 +530,32 @@
 /* Iconos de Tendencia */
 .tendencia-creciente {
   color: #28a745;
+  font-weight: bold;
+  background: rgba(40, 167, 69, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 0.5rem;
 }
 
 .tendencia-decreciente {
   color: #dc3545;
+  font-weight: bold;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 0.5rem;
 }
 
 .tendencia-estable {
   color: #ffc107;
+  font-weight: bold;
+  background: rgba(255, 193, 7, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 0.5rem;
 }
 
 /* Responsive Design */
@@ -691,10 +582,7 @@
     grid-template-columns: 1fr;
   }
 
-  .estados-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .estados-grid,
   .resumen-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -722,16 +610,9 @@
     font-size: 1.5rem;
   }
 
-  .estados-grid {
-    grid-template-columns: 1fr;
-  }
-
+  .estados-grid,
   .resumen-grid {
     grid-template-columns: 1fr;
-  }
-
-  .chart-container {
-    height: 250px;
   }
 }
 
@@ -754,12 +635,6 @@
   animation: fadeIn 0.6s ease-out;
 }
 
-/* Estilos para Snackbar */
-.error-snackbar {
-  background-color: #dc3545;
-  color: white;
-}
-
 /* Estilos para Mat-Expansion-Panel */
 .mat-expansion-panel {
   border-radius: 12px !important;
@@ -776,22 +651,6 @@
   background: #e9ecef !important;
 }
 
-.mat-expansion-panel-body {
-  padding: 1rem !important;
-}
-
-/* Estilos para Mat-Chips */
-.mat-chip {
-  border-radius: 16px !important;
-  font-weight: 500 !important;
-}
-
-/* Estilos para Mat-Badge */
-.mat-badge-content {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-}
-
 /* ===== ESTILOS PARA DATOS CONECTADOS ===== */
 
 /* Chart Data */
@@ -802,7 +661,7 @@
 }
 
 /* Materia Items */
-.materia-item, .programa-item, .tendencia-item {
+.materia-item, .programa-item {
   padding: 10px;
   margin: 5px 0;
   border: 1px solid #e0e0e0;
@@ -811,7 +670,7 @@
   transition: all 0.3s ease;
 }
 
-.materia-item:hover, .programa-item:hover, .tendencia-item:hover {
+.materia-item:hover, .programa-item:hover {
   background: #f0f0f0;
   transform: translateX(4px);
 }
@@ -841,8 +700,6 @@
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
-
-/* Predicción Items */
 
 .demanda-actual, .demanda-estimada, .variacion {
   margin: 0.25rem 0;
@@ -877,67 +734,27 @@
   color: #6c757d;
 }
 
-/* Tendencia Classes */
-.tendencia-creciente {
-  color: #28a745;
-  font-weight: bold;
-  background: rgba(40, 167, 69, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  display: inline-block;
-  margin-top: 0.5rem;
-}
-
-.tendencia-decreciente {
-  color: #dc3545;
-  font-weight: bold;
-  background: rgba(220, 53, 69, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  display: inline-block;
-  margin-top: 0.5rem;
-}
-
-.tendencia-estable {
-  color: #ffc107;
-  font-weight: bold;
-  background: rgba(255, 193, 7, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  display: inline-block;
-  margin-top: 0.5rem;
-}
-
 /* No Data */
 .no-data {
   text-align: center;
   color: #6c757d;
   font-style: italic;
-  padding: 20px;
+  padding: 40px;
   background: #f8f9fa;
   border-radius: 8px;
-  border: 1px dashed #dee2e6;
+  border: 2px dashed #dee2e6;
+  width: 100%;
 }
 
 /* ===== MEJORAS PARA ELIMINAR ESPACIOS EN BLANCO ===== */
 
-/* Eliminar espacios en blanco en todas las secciones */
-.chart-container {
-  min-height: auto !important;
-  height: auto !important;
-}
-
 .chart-content {
+  position: relative;
   min-height: auto !important;
   height: auto !important;
-  padding: 20px;
-}
-
-/* CSS específico para Tendencias Temporales */
-.tendencias-temporales .chart-content {
-  height: auto !important;
-  min-height: auto !important;
-  padding: 20px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
 }
 
 /* Ocultar áreas vacías */
@@ -945,38 +762,33 @@
   display: none;
 }
 
-/* Ajustar altura automáticamente */
-.chart-container:has(.chart-content:empty) {
-  display: none;
-}
-
 /* Estilos para tarjetas de predicciones */
-.prediccion-programa-card, .prediccion-temporal-card {
+.prediccion-materia-card, .prediccion-programa-card, .prediccion-temporal-card {
   background: #f0f8ff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 15px;
-  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   transition: all 0.3s ease;
 }
 
-.prediccion-programa-card:hover, .prediccion-temporal-card:hover {
+.prediccion-programa-card, .prediccion-temporal-card {
+  margin-bottom: 10px;
+}
+
+.prediccion-temporal-card {
+  padding: 20px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prediccion-materia-card:hover, .prediccion-programa-card:hover, .prediccion-temporal-card:hover {
   background: #e6f3ff;
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
-}
-
-.no-data {
-  text-align: center;
-  color: #6c757d;
-  font-style: italic;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #dee2e6;
 }
 
 /* ===== ESTILOS PARA NAVEGACIÓN ENTRE PESTAÑAS ===== */
@@ -1044,16 +856,6 @@
   color: var(--color-primario);
 }
 
-/* ===== MEJORAS PARA GRÁFICAS ===== */
-
-.chart-content {
-  position: relative;
-  min-height: 200px;
-  background: white;
-  border-radius: 8px;
-  padding: 10px;
-}
-
 canvas {
   max-width: 100%;
   height: auto;
@@ -1090,16 +892,8 @@ canvas {
   color: white !important;
 }
 
-::ng-deep .success-snackbar .mat-simple-snackbar-action {
-  color: white !important;
-}
-
 ::ng-deep .error-snackbar {
   background-color: #dc3545 !important;
-  color: white !important;
-}
-
-::ng-deep .error-snackbar .mat-simple-snackbar-action {
   color: white !important;
 }
 
@@ -1110,24 +904,6 @@ canvas {
   gap: 10px;
 }
 
-.tendencia-card {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  transition: all 0.3s ease;
-}
-
-.tendencia-card:hover {
-  background: #e9ecef;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
 /* Para las tarjetas de predicciones */
 .predicciones-materias, .predicciones-programas {
   display: flex;
@@ -1136,46 +912,10 @@ canvas {
   width: 100%;
 }
 
-.prediccion-materia-card, .prediccion-programa-card {
-  background: #f0f8ff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  transition: all 0.3s ease;
-}
-
-.prediccion-materia-card:hover, .prediccion-programa-card:hover {
-  background: #e6f3ff;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
 /* Predicciones Temporales */
 .predicciones-temporales {
   padding: 20px;
   min-height: auto;
-}
-
-.prediccion-temporal-card {
-  background: #f0f8ff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  transition: all 0.3s ease;
-}
-
-.prediccion-temporal-card:hover {
-  background: #e6f3ff;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
 }
 
 .prediccion-temporal-card .mes-pico {
@@ -1203,31 +943,9 @@ canvas {
   color: #6c757d;
 }
 
-/* Recomendaciones Grid */
-
-/* Banner Informativo de Recomendaciones */
-
-/* Call to Action de Recomendaciones */
-
-/* Hide empty sections */
-
-/* No Data Styling */
-.no-data {
-  text-align: center;
-  color: #6c757d;
-  font-style: italic;
-  padding: 40px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #dee2e6;
-  width: 100%;
-}
-
-/* ===== TENDENCIAS TEMPORALES SECTION ===== */
-
 /* Responsive para datos */
 @media (max-width: 768px) {
-  .materia-item, .programa-item, .tendencia-item {
+  .materia-item, .programa-item {
     padding: 8px;
     margin: 3px 0;
   }
@@ -1238,10 +956,6 @@ canvas {
 }
 
 /* ===== ESTILOS PARA PESTAÑA DE RECOMENDACIONES ===== */
-
-.recomendaciones-section {
-  margin-bottom: 2rem;
-}
 
 /* Resumen de Recomendaciones */
 .resumen-recomendaciones-card {
@@ -1597,8 +1311,6 @@ canvas {
   left: -1rem;
   top: -0.1rem;
 }
-
-/* Checklist de Acciones */
 
 /* Detalles Expandidos */
 .rec-card .detalles-expandidos {

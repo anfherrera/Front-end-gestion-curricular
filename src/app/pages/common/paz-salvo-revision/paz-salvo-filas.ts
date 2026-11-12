@@ -1,5 +1,6 @@
 import { DocumentoHomologacion, Solicitud, SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
 import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { DocumentoPazSalvoRespuesta } from '../../../core/services/paz-salvo.service';
 
 /** Funciones compartidas por las bandejas de paz y salvo (funcionario, coordinador y secretaría). */
 
@@ -45,13 +46,13 @@ export function aFilaHistorial(sol: SolicitudHomologacionDTORespuesta): Solicitu
 }
 
 /** Documentos tal como los devuelven los endpoints obtenerOficios / obtenerDocumentos. */
-export function aDocumentos(documentos: any[]): DocumentoHomologacion[] {
+export function aDocumentos(documentos: DocumentoPazSalvoRespuesta[]): DocumentoHomologacion[] {
   return documentos.map(doc => ({
     id_documento: doc.id,
     nombre: doc.nombreArchivo || doc.nombre,
-    ruta_documento: doc.ruta,
-    fecha_documento: doc.fecha,
-    esValido: doc.esValido,
+    ruta_documento: doc.ruta ?? '',
+    fecha_documento: doc.fecha ?? '',
+    esValido: doc.esValido ?? false,
     comentario: doc.comentario
   }));
 }

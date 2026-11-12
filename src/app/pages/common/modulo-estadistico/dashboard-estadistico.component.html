@@ -224,52 +224,6 @@
       </div>
     </div>
 
-    <!-- Resumen de Procesos -->
-    <div *ngIf="estadisticasProceso" class="process-details-section">
-      <h2 class="section-title">
-        <mat-icon>list_alt</mat-icon>
-        Detalles del Proceso: {{ formatearNombreProceso(estadisticasProceso.nombreProceso) }}
-      </h2>
-      
-      <mat-card class="process-details-card">
-        <mat-card-content>
-          <div class="process-stats-grid">
-            <div class="process-stat">
-              <mat-icon class="stat-icon approved">check_circle</mat-icon>
-              <div class="stat-content">
-                <h3>{{ estadisticasProceso.aprobadas }}</h3>
-                <p>Aprobadas ({{ estadisticasProceso.porcentajeAprobacion }}%)</p>
-              </div>
-            </div>
-            
-            <div class="process-stat">
-              <mat-icon class="stat-icon rejected">cancel</mat-icon>
-              <div class="stat-content">
-                <h3>{{ estadisticasProceso.rechazadas }}</h3>
-                <p>Rechazadas</p>
-              </div>
-            </div>
-            
-            <div class="process-stat">
-              <mat-icon class="stat-icon pending">pending</mat-icon>
-              <div class="stat-content">
-                <h3>{{ estadisticasProceso.enProceso }}</h3>
-                <p>En Proceso</p>
-              </div>
-            </div>
-            
-            <div class="process-stat">
-              <mat-icon class="stat-icon total">description</mat-icon>
-              <div class="stat-content">
-                <h3>{{ estadisticasProceso.totalSolicitudes }}</h3>
-                <p>Total Solicitudes</p>
-              </div>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-
     <!-- Información de Actualización -->
     <div *ngIf="resumenCompleto" class="update-info">
       <mat-icon>update</mat-icon>

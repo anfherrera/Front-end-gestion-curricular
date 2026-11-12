@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -6,8 +6,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CursoEstadosService, EstadoCurso } from '../../../core/services/curso-estados.service';
-import { CursosIntersemestralesService, CursoOfertadoVerano } from '../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano } from '../../../core/models/cursos-intersemestrales.model';
 import { Subject, takeUntil } from 'rxjs';
+import { estadoCurso } from '../../../core/utils/cursos-verano.utils';
 
 @Component({
   selector: 'app-estado-filters',
@@ -336,7 +338,7 @@ import { Subject, takeUntil } from 'rxjs';
     }
   `]
 })
-export class EstadoFiltersComponent implements OnInit {
+export class EstadoFiltersComponent implements OnInit, OnDestroy {
   @Input() cursos: CursoOfertadoVerano[] = [];
   @Output() cursosFiltradosChange = new EventEmitter<CursoOfertadoVerano[]>();
   @Output() estadoSeleccionadoChange = new EventEmitter<string>();
@@ -384,7 +386,7 @@ export class EstadoFiltersComponent implements OnInit {
             this.cursosFiltradosChange.emit(this.cursosFiltrados);
             this.cargandoFiltro = false;
           },
-          error: (error) => {
+          error: () => {
             // Fallback: filtrar localmente
             // Usando filtro local como fallback
             this.aplicarFiltro();
@@ -406,7 +408,7 @@ export class EstadoFiltersComponent implements OnInit {
       this.cursosFiltrados = [...this.cursos];
     } else {
       this.cursosFiltrados = this.cursos.filter(curso => {
-        const estadoActual = this.obtenerEstadoActualCurso(curso);
+        const estadoActual = estadoCurso(curso);
         return estadoActual === this.estadoSeleccionado;
       });
     }
@@ -420,7 +422,7 @@ export class EstadoFiltersComponent implements OnInit {
     // Calcular conteos locales primero usando la nueva estructura de estados
     this.estadosDisponibles.forEach(estado => {
       this.conteosEstados[estado.value] = this.cursos.filter(curso => {
-        const estadoActual = this.obtenerEstadoActualCurso(curso);
+        const estadoActual = estadoCurso(curso);
         return estadoActual === estado.value;
       }).length;
     });
@@ -436,30 +438,10 @@ export class EstadoFiltersComponent implements OnInit {
             this.conteosEstados[estado.value] = cursos.length;
             // Conteo actualizado para estado
           },
-          error: (error) => {
+          error: () => {
             // Mantener el conteo local
           }
         });
     });
   }
-
-  // Método para obtener el estado actual del curso (similar al del servicio)
-  private obtenerEstadoActualCurso(curso: any): string {
-    // Si hay estado_actual, usarlo
-    if (curso.estado_actual) {
-      return curso.estado_actual;
-    }
-    
-    // Si hay estados y hay al menos uno, tomar el más reciente
-    if (curso.estados && curso.estados.length > 0) {
-      // Ordenar por fecha_registro_estado descendente y tomar el más reciente
-      const estadoMasReciente = curso.estados
-        .sort((a: any, b: any) => new Date(b.fecha_registro_estado).getTime() - new Date(a.fecha_registro_estado).getTime())[0];
-      return estadoMasReciente.estado_actual;
-    }
-    
-    // Fallback al campo estado legacy
-    return curso.estado || 'Borrador';
-  }
-
 }

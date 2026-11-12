@@ -8,40 +8,11 @@
 
   <div *ngIf="cargando" class="cargando">Cargando cursos...</div>
 
-  <!-- Mensaje informativo para inscripción desde seguimiento -->
-  <div *ngIf="mostrarMensajeInscripcion && !cargando" class="mensaje-inscripcion">
-    <mat-card class="mensaje-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon class="mensaje-icon">assignment_turned_in</mat-icon>
-          Proceder a Inscripción
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Has sido redirigido desde el seguimiento para proceder con la inscripción al curso:</p>
-        <div class="curso-info">
-          <strong>{{ cursoNombreDestino }}</strong>
-          <span class="curso-id">(ID: {{ cursoIdDestino }})</span>
-        </div>
-        <p class="instrucciones">
-          Busca el curso en la lista de abajo y haz clic en el botón de inscripción cuando esté disponible.
-        </p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-button color="primary" (click)="cerrarMensajeInscripcion()">
-          <mat-icon>close</mat-icon>
-          Entendido
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-
   <app-curso-list
     *ngIf="!cargando"
     [cursos]="cursos"
     [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','periodo','fecha_inicio','fecha_fin','duracion','estado']"
     [acciones]="[]"
-    (accionClick)="onAccionCurso($event)"
   ></app-curso-list>
 
   <div *ngIf="!cargando && cursos.length === 0" class="sin-datos">

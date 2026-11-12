@@ -1,4 +1,5 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, DestroyRef, OnInit, Output, EventEmitter, Input, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MATERIAL_IMPORTS } from '../material.imports';
 import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
@@ -84,6 +85,8 @@ export class PeriodoSelectorComponent implements OnInit {
   periodoSeleccionado = '';
   cargando = false;
 
+  private destroyRef = inject(DestroyRef);
+
   constructor(private cursosService: CursosIntersemestralesService) {}
 
   ngOnInit(): void {
@@ -95,13 +98,13 @@ export class PeriodoSelectorComponent implements OnInit {
     
     if (this.soloRegistrados) {
       // Cargar solo períodos que tienen cursos registrados
-      this.cursosService.getPeriodosRegistrados().subscribe({
+      this.cursosService.getPeriodosRegistrados().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (periodos) => {
           this.periodos = periodos;
           this.cargando = false;
           // Períodos registrados cargados
         },
-        error: (error) => {
+        error: () => {
           this.cargando = false;
           // Fallback: cargar todos los períodos
           this.cargarTodosLosPeriodos();
@@ -114,15 +117,10 @@ export class PeriodoSelectorComponent implements OnInit {
   }
 
   private cargarTodosLosPeriodos(): void {
-    this.cursosService.getPeriodosAcademicos().subscribe({
-      next: (periodos) => {
-        this.periodos = periodos;
-        this.cargando = false;
-        // Todos los períodos cargados
-      },
-      error: (error) => {
-        this.cargando = false;
-      }
+    // El servicio devuelve [] si falla
+    this.cursosService.getPeriodosAcademicos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodos => {
+      this.periodos = periodos;
+      this.cargando = false;
     });
   }
 
@@ -137,6 +135,3 @@ export class PeriodoSelectorComponent implements OnInit {
     return formatearPeriodo(periodo);
   }
 }
-
-
-

@@ -7,9 +7,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { CursosIntersemestralesService, CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/models/cursos-intersemestrales.model';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
+import { estadoCurso, nombreDocente } from '../../../../core/utils/cursos-verano.utils';
 
 @Component({
   selector: 'app-dashboard-cursos-intersemestrales',
@@ -29,7 +32,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
   cursosActivos: CursoOfertadoVerano[] = [];
   
   // Estadísticas del backend
@@ -83,7 +86,7 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
           
           this.cargandoEstadisticas = false;
         },
-        error: (error: any) => {
+        error: () => {
           // Mantener valores por defecto (ya inicializados en 0)
           this.cargandoEstadisticas = false;
         }
@@ -180,67 +183,17 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
 
   // Obtener nombre del docente de forma segura
   obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    if (!curso.objDocente) {
-      return 'Sin asignar';
-    }
-    
-    // Priorizar nombre_docente (estructura del backend)
-    if ((curso.objDocente as any).nombre_docente) {
-      return (curso.objDocente as any).nombre_docente;
-    }
-    
-    // Fallback a nombre y apellido (estructura legacy)
-    if (curso.objDocente.nombre && curso.objDocente.apellido) {
-      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
-    }
-    
-    if (curso.objDocente.nombre) {
-      return curso.objDocente.nombre;
-    }
-    
-    return 'Sin nombre';
+    return nombreDocente(curso);
   }
 
-  // Obtener nombre de la materia de forma segura
   obtenerNombreMateria(curso: CursoOfertadoVerano): string {
     if (!curso.objMateria) {
       return 'Sin materia';
     }
-    
-    // Intentar diferentes estructuras posibles
-    const materia = curso.objMateria as any;
-    
-    if (materia.nombre) {
-      return materia.nombre;
-    }
-    
-    if (materia.nombre_materia) {
-      return materia.nombre_materia;
-    }
-    
-    if (materia.codigo) {
-      return materia.codigo;
-    }
-    
-    return 'Sin nombre';
+    return curso.objMateria.nombre || curso.objMateria.codigo || 'Sin nombre';
   }
 
-  // Obtener estado actual del curso (método público para el template)
   obtenerEstadoActual(curso: CursoOfertadoVerano): string {
-    // Si hay estado_actual, usarlo
-    if (curso.estado_actual) {
-      return curso.estado_actual;
-    }
-    
-    // Si hay estados y hay al menos uno, tomar el más reciente
-    if (curso.estados && curso.estados.length > 0) {
-      // Ordenar por fecha_registro_estado descendente y tomar el más reciente
-      const estadoMasReciente = curso.estados
-        .sort((a, b) => new Date(b.fecha_registro_estado).getTime() - new Date(a.fecha_registro_estado).getTime())[0];
-      return estadoMasReciente.estado_actual;
-    }
-    
-    // Fallback al campo estado legacy
-    return curso.estado || 'Borrador';
+    return estadoCurso(curso);
   }
 }

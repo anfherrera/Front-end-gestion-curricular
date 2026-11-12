@@ -495,11 +495,11 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
               tasaResolucion: tasaResolucion,
               estadoMasComun: analisis?.estadoMasComun || this.obtenerEstadoMasComun(estados)
             }
-          } as any;
+          };
           
           this.loading = false;
         },
-        error: (err) => {
+        error: () => {
           this.error = true;
           this.loading = false;
         }
@@ -508,11 +508,11 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
     this.subscription.add(sub);
   }
 
-  private obtenerEstadoMasComun(estados: any): string {
+  private obtenerEstadoMasComun(estados: Record<string, EstadoInfo>): string {
     let maxCantidad = 0;
     let estadoMasComun = 'N/A';
     
-    Object.entries(estados).forEach(([nombre, info]: [string, any]) => {
+    Object.entries(estados).forEach(([nombre, info]) => {
       const cantidad = info?.cantidad || 0;
       if (cantidad > maxCantidad) {
         maxCantidad = cantidad;

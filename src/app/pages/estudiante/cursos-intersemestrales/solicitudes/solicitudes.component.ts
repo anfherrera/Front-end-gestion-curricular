@@ -1,18 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import {
-  CursosIntersemestralesService, Materia,
-  CondicionSolicitudVerano,
-  CreateSolicitudCursoNuevoDTO
-} from '../../../../core/services/cursos-intersemestrales.service';
-import { AuthService } from '../../../../core/services/auth.service';
-import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
+import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
+import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
+import { Materia, CondicionSolicitudVerano, CreateSolicitudCursoNuevoDTO } from '../../../../core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
+import { AuthService } from '../../../../core/services/auth.service';
 import { NotificacionesService } from '../../../../core/services/notificaciones.service';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { CONDICIONES_POR_DEFECTO, nombreCondicion } from '../../../../core/utils/cursos-verano.utils';
 
+const ERRORES_ENVIO: Record<number, string> = {
+  400: 'Datos inválidos. Verifica la información e inténtalo de nuevo.',
+  401: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
+  403: 'No tienes permisos para realizar esta acción.',
+  500: 'Error del servidor. Por favor, verifica los datos e inténtalo de nuevo.'
+};
+
+/** Solicitud de apertura de un curso intersemestral nuevo. */
 @Component({
   selector: 'app-solicitudes',
   standalone: true,
@@ -24,11 +33,12 @@ export class SolicitudesComponent implements OnInit {
   solicitudForm!: FormGroup;
   loading = false;
   solicitudEnviada = false;
-  
-  // Datos del backend
+
   materiasDisponibles: Materia[] = [];
   condiciones: CondicionSolicitudVerano[] = [];
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
+
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private fb: FormBuilder,
@@ -36,116 +46,76 @@ export class SolicitudesComponent implements OnInit {
     private authService: AuthService,
     private snackBar: MatSnackBar,
     private notificacionesService: NotificacionesService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.initForm();
-    this.loadUserData();
-    this.loadCursosDisponibles();
-    this.loadCondiciones();
-  }
-
-  private initForm(): void {
     this.solicitudForm = this.fb.group({
       nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
       codigo: ['', [Validators.required, Validators.minLength(5)]],
       curso: ['', [Validators.required]],
       condicion: ['', [Validators.required]]
     });
+    this.loadUserData();
+
+    this.cursosService.getMateriasDisponibles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (materias) => this.materiasDisponibles = materias,
+        error: () => this.snackBar.open('Error al cargar las materias disponibles', 'Cerrar', snackbarConfig(['error-snackbar']))
+      });
+
+    this.cursosService.getCondicionesSolicitud()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (condiciones) => this.condiciones = condiciones,
+        error: () => this.condiciones = CONDICIONES_POR_DEFECTO
+      });
   }
 
   private loadUserData(): void {
     this.usuario = this.authService.getUsuario();
     if (this.usuario) {
-      // Usar los campos correctos del usuario
-      const nombreCompleto = this.usuario.nombre_completo || `${this.usuario.nombre || ''} ${this.usuario.apellido || ''}`.trim();
-      const codigo = this.usuario.codigo || this.usuario.codigo_estudiante || '';
       this.solicitudForm.patchValue({
-        nombreCompleto: nombreCompleto,
-        codigo: codigo
+        nombreCompleto: this.usuario.nombre_completo,
+        codigo: this.usuario.codigo || ''
       });
-    } else {
     }
-  }
-
-  private loadCursosDisponibles(): void {
-    this.cursosService.getMateriasDisponibles().subscribe({
-      next: (materias) => {
-        this.materiasDisponibles = materias;
-      },
-      error: (error) => {
-        this.snackBar.open('Error al cargar las materias disponibles', 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
-    });
-  }
-
-  private loadCondiciones(): void {
-    this.cursosService.getCondicionesSolicitud().subscribe({
-      next: (condiciones) => {
-        this.condiciones = condiciones;
-      },
-      error: (error) => {
-        // Si falla, usar las condiciones por defecto
-        this.condiciones = [
-          CondicionSolicitudVerano.Primera_Vez,
-          CondicionSolicitudVerano.Habilitacion,
-          CondicionSolicitudVerano.Repeticion
-        ];
-      }
-    });
   }
 
   onSubmitSolicitud(): void {
-    if (this.solicitudForm.valid && this.usuario) {
-      this.loading = true;
-      
-      const formData = this.solicitudForm.value;
-      const payload: CreateSolicitudCursoNuevoDTO = {
-        nombreCompleto: formData.nombreCompleto,
-        codigo: formData.codigo,
-        curso: formData.curso,
-        condicion: formData.condicion,
-        idUsuario: this.usuario.id_usuario
-      };
+    const usuario = this.usuario;
+    if (!this.solicitudForm.valid || !usuario) {
+      this.solicitudForm.markAllAsTouched();
+      return;
+    }
 
+    this.loading = true;
+    const formData = this.solicitudForm.value;
+    const payload: CreateSolicitudCursoNuevoDTO = {
+      nombreCompleto: formData.nombreCompleto,
+      codigo: formData.codigo,
+      curso: formData.curso,
+      condicion: formData.condicion,
+      idUsuario: usuario.id_usuario
+    };
 
-      this.cursosService.crearSolicitudCursoNuevo(payload).subscribe({
-        next: (response) => {
+    this.cursosService.crearSolicitudCursoNuevo(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
           this.loading = false;
           this.solicitudEnviada = true;
           this.solicitudForm.reset();
-          this.loadUserData(); // Recargar datos del usuario
-          
-          // Actualizar notificaciones después de crear la solicitud
-          if (this.usuario?.id_usuario) {
-            this.notificacionesService.actualizarNotificaciones(this.usuario.id_usuario);
-          }
-          
+          this.loadUserData();
+          this.notificacionesService.actualizarNotificaciones(usuario.id_usuario);
           this.snackBar.open('¡Solicitud enviada exitosamente!', 'Cerrar', snackbarConfig(['success-snackbar']));
         },
-        error: (error) => {
+        error: (error: HttpErrorResponse) => {
           this.loading = false;
-          
-          // Manejar diferentes tipos de errores
-          let mensaje = 'Error al enviar la solicitud. Inténtalo de nuevo.';
-          
-          if (error.status === 500) {
-            mensaje = 'Error del servidor. Por favor, verifica los datos e inténtalo de nuevo.';
-          } else if (error.status === 400) {
-            mensaje = 'Datos inválidos. Verifica la información e inténtalo de nuevo.';
-          } else if (error.status === 401) {
-            mensaje = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-          } else if (error.status === 403) {
-            mensaje = 'No tienes permisos para realizar esta acción.';
-          }
-          
+          const mensaje = ERRORES_ENVIO[error.status] ?? 'Error al enviar la solicitud. Inténtalo de nuevo.';
           this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       });
-    } else {
-      this.markFormGroupTouched();
-    }
   }
 
   onClearForm(): void {
@@ -155,23 +125,7 @@ export class SolicitudesComponent implements OnInit {
     this.snackBar.open('Formulario limpiado', 'Cerrar', snackbarConfig());
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.solicitudForm.controls).forEach(key => {
-      const control = this.solicitudForm.get(key);
-      control?.markAsTouched();
-    });
-  }
-
   getCondicionDisplayName(condicion: CondicionSolicitudVerano): string {
-    switch (condicion) {
-      case CondicionSolicitudVerano.Primera_Vez:
-        return 'Primera Vez';
-      case CondicionSolicitudVerano.Habilitacion:
-        return 'Habilitación';
-      case CondicionSolicitudVerano.Repeticion:
-        return 'Repetición';
-      default:
-        return condicion;
-    }
+    return nombreCondicion(condicion);
   }
 }

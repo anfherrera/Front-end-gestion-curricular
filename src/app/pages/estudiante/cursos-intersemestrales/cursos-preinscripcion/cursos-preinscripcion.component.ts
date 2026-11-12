@@ -1,15 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
 import { PreinscripcionDialogComponent } from '../../../../shared/components/preinscripcion-dialog/preinscripcion-dialog.component';
-import { CursosIntersemestralesService, CursoOfertadoVerano } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano } from '../../../../core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { estadoCurso, nombreDocente } from '../../../../core/utils/cursos-verano.utils';
 
+/** Cursos en preinscripción: el estudiante elige uno y se preinscribe desde un diálogo. */
 @Component({
   selector: 'app-cursos-preinscripcion',
   standalone: true,
@@ -19,9 +24,12 @@ import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 })
 export class CursosPreinscripcionComponent implements OnInit {
   cursos: Curso[] = [];
-  cursosOriginales: CursoOfertadoVerano[] = []; // Para mantener datos originales del backend
+  /** Respuesta del backend, para abrir el diálogo con el curso completo. */
+  cursosOriginales: CursoOfertadoVerano[] = [];
   cargando = true;
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
+
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private cursosService: CursosIntersemestralesService,
@@ -35,108 +43,61 @@ export class CursosPreinscripcionComponent implements OnInit {
     this.loadCursos();
   }
 
-  loadCursos() {
+  loadCursos(): void {
     this.cargando = true;
-    
-    // Cargar cursos reales del backend (solo cursos en preinscripción)
-    this.cursosService.getCursosPorEstado('Preinscripción').subscribe({
-      next: (cursosReales) => {
-        // Usar todos los cursos reales (sin filtros)
-        this.cursosOriginales = cursosReales;
-        
-        // Mapear a formato para la tabla
-        this.cursos = this.cursosOriginales.map(curso => ({
-          codigo: curso.codigo_curso || curso.id_curso?.toString() || 'N/A',
-          nombre: curso.nombre_curso || 'Sin nombre',
-          docente: this.obtenerNombreDocente(curso),
-          cupos: curso.cupo_disponible || curso.cupo_estimado || 0,
-          creditos: curso.objMateria?.creditos || 0,
-          espacio: curso.espacio_asignado || 'Por asignar',
-          estado: curso.estado || 'Borrador'
-        }));
-        
-        this.cargando = false;
-      },
-      error: (err) => {
-        // Fallback a cursos legacy
-        this.loadCursosLegacy();
-      }
-    });
+    this.cursosService.getCursosPorEstado('Preinscripción')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (cursos) => {
+          this.cursosOriginales = cursos;
+          this.cursos = cursos.map(curso => ({
+            codigo: curso.codigo_curso || curso.id_curso?.toString() || 'N/A',
+            nombre: curso.nombre_curso || 'Sin nombre',
+            docente: nombreDocente(curso),
+            cupos: curso.cupo_disponible || curso.cupo_estimado || 0,
+            creditos: curso.objMateria?.creditos || 0,
+            espacio: curso.espacio_asignado || 'Por asignar',
+            estado: estadoCurso(curso) as Curso['estado']
+          }));
+          this.cargando = false;
+        },
+        error: () => {
+          this.cargando = false;
+        }
+      });
   }
 
-  private loadCursosLegacy() {
-    this.cursosService.getCursosPreinscripcion().subscribe({
-      next: (data: any) => {
-        this.cursos = data;
-        this.cargando = false;
-      },
-      error: (err: any) => {
-        this.cargando = false;
-      }
-    });
-  }
-
-
-
-  onAccionCurso(event: { accion: string; curso: Curso }) {
+  onAccionCurso(event: { accion: string; curso: Curso }): void {
     if (!this.usuario?.id_usuario) {
       this.snackBar.open('Error: Usuario no autenticado', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
 
-    // Buscar el curso original en la lista de cursos originales del backend
-    const cursoOriginal = this.cursosOriginales.find(c => 
-      c.codigo_curso === event.curso.codigo || 
-      c.id_curso?.toString() === event.curso.codigo
+    const cursoOriginal = this.cursosOriginales.find(c =>
+      c.codigo_curso === event.curso.codigo || c.id_curso?.toString() === event.curso.codigo
     );
-    
     if (!cursoOriginal) {
       this.snackBar.open('Error: Curso no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
       return;
     }
-
 
     if (event.accion === 'preinscribir') {
       this.abrirDialogoPreinscripcion(cursoOriginal);
     }
   }
 
-  private abrirDialogoPreinscripcion(curso: CursoOfertadoVerano) {
-    const dialogRef = this.dialog.open(PreinscripcionDialogComponent, {
+  private abrirDialogoPreinscripcion(curso: CursoOfertadoVerano): void {
+    this.dialog.open(PreinscripcionDialogComponent, {
       width: '600px',
       maxWidth: '90vw',
-      data: { curso: curso },
+      data: { curso },
       disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        // La preinscripción fue exitosa, recargar cursos
-        this.loadCursos();
-      }
-    });
-  }
-
-  // Obtener nombre del docente de forma segura
-  private obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    if (!curso.objDocente) {
-      return 'Sin asignar';
-    }
-    
-    // Priorizar nombre_docente (estructura del backend)
-    if ((curso.objDocente as any).nombre_docente) {
-      return (curso.objDocente as any).nombre_docente;
-    }
-    
-    // Fallback a nombre y apellido (estructura legacy)
-    if (curso.objDocente.nombre && curso.objDocente.apellido) {
-      return `${curso.objDocente.nombre} ${curso.objDocente.apellido}`;
-    }
-    
-    if (curso.objDocente.nombre) {
-      return curso.objDocente.nombre;
-    }
-    
-    return 'Sin nombre';
+    }).afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result === true) {
+          this.loadCursos();
+        }
+      });
   }
 }

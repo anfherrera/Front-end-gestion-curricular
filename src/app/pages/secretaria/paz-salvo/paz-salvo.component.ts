@@ -1,4 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
+import { switchMap, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -59,6 +62,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
   archivoPDF: File | null = null;
   subiendoPDF = false;
   enviandoPDF = false;
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     public pazSalvoService: PazSalvoService,
@@ -74,7 +78,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
 
   /** Pendientes de secretaría: el backend ya las filtra (APROBADA_COORDINADOR). */
   cargarSolicitudesPendientes(): void {
-    this.pazSalvoService.getSecretariaRequests().subscribe({
+    this.pazSalvoService.getSecretariaRequests().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (sols) => {
         this.pendientesOriginales = sols;
         this.solicitudes = sols.map(aFilaTabla);
@@ -84,7 +88,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   cargarSolicitudesProcesadas(): void {
-    this.pazSalvoService.getSolicitudesProcesadasSecretaria(this.periodoAcademicoFiltro || undefined).subscribe({
+    this.pazSalvoService.getSolicitudesProcesadasSecretaria(this.periodoAcademicoFiltro || undefined)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (sols) => this.solicitudesProcesadas = sols.map(aFilaHistorial),
       error: () => this.snackbar.error('Error al cargar historial de solicitudes procesadas')
     });
@@ -107,8 +112,8 @@ export class SecretariaPazSalvoComponent implements OnInit {
   }
 
   cargarDocumentos(idSolicitud: number): void {
-    this.pazSalvoService.obtenerOficios(idSolicitud).subscribe({
-      next: (documentos: any[]) => {
+    this.pazSalvoService.obtenerOficios(idSolicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (documentos) => {
         if (this.selectedSolicitud?.id_solicitud !== idSolicitud) return;
         this.selectedSolicitud.documentos = aDocumentos(documentos);
         this.cdr.detectChanges();
@@ -134,7 +139,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
     const nombreEstudiante = this.selectedSolicitud.objUsuario.nombre_completo;
 
     this.loading = true;
-    this.documentGeneratorService.generarDocumento(request).subscribe({
+    this.documentGeneratorService.generarDocumento(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob) => {
         const nombreArchivo = `${request.tipoDocumento}_${nombreEstudiante}_${new Date().getFullYear()}.docx`;
         this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
@@ -173,27 +178,30 @@ export class SecretariaPazSalvoComponent implements OnInit {
     const id = this.selectedSolicitud.id_solicitud;
 
     this.subiendoPDF = true;
-    this.pazSalvoService.subirOficioPdf(id, this.archivoPDF).subscribe({
-      next: () => {
+    let pdfSubido = false;
+    this.pazSalvoService.subirOficioPdf(id, this.archivoPDF).pipe(
+      tap(() => {
+        pdfSubido = true;
         this.subiendoPDF = false;
         this.enviandoPDF = true;
-
-        this.pazSalvoService.approveDefinitively(id).subscribe({
-          next: () => {
-            this.snackbar.success('Documento enviado al estudiante y solicitud aprobada exitosamente');
-            this.limpiarEstado();
-            this.selectedSolicitud = undefined;
-            this.bandeja?.resetSelection();
-            this.cargarSolicitudesPendientes();
-            this.cargarSolicitudesProcesadas();
-          },
-          error: () => {
-            this.enviandoPDF = false;
-            this.snackbar.error('PDF subido pero error al enviar al estudiante');
-          }
-        });
+      }),
+      switchMap(() => this.pazSalvoService.approveDefinitively(id)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        this.snackbar.success('Documento enviado al estudiante y solicitud aprobada exitosamente');
+        this.limpiarEstado();
+        this.selectedSolicitud = undefined;
+        this.bandeja?.resetSelection();
+        this.cargarSolicitudesPendientes();
+        this.cargarSolicitudesProcesadas();
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
+        if (pdfSubido) {
+          this.enviandoPDF = false;
+          this.snackbar.error('PDF subido pero error al enviar al estudiante');
+          return;
+        }
         this.subiendoPDF = false;
         this.snackbar.error('Error al subir archivo PDF: ' + (err.error?.message || err.message || 'Error desconocido'));
       }

@@ -29,6 +29,22 @@ const PROGRAMAS_CON_TRABAJO_DE_GRADO = ['sistemas', 'electronica', 'automatica',
 /** Documentos obligatorios de los demás programas que no aplican a Telemática (nombres normalizados). */
 const DOCUMENTOS_NO_TELEMATICA = ['pmfo4for27', 'hojadevida', 'autorizacion', 'comprobante', 'trabajodegrado'];
 
+/** Lo que usa esta pantalla del usuario guardado en sesión (localStorage 'usuario'). */
+interface UsuarioSesion {
+  id_usuario: number;
+  nombre_completo?: string;
+  nombre?: string;
+  objPrograma?: { nombre_programa?: string; nombre?: string };
+}
+
+/** Datos con que se crea la solicitud. */
+interface DatosSolicitudPazSalvo {
+  nombre_solicitud: string;
+  fecha_registro_solicitud: string;
+  titulo_trabajo_grado?: string;
+  director_trabajo_grado?: string;
+}
+
 @Component({
   selector: 'app-paz-salvo',
   standalone: true,
@@ -60,7 +76,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
   archivosActuales: Archivo[] = [];
   resetFileUpload = false;
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
   solicitudForm: FormGroup;
   requiereTrabajoGrado = false;
   maxDate: Date = new Date();
@@ -254,28 +270,29 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
             return;
           }
           this.solicitudesCompletas = data;
-          this.solicitudes = data.map((sol: any) => this.aSolicitud(sol));
+          this.solicitudes = data.map(sol => this.aSolicitud(sol));
         },
         error: () => this.mostrarMensaje('No se pudieron cargar tus solicitudes', 'error')
       });
   }
 
   /** Convierte la respuesta del backend en la fila de la tabla de seguimiento. */
-  private aSolicitud(sol: any): Solicitud {
-    const estados = sol.estado_actual || sol.estadosSolicitud || [];
+  private aSolicitud(sol: SolicitudHomologacionDTORespuesta): Solicitud {
+    const estados = sol.estadosSolicitud || [];
     const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
     return {
       id: sol.id_solicitud,
       nombre: sol.nombre_solicitud,
       fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-      estado: ultimoEstado?.estado_actual || 'Pendiente',
-      comentarios: ultimoEstado?.comentarios || ''
+      estado: (ultimoEstado?.estado_actual || 'Pendiente') as SolicitudStatusEnum,
+      comentarios: ultimoEstado?.comentario || ''
     };
   }
 
   onSolicitudEnviada() {
-    if (!this.usuario || !this.fileUploadComponent) {
+    const usuario = this.usuario;
+    if (!usuario || !this.fileUploadComponent) {
       return;
     }
 
@@ -284,7 +301,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (archivosSubidos) => {
-          this.pazSalvoService.crearSolicitudConFormulario(this.usuario.id_usuario, archivosSubidos, this.datosSolicitud())
+          this.pazSalvoService.crearSolicitudConFormulario(usuario.id_usuario, archivosSubidos, this.datosSolicitud())
             .pipe(takeUntil(this.destroy$))
             .subscribe({
               next: () => this.despuesDeEnviar(),
@@ -307,20 +324,15 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   }
 
   /** Datos del formulario en el formato que espera el backend. */
-  private datosSolicitud(): any {
+  private datosSolicitud(): DatosSolicitudPazSalvo {
     const formValue = this.solicitudForm.value;
     const fecha = formValue.fecha_terminacion_plan instanceof Date
       ? formValue.fecha_terminacion_plan
       : new Date(formValue.fecha_terminacion_plan);
 
-    const nombreCompleto = (this.usuario?.nombre_completo
-      || this.usuario?.nombre
-      || this.usuario?.nombreCompleto
-      || `${this.usuario?.primer_nombre || ''} ${this.usuario?.segundo_nombre || ''} ${this.usuario?.primer_apellido || ''} ${this.usuario?.segundo_apellido || ''}`
-    ).trim() || 'Usuario';
+    const nombreCompleto = (this.usuario?.nombre_completo || this.usuario?.nombre || '').trim() || 'Usuario';
 
-    const datos: any = {
-      idUsuario: this.usuario.id_usuario,
+    const datos: DatosSolicitudPazSalvo = {
       nombre_solicitud: `Solicitud Paz y Salvo - ${nombreCompleto}`,
       fecha_registro_solicitud: fecha.toISOString().split('T')[0]
     };
@@ -373,7 +385,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).subscribe({
+    this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).pipe(takeUntil(this.destroy$)).subscribe({
       next: (comentarios) => {
         const documentos = comentarios.documentosConComentarios?.map(doc => ({
           id: doc.id,
@@ -400,9 +412,9 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
    * Content-Disposition o, si no viene, del primer oficio de la solicitud.
    */
   descargarOficio(idSolicitud: number, nombreArchivo: string): void {
-    this.pazSalvoService.descargarOficioPorSolicitud(idSolicitud).subscribe({
-      next: (blob: Blob) => {
-        descargarBlob(blob, (blob as any).filename || nombreArchivo || `oficio_${idSolicitud}.pdf`);
+    this.pazSalvoService.descargarOficioPorSolicitud(idSolicitud).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (blob) => {
+        descargarBlob(blob, blob.filename || nombreArchivo || `oficio_${idSolicitud}.pdf`);
         this.mostrarMensaje('Oficio descargado exitosamente', 'success');
       },
       error: (err) => {

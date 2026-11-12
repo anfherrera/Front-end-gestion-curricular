@@ -397,8 +397,8 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
 
     it('PZS-031: Debe actualizar estado de documentos', (done) => {
       const documentos = [
-        { id: 1, estado: 'APROBADO' },
-        { id: 2, estado: 'RECHAZADO' }
+        { id_documento: 1, esValido: true },
+        { id_documento: 2, esValido: false }
       ];
       
       service.actualizarEstadoDocumentos(1, documentos).subscribe(() => done());

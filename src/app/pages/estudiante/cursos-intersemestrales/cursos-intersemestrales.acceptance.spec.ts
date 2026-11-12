@@ -234,18 +234,22 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   describe('HU-08: Seguimiento de Solicitudes', () => {
     it('ACEP-CI-008: DADO que tengo preinscripciones, CUANDO consulto seguimiento, ENTONCES veo cada curso con su estado', fakeAsync(() => {
       // GIVEN: Estudiante con una preinscripción pendiente
-      const mockPreinscripciones: any[] = [{
-        id_solicitud: 1,
-        nombre_solicitud: 'Preinscripción Cálculo',
+      const mockPreinscripciones = [{
+        id: 1,
+        fecha: '2025-06-01',
         estado: 'PENDIENTE',
-        objCursoOfertadoVerano: { nombre_curso: 'Cálculo Diferencial', estado: 'Preinscripción' }
+        tipo: 'Preinscripcion',
+        estudianteId: 1,
+        cursoId: 5,
+        cursoNombre: 'Cálculo Diferencial',
+        accionesDisponibles: ['esperando_respuesta']
       }];
 
       // WHEN: Consulto mis preinscripciones
       service.getPreinscripcionesUsuario(1).subscribe((preinscripciones) => {
         // THEN: Veo el curso y su estado
         expect(preinscripciones.length).toBe(1);
-        expect(preinscripciones[0].objCursoOfertadoVerano.nombre_curso).toBe('Cálculo Diferencial');
+        expect(preinscripciones[0].cursoNombre).toBe('Cálculo Diferencial');
         expect(preinscripciones[0].estado).toBe('PENDIENTE');
       });
       tick();

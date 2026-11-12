@@ -1,81 +1,4 @@
-/* Dashboard Container */
-.dashboard-container {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  background-color: #f5f7fa;
-  font-family: 'Roboto', sans-serif;
-  min-height: 100vh;
-}
-
-/* Header */
-.dashboard-header {
-  margin-bottom: 30px;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: var(--sombra-2);
-  border-left: 4px solid var(--color-primario);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.header-text {
-  text-align: center;
-  flex: 1;
-}
-
-.header-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.header-actions button {
-  min-width: 140px;
-}
-
-.dashboard-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--color-primario);
-  margin-bottom: 10px;
-}
-
-.dashboard-subtitle {
-  color: #6c757d;
-  font-size: 1.1rem;
-  margin: 0;
-  font-weight: 500;
-}
-
 /* Filtros */
-.filters-card {
-  margin-bottom: 30px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: var(--sombra-2);
-  background-color: #fff;
-}
-
-.filters-card mat-card-header {
-  background: var(--color-primario);
-  color: white;
-  margin: -16px -16px 16px -16px;
-  padding: 16px;
-  border-radius: 8px 8px 0 0;
-}
 
 .filters-card mat-card-title {
   color: white;
@@ -128,17 +51,6 @@
   margin-bottom: 20px;
 }
 
-/* Secciones */
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 20px;
-}
-
 /* KPIs Section */
 .kpis-section {
   margin-bottom: 40px;
@@ -172,11 +84,6 @@
   box-shadow: var(--sombra-2);
   background-color: #fff;
   border-left: 4px solid;
-}
-
-.kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--sombra-2);
 }
 
 .kpi-primary {
@@ -243,7 +150,6 @@
   background: #17a2b8;
   color: white;
 }
-
 
 .kpi-secondary .kpi-icon {
   background: #6f42c1;
@@ -360,78 +266,6 @@
   color: #666;
 }
 
-/* Process Details */
-.process-details-section {
-  margin-bottom: 40px;
-}
-
-.process-details-card {
-  margin-bottom: 20px;
-}
-
-.process-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.process-stat {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 20px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  transition: background-color 0.2s ease;
-}
-
-.process-stat:hover {
-  background: #e9ecef;
-}
-
-.stat-icon {
-  font-size: 2.5rem;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.stat-icon.approved {
-  color: #249337;
-  background: #e8f5e8;
-}
-
-.stat-icon.rejected {
-  color: var(--color-error);
-  background: #ffebee;
-}
-
-.stat-icon.pending {
-  color: #ff9800;
-  background: #fff3e0;
-}
-
-.stat-icon.total {
-  color: #1976d2;
-  background: #e3f2fd;
-}
-
-.stat-content h3 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 0;
-  color: #333;
-}
-
-.stat-content p {
-  font-size: 0.9rem;
-  color: #666;
-  margin: 5px 0 0 0;
-}
-
 /* Update Info */
 .update-info {
   display: flex;
@@ -467,10 +301,6 @@
     grid-template-columns: 1fr;
   }
   
-  .process-stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .filter-actions {
     flex-direction: column;
     align-items: stretch;
@@ -479,12 +309,6 @@
 
 @media (max-width: 480px) {
   .kpi-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 10px;
-  }
-  
-  .process-stat {
     flex-direction: column;
     text-align: center;
     gap: 10px;
@@ -532,48 +356,3 @@
   width: 100%;
 }
 
-/* ===== ESTILOS PARA PREDICCIONES CON REGRESIÓN LINEAL ===== */
-
-/* Tarjeta de Predicción Global */
-
-.confiabilidad-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-weight: 600;
-}
-
-.confiabilidad-badge.alta {
-  background: #d1ecf1;
-  color: #0c5460;
-  border: 2px solid #17a2b8;
-}
-
-.confiabilidad-badge.media {
-  background: #fff3cd;
-  color: #856404;
-  border: 2px solid #ffc107;
-}
-
-.confiabilidad-badge mat-icon {
-  font-size: 1.3rem;
-  width: 1.3rem;
-  height: 1.3rem;
-}
-
-/* Grid de Predicciones (Procesos y Programas) */
-
-/* Responsive Design para Predicciones */
-
-/* Snackbar Styles */
-.success-snackbar {
-  background-color: #249337 !important;
-  color: white !important;
-}
-
-.error-snackbar {
-  background-color: var(--color-error) !important;
-  color: white !important;
-}

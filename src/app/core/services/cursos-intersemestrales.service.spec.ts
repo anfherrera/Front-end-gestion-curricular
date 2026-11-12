@@ -1,12 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import {
-  CursosIntersemestralesService,
-  CursoOfertadoVerano,
-  CreatePreinscripcionDTO,
-  CreateInscripcionDTO,
-  SolicitudCursoVerano
-} from './cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
+import { CursoOfertadoVerano, CreatePreinscripcionDTO, CreateInscripcionDTO, SolicitudCursoVerano } from '../models/cursos-intersemestrales.model';
 import { AuthService } from './auth.service';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { environment } from '../../../environments/environment';
@@ -31,15 +26,14 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     nombre_curso: overrides.nombre_curso ?? 'Matemáticas Avanzadas',
     codigo_curso: overrides.codigo_curso ?? 'MAT-401',
     descripcion: overrides.descripcion ?? 'Curso de prueba',
-    fecha_inicio: overrides.fecha_inicio ?? new Date('2025-06-01'),
-    fecha_fin: overrides.fecha_fin ?? new Date('2025-06-30'),
+    fecha_inicio: overrides.fecha_inicio ?? '2025-06-01',
+    fecha_fin: overrides.fecha_fin ?? '2025-06-30',
     periodoAcademico: overrides.periodoAcademico ?? '2025-1',
     cupo_maximo: overrides.cupo_maximo ?? 30,
     cupo_disponible: overrides.cupo_disponible ?? 25,
     cupo_estimado: overrides.cupo_estimado ?? 25,
     espacio_asignado: overrides.espacio_asignado ?? 'Aula 101',
     estado: overrides.estado ?? 'Publicado',
-    estado_actual: overrides.estado_actual,
     objMateria: overrides.objMateria ?? {
       id_materia: 1,
       codigo: 'MAT-401',
@@ -47,14 +41,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       creditos: 3,
       descripcion: 'Matemáticas'
     },
-    objDocente: overrides.objDocente ?? {
-      id_usuario: 10,
-      nombre: 'Juan',
-      apellido: 'Pérez',
-      email: 'juan.perez@unicauca.edu.co',
-      telefono: '1234567',
-      objRol: { id_rol: 3, nombre_rol: 'DOCENTE' }
-    }
+    objDocente: overrides.objDocente ?? { id_docente: 10, codigo_docente: 'DOC-10', nombre_docente: 'Juan Pérez' }
   });
 
   beforeEach(() => {
@@ -98,12 +85,12 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe usar el endpoint específico al pedir estado Preinscripción', (done) => {
-      const respuesta = [buildCurso({ estado_actual: 'Preinscripción' })];
+      const respuesta = [buildCurso({ estado: 'Preinscripción' })];
 
       service.getCursosPorEstado('Preinscripción').subscribe((cursos) => {
         expect(cursos.length).toBe(1);
         expect(cursos[0].id_curso).toBe(respuesta[0].id_curso);
-        expect(cursos[0].estado_actual).toBe(respuesta[0].estado_actual);
+        expect(cursos[0].estado).toBe(respuesta[0].estado);
         // El servicio normaliza y agrega periodo y grupo
         done();
       });
@@ -114,8 +101,8 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe filtrar cursos por estado cuando requiere obtener todos', (done) => {
-      const publicado = buildCurso({ id_curso: 1, estado_actual: 'Publicado' });
-      const borrador = buildCurso({ id_curso: 2, estado_actual: 'Borrador' });
+      const publicado = buildCurso({ id_curso: 1, estado: 'Publicado' });
+      const borrador = buildCurso({ id_curso: 2, estado: 'Borrador' });
 
       service.getCursosPorEstado('Publicado').subscribe((cursos) => {
         expect(cursos.length).toBe(1);
@@ -251,19 +238,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(mockBlob);
-    });
-
-    it('debe obtener estadísticas del curso', (done) => {
-      const respuesta = { total: 5 };
-
-      service.obtenerEstadisticasCurso(1).subscribe((data) => {
-        expect(data.total).toBe(5);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${BASE_URL}/inscripciones/curso/1/estadisticas`);
-      expect(req.request.method).toBe('GET');
-      req.flush(respuesta);
     });
   });
 
@@ -468,7 +442,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener solicitudes para visualizar', (done) => {
-      const solicitudes = [{ id: 1 }];
+      const solicitudes = [{ nombreCompleto: 'Ana', codigo: '1', curso: 'Cálculo', condicion: 'Primera_Vez', estado: 'ENVIADA', fecha: '2025-06-01' }];
 
       service.getSolicitudesVisualizar().subscribe((result) => {
         expect(result).toEqual(solicitudes);
@@ -481,7 +455,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener materias para filtro', (done) => {
-      const materias = [{ id: 1, nombre: 'Matemáticas' }];
+      const materias = [{ id: 1, nombre: 'Matemáticas', codigo: 'MAT-101' }];
 
       service.getMateriasFiltro().subscribe((result) => {
         expect(result).toEqual(materias);
@@ -491,6 +465,70 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       const req = httpMock.expectOne(`${BASE_URL}/materias-filtro`);
       expect(req.request.method).toBe('GET');
       req.flush(materias);
+    });
+  });
+
+  describe('Filtros y exportaciones', () => {
+    it('no envía el período cuando es "todos"', () => {
+      service.getTodosLosCursosParaFuncionarios('todos').subscribe();
+      const req = httpMock.expectOne(r => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      expect(req.request.params.has('periodoAcademico')).toBeFalse();
+      req.flush([]);
+    });
+
+    it('envía el período y el programa cuando se indican', () => {
+      service.getTodosLosCursosParaFuncionarios(' 2025-2 ', 3).subscribe();
+      const req = httpMock.expectOne(r => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      expect(req.request.params.get('periodoAcademico')).toBe('2025-2');
+      expect(req.request.params.get('idPrograma')).toBe('3');
+      req.flush([]);
+    });
+
+    it('pide todos los períodos a los cursos disponibles con "todos"', () => {
+      service.getCursosDisponibles('todos').subscribe();
+      const req = httpMock.expectOne(r => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+      expect(req.request.params.get('todosLosPeriodos')).toBe('true');
+      expect(req.request.params.has('periodoAcademico')).toBeFalse();
+      req.flush([]);
+    });
+
+    it('rellena periodoAcademico y grupo de los cursos', (done) => {
+      service.getCursosDisponibles().subscribe(cursos => {
+        expect(cursos[0].periodoAcademico).toBe('2025-2');
+        expect(cursos[0].grupo).toBe('A');
+        done();
+      });
+      httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES)
+        .flush([{ ...buildCurso(), periodo: '2025-2', periodoAcademico: undefined, grupo: undefined }]);
+    });
+
+    it('usa el nombre de Content-Disposition al exportar cursos', (done) => {
+      service.exportarCursosPDF('2025-1').subscribe(archivo => {
+        expect(archivo.filename).toBe('cursos 2025-1.pdf');
+        done();
+      });
+      httpMock.expectOne(r => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_CURSOS_PDF)
+        .flush(new Blob(['pdf']), { headers: { 'Content-Disposition': 'attachment; filename="cursos 2025-1.pdf"' } });
+    });
+
+    it('genera un nombre si el servidor no lo envía', (done) => {
+      service.exportarEstudiantesPDF(8).subscribe(archivo => {
+        expect(archivo.filename).toMatch(/^estudiantes_curso_8_\d{4}-\d{2}-\d{2}\.pdf$/);
+        done();
+      });
+      httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_ESTUDIANTES_PDF(8)).flush(new Blob(['pdf']));
+    });
+
+    it('falla si el Excel de solicitudes no es un Excel', (done) => {
+      service.exportarSolicitudesExcel().subscribe({
+        next: () => fail('debía fallar'),
+        error: (e: Error) => {
+          expect(e.message).toContain('no devolvió un Excel');
+          done();
+        }
+      });
+      httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL)
+        .flush(new Blob(['x']), { headers: { 'Content-Type': 'text/html' } });
     });
   });
 
@@ -509,11 +547,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener todos los docentes', (done) => {
-      const docentes = [{ id_usuario: 1, nombre_usuario: 'Juan Pérez' }];
+      const docentes = [{ id_docente: 1, codigo_docente: 'DOC-1', nombre_docente: 'Juan Pérez' }];
 
       service.getTodosLosDocentes().subscribe((result) => {
-        expect(result).toBeTruthy();
-        expect(Array.isArray(result)).toBe(true);
+        expect(result).toEqual(docentes);
         done();
       });
 
