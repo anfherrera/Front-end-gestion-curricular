@@ -14,82 +14,6 @@
   padding: 20px 24px;
 }
 
-.tabla-solicitudes {
-  width: 100%;
-  margin-top: 16px;
-}
-
-.tabla-solicitudes th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-  color: #495057;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.tabla-solicitudes td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.tabla-solicitudes tr:hover {
-  background-color: #f8f9fa;
-}
-
-.estado-badge {
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.estado-aprobada {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.estado-pendiente {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-.sin-solicitudes {
-  text-align: center;
-  padding: 40px 20px;
-  color: #6c757d;
-}
-
-.sin-solicitudes mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 16px;
-  color: #dee2e6;
-}
-
-.solicitud-info {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  border-left: 4px solid #667eea;
-}
-
-.solicitud-info p {
-  margin: 8px 0;
-  color: #495057;
-}
-
-.solicitud-info strong {
-  color: #343a40;
-  font-weight: 600;
-}
-
-.oficio-container {
-  margin-top: 20px;
-}
-
 /* Estilos para la sección de subida de PDF */
 .pdf-upload-section {
   padding: 20px;
@@ -157,66 +81,10 @@
   margin-bottom: 16px;
 }
 
-/* Estilo para botón de subir PDF */
-.upload-btn {
-  min-width: 180px;
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: var(--sombra-1);
-}
-
-.upload-btn:hover:not(:disabled) {
-  background-color: var(--color-primario-light) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
-
-.upload-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--sombra-1);
-}
-
 /* Estilo para botón de enviar al estudiante */
-.send-btn {
-  min-width: 180px;
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: var(--sombra-1);
-}
-
-.send-btn:hover:not(:disabled) {
-  background-color: var(--color-primario-light) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
-
-.send-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--sombra-1);
-}
 
 .progress-bar {
   margin-top: 16px;
-}
-
-/* Estados de los botones */
-.upload-btn:disabled, .send-btn:disabled {
-  background-color: #d3d3d3 !important;
-  color: #888888 !important;
-  cursor: not-allowed;
-  opacity: 0.5;
-  transform: none;
-  box-shadow: none;
 }
 
 /* Responsive para la sección de PDF */
@@ -232,67 +100,6 @@
     gap: 12px;
   }
 
-  .upload-btn, .send-btn {
-    width: 100%;
-  }
-}
-
-/* Estilos para el botón "Tengo un documento" */
-.document-actions {
-  margin-top: 24px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 2px dashed #dee2e6;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.document-actions:hover {
-  border-color: var(--color-primario);
-  background: #e3f2fd;
-}
-
-.enable-document-btn {
-  min-width: 200px;
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none;
-  border-radius: 8px;
-  padding: 16px 32px;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: var(--sombra-2);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 auto 16px auto;
-}
-
-.enable-document-btn:hover {
-  background-color: var(--color-primario-light) !important;
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
-.enable-document-btn:active {
-  transform: translateY(0);
-  box-shadow: var(--sombra-2);
-}
-
-.enable-document-btn mat-icon {
-  font-size: 1.2rem;
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.action-description {
-  color: #6c757d;
-  font-size: 0.9rem;
-  margin: 0;
-  font-style: italic;
-  line-height: 1.4;
 }
 
 /* Responsive */
@@ -302,26 +109,4 @@
     gap: 16px;
   }
 
-  .card-title {
-    font-size: 1.1rem;
-    padding: 16px 20px;
-  }
-
-  .tabla-solicitudes {
-    font-size: 0.875rem;
-  }
-
-  .tabla-solicitudes td {
-    padding: 8px 12px;
-  }
-
-  .enable-document-btn {
-    min-width: 160px;
-    padding: 12px 24px;
-    font-size: 0.9rem;
-  }
-
-  .document-actions {
-    padding: 16px;
-  }
 }

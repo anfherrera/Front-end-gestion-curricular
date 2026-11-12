@@ -179,7 +179,7 @@ mat-table {
   background-color: #001066 !important;
 }
 
-.loading-container, .error-container, .empty-container {
+.loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -192,21 +192,7 @@ mat-table {
   margin-bottom: 16px;
 }
 
-.error-container mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: var(--color-error);
-}
-
-.empty-container mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: #9e9e9e;
-}
-
-.loading-container p, .error-container p, .empty-container p {
+.loading-container p {
   color: #666;
   font-size: 18px;
   font-weight: 500;

@@ -1,0 +1,24 @@
+/* ===== Piezas visuales compartidas entre vistas ===== */
+
+/* Miga de pan (Sistema de Diseño TIC, pág. 49): Open Sans Light 14px */
+.breadcrumb {
+  font-family: var(--breadcrumb-font);
+  font-size: var(--breadcrumb-size);
+  font-weight: var(--breadcrumb-weight);
+  color: var(--breadcrumb-color);
+}
+
+.breadcrumb a {
+  color: var(--breadcrumb-color);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--color-primario);
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: var(--breadcrumb-color);
+}

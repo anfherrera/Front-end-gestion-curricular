@@ -142,41 +142,6 @@
   border-left: 2px solid #ddd;
 }
 
-/* Estilos para el badge de estado */
-.estado-badge {
-  display: inline-block;
-  background-color: var(--color-primario);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: none;
-  outline: none;
-  box-shadow: none;
-}
-
-/* Estilos para el botón de acción */
-.action-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  min-height: 40px;
-}
-
-.action-button:hover {
-  background-color: rgba(0, 19, 140, 0.1);
-}
-
 /* Contenedor de acciones */
 .acciones-container {
   display: flex;
@@ -484,8 +449,6 @@
   color: var(--color-primario-light) !important;
 }
 
-/* ===== ESTILOS PARA LOS BOTONES DE ACCIÓN ===== */
-
 /* Contenedor de acciones mejorado */
 .acciones-container {
   display: flex;
@@ -493,72 +456,6 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-}
-
-/* Botón Ver - Azul sólido consistente con la aplicación */
-
-/* Botón Aprobar - Verde consistente */
-
-/* Botón Rechazar - Rojo consistente */
-.btn-rechazar {
-  background-color: var(--color-error) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 6px !important;
-  padding: 8px 16px !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  min-width: 90px !important;
-  height: 36px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: var(--sombra-1) !important;
-  text-transform: none !important;
-  line-height: 1 !important;
-}
-
-.btn-rechazar span,
-.btn-rechazar .mat-button-wrapper,
-.btn-rechazar .mdc-button__label {
-  color: white !important;
-}
-
-.btn-rechazar:hover:not(:disabled) {
-  background-color: #e53935 !important;
-  transform: translateY(-1px) !important;
-  box-shadow: var(--sombra-1) !important;
-}
-
-.btn-rechazar:active:not(:disabled) {
-  transform: translateY(0) !important;
-  box-shadow: var(--sombra-1) !important;
-}
-
-.btn-rechazar:disabled {
-  background-color: #d3d3d3 !important;
-  color: #888888 !important;
-  cursor: not-allowed !important;
-  opacity: 0.6 !important;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-.btn-rechazar .mat-icon {
-  color: white !important;
-  font-size: 16px !important;
-  width: 16px !important;
-  height: 16px !important;
-  margin: 0 !important;
-}
-
-.btn-rechazar mat-icon,
-.btn-rechazar .mat-icon,
-.btn-rechazar .material-icons {
-  color: white !important;
-  --mdc-icon-color: white !important;
 }
 
 /* Forzar estilos en todos los botones de la tabla usando ::ng-deep */
@@ -670,33 +567,14 @@
     gap: 4px;
     align-items: stretch;
   }
-  
-  .btn-rechazar {
-    min-width: 70px !important;
-    height: 32px !important;
-    font-size: 11px !important;
-    padding: 6px 12px !important;
-    width: 100% !important;
-  }
-  
-  .btn-rechazar .mat-icon {
-    font-size: 14px !important;
-    width: 14px !important;
-    height: 14px !important;
-  }
+
 }
 
 @media (max-width: 480px) {
   .acciones-container {
     gap: 2px;
   }
-  
-  .btn-rechazar {
-    min-width: 60px !important;
-    height: 30px !important;
-    font-size: 10px !important;
-    padding: 4px 8px !important;
-  }
+
 }
 
 /* ===== ESTILOS PARA EL MODAL DE RECHAZO ===== */
@@ -710,16 +588,6 @@
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1050;
   display: none;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1rem;
-  border-bottom: 1px solid #dee2e6;
-  border-top-left-radius: calc(0.3rem - 1px);
-  border-top-right-radius: calc(0.3rem - 1px);
 }
 
 .close {
@@ -739,50 +607,6 @@
 .close:hover {
   opacity: 0.75;
 }
-
-.modal-body {
-  position: relative;
-  flex: 1 1 auto;
-  padding: 1rem;
-}
-
-.modal-footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0.75rem;
-  border-top: 1px solid #dee2e6;
-  border-bottom-right-radius: calc(0.3rem - 1px);
-  border-bottom-left-radius: calc(0.3rem - 1px);
-  gap: 8px;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-/* Forzar iconos blancos en botones del modal */
-
-/* Forzar texto blanco en botones del modal */
-
-/* Forzar texto blanco en todos los elementos de los botones del modal */
-
-/* ESTILO UNIVERSAL: Forzar todos los iconos blancos en todos los botones */
-.btn-rechazar *,
-button[mat-raised-button].btn-rechazar * {
-  color: white !important;
-}
-
-/* Forzar específicamente iconos en todos los botones */
-.btn-rechazar mat-icon,
-.btn-rechazar .mat-icon,
-.btn-rechazar .material-icons {
-  color: white !important;
-  --mdc-icon-color: white !important;
-}
-
-/* ===== ESTILOS PARA BOTONES DE ICONOS CIRCULARES ===== */
 
 /* Botones de iconos circulares - estilo consistente */
 .acciones-container button[mat-icon-button] {

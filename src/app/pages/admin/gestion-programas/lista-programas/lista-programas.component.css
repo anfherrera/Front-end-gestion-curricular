@@ -64,16 +64,6 @@
   }
 }
 
-.search-bar {
-  display: flex;
-  gap: 16px;
-  align-items: flex-end;
-}
-
-.search-bar mat-form-field {
-  flex: 1;
-}
-
 ::ng-deep .search-section mat-icon[matprefix] {
   color: var(--color-primario);
   margin-right: 8px;
@@ -157,7 +147,7 @@ mat-table {
   background-color: #001066 !important;
 }
 
-.loading-container, .error-container, .empty-container {
+.loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -170,21 +160,7 @@ mat-table {
   margin-bottom: 16px;
 }
 
-.error-container mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: var(--color-error);
-}
-
-.empty-container mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: #9e9e9e;
-}
-
-.loading-container p, .error-container p, .empty-container p {
+.loading-container p {
   color: #666;
   font-size: 18px;
   font-weight: 500;
@@ -227,16 +203,7 @@ button[color="primary"] mat-icon {
     font-size: 22px;
   }
 
-  .search-bar {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .search-bar button {
-    width: 100%;
-  }
-
-  .table-container {
+.table-container {
     padding: 16px;
     overflow-x: auto;
   }

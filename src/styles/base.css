@@ -1,0 +1,22 @@
+/* ===== Base: documento y tipografía institucional (Sistema de Diseño TIC) ===== */
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Open Sans', 'Titillium Web', sans-serif;
+  background-color: var(--color-fondo);
+}
+
+/* Títulos con Titillium Web */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Titillium Web', 'Open Sans', sans-serif;
+}
+
+/* Cuerpos de texto con Open Sans */
+p, span, a, li, td, th, label, input, textarea, select, button {
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* Utilidades de maquetación usadas en muchas vistas */
+.full-width { width: 100%; }

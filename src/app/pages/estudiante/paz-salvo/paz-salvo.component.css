@@ -46,33 +46,6 @@ mat-card-content {
   margin-top: 10px;
 }
 
-/* Lista de documentos requeridos */
-.required-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.required-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  font-size: 14px;
-  color: #444;
-  transition: background 0.2s ease;
-}
-
-.required-list li:last-child {
-  margin-bottom: 0;
-}
-
-.required-list li:hover {
-  background-color: rgba(0, 0, 102, 0.05);
-}
-
 /* Botón Enviar Solicitud - Color primario TIC */
 .btn-enviar {
   background-color: var(--color-primario, #000066) !important;
@@ -165,21 +138,6 @@ mat-card-content {
   background-color: var(--primario-90, #E0E0FF);
   border-radius: 8px;
   border-left: 4px solid var(--color-primario, #000066);
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 20px 0;
-  color: var(--color-primario, #000066);
-  font-size: 1.1rem;
-  font-weight: 600;
-  font-family: 'Titillium Web', sans-serif;
-}
-
-.section-title mat-icon {
-  color: var(--color-primario, #000066);
 }
 
 .info-telematica {

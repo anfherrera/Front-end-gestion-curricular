@@ -8,83 +8,8 @@
   font-family: 'Roboto', sans-serif;
 }
 
-/* Estilos para las pestañas */
-
-/* Tarjetas (mat-card con clase card-section) */
-.secretaria-container mat-card.card-section {
-  border-radius: 12px;
-  background-color: #fff;
-  overflow: hidden;
-  box-shadow: var(--sombra-2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.secretaria-container mat-card.card-section:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
-/* Título de las tarjetas */
-.secretaria-container mat-card.card-section mat-card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  background-color: var(--color-primario); /* azul oscuro */
-  color: #fff;
-  padding: 14px 16px;
-  display: block;
-  border-bottom: 3px solid #001060;
-}
-
-/* Contenido de la tarjeta */
-.secretaria-container mat-card.card-section mat-card-content {
-  padding: 16px;
-}
-
-/* Información de la solicitud */
-
-/* Instrucciones */
-.instrucciones {
-  background-color: #e3f2fd;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border-left: 4px solid #2196f3;
-}
-
-.instrucciones h3 {
-  color: #1976d2;
-  margin-bottom: 12px;
-  font-size: 1.1rem;
-}
-
-.instrucciones p {
-  margin: 8px 0;
-  color: #333;
-}
-
-/* Sección de subida de archivos */
-.file-upload-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.file-info {
-  background-color: #f0f8ff;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #b3d9ff;
-}
-
-.file-info p {
-  margin: 4px 0;
-  color: #333;
-}
-
 /* Botones personalizados */
-.select-file-btn,
-.upload-btn,
-.send-btn {
+.select-file-btn {
   background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
@@ -95,17 +20,13 @@
   box-shadow: var(--sombra-1);
 }
 
-.select-file-btn:hover,
-.upload-btn:hover,
-.send-btn:hover {
+.select-file-btn:hover {
   background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: var(--sombra-1);
 }
 
-.select-file-btn:disabled,
-.upload-btn:disabled,
-.send-btn:disabled {
+.select-file-btn:disabled {
   background-color: #d3d3d3 !important;
   color: #888888 !important;
   cursor: not-allowed;
@@ -114,18 +35,8 @@
   box-shadow: none;
 }
 
-.send-btn {
-  background-color: var(--color-primario) !important;
-}
-
-.send-btn:hover:not(:disabled) {
-  background-color: var(--color-primario-light) !important;
-}
-
 /* Iconos en botones */
-.select-file-btn mat-icon,
-.upload-btn mat-icon,
-.send-btn mat-icon {
+.select-file-btn mat-icon {
   margin-right: 8px;
   vertical-align: middle;
 }
@@ -281,14 +192,7 @@
     gap: 12px;
   }
 
-  .upload-btn, .send-btn {
-    width: 100%;
-  }
 }
-
-/* Estilos para el botón "Tengo un documento" */
-
-/* Responsive para el botón */
 
 /* Estilo específico para botón "Enviar al Estudiante" (color="accent") */
 ::ng-deep .pdf-upload-section button[mat-raised-button][color="accent"]:not(:disabled) {
@@ -312,5 +216,3 @@
   transform: translateY(0) !important;
   box-shadow: var(--sombra-1) !important;
 }
-
-/* Filtro de período académico */

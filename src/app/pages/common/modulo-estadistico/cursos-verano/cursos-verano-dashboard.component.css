@@ -885,18 +885,6 @@ canvas {
   }
 }
 
-/* ===== ESTILOS PARA SNACKBARS ===== */
-
-::ng-deep .success-snackbar {
-  background-color: #28a745 !important;
-  color: white !important;
-}
-
-::ng-deep .error-snackbar {
-  background-color: #dc3545 !important;
-  color: white !important;
-}
-
 /* Tendencia Data */
 .tendencias-data {
   display: flex;

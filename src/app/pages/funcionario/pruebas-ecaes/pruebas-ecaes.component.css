@@ -8,15 +8,11 @@
   min-height: 100vh;
 }
 
-
-
 .fechas-form {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
-
-
 
 .periodo-academico-section {
   display: flex;
@@ -32,8 +28,6 @@
 .periodo-field .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
-
-
 
 .fechas-grid-container {
   display: grid;
@@ -103,8 +97,6 @@
   background-color: rgba(0, 19, 140, 0.04) !important;
 }
 
-
-
 .boton-publicacion {
   display: flex;
   justify-content: center;
@@ -145,10 +137,7 @@
   to { transform: rotate(360deg); }
 }
 
-
-
-.sin-solicitudes,
-.sin-documentacion {
+.sin-solicitudes {
   text-align: center;
   padding: 40px 20px;
   color: #666;
@@ -158,8 +147,7 @@
   margin: 20px 0;
 }
 
-.sin-solicitudes mat-icon,
-.sin-documentacion mat-icon {
+.sin-solicitudes mat-icon {
   font-size: 48px;
   width: 48px;
   height: 48px;
@@ -167,14 +155,11 @@
   margin-bottom: 16px;
 }
 
-.sin-solicitudes p,
-.sin-documentacion p {
+.sin-solicitudes p {
   font-size: 1.1rem;
   margin: 0;
   font-weight: 500;
 }
-
-
 
 @media (max-width: 1200px) {
   .fechas-grid-container {
@@ -218,8 +203,6 @@
   }
 }
 
-
-
 .fechas-grid-container {
   transition: box-shadow 0.3s ease;
 }
@@ -227,8 +210,6 @@
 .fechas-grid-container:hover {
   box-shadow: var(--sombra-2);
 }
-
-
 
 .botones-acciones {
   display: flex;
@@ -281,8 +262,6 @@
   box-shadow: none !important;
 }
 
-
-
 .mat-mdc-form-field {
   font-size: 14px;
 }
@@ -303,8 +282,6 @@
   background-color: var(--color-primario);
   color: white;
 }
-
-
 
 .info-card {
   box-shadow: var(--sombra-1);

@@ -278,11 +278,6 @@
 }
 
 /* Chips (mantener para estados) */
-.tipo-chip {
-  background-color: #e3f2fd;
-  color: #1976d2;
-  font-size: 0.85rem;
-}
 
 .estado-aprobada {
   background-color: #c8e6c9 !important;
@@ -349,7 +344,5 @@
   }
 
   .displayedColumns {
-    /* Ocultar algunas columnas en móvil */
-  }
+    }
 }
-

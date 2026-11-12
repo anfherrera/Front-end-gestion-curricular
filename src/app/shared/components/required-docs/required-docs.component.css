@@ -137,13 +137,7 @@
   color: var(--color-primario);
 }
 
-.icon-success,
-.icon-pending {
-  color: #333;
-}
-
-.required-list li.success,
-.required-list li.pending {
+.required-list li.success {
   color: #333;
   font-weight: normal;
 }
@@ -159,16 +153,6 @@
   font-weight: bold;
   font-size: 14px;
   margin-left: 4px;
-}
-
-.required-list li.optional {
-  color: #333 !important;
-  font-weight: normal;
-}
-
-.required-list li.optional.success {
-  color: #333 !important;
-  font-weight: normal;
 }
 
 .required-list li.obligatorio-exclusivo {

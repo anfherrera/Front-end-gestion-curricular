@@ -1,0 +1,103 @@
+/* ===== Angular Material con el Sistema de Diseño TIC ===== */
+
+/* Botón principal */
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--color-primario) !important;
+  color: white !important;
+  border-radius: 100px !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
+  box-shadow: var(--sombra-1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+  background-color: var(--color-primario-light) !important;
+  box-shadow: var(--sombra-1) !important;
+  transform: translateY(-1px) !important;
+}
+
+.mat-mdc-raised-button.mat-primary:disabled {
+  background-color: #C8C5D0 !important;
+  color: #46464F !important;
+}
+
+/* Botón secundario */
+.mat-mdc-outlined-button.mat-primary,
+.mat-mdc-stroked-button.mat-primary {
+  border: 1px solid var(--color-primario) !important;
+  color: var(--color-primario) !important;
+  border-radius: 100px !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+}
+
+/* Botón terciario (texto) */
+.mat-mdc-button.mat-primary {
+  color: var(--color-primario) !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+}
+
+.mat-mdc-outlined-button.mat-primary:hover,
+.mat-mdc-stroked-button.mat-primary:hover,
+.mat-mdc-button.mat-primary:hover {
+  background-color: rgba(80, 86, 172, 0.2) !important;
+}
+
+.mat-mdc-button {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* FAB */
+.mat-mdc-fab.mat-primary { background-color: var(--color-primario) !important; }
+.mat-mdc-fab.mat-primary:hover { background-color: var(--color-primario-light) !important; }
+
+/* Campos de formulario */
+.mat-mdc-form-field { font-size: 14px !important; }
+.mat-mdc-form-field .mat-mdc-text-field-wrapper { border-radius: 6px !important; }
+
+.mat-mdc-form-field-label,
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  font-family: 'Titillium Web', sans-serif !important;
+  color: var(--color-primario) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--color-primario) !important;
+}
+
+/* Tablas */
+.mat-mdc-table {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.mat-mdc-header-row { background-color: var(--primario-90) !important; }
+
+.mat-mdc-header-cell {
+  font-weight: 600 !important;
+  color: var(--color-primario) !important;
+  font-size: 14px !important;
+  font-family: 'Titillium Web', sans-serif !important;
+}
+
+/* Diálogos, chips y tooltips */
+.mat-mdc-dialog-container .mdc-dialog__surface { border-radius: 28px !important; }
+
+.mat-mdc-chip.mat-primary {
+  background-color: var(--primario-90) !important;
+  color: var(--color-primario) !important;
+}
+
+.mat-mdc-tooltip {
+  background-color: var(--color-primario-dark) !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 12px !important;
+  border-radius: 8px !important;
+}

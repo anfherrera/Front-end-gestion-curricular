@@ -183,8 +183,6 @@ mat-table {
   background-color: #d32f2f !important;
 }
 
-/* === BADGES PERSONALIZADOS === */
-
 /* Badge base styles */
 .badge-rol,
 .badge-estado {
@@ -205,8 +203,6 @@ mat-table {
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
-
-/* === BADGES DE ROL === */
 
 /* Administrador - Rojo */
 .badge-rol.rol-admin {
@@ -281,8 +277,6 @@ mat-table {
   box-shadow: var(--sombra-1);
 }
 
-/* === BADGES DE ESTADO === */
-
 /* Estado Activo - Verde brillante */
 .badge-estado.estado-activo {
   background: #66bb6a;
@@ -316,29 +310,6 @@ mat-table {
   box-shadow: var(--sombra-2);
 }
 
-/* === ESTILOS PARA NOTIFICACIONES (SNACKBAR) === */
-
-::ng-deep .snackbar-success {
-  background-color: #249337 !important;
-  color: white !important;
-}
-
-::ng-deep .snackbar-warning {
-  background-color: #ff9800 !important;
-  color: white !important;
-}
-
-::ng-deep .snackbar-error {
-  background-color: var(--color-error) !important;
-  color: white !important;
-}
-
-::ng-deep .snackbar-success .mat-mdc-button,
-::ng-deep .snackbar-warning .mat-mdc-button,
-::ng-deep .snackbar-error .mat-mdc-button {
-  color: white !important;
-}
-
 /* Estilo para la fila vacía */
 .no-data {
   text-align: center;
@@ -366,7 +337,7 @@ mat-table {
   font-weight: 500;
 }
 
-.loading-container, .error-container, .empty-container {
+.loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -379,21 +350,7 @@ mat-table {
   margin-bottom: 16px;
 }
 
-.error-container mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: var(--color-error);
-}
-
-.empty-container mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  color: #9e9e9e;
-}
-
-.loading-container p, .error-container p, .empty-container p {
+.loading-container p {
   color: #666;
   font-size: 18px;
   font-weight: 500;

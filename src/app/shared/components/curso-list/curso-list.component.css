@@ -24,21 +24,18 @@ table {
   overflow-x: auto;
   overflow-y: visible;
   width: 100%;
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-}
+  -webkit-overflow-scrolling: touch; }
 
 /* Asegurar que la tabla no se corte */
 .mat-elevation-z8 {
   display: table;
   width: 100%;
-  min-width: 1200px; /* Ancho mínimo para todas las columnas */
-}
+  min-width: 1200px; }
 
 /* Asegurar que las celdas muestren todo el contenido */
 .mat-mdc-table {
   width: 100%;
-  min-width: 1200px; /* Ancho mínimo para todas las columnas */
-}
+  min-width: 1200px; }
 
 .mat-mdc-header-cell,
 .mat-mdc-cell {
@@ -52,8 +49,7 @@ table {
 .mat-mdc-cell {
   white-space: normal;
   word-wrap: break-word;
-  max-width: 200px; /* Ancho máximo por celda */
-}
+  max-width: 200px; }
 
 /* Asegurar que el contenedor de la tabla tenga scroll horizontal */
 .tabla-container table {
@@ -65,23 +61,6 @@ table {
 span.disponible {
   color: green;
   font-weight: bold;
-}
-
-span.cerrado {
-  color: red;
-  font-weight: bold;
-}
-
-/* Estilos para badge de período */
-.periodo-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  font-size: 0.85em;
-  text-align: center;
-  min-width: 60px;
 }
 
 /* Estilos para badge de grupo */
@@ -170,8 +149,7 @@ button {
   }
   
   .mat-mdc-table {
-    min-width: 1200px; /* Mantener ancho mínimo para todas las columnas */
-  }
+    min-width: 1200px; }
   
   table {
     min-width: 1200px;

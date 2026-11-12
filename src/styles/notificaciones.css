@@ -1,0 +1,80 @@
+/* ===== Avisos (snackbars) del Sistema de Diseño TIC =====
+ * Arriba a la derecha, 5 s. Cada tipo solo define sus colores; la forma es común.
+ * Se aceptan las dos convenciones de nombre que usa el proyecto: snackbar-x y x-snackbar.
+ */
+
+.snackbar-success, .success-snackbar {
+  --aviso-fondo: var(--notif-exito-fondo);
+  --aviso-texto: var(--notif-exito-texto);
+  --aviso-borde: var(--notif-exito-borde);
+  --aviso-accion: var(--notif-exito-borde);
+}
+
+.snackbar-error, .error-snackbar {
+  --aviso-fondo: var(--notif-error-fondo);
+  --aviso-texto: var(--notif-error-texto);
+  --aviso-borde: var(--notif-error-borde);
+  --aviso-accion: var(--notif-error-borde);
+}
+
+/* Advertencia: mismo fondo que el error, con el naranja institucional */
+.snackbar-warning, .warning-snackbar {
+  --aviso-fondo: var(--notif-error-fondo);
+  --aviso-texto: var(--notif-error-texto);
+  --aviso-borde: var(--color-error);
+  --aviso-accion: var(--color-error);
+}
+
+.snackbar-info, .info-snackbar {
+  --aviso-fondo: var(--notif-info-fondo);
+  --aviso-texto: var(--notif-info-texto);
+  --aviso-borde: var(--notif-info-borde);
+  --aviso-accion: var(--notif-info-borde);
+}
+
+.snackbar-success, .success-snackbar,
+.snackbar-error, .error-snackbar,
+.snackbar-warning, .warning-snackbar,
+.snackbar-info, .info-snackbar {
+  background-color: var(--aviso-fondo) !important;
+  color: var(--aviso-texto) !important;
+  font-weight: 600 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
+  border-left: 4px solid var(--aviso-borde) !important;
+  border-radius: 4px !important;
+  box-shadow: var(--sombra-2) !important;
+  /* El contenedor MDC no debe pintar su propio fondo encima */
+  --mdc-snackbar-container-color: transparent !important;
+  --mdc-snackbar-supporting-text-color: inherit !important;
+}
+
+:is(.snackbar-success, .success-snackbar, .snackbar-error, .error-snackbar,
+    .snackbar-warning, .warning-snackbar, .snackbar-info, .info-snackbar)
+  :is(.mdc-snackbar__label, .mat-mdc-snack-bar-label) {
+  color: var(--aviso-texto) !important;
+  font-weight: 600 !important;
+}
+
+:is(.snackbar-success, .success-snackbar, .snackbar-error, .error-snackbar,
+    .snackbar-warning, .warning-snackbar, .snackbar-info, .info-snackbar)
+  .mat-mdc-button {
+  color: var(--aviso-accion) !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-snack-bar-container:is(.snackbar-success, .success-snackbar, .snackbar-error, .error-snackbar,
+    .snackbar-warning, .warning-snackbar, .snackbar-info, .info-snackbar) .mdc-snackbar__surface {
+  background-color: var(--aviso-fondo) !important;
+  border-left: 4px solid var(--aviso-borde) !important;
+}
+
+/* Aviso de cambio de período (fondo institucional) */
+.periodo-cambio-notification {
+  background: var(--color-primario) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  border-left: 4px solid #fff !important;
+}
+
+.mat-mdc-snack-bar-container { animation: slideInFromTop 0.3s ease-out !important; }

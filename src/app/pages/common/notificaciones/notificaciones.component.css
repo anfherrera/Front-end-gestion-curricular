@@ -287,25 +287,6 @@ mat-card-subtitle {
   color: var(--color-primario);
 }
 
-.accion-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-primario);
-  font-weight: 500;
-  font-size: 14px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.accion-section mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: var(--color-primario);
-}
-
 .actions-section mat-icon-button mat-icon {
   color: var(--color-primario) !important;
 }
@@ -394,6 +375,3 @@ mat-card-subtitle {
     align-self: flex-end;
   }
 }
-
-
-

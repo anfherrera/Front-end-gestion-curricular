@@ -34,11 +34,6 @@
   height: 32px;
 }
 
-.form-container {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
 mat-card {
   padding: 32px;
   border-radius: 16px;
@@ -98,8 +93,7 @@ mat-card {
 
 /* Efecto hover en iconos */
 ::ng-deep .form-container mat-form-field:hover mat-icon[matprefix] {
-  /* Sin animaciones para mejor rendimiento */
-}
+  }
 
 /* Hints más visibles */
 ::ng-deep .form-container mat-hint {

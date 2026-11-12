@@ -1,0 +1,127 @@
+/* ===== Animaciones globales =====
+ * Los componentes pueden definir sus propios @keyframes: Angular los aísla por componente.
+ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromTop {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ----- Clases reutilizables ----- */
+
+.animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
+.animate-slide-in-down { animation: slideInDown 0.5s ease-out; }
+.loading-spin { animation: spin 1s linear infinite; }
+
+.hover-lift,
+.hover-scale,
+.hover-glow,
+.btn-animated,
+.card-animated,
+.icon-bounce,
+.form-field-animated {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover { transform: translateY(-4px); box-shadow: var(--sombra-2); }
+.hover-scale:hover { transform: scale(1.05); }
+.hover-glow:hover { box-shadow: var(--sombra-2); }
+.icon-bounce:hover { transform: scale(1.2) rotate(5deg); }
+.form-field-animated:focus-within { transform: scale(1.02); }
+
+/* Brillo que cruza el botón al pasar el ratón */
+.btn-animated {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-animated::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-animated:hover::before { left: 100%; }
+
+.card-animated { transform-origin: center; }
+.card-animated:hover { transform: translateY(-2px) scale(1.02); box-shadow: var(--sombra-2); }
+
+.table-row-animated { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+.table-row-animated:hover { transform: translateX(4px); background-color: rgba(0, 0, 102, 0.05); }
+
+/* ----- Entrada de las piezas del layout ----- */
+
+.header-container { animation: slideInDown 0.6s ease-out; }
+.sidebar { animation: fadeInLeft 0.6s ease-out; }
+.main-content { animation: fadeInUp 0.8s ease-out; }
+.card-container { animation: fadeInUp 0.6s ease-out; }
+.mat-mdc-table { animation: fadeInUp 0.6s ease-out; }
+.mat-mdc-dialog-container { animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Transiciones solo en lo interactivo (antes había una en `*`, que animaba toda la página) */
+button,
+mat-icon,
+.mat-mdc-form-field {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover { transform: translateY(-1px); }
+.mat-mdc-form-field:focus-within { transform: scale(1.02); }
+
+@media (max-width: 768px) {
+  .animate-fade-in-up,
+  .animate-slide-in-down {
+    animation-duration: 0.3s;
+  }
+}
+
+/* Accesibilidad: sin movimiento para quien lo pide en el sistema */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

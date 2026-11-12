@@ -111,29 +111,6 @@
   width: 100%;
 }
 
-/* Campos opcionales */
-.optional-fields {
-  margin-top: 24px;
-}
-
-.optional-fields h4 {
-  color: #495057;
-  font-weight: 600;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.optional-fields h4::before {
-  content: "";
-  font-size: 1.2rem;
-}
-
-.optional-field {
-  margin-bottom: 16px;
-}
-
 /* Acciones del formulario */
 .form-actions {
   display: flex;
@@ -336,4 +313,3 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
 ::ng-deep .document-generator-container mat-form-field.mat-focused mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
   color: var(--color-primario-light) !important;
 }
-

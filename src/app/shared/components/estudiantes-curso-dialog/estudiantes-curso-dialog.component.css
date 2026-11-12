@@ -183,19 +183,6 @@
   border-bottom: none;
 }
 
-.estado-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  color: white !important;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  box-shadow: var(--sombra-1);
-  border: none;
-}
-
 .estado-texto {
   color: #212529;
   font-size: 14px;
@@ -360,4 +347,3 @@ mat-dialog-actions button[mat-raised-button][disabled] {
     font-size: 18px;
   }
 }
-

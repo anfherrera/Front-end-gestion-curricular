@@ -98,11 +98,6 @@
   margin-left: 10px;
 }
 
-.badge.urgente {
-  background: #ff6b6b;
-  animation: urgentPulse 1s infinite;
-}
-
 @keyframes urgentPulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }
