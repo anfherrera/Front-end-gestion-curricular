@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
-import { PeriodoSelectorComponent } from '../../../../shared/components/periodo-selector/periodo-selector.component';
+import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoOfertadoVerano } from '../../../../core/models/cursos-intersemestrales.model';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
@@ -13,7 +13,7 @@ import { estadoCurso, nombreDocente, periodoCurso } from '../../../../core/utils
 @Component({
   selector: 'app-cursos-ofertados',
   standalone: true,
-  imports: [CommonModule, CardContainerComponent, CursoListComponent, PeriodoSelectorComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, CardContainerComponent, CursoListComponent, PeriodoFiltroSelectorComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-ofertados.component.html',
   styleUrls: ['./cursos-ofertados.component.css']
 })

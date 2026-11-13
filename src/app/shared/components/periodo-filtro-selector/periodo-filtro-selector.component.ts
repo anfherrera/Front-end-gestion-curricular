@@ -1,13 +1,29 @@
-import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Subscription } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
+import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
 import { formatearPeriodo } from '../../../core/utils/periodo.utils';
 
+/** De dónde salen los períodos de la lista. */
+export type FuentePeriodos =
+  | 'recientes'   // PeriodosAcademicosService.getPeriodosRecientes()
+  | 'con-cursos'; // períodos con cursos intersemestrales registrados (si falla, todos los períodos)
+
+interface OpcionPeriodo {
+  valor: string;
+  texto: string;
+}
+
+/**
+ * Selector de período académico para filtrar listados.
+ * Emite 'todos', '' (período actual) o el valor del período ("2025-1").
+ */
 @Component({
   selector: 'app-periodo-filtro-selector',
   standalone: true,
@@ -22,8 +38,8 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
     <div class="periodo-filtro-container">
       <mat-form-field appearance="outline" class="periodo-selector">
         <mat-label>{{ label || 'Filtrar por período académico' }}</mat-label>
-        <mat-select 
-          [value]="periodoSeleccionado" 
+        <mat-select
+          [value]="periodoSeleccionado"
           (selectionChange)="onPeriodoChange($event.value)"
           [disabled]="cargando">
           <mat-option [value]="'todos'" *ngIf="mostrarTodos">
@@ -32,13 +48,13 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
           <mat-option [value]="''" *ngIf="incluirActual">
             <span class="option-text">Período actual{{ periodoActualTexto ? ' (' + periodoActualTexto + ')' : '' }}</span>
           </mat-option>
-          <mat-option *ngFor="let periodo of periodosDisponibles" [value]="periodo.valor">
-            <span class="option-text">{{ getPeriodoDisplay(periodo) }}</span>
+          <mat-option *ngFor="let opcion of opciones" [value]="opcion.valor">
+            <span class="option-text">{{ opcion.texto }}</span>
           </mat-option>
         </mat-select>
         <mat-spinner *ngIf="cargando" diameter="20" class="spinner"></mat-spinner>
       </mat-form-field>
-      
+
       <div class="info-periodo" *ngIf="mostrarInfo">
         <mat-icon>info</mat-icon>
         <span *ngIf="periodoSeleccionado === 'todos'">
@@ -102,95 +118,52 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
     }
   `]
 })
-export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
-  @Input() label: string = '';
-  @Input() mostrarTodos: boolean = true;
-  @Input() incluirActual: boolean = true;
-  @Input() mostrarInfo: boolean = true;
-  @Input() periodoInicial: string = '';
+export class PeriodoFiltroSelectorComponent implements OnInit {
+  @Input() label = '';
+  @Input() mostrarTodos = true;
+  @Input() incluirActual = true;
+  @Input() mostrarInfo = true;
+  @Input() fuente: FuentePeriodos = 'recientes';
+  /** Selección inicial. Sin valor: "todos" si se muestra esa opción, si no el período actual (''). */
+  @Input() periodoInicial: string | null = null;
   @Output() periodoChange = new EventEmitter<string>();
 
-  periodosDisponibles: PeriodoAcademico[] = [];
-  periodoActual: PeriodoAcademico | null = null;
-  periodoSeleccionado: string = '';
-  periodoActualTexto: string = '';
+  opciones: OpcionPeriodo[] = [];
+  periodoSeleccionado = '';
+  periodoActualTexto = '';
   cargando = false;
-  private subscriptions: Subscription[] = [];
 
-  constructor(private periodosService: PeriodosAcademicosService) {}
+  private readonly periodosService = inject(PeriodosAcademicosService);
+  private readonly cursosService = inject(CursosIntersemestralesService);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
-    // Inicializar con período inicial o "todos" por defecto si mostrarTodos está activo
-    if (this.periodoInicial) {
-      this.periodoSeleccionado = this.periodoInicial;
-    } else if (this.mostrarTodos) {
-      this.periodoSeleccionado = 'todos'; // Por defecto mostrar todos los períodos
-    }
-    
-    // Cargar período actual primero si no está cargado
-    const periodoActualValue = this.periodosService.getPeriodoActualValue();
-    if (!periodoActualValue) {
-      this.periodosService.getPeriodoActual().subscribe({
-        next: (periodo) => {
-          if (periodo) {
-            this.periodoActual = periodo;
-            this.periodoActualTexto = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
-          } else {
-            // Fallback si no hay período actual
-            this.periodoActualTexto = 'No disponible';
-          }
-        },
-        error: (error) => {
-          this.periodoActualTexto = 'No disponible';
-        }
-      });
+    this.periodoSeleccionado = this.periodoInicial ?? (this.mostrarTodos ? 'todos' : '');
+
+    const actual = this.periodosService.getPeriodoActualValue();
+    if (actual) {
+      this.periodoActualTexto = textoPeriodo(actual);
     } else {
-      this.periodoActual = periodoActualValue;
-      this.periodoActualTexto = periodoActualValue.nombrePeriodo || formatearPeriodo(periodoActualValue.valor);
+      this.periodosService.getPeriodoActual().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: periodo => this.periodoActualTexto = periodo ? textoPeriodo(periodo) : 'No disponible',
+        error: () => this.periodoActualTexto = 'No disponible'
+      });
     }
-
-    // Suscribirse al período actual para actualizaciones
-    const periodoSub = this.periodosService.periodoActual$.subscribe(periodo => {
-      this.periodoActual = periodo;
-      if (periodo) {
-        this.periodoActualTexto = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
-        // Si no hay período seleccionado, usar el actual
-        if (!this.periodoSeleccionado && !this.periodoInicial) {
-          this.periodoSeleccionado = periodo.valor;
-        }
-      } else {
-        // Fallback si no hay período actual
-        this.periodoActualTexto = 'No disponible';
-      }
+    this.periodosService.periodoActual$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodo => {
+      this.periodoActualTexto = periodo ? textoPeriodo(periodo) : 'No disponible';
     });
-    this.subscriptions.push(periodoSub);
 
-    // Establecer período inicial
-    if (this.periodoInicial) {
-      this.periodoSeleccionado = this.periodoInicial;
-    } else if (this.periodoActual) {
-      this.periodoSeleccionado = this.periodoActual.valor;
-    }
-
-    // Cargar períodos disponibles
     this.cargarPeriodos();
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   cargarPeriodos(): void {
     this.cargando = true;
-    
-    this.periodosService.getPeriodosRecientes().subscribe({
-      next: (periodos) => {
-        this.periodosDisponibles = periodos;
+    this.opcionesDeFuente().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: opciones => {
+        this.opciones = opciones;
         this.cargando = false;
       },
-      error: (error) => {
-        this.cargando = false;
-      }
+      error: () => this.cargando = false
     });
   }
 
@@ -199,19 +172,27 @@ export class PeriodoFiltroSelectorComponent implements OnInit, OnDestroy {
     this.periodoChange.emit(periodo);
   }
 
-  getPeriodoDisplay(periodo: PeriodoAcademico): string {
-    return periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
+  getPeriodoTexto(periodo: string): string {
+    if (periodo === 'todos') return 'Todos los Períodos';
+    if (!periodo) return this.periodoActualTexto || 'Período actual';
+    return this.opciones.find(o => o.valor === periodo)?.texto ?? formatearPeriodo(periodo);
   }
 
-  getPeriodoTexto(periodo: string): string {
-    if (periodo === 'todos') {
-      return 'Todos los Períodos';
+  private opcionesDeFuente(): Observable<OpcionPeriodo[]> {
+    if (this.fuente === 'con-cursos') {
+      const aOpciones = (valores: string[]) => valores.map(valor => ({ valor, texto: formatearPeriodo(valor) }));
+      return this.cursosService.getPeriodosRegistrados().pipe(
+        // Si falla, todos los períodos (el servicio devuelve [] si también falla)
+        catchError(() => this.cursosService.getPeriodosAcademicos()),
+        map(aOpciones)
+      );
     }
-    if (!periodo) {
-      return this.periodoActualTexto || 'Período actual';
-    }
-    const periodoObj = this.periodosDisponibles.find(p => p.valor === periodo);
-    return periodoObj ? this.getPeriodoDisplay(periodoObj) : formatearPeriodo(periodo);
+    return this.periodosService.getPeriodosRecientes().pipe(
+      map(periodos => periodos.map(p => ({ valor: p.valor, texto: textoPeriodo(p) })))
+    );
   }
 }
 
+function textoPeriodo(periodo: PeriodoAcademico): string {
+  return periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
+}

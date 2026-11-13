@@ -58,7 +58,8 @@ const casos = [
   },
   {
     correo: 'dcisneros@unicauca.edu.co', rol: 'estudiante',
-    rutas: ['/estudiante/paz-salvo', '/estudiante/cursos-intersemestrales', '/estudiante/reingreso-estudiante',
+    rutas: ['/estudiante/paz-salvo', '/estudiante/cursos-intersemestrales',
+      '/estudiante/cursos-intersemestrales/cursos-ofertados', '/estudiante/reingreso-estudiante',
       '/estudiante/homologacion-asignaturas', '/estudiante/pruebas-ecaes'],
     negadas: ['/funcionario/modulo-estadistico', '/secretaria/paz-salvo'],
   },

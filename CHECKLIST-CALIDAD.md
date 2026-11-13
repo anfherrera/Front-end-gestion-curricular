@@ -73,7 +73,10 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - [ ] Hay 9 `confirm()` nativos del navegador (admin, gestionar-cursos, activity-monitor). Crear un `ConfirmDialogComponent` en `shared` y usarlo en todos
 
 ### Selectores de período
-- [ ] [periodo-selector](src/app/shared/components/periodo-selector/periodo-selector.component.ts) y [periodo-filtro-selector](src/app/shared/components/periodo-filtro-selector/periodo-filtro-selector.component.ts) hacen lo mismo. Fusionarlos en uno (`onPeriodoChange` aparece en 13 componentes)
+- [x] Queda solo [periodo-filtro-selector](src/app/shared/components/periodo-filtro-selector/periodo-filtro-selector.component.ts). `periodo-selector` (solo lo usaba cursos-ofertados del estudiante) se borra; su diferencia pasa a la entrada `fuente="con-cursos"` (períodos con cursos registrados y, si falla, todos). `periodoInicial=""` permite arrancar en el período actual
+  - Corrección: en cursos-ofertados el selector está dentro de `*ngIf="!cargando"` y volvía a "Período actual" después de cada carga; ahora conserva la elección
+  - Se añade `/estudiante/cursos-intersemestrales/cursos-ofertados` a `test:navegacion`
+  - Los `onPeriodoChange` de las páginas son el manejador de cada una (recargan sus datos); se unifican con la bandeja genérica de la Fase 3
 
 ---
 

@@ -1,10 +1,11 @@
 <app-card-container title="Cursos Ofertados">
   <!-- Selector de período -->
-  <app-periodo-selector
+  <app-periodo-filtro-selector
     *ngIf="!cargando"
-    [soloRegistrados]="true"
+    fuente="con-cursos"
+    [periodoInicial]="periodoSeleccionado"
     (periodoChange)="onPeriodoChange($event)"
-  ></app-periodo-selector>
+  ></app-periodo-filtro-selector>
 
   <div *ngIf="cargando" class="cargando">Cargando cursos...</div>
 
