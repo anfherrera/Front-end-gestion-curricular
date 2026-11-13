@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
-import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
+import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,

@@ -10,14 +10,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { HistorialSolicitudesService } from '../../../core/services/historial-solicitudes.service';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { ArchivosService } from '../../../core/services/archivos.service';
-import { mensajeDeError } from '../../../core/utils/http-error.utils';
-import { descargarBlob } from '../../../core/utils/download.util';
-import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
-import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { HistorialSolicitudesService } from '@core/services/historial-solicitudes.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { ArchivosService } from '@core/services/archivos.service';
+import { mensajeDeError } from '@core/utils/http-error.utils';
+import { descargarBlob } from '@core/utils/download.util';
+import { EstadoClasePipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
+import { FechaPipe } from '@shared/pipes/fecha.pipe';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 interface HistorialEstado {
   id_estado: number;

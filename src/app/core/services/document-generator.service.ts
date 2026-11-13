@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { DocumentRequest, DocumentTemplate } from '../../shared/components/document-generator/document-generator.component';
+import { DocumentRequest, DocumentTemplate } from '@shared/components/document-generator/document-generator.component';
 import { Document, Packer, Paragraph, TextRun, AlignmentType } from 'docx';
 import { descargarBlob } from '../utils/download.util';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { formatearFecha } from '../utils/fecha.util';
 
 @Injectable({

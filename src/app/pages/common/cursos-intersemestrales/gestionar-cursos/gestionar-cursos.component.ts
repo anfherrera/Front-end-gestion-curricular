@@ -4,20 +4,20 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano, Docente, Materia } from '../../../../core/models/cursos-intersemestrales.model';
-import { descargarBlob } from '../../../../core/utils/download.util';
-import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
-import { EstadoFiltersComponent } from '../../../../shared/components/estado-filters/estado-filters.component';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, Docente, Materia } from '@core/models/cursos-intersemestrales.model';
+import { descargarBlob } from '@core/utils/download.util';
+import { CursoEstadosService } from '@core/services/curso-estados.service';
+import { EstadoFiltersComponent } from '@shared/components/estado-filters/estado-filters.component';
+import { SnackbarService } from '@core/services/snackbar.service';
 import { CursoDialogComponent } from './curso-dialog.component';
-import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
-import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { FechaPipe } from '../../../../shared/pipes/fecha.pipe';
-import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
-import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { EstudiantesCursoDialogComponent } from './estudiantes-curso-dialog/estudiantes-curso-dialog.component';
+import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { FechaPipe } from '@shared/pipes/fecha.pipe';
+import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
+import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-gestionar-cursos',

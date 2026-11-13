@@ -14,16 +14,16 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { estadoActual } from '../../../core/utils/estado-solicitud.util';
-import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
+import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
+import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { estadoActual } from '@core/utils/estado-solicitud.util';
+import { FechaPipe } from '@shared/pipes/fecha.pipe';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',

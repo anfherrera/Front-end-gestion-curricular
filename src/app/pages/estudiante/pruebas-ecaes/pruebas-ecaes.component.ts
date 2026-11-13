@@ -13,24 +13,24 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, A
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
-import { ArchivosService } from '../../../core/services/archivos.service';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
-import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { InfoPreregistroDialogComponent } from '../../../shared/components/info-preregistro-dialog/info-preregistro-dialog.component';
-import { VerComentariosDialogComponent, VerComentariosDialogData } from '../../../shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
-import { Archivo, Solicitud } from '../../../core/models/procesos.model';
-import { ESTADOS_SOLICITUD_LABELS, EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
-import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
-import { formatearFecha } from '../../../core/utils/fecha.util';
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
-import { getPeriodoActual } from '../../../core/utils/periodo.utils';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { ArchivosService } from '@core/services/archivos.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
+import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
+import { InfoPreregistroDialogComponent } from './info-preregistro-dialog/info-preregistro-dialog.component';
+import { VerComentariosDialogComponent, VerComentariosDialogData } from '@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
+import { Archivo, Solicitud } from '@core/models/procesos.model';
+import { ESTADOS_SOLICITUD_LABELS, EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
+import { normalizarEstado } from '@core/utils/estado-solicitud.util';
+import { formatearFecha } from '@core/utils/fecha.util';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { AuthService } from '@core/services/auth.service';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
+import { getPeriodoActual } from '@core/utils/periodo.utils';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-pruebas-ecaes',

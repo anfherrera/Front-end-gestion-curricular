@@ -9,9 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ProcesosService } from '../../../../core/services/procesos.service';
-import { ProcesoDTOPeticion, ProcesoDTORespuesta } from '../../../../core/models/proceso.interface';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { ProcesosService } from '@core/services/procesos.service';
+import { ProcesoDTOPeticion, ProcesoDTORespuesta } from '@core/models/proceso.interface';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 export interface FormProcesoDialogData {
   proceso: ProcesoDTORespuesta | null;

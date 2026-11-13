@@ -9,9 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 
-import { ProgramasService } from '../../../../core/services/programas.service';
-import { ProgramaDTOPeticion } from '../../../../core/models/programa.interface';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { ProgramasService } from '@core/services/programas.service';
+import { ProgramaDTOPeticion } from '@core/models/programa.interface';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-form-programa',

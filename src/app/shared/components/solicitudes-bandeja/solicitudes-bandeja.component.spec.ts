@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { SolicitudesBandejaComponent } from './solicitudes-bandeja.component';
-import { SolicitudRevisable } from '../../../core/models/solicitud-revision.model';
+import { SolicitudRevisable } from '@core/models/solicitud-revision.model';
 
 describe('SolicitudesBandejaComponent', () => {
   let component: SolicitudesBandejaComponent<SolicitudRevisable>;

@@ -6,18 +6,18 @@ import { Observable, catchError, filter, map, of, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
-import { DocumentoHomologacion, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
-import { RolRevision, SolicitudAprobable } from '../../../core/models/solicitud-revision.model';
-import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
-import { SolicitudesAprobacionService } from '../../../core/services/base/solicitudes-aprobacion.service';
-import { ValidezDocumento } from '../../../core/services/base/solicitudes-base.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { SnackbarService, TipoSnackbar } from '../../../core/services/snackbar.service';
-import { ESTADO_SIN_HISTORIAL, estadoActual, normalizarEstado } from '../../../core/utils/estado-solicitud.util';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { SolicitudesBandejaComponent } from '../../../shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
-import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
+import { DocumentoHomologacion, DocumentosDTORespuesta } from '@core/models/procesos.model';
+import { RolRevision, SolicitudAprobable } from '@core/models/solicitud-revision.model';
+import { EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
+import { SolicitudesAprobacionService } from '@core/services/base/solicitudes-aprobacion.service';
+import { ValidezDocumento } from '@core/services/base/solicitudes-base.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { SnackbarService, TipoSnackbar } from '@core/services/snackbar.service';
+import { ESTADO_SIN_HISTORIAL, estadoActual, normalizarEstado } from '@core/utils/estado-solicitud.util';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
+import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
+import { TextoDialogComponent, datosRechazo } from '@shared/components/texto-dialog/texto-dialog.component';
 
 /** Lo que cambia entre procesos; lo que depende del rol se deduce de `rol`. */
 export interface ConfigRevisionAprobacion<S extends SolicitudAprobable> {

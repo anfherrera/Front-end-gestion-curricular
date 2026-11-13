@@ -5,7 +5,7 @@ import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { AuthService } from './auth.service';
 import { ReingresoEstudianteService } from './reingreso-estudiante.service';
 import { LoggerService } from './logger.service';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 describe('ReingresoEstudianteService - Pruebas Unitarias', () => {
   let service: ReingresoEstudianteService;

@@ -12,13 +12,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { merge } from 'rxjs';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import {
   CreateCursoDTO, CursoOfertadoVerano, Docente, Materia, Salon, UpdateCursoDTO
-} from '../../../../core/models/cursos-intersemestrales.model';
-import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '../../../../core/utils/periodo.utils';
-import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+} from '@core/models/cursos-intersemestrales.model';
+import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '@core/utils/periodo.utils';
+import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 export interface CursoDialogData {
   form: FormGroup;

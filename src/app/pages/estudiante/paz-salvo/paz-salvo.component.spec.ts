@@ -6,8 +6,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 
 import { PazSalvoComponent } from './paz-salvo.component';
-import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
+import { PazSalvoService } from '@core/services/paz-salvo.service';
+import { NotificacionesService } from '@core/services/notificaciones.service';
 
 describe('PazSalvoComponent', () => {
   let component: PazSalvoComponent;

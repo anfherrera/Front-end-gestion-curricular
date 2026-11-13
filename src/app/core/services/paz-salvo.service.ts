@@ -3,7 +3,7 @@ import { HttpResponse } from '@angular/common/http';
 import { Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
 import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { AuthService } from './auth.service';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { nombreDeContentDisposition } from '../utils/download.util';
 import { SolicitudesBaseService, ValidezDocumento, validarPdf } from './base/solicitudes-base.service';
 

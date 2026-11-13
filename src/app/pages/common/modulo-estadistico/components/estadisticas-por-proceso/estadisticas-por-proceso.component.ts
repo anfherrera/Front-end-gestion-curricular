@@ -7,8 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { Subscription } from 'rxjs';
-import { EstadisticasService } from '../../../core/services/estadisticas.service';
-import { EstadisticasPorProcesoResponse, ProcesoDetallado } from '../../../core/models/estadisticas.model';
+import { EstadisticasService } from '@core/services/estadisticas.service';
+import { EstadisticasPorProcesoResponse, ProcesoDetallado } from '@core/models/estadisticas.model';
 
 interface ProcesoData {
   nombre: string;

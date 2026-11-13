@@ -3,8 +3,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 
 import { ManageUsersComponent } from './manage-users.component';
-import { UsuariosService } from '../../../core/services/usuarios.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { UsuariosService } from '@core/services/usuarios.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter } from '@angular/router';
 

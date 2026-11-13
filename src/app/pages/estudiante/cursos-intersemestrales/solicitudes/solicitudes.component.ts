@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { Materia, CondicionSolicitudVerano, CreateSolicitudCursoNuevoDTO } from '../../../../core/models/cursos-intersemestrales.model';
-import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
-import { AuthService } from '../../../../core/services/auth.service';
-import { NotificacionesService } from '../../../../core/services/notificaciones.service';
-import { CONDICIONES_POR_DEFECTO, nombreCondicion } from '../../../../core/utils/cursos-verano.utils';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { Materia, CondicionSolicitudVerano, CreateSolicitudCursoNuevoDTO } from '@core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { AuthService } from '@core/services/auth.service';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { CONDICIONES_POR_DEFECTO, nombreCondicion } from '@core/utils/cursos-verano.utils';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 const ERRORES_ENVIO: Record<number, string> = {
   400: 'Datos inválidos. Verifica la información e inténtalo de nuevo.',

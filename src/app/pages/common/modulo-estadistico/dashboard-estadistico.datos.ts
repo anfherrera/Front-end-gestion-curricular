@@ -8,7 +8,7 @@ import {
   KPIData,
   ResumenCompleto,
   ResumenCompletoAPI
-} from '../../../core/models/estadisticas.model';
+} from '@core/models/estadisticas.model';
 
 /** Filtros tal como los aceptan los endpoints de estadísticas. */
 export interface FiltrosBackend {

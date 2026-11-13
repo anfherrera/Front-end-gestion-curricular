@@ -13,19 +13,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Notificacion, TipoSolicitud } from '../../../core/models/notificaciones.model';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { AuthService } from '@core/services/auth.service';
+import { Notificacion, TipoSolicitud } from '@core/models/notificaciones.model';
 import {
   getIconByTipoSolicitud,
   getColorByTipoSolicitud,
   getCategoriaDisplay,
   enrichNotificaciones
-} from '../../../core/utils/notificaciones.util';
+} from '@core/utils/notificaciones.util';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-notificaciones',

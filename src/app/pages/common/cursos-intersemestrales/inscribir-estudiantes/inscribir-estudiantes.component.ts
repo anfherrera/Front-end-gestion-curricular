@@ -16,18 +16,18 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano, EstudianteElegible } from '../../../../core/models/cursos-intersemestrales.model';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
-import { LoggerService } from '../../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
-import { AuthService } from '../../../../core/services/auth.service';
-import { UserRole } from '../../../../core/enums/roles.enum';
-import { descargarBlob } from '../../../../core/utils/download.util';
-import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
-import { TextoDialogComponent, TextoDialogData, datosRechazo } from '../../../../shared/components/texto-dialog/texto-dialog.component';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, EstudianteElegible } from '@core/models/cursos-intersemestrales.model';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { AuthService } from '@core/services/auth.service';
+import { UserRole } from '@core/enums/roles.enum';
+import { descargarBlob } from '@core/utils/download.util';
+import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
+import { TextoDialogComponent, TextoDialogData, datosRechazo } from '@shared/components/texto-dialog/texto-dialog.component';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-inscribir-estudiantes',

@@ -1,13 +1,13 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
-import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano } from '../../../../core/models/cursos-intersemestrales.model';
-import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { estadoCurso, nombreDocente, periodoCurso } from '../../../../core/utils/cursos-verano.utils';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { CursoListComponent, Curso } from '../components/curso-list/curso-list.component';
+import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano } from '@core/models/cursos-intersemestrales.model';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { estadoCurso, nombreDocente, periodoCurso } from '@core/utils/cursos-verano.utils';
 
 /** Cursos ofertados (solo consulta). Si el período actual no tiene cursos, muestra los de todos los períodos. */
 @Component({

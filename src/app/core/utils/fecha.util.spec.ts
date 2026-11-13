@@ -1,5 +1,5 @@
 import { aFecha, fechaRelativa, formatearFecha } from './fecha.util';
-import { FechaPipe } from '../../shared/pipes/fecha.pipe';
+import { FechaPipe } from '@shared/pipes/fecha.pipe';
 
 describe('fecha.util', () => {
   it('lee "aaaa-mm-dd" como día local (no se corre al día anterior)', () => {

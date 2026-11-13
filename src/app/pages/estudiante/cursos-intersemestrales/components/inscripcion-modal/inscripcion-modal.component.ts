@@ -4,14 +4,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
-import { CreateInscripcionDTO, PreinscripcionSeguimiento } from '../../../core/models/cursos-intersemestrales.model';
-import { UsuarioSesion } from '../../../core/models/usuario-sesion.model';
-import { AuthService } from '../../../core/services/auth.service';
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
-import { MATERIAL_IMPORTS } from '../material.imports';
-import { mensajeDeError } from '../../../core/utils/http-error.utils';
-import { SnackbarService, TipoSnackbar } from '../../../core/services/snackbar.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CreateInscripcionDTO, PreinscripcionSeguimiento } from '@core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { AuthService } from '@core/services/auth.service';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { mensajeDeError } from '@core/utils/http-error.utils';
+import { SnackbarService, TipoSnackbar } from '@core/services/snackbar.service';
 
 export interface InscripcionModalData {
   preinscripcion: Pick<PreinscripcionSeguimiento, 'cursoId' | 'curso' | 'estado' | 'estadoCurso'>;

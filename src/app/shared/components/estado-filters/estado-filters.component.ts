@@ -5,11 +5,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CursoEstadosService, EstadoCurso } from '../../../core/services/curso-estados.service';
-import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano } from '../../../core/models/cursos-intersemestrales.model';
+import { CursoEstadosService, EstadoCurso } from '@core/services/curso-estados.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano } from '@core/models/cursos-intersemestrales.model';
 import { Subject, takeUntil } from 'rxjs';
-import { estadoCurso } from '../../../core/utils/cursos-verano.utils';
+import { estadoCurso } from '@core/utils/cursos-verano.utils';
 
 @Component({
   selector: 'app-estado-filters',

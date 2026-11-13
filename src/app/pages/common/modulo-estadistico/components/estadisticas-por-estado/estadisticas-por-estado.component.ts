@@ -5,8 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { EstadisticasService } from '../../../core/services/estadisticas.service';
-import { EstadoSolicitudesResponse, EstadoInfo } from '../../../core/models/estadisticas.model';
+import { EstadisticasService } from '@core/services/estadisticas.service';
+import { EstadoSolicitudesResponse, EstadoInfo } from '@core/models/estadisticas.model';
 import { Subscription } from 'rxjs';
 
 @Component({

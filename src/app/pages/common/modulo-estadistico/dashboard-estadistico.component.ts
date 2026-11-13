@@ -16,17 +16,17 @@ import type { ChartConfiguration } from 'chart.js';
 import { Observable, Subject, catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 
-import { EstadisticasService } from '../../../core/services/estadisticas.service';
-import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
-import { esErrorDeAcceso, mensajeErrorDeAcceso } from '../../../core/utils/http-error.utils';
-import { descargarBlob } from '../../../core/utils/download.util';
-import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { EstudiantesPorProgramaComponent } from '../../../shared/components/estudiantes-por-programa/estudiantes-por-programa.component';
-import { EstadisticasPorProcesoComponent } from '../../../shared/components/estadisticas-por-proceso/estadisticas-por-proceso.component';
-import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
-import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
-import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { FiltroEstadisticas, KPIData, ResumenCompleto } from '../../../core/models/estadisticas.model';
+import { EstadisticasService } from '@core/services/estadisticas.service';
+import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
+import { esErrorDeAcceso, mensajeErrorDeAcceso } from '@core/utils/http-error.utils';
+import { descargarBlob } from '@core/utils/download.util';
+import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
+import { EstudiantesPorProgramaComponent } from './components/estudiantes-por-programa/estudiantes-por-programa.component';
+import { EstadisticasPorProcesoComponent } from './components/estadisticas-por-proceso/estadisticas-por-proceso.component';
+import { EstadisticasPorEstadoComponent } from './components/estadisticas-por-estado/estadisticas-por-estado.component';
+import { TendenciasComparativasComponent } from './components/tendencias-comparativas/tendencias-comparativas.component';
+import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { FiltroEstadisticas, KPIData, ResumenCompleto } from '@core/models/estadisticas.model';
 import {
   TITULO_KPI_ESTUDIANTES,
   filtrosDelFormulario,
@@ -38,7 +38,7 @@ import {
   resumenDesdeEndpoints
 } from './dashboard-estadistico.datos';
 import { graficoProcesos, graficoProcesosDesdeResumen, graficoProgramas, graficoTendencia } from './dashboard-estadistico.graficos';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 Chart.register(...registerables);
 

@@ -6,13 +6,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
 import { PruebasEcaesComponent } from './pruebas-ecaes.component';
-import { PruebasEcaesService } from '../../../core/services/pruebas-ecaes.service';
-import { ArchivosService } from '../../../core/services/archivos.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
-import { LoggerService } from '../../../core/services/logger.service';
+import { PruebasEcaesService } from '@core/services/pruebas-ecaes.service';
+import { ArchivosService } from '@core/services/archivos.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
+import { AuthService } from '@core/services/auth.service';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { LoggerService } from '@core/services/logger.service';
 
 describe('PruebasEcaesComponent', () => {
   let component: PruebasEcaesComponent;

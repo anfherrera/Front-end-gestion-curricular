@@ -5,8 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
-import { AuthService } from '../../../core/services/auth.service';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
+import { AuthService } from '@core/services/auth.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 
 @Component({
   selector: 'app-perfil',

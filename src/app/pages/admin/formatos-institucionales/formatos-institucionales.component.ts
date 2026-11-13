@@ -12,8 +12,8 @@ import {
   FormatoInstitucional,
   FormatoId,
   FORMATO_IDS
-} from '../../../core/services/formatos-institucionales.service';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+} from '@core/services/formatos-institucionales.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-formatos-institucionales',

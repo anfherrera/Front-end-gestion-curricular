@@ -4,19 +4,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { InscripcionModalComponent } from '../../../../shared/components/inscripcion-modal/inscripcion-modal.component';
-import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { InscripcionModalComponent } from '../components/inscripcion-modal/inscripcion-modal.component';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { AuthService } from '@core/services/auth.service';
 import {
   InscripcionSeguimiento,
   PreinscripcionSeguimiento,
   PreinscripcionUsuario
-} from '../../../../core/models/cursos-intersemestrales.model';
-import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
+} from '@core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { MotivoRechazoDialogComponent, MotivoRechazoDialogData } from './motivo-rechazo-dialog.component';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 type Actividad = PreinscripcionSeguimiento | InscripcionSeguimiento;
 

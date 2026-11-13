@@ -3,11 +3,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 
 import { HomologacionAsignaturasComponent } from './homologacion-asignaturas.component';
-import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
-import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
+import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { DocumentGeneratorService } from '@core/services/document-generator.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
 
 describe('HomologacionAsignaturasComponent (Secretaria)', () => {
   let component: HomologacionAsignaturasComponent;

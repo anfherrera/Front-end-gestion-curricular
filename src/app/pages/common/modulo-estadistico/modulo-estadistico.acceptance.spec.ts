@@ -1,8 +1,8 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { EstadisticasService } from '../../../core/services/estadisticas.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { ApiEndpoints } from '../../../core/utils/api-endpoints';
+import { EstadisticasService } from '@core/services/estadisticas.service';
+import { AuthService } from '@core/services/auth.service';
+import { ApiEndpoints } from '@core/utils/api-endpoints';
 
 /**
  * ===================================================

@@ -6,18 +6,18 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
-import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
-import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
-import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { estadoActual } from '../../../core/utils/estado-solicitud.util';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { DocumentGeneratorService } from '@core/services/document-generator.service';
+import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
+import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '@shared/components/document-generator/document-generator.component';
+import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
+import { ApprovedRequestsSectionComponent } from '@shared/components/approved-requests-section/approved-requests-section.component';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { estadoActual } from '@core/utils/estado-solicitud.util';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-homologacion-asignaturas',

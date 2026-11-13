@@ -6,11 +6,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
 import { ReingresoEstudianteComponent } from './reingreso-estudiante.component';
-import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
-import { FormatosInstitucionalesService } from '../../../core/services/formatos-institucionales.service';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
+import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { FormatosInstitucionalesService } from '@core/services/formatos-institucionales.service';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 
 describe('ReingresoEstudianteComponent', () => {
   let component: ReingresoEstudianteComponent;

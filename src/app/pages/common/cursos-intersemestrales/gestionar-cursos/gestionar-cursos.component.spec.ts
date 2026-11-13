@@ -4,8 +4,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoEstadosService } from '@core/services/curso-estados.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 

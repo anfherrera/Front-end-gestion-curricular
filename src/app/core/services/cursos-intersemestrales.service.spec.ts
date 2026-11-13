@@ -4,7 +4,7 @@ import { CursosIntersemestralesService } from './cursos-intersemestrales.service
 import { CursoOfertadoVerano, CreatePreinscripcionDTO, CreateInscripcionDTO, SolicitudCursoVerano } from '../models/cursos-intersemestrales.model';
 import { AuthService } from './auth.service';
 import { ApiEndpoints } from '../utils/api-endpoints';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 describe('CursosIntersemestralesService - Cursos de Verano', () => {
   let service: CursosIntersemestralesService;

@@ -3,7 +3,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 
 import { ManageProcessesComponent } from './manage-processes.component';
-import { ProcesosService } from '../../../core/services/procesos.service';
+import { ProcesosService } from '@core/services/procesos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 

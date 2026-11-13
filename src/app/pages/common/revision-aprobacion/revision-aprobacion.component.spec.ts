@@ -6,10 +6,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 
 import { RevisionAprobacionComponent } from './revision-aprobacion.component';
-import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
-import { SnackbarService } from '../../../core/services/snackbar.service';
-import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
-import { RolRevision } from '../../../core/models/solicitud-revision.model';
+import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { SnackbarService } from '@core/services/snackbar.service';
+import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { RolRevision } from '@core/models/solicitud-revision.model';
 
 type Sol = SolicitudHomologacionDTORespuesta;
 

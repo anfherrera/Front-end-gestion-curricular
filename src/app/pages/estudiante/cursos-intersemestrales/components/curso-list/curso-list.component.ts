@@ -2,9 +2,9 @@ import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnCha
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MATERIAL_IMPORTS } from '../material.imports';
-import { calcularDuracionSemanas, formatearPeriodo } from '../../../core/utils/periodo.utils';
-import { FechaPipe } from '../../pipes/fecha.pipe';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { calcularDuracionSemanas, formatearPeriodo } from '@core/utils/periodo.utils';
+import { FechaPipe } from '@shared/pipes/fecha.pipe';
 
 export interface Curso {
   codigo: string;

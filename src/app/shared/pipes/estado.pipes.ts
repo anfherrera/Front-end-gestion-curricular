@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { estadoClase, estadoColor, estadoIcono, estadoLabel } from '../../core/utils/estado-solicitud.util';
+import { estadoClase, estadoColor, estadoIcono, estadoLabel } from '@core/utils/estado-solicitud.util';
 
 /** `{{ estado | estadoLabel }}` → "Aprobada por Funcionario" */
 @Pipe({ name: 'estadoLabel', standalone: true })

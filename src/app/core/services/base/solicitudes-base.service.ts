@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable, catchError, of, throwError } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env/environment';
 import { LoggerService } from '../logger.service';
 
 /** Documento como lo devuelve /documentos/buscarPorId (el visor solo usa el comentario). */

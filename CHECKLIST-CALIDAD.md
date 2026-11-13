@@ -142,7 +142,13 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - detalle-solicitud ya usaba `ArchivosService`; ahora también `descargarBlob`
   - Specs: `periodos-academicos.service.spec.ts` (4 pruebas, nuevo), 2 de `listarTiposDocumento` en el servicio de ECAES y 2 de tipos de documento en la página del estudiante. Total 558/558 (50 specs)
   - Sin cambios visibles esperados
-- [ ] **`shared` solo para lo genérico**: `estadisticas-por-estado`, `estadisticas-por-proceso`, `estudiantes-por-programa`, `tendencias-comparativas`, `inscripcion-modal`, `preinscripcion-dialog`, `info-preregistro-dialog`, `estudiantes-curso-dialog` y `curso-list` solo se usan dentro de una funcionalidad. Moverlos a su carpeta (`modulo-estadistico/`, `cursos-intersemestrales/`)
+- [x] **`shared` solo para lo genérico** (2026-11-13). Se mueven con `git mv` a la carpeta de la página que los usa:
+  - `estadisticas-por-estado`, `estadisticas-por-proceso`, `estudiantes-por-programa` y `tendencias-comparativas` → [modulo-estadistico/components/](src/app/pages/common/modulo-estadistico/components/)
+  - `curso-list`, `preinscripcion-dialog` e `inscripcion-modal` → [estudiante/cursos-intersemestrales/components/](src/app/pages/estudiante/cursos-intersemestrales/components/)
+  - `estudiantes-curso-dialog` → [gestionar-cursos/](src/app/pages/common/cursos-intersemestrales/gestionar-cursos/), junto a `curso-dialog`
+  - `info-preregistro-dialog` → [estudiante/pruebas-ecaes/](src/app/pages/estudiante/pruebas-ecaes/)
+  - Se quita `PreinscripcionDialogComponent` de los providers de `app.config.ts`: un componente standalone no se registra como provider y nadie lo inyectaba
+  - Sin cambios visibles esperados
 - [ ] **Plantillas inline largas a archivo `.html`**: `estadisticas-por-estado` (594 líneas), `estadisticas-por-proceso` (519), `estado-filters` (447), `estudiantes-por-programa` (383), `comentarios-dialog` (369), `preinscribir-estudiantes` (969) e `inscribir-estudiantes` (842)
 - [ ] **Partir archivos gigantes**:
   - [ ] [preinscribir-estudiantes.component.ts](src/app/pages/common/cursos-intersemestrales/preinscribir-estudiantes/preinscribir-estudiantes.component.ts) (969)
@@ -151,7 +157,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - [ ] [estadisticas.model.ts](src/app/core/models/estadisticas.model.ts) (565)
   - [ ] [cursos-verano-dashboard.component.css](src/app/pages/common/modulo-estadistico/cursos-verano/cursos-verano-dashboard.component.css) (1428): usar [dashboard-comun.css](src/app/pages/common/modulo-estadistico/dashboard-comun.css)
   - [ ] [inscripcion-modal.component.css](src/app/shared/components/inscripcion-modal/inscripcion-modal.component.css) (714) y [preinscribir-estudiantes.component.css](src/app/pages/common/cursos-intersemestrales/preinscribir-estudiantes/preinscribir-estudiantes.component.css) (685)
-- [ ] **Alias de imports**: agregar `@core/*`, `@shared/*` y `@env/*` en `tsconfig.json` y reemplazar los `../../../`
+- [x] **Alias de imports** (2026-11-13): `@core/*`, `@shared/*` y `@env/*` en `paths` de [tsconfig.json](tsconfig.json). Un script cambió 478 imports en 117 archivos: todo import que sale de su área hacia `core`, `shared` o `environments` usa el alias; dentro de una misma área siguen siendo relativos (`../models/…` desde `core/services`). Ya no queda ningún `../../../`
 - [ ] **Estructura por funcionalidad** (opcional, al final): pasar de `pages/<rol>/<proceso>` a `features/<proceso>/{estudiante,revision}`
 
 ---

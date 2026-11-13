@@ -12,15 +12,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 
-import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial } from '../../../core/services/historial-solicitudes.service';
-import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { UtfFixPipe } from '../../../shared/pipes/utf-fix.pipe';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
-import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial } from '@core/services/historial-solicitudes.service';
+import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { EstadoClasePipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
+import { FechaPipe } from '@shared/pipes/fecha.pipe';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-historial-completo',

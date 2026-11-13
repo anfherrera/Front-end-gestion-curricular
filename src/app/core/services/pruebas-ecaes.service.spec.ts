@@ -5,7 +5,7 @@ import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { AuthService } from './auth.service';
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from './pruebas-ecaes.service';
 import { LoggerService } from './logger.service';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 describe('PruebasEcaesService - Pruebas Unitarias', () => {
   let service: PruebasEcaesService;

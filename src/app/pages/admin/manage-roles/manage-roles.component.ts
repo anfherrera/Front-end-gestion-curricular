@@ -11,14 +11,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
-import { RolesAdminService } from '../../../core/services/roles-admin.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { RolDTORespuesta } from '../../../core/models/rol.interface';
+import { RolesAdminService } from '@core/services/roles-admin.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { RolDTORespuesta } from '@core/models/rol.interface';
 import { FormRolDialogComponent } from './form-rol-dialog/form-rol-dialog.component';
-import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
-import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { corregirEncodingObjeto } from '@core/utils/encoding.utils';
+import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-manage-roles',

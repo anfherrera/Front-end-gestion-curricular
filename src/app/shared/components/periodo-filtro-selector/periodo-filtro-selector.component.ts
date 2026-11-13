@@ -6,9 +6,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Observable, catchError, map } from 'rxjs';
-import { PeriodosAcademicosService, PeriodoAcademico } from '../../../core/services/periodos-academicos.service';
-import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
-import { formatearPeriodo } from '../../../core/utils/periodo.utils';
+import { PeriodosAcademicosService, PeriodoAcademico } from '@core/services/periodos-academicos.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { formatearPeriodo } from '@core/utils/periodo.utils';
 
 /** De dónde salen los períodos de la lista. */
 export type FuentePeriodos =

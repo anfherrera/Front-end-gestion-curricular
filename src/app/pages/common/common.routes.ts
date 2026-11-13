@@ -19,6 +19,6 @@ export const CommonRoutes: Routes = [
   {
     path: 'notificaciones-guia',
     loadComponent: () =>
-      import('../../shared/components/notificaciones-guia/notificaciones-guia.component').then(m => m.NotificacionesGuiaComponent)
+      import('@shared/components/notificaciones-guia/notificaciones-guia.component').then(m => m.NotificacionesGuiaComponent)
   }
 ];

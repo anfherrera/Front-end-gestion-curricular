@@ -5,12 +5,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 
-import { Solicitud } from '../../../core/models/procesos.model';
+import { Solicitud } from '@core/models/procesos.model';
 import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component';
 import { FechaPipe } from '../../pipes/fecha.pipe';
 import { EstadoColorPipe, EstadoIconoPipe, EstadoLabelPipe } from '../../pipes/estado.pipes';
-import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
-import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
+import { EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
+import { normalizarEstado } from '@core/utils/estado-solicitud.util';
 
 /**
  * Componente de tabla para mostrar el estado de solicitudes

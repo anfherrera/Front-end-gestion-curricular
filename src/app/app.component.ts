@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AuthService } from './core/services/auth.service';
-import { PeriodosAcademicosService } from './core/services/periodos-academicos.service';
-import { formatearPeriodo } from './core/utils/periodo.utils';
-import { SnackbarService } from './core/services/snackbar.service';
+import { AuthService } from '@core/services/auth.service';
+import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
+import { formatearPeriodo } from '@core/utils/periodo.utils';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-root',

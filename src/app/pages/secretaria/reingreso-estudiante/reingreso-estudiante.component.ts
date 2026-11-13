@@ -10,21 +10,21 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
-import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
-import { SolicitudReingresoDTORespuesta, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
-import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
-import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { estadoActual } from '../../../core/utils/estado-solicitud.util';
-import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
-import { TextoDialogData } from '../../../shared/components/texto-dialog/texto-dialog.component';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { DocumentGeneratorService } from '@core/services/document-generator.service';
+import { SolicitudReingresoDTORespuesta, DocumentosDTORespuesta } from '@core/models/procesos.model';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
+import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '@shared/components/document-generator/document-generator.component';
+import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
+import { ApprovedRequestsSectionComponent } from '@shared/components/approved-requests-section/approved-requests-section.component';
+import { EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { estadoActual } from '@core/utils/estado-solicitud.util';
+import { TextoDialogComponent, datosRechazo } from '@shared/components/texto-dialog/texto-dialog.component';
+import { TextoDialogData } from '@shared/components/texto-dialog/texto-dialog.component';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-reingreso-estudiante',

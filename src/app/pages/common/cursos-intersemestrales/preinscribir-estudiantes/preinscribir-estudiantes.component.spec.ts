@@ -3,8 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { AuthService } from '@core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 

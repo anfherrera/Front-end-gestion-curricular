@@ -7,7 +7,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import { ModuloEstadisticoComponent } from './modulo-estadistico.component';
-import { EstadisticasService } from '../../../core/services/estadisticas.service';
+import { EstadisticasService } from '@core/services/estadisticas.service';
 
 describe('ModuloEstadisticoComponent', () => {
   let component: ModuloEstadisticoComponent;

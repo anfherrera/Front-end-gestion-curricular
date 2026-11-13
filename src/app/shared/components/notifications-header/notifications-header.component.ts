@@ -10,16 +10,16 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Subscription } from 'rxjs';
 
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
-import { SnackbarService } from '../../../core/services/snackbar.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Notificacion } from '../../../core/models/notificaciones.model';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { SnackbarService } from '@core/services/snackbar.service';
+import { AuthService } from '@core/services/auth.service';
+import { Notificacion } from '@core/models/notificaciones.model';
 import { 
   getColorByTipoSolicitud, 
   getCategoriaDisplay,
   getIconByTipoNotificacion,
   enrichNotificaciones
-} from '../../../core/utils/notificaciones.util';
+} from '@core/utils/notificaciones.util';
 
 @Component({
   selector: 'app-notifications-header',

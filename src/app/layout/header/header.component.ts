@@ -7,10 +7,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../core/services/auth.service';
-import { PeriodosAcademicosService, PeriodoAcademico } from '../../core/services/periodos-academicos.service';
-import { NotificationsHeaderComponent } from '../../shared/components/notifications-header/notifications-header.component';
-import { formatearPeriodo } from '../../core/utils/periodo.utils';
+import { AuthService } from '@core/services/auth.service';
+import { PeriodosAcademicosService, PeriodoAcademico } from '@core/services/periodos-academicos.service';
+import { NotificationsHeaderComponent } from '@shared/components/notifications-header/notifications-header.component';
+import { formatearPeriodo } from '@core/utils/periodo.utils';
 
 @Component({
   selector: 'app-header',

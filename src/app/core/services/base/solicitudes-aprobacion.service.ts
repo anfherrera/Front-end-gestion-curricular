@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env/environment';
 import { OficioRespuesta, SolicitudesBaseService, ValidezDocumento } from './solicitudes-base.service';
 
 /** Rutas propias de cada proceso; lo demás es igual en homologación y reingreso. */

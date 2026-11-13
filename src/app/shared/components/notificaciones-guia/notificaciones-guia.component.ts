@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
-import { Notificacion } from '../../../core/models/notificaciones.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { Notificacion } from '@core/models/notificaciones.model';
+import { AuthService } from '@core/services/auth.service';
 import { interval, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';

@@ -12,12 +12,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { RouterModule } from '@angular/router';
-import { UsuariosService } from '../../../core/services/usuarios.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
-import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { UsuariosService } from '@core/services/usuarios.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { corregirEncodingObjeto } from '@core/utils/encoding.utils';
+import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-manage-users',

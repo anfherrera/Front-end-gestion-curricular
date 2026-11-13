@@ -8,10 +8,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { DocumentosDTORespuesta, DocumentoHomologacion } from '@core/models/procesos.model';
 import { FechaPipe } from '../../pipes/fecha.pipe';
 import { TextoDialogComponent, TextoDialogData } from '../texto-dialog/texto-dialog.component';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 type Documento = DocumentosDTORespuesta | DocumentoHomologacion;
 

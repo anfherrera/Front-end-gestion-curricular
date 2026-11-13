@@ -5,7 +5,7 @@ import { PazSalvoService } from './paz-salvo.service';
 import { AuthService } from './auth.service';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 describe('PazSalvoService - Pruebas Unitarias', () => {
   let service: PazSalvoService;

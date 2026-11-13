@@ -8,9 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PeriodosAcademicosService, PeriodoAcademico, PeriodoActivoConfig } from '../../../core/services/periodos-academicos.service';
-import { formatearPeriodo } from '../../../core/utils/periodo.utils';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { PeriodosAcademicosService, PeriodoAcademico, PeriodoActivoConfig } from '@core/services/periodos-academicos.service';
+import { formatearPeriodo } from '@core/utils/periodo.utils';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-configurar-periodo',

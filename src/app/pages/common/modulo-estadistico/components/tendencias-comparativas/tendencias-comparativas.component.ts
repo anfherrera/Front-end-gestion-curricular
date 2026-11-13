@@ -6,9 +6,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
 
-import { EstadisticasService } from '../../../core/services/estadisticas.service';
-import { TendenciasComparativasResponse } from '../../../core/models/estadisticas.model';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { EstadisticasService } from '@core/services/estadisticas.service';
+import { TendenciasComparativasResponse } from '@core/models/estadisticas.model';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-tendencias-comparativas',

@@ -1,7 +1,7 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { PazSalvoService } from '@core/services/paz-salvo.service';
+import { AuthService } from '@core/services/auth.service';
 
 /**
  * ================================================

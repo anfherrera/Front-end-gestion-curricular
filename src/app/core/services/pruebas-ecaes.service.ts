@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { TipoDocumento, TiposDocumentoRespuesta } from '../models/tipo-documento.model';
 import { SolicitudesBaseService } from './base/solicitudes-base.service';
 

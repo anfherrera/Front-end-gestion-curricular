@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 
-import { Solicitud } from '../../../core/models/procesos.model';
-import { SolicitudRevisable } from '../../../core/models/solicitud-revision.model';
-import { aFilaSolicitud } from '../../../core/utils/fila-solicitud.util';
+import { Solicitud } from '@core/models/procesos.model';
+import { SolicitudRevisable } from '@core/models/solicitud-revision.model';
+import { aFilaSolicitud } from '@core/utils/fila-solicitud.util';
 import { CardContainerComponent } from '../card-container/card-container.component';
 import { RequestStatusTableComponent } from '../request-status/request-status.component';
 import { PeriodoFiltroSelectorComponent } from '../periodo-filtro-selector/periodo-filtro-selector.component';

@@ -13,14 +13,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
 import { Inject } from '@angular/core';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/models/cursos-intersemestrales.model';
-import { AuthService } from '../../../../core/services/auth.service';
-import { UserRole } from '../../../../core/enums/roles.enum';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { EstadoColorPipe } from '../../../../shared/pipes/estado.pipes';
-import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, SolicitudCursoVerano, EstadoSolicitudDetalle } from '@core/models/cursos-intersemestrales.model';
+import { AuthService } from '@core/services/auth.service';
+import { UserRole } from '@core/enums/roles.enum';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { EstadoColorPipe } from '@shared/pipes/estado.pipes';
+import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-preinscribir-estudiantes',

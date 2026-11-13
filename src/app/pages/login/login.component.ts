@@ -9,11 +9,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
-import { LoggerService } from '../../core/services/logger.service';
+import { AuthService } from '@core/services/auth.service';
+import { LoggerService } from '@core/services/logger.service';
 import { interval, Subscription } from 'rxjs';
-import { getLoginCooldownRemainingSeconds } from '../../core/interceptors/login-rate-limit.interceptor';
-import { SnackbarService } from '../../core/services/snackbar.service';
+import { getLoginCooldownRemainingSeconds } from '@core/interceptors/login-rate-limit.interceptor';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-login',

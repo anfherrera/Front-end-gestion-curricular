@@ -11,18 +11,18 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { Subject, takeUntil } from 'rxjs';
 
-import { descargarBlob } from '../../../core/utils/download.util';
-import { Archivo, Solicitud, SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
-import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
-import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
-import { VerComentariosDialogComponent, VerComentariosDialogData } from '../../../shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
-import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { estadoActual, ultimoEstado } from '../../../core/utils/estado-solicitud.util';
-import { NotificacionesService } from '../../../core/services/notificaciones.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { normalizarNombreArchivo } from '../../../core/utils/texto.util';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { descargarBlob } from '@core/utils/download.util';
+import { Archivo, Solicitud, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
+import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
+import { RequiredDocsComponent } from '@shared/components/required-docs/required-docs.component';
+import { VerComentariosDialogComponent, VerComentariosDialogData } from '@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
+import { PazSalvoService } from '@core/services/paz-salvo.service';
+import { estadoActual, ultimoEstado } from '@core/utils/estado-solicitud.util';
+import { NotificacionesService } from '@core/services/notificaciones.service';
+import { AuthService } from '@core/services/auth.service';
+import { normalizarNombreArchivo } from '@core/utils/texto.util';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 /** Programas cuyo paz y salvo exige trabajo de grado y el formato PPH o TIH. */
 const PROGRAMAS_CON_TRABAJO_DE_GRADO = ['sistemas', 'electronica', 'automatica', 'automatizacion'];

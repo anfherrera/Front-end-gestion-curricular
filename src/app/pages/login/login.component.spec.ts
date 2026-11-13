@@ -6,8 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError, delay } from 'rxjs';
 
 import { LoginComponent } from './login.component';
-import { AuthService } from '../../core/services/auth.service';
-import { LoginRespuesta } from '../../core/models/usuario-sesion.model';
+import { AuthService } from '@core/services/auth.service';
+import { LoginRespuesta } from '@core/models/usuario-sesion.model';
 
 describe('LoginComponent - Pruebas Unitarias', () => {
   let component: LoginComponent;

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { FormatoFecha, formatearFecha } from '../../core/utils/fecha.util';
+import { FormatoFecha, formatearFecha } from '@core/utils/fecha.util';
 
 /**
  * `{{ valor | fecha }}` → 15/01/2025

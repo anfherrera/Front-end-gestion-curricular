@@ -1,5 +1,5 @@
 import { coincidenPorPalabrasClave, normalizarNombreArchivo } from './texto.util';
-import { NombreDocentePipe } from '../../shared/pipes/nombre-docente.pipe';
+import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 
 describe('texto.util', () => {
   it('normaliza nombres de archivo para compararlos', () => {

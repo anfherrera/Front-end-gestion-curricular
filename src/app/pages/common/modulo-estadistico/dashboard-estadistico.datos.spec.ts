@@ -7,7 +7,7 @@ import {
   resumenDesdeAPI,
   resumenDesdeEndpoints
 } from './dashboard-estadistico.datos';
-import { EstadisticasPorProcesoResponse, EstadoSolicitudesResponse, ResumenCompletoAPI } from '../../../core/models/estadisticas.model';
+import { EstadisticasPorProcesoResponse, EstadoSolicitudesResponse, ResumenCompletoAPI } from '@core/models/estadisticas.model';
 
 describe('dashboard-estadistico.datos', () => {
   const sinIds = () => null;

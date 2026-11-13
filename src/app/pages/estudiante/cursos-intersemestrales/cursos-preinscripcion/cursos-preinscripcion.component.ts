@@ -2,16 +2,16 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
-import { PreinscripcionDialogComponent } from '../../../../shared/components/preinscripcion-dialog/preinscripcion-dialog.component';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano } from '../../../../core/models/cursos-intersemestrales.model';
-import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
-import { AuthService } from '../../../../core/services/auth.service';
-import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { estadoCurso, nombreDocente } from '../../../../core/utils/cursos-verano.utils';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { CursoListComponent, Curso } from '../components/curso-list/curso-list.component';
+import { PreinscripcionDialogComponent } from '../components/preinscripcion-dialog/preinscripcion-dialog.component';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano } from '@core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { AuthService } from '@core/services/auth.service';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { estadoCurso, nombreDocente } from '@core/utils/cursos-verano.utils';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 /** Cursos en preinscripción: el estudiante elige uno y se preinscribe desde un diálogo. */
 @Component({

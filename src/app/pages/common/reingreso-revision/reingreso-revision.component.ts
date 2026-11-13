@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
-import { SolicitudReingresoDTORespuesta } from '../../../core/models/procesos.model';
+import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { SolicitudReingresoDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,

@@ -8,10 +8,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
-import { RespuestaEstudiantesCurso } from '../../../core/models/cursos-intersemestrales.model';
-import { descargarBlob } from '../../../core/utils/download.util';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { RespuestaEstudiantesCurso } from '@core/models/cursos-intersemestrales.model';
+import { descargarBlob } from '@core/utils/download.util';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 const ERRORES_CARGA: Record<number, string> = {
   403: 'No tienes permisos para ver esta información',

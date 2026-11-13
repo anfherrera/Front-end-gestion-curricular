@@ -4,14 +4,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MATERIAL_IMPORTS } from '../material.imports';
-import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano, CreatePreinscripcionDTO, CondicionSolicitudVerano } from '../../../core/models/cursos-intersemestrales.model';
-import { UsuarioSesion } from '../../../core/models/usuario-sesion.model';
-import { AuthService } from '../../../core/services/auth.service';
-import { CONDICIONES_POR_DEFECTO, nombreCondicion, } from '../../../core/utils/cursos-verano.utils';
-import { NombreDocentePipe } from '../../pipes/nombre-docente.pipe';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, CreatePreinscripcionDTO, CondicionSolicitudVerano } from '@core/models/cursos-intersemestrales.model';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { AuthService } from '@core/services/auth.service';
+import { CONDICIONES_POR_DEFECTO, nombreCondicion, } from '@core/utils/cursos-verano.utils';
+import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 export interface PreinscripcionDialogData {
   curso: CursoOfertadoVerano;

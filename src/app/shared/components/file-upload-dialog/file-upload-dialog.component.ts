@@ -2,12 +2,12 @@ import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Archivo } from '../../../core/models/procesos.model';
-import { ArchivosService } from '../../../core/services/archivos.service';
-import { PazSalvoService } from '../../../core/services/paz-salvo.service';
+import { Archivo } from '@core/models/procesos.model';
+import { ArchivosService } from '@core/services/archivos.service';
+import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-file-upload',

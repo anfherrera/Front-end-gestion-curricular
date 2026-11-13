@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Solicitud } from '../../../core/models/procesos.model';
-import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
-import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
+import { Solicitud } from '@core/models/procesos.model';
+import { EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
+import { normalizarEstado } from '@core/utils/estado-solicitud.util';
 @Component({
   selector: 'app-oficio-descarga',
   standalone: true,

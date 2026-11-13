@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
-import { EstadoClasePipe } from '../../../../shared/pipes/estado.pipes';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { MateriaFiltro, SolicitudVisualizar } from '../../../../core/models/cursos-intersemestrales.model';
-import { descargarBlob } from '../../../../core/utils/download.util';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
+import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
+import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
+import { EstadoClasePipe } from '@shared/pipes/estado.pipes';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { MateriaFiltro, SolicitudVisualizar } from '@core/models/cursos-intersemestrales.model';
+import { descargarBlob } from '@core/utils/download.util';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 const TODAS_LAS_MATERIAS: MateriaFiltro = { id: 0, nombre: 'Todas las materias', codigo: 'TODAS' };
 

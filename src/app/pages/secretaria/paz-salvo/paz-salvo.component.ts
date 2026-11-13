@@ -7,13 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { SnackbarService } from '../../../core/services/snackbar.service';
-import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
-import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
-import { SolicitudesBandejaComponent } from '../../../shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
+import { PazSalvoService } from '@core/services/paz-salvo.service';
+import { SnackbarService } from '@core/services/snackbar.service';
+import { DocumentGeneratorService } from '@core/services/document-generator.service';
+import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '@shared/components/document-generator/document-generator.component';
+import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
 import { aDocumentos } from '../../common/paz-salvo-revision/paz-salvo-filas';
 
 /**

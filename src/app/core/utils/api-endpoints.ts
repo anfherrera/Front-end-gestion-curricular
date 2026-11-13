@@ -1,4 +1,4 @@
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 export class ApiEndpoints {
   static readonly BASE_URL = environment.apiUrl;

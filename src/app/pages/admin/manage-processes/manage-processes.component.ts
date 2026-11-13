@@ -10,12 +10,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ProcesosService } from '../../../core/services/procesos.service';
-import { ProcesoDTORespuesta } from '../../../core/models/proceso.interface';
+import { ProcesosService } from '@core/services/procesos.service';
+import { ProcesoDTORespuesta } from '@core/models/proceso.interface';
 import { FormProcesoDialogComponent } from './form-proceso-dialog/form-proceso-dialog.component';
-import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-manage-processes',

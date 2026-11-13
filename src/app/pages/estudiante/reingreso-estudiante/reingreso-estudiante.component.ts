@@ -5,25 +5,25 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
-import { descargarBlob, nombreDeContentDisposition } from '../../../core/utils/download.util';
+import { descargarBlob, nombreDeContentDisposition } from '@core/utils/download.util';
 
-import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion } from '../../../core/models/procesos.model';
-import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
-import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
-import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
-import { VerComentariosDialogComponent, VerComentariosDialogData } from "../../../shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component";
+import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion } from '@core/models/procesos.model';
+import { RequestStatusTableComponent } from "@shared/components/request-status/request-status.component";
+import { FileUploadComponent } from "@shared/components/file-upload-dialog/file-upload-dialog.component";
+import { RequiredDocsComponent } from "@shared/components/required-docs/required-docs.component";
+import { VerComentariosDialogComponent, VerComentariosDialogData } from "@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component";
 
-import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
-import { FormatosInstitucionalesService } from '../../../core/services/formatos-institucionales.service';
+import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { FormatosInstitucionalesService } from '@core/services/formatos-institucionales.service';
 import { MatDialog } from '@angular/material/dialog';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
+import { LoggerService } from '@core/services/logger.service';
+import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 
-import { Solicitud } from '../../../core/models/procesos.model';
-import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '../../../core/utils/texto.util';
-import { getPeriodoActual } from '../../../core/utils/periodo.utils';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { Solicitud } from '@core/models/procesos.model';
+import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '@core/utils/texto.util';
+import { getPeriodoActual } from '@core/utils/periodo.utils';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 /** Palabras que identifican cada documento requerido, para reconocer archivos con otro nombre. */
 const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {

@@ -8,15 +8,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
-import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { SolicitudesBandejaComponent } from '../../../shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
+import { PazSalvoService } from '@core/services/paz-salvo.service';
+import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion, DocumentosDTORespuesta } from '@core/models/procesos.model';
+import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
 import { aDocumentos } from './paz-salvo-filas';
-import { estadoActual } from '../../../core/utils/estado-solicitud.util';
-import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
-import { SnackbarService, TipoSnackbar } from '../../../core/services/snackbar.service';
+import { estadoActual } from '@core/utils/estado-solicitud.util';
+import { TextoDialogComponent, datosRechazo } from '@shared/components/texto-dialog/texto-dialog.component';
+import { SnackbarService, TipoSnackbar } from '@core/services/snackbar.service';
 
 /** Roles que revisan paz y salvo con esta pantalla. Secretaría tiene su propio flujo (oficio). */
 export type RolRevisionPazSalvo = 'funcionario' | 'coordinador';

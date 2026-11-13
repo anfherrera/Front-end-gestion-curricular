@@ -7,14 +7,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/models/cursos-intersemestrales.model';
-import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
-import { AuthService } from '../../../../core/services/auth.service';
-import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
-import { estadoCurso, } from '../../../../core/utils/cursos-verano.utils';
-import { formatearFecha } from '../../../../core/utils/fecha.util';
-import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
+import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
+import { CursoOfertadoVerano, DashboardEstadisticas } from '@core/models/cursos-intersemestrales.model';
+import { CursoEstadosService } from '@core/services/curso-estados.service';
+import { AuthService } from '@core/services/auth.service';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { estadoCurso, } from '@core/utils/cursos-verano.utils';
+import { formatearFecha } from '@core/utils/fecha.util';
+import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 
 @Component({
   selector: 'app-dashboard-cursos-intersemestrales',

@@ -5,10 +5,9 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
-import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
-import { errorInterceptor } from './core/interceptors/error.interceptor';
-import { loginRateLimitInterceptor } from './core/interceptors/login-rate-limit.interceptor';
-import { PreinscripcionDialogComponent } from './shared/components/preinscripcion-dialog/preinscripcion-dialog.component';
+import { JwtInterceptor } from '@core/interceptors/jwt.interceptor';
+import { errorInterceptor } from '@core/interceptors/error.interceptor';
+import { loginRateLimitInterceptor } from '@core/interceptors/login-rate-limit.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -36,7 +35,6 @@ export const appConfig: ApplicationConfig = {
       ]), 
       withFetch()
     ),
-    importProvidersFrom(BrowserAnimationsModule),
-    PreinscripcionDialogComponent
+    importProvidersFrom(BrowserAnimationsModule)
   ]
 };

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { RoleGuard } from './core/guards/role.guard';
-import { UserRole } from './core/enums/roles.enum';
+import { authGuard } from '@core/guards/auth.guard';
+import { RoleGuard } from '@core/guards/role.guard';
+import { UserRole } from '@core/enums/roles.enum';
 import { CommonRoutes } from './pages/common/common.routes';
 
 // Subcomponentes de cursos intersemestrales
