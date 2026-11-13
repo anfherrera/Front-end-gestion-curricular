@@ -1,0 +1,130 @@
+<!-- Resumen -->
+<mat-card class="resumen-recomendaciones-card">
+  <mat-card-header>
+    <mat-card-title>Resumen de Recomendaciones</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="stats-grid">
+      <div class="stat alta">
+        <div class="numero">{{ estadisticas().prioridadAlta || 0 }}</div>
+        <div class="label">Prioridad alta</div>
+      </div>
+      <div class="stat media">
+        <div class="numero">{{ estadisticas().prioridadMedia || 0 }}</div>
+        <div class="label">Prioridad media</div>
+      </div>
+      <div class="stat baja">
+        <div class="numero">{{ estadisticas().prioridadBaja || 0 }}</div>
+        <div class="label">Prioridad baja</div>
+      </div>
+      @if ((estadisticas().alertasCriticas ?? 0) > 0) {
+        <div class="stat critica">
+          <div class="numero">{{ estadisticas().alertasCriticas }}</div>
+          <div class="label">Críticas</div>
+        </div>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- Alertas críticas -->
+@for (alerta of alertasCriticas(); track $index) {
+  <mat-card class="alerta-critica-card">
+    <mat-card-content>
+      <h3>{{ alerta.titulo }}</h3>
+      <p>{{ alerta.descripcion }}</p>
+      <div class="acciones-urgentes">
+        <strong>Acciones urgentes</strong>
+        <ul>
+          @for (accion of alerta.acciones; track $index) {
+            <li>{{ accion }}</li>
+          }
+        </ul>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+
+<!-- Recomendaciones, de la más a la menos prioritaria -->
+<div class="recomendaciones-list">
+  @for (rec of ordenadas(); track rec.id) {
+    <mat-card class="rec-card" [style.border-left-color]="colorPrioridad(rec.prioridad)">
+      <mat-card-content>
+        <div class="header">
+          <span class="badge" [style.background]="colorPrioridad(rec.prioridad)">
+            {{ etiquetaPrioridad(rec.prioridad) }}
+          </span>
+          <h3>{{ rec.titulo }}</h3>
+          <button mat-icon-button class="btn-expandir" (click)="alternar(rec.id)"
+                  [attr.aria-label]="expandidas().has(rec.id) ? 'Ver menos' : 'Ver más'">
+            <mat-icon>{{ expandidas().has(rec.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+        </div>
+
+        <p class="descripcion">{{ rec.descripcion }}</p>
+
+        @if (rec.demandaActual) {
+          <div class="seccion">
+            <strong>Proyección</strong>
+            <p>{{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes
+               ({{ (rec.porcentajeCrecimiento ?? 0) > 0 ? '+' : '' }}{{ rec.porcentajeCrecimiento }}%)</p>
+          </div>
+        }
+
+        @if (rec.recursos) {
+          <div class="seccion">
+            <strong>Recursos necesarios</strong>
+            <ul>
+              <li>{{ rec.recursos.docentes }} docente(s) especializado(s)</li>
+              <li>{{ rec.recursos.aulas }} aula(s) o laboratorio(s)</li>
+              @if (rec.recursos.laboratorios) {
+                <li>{{ rec.recursos.laboratorios }} laboratorio(s)</li>
+              }
+              <li>{{ rec.recursos.gruposRecomendados }} grupo(s) de {{ rec.recursos.capacidadPorGrupo }} estudiantes</li>
+            </ul>
+          </div>
+        }
+
+        <div class="seccion">
+          <strong>Acciones recomendadas</strong>
+          <ul>
+            @for (accion of rec.acciones; track $index) {
+              <li>{{ accion }}</li>
+            }
+          </ul>
+        </div>
+
+        @if (expandidas().has(rec.id)) {
+          <div class="detalles-expandidos">
+            @if (rec.impacto) {
+              <div class="seccion">
+                <strong>Impacto esperado</strong>
+                <ul>
+                  <li>Estudiantes atendidos: {{ rec.impacto.estudiantesAtendidos }}</li>
+                  <li>Estudiantes beneficiados: {{ rec.impacto.estudiantesBeneficiados }}</li>
+                  <li>Cobertura objetivo: {{ rec.impacto.tasaCoberturaObjetivo }}</li>
+                </ul>
+              </div>
+            }
+            <div class="seccion justificacion">
+              <strong>Justificación</strong>
+              <p>{{ rec.justificacion }}</p>
+            </div>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
+
+@if (recomendaciones().length === 0) {
+  <mat-card class="no-data-card">
+    <mat-card-content>
+      <div class="no-data">
+        <mat-icon>info</mat-icon>
+        <p>No hay recomendaciones disponibles en este momento.</p>
+        <p>Las recomendaciones se generan automáticamente basándose en el análisis de tendencias y predicciones.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

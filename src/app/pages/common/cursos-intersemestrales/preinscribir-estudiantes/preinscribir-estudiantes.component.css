@@ -458,107 +458,7 @@
   flex-wrap: wrap;
 }
 
-/* Forzar estilos en todos los botones de la tabla usando ::ng-deep */
 
-::ng-deep .preinscripciones-table .btn-rechazar {
-  background-color: var(--color-error) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 6px !important;
-  font-weight: 500 !important;
-  text-transform: none !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: var(--sombra-1) !important;
-}
-
-::ng-deep .preinscripciones-table .btn-rechazar:hover {
-  background-color: #e53935 !important;
-  transform: translateY(-1px) !important;
-  box-shadow: var(--sombra-1) !important;
-}
-
-::ng-deep .preinscripciones-table .btn-rechazar .mat-icon {
-  color: white !important;
-  font-size: 16px !important;
-  width: 16px !important;
-  height: 16px !important;
-}
-
-/* Forzar estilos en todos los botones mat-raised-button */
-
-::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar {
-  background-color: var(--color-error) !important;
-  color: white !important;
-  border: none !important;
-}
-
-/* Forzar estilos en el contenido de los botones */
-::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar .mat-button-wrapper {
-  color: white !important;
-}
-
-/* Forzar estilos en los iconos dentro de los botones */
-::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar mat-icon {
-  color: white !important;
-}
-
-/* Forzar estilos para Material Design button states */
-
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar {
-  --mdc-filled-button-container-color: var(--color-error) !important;
-  --mdc-filled-button-label-text-color: white !important;
-  background-color: var(--color-error) !important;
-  color: white !important;
-}
-
-/* Forzar estilos para hover states de Material Design */
-
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar:hover {
-  --mdc-filled-button-hover-state-layer-color: rgba(255, 255, 255, 0.08) !important;
-  background-color: #e53935 !important;
-}
-
-/* Forzar estilos para el contenido de los botones Material Design */
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mdc-button__label {
-  color: white !important;
-}
-
-/* Forzar texto blanco en todos los elementos de texto de los botones */
-::ng-deep .preinscripciones-table .btn-rechazar * {
-  color: white !important;
-}
-
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar * {
-  color: white !important;
-}
-
-/* Forzar texto blanco en elementos específicos de Material Design */
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar span,
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mat-button-wrapper,
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mdc-button__label {
-  color: white !important;
-}
-
-/* Forzar estilos para iconos en botones Material Design */
-::ng-deep .preinscripciones-table .mat-mdc-raised-button.btn-rechazar .mat-icon {
-  color: white !important;
-  --mdc-icon-color: white !important;
-}
-
-/* Forzar iconos blancos en todos los botones de la tabla */
-::ng-deep .preinscripciones-table .btn-rechazar mat-icon,
-::ng-deep .preinscripciones-table .btn-rechazar .mat-icon,
-::ng-deep .preinscripciones-table .btn-rechazar .material-icons {
-  color: white !important;
-  --mdc-icon-color: white !important;
-}
-
-/* Forzar iconos blancos en botones mat-raised-button */
-::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar mat-icon,
-::ng-deep .preinscripciones-table button[mat-raised-button].btn-rechazar .mat-icon {
-  color: white !important;
-  --mdc-icon-color: white !important;
-}
 
 /* Responsive para botones */
 @media (max-width: 768px) {
@@ -577,36 +477,7 @@
 
 }
 
-/* ===== ESTILOS PARA EL MODAL DE RECHAZO ===== */
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
-  display: none;
-}
-
-.close {
-  padding: 1rem 1rem;
-  margin: -1rem -1rem -1rem auto;
-  background: transparent;
-  border: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  opacity: 0.5;
-  cursor: pointer;
-}
-
-.close:hover {
-  opacity: 0.75;
-}
 
 /* Botones de iconos circulares - estilo consistente */
 .acciones-container button[mat-icon-button] {

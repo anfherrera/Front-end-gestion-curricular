@@ -25,16 +25,9 @@ import { EstadisticasService } from '@core/services/estadisticas.service';
 import { esErrorDeAcceso, mensajeErrorDeAcceso } from '@core/utils/http-error.utils';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { descargarBlob } from '@core/utils/download.util';
-import { AlertaCritica, AnalisisPrograma, CursosVeranoResponse, EstadisticasRecomendaciones, PrioridadRecomendacion, Recomendacion, TendenciaTemporal, TopMateria } from '@core/models/estadisticas/cursos-verano.model';
+import { AlertaCritica, AnalisisPrograma, CursosVeranoResponse, EstadisticasRecomendaciones, Recomendacion, TendenciaTemporal, TopMateria } from '@core/models/estadisticas/cursos-verano.model';
 import { SnackbarService } from '@core/services/snackbar.service';
-
-const ORDEN_PRIORIDAD: Record<PrioridadRecomendacion, number> = { CRITICA: 0, ALTA: 1, MEDIA: 2, BAJA: 3 };
-const COLOR_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
-  CRITICA: '#DC2626',
-  ALTA: '#EF4444',
-  MEDIA: '#F59E0B',
-  BAJA: '#10B981'
-};
+import { RecomendacionesCursosVeranoComponent } from './recomendaciones-cursos-verano/recomendaciones-cursos-verano.component';
 
 interface FiltrosCursosVerano { periodoAcademico?: string; idPrograma?: number }
 
@@ -63,7 +56,8 @@ Chart.register(...registerables);
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    PeriodoFiltroSelectorComponent
+    PeriodoFiltroSelectorComponent,
+    RecomendacionesCursosVeranoComponent
   ],
   templateUrl: './cursos-verano-dashboard.component.html',
   styleUrls: ['../dashboard-comun.css', './cursos-verano-dashboard.component.css']
@@ -91,8 +85,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   recomendaciones: Recomendacion[] = [];
   alertasCriticas: AlertaCritica[] = [];
   estadisticasRecomendaciones: Partial<EstadisticasRecomendaciones> = {};
-  expandidas = new Set<string>();
-  totalRecomendaciones = 0;
 
   // ===== GRÁFICOS =====
   chartMaterias: Chart | null = null;
@@ -228,11 +220,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         if (response.predicciones) {
           this.alertasCriticas = response.predicciones.alertasCriticas || [];
           this.estadisticasRecomendaciones = response.predicciones.estadisticasRecomendaciones || {};
-          this.totalRecomendaciones = this.estadisticasRecomendaciones.totalRecomendaciones || this.recomendaciones.length;
         }
-        
-        // Ordenar recomendaciones por prioridad
-        this.ordenarPorPrioridad();
         this.ultimaActualizacion = new Date(); // Actualizar timestamp
         this.loading = false;
         
@@ -440,54 +428,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       case 'ESTABLE': return '#ffc107';
       default: return '#6c757d';
     }
-  }
-
-  // ===== MÉTODOS PARA PREDICCIONES Y RECOMENDACIONES =====
-
-  /**
-   * Ordena las recomendaciones por prioridad
-   */
-  ordenarPorPrioridad(): void {
-    const orden = (r: Recomendacion) => ORDEN_PRIORIDAD[r.prioridad] ?? 999;
-    this.recomendaciones.sort((a, b) => orden(a) - orden(b));
-  }
-
-  /**
-   * Alterna el estado expandido de una recomendación
-   */
-  toggleExpandir(id: string): void {
-    if (this.expandidas.has(id)) {
-      this.expandidas.delete(id);
-    } else {
-      this.expandidas.add(id);
-    }
-  }
-
-  /**
-   * Verifica si una recomendación está expandida
-   */
-  estaExpandida(id: string): boolean {
-    return this.expandidas.has(id);
-  }
-
-  /**
-   * Obtiene el color según la prioridad
-   */
-  getColorPrioridad(prioridad: string): string {
-    return COLOR_PRIORIDAD[prioridad as PrioridadRecomendacion] || '#6B7280';
-  }
-
-  /**
-   * Etiqueta legible de la prioridad (Crítica, Alta, Media, Baja)
-   */
-  etiquetaPrioridad(prioridad: string): string {
-    const etiquetas: Record<string, string> = {
-      CRITICA: 'Crítica',
-      ALTA: 'Alta',
-      MEDIA: 'Media',
-      BAJA: 'Baja'
-    };
-    return etiquetas[(prioridad || '').toUpperCase()] || prioridad;
   }
 
   /**
