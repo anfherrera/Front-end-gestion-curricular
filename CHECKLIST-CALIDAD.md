@@ -39,12 +39,14 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - [x] Se elimina la página **Ajustes**: ningún valor que guardaba se leía en otra parte, y tres botones solo decían “próximamente”. Se quitan su ruta, la entrada del menú lateral, la opción del menú de usuario del header, la tarjeta del home y la miga de pan
 
 ### Pendiente detectado al cerrar la fase
-- [ ] Aviso de build: `file-saver` no es ESM. Hay que reemplazarlo por [download.util.ts](src/app/core/utils/download.util.ts) en [document-generator.service.ts](src/app/core/services/document-generator.service.ts) y desinstalar `file-saver` y `@types/file-saver`
+- [x] Aviso de build: `file-saver` no era ESM. [document-generator.service.ts](src/app/core/services/document-generator.service.ts) usa ahora `descargarBlob` de [download.util.ts](src/app/core/utils/download.util.ts) y se desinstalan `file-saver` y `@types/file-saver`. `ng build` ya no da avisos
 - [ ] Revisar a ojo el modal de inscripción a cursos y las páginas del estudiante (paz y salvo, homologación, reingreso) con datos reales
 
 ---
 
 ## Fase 2 — Código repetido (servicios, utilidades y componentes pequeños)
+
+Hecha el 2026-11-13 salvo `ApiService`. Cada bloque se verificó con `ng build`, `ng test` (526/526 al terminar; 499 al empezar) y `test:navegacion` sin backend.
 
 ### Servicios duplicados
 - [x] Hay dos `ErrorHandlerService`: queda solo [core/services/error-handler.service.ts](src/app/core/services/error-handler.service.ts). El de `shared/components/error-handler/` (264 líneas) se borra: su único uso real era `handleCargaError('cursos')` en `gestionar-cursos`, que pasa a `SnackbarService.warning()`

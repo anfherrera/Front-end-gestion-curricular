@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { DocumentRequest, DocumentTemplate } from '../../shared/components/document-generator/document-generator.component';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
-import { saveAs } from 'file-saver';
+import { descargarBlob } from '../utils/download.util';
 import { environment } from '../../../environments/environment';
 import { formatearFecha } from '../utils/fecha.util';
 
@@ -816,8 +816,7 @@ export class DocumentGeneratorService {
    * Descargar archivo generado
    */
   descargarArchivo(blob: Blob, nombreArchivo: string): void {
-    // Usar file-saver para descargar el archivo Word
-    saveAs(blob, nombreArchivo);
+    descargarBlob(blob, nombreArchivo);
   }
 
   /**
