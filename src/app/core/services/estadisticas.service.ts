@@ -3,17 +3,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, map, catchError, shareReplay } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { ProgramasService } from './programas.service';
-import {
-  ResumenCompletoAPI,
-  FiltroEstadisticas, TotalEstudiantesResponse,
-  EstudiantesPorProgramaResponse,
-  EstadisticasPorProcesoResponse,
-  EstadoSolicitudesResponse,
-  TendenciasComparativasResponse, EstadisticasPorProgramaMejoradasResponse,
-  EstadisticasPorPeriodoMejoradasResponse,
-  CursosVeranoResponse,
-  TendenciaTemporal
-} from '../models/estadisticas.model';
+import { ResumenCompletoAPI, FiltroEstadisticas, TotalEstudiantesResponse, EstudiantesPorProgramaResponse, EstadisticasPorProcesoResponse, EstadoSolicitudesResponse } from '../models/estadisticas/generales.model';
+import { TendenciasComparativasResponse } from '../models/estadisticas/tendencias.model';
+import { EstadisticasPorProgramaMejoradasResponse, EstadisticasPorPeriodoMejoradasResponse } from '../models/estadisticas/mejoradas.model';
+import { CursosVeranoResponse, TendenciaTemporal } from '../models/estadisticas/cursos-verano.model';
 
 @Injectable({
   providedIn: 'root'

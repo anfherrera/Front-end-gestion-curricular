@@ -1,5 +1,6 @@
 import type { ChartConfiguration, TooltipItem } from 'chart.js';
-import { EstadisticasPorPeriodoMejoradasResponse, ProcesoDetallado } from '@core/models/estadisticas.model';
+import { EstadisticasPorPeriodoMejoradasResponse } from '@core/models/estadisticas/mejoradas.model';
+import { ProcesoDetallado } from '@core/models/estadisticas/generales.model';
 
 /** Configuraciones de Chart.js del dashboard estadístico. Sin animaciones, por rendimiento. */
 

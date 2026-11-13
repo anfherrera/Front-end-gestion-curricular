@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
 import { EstadisticasService } from '@core/services/estadisticas.service';
-import { EstudiantesPorProgramaResponse, ProgramaData } from '@core/models/estadisticas.model';
+import { EstudiantesPorProgramaResponse, ProgramaData } from '@core/models/estadisticas/generales.model';
 
 @Component({
   selector: 'app-estudiantes-por-programa',

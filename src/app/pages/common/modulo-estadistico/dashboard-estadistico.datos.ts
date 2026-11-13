@@ -1,14 +1,4 @@
-import {
-  EstadisticasPorProcesoResponse,
-  EstadisticasProceso,
-  EstadisticasPrograma,
-  EstadoSolicitudesResponse,
-  EstudiantesPorProgramaResponse,
-  FiltroEstadisticas,
-  KPIData,
-  ResumenCompleto,
-  ResumenCompletoAPI
-} from '@core/models/estadisticas.model';
+import { EstadisticasPorProcesoResponse, EstadisticasProceso, EstadisticasPrograma, EstadoSolicitudesResponse, EstudiantesPorProgramaResponse, FiltroEstadisticas, KPIData, ResumenCompleto, ResumenCompletoAPI } from '@core/models/estadisticas/generales.model';
 
 /** Filtros tal como los aceptan los endpoints de estadísticas. */
 export interface FiltrosBackend {

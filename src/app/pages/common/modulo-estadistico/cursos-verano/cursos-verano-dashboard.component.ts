@@ -25,16 +25,7 @@ import { EstadisticasService } from '@core/services/estadisticas.service';
 import { esErrorDeAcceso, mensajeErrorDeAcceso } from '@core/utils/http-error.utils';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { descargarBlob } from '@core/utils/download.util';
-import {
-  AlertaCritica,
-  AnalisisPrograma,
-  CursosVeranoResponse,
-  EstadisticasRecomendaciones,
-  PrioridadRecomendacion,
-  Recomendacion,
-  TendenciaTemporal,
-  TopMateria
-} from '@core/models/estadisticas.model';
+import { AlertaCritica, AnalisisPrograma, CursosVeranoResponse, EstadisticasRecomendaciones, PrioridadRecomendacion, Recomendacion, TendenciaTemporal, TopMateria } from '@core/models/estadisticas/cursos-verano.model';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 const ORDEN_PRIORIDAD: Record<PrioridadRecomendacion, number> = { CRITICA: 0, ALTA: 1, MEDIA: 2, BAJA: 3 };

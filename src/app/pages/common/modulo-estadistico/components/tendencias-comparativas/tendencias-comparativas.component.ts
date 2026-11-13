@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
 
 import { EstadisticasService } from '@core/services/estadisticas.service';
-import { TendenciasComparativasResponse } from '@core/models/estadisticas.model';
+import { TendenciasComparativasResponse } from '@core/models/estadisticas/tendencias.model';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({

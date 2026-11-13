@@ -26,7 +26,7 @@ import { EstadisticasPorProcesoComponent } from './components/estadisticas-por-p
 import { EstadisticasPorEstadoComponent } from './components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { TendenciasComparativasComponent } from './components/tendencias-comparativas/tendencias-comparativas.component';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { FiltroEstadisticas, KPIData, ResumenCompleto } from '@core/models/estadisticas.model';
+import { FiltroEstadisticas, KPIData, ResumenCompleto } from '@core/models/estadisticas/generales.model';
 import {
   TITULO_KPI_ESTUDIANTES,
   filtrosDelFormulario,
