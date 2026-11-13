@@ -9,28 +9,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-
-export interface DocumentTemplate {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  camposRequeridos: string[];
-  camposOpcionales?: string[];
-}
-
-export interface DocumentData {
-  numeroDocumento: string;
-  fechaDocumento: Date;
-  observaciones?: string;
-  [key: string]: any; // Para campos adicionales específicos del proceso
-}
-
-export interface DocumentRequest {
-  idSolicitud: number;
-  tipoDocumento: string;
-  datosDocumento: DocumentData;
-  datosSolicitud: any; // Datos de la solicitud (estudiante, programa, etc.)
-}
+import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate } from '@core/models/documento.model';
 
 @Component({
   selector: 'app-document-generator',
@@ -62,7 +41,7 @@ export class DocumentGeneratorComponent implements OnInit {
   @Output() tengoDocumento = new EventEmitter<void>();
 
   documentForm!: FormGroup;
-  datosSolicitud: any = {};
+  datosSolicitud: DatosSolicitudDocumento = { idSolicitud: 0, estado: 'Pendiente' };
 
   constructor(private fb: FormBuilder) {}
 

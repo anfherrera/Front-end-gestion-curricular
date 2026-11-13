@@ -12,7 +12,9 @@ import { SnackbarService } from '@core/services/snackbar.service';
 import { DocumentGeneratorService } from '@core/services/document-generator.service';
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
-import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '@shared/components/document-generator/document-generator.component';
+import { DocumentGeneratorComponent } from '@shared/components/document-generator/document-generator.component';
+import { DocumentRequest, DocumentTemplate } from '@core/models/documento.model';
+import { descargarBlob } from '@core/utils/download.util';
 import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
 import { aDocumentos } from '../../common/paz-salvo-revision/paz-salvo-filas';
 
@@ -133,7 +135,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
     this.documentGeneratorService.generarDocumento(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob) => {
         const nombreArchivo = `${request.tipoDocumento}_${nombreEstudiante}_${new Date().getFullYear()}.docx`;
-        this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
+        descargarBlob(blob, nombreArchivo);
         this.documentoGenerado = true;
         this.loading = false;
         this.snackbar.exito('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');

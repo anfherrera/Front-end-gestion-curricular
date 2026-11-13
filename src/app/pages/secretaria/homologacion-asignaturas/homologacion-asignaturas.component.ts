@@ -11,7 +11,9 @@ import { DocumentGeneratorService } from '@core/services/document-generator.serv
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
-import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '@shared/components/document-generator/document-generator.component';
+import { DocumentGeneratorComponent } from '@shared/components/document-generator/document-generator.component';
+import { DocumentRequest, DocumentTemplate } from '@core/models/documento.model';
+import { descargarBlob } from '@core/utils/download.util';
 import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
 import { ApprovedRequestsSectionComponent } from '@shared/components/approved-requests-section/approved-requests-section.component';
 import { LoggerService } from '@core/services/logger.service';
@@ -195,7 +197,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
         const nombreArchivo = `${request.tipoDocumento}_${this.selectedSolicitud!.objUsuario.nombre_completo}_${new Date().getFullYear()}.docx`;
 
         // Descargar archivo Word
-        this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
+        descargarBlob(blob, nombreArchivo);
 
         // Marcar que el documento fue generado (SIN cambiar el estado de la solicitud)
         this.documentoGenerado = true;
