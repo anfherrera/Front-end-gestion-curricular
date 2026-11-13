@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -50,6 +50,13 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrl: './pruebas-ecaes.component.css'
 })
 export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
+  pruebasEcaesService = inject(PruebasEcaesService);
+  private snackbar = inject(SnackbarService);
+  private fb = inject(FormBuilder);
+  private periodosService = inject(PeriodosAcademicosService);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+
   private destroy$ = new Subject<void>();
 
   // Formulario para publicar fechas
@@ -70,14 +77,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   // Ya no necesitamos la configuración de tabla, ahora usamos grid
 
-  constructor(
-    public pruebasEcaesService: PruebasEcaesService,
-    private snackbar: SnackbarService,
-    private fb: FormBuilder,
-    private periodosService: PeriodosAcademicosService,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
-  ) {
+  constructor() {
     this.fechasForm = this.fb.group({
       periodoAcademico: ['', Validators.required],
       inscripcion_est_by_facultad: ['', Validators.required],

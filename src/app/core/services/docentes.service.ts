@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DocenteDTOPeticion, DocenteDTORespuesta } from '../models/docente.interface';
@@ -8,9 +8,9 @@ import { environment } from '@env/environment';
   providedIn: 'root'
 })
 export class DocentesService {
-  private apiUrl = `${environment.apiUrl}/docentes`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/docentes`;
 
   listarDocentes(): Observable<DocenteDTORespuesta[]> {
     return this.http.get<DocenteDTORespuesta[]>(`${this.apiUrl}/listarDocentes`);

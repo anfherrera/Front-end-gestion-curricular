@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -39,17 +39,15 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./manage-roles.component.css']
 })
 export class ManageRolesComponent implements OnInit {
+  private rolesService = inject(RolesAdminService);
+  private errorHandler = inject(ErrorHandlerService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+
   roles: RolDTORespuesta[] = [];
   displayedColumns: string[] = ['id_rol', 'nombre', 'acciones'];
   loading = false;
   searchTerm = '';
-
-  constructor(
-    private rolesService: RolesAdminService,
-    private errorHandler: ErrorHandlerService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     this.cargarRoles();

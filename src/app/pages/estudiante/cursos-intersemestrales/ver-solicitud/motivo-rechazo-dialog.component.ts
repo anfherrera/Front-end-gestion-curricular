@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -94,5 +94,5 @@ export interface MotivoRechazoDialogData {
   `]
 })
 export class MotivoRechazoDialogComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: MotivoRechazoDialogData) {}
+  data = inject<MotivoRechazoDialogData>(MAT_DIALOG_DATA);
 }

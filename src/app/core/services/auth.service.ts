@@ -1,5 +1,5 @@
 // src/app/core/services/auth.service.ts
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -16,6 +16,12 @@ import { SnackbarService } from './snackbar.service';
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private activityMonitor = inject(ActivityMonitorService);
+  private platformId = inject(PLATFORM_ID);
+  private snackbar = inject(SnackbarService);
+
   private readonly TOKEN_KEY = 'token';
   private readonly USER_KEY = 'usuario';
   private readonly ROLE_KEY = 'userRole';
@@ -25,13 +31,7 @@ export class AuthService {
   role$ = this.roleSubject.asObservable();
   private logoutTimer: any;
 
-  constructor(
-    private router: Router,
-    private http: HttpClient,
-    private activityMonitor: ActivityMonitorService,
-    @Inject(PLATFORM_ID) private platformId: object,
-    private snackbar?: SnackbarService
-  ) {
+  constructor() {
     this.restoreRoleFromStorage(); // restaura rol al recargar la página
     this.setupActivityMonitoring(); // configura el monitoreo de actividad
   }

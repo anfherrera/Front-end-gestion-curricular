@@ -1,5 +1,5 @@
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
@@ -32,6 +32,12 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private snackbar = inject(SnackbarService);
+  private logger = inject(LoggerService);
+
   loginForm: FormGroup;
   hide = true;
   errorMensaje = '';
@@ -41,13 +47,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   loginDisabled = false;
   private rateSub?: Subscription;
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private snackbar: SnackbarService,
-    private logger: LoggerService
-  ) {
+  constructor() {
     this.loginForm = this.fb.group({
       correo: ['', [Validators.required, Validators.email, this.unicaucaEmailValidator]],
       password: ['', [Validators.required, Validators.minLength(8)]],

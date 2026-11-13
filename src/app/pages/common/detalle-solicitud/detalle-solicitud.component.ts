@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -84,17 +84,15 @@ interface DetalleSolicitud {
   styleUrls: ['../estados-solicitud-comun.css', './detalle-solicitud.component.css']
 })
 export class DetalleSolicitudComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private historialService = inject(HistorialSolicitudesService);
+  private archivosService = inject(ArchivosService);
+  private snackbar = inject(SnackbarService);
+
   solicitud: DetalleSolicitud | null = null;
   loading = false;
   error: string | null = null;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private historialService: HistorialSolicitudesService,
-    private archivosService: ArchivosService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];

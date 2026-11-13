@@ -22,6 +22,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./cursos-preinscripcion.component.css']
 })
 export class CursosPreinscripcionComponent implements OnInit {
+  private cursosService = inject(CursosIntersemestralesService);
+  private authService = inject(AuthService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+
   cursos: Curso[] = [];
   /** Respuesta del backend, para abrir el diálogo con el curso completo. */
   cursosOriginales: CursoOfertadoVerano[] = [];
@@ -29,13 +34,6 @@ export class CursosPreinscripcionComponent implements OnInit {
   usuario: UsuarioSesion | null = null;
 
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    private cursosService: CursosIntersemestralesService,
-    private authService: AuthService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();

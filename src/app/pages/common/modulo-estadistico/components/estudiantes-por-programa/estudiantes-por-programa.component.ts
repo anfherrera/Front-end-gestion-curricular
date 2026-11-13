@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +24,8 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '@core/models/estad
   styleUrl: './estudiantes-por-programa.component.css'
 })
 export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnChanges {
+  private estadisticasService = inject(EstadisticasService);
+
   @Input() autoLoad = true;
   @Input() periodoAcademico?: string;
   @Input() idPrograma?: number;
@@ -35,8 +37,6 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
   error: string | null = null;
 
   private subscription: Subscription = new Subscription();
-
-  constructor(private estadisticasService: EstadisticasService) {}
 
   ngOnInit(): void {
     if (this.autoLoad) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,6 +39,12 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['../secretaria-comun.css', './homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
+  homologacionService = inject(HomologacionAsignaturasService);
+  private documentGeneratorService = inject(DocumentGeneratorService);
+  private snackbar = inject(SnackbarService);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
   solicitudesAprobadas: any[] = [];
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
@@ -57,13 +63,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    public homologacionService: HomologacionAsignaturasService,
-    private documentGeneratorService: DocumentGeneratorService,
-    private snackbar: SnackbarService,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
-  ) {
+  constructor() {
     // Inicializar plantilla para homologación
     this.template = {
       id: 'OFICIO_HOMOLOGACION',

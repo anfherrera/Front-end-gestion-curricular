@@ -191,7 +191,9 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 
 - [ ] **Tipado**: hay 282 `any` (los que más tienen: `api.service` con 20, `secretaria/reingreso` con 13, `form-usuario` con 11, `manage-processes` con 8). Reemplazarlos por las interfaces de `core/models`
 - [ ] **Suscripciones**: hay 430 `.subscribe(` y solo 195 `takeUntil`/`takeUntilDestroyed`. Revisar posibles fugas de memoria y usar `takeUntilDestroyed()`, el pipe `async` o `toSignal`
-- [ ] **Inyección de dependencias**: hoy se mezclan `inject()` (21 archivos) y el constructor (25). Elegir uno (recomendado: `inject()`)
+- [x] **Inyección de dependencias** (2026-11-13): todo usa `inject()`. Migración `ng generate @angular/core:inject` en 83 archivos (componentes, servicios, guards y un spec); `@angular-eslint/prefer-inject` pasa a `error`. Los avisos `prefer-inject` bajan de 282 a 0
+  - Spec ajustado: SEC-035-A creaba `new AuthService(router, http, …)`; ahora lo crea con `TestBed.runInInjectionContext(() => new AuthService())`
+  - Sin cambios visibles esperados
 - [ ] **Control flow**: hay 505 `*ngIf`, `*ngFor` y `*ngSwitch`. Migrar a `@if`, `@for` y `@switch` con `ng generate @angular/core:control-flow`
 - [ ] **`standalone: true`** sobra en Angular 19 porque ya es el valor por defecto; quitarlo de los 92 archivos
 - [ ] **Entradas y salidas**: pasar `@Input` y `@Output` a `input()` y `output()`, y el estado local a `signal()` (hoy hay 0 signals)

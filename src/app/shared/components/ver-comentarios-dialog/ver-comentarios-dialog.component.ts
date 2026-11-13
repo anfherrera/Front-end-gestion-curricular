@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,11 +28,9 @@ export interface VerComentariosDialogData {
   styleUrl: './ver-comentarios-dialog.component.css'
 })
 export class VerComentariosDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<VerComentariosDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: VerComentariosDialogData
-  ) {
-  }
+  dialogRef = inject<MatDialogRef<VerComentariosDialogComponent>>(MatDialogRef);
+  data = inject<VerComentariosDialogData>(MAT_DIALOG_DATA);
+
 
   /**
    * Verificar si hay comentario de rechazo

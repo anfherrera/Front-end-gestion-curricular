@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -50,6 +50,9 @@ import { filter } from 'rxjs/operators';
   `]
 })
 export class BreadcrumbComponent {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   items: { label: string; url: string }[] = [];
 
   private labels: Record<string, string> = {
@@ -82,10 +85,7 @@ export class BreadcrumbComponent {
     'historial-completo': 'Historial',
   };
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
+  constructor() {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => this.buildBreadcrumb());

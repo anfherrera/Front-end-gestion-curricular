@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Inject } from '@angular/core';
+
 import { CursoOfertadoVerano, EstudianteElegible } from '@core/models/cursos-intersemestrales.model';
 import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
 
@@ -24,10 +24,12 @@ import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
   styleUrl: './confirmacion-inscripcion-dialog.component.css'
 })
 export class ConfirmacionInscripcionDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmacionInscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible, curso: CursoOfertadoVerano | null }
-  ) {}
+  dialogRef = inject<MatDialogRef<ConfirmacionInscripcionDialogComponent>>(MatDialogRef);
+  data = inject<{
+    estudiante: EstudianteElegible;
+    curso: CursoOfertadoVerano | null;
+}>(MAT_DIALOG_DATA);
+
 
   confirmar(): void {
     this.dialogRef.close('confirmar');

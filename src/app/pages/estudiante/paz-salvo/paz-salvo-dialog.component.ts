@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -27,7 +27,8 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatDialogModule, MatButtonModule]
 })
 export class PazSalvoDialogComponent {
-  constructor(private dialogRef: MatDialogRef<PazSalvoDialogComponent>) {}
+  private dialogRef = inject<MatDialogRef<PazSalvoDialogComponent>>(MatDialogRef);
+
 
   onCancel() {
     this.dialogRef.close(false);

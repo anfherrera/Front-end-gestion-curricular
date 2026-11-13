@@ -1,5 +1,5 @@
 // src/app/layout/sidebar/sidebar.component.ts
-import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnChanges, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,16 +20,16 @@ import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-sa
   imports: [CommonModule, MatIconModule, MatButtonModule, RouterModule]
 })
 export class SidebarComponent implements OnChanges {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+
   @Input() isOpen = true;
   isSidebarOpen = true;
   menuItems: ConfigSidebarItem[] = [];
   private roleLower: UserRole;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private dialog: MatDialog
-  ) {
+  constructor() {
     // Intentar obtener el rol del localStorage primero
     let backendRole = this.authService.getRole();
     

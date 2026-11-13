@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -90,7 +90,8 @@ function aPeriodos(respuesta: RespuestaPeriodos | null): string[] {
  */
 @Injectable({ providedIn: 'root' })
 export class CursosIntersemestralesService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+
 
   // ====== PERÍODOS ACADÉMICOS ======
 

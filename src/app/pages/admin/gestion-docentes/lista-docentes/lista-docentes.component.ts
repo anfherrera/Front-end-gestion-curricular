@@ -39,18 +39,16 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./lista-docentes.component.css']
 })
 export class ListaDocentesComponent implements OnInit {
+  private docentesService = inject(DocentesService);
+  private errorHandler = inject(ErrorHandlerService);
+  private snackbar = inject(SnackbarService);
+  private router = inject(Router);
+
   private readonly dialog = inject(MatDialog);
   docentes: DocenteDTORespuesta[] = [];
   displayedColumns: string[] = ['id_docente', 'codigo_docente', 'nombre_docente', 'acciones'];
   loading = false;
   searchTerm = '';
-
-  constructor(
-    private docentesService: DocentesService,
-    private errorHandler: ErrorHandlerService,
-    private snackbar: SnackbarService,
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     this.cargarDocentes();

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -77,6 +77,11 @@ type NombreGrafico = 'chartProcesos' | 'chartTendencia' | 'chartDistribucion';
   styleUrls: ['./dashboard-comun.css', './dashboard-estadistico.component.css']
 })
 export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
+  private estadisticasService = inject(EstadisticasService);
+  private periodosService = inject(PeriodosAcademicosService);
+  private snackbar = inject(SnackbarService);
+  private fb = inject(FormBuilder);
+
   loading = false;
   error = false;
   errorMensaje: string | null = null;
@@ -103,13 +108,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private chartsCreados = false;
   /** Catálogo nombre de programa -> id_programa real. */
   private idsProgramaPorNombre = new Map<string, number>();
-
-  constructor(
-    private estadisticasService: EstadisticasService,
-    private periodosService: PeriodosAcademicosService,
-    private snackbar: SnackbarService,
-    private fb: FormBuilder
-  ) {}
 
   ngOnInit(): void {
     // El formulario se crea aquí y no en el constructor para evitar problemas de hidratación

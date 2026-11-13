@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,6 +33,10 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestroy {
+  private cursosService = inject(CursosIntersemestralesService);
+  private cursoEstadosService = inject(CursoEstadosService);
+  private authService = inject(AuthService);
+
   private destroy$ = new Subject<void>();
   
   usuario: UsuarioSesion | null = null;
@@ -47,12 +51,6 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
   inscripcionesPendientes = 0;
   
   cargandoEstadisticas = false;
-
-  constructor(
-    private cursosService: CursosIntersemestralesService,
-    private cursoEstadosService: CursoEstadosService,
-    private authService: AuthService
-  ) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();

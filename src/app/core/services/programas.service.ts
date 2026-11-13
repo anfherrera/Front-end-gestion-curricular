@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProgramaDTOPeticion, ProgramaDTORespuesta } from '../models/programa.interface';
@@ -8,9 +8,9 @@ import { environment } from '@env/environment';
   providedIn: 'root'
 })
 export class ProgramasService {
-  private apiUrl = `${environment.apiUrl}/programas`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/programas`;
 
   listarProgramas(): Observable<ProgramaDTORespuesta[]> {
     return this.http.get<ProgramaDTORespuesta[]>(`${this.apiUrl}/listarProgramas`);

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RolDTOPeticion, RolDTORespuesta } from '../models/rol.interface';
@@ -8,9 +8,9 @@ import { environment } from '@env/environment';
   providedIn: 'root'
 })
 export class RolesAdminService {
-  private apiUrl = `${environment.apiUrl}/roles`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/roles`;
 
   listarRoles(): Observable<RolDTORespuesta[]> {
     return this.http.get<RolDTORespuesta[]>(`${this.apiUrl}/listarRoles`);

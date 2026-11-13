@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
@@ -49,6 +49,13 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['../secretaria-comun.css', './reingreso-estudiante.component.css']
 })
 export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
+  reingresoService = inject(ReingresoEstudianteService);
+  private documentGeneratorService = inject(DocumentGeneratorService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;
 
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
@@ -69,14 +76,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    public reingresoService: ReingresoEstudianteService,
-    private documentGeneratorService: DocumentGeneratorService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
-  ) {
+  constructor() {
     // Inicializar plantilla para reingreso
     this.template = {
       id: 'RESOLUCION_REINGRESO',

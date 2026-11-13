@@ -29,6 +29,12 @@ const ERRORES_ENVIO: Record<number, string> = {
   styleUrls: ['./solicitudes.component.css']
 })
 export class SolicitudesComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private cursosService = inject(CursosIntersemestralesService);
+  private authService = inject(AuthService);
+  private snackbar = inject(SnackbarService);
+  private notificacionesService = inject(NotificacionesService);
+
   solicitudForm!: FormGroup;
   loading = false;
   solicitudEnviada = false;
@@ -38,14 +44,6 @@ export class SolicitudesComponent implements OnInit {
   usuario: UsuarioSesion | null = null;
 
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    private fb: FormBuilder,
-    private cursosService: CursosIntersemestralesService,
-    private authService: AuthService,
-    private snackbar: SnackbarService,
-    private notificacionesService: NotificacionesService
-  ) {}
 
   ngOnInit(): void {
     this.solicitudForm = this.fb.group({

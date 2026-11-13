@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UsuarioDTOPeticion, UsuarioDTORespuesta } from '../models/usuario.interface';
@@ -8,9 +8,9 @@ import { ApiEndpoints } from '../utils/api-endpoints';
   providedIn: 'root'
 })
 export class UsuariosService {
-  private apiUrl = `${ApiEndpoints.BASE_URL}/usuarios`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${ApiEndpoints.BASE_URL}/usuarios`;
 
   listarUsuarios(): Observable<UsuarioDTORespuesta[]> {
     return this.http.get<UsuarioDTORespuesta[]>(`${this.apiUrl}/listarUsuarios`);

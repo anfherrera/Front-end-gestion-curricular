@@ -39,6 +39,9 @@ export interface ServicioDocumentos {
   styleUrls: ['./documentation-viewer.component.css']
 })
 export class DocumentationViewerComponent implements OnInit {
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+
   @Input() documentos: Documento[] = [];
   @Input() solicitudId?: number;
   @Input() proceso: 'homologacion' | 'reingreso' | 'paz-salvo' | 'ecaes' = 'homologacion';
@@ -51,11 +54,6 @@ export class DocumentationViewerComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   displayedColumns: string[] = ['nombre', 'fecha', 'acciones'];
-
-  constructor(
-    private snackbar: SnackbarService,
-    private dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     // Inicializando componente

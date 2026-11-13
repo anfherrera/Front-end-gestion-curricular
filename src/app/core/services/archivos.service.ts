@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Archivo } from '../models/procesos.model';
@@ -9,9 +9,9 @@ import { environment } from '@env/environment';
   providedIn: 'root'
 })
 export class ArchivosService {
-  private apiUrl = `${environment.apiUrl}/archivos`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/archivos`;
 
   /**
    * Subir archivo PDF

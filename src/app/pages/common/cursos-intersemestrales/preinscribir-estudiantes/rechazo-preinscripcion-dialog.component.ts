@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Inject } from '@angular/core';
+
 import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-intersemestrales.model';
 
 // Componente del modal para rechazar preinscripción
@@ -26,16 +26,16 @@ import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-i
   styleUrl: './rechazo-preinscripcion-dialog.component.css'
 })
 export class RechazoPreinscripcionDialogComponent {
+  dialogRef = inject<MatDialogRef<RechazoPreinscripcionDialogComponent>>(MatDialogRef);
+  data = inject<{
+    solicitud: SolicitudCursoVerano;
+    curso?: CursoOfertadoVerano | null;
+}>(MAT_DIALOG_DATA);
+  private fb = inject(FormBuilder);
+
   rechazoForm: FormGroup;
 
-  constructor(
-    public dialogRef: MatDialogRef<RechazoPreinscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { 
-      solicitud: SolicitudCursoVerano,
-      curso?: CursoOfertadoVerano | null
-    },
-    private fb: FormBuilder
-  ) {
+  constructor() {
     this.rechazoForm = this.fb.group({
       motivo: ['', [Validators.required, Validators.minLength(10)]]
     });

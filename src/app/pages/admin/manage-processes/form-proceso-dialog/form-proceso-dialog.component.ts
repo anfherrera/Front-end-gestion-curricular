@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -36,16 +36,16 @@ export interface FormProcesoDialogData {
   styleUrl: './form-proceso-dialog.component.css'
 })
 export class FormProcesoDialogComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private procesosService = inject(ProcesosService);
+  private snackbar = inject(SnackbarService);
+  dialogRef = inject<MatDialogRef<FormProcesoDialogComponent>>(MatDialogRef);
+  data = inject<FormProcesoDialogData>(MAT_DIALOG_DATA);
+
   procesoForm: FormGroup;
   loading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private procesosService: ProcesosService,
-    private snackbar: SnackbarService,
-    public dialogRef: MatDialogRef<FormProcesoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: FormProcesoDialogData
-  ) {
+  constructor() {
     this.procesoForm = this.fb.group({
       nombre_proceso: ['', [
         Validators.required,

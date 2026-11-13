@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,6 +36,8 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RequestStatusTableComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
+
   @Input() solicitudes: Solicitud[] = [];
   @Input() showOficio = true;
   @Input() showComentarios = false;
@@ -48,8 +50,6 @@ export class RequestStatusTableComponent implements OnInit {
 
   displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
   selectedSolicitudId: number | null = null;
-
-  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     if (this.showOficio) {

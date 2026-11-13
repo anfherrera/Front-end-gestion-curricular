@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -54,6 +54,11 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
   styleUrls: ['./curso-dialog.component.css']
 })
 export class CursoDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<CursoDialogComponent>>(MatDialogRef);
+  data = inject<CursoDialogData>(MAT_DIALOG_DATA);
+  private cursosService = inject(CursosIntersemestralesService);
+  private snackbar = inject(SnackbarService);
+
   periodos: string[] = [];
   errorFechas: string | null = null;
   duracionSemanas = 0;
@@ -63,13 +68,6 @@ export class CursoDialogComponent implements OnInit {
   cargandoSalones = false;
 
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    public dialogRef: MatDialogRef<CursoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: CursoDialogData,
-    private cursosService: CursosIntersemestralesService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.cargarPeriodos();

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -25,17 +25,15 @@ import { RolesAdminService } from '@core/services/roles-admin.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  private docentesService = inject(DocentesService);
+  private programasService = inject(ProgramasService);
+  private rolesService = inject(RolesAdminService);
+
   loading = true;
   
   totalDocentes = 0;
   totalProgramas = 0;
   totalRoles = 0;
-
-  constructor(
-    private docentesService: DocentesService,
-    private programasService: ProgramasService,
-    private rolesService: RolesAdminService
-  ) {}
 
   ngOnInit(): void {
     this.cargarEstadisticas();

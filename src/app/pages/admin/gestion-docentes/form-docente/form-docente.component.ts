@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -31,18 +31,18 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./form-docente.component.css']
 })
 export class FormDocenteComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private docentesService = inject(DocentesService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private snackbar = inject(SnackbarService);
+
   docenteForm: FormGroup;
   isEditMode = false;
   docenteId?: number;
   loading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private docentesService: DocentesService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private snackbar: SnackbarService
-  ) {
+  constructor() {
     this.docenteForm = this.fb.group({
       codigo_docente: ['', [
         Validators.required,

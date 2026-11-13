@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +17,10 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./file-upload-dialog.component.css']
 })
 export class FileUploadComponent implements OnChanges {
+  private archivosService = inject(ArchivosService);
+  private pazSalvoService = inject(PazSalvoService);
+  private snackbar = inject(SnackbarService);
+
   @Input() archivos: Archivo[] = [];
   @Input() reset = false;                  // Para reiniciar desde el padre
   @Input() archivosExclusivos: string[] = []; // Archivos que son mutuamente exclusivos
@@ -24,12 +28,6 @@ export class FileUploadComponent implements OnChanges {
   @Output() archivosChange = new EventEmitter<Archivo[]>();
 
   cargando = false;
-
-  constructor(
-    private archivosService: ArchivosService,
-    private pazSalvoService: PazSalvoService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['reset'] && changes['reset'].currentValue) {

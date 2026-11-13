@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -63,6 +63,10 @@ Chart.register(...registerables);
   styleUrls: ['../dashboard-comun.css', './cursos-verano-dashboard.component.css']
 })
 export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
+  private estadisticasService = inject(EstadisticasService);
+  private snackbar = inject(SnackbarService);
+  private fb = inject(FormBuilder);
+
   // ===== PROPIEDADES DE DATOS =====
   data: CursosVeranoResponse | null = null;
   loading = true;
@@ -93,12 +97,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   // ===== SUBSCRIPCIONES =====
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private estadisticasService: EstadisticasService,
-    private snackbar: SnackbarService,
-    private fb: FormBuilder
-  ) {}
 
   ngOnInit(): void {
     // Inicializar formulario de filtros

@@ -54,6 +54,12 @@ interface ConfigRevision {
   styleUrls: ['./paz-salvo-revision.component.css']
 })
 export class PazSalvoRevisionComponent implements OnInit {
+  pazSalvoService = inject(PazSalvoService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+  private route = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild('bandeja') bandeja?: SolicitudesBandejaComponent<SolicitudHomologacionDTORespuesta>;
 
   rol: RolRevisionPazSalvo = 'funcionario';
@@ -64,14 +70,6 @@ export class PazSalvoRevisionComponent implements OnInit {
   selectedSolicitud: SolicitudHomologacionDTORespuesta | null = null;
   periodoAcademicoFiltro: string | null = null;
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    public pazSalvoService: PazSalvoService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog,
-    private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit(): void {
     this.rol = this.route.snapshot.data['rolRevision'] === 'coordinador' ? 'coordinador' : 'funcionario';

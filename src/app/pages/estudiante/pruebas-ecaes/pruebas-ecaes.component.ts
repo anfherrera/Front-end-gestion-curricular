@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -55,6 +55,17 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrl: './pruebas-ecaes.component.css'
 })
 export class PruebasEcaesComponent implements OnInit, OnDestroy {
+  private pruebasEcaesService = inject(PruebasEcaesService);
+  private archivosService = inject(ArchivosService);
+  private snackbar = inject(SnackbarService);
+  private fb = inject(FormBuilder);
+  private dialog = inject(MatDialog);
+  private notificacionesService = inject(NotificacionesService);
+  private authService = inject(AuthService);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+  private periodosService = inject(PeriodosAcademicosService);
+
 
   // Datos de fechas
   fechasEcaes: FechaEcaes[] = [];
@@ -87,18 +98,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private pruebasEcaesService: PruebasEcaesService,
-    private archivosService: ArchivosService,
-    private snackbar: SnackbarService,
-    private fb: FormBuilder,
-    private dialog: MatDialog,
-    private notificacionesService: NotificacionesService,
-    private authService: AuthService,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService,
-    private periodosService: PeriodosAcademicosService
-  ) {
+  constructor() {
     this.solicitudForm = this.fb.group({
       tipoDocumento: ['CC', [Validators.required, this.tipoDocumentoValido()]],
       numero_documento: ['', [Validators.required, Validators.minLength(6)]],

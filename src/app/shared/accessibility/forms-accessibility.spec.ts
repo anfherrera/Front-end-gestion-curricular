@@ -4,7 +4,7 @@
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // Componente de prueba con formulario típico
@@ -70,9 +70,11 @@ import { CommonModule } from '@angular/common';
   `]
 })
 class TestFormComponent {
+  private fb = inject(FormBuilder);
+
   testForm;
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.testForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],

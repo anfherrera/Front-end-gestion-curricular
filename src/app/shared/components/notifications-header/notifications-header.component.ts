@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,6 +38,12 @@ import {
   styleUrls: ['./notifications-header.component.css']
 })
 export class NotificationsHeaderComponent implements OnInit, OnDestroy {
+  private notificacionService = inject(NotificacionesService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private snackbar = inject(SnackbarService);
+  private cdr = inject(ChangeDetectorRef);
+
   @Input() userId?: number;
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   
@@ -46,15 +52,6 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   isLoading = false;
   private refreshInterval?: any;
   private notificacionesSubscription?: Subscription;
-
-
-  constructor(
-    private notificacionService: NotificacionesService,
-    private authService: AuthService,
-    private router: Router,
-    private snackbar: SnackbarService,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit(): void {
     this.cargarContador();

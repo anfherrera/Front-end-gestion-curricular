@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -35,6 +35,14 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./form-usuario.component.css']
 })
 export class FormUsuarioComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private usuariosService = inject(UsuariosService);
+  private rolesService = inject(RolesAdminService);
+  private programasService = inject(ProgramasService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private snackbar = inject(SnackbarService);
+
   usuarioForm: FormGroup;
   isEditMode = false;
   usuarioId?: number;
@@ -42,15 +50,7 @@ export class FormUsuarioComponent implements OnInit {
   roles: any[] = [];
   programas: any[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private usuariosService: UsuariosService,
-    private rolesService: RolesAdminService,
-    private programasService: ProgramasService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private snackbar: SnackbarService
-  ) {
+  constructor() {
     this.usuarioForm = this.fb.group({
       codigo: ['', [
         Validators.required, 

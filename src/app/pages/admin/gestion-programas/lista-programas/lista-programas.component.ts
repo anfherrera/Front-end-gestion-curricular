@@ -39,18 +39,16 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./lista-programas.component.css']
 })
 export class ListaProgramasComponent implements OnInit {
+  private programasService = inject(ProgramasService);
+  private errorHandler = inject(ErrorHandlerService);
+  private snackbar = inject(SnackbarService);
+  private router = inject(Router);
+
   private readonly dialog = inject(MatDialog);
   programas: ProgramaDTORespuesta[] = [];
   displayedColumns: string[] = ['id_programa', 'codigo', 'nombre_programa', 'acciones'];
   loading = false;
   searchTerm = '';
-
-  constructor(
-    private programasService: ProgramasService,
-    private errorHandler: ErrorHandlerService,
-    private snackbar: SnackbarService,
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     this.cargarProgramas();

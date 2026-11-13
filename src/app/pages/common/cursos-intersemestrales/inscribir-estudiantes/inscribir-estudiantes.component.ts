@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -52,6 +52,14 @@ import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripci
   styleUrls: ['../filtro-curso-comun.css', './inscribir-estudiantes.component.css']
 })
 export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
+  private cursosService = inject(CursosIntersemestralesService);
+  private fb = inject(FormBuilder);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+  private authService = inject(AuthService);
+
   private destroy$ = new Subject<void>();
   
   // Datos
@@ -75,15 +83,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     'acciones'
   ];
 
-  constructor(
-    private cursosService: CursosIntersemestralesService,
-    private fb: FormBuilder,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService,
-    private authService: AuthService
-  ) {
+  constructor() {
     this.filtroForm = this.fb.group({
       curso: ['', Validators.required]
     });

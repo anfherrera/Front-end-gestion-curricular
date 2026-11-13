@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -26,6 +26,9 @@ import { estadoCurso } from '@core/utils/cursos-verano.utils';
   styleUrl: './estado-filters.component.css'
 })
 export class EstadoFiltersComponent implements OnInit, OnDestroy {
+  private cursoEstadosService = inject(CursoEstadosService);
+  private cursosService = inject(CursosIntersemestralesService);
+
   @Input() cursos: CursoOfertadoVerano[] = [];
   @Output() cursosFiltradosChange = new EventEmitter<CursoOfertadoVerano[]>();
   @Output() estadoSeleccionadoChange = new EventEmitter<string>();
@@ -38,11 +41,6 @@ export class EstadoFiltersComponent implements OnInit, OnDestroy {
   conteosEstados: Record<string, number> = {};
   estadoInfo: EstadoCurso | undefined;
   cargandoFiltro = false;
-
-  constructor(
-    private cursoEstadosService: CursoEstadosService,
-    private cursosService: CursosIntersemestralesService
-  ) {}
 
   ngOnInit(): void {
     this.estadosDisponibles = this.cursoEstadosService.getEstadosDisponibles();

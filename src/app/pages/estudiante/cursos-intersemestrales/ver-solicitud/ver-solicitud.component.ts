@@ -45,19 +45,17 @@ const INSCRIPCION_RECHAZADA = ['PAGO_RECHAZADO', 'PAGO RECHAZADO', 'RECHAZADO'];
   styleUrls: ['./ver-solicitud.component.css']
 })
 export class VerSolicitudComponent implements OnInit {
+  private cursosService = inject(CursosIntersemestralesService);
+  private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
+  private snackbar = inject(SnackbarService);
+
   preinscripciones: PreinscripcionSeguimiento[] = [];
   inscripciones: InscripcionSeguimiento[] = [];
   cargando = true;
   usuario: UsuarioSesion | null = null;
 
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    private cursosService: CursosIntersemestralesService,
-    private authService: AuthService,
-    private dialog: MatDialog,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();

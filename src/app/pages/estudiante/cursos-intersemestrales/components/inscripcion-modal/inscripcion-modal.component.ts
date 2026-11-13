@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -39,6 +39,14 @@ const ERRORES_INSCRIPCION: Record<number, string> = {
   styleUrls: ['./inscripcion-modal.component.css']
 })
 export class InscripcionModalComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private dialogRef = inject<MatDialogRef<InscripcionModalComponent>>(MatDialogRef);
+  data = inject<InscripcionModalData>(MAT_DIALOG_DATA);
+  private cursosService = inject(CursosIntersemestralesService);
+  private authService = inject(AuthService);
+  private snackbar = inject(SnackbarService);
+  private notificacionesService = inject(NotificacionesService);
+
   inscripcionForm!: FormGroup;
   archivoSeleccionado: File | null = null;
   cargando = false;
@@ -47,15 +55,7 @@ export class InscripcionModalComponent implements OnInit {
 
   private destroyRef = inject(DestroyRef);
 
-  constructor(
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<InscripcionModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: InscripcionModalData,
-    private cursosService: CursosIntersemestralesService,
-    private authService: AuthService,
-    private snackbar: SnackbarService,
-    private notificacionesService: NotificacionesService
-  ) {
+  constructor() {
     this.inscripcionForm = this.fb.group({
       nombreCompleto: ['', Validators.required],
       codigo: ['', Validators.required]

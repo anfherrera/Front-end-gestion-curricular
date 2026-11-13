@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -57,6 +57,17 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
   styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
+  private homologacionService = inject(HomologacionAsignaturasService);
+  private formatosService = inject(FormatosInstitucionalesService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+  private notificacionesService = inject(NotificacionesService);
+  private authService = inject(AuthService);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+  private periodosService = inject(PeriodosAcademicosService);
+  private fb = inject(FormBuilder);
+
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
   private destroy$ = new Subject<void>();
@@ -77,18 +88,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   usuario: any = null;
   solicitudForm: FormGroup;
 
-  constructor(
-    private homologacionService: HomologacionAsignaturasService,
-    private formatosService: FormatosInstitucionalesService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog,
-    private notificacionesService: NotificacionesService,
-    private authService: AuthService,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService,
-    private periodosService: PeriodosAcademicosService,
-    private fb: FormBuilder
-  ) {
+  constructor() {
     // Inicializar formulario con los campos de información de la solicitud
     this.solicitudForm = this.fb.group({
       programa_origen: ['', [Validators.maxLength(200)]],

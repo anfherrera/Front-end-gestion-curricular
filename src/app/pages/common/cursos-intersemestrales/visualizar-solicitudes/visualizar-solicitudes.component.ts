@@ -54,6 +54,10 @@ const ESTADOS_TEXTO: Record<string, string> = {
   styleUrls: ['./visualizar-solicitudes.component.css']
 })
 export class VisualizarSolicitudesComponent implements OnInit {
+  private cursosService = inject(CursosIntersemestralesService);
+  private fb = inject(FormBuilder);
+  private snackbar = inject(SnackbarService);
+
   solicitudesFiltradas: SolicitudVisualizar[] = [];
   materias: MateriaFiltro[] = [];
   cargando = true;
@@ -64,11 +68,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
 
   private destroyRef = inject(DestroyRef);
 
-  constructor(
-    private cursosService: CursosIntersemestralesService,
-    private fb: FormBuilder,
-    private snackbar: SnackbarService
-  ) {
+  constructor() {
     // 0 = "Todas las materias"
     this.filtroForm = this.fb.group({ materia: [0] });
   }

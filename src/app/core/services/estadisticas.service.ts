@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, map, catchError, shareReplay } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
@@ -12,11 +12,12 @@ import { CursosVeranoResponse, TendenciaTemporal } from '../models/estadisticas/
   providedIn: 'root'
 })
 export class EstadisticasService {
+  private http = inject(HttpClient);
+  private programasService = inject(ProgramasService);
+
 
   /** Caché del catálogo nombre de programa → id_programa real (BD). */
   private idsProgramaPorNombre$?: Observable<Map<string, number>>;
-
-  constructor(private http: HttpClient, private programasService: ProgramasService) { }
 
   /**
    * Normaliza un nombre de programa para compararlo (minúsculas, sin tildes ni espacios extra).

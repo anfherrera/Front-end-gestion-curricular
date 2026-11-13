@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of, throwError, map } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
@@ -63,9 +63,9 @@ export enum TipoSolicitud {
   providedIn: 'root'
 })
 export class HistorialSolicitudesService {
-  private apiUrl = ApiEndpoints.SOLICITUDES.HISTORIAL;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = ApiEndpoints.SOLICITUDES.HISTORIAL;
 
   /**
    * Obtener historial completo de todas las solicitudes procesadas

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,6 +30,8 @@ import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate } from '@cor
   styleUrls: ['./document-generator.component.css']
 })
 export class DocumentGeneratorComponent implements OnInit {
+  private fb = inject(FormBuilder);
+
   @Input() solicitud!: any; // Datos de la solicitud
   @Input() template!: DocumentTemplate; // Plantilla del documento
   @Input() proceso!: string; // Tipo de proceso (homologacion, paz-salvo, etc.)
@@ -42,8 +44,6 @@ export class DocumentGeneratorComponent implements OnInit {
 
   documentForm!: FormGroup;
   datosSolicitud: DatosSolicitudDocumento = { idSolicitud: 0, estado: 'Pendiente' };
-
-  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.initializeForm();

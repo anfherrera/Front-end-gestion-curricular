@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProcesoDTOPeticion, ProcesoDTORespuesta } from '../models/proceso.interface';
@@ -8,9 +8,9 @@ import { environment } from '@env/environment';
   providedIn: 'root'
 })
 export class ProcesosService {
-  private apiUrl = `${environment.apiUrl}/procesos`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/procesos`;
 
   listarProcesos(): Observable<ProcesoDTORespuesta[]> {
     return this.http.get<ProcesoDTORespuesta[]>(`${this.apiUrl}/listarProcesos`);

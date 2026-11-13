@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -31,17 +31,17 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./formatos-institucionales.component.css']
 })
 export class FormatosInstitucionalesComponent implements OnInit {
+  private formatosService = inject(FormatosInstitucionalesService);
+  private fb = inject(FormBuilder);
+  private snackbar = inject(SnackbarService);
+
   formatos: FormatoInstitucional[] = [];
   editingId: FormatoId | null = null;
   editForm: FormGroup;
 
   readonly FORMATO_IDS = FORMATO_IDS;
 
-  constructor(
-    private formatosService: FormatosInstitucionalesService,
-    private fb: FormBuilder,
-    private snackbar: SnackbarService
-  ) {
+  constructor() {
     this.editForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(1)]],
       url: ['', [Validators.required, Validators.minLength(10)]]

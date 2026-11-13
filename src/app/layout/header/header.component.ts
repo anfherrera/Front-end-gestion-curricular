@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,6 +29,11 @@ import { formatearPeriodo } from '@core/utils/periodo.utils';
   ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private periodosService = inject(PeriodosAcademicosService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+
   @Output() toggleSidebar = new EventEmitter<void>();
 
   isSidebarOpen = true;
@@ -39,13 +44,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   periodoActual: PeriodoAcademico | null = null;
   periodoFormateado = '';
   private periodoSubscription?: Subscription;
-
-  constructor(
-    private authService: AuthService,
-    private periodosService: PeriodosAcademicosService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit(): void {
     const usuario = this.authService.getUsuario();

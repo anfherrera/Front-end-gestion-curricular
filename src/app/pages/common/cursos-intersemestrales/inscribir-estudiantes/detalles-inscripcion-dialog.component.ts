@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Inject } from '@angular/core';
+
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import { EstudianteElegible } from '@core/models/cursos-intersemestrales.model';
 import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
@@ -37,16 +37,16 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrl: './detalles-inscripcion-dialog.component.css'
 })
 export class DetallesInscripcionDialogComponent {
-  private destroyRef = inject(DestroyRef);
+  dialogRef = inject<MatDialogRef<DetallesInscripcionDialogComponent>>(MatDialogRef);
+  data = inject<{
+    estudiante: EstudianteElegible;
+}>(MAT_DIALOG_DATA);
+  private cursosService = inject(CursosIntersemestralesService);
+  private snackbar = inject(SnackbarService);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
 
-  constructor(
-    public dialogRef: MatDialogRef<DetallesInscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible },
-    private cursosService: CursosIntersemestralesService,
-    private snackbar: SnackbarService,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
-  ) {}
+  private destroyRef = inject(DestroyRef);
 
   async descargarComprobante(): Promise<void> {
     this.logger.debug('Descargando comprobante de pago');

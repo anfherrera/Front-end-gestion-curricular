@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -32,21 +32,19 @@ const ERRORES_POR_CODIGO: Record<string, string> = {
   styleUrls: ['./preinscripcion-dialog.component.css']
 })
 export class PreinscripcionDialogComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private dialogRef = inject<MatDialogRef<PreinscripcionDialogComponent>>(MatDialogRef);
+  data = inject<PreinscripcionDialogData>(MAT_DIALOG_DATA);
+  private cursosService = inject(CursosIntersemestralesService);
+  private authService = inject(AuthService);
+  private snackbar = inject(SnackbarService);
+
   preinscripcionForm!: FormGroup;
   loading = false;
   usuario: UsuarioSesion | null = null;
   condiciones: CondicionSolicitudVerano[] = [];
 
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<PreinscripcionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: PreinscripcionDialogData,
-    private cursosService: CursosIntersemestralesService,
-    private authService: AuthService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.preinscripcionForm = this.fb.group({

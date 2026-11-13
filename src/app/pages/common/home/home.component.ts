@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +24,10 @@ import { PazSalvoDialogComponent } from '../../estudiante/paz-salvo/paz-salvo-di
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+
   role: string | null = null;
   roleLower: string | null = null;
   userName = '';
@@ -46,12 +50,6 @@ export class HomeComponent implements OnInit {
     { name: 'Módulo Estadístico', route: 'modulo-estadistico', icon: 'bar_chart', color: 'bg-teal' },
     { name: 'Historial Completo', route: 'historial-completo', icon: 'history', color: 'bg-indigo' }
   ];
-
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     const usuario = this.authService.getUsuario();

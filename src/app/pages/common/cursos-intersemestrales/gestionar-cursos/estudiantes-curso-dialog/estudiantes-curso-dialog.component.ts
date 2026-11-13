@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -42,6 +42,14 @@ const ERRORES_EXPORTAR: Record<number, string> = {
   styleUrls: ['./estudiantes-curso-dialog.component.css']
 })
 export class EstudiantesCursoDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<EstudiantesCursoDialogComponent>>(MatDialogRef);
+  data = inject<{
+    idCurso: number;
+    nombreCurso: string;
+}>(MAT_DIALOG_DATA);
+  private cursosService = inject(CursosIntersemestralesService);
+  private snackbar = inject(SnackbarService);
+
   datos: RespuestaEstudiantesCurso | null = null;
   cargando = true;
   error: string | null = null;
@@ -58,13 +66,6 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   ];
 
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    public dialogRef: MatDialogRef<EstudiantesCursoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { idCurso: number; nombreCurso: string },
-    private cursosService: CursosIntersemestralesService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.cargarEstudiantes();

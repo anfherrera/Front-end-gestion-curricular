@@ -39,17 +39,15 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrl: './manage-users.component.css'
 })
 export class ManageUsersComponent implements OnInit {
+  private usuariosService = inject(UsuariosService);
+  private errorHandler = inject(ErrorHandlerService);
+  private snackbar = inject(SnackbarService);
+
   private readonly dialog = inject(MatDialog);
   usuarios: any[] = [];
   displayedColumns: string[] = ['id_usuario', 'nombre_completo', 'correo', 'rol', 'estado', 'acciones'];
   loading = false;
   searchTerm = '';
-
-  constructor(
-    private usuariosService: UsuariosService,
-    private errorHandler: ErrorHandlerService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.cargarUsuarios();

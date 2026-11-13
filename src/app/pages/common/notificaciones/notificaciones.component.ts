@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -46,6 +46,13 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./notificaciones.component.css']
 })
 export class NotificacionesComponent implements OnInit, OnDestroy {
+  private notificacionService = inject(NotificacionesService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private snackbar = inject(SnackbarService);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+
   todasLasNotificaciones: Notificacion[] = [];
   notificacionesFiltradas: Notificacion[] = [];
   notificacionesNoLeidas: Notificacion[] = [];
@@ -65,15 +72,6 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   ];
 
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private notificacionService: NotificacionesService,
-    private authService: AuthService,
-    private router: Router,
-    private snackbar: SnackbarService,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
-  ) {}
 
   ngOnInit(): void {
     this.cargarNotificaciones();

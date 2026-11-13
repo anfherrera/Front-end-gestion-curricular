@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -38,6 +38,12 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
   styleUrls: ['./gestionar-cursos.component.css']
 })
 export class GestionarCursosComponent implements OnInit, OnDestroy {
+  private cursosService = inject(CursosIntersemestralesService);
+  private cursoEstadosService = inject(CursoEstadosService);
+  private fb = inject(FormBuilder);
+  private dialog = inject(MatDialog);
+  private snackbar = inject(SnackbarService);
+
   private destroy$ = new Subject<void>();
   
   cursos: CursoOfertadoVerano[] = [];
@@ -72,13 +78,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     'acciones'
   ];
 
-  constructor(
-    private cursosService: CursosIntersemestralesService,
-    private cursoEstadosService: CursoEstadosService,
-    private fb: FormBuilder,
-    private dialog: MatDialog,
-    private snackbar: SnackbarService
-  ) {
+  constructor() {
     // Formulario completo para crear cursos - Solo campos que el backend espera
     // NO incluir: nombre_curso, codigo_curso, descripcion, cupo_maximo (se obtienen automáticamente)
     this.cursoForm = this.fb.group({

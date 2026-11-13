@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,6 +38,8 @@ interface ProcesoData {
   styleUrl: './estadisticas-por-proceso.component.css'
 })
 export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnChanges {
+  private estadisticasService = inject(EstadisticasService);
+
   @Input() autoLoad = true;
   @Input() periodoAcademico?: string;
   @Input() idPrograma?: number;
@@ -49,8 +51,6 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   mostrarDatosRaw = false;
 
   private subscription: Subscription = new Subscription();
-
-  constructor(private estadisticasService: EstadisticasService) {}
 
   ngOnInit(): void {
     if (this.autoLoad) {

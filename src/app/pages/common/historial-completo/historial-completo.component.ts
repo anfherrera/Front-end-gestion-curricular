@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -48,6 +48,12 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['../estados-solicitud-comun.css', './historial-completo.component.css']
 })
 export class HistorialCompletoComponent implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private historialService = inject(HistorialSolicitudesService);
+  private snackbar = inject(SnackbarService);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+
   filtrosForm: FormGroup;
   historial: HistorialResponse | null = null;
   loading = false;
@@ -68,13 +74,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private fb: FormBuilder,
-    private historialService: HistorialSolicitudesService,
-    private snackbar: SnackbarService,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService
-  ) {
+  constructor() {
     this.filtrosForm = this.fb.group({
       periodoAcademico: [''],
       tipoSolicitud: [''],

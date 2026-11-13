@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -37,16 +37,14 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrl: './manage-processes.component.css'
 })
 export class ManageProcessesComponent implements OnInit {
+  private procesosService = inject(ProcesosService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+
   procesos: ProcesoDTORespuesta[] = [];
   displayedColumns: string[] = ['id_proceso', 'nombre_proceso', 'descripcion', 'estado', 'acciones'];
   loading = false;
   searchTerm = '';
-
-  constructor(
-    private procesosService: ProcesosService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     this.cargarProcesos();

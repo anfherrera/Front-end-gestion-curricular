@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -34,16 +34,16 @@ export interface FormRolDialogData {
   styleUrls: ['./form-rol-dialog.component.css']
 })
 export class FormRolDialogComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private rolesService = inject(RolesAdminService);
+  private snackbar = inject(SnackbarService);
+  dialogRef = inject<MatDialogRef<FormRolDialogComponent>>(MatDialogRef);
+  data = inject<FormRolDialogData>(MAT_DIALOG_DATA);
+
   rolForm: FormGroup;
   loading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private rolesService: RolesAdminService,
-    private snackbar: SnackbarService,
-    public dialogRef: MatDialogRef<FormRolDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: FormRolDialogData
-  ) {
+  constructor() {
     this.rolForm = this.fb.group({
       nombre: ['', [
         Validators.required,

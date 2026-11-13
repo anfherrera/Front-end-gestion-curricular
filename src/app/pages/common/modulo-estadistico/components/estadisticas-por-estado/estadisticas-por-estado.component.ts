@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +24,8 @@ import { Subscription } from 'rxjs';
   styleUrl: './estadisticas-por-estado.component.css'
 })
 export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChanges {
+  private estadisticasService = inject(EstadisticasService);
+
   @Input() periodoAcademico?: string;
   @Input() idPrograma?: number;
   
@@ -34,8 +36,6 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
   loading = true;
   error = false;
   private subscription: Subscription = new Subscription();
-
-  constructor(private estadisticasService: EstadisticasService) { }
 
   ngOnInit(): void {
     this.cargarDatos();

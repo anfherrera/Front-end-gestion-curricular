@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +22,8 @@ import { Subject, takeUntil, filter } from 'rxjs';
   styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css']
 })
 export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+
   private destroy$ = new Subject<void>();
   
   opciones = [
@@ -30,10 +32,6 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
     { titulo: 'Ver Lista de Cursos para Preinscripción', ruta: 'cursos-preinscripcion', icon: 'playlist_add' },
     { titulo: 'Seguimiento', ruta: 'ver-solicitud', icon: 'list_alt' },
   ];
-
-  constructor(
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     this.setupNavigation();

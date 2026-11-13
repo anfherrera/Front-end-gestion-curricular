@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,6 +50,14 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
   styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css']
 })
 export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
+  private reingresoService = inject(ReingresoEstudianteService);
+  private formatosService = inject(FormatosInstitucionalesService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+  private logger = inject(LoggerService);
+  private errorHandler = inject(ErrorHandlerService);
+  private periodosService = inject(PeriodosAcademicosService);
+
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
   private destroy$ = new Subject<void>();
@@ -73,16 +81,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   solicitudesCompletas: SolicitudReingresoDTORespuesta[] = [];
 
   usuario: any = null;
-
-  constructor(
-    private reingresoService: ReingresoEstudianteService,
-    private formatosService: FormatosInstitucionalesService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog,
-    private logger: LoggerService,
-    private errorHandler: ErrorHandlerService,
-    private periodosService: PeriodosAcademicosService
-  ) {}
 
   ngOnInit(): void {
     const reingreso = this.formatosService.getReingreso();

@@ -38,6 +38,11 @@ import { aDocumentos } from '../../common/paz-salvo-revision/paz-salvo-filas';
   styleUrls: ['../secretaria-comun.css', './paz-salvo.component.css']
 })
 export class SecretariaPazSalvoComponent implements OnInit {
+  pazSalvoService = inject(PazSalvoService);
+  private documentGeneratorService = inject(DocumentGeneratorService);
+  private snackbar = inject(SnackbarService);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild('bandeja') bandeja?: SolicitudesBandejaComponent<SolicitudHomologacionDTORespuesta>;
 
   solicitudes: SolicitudHomologacionDTORespuesta[] = [];             // Pendientes
@@ -61,13 +66,6 @@ export class SecretariaPazSalvoComponent implements OnInit {
   subiendoPDF = false;
   enviandoPDF = false;
   private destroyRef = inject(DestroyRef);
-
-  constructor(
-    public pazSalvoService: PazSalvoService,
-    private documentGeneratorService: DocumentGeneratorService,
-    private snackbar: SnackbarService,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit(): void {
     this.cargarSolicitudesPendientes();

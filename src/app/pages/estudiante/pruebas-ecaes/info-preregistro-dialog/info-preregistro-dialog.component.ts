@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,11 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './info-preregistro-dialog.component.css'
 })
 export class InfoPreregistroDialogComponent {
+  dialogRef = inject<MatDialogRef<InfoPreregistroDialogComponent>>(MatDialogRef);
+  data = inject(MAT_DIALOG_DATA);
 
-  constructor(
-    public dialogRef: MatDialogRef<InfoPreregistroDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
 
   onClose(): void {
     this.dialogRef.close();

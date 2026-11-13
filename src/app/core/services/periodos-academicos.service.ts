@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map, catchError, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -58,13 +58,15 @@ export interface PeriodoActivoResponse {
   providedIn: 'root'
 })
 export class PeriodosAcademicosService {
+  private http = inject(HttpClient);
+
   private periodoActualSubject = new BehaviorSubject<PeriodoAcademico | null>(null);
   public periodoActual$ = this.periodoActualSubject.asObservable();
   private periodoAnterior: PeriodoAcademico | null = null;
   private cambioPeriodoSubject = new BehaviorSubject<{ anterior: PeriodoAcademico | null, actual: PeriodoAcademico | null } | null>(null);
   public cambioPeriodo$ = this.cambioPeriodoSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor() {
     // Detectar cambios en el período
     this.periodoActual$.pipe(
       distinctUntilChanged((prev, curr) => prev?.valor === curr?.valor)

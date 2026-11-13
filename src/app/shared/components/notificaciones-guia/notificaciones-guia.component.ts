@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { Notificacion } from '@core/models/notificaciones.model';
@@ -15,16 +15,14 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./notificaciones-guia.component.css']
 })
 export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
+  private notificacionService = inject(NotificacionesService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   notificaciones: Notificacion[] = [];
   contadorNoLeidas = 0;
   usuarioId = 0;
   private intervaloSubscription?: Subscription;
-
-  constructor(
-    private notificacionService: NotificacionesService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     this.obtenerUsuarioId();

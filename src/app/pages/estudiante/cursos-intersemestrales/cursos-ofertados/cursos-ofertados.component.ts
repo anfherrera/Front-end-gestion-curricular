@@ -18,14 +18,14 @@ import { estadoCurso, nombreDocente, periodoCurso } from '@core/utils/cursos-ver
   styleUrls: ['./cursos-ofertados.component.css']
 })
 export class CursosOfertadosComponent implements OnInit {
+  private cursosService = inject(CursosIntersemestralesService);
+
   cursos: Curso[] = [];
   cargando = true;
   periodoSeleccionado = '';
   mostrarTodosLosCursos = false;
 
   private destroyRef = inject(DestroyRef);
-
-  constructor(private cursosService: CursosIntersemestralesService) {}
 
   ngOnInit(): void {
     this.loadCursos();

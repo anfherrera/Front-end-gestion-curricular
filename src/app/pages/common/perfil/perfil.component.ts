@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,10 +24,10 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
   styleUrls: ['./perfil.component.css']
 })
 export class PerfilComponent implements OnInit {
+  private authService = inject(AuthService);
+
   usuario: any = null;
   userRole = 'Usuario';
-
-  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();

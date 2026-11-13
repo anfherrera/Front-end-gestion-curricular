@@ -4,7 +4,7 @@
 
 import { TestBed, fakeAsync, tick, discardPeriodicTasks } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { AuthService } from '../services/auth.service';
@@ -285,7 +285,8 @@ describe('Seguridad - Manejo de sesiones', () => {
       });
 
       // Crear nueva instancia del servicio
-      const newAuthService = new AuthService(router, TestBed.inject(HttpClient), activityMonitor, 'browser' as any);
+      // Con inject() las dependencias salen del inyector, así que se crea dentro de su contexto
+      const newAuthService = TestBed.runInInjectionContext(() => new AuthService());
 
       expect(newAuthService.getRole()).toBe(UserRole.ESTUDIANTE);
     });

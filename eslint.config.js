@@ -37,8 +37,8 @@ module.exports = tseslint.config(
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrors: "none" },
       ],
-      // Migración gradual de inyección por constructor a inject() (Fase 6).
-      "@angular-eslint/prefer-inject": "warn",
+      // Toda la inyección usa inject() desde la Fase 6; la inyección por constructor ya es error.
+      "@angular-eslint/prefer-inject": "error",
     },
   },
   {

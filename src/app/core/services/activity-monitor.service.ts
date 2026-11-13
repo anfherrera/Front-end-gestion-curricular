@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, Inject, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
@@ -8,6 +8,8 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '@shared/components/co
   providedIn: 'root'
 })
 export class ActivityMonitorService implements OnDestroy {
+  private platformId = inject(PLATFORM_ID);
+
   private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutos en milisegundos
   private readonly WARNING_TIME = 1 * 60 * 1000; // 1 minuto antes del logout
   private readonly THROTTLE_DELAY = 2000; // Throttle de 2 segundos para evitar exceso de eventos
@@ -28,7 +30,7 @@ export class ActivityMonitorService implements OnDestroy {
   private readonly dialog = inject(MatDialog);
   private avisoRef: MatDialogRef<ConfirmDialogComponent, boolean> | null = null;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {
+  constructor() {
     // Solo iniciar monitoreo en el navegador
     if (isPlatformBrowser(this.platformId)) {
       this.startMonitoring();

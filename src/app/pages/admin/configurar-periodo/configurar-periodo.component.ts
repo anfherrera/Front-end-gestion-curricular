@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -30,6 +30,10 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./configurar-periodo.component.css']
 })
 export class ConfigurarPeriodoComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private periodosService = inject(PeriodosAcademicosService);
+  private snackbar = inject(SnackbarService);
+
   configForm: FormGroup;
   periodosDisponibles: PeriodoAcademico[] = [];
   configActual: PeriodoActivoConfig | null = null;
@@ -37,11 +41,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
   cargando = false;
   guardando = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private periodosService: PeriodosAcademicosService,
-    private snackbar: SnackbarService
-  ) {
+  constructor() {
     this.configForm = this.fb.group({
       modo: ['automatico', Validators.required],
       periodoSeleccionado: ['']

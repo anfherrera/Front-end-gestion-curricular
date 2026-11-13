@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +24,9 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./tendencias-comparativas.component.css']
 })
 export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnChanges {
+  private estadisticasService = inject(EstadisticasService);
+  private snackbar = inject(SnackbarService);
+
   @Input() periodoAcademico?: string;
   @Input() idPrograma?: number;
   
@@ -32,11 +35,6 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
   error = false;
   
   private subscriptions: Subscription[] = [];
-
-  constructor(
-    private estadisticasService: EstadisticasService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.cargarTendenciasComparativas();

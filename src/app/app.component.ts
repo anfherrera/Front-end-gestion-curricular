@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -15,14 +15,12 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private periodosService = inject(PeriodosAcademicosService);
+  private snackbar = inject(SnackbarService);
+
   title = 'Front-end-gestion-curricular';
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private authService: AuthService,
-    private periodosService: PeriodosAcademicosService,
-    private snackbar: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.authService.restoreSession();

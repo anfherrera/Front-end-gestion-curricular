@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -68,6 +68,14 @@ interface DatosSolicitudPazSalvo {
   styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css']
 })
 export class PazSalvoComponent implements OnInit, OnDestroy {
+  private pazSalvoService = inject(PazSalvoService);
+  private snackbar = inject(SnackbarService);
+  private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
+  private notificacionesService = inject(NotificacionesService);
+  private authService = inject(AuthService);
+  private fb = inject(FormBuilder);
+
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
   private destroy$ = new Subject<void>();
@@ -104,15 +112,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     'Fotocopia de cédula (Solo para Tecnología en Telemática).pdf'
   ];
 
-  constructor(
-    private pazSalvoService: PazSalvoService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
-    private notificacionesService: NotificacionesService,
-    private authService: AuthService,
-    private fb: FormBuilder
-  ) {
+  constructor() {
     this.solicitudForm = this.fb.group({
       fecha_terminacion_plan: [null, Validators.required],
       titulo_trabajo_grado: [''],
