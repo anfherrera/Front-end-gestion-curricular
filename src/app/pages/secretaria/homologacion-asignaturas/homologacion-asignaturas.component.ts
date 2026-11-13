@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -17,15 +16,14 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
 import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
   standalone: true,
   imports: [
     CommonModule,
-    MatSnackBarModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
@@ -60,7 +58,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   constructor(
     public homologacionService: HomologacionAsignaturasService,
     private documentGeneratorService: DocumentGeneratorService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService
   ) {
@@ -106,7 +104,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al cargar solicitudes');
       }
     });
   }
@@ -136,7 +134,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes aprobadas de homologación:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar las solicitudes aprobadas', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al cargar las solicitudes aprobadas');
         this.cargandoSolicitudesAprobadas = false;
       }
     });
@@ -175,7 +173,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
    */
   onTengoDocumento(): void {
     this.documentoHabilitado = true;
-    this.snackBar.open('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.', 'Cerrar', snackbarConfig(['success-snackbar']));
+    this.snackbar.exito('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.');
   }
 
   /**
@@ -202,13 +200,13 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
         // Marcar que el documento fue generado (SIN cambiar el estado de la solicitud)
         this.documentoGenerado = true;
 
-        this.snackBar.open('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');
         this.loading = false;
       },
       error: (err: any) => {
         this.logger.error('Error al generar documento:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al generar documento', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al generar documento');
         this.loading = false;
       }
     });
@@ -230,9 +228,9 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     const archivo = event.target.files[0];
     if (archivo && archivo.type === 'application/pdf') {
       this.archivoPDF = archivo;
-      this.snackBar.open(`Archivo PDF seleccionado: ${archivo.name}`, 'Cerrar', snackbarConfig());
+      this.snackbar.info(`Archivo PDF seleccionado: ${archivo.name}`);
     } else {
-      this.snackBar.open('Por favor selecciona un archivo PDF válido', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor selecciona un archivo PDF válido');
     }
   }
 
@@ -241,7 +239,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
    */
   subirPDF(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor selecciona un archivo PDF');
       return;
     }
 
@@ -254,13 +252,13 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.logger.log('Archivo PDF subido exitosamente:', response);
-        this.snackBar.open('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Archivo PDF subido exitosamente. Ahora puedes enviarlo al estudiante.');
         this.subiendoPDF = false;
       },
       error: (err) => {
         this.logger.error('Error al subir archivo PDF:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al subir archivo PDF');
         this.subiendoPDF = false;
       }
     });
@@ -271,7 +269,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
    */
   enviarPDFAlEstudiante(): void {
     if (!this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona una solicitud', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor selecciona una solicitud');
       return;
     }
 
@@ -285,7 +283,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       next: () => {
         this.logger.log('Estado de solicitud actualizado a APROBADA');
         this.logger.log('PDF enviado al estudiante exitosamente');
-        this.snackBar.open('PDF enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('PDF enviado al estudiante y solicitud aprobada exitosamente');
         this.enviandoPDF = false;
 
         // Limpiar el estado
@@ -299,7 +297,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       error: (err: any) => {
             this.logger.error('Error al actualizar estado de solicitud:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al enviar al estudiante', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al enviar al estudiante');
         this.enviandoPDF = false;
       }
     });
@@ -310,7 +308,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
    */
   enviarDocumento(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackBar.open('Por favor selecciona un archivo PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor selecciona un archivo PDF');
       return;
     }
 
@@ -331,7 +329,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
         if (!this.selectedSolicitud) {
           this.logger.error('selectedSolicitud es undefined');
-          this.snackBar.open('Error: Solicitud no encontrada', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error('Error: Solicitud no encontrada');
           this.enviandoPDF = false;
           return;
         }
@@ -343,7 +341,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
           next: () => {
             this.logger.log('Estado de solicitud actualizado a APROBADA');
             this.logger.log('PDF enviado al estudiante exitosamente');
-            this.snackBar.open('Documento enviado al estudiante y solicitud aprobada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+            this.snackbar.exito('Documento enviado al estudiante y solicitud aprobada exitosamente');
             this.enviandoPDF = false;
 
             // Limpiar el estado
@@ -357,7 +355,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
           error: (err: any) => {
             this.logger.error('Error al actualizar estado de solicitud:', err);
             const mensaje = this.errorHandler.extraerMensajeError(err);
-            this.snackBar.open(mensaje || 'PDF subido pero error al enviar al estudiante', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error(mensaje || 'PDF subido pero error al enviar al estudiante');
             this.enviandoPDF = false;
           }
         });
@@ -365,7 +363,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al subir archivo PDF:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al subir archivo PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al subir archivo PDF');
         this.subiendoPDF = false;
       }
     });

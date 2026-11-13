@@ -6,7 +6,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { UserRole } from '../enums/roles.enum';
 import { ApiService } from './api.service';
 import { ActivityMonitorService } from './activity-monitor.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { SnackbarService } from './snackbar.service';
 
 /**
  * Servicio de autenticación y gestión de sesión
@@ -28,7 +28,7 @@ export class AuthService {
     private apiService: ApiService,
     private activityMonitor: ActivityMonitorService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private snackBar?: MatSnackBar
+    private snackbar?: SnackbarService
   ) {
     this.restoreRoleFromStorage(); // restaura rol al recargar la página
     this.setupActivityMonitoring(); // configura el monitoreo de actividad
@@ -214,11 +214,8 @@ export class AuthService {
    * @param showMessage Si es true, muestra un mensaje de sesión expirada
    */
   logout(showMessage: boolean = false): void {
-    if (showMessage && this.snackBar) {
-      this.snackBar.open('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'Cerrar', {
-        duration: 5000,
-        panelClass: ['warning-snackbar']
-      });
+    if (showMessage) {
+      this.snackbar?.advertencia('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
     }
     const storage = this.safeLocalStorage();
     if (storage) {

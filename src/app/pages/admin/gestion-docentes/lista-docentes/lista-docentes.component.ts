@@ -8,18 +8,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { DocentesService } from '../../../../core/services/docentes.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { DocenteDTORespuesta } from '../../../../core/models/docente.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-lista-docentes',
@@ -32,7 +31,6 @@ import { filter } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule
@@ -50,7 +48,7 @@ export class ListaDocentesComponent implements OnInit {
   constructor(
     private docentesService: DocentesService,
     private errorHandler: ErrorHandlerService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private router: Router
   ) {}
 
@@ -67,7 +65,7 @@ export class ListaDocentesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar la lista de docentes', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar la lista de docentes');
         this.loading = false;
       }
     });
@@ -86,7 +84,7 @@ export class ListaDocentesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al buscar docentes', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al buscar docentes');
         this.loading = false;
       }
     });
@@ -108,7 +106,7 @@ export class ListaDocentesComponent implements OnInit {
         next: () => {
           this.loading = false;
           // Status 200 OK - Éxito
-          this.snackBar.open('Docente eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Docente eliminado exitosamente');
           this.cargarDocentes();
         },
         error: (error: HttpErrorResponse) => {
@@ -120,16 +118,16 @@ export class ListaDocentesComponent implements OnInit {
           // Manejo de errores específicos
           if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
             // Error de dependencias (400) - Docente tiene cursos asignados
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+            this.snackbar.advertencia(`${mensaje}`);
           } else if (error.status === 409) {
             // Conflicto (respaldo para compatibilidad)
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+            this.snackbar.advertencia(`${mensaje}`);
           } else if (error.status === 404) {
             // Docente no encontrado
-            this.snackBar.open('Docente no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error('Docente no encontrado');
           } else {
             // Otros errores (500, etc.)
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error(`${mensaje}`);
           }
         }
       });

@@ -8,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -16,12 +15,12 @@ import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
 import { Inject } from '@angular/core';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoOfertadoVerano, SolicitudCursoVerano, EstadoSolicitudDetalle } from '../../../../core/models/cursos-intersemestrales.model';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { EstadoColorPipe } from '../../../../shared/pipes/estado.pipes';
 import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-preinscribir-estudiantes',
@@ -37,7 +36,6 @@ import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe'
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSnackBarModule,
     MatDialogModule,
     MatChipsModule,
     MatProgressSpinnerModule,
@@ -78,7 +76,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog
   ) {
     this.filtroForm = this.fb.group({
@@ -124,7 +122,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       error: () => {
         this.cursos = [];
         this.cargando = false;
-        this.snackBar.open('Error al cargar los cursos disponibles', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar los cursos disponibles');
       }
     });
   }
@@ -155,7 +153,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       error: () => {
         this.solicitudesFiltradas = [];
         this.cargando = false;
-        this.snackBar.open('Error al cargar las preinscripciones del curso', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar las preinscripciones del curso');
       }
     });
   }
@@ -190,7 +188,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   actualizarObservaciones(idSolicitud: number | undefined, observaciones: string): void {
     
     if (!idSolicitud) {
-      this.snackBar.open('Error: No se pudo identificar la preinscripción para guardar observaciones', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se pudo identificar la preinscripción para guardar observaciones');
       return;
     }
     
@@ -207,10 +205,10 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].observaciones = observaciones;
         }
         
-        this.snackBar.open('Observaciones guardadas exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Observaciones guardadas exitosamente');
       },
       error: (err) => {
-        this.snackBar.open('Error al guardar las observaciones', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al guardar las observaciones');
       }
     });
   }
@@ -219,7 +217,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
     
     if (!idSolicitud) {
-      this.snackBar.open('Error: No se pudo identificar la preinscripción', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se pudo identificar la preinscripción');
       return;
     }
     
@@ -236,7 +234,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.solicitudesFiltradas[index].estado = 'Aprobado';
         }
         
-        this.snackBar.open(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`, 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`);
       },
       error: (err) => {
         
@@ -254,7 +252,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para aprobar la preinscripción';
         }
         
-        this.snackBar.open(`${errorMessage}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(`${errorMessage}`);
       }
     });
   }
@@ -286,7 +284,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
     
     if (!idSolicitud) {
-      this.snackBar.open('Error: No se pudo identificar la preinscripción para rechazar', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se pudo identificar la preinscripción para rechazar');
       return;
     }
     
@@ -304,7 +302,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         }
         
         const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
-        this.snackBar.open(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`, 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`);
 
         if (this.cursoSeleccionado?.id_curso) {
           this.cargarSolicitudesPorCurso(this.cursoSeleccionado.id_curso);
@@ -326,7 +324,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
           errorMessage = 'Datos inválidos para rechazar la preinscripción';
         }
         
-        this.snackBar.open(`${errorMessage}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(`${errorMessage}`);
       }
     });
   }

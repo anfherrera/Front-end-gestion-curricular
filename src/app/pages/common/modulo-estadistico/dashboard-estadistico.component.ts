@@ -9,7 +9,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Chart, registerables } from 'chart.js';
@@ -27,7 +26,6 @@ import { EstadisticasPorProcesoComponent } from '../../../shared/components/esta
 import { EstadisticasPorEstadoComponent } from '../../../shared/components/estadisticas-por-estado/estadisticas-por-estado.component';
 import { TendenciasComparativasComponent } from '../../../shared/components/tendencias-comparativas/tendencias-comparativas.component';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { FiltroEstadisticas, KPIData, ResumenCompleto } from '../../../core/models/estadisticas.model';
 import {
   TITULO_KPI_ESTUDIANTES,
@@ -40,6 +38,7 @@ import {
   resumenDesdeEndpoints
 } from './dashboard-estadistico.datos';
 import { graficoProcesos, graficoProcesosDesdeResumen, graficoProgramas, graficoTendencia } from './dashboard-estadistico.graficos';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 Chart.register(...registerables);
 
@@ -65,7 +64,6 @@ type NombreGrafico = 'chartProcesos' | 'chartTendencia' | 'chartDistribucion';
     MatNativeDateModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
     MatFormFieldModule,
     MatInputModule,
     LoadingSpinnerComponent,
@@ -109,7 +107,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   constructor(
     private estadisticasService: EstadisticasService,
     private periodosService: PeriodosAcademicosService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private fb: FormBuilder
   ) {}
 
@@ -444,10 +442,10 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['success-snackbar']));
+    this.snackbar.exito(mensaje);
   }
 
   private mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+    this.snackbar.error(mensaje);
   }
 }

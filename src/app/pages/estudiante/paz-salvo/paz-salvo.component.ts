@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,6 +22,7 @@ import { estadoActual, ultimoEstado } from '../../../core/utils/estado-solicitud
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { normalizarNombreArchivo } from '../../../core/utils/texto.util';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 /** Programas cuyo paz y salvo exige trabajo de grado y el formato PPH o TIH. */
 const PROGRAMAS_CON_TRABAJO_DE_GRADO = ['sistemas', 'electronica', 'automatica', 'automatizacion'];
@@ -55,7 +55,6 @@ interface DatosSolicitudPazSalvo {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -107,7 +106,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
   constructor(
     private pazSalvoService: PazSalvoService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private notificacionesService: NotificacionesService,
@@ -237,15 +236,6 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     });
   }
 
-  private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: [`snackbar-${tipo}`]
-    });
-  }
-
   listarSolicitudes() {
     if (!this.usuario) {
       return;
@@ -262,7 +252,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
           this.solicitudesCompletas = data;
           this.solicitudes = data.map(sol => this.aSolicitud(sol));
         },
-        error: () => this.mostrarMensaje('No se pudieron cargar tus solicitudes', 'error')
+        error: () => this.snackbar.error('No se pudieron cargar tus solicitudes')
       });
   }
 
@@ -294,17 +284,17 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
               next: () => this.despuesDeEnviar(),
               error: (err) => {
                 if (err.status === 400) {
-                  this.mostrarMensaje('Error de validación: revisa los datos de la solicitud', 'warning');
+                  this.snackbar.advertencia('Error de validación: revisa los datos de la solicitud');
                 } else if (err.status === 401) {
-                  this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+                  this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
                 } else {
-                  this.mostrarMensaje('No se pudo enviar la solicitud. Inténtalo de nuevo.', 'error');
+                  this.snackbar.error('No se pudo enviar la solicitud. Inténtalo de nuevo.');
                 }
               }
             });
         },
         error: () => {
-          this.mostrarMensaje('Error al subir documentos. Por favor, inténtalo de nuevo.', 'error');
+          this.snackbar.error('Error al subir documentos. Por favor, inténtalo de nuevo.');
           this.fileUploadComponent?.resetearEstadoCarga();
         }
       });
@@ -355,7 +345,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       }, 0);
     }, 0);
 
-    this.mostrarMensaje('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.', 'success');
+    this.snackbar.exito('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.');
   }
 
   private obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta | undefined {
@@ -365,7 +355,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   verComentarios(solicitudId: number): void {
     const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
     if (!solicitudCompleta) {
-      this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
+      this.snackbar.error('No se encontró la información de la solicitud');
       return;
     }
 
@@ -387,7 +377,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
           }
         });
       },
-      error: () => this.mostrarMensaje('Error al cargar los comentarios', 'error')
+      error: () => this.snackbar.error('Error al cargar los comentarios')
     });
   }
 
@@ -399,13 +389,13 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     this.pazSalvoService.descargarOficioPorSolicitud(idSolicitud).pipe(takeUntil(this.destroy$)).subscribe({
       next: (blob) => {
         descargarBlob(blob, blob.filename || nombreArchivo || `oficio_${idSolicitud}.pdf`);
-        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+        this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
         if (err.status === 404) {
-          this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
+          this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
         } else {
-          this.mostrarMensaje('Error al descargar el oficio: ' + (err.error?.message || err.message || 'Error desconocido'), 'error');
+          this.snackbar.error('Error al descargar el oficio: ' + (err.error?.message || err.message || 'Error desconocido'));
         }
       }
     });

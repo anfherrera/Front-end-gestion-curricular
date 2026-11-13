@@ -8,11 +8,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
 import { RespuestaEstudiantesCurso } from '../../../core/models/cursos-intersemestrales.model';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { descargarBlob } from '../../../core/utils/download.util';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 const ERRORES_CARGA: Record<number, string> = {
   403: 'No tienes permisos para ver esta información',
@@ -37,8 +36,7 @@ const ERRORES_EXPORTAR: Record<number, string> = {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatProgressSpinnerModule
   ],
   templateUrl: './estudiantes-curso-dialog.component.html',
   styleUrls: ['./estudiantes-curso-dialog.component.css']
@@ -65,7 +63,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<EstudiantesCursoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { idCurso: number; nombreCurso: string },
     private cursosService: CursosIntersemestralesService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -86,7 +84,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
         error: (err: HttpErrorResponse) => {
           this.cargando = false;
           this.error = ERRORES_CARGA[err.status] ?? 'Error al cargar los estudiantes';
-          this.snackBar.open(this.error, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(this.error);
         }
       });
   }
@@ -97,7 +95,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
 
   exportarEstudiantesPDF(): void {
     if (!this.data.idCurso) {
-      this.snackBar.open('Error: No se pudo identificar el curso', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se pudo identificar el curso');
       return;
     }
 
@@ -106,10 +104,10 @@ export class EstudiantesCursoDialogComponent implements OnInit {
       .subscribe({
         next: (archivo) => {
           descargarBlob(archivo.blob, archivo.filename);
-          this.snackBar.open('PDF exportado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('PDF exportado correctamente');
         },
         error: (err: HttpErrorResponse) => {
-          this.snackBar.open(ERRORES_EXPORTAR[err.status] ?? 'Error al exportar el PDF', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(ERRORES_EXPORTAR[err.status] ?? 'Error al exportar el PDF');
         }
       });
   }

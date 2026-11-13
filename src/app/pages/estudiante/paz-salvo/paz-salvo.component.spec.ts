@@ -126,16 +126,14 @@ describe('PazSalvoComponent', () => {
 
     completarFormulario();
     component.archivosActuales = archivos as any;
-    component.fileUploadComponent = fileUploadMock as any;
-
-    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje').and.callThrough();
+    component.fileUploadComponent = fileUploadMock as any;
 
     component.onSolicitudEnviada();
     tick();
     tick();
 
     expect(pazSalvoService.crearSolicitudConFormulario).toHaveBeenCalledWith(mockUsuario.id_usuario, archivos as any, jasmine.any(Object));
-    expect(mostrarSpy).toHaveBeenCalledWith(jasmine.stringMatching('Solicitud de paz y salvo'), 'success');
+    expect(snackBar.open).toHaveBeenCalledWith(jasmine.stringMatching('Solicitud de paz y salvo'), 'Cerrar', jasmine.objectContaining({ panelClass: ['snackbar-success'] }));
     expect(fileUploadMock.resetearEstadoCarga).not.toHaveBeenCalled();
     expect(component.resetFileUpload).toBeFalse();
   }));
@@ -146,14 +144,12 @@ describe('PazSalvoComponent', () => {
       resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
     };
 
-    component.fileUploadComponent = fileUploadMock as any;
-
-    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje').and.callThrough();
+    component.fileUploadComponent = fileUploadMock as any;
 
     component.onSolicitudEnviada();
     tick();
 
-    expect(mostrarSpy).toHaveBeenCalledWith(jasmine.stringMatching('Error al subir documentos'), 'error');
+    expect(snackBar.open).toHaveBeenCalledWith(jasmine.stringMatching('Error al subir documentos'), 'Cerrar', jasmine.objectContaining({ panelClass: ['snackbar-error'] }));
     expect(fileUploadMock.resetearEstadoCarga).toHaveBeenCalled();
   }));
 
@@ -221,24 +217,22 @@ describe('PazSalvoComponent', () => {
   it('debe descargar el oficio con el nombre que entrega el servicio', () => {
     const blob = new Blob(['pdf'], { type: 'application/pdf' });
     (blob as any).filename = 'OFICIO_PAZ_SALVO.pdf';
-    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(of(blob));
-    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje');
+    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(of(blob));
     spyOn(URL, 'createObjectURL').and.returnValue('blob:prueba');
     spyOn(URL, 'revokeObjectURL');
 
     component.descargarOficio(7, 'respaldo.pdf');
 
     expect(pazSalvoService.descargarOficioPorSolicitud).toHaveBeenCalledWith(7);
-    expect(mostrarSpy).toHaveBeenCalledWith('Oficio descargado exitosamente', 'success');
+    expect(snackBar.open).toHaveBeenCalledWith('Oficio descargado exitosamente', 'Cerrar', jasmine.objectContaining({ panelClass: ['snackbar-success'] }));
   });
 
   it('debe avisar cuando la solicitud no tiene oficio', () => {
-    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(throwError(() => ({ status: 404 })));
-    const mostrarSpy = spyOn<any>(component, 'mostrarMensaje');
+    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(throwError(() => ({ status: 404 })));
 
     component.descargarOficio(7, 'respaldo.pdf');
 
-    expect(mostrarSpy).toHaveBeenCalledWith('No hay oficios disponibles para esta solicitud', 'warning');
+    expect(snackBar.open).toHaveBeenCalledWith('No hay oficios disponibles para esta solicitud', 'Cerrar', jasmine.objectContaining({ panelClass: ['snackbar-warning'] }));
   });
 
   describe('Usabilidad y funcionalidad adicional', () => {

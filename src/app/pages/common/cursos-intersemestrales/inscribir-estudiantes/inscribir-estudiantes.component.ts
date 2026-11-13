@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -23,12 +22,12 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { descargarBlob } from '../../../../core/utils/download.util';
 import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
 import { TextoDialogComponent, TextoDialogData, datosRechazo } from '../../../../shared/components/texto-dialog/texto-dialog.component';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -43,7 +42,6 @@ import { TextoDialogComponent, TextoDialogData, datosRechazo } from '../../../..
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSnackBarModule,
     MatDialogModule,
     MatChipsModule,
     MatProgressSpinnerModule,
@@ -82,7 +80,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog,
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService,
@@ -129,11 +127,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         
         if (!this.cursos || this.cursos.length === 0) {
           // Mostrar mensaje informativo al usuario
-          this.snackBar.open(
-            'No hay cursos disponibles para inscripción en este momento.', 
-            'Cerrar', 
-            snackbarConfig(['warning-snackbar'])
-          );
+          this.snackbar.advertencia('No hay cursos disponibles para inscripción en este momento.');
         }
         this.cargando = false;
       },
@@ -143,11 +137,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         
         const mensajeError = this.errorHandler.extraerMensajeError(err);
         // Mostrar mensaje de error al usuario
-        this.snackBar.open(
-          mensajeError || 'Error al cargar los cursos. Verifique su conexión o contacte al administrador.', 
-          'Cerrar', 
-          snackbarConfig(['error-snackbar'])
-        );
+        this.snackbar.error(mensajeError || 'Error al cargar los cursos. Verifique su conexión o contacte al administrador.');
         this.cargando = false;
       }
     });
@@ -179,11 +169,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           this.estudiantesFiltrados = [];
           
           // Mostrar mensaje informativo al usuario
-          this.snackBar.open(
-            'No hay estudiantes elegibles para este curso. Todos los estudiantes deben tener preinscripción aprobada y pago validado.', 
-            'Cerrar', 
-            snackbarConfig()
-          );
+          this.snackbar.info('No hay estudiantes elegibles para este curso. Todos los estudiantes deben tener preinscripción aprobada y pago validado.');
         }
         
         this.cargando = false;
@@ -195,11 +181,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
         
         const mensajeError = this.errorHandler.extraerMensajeError(err);
         // Mostrar mensaje de error al usuario
-        this.snackBar.open(
-          mensajeError || 'Error al cargar los estudiantes elegibles', 
-          'Cerrar', 
-          snackbarConfig(['error-snackbar'])
-        );
+        this.snackbar.error(mensajeError || 'Error al cargar los estudiantes elegibles');
       }
     });
   }
@@ -233,7 +215,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   confirmarInscripcion(estudiante: EstudianteElegible): void {
     // Verificar que id_solicitud existe (campo principal)
     if (!estudiante.id_solicitud) {
-      this.snackBar.open('Error: No se encontró ID de solicitud para el estudiante', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se encontró ID de solicitud para el estudiante');
       return;
     }
     
@@ -270,7 +252,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       .subscribe({
       next: (response) => {
         this.logger.debug('Inscripción aceptada exitosamente', response);
-        this.snackBar.open('Inscripción aceptada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Inscripción aceptada exitosamente');
         // Recargar la lista de estudiantes
         if (this.cursoSeleccionado) {
           this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
@@ -302,11 +284,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
           next: (response) => {
             const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
             this.logger.debug('Inscripción rechazada exitosamente', response);
-            this.snackBar.open(
-              `Inscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`,
-              'Cerrar',
-              snackbarConfig(['success-snackbar'])
-            );
+            this.snackbar.exito(`Inscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`);
             
             if (this.cursoSeleccionado) {
               this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
@@ -349,7 +327,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       mensaje = this.errorHandler.extraerMensajeError(error) || mensaje;
     }
     
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+    this.snackbar.error(mensaje);
   }
 
 }
@@ -367,7 +345,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     MatInputModule,
     MatChipsModule,
     MatIconModule,
-    MatSnackBarModule,
     UtfFixPipe
   ],
   template: `
@@ -557,7 +534,7 @@ export class DetallesInscripcionDialogComponent {
     public dialogRef: MatDialogRef<DetallesInscripcionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { estudiante: EstudianteElegible },
     private cursosService: CursosIntersemestralesService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService
   ) {}
@@ -568,7 +545,7 @@ export class DetallesInscripcionDialogComponent {
     try {
       // Verificar si hay archivo de pago disponible en los datos del estudiante
       if (!this.data.estudiante.archivoPago || !this.data.estudiante.archivoPago.nombre) {
-        this.snackBar.open('No se encontró el archivo de comprobante', 'Cerrar', snackbarConfig(['warning-snackbar']));
+        this.snackbar.advertencia('No se encontró el archivo de comprobante');
         return;
       }
       
@@ -578,7 +555,7 @@ export class DetallesInscripcionDialogComponent {
       const idParaDescarga = this.data.estudiante.id_inscripcion || this.data.estudiante.id_solicitud;
       
       if (!idParaDescarga) {
-        this.snackBar.open('Error: No se encontró ID para descargar comprobante', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error: No se encontró ID para descargar comprobante');
         return;
       }
       
@@ -590,24 +567,20 @@ export class DetallesInscripcionDialogComponent {
           // Verificar que el blob no esté vacío
           if (blob && blob.size > 0) {
             descargarBlob(blob, nombreArchivo);
-            this.snackBar.open('Comprobante descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+            this.snackbar.exito('Comprobante descargado exitosamente');
           } else {
-            this.snackBar.open('Error: El archivo PDF está vacío o corrupto', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error('Error: El archivo PDF está vacío o corrupto');
           }
         },
         error: (error: HttpErrorResponse) => {
           this.logger.error('Error al descargar comprobante de pago', error);
           const mensajeError = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(
-            mensajeError || 'Error al descargar el comprobante de pago',
-            'Cerrar',
-            snackbarConfig(['error-snackbar'])
-          );
+          this.snackbar.error(mensajeError || 'Error al descargar el comprobante de pago');
         }
       });
     } catch (error) {
       this.logger.error('Error de conexión al descargar comprobante', error);
-this.snackBar.open('Error de conexión', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error de conexión');
     }
   }
 

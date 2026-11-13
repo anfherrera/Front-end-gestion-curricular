@@ -1,55 +1,48 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_CONFIG_TIC } from '../design-system/design-tokens';
 
-export type SnackbarType = 'success' | 'error' | 'warning' | 'info';
+/** `destacado`: avisos generales con el fondo institucional (p. ej. cambio de período). */
+export type TipoSnackbar = 'exito' | 'error' | 'advertencia' | 'info' | 'destacado';
+
+/** Clase de estilo de cada tipo (ver src/styles/notificaciones.css). */
+const CLASE: Record<TipoSnackbar, string> = {
+  exito: 'snackbar-success',
+  error: 'snackbar-error',
+  advertencia: 'snackbar-warning',
+  info: 'snackbar-info',
+  destacado: 'snackbar-destacado',
+};
 
 /**
- * Servicio centralizado de Snackbar - Sistema de Diseño TIC
- * Aplica estilos institucionales automáticamente a todas las notificaciones
+ * Notificaciones del Sistema de Diseño TIC: arriba a la derecha, 5 s, con botón "Cerrar".
+ * Usar este servicio en lugar de inyectar MatSnackBar.
  */
 @Injectable({ providedIn: 'root' })
 export class SnackbarService {
-  constructor(private snackBar: MatSnackBar) {}
+  private readonly snackBar = inject(MatSnackBar);
 
-  /**
-   * Muestra notificación de éxito (verde institucional)
-   */
-  success(mensaje: string, duracion = 5000): void {
-    this.mostrar(mensaje, 'success', duracion);
+  exito(mensaje: string, duracion?: number): void {
+    this.mostrar(mensaje, 'exito', duracion);
   }
 
-  /**
-   * Muestra notificación de error (naranja institucional)
-   */
-  error(mensaje: string, duracion = 6000): void {
+  error(mensaje: string, duracion?: number): void {
     this.mostrar(mensaje, 'error', duracion);
   }
 
-  /**
-   * Muestra notificación de advertencia
-   */
-  warning(mensaje: string, duracion = 5000): void {
-    this.mostrar(mensaje, 'warning', duracion);
+  advertencia(mensaje: string, duracion?: number): void {
+    this.mostrar(mensaje, 'advertencia', duracion);
   }
 
-  /**
-   * Muestra notificación informativa
-   */
-  info(mensaje: string, duracion = 5000): void {
+  info(mensaje: string, duracion?: number): void {
     this.mostrar(mensaje, 'info', duracion);
   }
 
-  /**
-   * Muestra notificación con tipo y estilos TIC
-   * Posición: superior derecha según Sistema de Diseño TIC
-   */
-  mostrar(mensaje: string, tipo: SnackbarType = 'info', duracion = 5000): void {
-    const config = {
+  mostrar(mensaje: string, tipo: TipoSnackbar = 'info', duracion = SNACKBAR_CONFIG_TIC.duration): void {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      ...SNACKBAR_CONFIG_TIC,
       duration: duracion,
-      horizontalPosition: 'end' as const,
-      verticalPosition: 'top' as const,
-      panelClass: [`snackbar-${tipo}`],
-    };
-    this.snackBar.open(mensaje, 'Cerrar', config);
+      panelClass: [CLASE[tipo]],
+    });
   }
 }

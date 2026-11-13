@@ -6,11 +6,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ApiService } from '../../../../core/services/api.service';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 export interface FormProcesoDialogData {
   proceso: any | null;
@@ -28,7 +27,6 @@ export interface FormProcesoDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatCheckboxModule
   ],
@@ -42,7 +40,7 @@ export class FormProcesoDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     public dialogRef: MatDialogRef<FormProcesoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FormProcesoDialogData
   ) {
@@ -72,7 +70,7 @@ export class FormProcesoDialogComponent implements OnInit {
   guardar(): void {
     if (this.procesoForm.invalid) {
       this.procesoForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor completa todos los campos correctamente');
       return;
     }
 
@@ -93,12 +91,12 @@ export class FormProcesoDialogComponent implements OnInit {
   crearProceso(data: any): void {
     this.apiService.post('procesos/crearProceso', data).subscribe({
       next: () => {
-        this.snackBar.open('Proceso creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Proceso creado exitosamente');
         this.dialogRef.close(true);
       },
       error: (err: any) => {
         const mensaje = err.error?.mensaje || 'Error al crear el proceso';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });
@@ -107,12 +105,12 @@ export class FormProcesoDialogComponent implements OnInit {
   actualizarProceso(data: any): void {
     this.apiService.put('procesos/actualizarProceso', data).subscribe({
       next: () => {
-        this.snackBar.open('Proceso actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Proceso actualizado exitosamente');
         this.dialogRef.close(true);
       },
       error: (err: any) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el proceso';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });

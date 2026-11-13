@@ -1,7 +1,6 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../../../../shared/components/curso-list/curso-list.component';
@@ -11,8 +10,8 @@ import { CursoOfertadoVerano } from '../../../../core/models/cursos-intersemestr
 import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { estadoCurso, nombreDocente } from '../../../../core/utils/cursos-verano.utils';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 /** Cursos en preinscripción: el estudiante elige uno y se preinscribe desde un diálogo. */
 @Component({
@@ -34,7 +33,7 @@ export class CursosPreinscripcionComponent implements OnInit {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog
   ) {}
 
@@ -69,7 +68,7 @@ export class CursosPreinscripcionComponent implements OnInit {
 
   onAccionCurso(event: { accion: string; curso: Curso }): void {
     if (!this.usuario?.id_usuario) {
-      this.snackBar.open('Error: Usuario no autenticado', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: Usuario no autenticado');
       return;
     }
 
@@ -77,7 +76,7 @@ export class CursosPreinscripcionComponent implements OnInit {
       c.codigo_curso === event.curso.codigo || c.id_curso?.toString() === event.curso.codigo
     );
     if (!cursoOriginal) {
-      this.snackBar.open('Error: Curso no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: Curso no encontrado');
       return;
     }
 

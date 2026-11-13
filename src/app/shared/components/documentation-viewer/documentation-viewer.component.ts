@@ -7,12 +7,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { FechaPipe } from '../../pipes/fecha.pipe';
 import { TextoDialogComponent, TextoDialogData } from '../texto-dialog/texto-dialog.component';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 type Documento = DocumentosDTORespuesta | DocumentoHomologacion;
 
@@ -33,7 +32,6 @@ export interface ServicioDocumentos {
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSnackBarModule,
     MatDialogModule,
     FechaPipe
   ],
@@ -55,7 +53,7 @@ export class DocumentationViewerComponent implements OnInit {
   displayedColumns: string[] = ['nombre', 'fecha', 'acciones'];
 
   constructor(
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog
   ) {}
 
@@ -81,10 +79,10 @@ export class DocumentationViewerComponent implements OnInit {
     // verDocumento() llamado
     
     // Mostrar mensaje de carga
-    this.snackBar.open('Descargando documento...', 'Cerrar', snackbarConfig());
+    this.snackbar.info('Descargando documento...');
 
     if (!this.servicio) {
-      this.snackBar.open('Error: Servicio no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: Servicio no disponible');
       return;
     }
 
@@ -151,12 +149,12 @@ export class DocumentationViewerComponent implements OnInit {
    */
   private intentarDescargaPorNombre(documento: Documento): void {
     if (!documento.nombre) {
-      this.snackBar.open('No hay información suficiente para descargar el documento', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('No hay información suficiente para descargar el documento');
       return;
     }
 
     if (!this.servicio?.descargarArchivo) {
-      this.snackBar.open('Error: Método de descarga no disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: Método de descarga no disponible');
       return;
     }
 
@@ -170,7 +168,7 @@ export class DocumentationViewerComponent implements OnInit {
         const errorMessage = error.status === 404 
           ? 'El archivo no se encontró en el servidor. Verifique que el documento existe.'
           : (error.error?.message || error.message || 'Error desconocido');
-        this.snackBar.open('Error al descargar documento: ' + errorMessage, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al descargar documento: ' + errorMessage);
       }
     });
   }
@@ -218,7 +216,7 @@ export class DocumentationViewerComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     }, 5000);
 
-    this.snackBar.open('Documento abierto correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+    this.snackbar.exito('Documento abierto correctamente');
   }
 
   /**
@@ -229,7 +227,7 @@ export class DocumentationViewerComponent implements OnInit {
     
     if (!documento.comentario || documento.comentario.trim().length === 0) {
       // Documento sin comentarios
-      this.snackBar.open('Este documento no tiene comentarios', 'Cerrar', snackbarConfig());
+      this.snackbar.info('Este documento no tiene comentarios');
       return;
     }
 
@@ -272,7 +270,7 @@ export class DocumentationViewerComponent implements OnInit {
    */
   agregarComentario(documento: Documento): void {
     if (!documento.id_documento) {
-      this.snackBar.open('No hay ID de documento disponible', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('No hay ID de documento disponible');
       return;
     }
 
@@ -294,7 +292,7 @@ export class DocumentationViewerComponent implements OnInit {
       dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((comentarioNuevo: string | undefined) => {
         if (comentarioNuevo === undefined) return;
         if (!comentarioNuevo.trim()) {
-          this.snackBar.open('El comentario no puede estar vacío', 'Cerrar', snackbarConfig(['warning-snackbar']));
+          this.snackbar.advertencia('El comentario no puede estar vacío');
           return;
         }
         // Solo emitir: el componente padre hace la llamada PUT (una sola vez). Si el viewer también llamara aquí, se duplicaría el comentario en backend.
@@ -304,7 +302,7 @@ export class DocumentationViewerComponent implements OnInit {
 
     // Obtener documento actualizado para mostrar comentarios existentes (el backend concatena; solo enviamos lo nuevo)
     if (this.servicio?.buscarDocumentoPorId) {
-      this.snackBar.open('Cargando comentarios...', 'Cerrar', snackbarConfig());
+      this.snackbar.info('Cargando comentarios...');
       this.servicio.buscarDocumentoPorId(documento.id_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (doc) => abrirDialogConHistorial(doc.comentario ?? ''),
         error: () => abrirDialogConHistorial(documento.comentario ?? '')

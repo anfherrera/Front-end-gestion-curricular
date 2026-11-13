@@ -3,7 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -26,7 +25,6 @@ import { aDocumentos, aFilaHistorial, aFilaTabla } from '../../common/paz-salvo-
   standalone: true,
   imports: [
     CommonModule,
-    MatSnackBarModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
@@ -145,7 +143,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
         this.documentGeneratorService.descargarArchivo(blob, nombreArchivo);
         this.documentoGenerado = true;
         this.loading = false;
-        this.snackbar.success('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');
+        this.snackbar.exito('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');
       },
       error: () => {
         this.loading = false;
@@ -165,14 +163,14 @@ export class SecretariaPazSalvoComponent implements OnInit {
       this.archivoPDF = archivo;
       this.snackbar.info(`Archivo PDF seleccionado: ${archivo.name}`);
     } else {
-      this.snackbar.warning('Por favor selecciona un archivo PDF válido');
+      this.snackbar.advertencia('Por favor selecciona un archivo PDF válido');
     }
   }
 
   /** Sube el oficio en PDF y, si sale bien, aprueba definitivamente la solicitud. */
   enviarDocumento(): void {
     if (!this.archivoPDF || !this.selectedSolicitud) {
-      this.snackbar.warning('Por favor selecciona un archivo PDF');
+      this.snackbar.advertencia('Por favor selecciona un archivo PDF');
       return;
     }
     const id = this.selectedSolicitud.id_solicitud;
@@ -189,7 +187,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
-        this.snackbar.success('Documento enviado al estudiante y solicitud aprobada exitosamente');
+        this.snackbar.exito('Documento enviado al estudiante y solicitud aprobada exitosamente');
         this.limpiarEstado();
         this.selectedSolicitud = undefined;
         this.bandeja?.resetSelection();

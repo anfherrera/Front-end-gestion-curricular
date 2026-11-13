@@ -6,7 +6,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,12 +13,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { RolesAdminService } from '../../../core/services/roles-admin.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { RolDTORespuesta, RolDTOPeticion } from '../../../core/models/rol.interface';
 import { FormRolDialogComponent } from './form-rol-dialog/form-rol-dialog.component';
 import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
 import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-manage-roles',
@@ -31,7 +30,6 @@ import { filter } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
@@ -49,7 +47,7 @@ export class ManageRolesComponent implements OnInit {
   constructor(
     private rolesService: RolesAdminService,
     private errorHandler: ErrorHandlerService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog
   ) {}
 
@@ -66,7 +64,7 @@ export class ManageRolesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar la lista de roles', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar la lista de roles');
         this.loading = false;
       }
     });
@@ -85,7 +83,7 @@ export class ManageRolesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('No se encontró el rol', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('No se encontró el rol');
         this.loading = false;
       }
     });
@@ -106,7 +104,7 @@ export class ManageRolesComponent implements OnInit {
       this.rolesService.eliminarRol(rol.id_rol).subscribe({
         next: () => {
           this.loading = false;
-          this.snackBar.open('Rol eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Rol eliminado exitosamente');
           this.cargarRoles();
         },
         error: (error: HttpErrorResponse) => {
@@ -118,13 +116,13 @@ export class ManageRolesComponent implements OnInit {
           // Determinar el tipo de error
           if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
             // Error de dependencias (400) - Rol tiene usuarios asociados
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+            this.snackbar.advertencia(`${mensaje}`);
           } else if (error.status === 404) {
             // No encontrado
-            this.snackBar.open('Rol no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error('Rol no encontrado');
           } else {
             // Otros errores
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error(`${mensaje}`);
           }
         }
       });

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -17,7 +16,6 @@ import { VerComentariosDialogComponent, VerComentariosDialogData } from "../../.
 
 import { ReingresoEstudianteService } from '../../../core/services/reingreso-estudiante.service';
 import { FormatosInstitucionalesService } from '../../../core/services/formatos-institucionales.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { MatDialog } from '@angular/material/dialog';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
@@ -26,6 +24,7 @@ import { PeriodosAcademicosService } from '../../../core/services/periodos-acade
 import { Solicitud } from '../../../core/models/procesos.model';
 import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '../../../core/utils/texto.util';
 import { getPeriodoActual } from '../../../core/utils/periodo.utils';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 /** Palabras que identifican cada documento requerido, para reconocer archivos con otro nombre. */
 const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
@@ -43,7 +42,6 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
     MatDialogModule,
     FileUploadComponent,
     RequiredDocsComponent,
@@ -80,7 +78,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   constructor(
     private reingresoService: ReingresoEstudianteService,
     private formatosService: FormatosInstitucionalesService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog,
     private http: HttpClient,
     private logger: LoggerService,
@@ -162,30 +160,16 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Muestra un mensaje bonito usando SnackBar
-   */
-  private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
-    const config = {
-      duration: tipo === 'success' ? 4000 : 6000,
-      horizontalPosition: 'center' as const,
-      verticalPosition: 'top' as const,
-      panelClass: [`snackbar-${tipo}`]
-    };
-
-    this.snackBar.open(mensaje, 'Cerrar', config);
-  }
-
   onSolicitudEnviada() {
     if (!this.usuario) {
       this.logger.error('No se puede enviar solicitud: usuario no encontrado.');
-      this.snackBar.open('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.');
       return;
     }
 
     if (!this.fileUploadComponent) {
       this.logger.error('No se puede acceder al componente de archivos.');
-      this.snackBar.open('Error: No se puede acceder al componente de archivos.', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se puede acceder al componente de archivos.');
       return;
     }
 
@@ -251,17 +235,17 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
             this.resetFileUpload = true;
             setTimeout(() => this.resetFileUpload = false, 0);
 
-            this.mostrarMensaje('¡Solicitud de reingreso enviada correctamente!', 'success');
+            this.snackbar.exito('¡Solicitud de reingreso enviada correctamente!');
           },
           error: (err) => {
             this.logger.error('Error al crear solicitud', err);
             const mensajeError = this.errorHandler.extraerMensajeError(err);
             if (err.status === 400) {
-              this.mostrarMensaje(mensajeError || 'Error de validación: revisa los datos de la solicitud', 'warning');
+              this.snackbar.advertencia(mensajeError || 'Error de validación: revisa los datos de la solicitud');
             } else if (err.status === 401) {
-              this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+              this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
             } else {
-              this.mostrarMensaje(mensajeError || 'Error al crear la solicitud. Por favor, inténtalo de nuevo.', 'error');
+              this.snackbar.error(mensajeError || 'Error al crear la solicitud. Por favor, inténtalo de nuevo.');
             }
           }
         });
@@ -269,7 +253,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al subir archivos', err);
         const mensajeError = this.errorHandler.extraerMensajeError(err);
-        this.mostrarMensaje(mensajeError || 'Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        this.snackbar.error(mensajeError || 'Error al subir archivos. Por favor, inténtalo de nuevo.');
 
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
@@ -336,11 +320,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           error: err
         });
         const mensajeError = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(
-          mensajeError || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.',
-          'Cerrar',
-          snackbarConfig(['error-snackbar'])
-        );
+        this.snackbar.error(mensajeError || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.');
       }
     });
   }
@@ -366,12 +346,12 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
 
     if (!solicitudCompleta) {
-      this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
+      this.snackbar.error('No se encontró la información de la solicitud');
       return;
     }
 
     if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
-      this.mostrarMensaje('No hay documentos asociados a esta solicitud', 'warning');
+      this.snackbar.advertencia('No hay documentos asociados a esta solicitud');
       return;
     }
 
@@ -426,7 +406,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         this.logger.debug('Oficios obtenidos', oficios);
 
         if (!oficios || oficios.length === 0) {
-          this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
+          this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
           return;
         }
 
@@ -533,12 +513,12 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
 
-        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+        this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
         this.logger.error('Error al descargar archivo', err);
         const mensajeError = this.errorHandler.extraerMensajeError(err);
-        this.mostrarMensaje(mensajeError || 'Error al descargar archivo. Por favor, inténtalo de nuevo.', 'error');
+        this.snackbar.error(mensajeError || 'Error al descargar archivo. Por favor, inténtalo de nuevo.');
       }
     });
   }
@@ -657,7 +637,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       .subscribe({
       next: (blob: Blob) => {
         this.descargarBlob(blob, nombreDescarga);
-        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+        this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
         this.logger.error('Error al descargar documento de resolución por nombre', err);
@@ -728,7 +708,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       next: (blob: Blob) => {
         const nombreFinal = nombreArchivo || `oficio_reingreso_${idOficio}.pdf`;
         this.descargarBlob(blob, nombreFinal);
-        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+        this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
         this.logger.error(`Error al descargar oficio por ID ${idOficio}`, err);
@@ -753,7 +733,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       next: (blob: Blob) => {
         const nombreFinal = nombreDescarga || this.extraerNombreDesdeRuta(nombreActual) || `oficio_${idSolicitud}.pdf`;
         this.descargarBlob(blob, nombreFinal);
-        this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+        this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
         this.logger.debug(`Error al descargar usando "${nombreActual}". Probando siguiente opción...`, err);
@@ -810,7 +790,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
    */
   private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga: string, idSolicitud: number): void {
     if (index >= nombres.length) {
-      this.mostrarMensaje('No se encontró el archivo con los nombres probados', 'warning');
+      this.snackbar.advertencia('No se encontró el archivo con los nombres probados');
       return;
     }
 

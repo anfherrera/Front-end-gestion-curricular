@@ -21,17 +21,12 @@ export const COLORS = {
   breadcrumb: '#A7A6B0',
 } as const;
 
-/** Configuración de snackbar según TIC: 5s, superior derecha */
+/** Configuración de snackbar según TIC: 5s, superior derecha. Se usa a través de SnackbarService. */
 export const SNACKBAR_CONFIG_TIC: MatSnackBarConfig = {
   duration: 5000,
   horizontalPosition: 'end',
   verticalPosition: 'top',
 };
-
-/** Snackbar con panelClass - merge con SNACKBAR_CONFIG_TIC */
-export function snackbarConfig(panelClass?: string[]): MatSnackBarConfig {
-  return panelClass ? { ...SNACKBAR_CONFIG_TIC, panelClass } : SNACKBAR_CONFIG_TIC;
-}
 
 /** Mapeo de estados a iconos Material Icons (no Font Awesome) */
 export const ICONS_BY_STATE: Record<string, string> = {

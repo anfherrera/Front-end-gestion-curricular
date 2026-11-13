@@ -12,7 +12,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,7 +22,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Chart, registerables } from 'chart.js';
 
 import { EstadisticasService } from '../../../../core/services/estadisticas.service';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { esErrorDeAcceso, mensajeErrorDeAcceso } from '../../../../core/utils/http-error.utils';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { descargarBlob } from '../../../../core/utils/download.util';
@@ -37,6 +35,7 @@ import {
   TendenciaTemporal,
   TopMateria
 } from '../../../../core/models/estadisticas.model';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 const ORDEN_PRIORIDAD: Record<PrioridadRecomendacion, number> = { CRITICA: 0, ALTA: 1, MEDIA: 2, BAJA: 3 };
 const COLOR_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
@@ -69,7 +68,6 @@ Chart.register(...registerables);
     MatDividerModule,
     MatListModule,
     MatExpansionModule,
-    MatSnackBarModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -115,7 +113,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private estadisticasService: EstadisticasService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private fb: FormBuilder
   ) {}
 
@@ -556,14 +554,14 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       next: (blob) => {
         if (blob && blob.size > 0) {
           descargarBlob(blob, nombreArchivo);
-          this.snackBar.open(`Reporte ${formato} descargado exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito(`Reporte ${formato} descargado exitosamente`);
         } else {
-          this.snackBar.open(`El archivo ${formato} está vacío o corrupto`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(`El archivo ${formato} está vacío o corrupto`);
         }
       },
       error: (error: HttpErrorResponse) => {
         const mensaje = esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : `Error al exportar el reporte ${formato}`;
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
       }
     });
   }

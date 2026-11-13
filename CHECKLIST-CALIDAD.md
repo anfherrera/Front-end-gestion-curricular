@@ -48,7 +48,8 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 
 ### Servicios duplicados
 - [x] Hay dos `ErrorHandlerService`: queda solo [core/services/error-handler.service.ts](src/app/core/services/error-handler.service.ts). El de `shared/components/error-handler/` (264 líneas) se borra: su único uso real era `handleCargaError('cursos')` en `gestionar-cursos`, que pasa a `SnackbarService.warning()`
-- [ ] Notificaciones (snackbar): 53 archivos inyectan `MatSnackBar` directamente y solo 2 usan [SnackbarService](src/app/core/services/snackbar.service.ts). Pasarlos todos a `SnackbarService` con métodos `exito()`, `error()` e `info()`
+- [x] Notificaciones: [SnackbarService](src/app/core/services/snackbar.service.ts) con `exito()`, `error()`, `advertencia()`, `info()` y `mostrar(msg, tipo, duración)` (tipo `destacado` para el aviso de cambio de período). Lo usan 51 archivos y `MatSnackBar` ya solo aparece dentro del servicio. Se borran `snackbarConfig()`, los `MatSnackBarModule` de los componentes y los `mostrarMensaje` de las páginas del estudiante
+  - Cambio visible esperado: homologación y reingreso del estudiante mostraban los avisos centrados (4 o 6 s) y ahora salen arriba a la derecha (5 s) como el resto; el aviso de cambio de período pasa de abajo al centro a arriba a la derecha (sigue con fondo institucional y 8 s)
 - [ ] `ApiService` lo usan solo `auth`, `login` y `manage-processes` (y tiene 20 `any`). Que todos los servicios lo usen o eliminarlo y usar `HttpClient` en todos
 
 ### Estados de solicitud

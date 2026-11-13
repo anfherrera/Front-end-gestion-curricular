@@ -7,11 +7,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PeriodosAcademicosService, PeriodoAcademico, PeriodoActivoConfig } from '../../../core/services/periodos-academicos.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { formatearPeriodo } from '../../../core/utils/periodo.utils';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-configurar-periodo',
@@ -25,7 +24,6 @@ import { formatearPeriodo } from '../../../core/utils/periodo.utils';
     MatButtonModule,
     MatIconModule,
     MatRadioModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule
   ],
   templateUrl: './configurar-periodo.component.html',
@@ -42,7 +40,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private periodosService: PeriodosAcademicosService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {
     this.configForm = this.fb.group({
       modo: ['automatico', Validators.required],
@@ -79,7 +77,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.snackBar.open('Error al cargar la configuración actual', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar la configuración actual');
       }
     });
 
@@ -102,14 +100,14 @@ export class ConfigurarPeriodoComponent implements OnInit {
       },
       error: (error) => {
         this.cargando = false;
-        this.snackBar.open('Error al cargar los períodos disponibles', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar los períodos disponibles');
       }
     });
   }
 
   guardarConfiguracion(): void {
     if (this.configForm.invalid) {
-      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor, completa todos los campos requeridos');
       return;
     }
 
@@ -123,20 +121,16 @@ export class ConfigurarPeriodoComponent implements OnInit {
       next: (config) => {
         if (config) {
           this.configActual = config;
-          this.snackBar.open(
-            modo === 'automatico' 
+          this.snackbar.exito(modo === 'automatico' 
               ? 'Modo automático activado correctamente' 
-              : `Período ${formatearPeriodo(periodoSeleccionado)} establecido correctamente`,
-            'Cerrar',
-            snackbarConfig(['success-snackbar'])
-          );
+              : `Período ${formatearPeriodo(periodoSeleccionado)} establecido correctamente`);
           // Recargar período actual
           this.periodosService.getPeriodoActual().subscribe();
         }
         this.guardando = false;
       },
       error: (error) => {
-        this.snackBar.open('Error al guardar la configuración', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al guardar la configuración');
         this.guardando = false;
       }
     });

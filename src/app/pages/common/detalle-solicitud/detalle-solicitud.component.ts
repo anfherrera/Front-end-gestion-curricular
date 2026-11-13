@@ -6,18 +6,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { HistorialSolicitudesService } from '../../../core/services/historial-solicitudes.service';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { mensajeDeError } from '../../../core/utils/http-error.utils';
 import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
 import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 interface HistorialEstado {
   id_estado: number;
@@ -72,7 +71,6 @@ interface DetalleSolicitud {
     MatIconModule,
     MatProgressSpinnerModule,
     MatChipsModule,
-    MatSnackBarModule,
     MatDividerModule,
     MatListModule,
     MatTooltipModule,
@@ -94,7 +92,7 @@ export class DetalleSolicitudComponent implements OnInit {
     private router: Router,
     private historialService: HistorialSolicitudesService,
     private archivosService: ArchivosService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -119,7 +117,7 @@ export class DetalleSolicitudComponent implements OnInit {
         this.error = err.error?.error || 'Error al cargar el historial de la solicitud';
         this.loading = false;
         if (this.error) {
-          this.snackBar.open(this.error, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(this.error);
         }
       }
     });
@@ -139,7 +137,7 @@ export class DetalleSolicitudComponent implements OnInit {
         window.URL.revokeObjectURL(url);
       },
       error: (error) => {
-        this.snackBar.open(mensajeDeError(error, 'Error al descargar el documento'), 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensajeDeError(error, 'Error al descargar el documento'));
       }
     });
   }

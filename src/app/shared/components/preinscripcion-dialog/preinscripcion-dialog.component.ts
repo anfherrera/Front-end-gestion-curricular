@@ -4,15 +4,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MATERIAL_IMPORTS } from '../material.imports';
 import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
 import { CursoOfertadoVerano, CreatePreinscripcionDTO, CondicionSolicitudVerano } from '../../../core/models/cursos-intersemestrales.model';
 import { UsuarioSesion } from '../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../core/services/auth.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { CONDICIONES_POR_DEFECTO, nombreCondicion, } from '../../../core/utils/cursos-verano.utils';
 import { NombreDocentePipe } from '../../pipes/nombre-docente.pipe';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 export interface PreinscripcionDialogData {
   curso: CursoOfertadoVerano;
@@ -46,7 +45,7 @@ export class PreinscripcionDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: PreinscripcionDialogData,
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -93,7 +92,7 @@ export class PreinscripcionDialogComponent implements OnInit {
       .subscribe({
         next: () => {
           this.loading = false;
-          this.snackBar.open('¡Preinscripción enviada exitosamente!', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('¡Preinscripción enviada exitosamente!');
           this.dialogRef.close(true);
         },
         error: (error: HttpErrorResponse) => {
@@ -102,7 +101,7 @@ export class PreinscripcionDialogComponent implements OnInit {
             ?? (error.status === 400 ? 'Datos inválidos. Verifica la información e inténtalo de nuevo.'
               : error.status === 500 ? 'Error del servidor. Inténtalo más tarde.'
               : 'Error al enviar la preinscripción. Inténtalo de nuevo.');
-          this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(mensaje);
         }
       });
   }

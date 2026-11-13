@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import {
   FormatosInstitucionalesService,
@@ -14,7 +13,7 @@ import {
   FormatoId,
   FORMATO_IDS
 } from '../../../core/services/formatos-institucionales.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-formatos-institucionales',
@@ -26,8 +25,7 @@ import { snackbarConfig } from '../../../core/design-system/design-tokens';
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
-    MatInputModule,
-    MatSnackBarModule
+    MatInputModule
   ],
   templateUrl: './formatos-institucionales.component.html',
   styleUrls: ['./formatos-institucionales.component.css']
@@ -42,7 +40,7 @@ export class FormatosInstitucionalesComponent implements OnInit {
   constructor(
     private formatosService: FormatosInstitucionalesService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {
     this.editForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(1)]],
@@ -75,7 +73,7 @@ export class FormatosInstitucionalesComponent implements OnInit {
     this.cargarFormatos();
     this.editingId = null;
     this.editForm.reset();
-    this.snackBar.open('Formato actualizado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+    this.snackbar.exito('Formato actualizado correctamente');
   }
 
   estaEditando(id: FormatoId): boolean {

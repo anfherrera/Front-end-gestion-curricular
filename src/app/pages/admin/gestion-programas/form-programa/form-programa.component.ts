@@ -6,13 +6,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 
 import { ProgramasService } from '../../../../core/services/programas.service';
 import { ProgramaDTOPeticion } from '../../../../core/models/programa.interface';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-form-programa',
@@ -25,7 +24,6 @@ import { snackbarConfig } from '../../../../core/design-system/design-tokens';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatCardModule
   ],
@@ -43,7 +41,7 @@ export class FormProgramaComponent implements OnInit {
     private programasService: ProgramasService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {
     this.programaForm = this.fb.group({
       codigo: ['', [
@@ -82,7 +80,7 @@ export class FormProgramaComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar los datos del programa', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar los datos del programa');
         this.router.navigate(['/admin/programas']);
         this.loading = false;
       }
@@ -92,7 +90,7 @@ export class FormProgramaComponent implements OnInit {
   guardar(): void {
     if (this.programaForm.invalid) {
       this.programaForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor completa todos los campos correctamente');
       return;
     }
 
@@ -113,12 +111,12 @@ export class FormProgramaComponent implements OnInit {
   crearPrograma(data: ProgramaDTOPeticion): void {
     this.programasService.crearPrograma(data).subscribe({
       next: () => {
-        this.snackBar.open('Programa creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Programa creado exitosamente');
         this.router.navigate(['/admin/programas']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el programa';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });
@@ -127,12 +125,12 @@ export class FormProgramaComponent implements OnInit {
   actualizarPrograma(data: ProgramaDTOPeticion): void {
     this.programasService.actualizarPrograma(data).subscribe({
       next: () => {
-        this.snackBar.open('Programa actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Programa actualizado exitosamente');
         this.router.navigate(['/admin/programas']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el programa';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });

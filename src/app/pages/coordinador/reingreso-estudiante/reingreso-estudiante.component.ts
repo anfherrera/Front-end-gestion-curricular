@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,16 +17,15 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
 import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-reingreso-estudiante',
   standalone: true,
   imports: [
     CommonModule,
-    MatSnackBarModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -50,7 +48,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   constructor(
     public reingresoService: ReingresoEstudianteService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog,
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService
@@ -84,7 +82,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al cargar solicitudes');
       }
     });
   }
@@ -124,14 +122,14 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       ).subscribe({
         next: () => {
-          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Comentario añadido correctamente');
           // Recargar la solicitud para actualizar los comentarios
           this.cargarSolicitudes();
         },
         error: (error) => {
           this.logger.error('Error al añadir comentario:', error);
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(mensaje || 'Error al añadir comentario');
         }
       });
     }
@@ -146,7 +144,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Solicitud aprobada definitivamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Solicitud aprobada definitivamente');
         this.cargarSolicitudes();
         this.selectedSolicitud = undefined;
         this.requestStatusTable?.resetSelection();
@@ -154,7 +152,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al aprobar solicitud:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al aprobar solicitud');
       }
     });
   }
@@ -175,7 +173,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           takeUntil(this.destroy$)
         ).subscribe({
           next: () => {
-            this.snackBar.open('Solicitud rechazada', 'Cerrar', snackbarConfig(['success-snackbar']));
+            this.snackbar.exito('Solicitud rechazada');
             this.cargarSolicitudes();
             this.selectedSolicitud = undefined;
             this.requestStatusTable?.resetSelection();
@@ -183,7 +181,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           error: (err) => {
             this.logger.error('Error al rechazar solicitud:', err);
             const mensaje = this.errorHandler.extraerMensajeError(err);
-            this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error(mensaje || 'Error al rechazar solicitud');
           }
         });
       }

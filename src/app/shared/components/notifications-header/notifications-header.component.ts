@@ -8,7 +8,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
@@ -34,8 +33,7 @@ import {
     MatBadgeModule,
     MatTooltipModule,
     MatDividerModule,
-    MatChipsModule,
-    MatSnackBarModule
+    MatChipsModule
   ],
   templateUrl: './notifications-header.component.html',
   styleUrls: ['./notifications-header.component.css']
@@ -151,7 +149,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
         this.totalNoLeidas = 0;
         this.notificaciones = [];
         this.cdr.detectChanges();
-        this.snackbar.success('Notificaciones marcadas como leídas');
+        this.snackbar.exito('Notificaciones marcadas como leídas');
       },
       error: (error) => {
         this.snackbar.error('Error al marcar notificaciones como leídas');

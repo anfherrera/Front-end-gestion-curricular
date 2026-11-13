@@ -98,13 +98,6 @@ describe('PruebasEcaesComponent', () => {
     fixture = TestBed.createComponent(PruebasEcaesComponent);
     component = fixture.componentInstance;
     compiled = fixture.nativeElement as HTMLElement;
-    // MatSnackBarModule (importado por el componente y sus hijos) registra su propio
-    // MatSnackBar en el inyector del componente: se espía la instancia que usa de verdad.
-    const snackBarReal = (component as any).snackBar as MatSnackBar;
-    if (!jasmine.isSpy(snackBarReal.open)) {
-      spyOn(snackBarReal, 'open');
-    }
-    snackBar = snackBarReal as jasmine.SpyObj<MatSnackBar>;
     fixture.detectChanges();
   });
 

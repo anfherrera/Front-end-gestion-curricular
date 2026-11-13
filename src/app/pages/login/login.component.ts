@@ -8,14 +8,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { interval, Subscription } from 'rxjs';
 import { getLoginCooldownRemainingSeconds } from '../../core/interceptors/login-rate-limit.interceptor';
-import { snackbarConfig } from '../../core/design-system/design-tokens';
+import { SnackbarService } from '../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-login',
@@ -28,8 +27,7 @@ import { snackbarConfig } from '../../core/design-system/design-tokens';
     MatIconModule,
     MatFormFieldModule,
     MatCheckboxModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -49,7 +47,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private apiService: ApiService,
     private router: Router,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private logger: LoggerService
   ) {
     this.loginForm = this.fb.group({
@@ -140,14 +138,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 
             // Mostrar mensaje de éxito
-            this.snackBar.open(`¡Bienvenido, ${response.usuario.nombre_completo}!`, 'Cerrar', snackbarConfig(['success-snackbar']));
+            this.snackbar.exito(`¡Bienvenido, ${response.usuario.nombre_completo}!`);
 
             // Redirigir a la página de home
             this.router.navigate(['/welcome']);
           } else {
             this.logger.error('Respuesta inválida del servidor:', response);
             this.errorMensaje = 'Error: respuesta del servidor inválida.';
-            this.snackBar.open('Error en la respuesta del servidor', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error('Error en la respuesta del servidor');
           }
 
           this.cargando = false;
@@ -178,7 +176,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           }
 
           this.errorMensaje = errorMessage;
-this.snackBar.open(errorMessage, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(errorMessage);
           
           this.cargando = false;
         }
@@ -189,7 +187,7 @@ this.snackBar.open(errorMessage, 'Cerrar', snackbarConfig(['error-snackbar']));
         this.loginForm.get(key)?.markAsTouched();
       });
       
-      this.snackBar.open('Por favor, completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor, completa todos los campos correctamente');
     }
   }
 

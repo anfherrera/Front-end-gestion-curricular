@@ -8,18 +8,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { ProgramasService } from '../../../../core/services/programas.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { ProgramaDTORespuesta } from '../../../../core/models/programa.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-lista-programas',
@@ -32,7 +31,6 @@ import { filter } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule
@@ -50,7 +48,7 @@ export class ListaProgramasComponent implements OnInit {
   constructor(
     private programasService: ProgramasService,
     private errorHandler: ErrorHandlerService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private router: Router
   ) {}
 
@@ -67,7 +65,7 @@ export class ListaProgramasComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar la lista de programas', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar la lista de programas');
         this.loading = false;
       }
     });
@@ -86,7 +84,7 @@ export class ListaProgramasComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al buscar programas', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al buscar programas');
         this.loading = false;
       }
     });
@@ -107,7 +105,7 @@ export class ListaProgramasComponent implements OnInit {
       this.programasService.eliminarPrograma(programa.id_programa).subscribe({
         next: () => {
           this.loading = false;
-          this.snackBar.open('Programa eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Programa eliminado exitosamente');
           this.cargarProgramas();
         },
         error: (error: HttpErrorResponse) => {
@@ -119,13 +117,13 @@ export class ListaProgramasComponent implements OnInit {
           // Determinar el tipo de error
           if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
             // Error de dependencias (400) - Programa tiene usuarios asociados
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+            this.snackbar.advertencia(`${mensaje}`);
           } else if (error.status === 404) {
             // No encontrado
-            this.snackBar.open('Programa no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error('Programa no encontrado');
           } else {
             // Otros errores
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error(`${mensaje}`);
           }
         }
       });

@@ -69,8 +69,8 @@
   border-left: 4px solid var(--aviso-borde) !important;
 }
 
-/* Aviso de cambio de período (fondo institucional) */
-.periodo-cambio-notification {
+/* Aviso destacado, p. ej. cambio de período (fondo institucional) */
+.snackbar-destacado {
   background: var(--color-primario) !important;
   color: white !important;
   font-weight: 500 !important;

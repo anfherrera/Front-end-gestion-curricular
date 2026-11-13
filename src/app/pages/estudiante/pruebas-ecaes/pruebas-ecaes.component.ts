@@ -8,7 +8,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -32,8 +31,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { getPeriodoActual } from '../../../core/utils/periodo.utils';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-pruebas-ecaes',
@@ -47,7 +46,6 @@ import { getPeriodoActual } from '../../../core/utils/periodo.utils';
     MatNativeDateModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
@@ -94,7 +92,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
   constructor(
     private pruebasEcaesService: PruebasEcaesService,
     private archivosService: ArchivosService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private fb: FormBuilder,
     private dialog: MatDialog,
     private http: HttpClient,
@@ -228,7 +226,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al cargar fechas ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al cargar las fechas de ECAES', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al cargar las fechas de ECAES');
       }
     });
   }
@@ -260,18 +258,18 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   enviarSolicitud(): void {
     if (this.solicitudForm.invalid) {
-      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor complete todos los campos requeridos');
       return;
     }
 
     if (this.archivos.length === 0) {
-      this.snackBar.open('Debe adjuntar al menos un archivo', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Debe adjuntar al menos un archivo');
       return;
     }
 
     if (!this.usuario) {
       this.logger.error('No se puede enviar solicitud: usuario no encontrado.');
-      this.snackBar.open('Error: Usuario no encontrado. Inicie sesión nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: Usuario no encontrado. Inicie sesión nuevamente.');
       return;
     }
 
@@ -290,7 +288,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     }).catch(error => {
       this.logger.error('Error al subir archivos:', error);
       const mensaje = this.errorHandler.extraerMensajeError(error);
-      this.snackBar.open(mensaje || 'Error al subir los archivos. Intente nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error(mensaje || 'Error al subir los archivos. Intente nuevamente.');
       this.enviandoSolicitud = false;
     });
   }
@@ -406,7 +404,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         this.notificacionesService.actualizarNotificaciones();
 
         // El backend ya crea la solicitud en estado ENVIADA
-        this.snackBar.open('Solicitud enviada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Solicitud enviada exitosamente');
         this.limpiarFormulario();
         this.listarSolicitudes();
       },
@@ -417,7 +415,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         const textoCompleto = mensaje
           ? `${mensaje} Debe corregir los datos y volver a adjuntar los documentos.`
           : 'Error al enviar la solicitud. Debe volver a adjuntar los documentos.';
-        this.snackBar.open(textoCompleto, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(textoCompleto);
         this.enviandoSolicitud = false;
         // Limpiar archivos para evitar reutilizar rutas o referencias inválidas en el próximo intento.
         // El backend puede invalidar archivos subidos cuando la creación falla (ej. validación).
@@ -483,7 +481,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al cargar solicitudes:', err);
         const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackBar.open(mensaje || 'Error al cargar las solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al cargar las solicitudes');
       }
     });
   }
@@ -595,12 +593,12 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
 
     if (!solicitudCompleta) {
-      this.snackBar.open('No se encontró la información de la solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('No se encontró la información de la solicitud');
       return;
     }
 
     if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
-      this.snackBar.open('No hay documentos asociados a esta solicitud', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('No hay documentos asociados a esta solicitud');
       return;
     }
 

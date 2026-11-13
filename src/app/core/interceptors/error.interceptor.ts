@@ -2,8 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { snackbarConfig } from '../design-system/design-tokens';
+import { SnackbarService } from '../services/snackbar.service';
 import { MENSAJE_SIN_PERMISOS } from '../utils/http-error.utils';
 import { AuthService } from '../services/auth.service';
 import { ActivityMonitorService } from '../services/activity-monitor.service';
@@ -22,7 +21,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const activityMonitor = inject(ActivityMonitorService);
   const logger = inject(LoggerService);
-  const snackBar = inject(MatSnackBar);
+  const snackbar = inject(SnackbarService);
   const platformId = inject(PLATFORM_ID);
 
   return next(req).pipe(
@@ -94,7 +93,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             // de modo que reemplaza cualquier snackbar genérico que este haya mostrado.
             if (isPlatformBrowser(platformId)) {
               setTimeout(() => {
-                snackBar.open(MENSAJE_SIN_PERMISOS, 'Cerrar', snackbarConfig(['error-snackbar']));
+                snackbar.error(MENSAJE_SIN_PERMISOS);
               }, 0);
             }
           }

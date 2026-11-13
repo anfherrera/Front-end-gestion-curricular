@@ -5,7 +5,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,9 +12,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { FormProcesoDialogComponent } from './form-proceso-dialog/form-proceso-dialog.component';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-manage-processes',
@@ -27,7 +26,6 @@ import { filter } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
@@ -45,7 +43,7 @@ export class ManageProcessesComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog
   ) {}
 
@@ -62,7 +60,7 @@ export class ManageProcessesComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cargar procesos', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar procesos');
         this.loading = false;
       }
     });
@@ -100,11 +98,11 @@ export class ManageProcessesComponent implements OnInit {
     }).pipe(filter(Boolean)).subscribe(() => {
       this.apiService.put(`procesos/actualizarEstado/${proceso.id_proceso}`, { estado_proceso: nuevoEstado }).subscribe({
         next: () => {
-          this.snackBar.open(`Proceso ${mensaje}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito(`Proceso ${mensaje}do exitosamente`);
           this.cargarProcesos();
         },
         error: (err: any) => {
-          this.snackBar.open('Error al cambiar el estado del proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error('Error al cambiar el estado del proceso');
         }
       });
     });
@@ -143,11 +141,11 @@ export class ManageProcessesComponent implements OnInit {
     }).pipe(filter(Boolean)).subscribe(() => {
       this.apiService.delete(`procesos/eliminarProceso/${proceso.id_proceso}`).subscribe({
         next: () => {
-          this.snackBar.open('Proceso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Proceso eliminado exitosamente');
           this.cargarProcesos();
         },
         error: (err: any) => {
-          this.snackBar.open('Error al eliminar el proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error('Error al eliminar el proceso');
         }
       });
     });

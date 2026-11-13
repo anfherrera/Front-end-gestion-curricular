@@ -2,18 +2,17 @@ import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Archivo } from '../../../core/models/procesos.model';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatSnackBarModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './file-upload-dialog.component.html',
   styleUrls: ['./file-upload-dialog.component.css']
 })
@@ -29,7 +28,7 @@ export class FileUploadComponent implements OnChanges {
   constructor(
     private archivosService: ArchivosService,
     private pazSalvoService: PazSalvoService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -48,29 +47,21 @@ export class FileUploadComponent implements OnChanges {
     Array.from(input.files).forEach(file => {
       // Validaciones
       if (file.type !== 'application/pdf') {
-        this.snackBar.open('Solo se permiten archivos PDF', 'Cerrar', snackbarConfig(['warning-snackbar']));
+        this.snackbar.advertencia('Solo se permiten archivos PDF');
         return;
       }
 
       // Validar tamaño máximo (10MB)
       const maxFileSize = 10 * 1024 * 1024; // 10MB
       if (file.size > maxFileSize) {
-        this.snackBar.open(
-          `El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`,
-          'Cerrar',
-          snackbarConfig(['warning-snackbar'])
-        );
+        this.snackbar.advertencia(`El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
         return;
       }
 
       // Validar archivos duplicados
       const archivoDuplicado = this.archivos.find(archivo => archivo.nombre === file.name);
       if (archivoDuplicado) {
-        this.snackBar.open(
-          `El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`,
-          'Cerrar',
-          snackbarConfig(['warning-snackbar'])
-        );
+        this.snackbar.advertencia(`El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`);
         return;
       }
 
@@ -89,11 +80,7 @@ export class FileUploadComponent implements OnChanges {
           );
           
           if (archivoExclusivoExistente) {
-            this.snackBar.open(
-              `Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${this.archivosExclusivos.join(' o ')}`,
-              'Cerrar',
-              snackbarConfig(['warning-snackbar'])
-            );
+            this.snackbar.advertencia(`Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${this.archivosExclusivos.join(' o ')}`);
             return;
           }
         }

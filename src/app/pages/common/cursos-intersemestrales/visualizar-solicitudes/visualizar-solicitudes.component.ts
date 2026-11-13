@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
@@ -12,7 +11,7 @@ import { EstadoClasePipe } from '../../../../shared/pipes/estado.pipes';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
 import { MateriaFiltro, SolicitudVisualizar } from '../../../../core/models/cursos-intersemestrales.model';
 import { descargarBlob } from '../../../../core/utils/download.util';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 const TODAS_LAS_MATERIAS: MateriaFiltro = { id: 0, nombre: 'Todas las materias', codigo: 'TODAS' };
 
@@ -48,7 +47,6 @@ const ESTADOS_TEXTO: Record<string, string> = {
     CardContainerComponent,
     PeriodoFiltroSelectorComponent,
     ...MATERIAL_IMPORTS,
-    MatSnackBarModule,
     UtfFixPipe,
     EstadoClasePipe
   ],
@@ -69,7 +67,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {
     // 0 = "Todas las materias"
     this.filtroForm = this.fb.group({ materia: [0] });
@@ -139,13 +137,13 @@ export class VisualizarSolicitudesComponent implements OnInit {
       .subscribe({
         next: (archivo) => {
           descargarBlob(archivo.blob, archivo.filename);
-          this.snackBar.open('Excel descargado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Excel descargado exitosamente');
           this.exportando = false;
         },
         error: (error: HttpErrorResponse | Error) => {
           this.exportando = false;
           const porDefecto = 'Error al exportar las solicitudes. Por favor, intente nuevamente.';
-          const mostrar = (mensaje: string) => this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+          const mostrar = (mensaje: string) => this.snackbar.error(mensaje);
           if (error instanceof HttpErrorResponse && error.error instanceof Blob) {
             error.error.text().then(texto => {
               try {

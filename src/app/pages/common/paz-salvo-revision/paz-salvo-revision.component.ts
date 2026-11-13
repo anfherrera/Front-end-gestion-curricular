@@ -4,7 +4,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, catchError, filter, map, of, switchMap } from 'rxjs';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,11 +12,11 @@ import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, SolicitudHomologacionDTORespuesta, DocumentoHomologacion, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { PazSalvoBandejaComponent } from './paz-salvo-bandeja.component';
 import { aDocumentos, aFilaHistorial, aFilaTabla } from './paz-salvo-filas';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
+import { SnackbarService, TipoSnackbar } from '../../../core/services/snackbar.service';
 
 /** Roles que revisan paz y salvo con esta pantalla. Secretaría tiene su propio flujo (oficio). */
 export type RolRevisionPazSalvo = 'funcionario' | 'coordinador';
@@ -45,7 +44,6 @@ interface ConfigRevision {
   standalone: true,
   imports: [
     CommonModule,
-    MatSnackBarModule,
     MatButtonModule,
     MatIconModule,
     CardContainerComponent,
@@ -71,7 +69,7 @@ export class PazSalvoRevisionComponent implements OnInit {
 
   constructor(
     public pazSalvoService: PazSalvoService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
@@ -121,7 +119,7 @@ export class PazSalvoRevisionComponent implements OnInit {
         this.solicitudes = sols.map(aFilaTabla);
       },
       error: () => {
-        this.snackBar.open('Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar solicitudes');
       }
     });
   }
@@ -132,7 +130,7 @@ export class PazSalvoRevisionComponent implements OnInit {
         this.solicitudesProcesadas = sols.map(aFilaHistorial);
       },
       error: () => {
-        this.snackBar.open('Error al cargar historial de solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar historial de solicitudes');
       }
     });
   }
@@ -169,7 +167,7 @@ export class PazSalvoRevisionComponent implements OnInit {
           this.selectedSolicitud.documentos = [];
           this.cdr.detectChanges();
         }
-        this.snackBar.open('Error al cargar documentos', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar documentos');
       }
     });
   }
@@ -195,11 +193,11 @@ export class PazSalvoRevisionComponent implements OnInit {
     if (!event.documento.id_documento) return;
     this.pazSalvoService.agregarComentario(event.documento.id_documento, event.comentario).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this.snackBar.open('Comentario añadido correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Comentario añadido correctamente');
         this.cargarSolicitudesPendientes();
       },
       error: () => {
-        this.snackBar.open('Error al añadir comentario', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al añadir comentario');
       }
     });
   }
@@ -240,15 +238,15 @@ export class PazSalvoRevisionComponent implements OnInit {
       filter((motivo: string | undefined): motivo is string => !!motivo),
       switchMap(motivo => this.pazSalvoService.rejectRequest(id, motivo)),
       switchMap(() => !this.config.marcarDocumentosAlDecidir
-        ? of({ mensaje: 'Paz y Salvo rechazado', clase: 'success-snackbar' })
+        ? of({ mensaje: 'Paz y Salvo rechazado', tipo: 'exito' as TipoSnackbar })
         : this.pazSalvoService.actualizarEstadoDocumentos(id, documentos).pipe(
-            map(() => ({ mensaje: 'Solicitud rechazada y documentos actualizados', clase: 'success-snackbar' })),
-            catchError(() => of({ mensaje: 'Solicitud rechazada, pero error al actualizar documentos', clase: 'warning-snackbar' }))
+            map(() => ({ mensaje: 'Solicitud rechazada y documentos actualizados', tipo: 'exito' as TipoSnackbar })),
+            catchError(() => of({ mensaje: 'Solicitud rechazada, pero error al actualizar documentos', tipo: 'advertencia' as TipoSnackbar }))
           )),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: ({ mensaje, clase }) => this.finalizarDecision(mensaje, clase),
-      error: () => this.snackBar.open('Error al rechazar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']))
+      next: ({ mensaje, tipo }) => this.finalizarDecision(mensaje, tipo),
+      error: () => this.snackbar.error('Error al rechazar solicitud')
     });
   }
 
@@ -257,8 +255,8 @@ export class PazSalvoRevisionComponent implements OnInit {
   }
 
   /** Mensaje, recarga de listas y limpieza de la selección tras aprobar o rechazar. */
-  private finalizarDecision(mensaje: string, clase: string = 'success-snackbar'): void {
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig([clase]));
+  private finalizarDecision(mensaje: string, tipo: TipoSnackbar = 'exito'): void {
+    this.snackbar.mostrar(mensaje, tipo);
     this.cargarSolicitudesPendientes();
     this.cargarSolicitudesProcesadas();
     this.selectedSolicitud = null;
@@ -266,7 +264,7 @@ export class PazSalvoRevisionComponent implements OnInit {
   }
 
   private mostrarErrorAprobacion(err: HttpErrorResponse): void {
-    const abrir = (texto: string) => this.snackBar.open(texto, 'Cerrar', snackbarConfig(['error-snackbar']));
+    const abrir = (texto: string) => this.snackbar.error(texto);
     if (err?.error instanceof Blob) {
       err.error.text().then((texto: string) => {
         try {

@@ -4,15 +4,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { CursosIntersemestralesService } from '../../../core/services/cursos-intersemestrales.service';
 import { CreateInscripcionDTO, PreinscripcionSeguimiento } from '../../../core/models/cursos-intersemestrales.model';
 import { UsuarioSesion } from '../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '../material.imports';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { mensajeDeError } from '../../../core/utils/http-error.utils';
+import { SnackbarService, TipoSnackbar } from '../../../core/services/snackbar.service';
 
 export interface InscripcionModalData {
   preinscripcion: Pick<PreinscripcionSeguimiento, 'cursoId' | 'curso' | 'estado' | 'estadoCurso'>;
@@ -54,7 +53,7 @@ export class InscripcionModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: InscripcionModalData,
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private notificacionesService: NotificacionesService
   ) {
     this.inscripcionForm = this.fb.group({
@@ -90,16 +89,16 @@ export class InscripcionModalComponent implements OnInit {
 
   private rechazarArchivo(mensaje: string): void {
     this.errorArchivo = mensaje;
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['warning-snackbar']));
+    this.snackbar.advertencia(mensaje);
   }
 
   onSubmit(): void {
     if (this.inscripcionForm.invalid) {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor completa todos los campos requeridos');
       return;
     }
     if (!this.archivoSeleccionado) {
-      this.snackBar.open('Debes subir el comprobante de pago (PDF)', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Debes subir el comprobante de pago (PDF)');
       return;
     }
     if (!this.usuario) return;
@@ -120,21 +119,13 @@ export class InscripcionModalComponent implements OnInit {
             return;
           }
           this.cargando = false;
-          this.snackBar.open(
-            delCurso.length > 0
+          this.snackbar.advertencia(delCurso.length > 0
               ? 'Tu preinscripción aún no ha sido aprobada. Podrás inscribirte cuando un funcionario la apruebe.'
-              : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".',
-            'Cerrar',
-            snackbarConfig(['warning-snackbar'])
-          );
+              : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".');
         },
         error: (error) => {
           this.cargando = false;
-          this.snackBar.open(
-            mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.'),
-            'Cerrar',
-            snackbarConfig(['error-snackbar'])
-          );
+          this.snackbar.error(mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.'));
         }
       });
   }
@@ -156,7 +147,7 @@ export class InscripcionModalComponent implements OnInit {
           const mensaje = error.status === 400
             ? `Error del servidor: ${error.error?.message || error.error?.error || 'Datos inválidos'}`
             : ERRORES_INSCRIPCION[error.status] ?? 'Error al crear la inscripción. Por favor, inténtalo de nuevo.';
-          this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(mensaje);
         }
       });
   }
@@ -169,17 +160,17 @@ export class InscripcionModalComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.terminar(
-          `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 'success-snackbar'),
+          `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 'exito'),
         error: () => this.terminar(
           'Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.',
-          'warning-snackbar')
+          'advertencia')
       });
   }
 
-  private terminar(mensaje: string, clase: string): void {
+  private terminar(mensaje: string, tipo: TipoSnackbar): void {
     this.notificacionesService.actualizarNotificaciones();
     this.cargando = false;
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig([clase]));
+    this.snackbar.mostrar(mensaje, tipo);
     this.dialogRef.close(true);
   }
 

@@ -7,7 +7,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,10 +14,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { RouterModule } from '@angular/router';
 import { UsuariosService } from '../../../core/services/usuarios.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
 import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-manage-users',
@@ -31,7 +30,6 @@ import { filter } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
@@ -50,7 +48,7 @@ export class ManageUsersComponent implements OnInit {
   constructor(
     private usuariosService: UsuariosService,
     private errorHandler: ErrorHandlerService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -67,7 +65,7 @@ export class ManageUsersComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        this.snackBar.open('Error al cargar usuarios', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar usuarios');
         this.loading = false;
       }
     });
@@ -115,13 +113,13 @@ export class ManageUsersComponent implements OnInit {
           usuario.estado_usuario = response.estado_usuario;
         
           // Mostrar mensaje de éxito
-          this.snackBar.open(`Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito(`Usuario ${nuevoEstado}do exitosamente`);
         },
         error: (error: any) => {
           this.loading = false;
         
           // Mostrar mensaje de error
-          this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error('Error al cambiar el estado del usuario');
         }
       });
     });
@@ -137,7 +135,7 @@ export class ManageUsersComponent implements OnInit {
       this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
         next: () => {
           this.loading = false;
-          this.snackBar.open('Usuario eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Usuario eliminado exitosamente');
           this.cargarUsuarios();
         },
         error: (error: HttpErrorResponse) => {
@@ -149,13 +147,13 @@ export class ManageUsersComponent implements OnInit {
           // Determinar el tipo de error para mostrar el color correcto
           if (this.errorHandler.esErrorDependencias(error)) {
             // Error de dependencias (400) - Naranja/Advertencia
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+            this.snackbar.advertencia(`${mensaje}`);
           } else if (error.status === 404) {
             // No encontrado
-            this.snackBar.open('Usuario no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error('Usuario no encontrado');
           } else {
             // Otros errores
-            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+            this.snackbar.error(`${mensaje}`);
           }
         }
       });

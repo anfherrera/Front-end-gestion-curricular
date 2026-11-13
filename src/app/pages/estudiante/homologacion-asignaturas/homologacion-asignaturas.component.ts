@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,7 +18,6 @@ import { VerComentariosDialogComponent, VerComentariosDialogData } from "../../.
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 import { FormatosInstitucionalesService } from '../../../core/services/formatos-institucionales.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -31,6 +29,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { Solicitud } from '../../../core/models/procesos.model';
 import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '../../../core/utils/texto.util';
 import { getPeriodoActual } from '../../../core/utils/periodo.utils';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 /** Palabras que identifican cada documento requerido, para reconocer archivos con otro nombre. */
 const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
@@ -48,7 +47,6 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -83,7 +81,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   constructor(
     private homologacionService: HomologacionAsignaturasService,
     private formatosService: FormatosInstitucionalesService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private dialog: MatDialog,
     private http: HttpClient,
     private notificacionesService: NotificacionesService,
@@ -174,30 +172,16 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Muestra un mensaje bonito usando SnackBar
-   */
-  private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
-    const config = {
-      duration: tipo === 'success' ? 4000 : 6000,
-      horizontalPosition: 'center' as const,
-      verticalPosition: 'top' as const,
-      panelClass: [`snackbar-${tipo}`]
-    };
-
-    this.snackBar.open(mensaje, 'Cerrar', config);
-  }
-
   onSolicitudEnviada() {
     if (!this.usuario) {
       this.logger.error('No se puede enviar solicitud: usuario no encontrado.');
-      this.snackBar.open('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.');
       return;
     }
 
     if (!this.fileUploadComponent) {
       this.logger.error('No se puede acceder al componente de archivos.');
-      this.snackBar.open('Error: No se puede acceder al componente de archivos.', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se puede acceder al componente de archivos.');
       return;
     }
 
@@ -264,17 +248,17 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       this.resetFileUpload = true;
       setTimeout(() => this.resetFileUpload = false, 0);
 
-            this.mostrarMensaje('¡Solicitud de homologación enviada correctamente!', 'success');
+            this.snackbar.exito('¡Solicitud de homologación enviada correctamente!');
     },
     error: (err) => {
       this.logger.error('Error al crear solicitud', err);
       const mensajeError = this.errorHandler.extraerMensajeError(err);
       if (err.status === 400) {
-        this.mostrarMensaje(mensajeError || 'Error de validación: revisa los datos de la solicitud', 'warning');
+        this.snackbar.advertencia(mensajeError || 'Error de validación: revisa los datos de la solicitud');
       } else if (err.status === 401) {
-        this.mostrarMensaje('Sesión expirada. Por favor, inicia sesión de nuevo.', 'warning');
+        this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
       } else {
-        this.mostrarMensaje(mensajeError || 'Error al crear la solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.snackbar.error(mensajeError || 'Error al crear la solicitud. Por favor, inténtalo de nuevo.');
       }
     }
   });
@@ -282,7 +266,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.logger.error('Error al subir archivos', err);
         const mensajeError = this.errorHandler.extraerMensajeError(err);
-        this.mostrarMensaje(mensajeError || 'Error al subir archivos. Por favor, inténtalo de nuevo.', 'error');
+        this.snackbar.error(mensajeError || 'Error al subir archivos. Por favor, inténtalo de nuevo.');
 
         // Resetear el estado de carga del componente de subida
         if (this.fileUploadComponent) {
@@ -364,11 +348,7 @@ listarSolicitudes() {
         error: err
       });
       const mensajeError = this.errorHandler.extraerMensajeError(err);
-      this.snackBar.open(
-        mensajeError || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.',
-        'Cerrar',
-        snackbarConfig(['error-snackbar'])
-      );
+      this.snackbar.error(mensajeError || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.');
     }
   });
 }
@@ -431,12 +411,12 @@ verComentarios(solicitudId: number): void {
   const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
 
   if (!solicitudCompleta) {
-    this.mostrarMensaje('No se encontró la información de la solicitud', 'error');
+    this.snackbar.error('No se encontró la información de la solicitud');
     return;
   }
 
   if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
-    this.mostrarMensaje('No hay documentos asociados a esta solicitud', 'warning');
+    this.snackbar.advertencia('No hay documentos asociados a esta solicitud');
     return;
   }
 
@@ -527,7 +507,7 @@ private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): vo
       this.logger.debug('Oficios obtenidos', oficios);
 
       if (!oficios || oficios.length === 0) {
-        this.mostrarMensaje('No hay oficios disponibles para esta solicitud', 'warning');
+        this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
         return;
       }
 
@@ -621,12 +601,12 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      this.mostrarMensaje('Oficio descargado exitosamente', 'success');
+      this.snackbar.exito('Oficio descargado exitosamente');
     },
     error: (err) => {
       this.logger.error('Error al descargar archivo', err);
       const mensajeError = this.errorHandler.extraerMensajeError(err);
-      this.mostrarMensaje(mensajeError || 'Error al descargar archivo. Por favor, inténtalo de nuevo.', 'error');
+      this.snackbar.error(mensajeError || 'Error al descargar archivo. Por favor, inténtalo de nuevo.');
     }
   });
 }
@@ -660,7 +640,7 @@ private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: st
  */
 private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga: string, idSolicitud: number): void {
   if (index >= nombres.length) {
-    this.mostrarMensaje('No se encontró el archivo con los nombres probados', 'warning');
+    this.snackbar.advertencia('No se encontró el archivo con los nombres probados');
     return;
   }
 
@@ -678,11 +658,11 @@ private mostrarOficiosEnUI(oficios: any[]): void {
   this.logger.debug('Mostrando oficios en UI', oficios);
 
   if (!oficios || oficios.length === 0) {
-    this.mostrarMensaje('No hay oficios disponibles', 'info');
+    this.snackbar.info('No hay oficios disponibles');
     return;
   }
 
-  this.mostrarMensaje(`Se encontraron ${oficios.length} oficio(s) disponible(s)`, 'success');
+  this.snackbar.exito(`Se encontraron ${oficios.length} oficio(s) disponible(s)`);
 }
 
 }

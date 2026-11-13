@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
@@ -16,7 +15,6 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { CursoDialogComponent } from './curso-dialog.component';
 import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { FechaPipe } from '../../../../shared/pipes/fecha.pipe';
 import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
 import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -28,7 +26,6 @@ import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatSnackBarModule,
     MatChipsModule,
     CardContainerComponent,
     EstadoFiltersComponent,
@@ -78,10 +75,9 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private cursoEstadosService: CursoEstadosService,
-    private snackbarService: SnackbarService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {
     // Formulario completo para crear cursos - Solo campos que el backend espera
     // NO incluir: nombre_curso, codigo_curso, descripcion, cupo_maximo (se obtienen automáticamente)
@@ -140,7 +136,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: () => {
-        this.snackbarService.warning('No se pudieron cargar los cursos - Intenta recargar la página');
+        this.snackbar.advertencia('No se pudieron cargar los cursos - Intenta recargar la página');
         this.cargando = false;
         // Mostrar mensaje de error sin datos de prueba
         this.cursos = [];
@@ -158,7 +154,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.materias = []; // Array vacío en lugar de datos de prueba
-        this.snackBar.open('No se pudieron cargar las materias. Verifica la conexión con el backend.', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('No se pudieron cargar las materias. Verifica la conexión con el backend.');
       }
     });
 
@@ -169,7 +165,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.docentes = []; // Array vacío en lugar de datos de prueba
-        this.snackBar.open('No se pudieron cargar los docentes. Verifica la conexión con el backend.', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('No se pudieron cargar los docentes. Verifica la conexión con el backend.');
       }
     });
   }
@@ -267,7 +263,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: () => {
-        this.snackBar.open('Curso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Curso eliminado exitosamente');
         this.cargarDatos();
       },
       error: (err) => {
@@ -279,7 +275,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         } else if (err.status === 500) {
           mensajeError = 'Error interno del servidor';
         }
-        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensajeError);
         // Recargar datos incluso si hay error para sincronizar
         this.cargarDatos();
       }
@@ -359,7 +355,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cursosService.exportarCursosPDF(periodoParam).pipe(takeUntil(this.destroy$)).subscribe({
       next: (result) => {
         descargarBlob(result.blob, result.filename);
-        this.snackBar.open('PDF exportado correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('PDF exportado correctamente');
       },
       error: (err) => {
         let mensajeError = 'Error al exportar el PDF';
@@ -374,7 +370,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
           mensajeError = 'Error interno del servidor al generar el PDF';
         }
         
-        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensajeError);
       }
     });
   }

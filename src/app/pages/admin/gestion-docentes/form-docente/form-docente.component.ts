@@ -6,13 +6,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 
 import { DocentesService } from '../../../../core/services/docentes.service';
 import { DocenteDTOPeticion } from '../../../../core/models/docente.interface';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-form-docente',
@@ -25,7 +24,6 @@ import { snackbarConfig } from '../../../../core/design-system/design-tokens';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatCardModule
   ],
@@ -43,7 +41,7 @@ export class FormDocenteComponent implements OnInit {
     private docentesService: DocentesService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {
     this.docenteForm = this.fb.group({
       codigo_docente: ['', [
@@ -82,7 +80,7 @@ export class FormDocenteComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open('Error al cargar los datos del docente', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error('Error al cargar los datos del docente');
         this.router.navigate(['/admin/docentes']);
         this.loading = false;
       }
@@ -92,7 +90,7 @@ export class FormDocenteComponent implements OnInit {
   guardar(): void {
     if (this.docenteForm.invalid) {
       this.docenteForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor completa todos los campos correctamente');
       return;
     }
 
@@ -113,12 +111,12 @@ export class FormDocenteComponent implements OnInit {
   crearDocente(data: DocenteDTOPeticion): void {
     this.docentesService.crearDocente(data).subscribe({
       next: () => {
-        this.snackBar.open('Docente creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Docente creado exitosamente');
         this.router.navigate(['/admin/docentes']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el docente';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });
@@ -127,12 +125,12 @@ export class FormDocenteComponent implements OnInit {
   actualizarDocente(data: DocenteDTOPeticion): void {
     this.docentesService.actualizarDocente(data).subscribe({
       next: () => {
-        this.snackBar.open('Docente actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Docente actualizado exitosamente');
         this.router.navigate(['/admin/docentes']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el docente';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });

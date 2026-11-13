@@ -10,16 +10,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { merge } from 'rxjs';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
 import {
   CreateCursoDTO, CursoOfertadoVerano, Docente, Materia, Salon, UpdateCursoDTO
 } from '../../../../core/models/cursos-intersemestrales.model';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '../../../../core/utils/periodo.utils';
 import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 export interface CursoDialogData {
   form: FormGroup;
@@ -48,7 +47,6 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSnackBarModule,
     MatIconModule,
     NombreDocentePipe
   ],
@@ -70,7 +68,7 @@ export class CursoDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<CursoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CursoDialogData,
     private cursosService: CursosIntersemestralesService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -103,7 +101,7 @@ export class CursoDialogComponent implements OnInit {
           }
         },
         error: () => {
-          this.snackBar.open('Error al cargar la lista de salones', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error('Error al cargar la lista de salones');
           this.cargandoSalones = false;
         }
       });
@@ -144,7 +142,7 @@ export class CursoDialogComponent implements OnInit {
 
   guardarCurso(): void {
     if (!this.data.form.valid) {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor completa todos los campos requeridos');
       return;
     }
 
@@ -172,14 +170,14 @@ export class CursoDialogComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.snackBar.open('Curso actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Curso actualizado exitosamente');
           this.dialogRef.close('guardado');
         },
         error: (err: HttpErrorResponse) => {
           const mensaje = err.error?.message
             || (typeof err.error === 'string' ? err.error : '')
             || (err.status === 400 ? 'Datos inválidos enviados al servidor' : 'Error al actualizar el curso');
-          this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(mensaje);
           // Se cierra igual para que la lista se recargue
           this.dialogRef.close('guardado');
         }
@@ -190,7 +188,7 @@ export class CursoDialogComponent implements OnInit {
     const formValue = this.data.form.value;
     const periodoAcademico = formValue.periodoAcademico || '';
     if (!validarPeriodo(periodoAcademico)) {
-      this.snackBar.open('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.');
       return;
     }
 
@@ -217,12 +215,12 @@ export class CursoDialogComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.snackBar.open('Curso creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Curso creado exitosamente');
           this.dialogRef.close('guardado');
         },
         // El diálogo sigue abierto para que el usuario corrija
         error: (err: HttpErrorResponse) => {
-          this.snackBar.open(this.mensajeErrorCreacion(err), 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(this.mensajeErrorCreacion(err));
         }
       });
   }

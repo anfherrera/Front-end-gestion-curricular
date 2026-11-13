@@ -3,14 +3,12 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 
 import { EstadisticasService } from '../../../core/services/estadisticas.service';
 import { TendenciasComparativasResponse } from '../../../core/models/estadisticas.model';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-tendencias-comparativas',
@@ -20,7 +18,6 @@ import { snackbarConfig } from '../../../core/design-system/design-tokens';
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
     MatButtonModule
   ],
   templateUrl: './tendencias-comparativas.component.html',
@@ -38,7 +35,7 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
 
   constructor(
     private estadisticasService: EstadisticasService,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -138,13 +135,13 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
    * Muestra mensaje de éxito
    */
   private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['success-snackbar']));
+    this.snackbar.exito(mensaje);
   }
 
   /**
    * Muestra mensaje de error
    */
   private mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+    this.snackbar.error(mensaje);
   }
 }

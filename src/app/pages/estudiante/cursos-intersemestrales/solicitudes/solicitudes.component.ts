@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
@@ -11,8 +10,8 @@ import { Materia, CondicionSolicitudVerano, CreateSolicitudCursoNuevoDTO } from 
 import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificacionesService } from '../../../../core/services/notificaciones.service';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { CONDICIONES_POR_DEFECTO, nombreCondicion } from '../../../../core/utils/cursos-verano.utils';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 const ERRORES_ENVIO: Record<number, string> = {
   400: 'Datos inválidos. Verifica la información e inténtalo de nuevo.',
@@ -44,7 +43,7 @@ export class SolicitudesComponent implements OnInit {
     private fb: FormBuilder,
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private notificacionesService: NotificacionesService
   ) {}
 
@@ -61,7 +60,7 @@ export class SolicitudesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (materias) => this.materiasDisponibles = materias,
-        error: () => this.snackBar.open('Error al cargar las materias disponibles', 'Cerrar', snackbarConfig(['error-snackbar']))
+        error: () => this.snackbar.error('Error al cargar las materias disponibles')
       });
 
     this.cursosService.getCondicionesSolicitud()
@@ -108,12 +107,12 @@ export class SolicitudesComponent implements OnInit {
           this.solicitudForm.reset();
           this.loadUserData();
           this.notificacionesService.actualizarNotificaciones();
-          this.snackBar.open('¡Solicitud enviada exitosamente!', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('¡Solicitud enviada exitosamente!');
         },
         error: (error: HttpErrorResponse) => {
           this.loading = false;
           const mensaje = ERRORES_ENVIO[error.status] ?? 'Error al enviar la solicitud. Inténtalo de nuevo.';
-          this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(mensaje);
         }
       });
   }
@@ -122,7 +121,7 @@ export class SolicitudesComponent implements OnInit {
     this.solicitudForm.reset();
     this.solicitudEnviada = false;
     this.loadUserData();
-    this.snackBar.open('Formulario limpiado', 'Cerrar', snackbarConfig());
+    this.snackbar.info('Formulario limpiado');
   }
 
   getCondicionDisplayName(condicion: CondicionSolicitudVerano): string {

@@ -6,12 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { RolesAdminService } from '../../../../core/services/roles-admin.service';
 import { RolDTOPeticion, RolDTORespuesta } from '../../../../core/models/rol.interface';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 export interface FormRolDialogData {
   rol: RolDTORespuesta | null;
@@ -29,7 +28,6 @@ export interface FormRolDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatSnackBarModule,
     MatProgressSpinnerModule
   ],
   templateUrl: './form-rol-dialog.component.html',
@@ -42,7 +40,7 @@ export class FormRolDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private rolesService: RolesAdminService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     public dialogRef: MatDialogRef<FormRolDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FormRolDialogData
   ) {
@@ -66,7 +64,7 @@ export class FormRolDialogComponent implements OnInit {
   guardar(): void {
     if (this.rolForm.invalid) {
       this.rolForm.markAllAsTouched();
-      this.snackBar.open('Por favor completa todos los campos correctamente', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor completa todos los campos correctamente');
       return;
     }
 
@@ -87,12 +85,12 @@ export class FormRolDialogComponent implements OnInit {
   crearRol(data: RolDTOPeticion): void {
     this.rolesService.crearRol(data).subscribe({
       next: () => {
-        this.snackBar.open('Rol creado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Rol creado exitosamente');
         this.dialogRef.close(true);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el rol';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });
@@ -101,12 +99,12 @@ export class FormRolDialogComponent implements OnInit {
   actualizarRol(data: RolDTOPeticion): void {
     this.rolesService.actualizarRol(data).subscribe({
       next: () => {
-        this.snackBar.open('Rol actualizado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Rol actualizado exitosamente');
         this.dialogRef.close(true);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el rol';
-        this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje);
         this.loading = false;
       }
     });

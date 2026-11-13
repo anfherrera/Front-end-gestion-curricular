@@ -7,7 +7,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,9 +22,9 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
@@ -38,7 +37,6 @@ import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatSnackBarModule,
     MatTableModule,
     MatExpansionModule,
     MatSelectModule,
@@ -75,7 +73,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   constructor(
     public pruebasEcaesService: PruebasEcaesService,
-    private snackBar: MatSnackBar,
+    private snackbar: SnackbarService,
     private fb: FormBuilder,
     private http: HttpClient,
     private logger: LoggerService,
@@ -182,7 +180,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       this.periodosAcademicos.push(`${año}-1`, `${año}-2`);
     }
     this.logger.log('Períodos fallback cargados (2020-2030):', this.periodosAcademicos);
-    this.snackBar.open('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.', 'Cerrar', snackbarConfig(['warning-snackbar']));
+    this.snackbar.advertencia('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.');
   }
 
   cargarSolicitudesPendientes(): void {
@@ -204,7 +202,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al cargar solicitudes ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al cargar solicitudes ECAES', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al cargar solicitudes ECAES');
       }
     });
   }
@@ -241,7 +239,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         this.esModoEdicion = true;
         this.idFechaEcaesActual = fechas.idFechaEcaes;
         this.cargandoFechas = false;
-        this.snackBar.open('Fechas existentes cargadas. Puede editarlas.', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Fechas existentes cargadas. Puede editarlas.');
       },
       error: (error) => {
         this.cargandoFechas = false;
@@ -255,7 +253,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         } else {
           this.logger.error('Error al buscar fechas:', error);
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(mensaje || 'Error al buscar fechas existentes', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(mensaje || 'Error al buscar fechas existentes');
         }
       }
     });
@@ -324,7 +322,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   publicarFechas(): void {
     if (this.fechasForm.invalid) {
-      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('Por favor complete todos los campos requeridos');
       return;
     }
 
@@ -358,11 +356,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.logger.log('Fechas ' + (this.esModoEdicion ? 'actualizadas' : 'publicadas') + ' exitosamente:', response);
-        this.snackBar.open(
-          `Fechas ${this.esModoEdicion ? 'actualizadas' : 'publicadas'} exitosamente`, 
-          'Cerrar', 
-          snackbarConfig(['success-snackbar'])
-        );
+        this.snackbar.exito(`Fechas ${this.esModoEdicion ? 'actualizadas' : 'publicadas'} exitosamente`);
         
         // Mantener el modo de edición si se actualizó
         if (this.esModoEdicion && response.idFechaEcaes) {
@@ -383,11 +377,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al ' + (this.esModoEdicion ? 'actualizar' : 'publicar') + ' fechas:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(
-          mensaje || `Error al ${this.esModoEdicion ? 'actualizar' : 'publicar'} las fechas`, 
-          'Cerrar', 
-          snackbarConfig(['error-snackbar'])
-        );
+        this.snackbar.error(mensaje || `Error al ${this.esModoEdicion ? 'actualizar' : 'publicar'} las fechas`);
         this.publicandoFechas = false;
       }
     });
@@ -447,7 +437,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al cargar solicitud seleccionada:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al cargar solicitud seleccionada', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al cargar solicitud seleccionada');
       }
     });
   }
@@ -472,7 +462,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       ).subscribe({
         next: () => {
-          this.snackBar.open('Comentario añadido correctamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.snackbar.exito('Comentario añadido correctamente');
           // Recargar la solicitud para actualizar los comentarios
           this.cargarSolicitudesPendientes();
           // Recargar la solicitud seleccionada para obtener los comentarios actualizados
@@ -483,12 +473,12 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.logger.error('Error al añadir comentario:', error);
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackBar.open(mensaje || 'Error al añadir comentario', 'Cerrar', snackbarConfig(['error-snackbar']));
+          this.snackbar.error(mensaje || 'Error al añadir comentario');
         }
       });
     } else {
       this.logger.error('No se pudo obtener el ID del documento para agregar comentario');
-      this.snackBar.open('Error: No se pudo identificar el documento', 'Cerrar', snackbarConfig(['error-snackbar']));
+      this.snackbar.error('Error: No se pudo identificar el documento');
     }
   }
 
@@ -498,7 +488,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   aprobarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) {
-      this.snackBar.open('No hay solicitud seleccionada', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('No hay solicitud seleccionada');
       return;
     }
 
@@ -510,7 +500,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.logger.log('Solicitud ECAES aprobada exitosamente:', response);
-        this.snackBar.open('Solicitud marcada como Pre-registrada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Solicitud marcada como Pre-registrada exitosamente');
 
         // Recargar solicitudes después de la aprobación
         this.cargarSolicitudesPendientes();
@@ -521,14 +511,14 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al aprobar solicitud ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al aprobar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al aprobar solicitud');
       }
     });
   }
 
   rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) {
-      this.snackBar.open('No hay solicitud seleccionada', 'Cerrar', snackbarConfig(['warning-snackbar']));
+      this.snackbar.advertencia('No hay solicitud seleccionada');
       return;
     }
 
@@ -540,7 +530,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.logger.log('Solicitud ECAES rechazada exitosamente:', response);
-        this.snackBar.open('Solicitud rechazada exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.snackbar.exito('Solicitud rechazada exitosamente');
 
         // Recargar solicitudes después del rechazo
         this.cargarSolicitudesPendientes();
@@ -551,7 +541,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.logger.error('Error al rechazar solicitud ECAES:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackBar.open(mensaje || 'Error al rechazar solicitud', 'Cerrar', snackbarConfig(['error-snackbar']));
+        this.snackbar.error(mensaje || 'Error al rechazar solicitud');
       }
     });
   }

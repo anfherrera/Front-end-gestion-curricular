@@ -2,7 +2,6 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
@@ -16,8 +15,8 @@ import {
   PreinscripcionUsuario
 } from '../../../../core/models/cursos-intersemestrales.model';
 import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
-import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { MotivoRechazoDialogComponent, MotivoRechazoDialogData } from './motivo-rechazo-dialog.component';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 type Actividad = PreinscripcionSeguimiento | InscripcionSeguimiento;
 
@@ -57,7 +56,7 @@ export class VerSolicitudComponent implements OnInit {
     private cursosService: CursosIntersemestralesService,
     private authService: AuthService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -164,7 +163,7 @@ export class VerSolicitudComponent implements OnInit {
   revisarMotivoRechazo(actividad: Actividad): void {
     const motivo = this.getComentarioEstadoActual(actividad);
     if (!motivo) {
-      this.snackBar.open('No hay un motivo registrado para esta solicitud.', 'Cerrar', snackbarConfig());
+      this.snackbar.info('No hay un motivo registrado para esta solicitud.');
       return;
     }
 
