@@ -1,12 +1,12 @@
 <div class="paz-salvo-container">
 
-  <app-paz-salvo-bandeja
+  <app-solicitudes-bandeja
     #bandeja
     [pendientes]="solicitudes"
     [procesadas]="solicitudesProcesadas"
     (solicitudSeleccionada)="onSolicitudSeleccionada($event)"
     (periodoChange)="onPeriodoChange($event)">
-  </app-paz-salvo-bandeja>
+  </app-solicitudes-bandeja>
 
   <!-- Documentación de la solicitud seleccionada -->
   <app-card-container

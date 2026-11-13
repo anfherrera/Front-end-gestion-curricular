@@ -93,10 +93,13 @@ Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al 
 
 ## Fase 3 — Reutilizar vistas entre roles (el cambio más grande)
 
-Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/common/paz-salvo-revision/) es un solo componente para funcionario y coordinador (con `data: { rolRevision }` en la ruta) y comparte [paz-salvo-bandeja](src/app/pages/common/paz-salvo-revision/paz-salvo-bandeja.component.ts) con secretaría. Hay que llevar ese patrón a los demás procesos.
+Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/common/paz-salvo-revision/) es un solo componente para funcionario y coordinador (con `data: { rolRevision }` en la ruta) y comparte la bandeja con secretaría. Hay que llevar ese patrón a los demás procesos.
 
 ### Bandeja genérica
-- [ ] Convertir `PazSalvoBandejaComponent` en un `SolicitudesBandejaComponent` genérico en `shared`, con pestañas Pendientes/Historial y filtro de período
+- [x] `PazSalvoBandejaComponent` pasa a [SolicitudesBandejaComponent](src/app/shared/components/solicitudes-bandeja/solicitudes-bandeja.component.ts) (`app-solicitudes-bandeja`), con pestañas Pendientes/Historial y filtro de período (`periodo-filtro-selector`; "todos" se emite como `null`)
+  - Recibe las solicitudes tal como llegan del backend (cualquier tipo que cumpla [SolicitudRevisable](src/app/core/models/solicitud-revision.model.ts)), arma ella las filas con [aFilaSolicitud](src/app/core/utils/fila-solicitud.util.ts) y emite la solicitud elegida, no su id. Así las páginas ya no guardan `pendientesOriginales` para buscarla
+  - `aFilaTabla`/`aFilaHistorial` de `paz-salvo-filas` se unen en `aFilaSolicitud`; `paz-salvo-filas` se queda solo con `aDocumentos`. Se quita `fechaProcesamiento` de las filas del historial, que la tabla nunca mostraba
+  - La usan paz-salvo-revision (funcionario y coordinador) y secretaría/paz-salvo, sin cambios visibles. Specs nuevos de la bandeja y de `aFilaSolicitud` (537/537)
 
 ### Revisión (funcionario / coordinador / secretaría)
 - [ ] **Homologación**: [funcionario](src/app/pages/funcionario/homologacion-asignaturas/) y [coordinador](src/app/pages/coordinador/homologacion-asignaturas/) tienen el HTML casi igual (unas 14 líneas distintas) y unas 240 líneas de TS cada uno. Unirlos en `common/homologacion-revision` con `rolRevision`

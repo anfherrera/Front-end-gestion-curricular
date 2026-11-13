@@ -9,11 +9,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { Solicitud, SolicitudHomologacionDTORespuesta, DocumentoHomologacion, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
+import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
-import { PazSalvoBandejaComponent } from './paz-salvo-bandeja.component';
-import { aDocumentos, aFilaHistorial, aFilaTabla } from './paz-salvo-filas';
+import { SolicitudesBandejaComponent } from '../../../shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
+import { aDocumentos } from './paz-salvo-filas';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
 import { SnackbarService, TipoSnackbar } from '../../../core/services/snackbar.service';
@@ -48,21 +48,19 @@ interface ConfigRevision {
     MatIconModule,
     CardContainerComponent,
     DocumentationViewerComponent,
-    PazSalvoBandejaComponent
+    SolicitudesBandejaComponent
   ],
   templateUrl: './paz-salvo-revision.component.html',
   styleUrls: ['./paz-salvo-revision.component.css']
 })
 export class PazSalvoRevisionComponent implements OnInit {
-  @ViewChild('bandeja') bandeja?: PazSalvoBandejaComponent;
+  @ViewChild('bandeja') bandeja?: SolicitudesBandejaComponent<SolicitudHomologacionDTORespuesta>;
 
   rol: RolRevisionPazSalvo = 'funcionario';
   config!: ConfigRevision;
 
-  solicitudes: Solicitud[] = [];              // Pendientes
-  solicitudesProcesadas: Solicitud[] = [];    // Historial
-  /** Respuesta original de pendientes, para recuperar la solicitud al seleccionarla. */
-  private pendientesOriginales: SolicitudHomologacionDTORespuesta[] = [];
+  solicitudes: SolicitudHomologacionDTORespuesta[] = [];              // Pendientes
+  solicitudesProcesadas: SolicitudHomologacionDTORespuesta[] = [];    // Historial
   selectedSolicitud: SolicitudHomologacionDTORespuesta | null = null;
   periodoAcademicoFiltro: string | null = null;
   private destroyRef = inject(DestroyRef);
@@ -114,10 +112,7 @@ export class PazSalvoRevisionComponent implements OnInit {
 
   cargarSolicitudesPendientes(): void {
     this.config.pendientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => {
-        this.pendientesOriginales = sols;
-        this.solicitudes = sols.map(aFilaTabla);
-      },
+      next: (sols) => this.solicitudes = sols,
       error: () => {
         this.snackbar.error('Error al cargar solicitudes');
       }
@@ -126,9 +121,7 @@ export class PazSalvoRevisionComponent implements OnInit {
 
   cargarSolicitudesProcesadas(): void {
     this.config.procesadas(this.periodoAcademicoFiltro || undefined).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => {
-        this.solicitudesProcesadas = sols.map(aFilaHistorial);
-      },
+      next: (sols) => this.solicitudesProcesadas = sols,
       error: () => {
         this.snackbar.error('Error al cargar historial de solicitudes');
       }
@@ -142,13 +135,8 @@ export class PazSalvoRevisionComponent implements OnInit {
 
   // ===== Selección y documentos =====
 
-  onSolicitudSeleccionada(solicitudId: number | null): void {
-    if (solicitudId === null) {
-      this.selectedSolicitud = null;
-      return;
-    }
-
-    this.selectedSolicitud = this.pendientesOriginales.find(sol => sol.id_solicitud === solicitudId) || null;
+  onSolicitudSeleccionada(solicitud: SolicitudHomologacionDTORespuesta | null): void {
+    this.selectedSolicitud = solicitud;
     if (this.selectedSolicitud && this.config.cargarDocumentosAparte) {
       this.cargarDocumentos(this.selectedSolicitud.id_solicitud);
     }

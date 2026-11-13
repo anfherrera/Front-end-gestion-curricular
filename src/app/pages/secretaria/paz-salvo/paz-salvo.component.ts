@@ -10,11 +10,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { DocumentGeneratorService } from '../../../core/services/document-generator.service';
-import { Solicitud, SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
+import { SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
-import { PazSalvoBandejaComponent } from '../../common/paz-salvo-revision/paz-salvo-bandeja.component';
-import { aDocumentos, aFilaHistorial, aFilaTabla } from '../../common/paz-salvo-revision/paz-salvo-filas';
+import { SolicitudesBandejaComponent } from '../../../shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
+import { aDocumentos } from '../../common/paz-salvo-revision/paz-salvo-filas';
 
 /**
  * Secretaría: genera el oficio de paz y salvo, sube el PDF firmado y con eso
@@ -30,18 +30,16 @@ import { aDocumentos, aFilaHistorial, aFilaTabla } from '../../common/paz-salvo-
     MatProgressBarModule,
     CardContainerComponent,
     DocumentGeneratorComponent,
-    PazSalvoBandejaComponent
+    SolicitudesBandejaComponent
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['./paz-salvo.component.css']
 })
 export class SecretariaPazSalvoComponent implements OnInit {
-  @ViewChild('bandeja') bandeja?: PazSalvoBandejaComponent;
+  @ViewChild('bandeja') bandeja?: SolicitudesBandejaComponent<SolicitudHomologacionDTORespuesta>;
 
-  solicitudes: Solicitud[] = [];             // Pendientes
-  solicitudesProcesadas: Solicitud[] = [];   // Historial
-  /** Respuesta original de pendientes, para recuperar la solicitud al seleccionarla. */
-  private pendientesOriginales: SolicitudHomologacionDTORespuesta[] = [];
+  solicitudes: SolicitudHomologacionDTORespuesta[] = [];             // Pendientes
+  solicitudesProcesadas: SolicitudHomologacionDTORespuesta[] = [];   // Historial
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
   periodoAcademicoFiltro: string | null = null;
   loading = false;
@@ -77,10 +75,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
   /** Pendientes de secretaría: el backend ya las filtra (APROBADA_COORDINADOR). */
   cargarSolicitudesPendientes(): void {
     this.pazSalvoService.getSecretariaRequests().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => {
-        this.pendientesOriginales = sols;
-        this.solicitudes = sols.map(aFilaTabla);
-      },
+      next: (sols) => this.solicitudes = sols,
       error: () => this.snackbar.error('Error al cargar solicitudes')
     });
   }
@@ -88,7 +83,7 @@ export class SecretariaPazSalvoComponent implements OnInit {
   cargarSolicitudesProcesadas(): void {
     this.pazSalvoService.getSolicitudesProcesadasSecretaria(this.periodoAcademicoFiltro || undefined)
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => this.solicitudesProcesadas = sols.map(aFilaHistorial),
+      next: (sols) => this.solicitudesProcesadas = sols,
       error: () => this.snackbar.error('Error al cargar historial de solicitudes procesadas')
     });
   }
@@ -98,11 +93,9 @@ export class SecretariaPazSalvoComponent implements OnInit {
     this.cargarSolicitudesProcesadas();
   }
 
-  onSolicitudSeleccionada(solicitudId: number | null): void {
+  onSolicitudSeleccionada(solicitud: SolicitudHomologacionDTORespuesta | null): void {
     this.limpiarEstado();
-    this.selectedSolicitud = solicitudId === null
-      ? undefined
-      : this.pendientesOriginales.find(sol => sol.id_solicitud === solicitudId);
+    this.selectedSolicitud = solicitud ?? undefined;
 
     if (this.selectedSolicitud) {
       this.cargarDocumentos(this.selectedSolicitud.id_solicitud);

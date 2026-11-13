@@ -1,12 +1,12 @@
 <div class="secretaria-container">
 
-  <app-paz-salvo-bandeja
+  <app-solicitudes-bandeja
     #bandeja
     [pendientes]="solicitudes"
     [procesadas]="solicitudesProcesadas"
     (solicitudSeleccionada)="onSolicitudSeleccionada($event)"
     (periodoChange)="onPeriodoChange($event)">
-  </app-paz-salvo-bandeja>
+  </app-solicitudes-bandeja>
 
       <!-- Contenedor para generar documento usando componente genérico -->
       <app-card-container

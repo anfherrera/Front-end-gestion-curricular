@@ -5,14 +5,14 @@
       <app-card-container title="Solicitudes Pendientes de Procesar">
         <app-request-status-table
           #tablaPendientes
-          [solicitudes]="pendientes"
+          [solicitudes]="filasPendientes"
           [showOficio]="false"
           [showComentarios]="false"
           [showSeleccionar]="true"
-          (solicitudSeleccionada)="solicitudSeleccionada.emit($event)">
+          (solicitudSeleccionada)="onFilaSeleccionada($event)">
         </app-request-status-table>
 
-        <p *ngIf="pendientes.length === 0" class="no-solicitudes">
+        <p *ngIf="filasPendientes.length === 0" class="no-solicitudes">
           No hay solicitudes pendientes de procesar
         </p>
       </app-card-container>
@@ -33,13 +33,13 @@
         </div>
 
         <app-request-status-table
-          [solicitudes]="procesadas"
+          [solicitudes]="filasProcesadas"
           [showOficio]="false"
           [showComentarios]="false"
           [showSeleccionar]="false">
         </app-request-status-table>
 
-        <p *ngIf="procesadas.length === 0" class="no-solicitudes">
+        <p *ngIf="filasProcesadas.length === 0" class="no-solicitudes">
           No hay solicitudes procesadas todavía
         </p>
       </app-card-container>
