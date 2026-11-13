@@ -1,17 +1,95 @@
 /* ===== Base: documento y tipografía institucional (Sistema de Diseño TIC) ===== */
 
+/*
+ * Reset mínimo. Reemplaza el "reboot" que antes aportaba Bootstrap,
+ * solo con las reglas de los elementos que usa la aplicación.
+ */
+*, *::before, *::after { box-sizing: border-box; }
+
+@media (prefers-reduced-motion: no-preference) {
+  :root { scroll-behavior: smooth; }
+}
+
 html, body { height: 100%; }
 
 body {
   margin: 0;
   font-family: 'Open Sans', 'Titillium Web', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
   background-color: var(--color-fondo);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+hr {
+  margin: 1rem 0;
+  color: inherit;
+  border: 0;
+  border-top: 1px solid;
+  opacity: 0.25;
 }
 
 /* Títulos con Titillium Web */
 h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
   font-family: 'Titillium Web', 'Open Sans', sans-serif;
+  font-weight: 500;
+  line-height: 1.2;
 }
+
+h1 { font-size: calc(1.375rem + 1.5vw); }
+h2 { font-size: calc(1.325rem + 0.9vw); }
+h3 { font-size: calc(1.3rem + 0.6vw); }
+h4 { font-size: calc(1.275rem + 0.3vw); }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+@media (min-width: 1200px) {
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+}
+
+p { margin-top: 0; margin-bottom: 1rem; }
+
+ol, ul { padding-left: 2rem; margin-top: 0; margin-bottom: 1rem; }
+ol ol, ul ul, ol ul, ul ol { margin-bottom: 0; }
+
+b, strong { font-weight: bolder; }
+small { font-size: 0.875em; }
+
+a { color: #0d6efd; text-decoration: underline; }
+a:hover { color: #0a58ca; }
+
+img, svg { vertical-align: middle; }
+
+table { caption-side: bottom; border-collapse: collapse; }
+th { text-align: inherit; text-align: -webkit-match-parent; }
+
+label { display: inline-block; }
+
+button { border-radius: 0; }
+button:focus:not(:focus-visible) { outline: 0; }
+
+input, button, select, textarea {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+button, select { text-transform: none; }
+button, [type="button"], [type="reset"], [type="submit"] { -webkit-appearance: button; }
+button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled), [role="button"] {
+  cursor: pointer;
+}
+textarea { resize: vertical; }
+
+[hidden] { display: none !important; }
 
 /* Cuerpos de texto con Open Sans */
 p, span, a, li, td, th, label, input, textarea, select, button {
@@ -20,3 +98,4 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 
 /* Utilidades de maquetación usadas en muchas vistas */
 .full-width { width: 100%; }
+.mt-4 { margin-top: 1.5rem; }

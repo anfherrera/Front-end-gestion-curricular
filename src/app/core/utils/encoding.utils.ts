@@ -12,7 +12,7 @@
  * - "Ã±" → "ñ"
  * - "Ã¡" → "á"
  */
-export function corregirEncoding(texto: string): string {
+function corregirEncoding(texto: string): string {
   if (!texto) return texto;
   
   try {

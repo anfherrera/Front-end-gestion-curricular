@@ -84,9 +84,6 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Historial Completo', icon: 'history', route: '/coordinador/historial-completo', roles: [UserRole.COORDINADOR] },
   { label: 'Historial Completo', icon: 'history', route: '/decano/historial-completo', roles: [UserRole.DECANO] },
 
-  // Ajustes
-  { label: 'Ajustes', icon: 'settings', route: '/ajustes', roles: ALL_ROLES },
-
   // Separador visual
   { label: '---', icon: 'horizontal_rule', action: 'separator', roles: ALL_ROLES },
   

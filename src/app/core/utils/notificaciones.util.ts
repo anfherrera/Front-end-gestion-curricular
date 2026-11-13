@@ -73,21 +73,6 @@ export function getColorByTipoSolicitud(tipoSolicitud: string): string {
 }
 
 /**
- * Obtiene el color por tipo de notificación
- */
-export function getColorByTipoNotificacion(tipoNotificacion: string): string {
-  // Colores institucionales - Sistema de Diseño TIC Universidad del Cauca
-  const colores: { [key: string]: string } = {
-    'NUEVA_SOLICITUD': '#1D72D3',
-    'CAMBIO_ESTADO': '#FF6D0A',
-    'APROBADA': '#249337',
-    'RECHAZADA': '#FF6D0A',
-    'ENVIADA': '#1D72D3'
-  };
-  return colores[tipoNotificacion] || '#454444';
-}
-
-/**
  * Obtiene el nombre de categoría para mostrar
  */
 export function getCategoriaDisplay(tipoSolicitud: string): string {
@@ -105,7 +90,7 @@ export function getCategoriaDisplay(tipoSolicitud: string): string {
 /**
  * Enriquece una notificación con campos calculados
  */
-export function enrichNotificacion(notificacion: any): Notificacion {
+function enrichNotificacion(notificacion: any): Notificacion {
   return {
     ...notificacion,
     tiempoTranscurrido: formatDate(notificacion.fechaCreacion),
@@ -121,6 +106,4 @@ export function enrichNotificacion(notificacion: any): Notificacion {
 export function enrichNotificaciones(notificaciones: any[]): Notificacion[] {
   return notificaciones.map(enrichNotificacion);
 }
-
-
 

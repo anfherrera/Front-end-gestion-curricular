@@ -34,7 +34,7 @@ export const routes: Routes = [
       { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.component').then(m => m.WelcomeComponent) },
 
       // ==========================
-      // Rutas comunes (home, ajustes)
+      // Rutas comunes (home, perfil, notificaciones)
       // ==========================
       ...CommonRoutes,
 

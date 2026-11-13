@@ -32,6 +32,7 @@
   display: block;
   border-bottom: 3px solid var(--color-primario-dark, #07184A);
   font-family: 'Titillium Web', sans-serif;
+  margin-bottom: 0.5rem;
 }
 
 /* Contenido de la tarjeta */

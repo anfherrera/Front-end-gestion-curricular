@@ -44,8 +44,7 @@ export class HomeComponent implements OnInit {
     { name: 'Reingreso Estudiante', route: 'reingreso-estudiante', icon: 'person_add', color: 'bg-purple' },
     { name: 'Homologación Asignaturas', route: 'homologacion-asignaturas', icon: 'sync_alt', color: 'bg-red' },
     { name: 'Módulo Estadístico', route: 'modulo-estadistico', icon: 'bar_chart', color: 'bg-teal' },
-    { name: 'Historial Completo', route: 'historial-completo', icon: 'history', color: 'bg-indigo' },
-    { name: 'Ajustes', route: 'ajustes', icon: 'settings', color: 'bg-gray' }
+    { name: 'Historial Completo', route: 'historial-completo', icon: 'history', color: 'bg-indigo' }
   ];
 
   constructor(
@@ -92,11 +91,11 @@ export class HomeComponent implements OnInit {
       // Filtrar por rol para opciones generales
       switch (this.roleLower) {
         case 'coordinador':
-          return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo', 'ajustes'].includes(p.route);
+          return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo'].includes(p.route);
         case 'funcionario':
-          return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo', 'ajustes'].includes(p.route);
+          return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo'].includes(p.route);
         case 'decano':
-          return ['modulo-estadistico', 'historial-completo', 'ajustes'].includes(p.route);
+          return ['modulo-estadistico', 'historial-completo'].includes(p.route);
         case 'estudiante':
           return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
         case 'secretaria':
@@ -129,12 +128,6 @@ export class HomeComponent implements OnInit {
   // Caso especial: opciones del panel de administración
   if (process.adminOnly && currentRole === 'admin') {
     this.router.navigate(['/admin/' + process.route]);
-    return;
-  }
-
-  // Caso especial: Ajustes es una ruta común, no tiene prefijo de rol
-  if (process.route === 'ajustes') {
-    this.router.navigate(['/ajustes']);
     return;
   }
 

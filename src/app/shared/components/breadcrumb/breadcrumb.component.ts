@@ -24,6 +24,8 @@ import { filter } from 'rxjs/operators';
   `,
   styles: [`
     .breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
       font-family: var(--breadcrumb-font, 'Open Sans'), sans-serif;
       font-size: var(--breadcrumb-size, 14px);
       font-weight: var(--breadcrumb-weight, 300);
@@ -76,7 +78,6 @@ export class BreadcrumbComponent {
     'configurar-periodo': 'Configurar Período',
     'welcome': 'Inicio',
     'home': 'Inicio',
-    'ajustes': 'Ajustes',
     'perfil': 'Mi Perfil',
     'historial-completo': 'Historial',
   };

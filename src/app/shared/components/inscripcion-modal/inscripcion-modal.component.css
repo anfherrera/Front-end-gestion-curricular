@@ -19,6 +19,9 @@
 }
 
 .modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
   margin-bottom: 24px;
   padding: 16px 0;
   border-bottom: 2px solid #e3f2fd;
@@ -42,10 +45,11 @@
 }
 
 .modal-body {
+  position: relative;
   margin-bottom: 24px;
   flex: 1;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: 1rem 4px 1rem 1rem;
 }
 
 .curso-info {
@@ -286,12 +290,18 @@
 
 .modal-footer {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  padding-top: 24px;
+  padding: 24px 0.75rem 0.75rem;
   border-top: 2px solid #e3f2fd;
   flex-shrink: 0;
   background: white;
+}
+
+.modal-footer > * {
+  margin: 0.25rem;
 }
 
 .submit-button {

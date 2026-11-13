@@ -7,11 +7,6 @@ export const CommonRoutes: Routes = [
       import('./home/home.component').then(m => m.HomeComponent)
   },
   {
-    path: 'ajustes',
-    loadComponent: () =>
-      import('./ajustes/ajustes.component').then(m => m.AjustesComponent)
-  },
-  {
     path: 'perfil',
     loadComponent: () =>
       import('./perfil/perfil.component').then(m => m.PerfilComponent)

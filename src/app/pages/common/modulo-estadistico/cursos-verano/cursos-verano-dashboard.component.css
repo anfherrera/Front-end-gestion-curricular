@@ -1201,6 +1201,9 @@ canvas {
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: baseline;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: white;

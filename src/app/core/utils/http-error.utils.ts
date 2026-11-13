@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export const MENSAJE_SIN_PERMISOS = 'No tiene permisos para realizar esta acción.';
 
 /** Mensaje estándar para respuestas 401 del backend. */
-export const MENSAJE_SESION_INVALIDA = 'Su sesión no es válida o expiró. Inicie sesión de nuevo.';
+const MENSAJE_SESION_INVALIDA = 'Su sesión no es válida o expiró. Inicie sesión de nuevo.';
 
 /**
  * Indica si el error HTTP es de autenticación (401) o de autorización (403).
@@ -13,11 +13,6 @@ export const MENSAJE_SESION_INVALIDA = 'Su sesión no es válida o expiró. Inic
  */
 export function esErrorDeAcceso(error: unknown): error is HttpErrorResponse {
   return error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403);
-}
-
-/** Indica si el error HTTP es un 403 (sin permisos). */
-export function esErrorSinPermisos(error: unknown): error is HttpErrorResponse {
-  return error instanceof HttpErrorResponse && error.status === 403;
 }
 
 /**

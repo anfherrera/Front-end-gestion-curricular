@@ -61,58 +61,6 @@ export function calcularDuracionSemanas(fechaInicio: string | Date, fechaFin: st
 }
 
 /**
- * Calcula la duración en días entre dos fechas
- * @param fechaInicio Fecha de inicio
- * @param fechaFin Fecha de fin
- * @returns Número de días
- */
-export function calcularDuracionDias(fechaInicio: string | Date, fechaFin: string | Date): number {
-  try {
-    const inicio = typeof fechaInicio === 'string' ? new Date(fechaInicio) : fechaInicio;
-    const fin = typeof fechaFin === 'string' ? new Date(fechaFin) : fechaFin;
-    
-    return Math.abs(Math.round((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)));
-  } catch (error) {
-    return 0;
-  }
-}
-
-/**
- * Verifica si un curso está activo en una fecha específica
- * @param fechaInicio Fecha de inicio del curso
- * @param fechaFin Fecha de fin del curso
- * @param fechaReferencia Fecha de referencia (por defecto hoy)
- * @returns true si el curso está activo
- */
-export function esCursoActivo(fechaInicio: string | Date, fechaFin: string | Date, fechaReferencia?: Date): boolean {
-  try {
-    const inicio = typeof fechaInicio === 'string' ? new Date(fechaInicio) : fechaInicio;
-    const fin = typeof fechaFin === 'string' ? new Date(fechaFin) : fechaFin;
-    const referencia = fechaReferencia || new Date();
-    
-    return referencia >= inicio && referencia <= fin;
-  } catch (error) {
-    return false;
-  }
-}
-
-/**
- * Obtiene el color asociado a un período académico
- * @param periodo Período académico (ej: "2025-1")
- * @returns Color hexadecimal
- */
-export function getColorPeriodo(periodo: string): string {
-  if (!periodo) return '#9e9e9e'; // Gris por defecto
-  
-  const partes = periodo.split('-');
-  if (partes.length !== 2) return '#9e9e9e';
-  
-  const numero = partes[1];
-  // Período 1 (primer semestre) = Azul, Período 2 (segundo semestre) = Azul oscuro
-  return numero === '1' ? '#3498db' : '#2980b9';
-}
-
-/**
  * Valida un período académico
  * @param periodo Período en formato "YYYY-N" (ej: "2025-1")
  * @returns true si el formato es válido
@@ -160,23 +108,6 @@ export function validarFechasCurso(fechaInicio: string | Date, fechaFin: string 
 }
 
 /**
- * Genera un array de períodos académicos entre dos años
- * @param añoInicio Año de inicio (ej: 2020)
- * @param añoFin Año de fin (ej: 2030)
- * @returns Array de períodos en formato "YYYY-N"
- */
-export function generarPeriodos(añoInicio: number, añoFin: number): string[] {
-  const periodos: string[] = [];
-  
-  for (let año = añoInicio; año <= añoFin; año++) {
-    periodos.push(`${año}-1`);
-    periodos.push(`${año}-2`);
-  }
-  
-  return periodos;
-}
-
-/**
  * Obtiene el período actual basado en la fecha
  * @param fecha Fecha de referencia (por defecto hoy)
  * @returns Período académico (ej: "2025-1")
@@ -198,7 +129,7 @@ export function getPeriodoActual(fecha?: Date): string {
  * @param periodo Período en formato "YYYY-N"
  * @returns Objeto con año y número de período
  */
-export function parsearPeriodo(periodo: string): { año: number; numero: number } | null {
+function parsearPeriodo(periodo: string): { año: number; numero: number } | null {
   if (!validarPeriodo(periodo)) return null;
   
   const partes = periodo.split('-');
@@ -214,7 +145,7 @@ export function parsearPeriodo(periodo: string): { año: number; numero: number 
  * @param periodo2 Segundo período
  * @returns -1 si periodo1 < periodo2, 0 si son iguales, 1 si periodo1 > periodo2
  */
-export function compararPeriodos(periodo1: string, periodo2: string): number {
+function compararPeriodos(periodo1: string, periodo2: string): number {
   const p1 = parsearPeriodo(periodo1);
   const p2 = parsearPeriodo(periodo2);
   
@@ -256,26 +187,4 @@ export function formatearPeriodo(periodo: string): string {
   const nombreSemestre = parsed.numero === 1 ? 'Primer Semestre' : 'Segundo Semestre';
   return `${parsed.año} - ${nombreSemestre}`;
 }
-
-/**
- * Obtiene el estado visual de un curso basado en sus fechas
- * @param fechaInicio Fecha de inicio
- * @param fechaFin Fecha de fin
- * @returns Estado: 'proximo', 'activo', 'finalizado'
- */
-export function getEstadoCursoPorFechas(fechaInicio: string | Date, fechaFin: string | Date): 'proximo' | 'activo' | 'finalizado' {
-  try {
-    const inicio = typeof fechaInicio === 'string' ? new Date(fechaInicio) : fechaInicio;
-    const fin = typeof fechaFin === 'string' ? new Date(fechaFin) : fechaFin;
-    const hoy = new Date();
-    
-    if (hoy < inicio) return 'proximo';
-    if (hoy >= inicio && hoy <= fin) return 'activo';
-    return 'finalizado';
-  } catch (error) {
-    return 'proximo';
-  }
-}
-
-
 

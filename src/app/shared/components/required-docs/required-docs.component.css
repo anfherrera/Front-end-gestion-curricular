@@ -26,6 +26,7 @@
   display: block;
   border-bottom: 3px solid #001060;
   border-radius: 12px 12px 0 0;
+  margin-bottom: 0.5rem;
 }
 
 .info-intro {
