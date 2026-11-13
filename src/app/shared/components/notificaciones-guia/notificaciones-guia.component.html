@@ -3,12 +3,12 @@
   <div class="notificaciones-header">
     <h2>Notificaciones</h2>
     <div class="header-actions">
-      @if (contadorNoLeidas > 0) {
+      @if (contadorNoLeidas() > 0) {
         <span class="badge">
-          {{ contadorNoLeidas }} no leídas
+          {{ contadorNoLeidas() }} no leídas
         </span>
       }
-      @if (contadorNoLeidas > 0) {
+      @if (contadorNoLeidas() > 0) {
         <button
           (click)="marcarTodasComoLeidas()"
           class="btn-marcar-todas">
@@ -21,14 +21,14 @@
   <!-- Lista de notificaciones -->
   <div class="notificaciones-list">
     <!-- Si no hay notificaciones -->
-    @if (notificaciones.length === 0) {
+    @if (notificaciones().length === 0) {
       <div class="sin-notificaciones">
         <p>No tienes notificaciones</p>
       </div>
     }
 
     <!-- Lista de notificaciones -->
-    @for (notificacion of notificaciones; track notificacion) {
+    @for (notificacion of notificaciones(); track notificacion.id_notificacion) {
       <div
         class="notificacion-item"
         [class.no-leida]="!notificacion.leida"

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,15 +31,15 @@ import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate } from '@cor
 export class DocumentGeneratorComponent implements OnInit {
   private fb = inject(FormBuilder);
 
-  @Input() solicitud!: any; // Datos de la solicitud
-  @Input() template!: DocumentTemplate; // Plantilla del documento
-  @Input() proceso!: string; // Tipo de proceso (homologacion, paz-salvo, etc.)
-  @Input() loading = false;
-  @Input() mostrarObservaciones = true;
+  readonly solicitud = input.required<any>(); // Datos de la solicitud
+  readonly template = input.required<DocumentTemplate>(); // Plantilla del documento
+  readonly proceso = input.required<string>(); // Tipo de proceso (homologacion, paz-salvo, etc.)
+  readonly loading = input(false);
+  readonly mostrarObservaciones = input(true);
 
-  @Output() generarDocumento = new EventEmitter<DocumentRequest>();
-  @Output() cancelar = new EventEmitter<void>();
-  @Output() tengoDocumento = new EventEmitter<void>();
+  readonly generarDocumento = output<DocumentRequest>();
+  readonly cancelar = output<void>();
+  readonly tengoDocumento = output<void>();
 
   documentForm!: FormGroup;
   datosSolicitud: DatosSolicitudDocumento = { idSolicitud: 0, estado: 'Pendiente' };
@@ -58,9 +58,10 @@ export class DocumentGeneratorComponent implements OnInit {
     };
 
     // Agregar campos opcionales si existen
-    if (this.template.camposOpcionales) {
-      this.template.camposOpcionales.forEach(campo => {
-        if (campo === 'observaciones' && !this.mostrarObservaciones) {
+    const template = this.template();
+    if (template.camposOpcionales) {
+      template.camposOpcionales.forEach(campo => {
+        if (campo === 'observaciones' && !this.mostrarObservaciones()) {
           return;
         }
         formControls[campo] = [''];
@@ -76,29 +77,30 @@ export class DocumentGeneratorComponent implements OnInit {
     // Solicitud recibida
 
     // Obtener el estado actual de la solicitud
-    let estadoActual = this.solicitud.estado;
+    let estadoActual = this.solicitud().estado;
     
     // Si no hay estado directo, intentar obtenerlo de estadosSolicitud (para Paz y Salvo)
-    if (!estadoActual && this.solicitud.estadosSolicitud && this.solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = this.solicitud.estadosSolicitud[this.solicitud.estadosSolicitud.length - 1];
+    const solicitud = this.solicitud();
+    if (!estadoActual && solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
+      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
       estadoActual = ultimoEstado.estado_actual;
       // Estado obtenido de estadosSolicitud
     }
 
     // Extraer datos relevantes de la solicitud según el proceso
     this.datosSolicitud = {
-      idSolicitud: this.solicitud.id || this.solicitud.id_solicitud,
-      nombreEstudiante: this.solicitud.usuario?.nombre_completo || this.solicitud.objUsuario?.nombre_completo,
-      codigoEstudiante: this.solicitud.usuario?.codigo || this.solicitud.objUsuario?.codigo,
-      programa: this.solicitud.usuario?.objPrograma?.nombre_programa || this.solicitud.objUsuario?.objPrograma?.nombre_programa,
-      fechaSolicitud: this.solicitud.fecha || this.solicitud.fecha_registro_solicitud,
+      idSolicitud: solicitud.id || solicitud.id_solicitud,
+      nombreEstudiante: solicitud.usuario?.nombre_completo || solicitud.objUsuario?.nombre_completo,
+      codigoEstudiante: solicitud.usuario?.codigo || solicitud.objUsuario?.codigo,
+      programa: solicitud.usuario?.objPrograma?.nombre_programa || solicitud.objUsuario?.objPrograma?.nombre_programa,
+      fechaSolicitud: solicitud.fecha || solicitud.fecha_registro_solicitud,
       estado: estadoActual || 'Pendiente',
       // Extraer campos de trabajo de grado si están disponibles (para Paz y Salvo)
-      tituloTrabajoGrado: this.solicitud.informacion_adicional?.titulo_trabajo_grado || 
-                         this.solicitud.titulo_trabajo_grado || 
+      tituloTrabajoGrado: solicitud.informacion_adicional?.titulo_trabajo_grado || 
+                         solicitud.titulo_trabajo_grado || 
                          undefined,
-      directorTrabajoGrado: this.solicitud.informacion_adicional?.director_trabajo_grado || 
-                           this.solicitud.director_trabajo_grado || 
+      directorTrabajoGrado: solicitud.informacion_adicional?.director_trabajo_grado || 
+                           solicitud.director_trabajo_grado || 
                            undefined
     };
 
@@ -115,11 +117,11 @@ export class DocumentGeneratorComponent implements OnInit {
 
       const documentRequest: DocumentRequest = {
         idSolicitud: this.datosSolicitud.idSolicitud,
-        tipoDocumento: this.template.id,
+        tipoDocumento: this.template().id,
         datosDocumento: {
           numeroDocumento: formData.numeroDocumento,
           fechaDocumento: formData.fechaDocumento,
-          ...(this.mostrarObservaciones ? { observaciones: formData.observaciones || '' } : {}),
+          ...(this.mostrarObservaciones() ? { observaciones: formData.observaciones || '' } : {}),
           // Agregar campos adicionales específicos del proceso
           ...this.getAdditionalFields(formData)
         },
@@ -138,21 +140,23 @@ export class DocumentGeneratorComponent implements OnInit {
     const additionalFields: any = {};
 
     // Agregar campos específicos según el proceso
-    if (this.proceso === 'homologacion') {
+    const proceso = this.proceso();
+    if (proceso === 'homologacion') {
       additionalFields.tipoHomologacion = 'ASIGNATURAS';
-      additionalFields.asignaturasHomologadas = this.solicitud.asignaturas || [];
-    } else if (this.proceso === 'paz-salvo') {
+      additionalFields.asignaturasHomologadas = this.solicitud().asignaturas || [];
+    } else if (proceso === 'paz-salvo') {
       additionalFields.tipoPazSalvo = 'ACADEMICO';
-      additionalFields.semestre = this.solicitud.semestre || '';
-    } else if (this.proceso === 'reingreso') {
-      additionalFields.motivoReingreso = this.solicitud.motivo || '';
-      additionalFields.semestreAnterior = this.solicitud.semestreAnterior || '';
+      additionalFields.semestre = this.solicitud().semestre || '';
+    } else if (proceso === 'reingreso') {
+      additionalFields.motivoReingreso = this.solicitud().motivo || '';
+      additionalFields.semestreAnterior = this.solicitud().semestreAnterior || '';
     }
 
     // Agregar campos opcionales del formulario
-    if (this.template.camposOpcionales) {
-      this.template.camposOpcionales.forEach(campo => {
-        if (campo === 'observaciones' && !this.mostrarObservaciones) {
+    const template = this.template();
+    if (template.camposOpcionales) {
+      template.camposOpcionales.forEach(campo => {
+        if (campo === 'observaciones' && !this.mostrarObservaciones()) {
           return;
         }
         if (formData[campo]) {
@@ -208,7 +212,7 @@ export class DocumentGeneratorComponent implements OnInit {
       'PAZ_SALVO': 'verified_user',
       'RESOLUCION_REINGRESO': 'assignment_turned_in'
     };
-    return icons[this.template.id] || 'description';
+    return icons[this.template().id] || 'description';
   }
 
   getFieldPlaceholder(fieldName: string): string {

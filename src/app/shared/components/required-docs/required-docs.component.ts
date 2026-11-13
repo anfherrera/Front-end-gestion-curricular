@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,32 +29,34 @@ export interface Documento {
 })
 export class RequiredDocsComponent {
   /** Lista de documentos requeridos */
-  @Input() requiredFiles: Documento[] = [];
+  readonly requiredFiles = input<Documento[]>([]);
   
   /** Archivos que son mutuamente exclusivos */
-  @Input() exclusiveFiles: string[] = [];
+  readonly exclusiveFiles = input<string[]>([]);
   
   /** Archivos opcionales */
-  @Input() optionalFiles: string[] = [];
+  readonly optionalFiles = input<string[]>([]);
   
   /** Archivos ya subidos por el estudiante */
-  @Input() archivos: Archivo[] = [];
+  readonly archivos = input<Archivo[]>([]);
   
   /** Nombre del programa del estudiante */
-  @Input() programaEstudiante = '';
+  readonly programaEstudiante = input('');
   
   /** Indica si es para el proceso de Paz y Salvo */
-  @Input() esPazYSalvo = false;
+  readonly esPazYSalvo = input(false);
 
   get esTelematica(): boolean {
-    if (!this.programaEstudiante) return false;
-    const programa = this.programaEstudiante.toLowerCase().trim();
+    const programaEstudiante = this.programaEstudiante();
+    if (!programaEstudiante) return false;
+    const programa = programaEstudiante.toLowerCase().trim();
     return programa.includes('telemática') || programa.includes('telematica');
   }
 
   get esSistemasElectronicaAutomatica(): boolean {
-    if (!this.programaEstudiante) return false;
-    const programa = this.programaEstudiante.toLowerCase().trim();
+    const programaEstudiante = this.programaEstudiante();
+    if (!programaEstudiante) return false;
+    const programa = programaEstudiante.toLowerCase().trim();
     // Verificar variaciones del nombre del programa
     return programa.includes('sistemas') || 
            programa.includes('electrónica') || 
@@ -75,23 +77,23 @@ export class RequiredDocsComponent {
     if (this.esTelematica) {
       return []; // Telemática solo sube la cédula, no los 4 documentos obligatorios
     }
-    return this.requiredFiles.filter(doc => doc.obligatorio);
+    return this.requiredFiles().filter(doc => doc.obligatorio);
   }
 
   get documentosSegunModalidad(): Documento[] {
     if (this.esTelematica) {
       return []; // Telemática no necesita estos formatos
     }
-    return this.requiredFiles.filter(doc => !doc.obligatorio && !doc.opcional);
+    return this.requiredFiles().filter(doc => !doc.obligatorio && !doc.opcional);
   }
 
   get documentosOpcionales(): Documento[] {
-    return this.requiredFiles.filter(doc => doc.opcional === true);
+    return this.requiredFiles().filter(doc => doc.opcional === true);
   }
 
   get archivosExclusivosFiltrados(): string[] {
     if (this.esSistemasElectronicaAutomatica) {
-      return this.exclusiveFiles; // Solo para Sistemas, Electrónica, Automática
+      return this.exclusiveFiles(); // Solo para Sistemas, Electrónica, Automática
     }
     return []; // No mostrar para otros programas
   }
@@ -102,7 +104,7 @@ export class RequiredDocsComponent {
 
   get archivosObligatoriosTelematica(): string[] {
     if (this.esTelematica) {
-      return this.optionalFiles; // Para Telemática, la cédula es obligatoria
+      return this.optionalFiles(); // Para Telemática, la cédula es obligatoria
     }
     return []; // No mostrar para otros programas
   }
@@ -118,14 +120,14 @@ export class RequiredDocsComponent {
 
   isUploaded(file: string): boolean {
     const target = this.normalizarTexto(file);
-    return this.archivos.some(a =>
+    return this.archivos().some(a =>
       this.normalizarTexto(a.nombre).includes(target)
     );
   }
 
   exclusiveUploaded(): string | null {
-    const exclusivosNormalizados = this.exclusiveFiles.map(nombre => this.normalizarTexto(nombre));
-    const encontrados = this.archivos.filter(a =>
+    const exclusivosNormalizados = this.exclusiveFiles().map(nombre => this.normalizarTexto(nombre));
+    const encontrados = this.archivos().filter(a =>
       exclusivosNormalizados.some(exclusivo =>
         this.normalizarTexto(a.nombre).includes(exclusivo)
       )
@@ -135,7 +137,7 @@ export class RequiredDocsComponent {
 
   optionalUploaded(file: string): boolean {
     const target = this.normalizarTexto(file);
-    return this.archivos.some(a =>
+    return this.archivos().some(a =>
       this.normalizarTexto(a.nombre).includes(target)
     );
   }

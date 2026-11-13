@@ -40,9 +40,9 @@
     <mat-card-header>
       <mat-card-title>
         <mat-icon>{{ getTemplateIcon() }}</mat-icon>
-        {{ template.nombre }}
+        {{ template().nombre }}
       </mat-card-title>
-      <mat-card-subtitle>{{ template.descripcion }}</mat-card-subtitle>
+      <mat-card-subtitle>{{ template().descripcion }}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
@@ -50,7 +50,7 @@
 
         <!-- Número de documento -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Número de {{ template.nombre }}</mat-label>
+          <mat-label>Número de {{ template().nombre }}</mat-label>
           <input matInput
             formControlName="numeroDocumento"
             placeholder="Ej: 001-2024"
@@ -80,7 +80,7 @@
             </mat-form-field>
 
             <!-- Observaciones -->
-            @if (mostrarObservaciones) {
+            @if (mostrarObservaciones()) {
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Observaciones</mat-label>
                 <textarea matInput
@@ -98,7 +98,7 @@
           <button mat-button
             type="button"
             (click)="onCancel()"
-            [disabled]="loading">
+            [disabled]="loading()">
             <mat-icon>cancel</mat-icon>
             Cancelar
           </button>
@@ -107,21 +107,21 @@
             color="primary"
             type="submit"
             (click)="onSubmit()"
-            [disabled]="documentForm.invalid || loading">
-            @if (!loading) {
+            [disabled]="documentForm.invalid || loading()">
+            @if (!loading()) {
               <mat-icon>description</mat-icon>
             }
-            @if (loading) {
+            @if (loading()) {
               <mat-icon class="spinning">refresh</mat-icon>
             }
-            {{ loading ? 'Generando...' : 'Generar ' + template.nombre }}
+            {{ loading() ? 'Generando...' : 'Generar ' + template().nombre }}
           </button>
 
           <button mat-raised-button
             color="accent"
             type="button"
             (click)="onTengoDocumento()"
-            [disabled]="loading">
+            [disabled]="loading()">
             <mat-icon>upload_file</mat-icon>
             Tengo un documento
           </button>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject, output } from '@angular/core';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-  @Output() toggleSidebar = new EventEmitter<void>();
+  readonly toggleSidebar = output<void>();
 
   isSidebarOpen = true;
   userName = '';

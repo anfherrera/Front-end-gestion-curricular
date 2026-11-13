@@ -16,8 +16,8 @@
       <app-documentation-viewer
         [documentos]="documentos"
         [solicitudId]="seleccionada.id_solicitud"
-        [proceso]="config.proceso"
-        [servicio]="config.servicio"
+        [proceso]="config().proceso"
+        [servicio]="config().servicio"
         [puedeAgregarComentarios]="true"
         (comentarioAgregado)="onComentarioAgregado($event)">
       </app-documentation-viewer>
@@ -31,7 +31,7 @@
         {{ textoAprobar }}
       </button>
       <button mat-raised-button color="warn" [disabled]="!puedeDecidir" (click)="rechazar()">
-        Rechazar {{ config.nombreProceso }}
+        Rechazar {{ config().nombreProceso }}
       </button>
     </div>
   }

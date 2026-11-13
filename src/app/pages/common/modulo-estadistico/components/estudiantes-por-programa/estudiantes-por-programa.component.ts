@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,9 +25,9 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '@core/models/estad
 export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
 
-  @Input() autoLoad = true;
-  @Input() periodoAcademico?: string;
-  @Input() idPrograma?: number;
+  readonly autoLoad = input(true);
+  readonly periodoAcademico = input<string>();
+  readonly idPrograma = input<number>();
   
   programasData: ProgramaData[] = [];
   totalEstudiantes = 0;
@@ -38,13 +38,13 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
   private subscription: Subscription = new Subscription();
 
   ngOnInit(): void {
-    if (this.autoLoad) {
+    if (this.autoLoad()) {
       this.cargarDatos();
     }
   }
 
   ngOnChanges(): void {
-    if (this.autoLoad) {
+    if (this.autoLoad()) {
       this.cargarDatos();
     }
   }
@@ -60,12 +60,14 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
     
-    if (this.periodoAcademico && this.periodoAcademico.trim() !== '' && this.periodoAcademico !== 'todos') {
-      filtros.periodoAcademico = this.periodoAcademico.trim();
+    const periodoAcademico = this.periodoAcademico();
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico !== 'todos') {
+      filtros.periodoAcademico = periodoAcademico.trim();
     }
     
-    if (this.idPrograma !== undefined && this.idPrograma !== null && !isNaN(this.idPrograma) && this.idPrograma > 0) {
-      filtros.idPrograma = this.idPrograma;
+    const idPrograma = this.idPrograma();
+    if (idPrograma !== undefined && idPrograma !== null && !isNaN(idPrograma) && idPrograma > 0) {
+      filtros.idPrograma = idPrograma;
     }
 
     const sub = this.estadisticasService.getEstudiantesPorPrograma(filtros)

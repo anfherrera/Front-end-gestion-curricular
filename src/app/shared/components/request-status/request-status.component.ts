@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, input, output, signal } from '@angular/core';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,33 +33,24 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
   styleUrls: ['./request-status.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RequestStatusTableComponent implements OnInit {
-  private cdr = inject(ChangeDetectorRef);
+export class RequestStatusTableComponent {
+  readonly solicitudes = input<Solicitud[]>([]);
+  readonly showOficio = input(true);
+  readonly showComentarios = input(false);
+  readonly showSeleccionar = input(false);
+  readonly headerAcciones = input('Oficio/Resolución');
+  readonly verComentarios = output<number>();
+  readonly solicitudSeleccionada = output<number | null>();
+  readonly descargarOficio = output<{ id: number; nombreArchivo: string }>();
+  readonly mostrarInfoPreregistro = output<void>();
 
-  @Input() solicitudes: Solicitud[] = [];
-  @Input() showOficio = true;
-  @Input() showComentarios = false;
-  @Input() showSeleccionar = false;
-  @Input() headerAcciones = 'Oficio/Resolución';
-  @Output() verComentarios = new EventEmitter<number>();
-  @Output() solicitudSeleccionada = new EventEmitter<number | null>();
-  @Output() descargarOficio = new EventEmitter<{id: number, nombreArchivo: string}>();
-  @Output() mostrarInfoPreregistro = new EventEmitter<void>();
-
-  displayedColumns: string[] = ['nombre', 'fecha', 'estado'];
-  selectedSolicitudId: number | null = null;
-
-  ngOnInit() {
-    if (this.showOficio) {
-      this.displayedColumns.push('acciones');
-    }
-    if (this.showComentarios) {
-      this.displayedColumns.push('comentarios');
-    }
-    if (this.showSeleccionar) {
-      this.displayedColumns.push('seleccionar');
-    }
-  }
+  readonly displayedColumns = computed(() => [
+    'nombre', 'fecha', 'estado',
+    ...(this.showOficio() ? ['acciones'] : []),
+    ...(this.showComentarios() ? ['comentarios'] : []),
+    ...(this.showSeleccionar() ? ['seleccionar'] : [])
+  ]);
+  readonly selectedSolicitudId = signal<number | null>(null);
 
   onVerComentarios(solicitudId: number): void {
     this.verComentarios.emit(solicitudId);
@@ -71,18 +62,10 @@ export class RequestStatusTableComponent implements OnInit {
    */
   onSeleccionarSolicitud(solicitudId: number): void {
     // Si ya está seleccionada, deseleccionar
-    if (this.selectedSolicitudId === solicitudId) {
-      this.selectedSolicitudId = null;
-    } else {
-      // Seleccionar nueva solicitud
-      this.selectedSolicitudId = solicitudId;
-    }
-
-    // Marcar para detección de cambios con OnPush
-    this.cdr.markForCheck();
+    this.selectedSolicitudId.update(actual => actual === solicitudId ? null : solicitudId);
 
     // Emitir el ID de la solicitud seleccionada (o null si se deseleccionó)
-    this.solicitudSeleccionada.emit(this.selectedSolicitudId);
+    this.solicitudSeleccionada.emit(this.selectedSolicitudId());
   }
 
   /**
@@ -91,7 +74,7 @@ export class RequestStatusTableComponent implements OnInit {
    * @returns true si la solicitud está seleccionada
    */
   isSelected(solicitudId: number): boolean {
-    return this.selectedSolicitudId === solicitudId;
+    return this.selectedSolicitudId() === solicitudId;
   }
 
   /**
@@ -99,8 +82,7 @@ export class RequestStatusTableComponent implements OnInit {
    * Llamado desde el componente padre cuando se necesita limpiar la selección
    */
   resetSelection(): void {
-    this.selectedSolicitudId = null;
-    this.cdr.markForCheck();
+    this.selectedSolicitudId.set(null);
   }
 
   onDescargarOficio(solicitudId: number): void {

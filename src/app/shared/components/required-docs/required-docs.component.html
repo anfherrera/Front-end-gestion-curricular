@@ -2,14 +2,14 @@
   <mat-card-title class="card-title">Documentación requerida</mat-card-title>
   <mat-card-content>
     <!-- Texto introductorio solo para Paz y Salvo -->
-    @if (esPazYSalvo) {
+    @if (esPazYSalvo()) {
       <p class="info-intro">Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva programada por la Secretaría General de la Universidad del Cauca.</p>
     }
 
     <p class="info-text">Debes subir los siguientes documentos necesarios en formato PDF. Todos los formatos deben estar debidamente diligenciados y firmados:</p>
 
     <!-- Notas específicas solo para Paz y Salvo -->
-    @if (esPazYSalvo) {
+    @if (esPazYSalvo()) {
       <!-- Nota para Sistemas, Electrónica y Automática -->
       @if (esSistemasElectronicaAutomatica && !esTelematica) {
         <div class="info-ayuda-sistemas">
@@ -90,7 +90,7 @@
       }
     </ul>
     <!-- Información adicional solo para Paz y Salvo -->
-    @if (esPazYSalvo) {
+    @if (esPazYSalvo()) {
       <div class="info-adicional">
         <p class="info-nota">
           <strong>Nota importante sobre pruebas ECAES:</strong> Los resultados de las pruebas ECAES deben estar registrados en la historia académica. De lo contrario, el estudiante debe presentar el resultado a DARCA para su inclusión.

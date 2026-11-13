@@ -1,11 +1,11 @@
 <mat-card class="card-container card-animated animate-fade-in-up">
   <mat-card-header>
-    @if (icon) {
-      <mat-icon class="icon-bounce">{{ icon }}</mat-icon>
+    @if (icon(); as icono) {
+      <mat-icon class="icon-bounce">{{ icono }}</mat-icon>
     }
-    <mat-card-title>{{ title }}</mat-card-title>
-    @if (subtitle) {
-      <mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
+    <mat-card-title>{{ title() }}</mat-card-title>
+    @if (subtitle(); as subtitulo) {
+      <mat-card-subtitle>{{ subtitulo }}</mat-card-subtitle>
     }
   </mat-card-header>
 

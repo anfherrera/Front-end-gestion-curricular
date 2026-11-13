@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnChanges, SimpleChanges, output, input } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -30,11 +30,14 @@ export interface Curso {
   styleUrls: ['./curso-list.component.css']
 })
 export class CursoListComponent implements AfterViewInit, OnChanges {
-  @Input() cursos: Curso[] = [];
-  @Input() displayedColumns: string[] = ['codigo', 'nombre', 'docente', 'cupos', 'estado', 'acciones'];
-  @Input() acciones: string[] = []; // ejemplo: ['inscribir', 'aprobar', 'rechazar']
+  readonly cursos = input<Curso[]>([]);
+  readonly displayedColumns = input<string[]>(['codigo', 'nombre', 'docente', 'cupos', 'estado', 'acciones']);
+  readonly acciones = input<string[]>([]); // ejemplo: ['inscribir', 'aprobar', 'rechazar']
 
-  @Output() accionClick = new EventEmitter<{ accion: string; curso: Curso }>();
+  readonly accionClick = output<{
+    accion: string;
+    curso: Curso;
+}>();
 
   dataSource = new MatTableDataSource<Curso>();
 
@@ -48,7 +51,7 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['cursos']) {
-      this.dataSource.data = this.cursos;
+      this.dataSource.data = this.cursos();
     }
   }
 

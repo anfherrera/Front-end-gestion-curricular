@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject, input, signal } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -40,21 +40,20 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private snackbar = inject(SnackbarService);
-  private cdr = inject(ChangeDetectorRef);
 
-  @Input() userId?: number;
+  readonly userId = input<number>();
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   
-  notificaciones: Notificacion[] = [];
-  totalNoLeidas = 0;
-  isLoading = false;
-  private refreshInterval?: any;
+  readonly notificaciones = signal<Notificacion[]>([]);
+  readonly totalNoLeidas = signal(0);
+  readonly isLoading = signal(false);
+  private refreshInterval?: ReturnType<typeof setInterval>;
   private notificacionesSubscription?: Subscription;
 
   ngOnInit(): void {
     this.cargarContador();
     
-    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    const userId = this.userId() || this.authService.getUsuario()?.id_usuario;
     if (userId) {
       this.iniciarPollingContador(userId, 30000);
     }
@@ -72,10 +71,10 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   cargarContador(): void {
-    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    const userId = this.userId() || this.authService.getUsuario()?.id_usuario;
     if (!userId) {
       setTimeout(() => {
-        const retryUserId = this.userId || this.authService.getUsuario()?.id_usuario;
+        const retryUserId = this.userId() || this.authService.getUsuario()?.id_usuario;
         if (retryUserId) {
           this.actualizarContador();
         }
@@ -87,13 +86,12 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   actualizarContador(): void {
-    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    const userId = this.userId() || this.authService.getUsuario()?.id_usuario;
     if (!userId) return;
 
     this.notificacionService.contarNoLeidas(userId).subscribe({
       next: (count) => {
-        this.totalNoLeidas = count;
-        this.cdr.detectChanges();
+        this.totalNoLeidas.set(count);
       },
       error: () => {
         // Silenciar errores 403
@@ -102,28 +100,27 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   cargarNotificaciones(): void {
-    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    const userId = this.userId() || this.authService.getUsuario()?.id_usuario;
     if (!userId) {
       return;
     }
 
-    if (this.isLoading) {
+    if (this.isLoading()) {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.notificacionService.obtenerNoLeidas(userId).subscribe({
       next: (notificaciones) => {
         const notificacionesEnriquecidas = enrichNotificaciones(notificaciones);
 
-        this.notificaciones = notificacionesEnriquecidas;
-        this.totalNoLeidas = notificacionesEnriquecidas.length;
-        this.isLoading = false;
-        this.cdr.detectChanges();
+        this.notificaciones.set(notificacionesEnriquecidas);
+        this.totalNoLeidas.set(notificacionesEnriquecidas.length);
+        this.isLoading.set(false);
       },
       error: (error) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         
         if (error.status !== 403) {
           this.snackbar.error('Error al cargar notificaciones');
@@ -133,16 +130,15 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   marcarTodasComoLeidas(): void {
-    const userId = this.userId || this.authService.getUsuario()?.id_usuario;
+    const userId = this.userId() || this.authService.getUsuario()?.id_usuario;
     if (!userId) {
       return;
     }
 
     this.notificacionService.marcarTodasComoLeidas(userId).subscribe({
       next: () => {
-        this.totalNoLeidas = 0;
-        this.notificaciones = [];
-        this.cdr.detectChanges();
+        this.totalNoLeidas.set(0);
+        this.notificaciones.set([]);
         this.snackbar.exito('Notificaciones marcadas como leídas');
       },
       error: () => {
@@ -163,9 +159,9 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     this.notificacionService.marcarComoLeida(notificacion.id_notificacion).subscribe({
       next: () => {
         // Actualizar estado local
-        notificacion.leida = true;
-        this.totalNoLeidas = Math.max(0, this.totalNoLeidas - 1);
-        this.cdr.detectChanges();
+        this.notificaciones.update(lista => lista.map(n =>
+          n.id_notificacion === notificacion.id_notificacion ? { ...n, leida: true } : n));
+        this.totalNoLeidas.update(total => Math.max(0, total - 1));
       },
       error: () => {
         // Error silenciado
@@ -231,7 +227,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
 
   tieneNotificacionesUrgentes(): boolean {
-    return this.notificaciones.some(n => n.esUrgente);
+    return this.notificaciones().some(n => n.esUrgente);
   }
 
   private iniciarPollingContador(userId: number, intervalo = 30000): void {

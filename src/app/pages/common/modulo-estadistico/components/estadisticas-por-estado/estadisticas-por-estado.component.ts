@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,8 +25,8 @@ import { Subscription } from 'rxjs';
 export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
 
-  @Input() periodoAcademico?: string;
-  @Input() idPrograma?: number;
+  readonly periodoAcademico = input<string>();
+  readonly idPrograma = input<number>();
   
   data: EstadoSolicitudesResponse | null = null;
   estadosData: ({nombre: string} & EstadoInfo)[] = [];
@@ -51,12 +51,14 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
     
-    if (this.periodoAcademico && this.periodoAcademico.trim() !== '' && this.periodoAcademico !== 'todos') {
-      filtros.periodoAcademico = this.periodoAcademico.trim();
+    const periodoAcademico = this.periodoAcademico();
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico !== 'todos') {
+      filtros.periodoAcademico = periodoAcademico.trim();
     }
     
-    if (this.idPrograma !== undefined && this.idPrograma !== null && !isNaN(this.idPrograma) && this.idPrograma > 0) {
-      filtros.idPrograma = this.idPrograma;
+    const idPrograma = this.idPrograma();
+    if (idPrograma !== undefined && idPrograma !== null && !isNaN(idPrograma) && idPrograma > 0) {
+      filtros.idPrograma = idPrograma;
     }
 
     // Usar el endpoint específico de estado de solicitudes que funciona

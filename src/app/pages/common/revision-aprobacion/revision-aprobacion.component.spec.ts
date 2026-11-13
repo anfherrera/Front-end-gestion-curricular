@@ -62,7 +62,7 @@ describe('RevisionAprobacionComponent', () => {
 
     fixture = TestBed.createComponent(RevisionAprobacionComponent<Sol>);
     component = fixture.componentInstance;
-    component.config = { rol, servicio, proceso: 'homologacion', nombreProceso: 'Homologación', marcarDocumentosAlDecidir };
+    fixture.componentRef.setInput('config', { rol, servicio, proceso: 'homologacion', nombreProceso: 'Homologación', marcarDocumentosAlDecidir });
     fixture.detectChanges();
   }
 

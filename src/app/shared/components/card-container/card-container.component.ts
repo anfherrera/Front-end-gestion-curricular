@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,11 +16,11 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class CardContainerComponent {
   /** Título principal de la tarjeta */
-  @Input() title = '';
+  readonly title = input('');
   
   /** Subtítulo opcional de la tarjeta */
-  @Input() subtitle?: string;
+  readonly subtitle = input<string>();
   
   /** Nombre del ícono Material a mostrar */
-  @Input() icon?: string;
+  readonly icon = input<string>();
 }

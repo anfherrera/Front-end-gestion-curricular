@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ActivatedRoute } from '@angular/router';
@@ -52,7 +52,7 @@ interface Aviso {
   styleUrls: ['./revision-aprobacion.component.css']
 })
 export class RevisionAprobacionComponent<S extends SolicitudAprobable> implements OnInit {
-  @Input({ required: true }) config!: ConfigRevisionAprobacion<S>;
+  readonly config = input.required<ConfigRevisionAprobacion<S>>();
   @ViewChild('bandeja') private bandeja?: SolicitudesBandejaComponent<S>;
 
   private readonly snackbar = inject(SnackbarService);
@@ -71,11 +71,11 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   }
 
   get esCoordinador(): boolean {
-    return this.config.rol === 'coordinador';
+    return this.config().rol === 'coordinador';
   }
 
   get textoAprobar(): string {
-    return this.esCoordinador ? 'Aprobar Definitivamente' : `Aprobar ${this.config.nombreProceso}`;
+    return this.esCoordinador ? 'Aprobar Definitivamente' : `Aprobar ${this.config().nombreProceso}`;
   }
 
   get documentos(): (DocumentoHomologacion | DocumentosDTORespuesta)[] {
@@ -94,7 +94,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   // ===== Listados =====
 
   cargarPendientes(): void {
-    const servicio = this.config.servicio;
+    const servicio = this.config().servicio;
     const pendientes$ = this.esCoordinador ? servicio.getCoordinadorRequests() : servicio.getPendingRequests();
     pendientes$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (sols) => {
@@ -106,7 +106,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   }
 
   cargarProcesadas(): void {
-    const servicio = this.config.servicio;
+    const servicio = this.config().servicio;
     const periodo = this.periodo ?? undefined;
     const procesadas$ = this.esCoordinador
       ? servicio.getSolicitudesProcesadasCoordinador(periodo)
@@ -136,7 +136,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
 
   onComentarioAgregado(event: { documento: DocumentoHomologacion | DocumentosDTORespuesta; comentario: string }): void {
     if (!event.documento.id_documento) return;
-    this.config.servicio.agregarComentario(event.documento.id_documento, event.comentario)
+    this.config().servicio.agregarComentario(event.documento.id_documento, event.comentario)
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.snackbar.exito('Comentario añadido correctamente');
@@ -152,7 +152,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
     if (!this.seleccionada) return;
     const id = this.seleccionada.id_solicitud;
     const documentos = this.validez(true);
-    const servicio = this.config.servicio;
+    const servicio = this.config().servicio;
     const aprobar$ = this.esCoordinador ? servicio.approveAsCoordinador(id) : servicio.approveRequest(id);
     const mensaje = this.esCoordinador ? 'Solicitud aprobada definitivamente' : 'Solicitud aprobada';
 
@@ -172,7 +172,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
 
     this.dialog.open(TextoDialogComponent, { width: '450px', data: datosRechazo() }).afterClosed().pipe(
       filter((motivo: string | undefined): motivo is string => !!motivo),
-      switchMap(motivo => this.config.servicio.rejectRequest(id, motivo)),
+      switchMap(motivo => this.config().servicio.rejectRequest(id, motivo)),
       switchMap(() => this.marcarDocumentos(id, documentos, 'Solicitud rechazada', 'rechazada')),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -183,8 +183,8 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
 
   /** Si el proceso lo pide, marca los documentos; si eso falla, la decisión sigue valiendo. */
   private marcarDocumentos(id: number, documentos: ValidezDocumento[], mensaje: string, accion: string): Observable<Aviso> {
-    if (!this.config.marcarDocumentosAlDecidir) return of({ mensaje, tipo: 'exito' });
-    return this.config.servicio.actualizarEstadoDocumentos(id, documentos).pipe(
+    if (!this.config().marcarDocumentosAlDecidir) return of({ mensaje, tipo: 'exito' });
+    return this.config().servicio.actualizarEstadoDocumentos(id, documentos).pipe(
       map((): Aviso => ({ mensaje: `Solicitud ${accion} y documentos actualizados`, tipo: 'exito' })),
       catchError(() => of<Aviso>({ mensaje: `Solicitud ${accion}, pero error al actualizar documentos`, tipo: 'advertencia' }))
     );

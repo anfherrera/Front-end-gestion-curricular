@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
+import { Solicitud } from '@core/models/procesos.model';
 import { CardContainerComponent } from '../card-container/card-container.component';
 import { RequestStatusTableComponent } from '../request-status/request-status.component';
 @Component({
@@ -19,35 +20,20 @@ import { RequestStatusTableComponent } from '../request-status/request-status.co
   styleUrls: ['./approved-requests-section.component.css']
 })
 export class ApprovedRequestsSectionComponent {
-  @Input() title = 'Solicitudes aprobadas';
-  @Input() icon = 'task_alt';
-  @Input() solicitudes: any[] = [];
-  @Input() loading = false;
-  @Input() emptyMessage = 'No hay solicitudes aprobadas todavía.';
-  @Input() allowToggle = true;
+  readonly title = input('Solicitudes aprobadas');
+  readonly icon = input('task_alt');
+  readonly solicitudes = input<Solicitud[]>([]);
+  readonly loading = input(false);
+  readonly emptyMessage = input('No hay solicitudes aprobadas todavía.');
+  readonly allowToggle = input(true);
 
-  private _initiallyExpanded = true;
-  showContent = true;
-
-  @Input()
-  set initiallyExpanded(value: boolean) {
-    this._initiallyExpanded = value;
-    this.showContent = value;
-  }
-
-  get initiallyExpanded(): boolean {
-    return this._initiallyExpanded;
-  }
+  readonly showContent = signal(true);
+  readonly hasSolicitudes = computed(() => (this.solicitudes() ?? []).length > 0);
 
   toggleSection(): void {
-    if (!this.allowToggle) {
+    if (!this.allowToggle()) {
       return;
     }
-    this.showContent = !this.showContent;
-  }
-
-  get hasSolicitudes(): boolean {
-    return this.solicitudes && this.solicitudes.length > 0;
+    this.showContent.update(visible => !visible);
   }
 }
-

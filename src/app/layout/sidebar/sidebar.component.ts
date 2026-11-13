@@ -1,5 +1,5 @@
 // src/app/layout/sidebar/sidebar.component.ts
-import { Component, Input, OnChanges, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnChanges, ChangeDetectionStrategy, inject, input } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,7 +23,7 @@ export class SidebarComponent implements OnChanges {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  @Input() isOpen = true;
+  readonly isOpen = input(true);
   isSidebarOpen = true;
   menuItems: ConfigSidebarItem[] = [];
   private roleLower: UserRole;
@@ -49,7 +49,7 @@ export class SidebarComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    this.isSidebarOpen = this.isOpen;
+    this.isSidebarOpen = this.isOpen();
   }
 
   // TrackBy para optimizar ngFor

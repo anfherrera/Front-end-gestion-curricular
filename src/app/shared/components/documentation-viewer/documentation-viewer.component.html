@@ -3,19 +3,19 @@
     <h3>
       Documentación Adjunta
     </h3>
-    <span class="document-count">{{ documentos.length }} documento(s)</span>
+    <span class="document-count">{{ documentos().length }} documento(s)</span>
   </div>
 
-  @if (documentos.length === 0) {
+  @if (documentos().length === 0) {
     <div class="no-documents">
       <mat-icon>folder_open</mat-icon>
       <p>No hay documentos adjuntos para esta solicitud.</p>
     </div>
   }
 
-  @if (documentos.length > 0) {
+  @if (documentos().length > 0) {
     <div class="documents-table">
-      <table mat-table [dataSource]="documentos" class="mat-elevation-z2">
+      <table mat-table [dataSource]="documentos()" class="mat-elevation-z2">
         <!-- Nombre del archivo -->
         <ng-container matColumnDef="nombre">
           <th mat-header-cell *matHeaderCellDef>Nombre del Archivo</th>
@@ -70,7 +70,7 @@
                 class="action-button">
                 <mat-icon>visibility</mat-icon>
               </button>
-              @if (puedeAgregarComentarios) {
+              @if (puedeAgregarComentarios()) {
                 <button
                   mat-icon-button
                   color="accent"
@@ -83,8 +83,8 @@
             </div>
           </td>
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
       </table>
     </div>
   }

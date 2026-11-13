@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -6,11 +6,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'app-loading-spinner',
   imports: [MatProgressSpinnerModule],
   template: `
-    <div class="loading-container" [class.overlay]="overlay">
+    <div class="loading-container" [class.overlay]="overlay()">
       <div class="loading-content">
-        <mat-spinner [diameter]="size" [color]="color"></mat-spinner>
-        @if (message) {
-          <p class="loading-message">{{ message }}</p>
+        <mat-spinner [diameter]="size()" [color]="color()"></mat-spinner>
+        @if (message()) {
+          <p class="loading-message">{{ message() }}</p>
         }
       </div>
     </div>
@@ -63,8 +63,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   `]
 })
 export class LoadingSpinnerComponent {
-  @Input() size = 50;
-  @Input() color = 'primary';
-  @Input() message = '';
-  @Input() overlay = false;
+  readonly size = input(50);
+  readonly color = input('primary');
+  readonly message = input('');
+  readonly overlay = input(false);
 }

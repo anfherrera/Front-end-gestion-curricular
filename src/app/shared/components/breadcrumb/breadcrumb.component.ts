@@ -1,17 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 
-import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 /** Miga de pan según Sistema de Diseño TIC (pág. 49) - Solo cuando hay más de 3 niveles */
 @Component({
   selector: 'app-breadcrumb',
   imports: [RouterModule],
   template: `
-    @if (items.length > 0) {
+    @if (items().length > 0) {
       <nav class="breadcrumb" aria-label="Miga de pan">
-        @for (item of items; track item.url; let last = $last) {
+        @for (item of items(); track item.url; let last = $last) {
           @if (last) {
             <span class="breadcrumb-current">{{ item.label }}</span>
           } @else {
@@ -51,9 +51,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class BreadcrumbComponent {
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
 
-  items: { label: string; url: string }[] = [];
+  /** URL actual (sin query), al día con cada navegación. */
+  private readonly url = toSignal(
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd), map(() => this.router.url)),
+    { initialValue: this.router.url }
+  );
+
+  readonly items = computed(() => this.construirMigas(this.url()));
 
   private labels: Record<string, string> = {
     'estudiante': 'Estudiante',
@@ -85,28 +90,17 @@ export class BreadcrumbComponent {
     'historial-completo': 'Historial',
   };
 
-  constructor() {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      takeUntilDestroyed()
-    ).subscribe(() => this.buildBreadcrumb());
-    this.buildBreadcrumb();
-  }
-
-  private buildBreadcrumb(): void {
-    const url = this.router.url.split('?')[0];
-    const segments = url.split('/').filter(s => s);
-    this.items = [];
+  private construirMigas(url: string): { label: string; url: string }[] {
+    const segments = url.split('?')[0].split('/').filter(s => s);
 
     // Solo mostrar cuando hay más de 3 niveles (Sistema de Diseño TIC)
-    if (segments.length <= 3) return;
+    if (segments.length <= 3) return [];
 
     let path = '';
-    for (const seg of segments) {
+    return segments.map(seg => {
       path += '/' + seg;
-      const label = this.labels[seg] || this.formatLabel(seg);
-      this.items.push({ label, url: path });
-    }
+      return { label: this.labels[seg] || this.formatLabel(seg), url: path };
+    });
   }
 
   private formatLabel(seg: string): string {

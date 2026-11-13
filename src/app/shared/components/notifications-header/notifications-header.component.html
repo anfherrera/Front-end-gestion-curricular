@@ -13,12 +13,12 @@
     <mat-icon class="notification-icon">notifications</mat-icon>
 
     <!-- Badge con contador de no leídas -->
-    @if (totalNoLeidas > 0) {
+    @if (totalNoLeidas() > 0) {
       <span class="notification-badge"
         [class.urgent]="tieneNotificacionesUrgentes()"
-        [attr.data-count]="totalNoLeidas"
-        [title]="'Tienes ' + totalNoLeidas + ' notificaciones no leídas'">
-        {{ totalNoLeidas > 99 ? '99+' : totalNoLeidas }}
+        [attr.data-count]="totalNoLeidas()"
+        [title]="'Tienes ' + totalNoLeidas() + ' notificaciones no leídas'">
+        {{ totalNoLeidas() > 99 ? '99+' : totalNoLeidas() }}
       </span>
     }
   </button>
@@ -33,7 +33,7 @@
         <span class="header-text">Notificaciones</span>
       </div>
       <div class="header-actions">
-        @if (totalNoLeidas > 0) {
+        @if (totalNoLeidas() > 0) {
           <button mat-icon-button
             (click)="marcarTodasComoLeidas()"
             matTooltip="Marcar todas como leídas"
@@ -45,7 +45,7 @@
           (click)="actualizarManual()"
           matTooltip="Actualizar"
           class="refresh-button">
-          <mat-icon [class.spinning]="isLoading">refresh</mat-icon>
+          <mat-icon [class.spinning]="isLoading()">refresh</mat-icon>
         </button>
       </div>
     </div>
@@ -56,7 +56,7 @@
     <div class="menu-content">
 
       <!-- Estado de carga -->
-      @if (isLoading) {
+      @if (isLoading()) {
         <div class="loading-state">
           <mat-icon class="loading-icon spinning">refresh</mat-icon>
           <span class="loading-text">Cargando notificaciones...</span>
@@ -64,9 +64,9 @@
       }
 
       <!-- Lista de notificaciones -->
-      @if (!isLoading && notificaciones.length > 0) {
+      @if (!isLoading() && notificaciones().length > 0) {
         <div class="notifications-list">
-          @for (notificacion of notificaciones; track notificacion.id_notificacion) {
+          @for (notificacion of notificaciones(); track notificacion.id_notificacion) {
             <div class="notification-item"
               [class.urgent]="notificacion.esUrgente"
               [class.unread]="!notificacion.leida"
@@ -111,7 +111,7 @@
       }
 
       <!-- Estado vacío -->
-      @if (!isLoading && notificaciones.length === 0) {
+      @if (!isLoading() && notificaciones().length === 0) {
         <div class="empty-state">
           <mat-icon class="empty-icon">notifications_none</mat-icon>
           <h4 class="empty-title">No hay notificaciones</h4>

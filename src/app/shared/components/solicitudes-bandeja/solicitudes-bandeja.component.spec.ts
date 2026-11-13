@@ -30,10 +30,10 @@ describe('SolicitudesBandejaComponent', () => {
   });
 
   it('arma las filas de pendientes e historial', () => {
-    component.pendientes = [solicitud(1, 'ENVIADA'), solicitud(2, 'ENVIADA')];
-    component.procesadas = [solicitud(3, 'APROBADA_FUNCIONARIO')];
-    expect(component.filasPendientes.map(f => f.id)).toEqual([1, 2]);
-    expect(component.filasProcesadas[0].estado).toBe('APROBADA_FUNCIONARIO');
+    fixture.componentRef.setInput('pendientes', [solicitud(1, 'ENVIADA'), solicitud(2, 'ENVIADA')]);
+    fixture.componentRef.setInput('procesadas', [solicitud(3, 'APROBADA_FUNCIONARIO')]);
+    expect(component.filasPendientes().map(f => f.id)).toEqual([1, 2]);
+    expect(component.filasProcesadas()[0].estado).toBe('APROBADA_FUNCIONARIO');
   });
 
   it('sin solicitudes muestra el aviso de lista vacía', () => {
@@ -43,7 +43,7 @@ describe('SolicitudesBandejaComponent', () => {
 
   it('al elegir una fila emite la solicitud original, y null al quitarla', () => {
     const elegida = solicitud(2, 'ENVIADA');
-    component.pendientes = [solicitud(1, 'ENVIADA'), elegida];
+    fixture.componentRef.setInput('pendientes', [solicitud(1, 'ENVIADA'), elegida]);
     const emitidas: (SolicitudRevisable | null)[] = [];
     component.solicitudSeleccionada.subscribe(s => emitidas.push(s));
 

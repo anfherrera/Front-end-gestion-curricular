@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { Notificacion } from '@core/models/notificaciones.model';
@@ -18,9 +18,9 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  notificaciones: Notificacion[] = [];
-  contadorNoLeidas = 0;
-  usuarioId = 0;
+  readonly notificaciones = signal<Notificacion[]>([]);
+  readonly contadorNoLeidas = signal(0);
+  private usuarioId = 0;
   private intervaloSubscription?: Subscription;
 
   ngOnInit(): void {
@@ -60,7 +60,7 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
     this.notificacionService.obtenerTodas(this.usuarioId)
       .subscribe({
         next: (notificaciones: Notificacion[]) => {
-          this.notificaciones = notificaciones;
+          this.notificaciones.set(notificaciones);
         },
         error: (error: HttpErrorResponse) => {
           this.manejarError(error);
@@ -74,7 +74,7 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
     this.notificacionService.contarNoLeidas(this.usuarioId)
       .subscribe({
         next: (count) => {
-          this.contadorNoLeidas = count;
+          this.contadorNoLeidas.set(count);
         },
         error: () => {
           // Error silenciado
@@ -90,7 +90,8 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
     this.notificacionService.marcarComoLeida(notificacion.id_notificacion)
       .subscribe({
         next: () => {
-          notificacion.leida = true;
+          this.notificaciones.update(lista => lista.map(n =>
+            n.id_notificacion === notificacion.id_notificacion ? { ...n, leida: true } : n));
           this.actualizarContador();
         },
         error: () => {
@@ -105,8 +106,8 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
     this.notificacionService.marcarTodasComoLeidas(this.usuarioId)
       .subscribe({
         next: () => {
-          this.notificaciones.forEach(n => n.leida = true);
-          this.contadorNoLeidas = 0;
+          this.notificaciones.update(lista => lista.map(n => ({ ...n, leida: true })));
+          this.contadorNoLeidas.set(0);
         },
         error: () => {
           // Error silenciado

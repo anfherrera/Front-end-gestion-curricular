@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, inject, input } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,8 +25,8 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
   private estadisticasService = inject(EstadisticasService);
   private snackbar = inject(SnackbarService);
 
-  @Input() periodoAcademico?: string;
-  @Input() idPrograma?: number;
+  readonly periodoAcademico = input<string>();
+  readonly idPrograma = input<number>();
   
   data: TendenciasComparativasResponse | null = null;
   loading = false;
@@ -56,12 +56,14 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
     
-    if (this.periodoAcademico && this.periodoAcademico.trim() !== '' && this.periodoAcademico !== 'todos') {
-      filtros.periodoAcademico = this.periodoAcademico.trim();
+    const periodoAcademico = this.periodoAcademico();
+    if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico !== 'todos') {
+      filtros.periodoAcademico = periodoAcademico.trim();
     }
     
-    if (this.idPrograma !== undefined && this.idPrograma !== null && !isNaN(this.idPrograma) && this.idPrograma > 0) {
-      filtros.idPrograma = this.idPrograma;
+    const idPrograma = this.idPrograma();
+    if (idPrograma !== undefined && idPrograma !== null && !isNaN(idPrograma) && idPrograma > 0) {
+      filtros.idPrograma = idPrograma;
     }
     
     const subscription = this.estadisticasService.getTendenciasComparativas(filtros)

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,67 +36,67 @@ interface OpcionPeriodo {
   styleUrl: './periodo-filtro-selector.component.css'
 })
 export class PeriodoFiltroSelectorComponent implements OnInit {
-  @Input() label = '';
-  @Input() mostrarTodos = true;
-  @Input() incluirActual = true;
-  @Input() mostrarInfo = true;
-  @Input() fuente: FuentePeriodos = 'recientes';
+  readonly label = input('');
+  readonly mostrarTodos = input(true);
+  readonly incluirActual = input(true);
+  readonly mostrarInfo = input(true);
+  readonly fuente = input<FuentePeriodos>('recientes');
   /** Selección inicial. Sin valor: "todos" si se muestra esa opción, si no el período actual (''). */
-  @Input() periodoInicial: string | null = null;
-  @Output() periodoChange = new EventEmitter<string>();
+  readonly periodoInicial = input<string | null>(null);
+  readonly periodoChange = output<string>();
 
-  opciones: OpcionPeriodo[] = [];
-  periodoSeleccionado = '';
-  periodoActualTexto = '';
-  cargando = false;
+  readonly opciones = signal<OpcionPeriodo[]>([]);
+  readonly periodoSeleccionado = signal('');
+  readonly periodoActualTexto = signal('');
+  readonly cargando = signal(false);
 
   private readonly periodosService = inject(PeriodosAcademicosService);
   private readonly cursosService = inject(CursosIntersemestralesService);
   private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
-    this.periodoSeleccionado = this.periodoInicial ?? (this.mostrarTodos ? 'todos' : '');
+    this.periodoSeleccionado.set(this.periodoInicial() ?? (this.mostrarTodos() ? 'todos' : ''));
 
     const actual = this.periodosService.getPeriodoActualValue();
     if (actual) {
-      this.periodoActualTexto = textoPeriodo(actual);
+      this.periodoActualTexto.set(textoPeriodo(actual));
     } else {
       this.periodosService.getPeriodoActual().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: periodo => this.periodoActualTexto = periodo ? textoPeriodo(periodo) : 'No disponible',
-        error: () => this.periodoActualTexto = 'No disponible'
+        next: periodo => this.periodoActualTexto.set(periodo ? textoPeriodo(periodo) : 'No disponible'),
+        error: () => this.periodoActualTexto.set('No disponible')
       });
     }
     this.periodosService.periodoActual$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodo => {
-      this.periodoActualTexto = periodo ? textoPeriodo(periodo) : 'No disponible';
+      this.periodoActualTexto.set(periodo ? textoPeriodo(periodo) : 'No disponible');
     });
 
     this.cargarPeriodos();
   }
 
   cargarPeriodos(): void {
-    this.cargando = true;
+    this.cargando.set(true);
     this.opcionesDeFuente().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: opciones => {
-        this.opciones = opciones;
-        this.cargando = false;
+        this.opciones.set(opciones);
+        this.cargando.set(false);
       },
-      error: () => this.cargando = false
+      error: () => this.cargando.set(false)
     });
   }
 
   onPeriodoChange(periodo: string): void {
-    this.periodoSeleccionado = periodo;
+    this.periodoSeleccionado.set(periodo);
     this.periodoChange.emit(periodo);
   }
 
   getPeriodoTexto(periodo: string): string {
     if (periodo === 'todos') return 'Todos los Períodos';
-    if (!periodo) return this.periodoActualTexto || 'Período actual';
-    return this.opciones.find(o => o.valor === periodo)?.texto ?? formatearPeriodo(periodo);
+    if (!periodo) return this.periodoActualTexto() || 'Período actual';
+    return this.opciones().find(o => o.valor === periodo)?.texto ?? formatearPeriodo(periodo);
   }
 
   private opcionesDeFuente(): Observable<OpcionPeriodo[]> {
-    if (this.fuente === 'con-cursos') {
+    if (this.fuente() === 'con-cursos') {
       const aOpciones = (valores: string[]) => valores.map(valor => ({ valor, texto: formatearPeriodo(valor) }));
       return this.cursosService.getPeriodosRegistrados().pipe(
         // Si falla, todos los períodos (el servicio devuelve [] si también falla)

@@ -34,24 +34,24 @@ describe('PeriodoFiltroSelectorComponent', () => {
 
   it('por defecto arranca en "todos" y lista los períodos recientes', () => {
     fixture.detectChanges();
-    expect(component.periodoSeleccionado).toBe('todos');
-    expect(component.opciones).toEqual([{ valor: '2025-2', texto: 'Segundo 2025' }]);
+    expect(component.periodoSeleccionado()).toBe('todos');
+    expect(component.opciones()).toEqual([{ valor: '2025-2', texto: 'Segundo 2025' }]);
     expect(cursos.getPeriodosRegistrados).not.toHaveBeenCalled();
   });
 
   it('respeta periodoInicial vacío (período actual)', () => {
-    component.periodoInicial = '';
+    fixture.componentRef.setInput('periodoInicial', '');
     fixture.detectChanges();
-    expect(component.periodoSeleccionado).toBe('');
+    expect(component.periodoSeleccionado()).toBe('');
   });
 
   it('con fuente "con-cursos" usa los períodos registrados y, si fallan, todos', () => {
     cursos.getPeriodosRegistrados.and.returnValue(throwError(() => new Error('500')));
     cursos.getPeriodosAcademicos.and.returnValue(of(['2024-1']));
-    component.fuente = 'con-cursos';
+    fixture.componentRef.setInput('fuente', 'con-cursos');
     fixture.detectChanges();
     expect(cursos.getPeriodosAcademicos).toHaveBeenCalled();
-    expect(component.opciones.map(o => o.valor)).toEqual(['2024-1']);
+    expect(component.opciones().map(o => o.valor)).toEqual(['2024-1']);
     expect(periodos.getPeriodosRecientes).not.toHaveBeenCalled();
   });
 

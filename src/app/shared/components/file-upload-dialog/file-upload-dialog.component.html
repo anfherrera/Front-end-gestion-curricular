@@ -1,10 +1,10 @@
 <div class="file-upload-container animate-fade-in-up">
   <button type="button"
     (click)="fileInput.click()"
-    [disabled]="cargando"
+    [disabled]="cargando()"
     class="upload-btn mat-elevation-z2 btn-animated hover-glow">
-    <mat-icon class="icon-bounce">{{ cargando ? 'hourglass_top loading-spin' : 'cloud_upload' }}</mat-icon>
-    {{ cargando ? 'Subiendo...' : 'Seleccionar archivo(s)' }}
+    <mat-icon class="icon-bounce">{{ cargando() ? 'hourglass_top loading-spin' : 'cloud_upload' }}</mat-icon>
+    {{ cargando() ? 'Subiendo...' : 'Seleccionar archivo(s)' }}
   </button>
 
   <input type="file"
@@ -15,7 +15,7 @@
     hidden />
 
     <!-- Encabezado -->
-    @if (archivos.length > 0) {
+    @if (archivos().length > 0) {
       <div class="list-header">
         <span class="col-nombre">Nombre</span>
         <span class="col-accion">Acción</span>
@@ -23,9 +23,9 @@
     }
 
     <!-- Lista de archivos -->
-    @if (archivos.length > 0) {
+    @if (archivos().length > 0) {
       <ul class="uploaded-list">
-        @for (archivo of archivos; track archivo; let i = $index) {
+        @for (archivo of archivos(); track archivo; let i = $index) {
           <li class="file-row animate-fade-in-up">
             <span class="col-nombre">
               <mat-icon>description</mat-icon>

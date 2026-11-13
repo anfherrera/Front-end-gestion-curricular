@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, OnChanges, SimpleChanges, inject, input, model, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,8 +6,13 @@ import { Archivo } from '@core/models/procesos.model';
 import { ArchivosService } from '@core/services/archivos.service';
 import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { Observable, of, forkJoin } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { finalize, map, tap } from 'rxjs/operators';
 import { SnackbarService } from '@core/services/snackbar.service';
+
+/** Lo que devuelve el backend al subir un archivo (cada servicio usa nombres algo distintos). */
+type RespuestaSubida = Partial<Archivo> & { nombreArchivo?: string; titulo?: string; ruta?: string };
+
+const TAMANO_MAXIMO = 10 * 1024 * 1024; // 10MB
 
 @Component({
   selector: 'app-file-upload',
@@ -20,26 +25,28 @@ export class FileUploadComponent implements OnChanges {
   private pazSalvoService = inject(PazSalvoService);
   private snackbar = inject(SnackbarService);
 
-  @Input() archivos: Archivo[] = [];
-  @Input() reset = false;                  // Para reiniciar desde el padre
-  @Input() archivosExclusivos: string[] = []; // Archivos que son mutuamente exclusivos
-  @Input() proceso = 'general';    // Tipo de proceso: 'general', 'paz-salvo', etc.
-  @Output() archivosChange = new EventEmitter<Archivo[]>();
+  /** Archivos elegidos; se usa con `[archivos]` y `(archivosChange)` (o `[(archivos)]`). */
+  readonly archivos = model<Archivo[]>([]);
+  readonly reset = input(false);                  // Para reiniciar desde el padre
+  readonly archivosExclusivos = input<string[]>([]); // Archivos que son mutuamente exclusivos
+  readonly proceso = input('general');    // Tipo de proceso: 'general', 'paz-salvo', etc.
 
-  cargando = false;
+  readonly cargando = signal(false);
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['reset'] && changes['reset'].currentValue) {
-      this.archivos = [];
-      // Emitir en el siguiente tick para evitar NG0100 (ExpressionChangedAfterItHasBeenCheckedError):
+      // En el siguiente tick para evitar NG0100 (ExpressionChangedAfterItHasBeenCheckedError):
       // el padre no debe ver [archivos] pasar a [] en el mismo ciclo de detección.
-      setTimeout(() => this.notificarCambio(), 0);
+      setTimeout(() => this.archivos.set([]), 0);
     }
   }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
+
+    const nuevos = [...this.archivos()];
+    const exclusivos = this.archivosExclusivos();
 
     Array.from(input.files).forEach(file => {
       // Validaciones
@@ -48,60 +55,44 @@ export class FileUploadComponent implements OnChanges {
         return;
       }
 
-      // Validar tamaño máximo (10MB)
-      const maxFileSize = 10 * 1024 * 1024; // 10MB
-      if (file.size > maxFileSize) {
+      if (file.size > TAMANO_MAXIMO) {
         this.snackbar.advertencia(`El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
         return;
       }
 
       // Validar archivos duplicados
-      const archivoDuplicado = this.archivos.find(archivo => archivo.nombre === file.name);
-      if (archivoDuplicado) {
+      if (nuevos.some(archivo => archivo.nombre === file.name)) {
         this.snackbar.advertencia(`El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`);
         return;
       }
 
       // Validar archivos exclusivos
-      if (this.archivosExclusivos.length > 0) {
-        const esArchivoExclusivo = this.archivosExclusivos.some(archivoExclusivo => 
-          file.name.includes(archivoExclusivo)
+      if (exclusivos.length > 0 && exclusivos.some(exclusivo => file.name.includes(exclusivo))) {
+        const archivoExclusivoExistente = nuevos.find(archivo =>
+          exclusivos.some(exclusivo => archivo.nombre.includes(exclusivo))
         );
-        
-        if (esArchivoExclusivo) {
-          // Verificar si ya existe otro archivo exclusivo
-          const archivoExclusivoExistente = this.archivos.find(archivo => 
-            this.archivosExclusivos.some(archivoExclusivo => 
-              archivo.nombre.includes(archivoExclusivo)
-            )
-          );
-          
-          if (archivoExclusivoExistente) {
-            this.snackbar.advertencia(`Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${this.archivosExclusivos.join(' o ')}`);
-            return;
-          }
+        if (archivoExclusivoExistente) {
+          this.snackbar.advertencia(`Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${exclusivos.join(' o ')}`);
+          return;
         }
       }
 
       // Solo agregar el archivo localmente, sin subirlo al backend
-      const archivoLocal: Archivo = {
-        file: file,                    // mantener referencia del archivo
-        nombre: file.name,             // nombre del archivo
+      nuevos.push({
+        file,                            // mantener referencia del archivo
+        nombre: file.name,
         fecha: new Date().toISOString(), // fecha de selección
-        estado: 'pendiente',           // estado inicial
-        esValido: true                 // asumir válido hasta que se suba
-      };
-
-      this.archivos.push(archivoLocal);
+        estado: 'pendiente',
+        esValido: true                   // asumir válido hasta que se suba
+      });
     });
 
-    this.notificarCambio();
+    this.archivos.set(nuevos);
     input.value = ''; // limpiar input
   }
 
   removeFile(index: number) {
-    this.archivos.splice(index, 1);
-    this.notificarCambio();
+    this.archivos.update(archivos => archivos.filter((_, i) => i !== index));
   }
 
   /**
@@ -109,97 +100,54 @@ export class FileUploadComponent implements OnChanges {
    * @returns Observable que emite cuando todos los archivos han sido subidos
    */
   subirArchivosPendientes(): Observable<Archivo[]> {
-    const archivosPendientes = this.archivos.filter(archivo => archivo.file && !archivo.id_documento);
+    const archivosPendientes = this.archivos().filter(archivo => archivo.file && !archivo.id_documento);
 
     if (archivosPendientes.length === 0) {
-      return of(this.archivos); // Si no hay archivos pendientes, retornar los existentes
+      return of(this.archivos()); // Si no hay archivos pendientes, retornar los existentes
     }
 
-    this.cargando = true;
+    this.cargando.set(true);
 
-    // Subir archivos uno por uno usando el servicio correcto según el proceso
     const subidas$ = archivosPendientes.map(archivo => {
-      let subida$: Observable<any>;
-      
-      // Usar el servicio correcto según el proceso
-      if (this.proceso === 'paz-salvo') {
-        // Usando servicio Paz y Salvo para subir
-        subida$ = this.pazSalvoService.subirDocumento(archivo.file!);
-      } else {
-        // Usando servicio genérico para subir
-        subida$ = this.archivosService.subirPDF(archivo.file!);
-      }
-
-      return subida$.pipe(
-        map(archivoSubido => {
-          // Actualizar el archivo local con la información del backend
-          const index = this.archivos.findIndex(a => a.file === archivo.file);
-          if (index !== -1) {
-            const nombreArchivo = archivoSubido?.nombre
-              || archivoSubido?.nombreArchivo
-              || archivoSubido?.titulo
-              || archivo.nombre;
-            const urlArchivo = archivoSubido?.ruta_documento
-              || archivoSubido?.ruta
-              || archivoSubido?.url
-              || archivo.url;
-
-            this.archivos[index] = {
-              ...this.archivos[index],
-              ...archivoSubido,
-              nombre: nombreArchivo,
-              file: archivo.file, // mantener referencia local
-              estado: 'aprobado',
-              esValido: true,
-              url: urlArchivo
-            };
-          }
-          return this.archivos[index];
-        }),
+      const file = archivo.file!;
+      return this.subir(file).pipe(
+        // Actualizar el archivo local con la información del backend
         tap({
-          error: () => {
-            // Marcar el archivo como con error
-            const index = this.archivos.findIndex(a => a.file === archivo.file);
-            if (index !== -1) {
-              this.archivos[index].estado = 'error';
-              this.archivos[index].esValido = false;
-            }
-          }
+          next: subido => this.reemplazar(file, actual => ({
+            ...actual,
+            ...subido,
+            nombre: subido?.nombre || subido?.nombreArchivo || subido?.titulo || actual.nombre,
+            file, // mantener referencia local
+            estado: 'aprobado',
+            esValido: true,
+            url: subido?.ruta_documento || subido?.ruta || subido?.url || actual.url
+          })),
+          error: () => this.reemplazar(file, actual => ({ ...actual, estado: 'error', esValido: false }))
         })
       );
     });
 
     return forkJoin(subidas$).pipe(
-      tap({
-        next: () => {
-          this.cargando = false;
-          this.notificarCambio();
-        },
-        error: () => {
-          this.cargando = false;
-          this.notificarCambio();
-        }
-      }),
-      map(() => this.archivos),
-      tap({
-        error: () => {
-          // Asegurar que siempre se resetee el estado de carga
-          this.cargando = false;
-          this.notificarCambio();
-        }
-      })
+      map(() => this.archivos()),
+      finalize(() => this.cargando.set(false))
     );
-  }
-
-  private notificarCambio() {
-    this.archivosChange.emit(this.archivos);
   }
 
   /**
    * Resetear el estado de carga (método público para casos de emergencia)
    */
   resetearEstadoCarga() {
-    this.cargando = false;
-    this.notificarCambio();
+    this.cargando.set(false);
+  }
+
+  /** Usa el servicio de subida que corresponde al proceso. */
+  private subir(file: File): Observable<RespuestaSubida> {
+    return this.proceso() === 'paz-salvo'
+      ? this.pazSalvoService.subirDocumento(file)
+      : this.archivosService.subirPDF(file);
+  }
+
+  private reemplazar(file: File, cambio: (archivo: Archivo) => Archivo): void {
+    this.archivos.update(archivos => archivos.map(a => a.file === file ? cambio(a) : a));
   }
 }

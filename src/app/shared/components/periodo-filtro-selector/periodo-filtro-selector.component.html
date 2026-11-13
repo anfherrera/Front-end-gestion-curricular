@@ -1,48 +1,50 @@
 <div class="periodo-filtro-container">
   <mat-form-field appearance="outline" class="periodo-selector">
-    <mat-label>{{ label || 'Filtrar por período académico' }}</mat-label>
+    <mat-label>{{ label() || 'Filtrar por período académico' }}</mat-label>
     <mat-select
-      [value]="periodoSeleccionado"
+      [value]="periodoSeleccionado()"
       (selectionChange)="onPeriodoChange($event.value)"
-      [disabled]="cargando">
-      @if (mostrarTodos) {
+      [disabled]="cargando()">
+      @if (mostrarTodos()) {
         <mat-option [value]="'todos'">
           <span class="option-text">Todos los Períodos</span>
         </mat-option>
       }
-      @if (incluirActual) {
+      @if (incluirActual()) {
         <mat-option [value]="''">
-          <span class="option-text">Período actual{{ periodoActualTexto ? ' (' + periodoActualTexto + ')' : '' }}</span>
+          <span class="option-text">Período actual{{ periodoActualTexto() ? ' (' + periodoActualTexto() + ')' : '' }}</span>
         </mat-option>
       }
-      @for (opcion of opciones; track opcion) {
+      @for (opcion of opciones(); track opcion) {
         <mat-option [value]="opcion.valor">
           <span class="option-text">{{ opcion.texto }}</span>
         </mat-option>
       }
     </mat-select>
-    @if (cargando) {
+    @if (cargando()) {
       <mat-spinner diameter="20" class="spinner"></mat-spinner>
     }
   </mat-form-field>
 
-  @if (mostrarInfo) {
+  @if (mostrarInfo()) {
     <div class="info-periodo">
       <mat-icon>info</mat-icon>
-      @if (periodoSeleccionado === 'todos') {
-        <span>
-          Mostrando <strong>todos los cursos</strong> de todos los períodos
-        </span>
-      }
-      @if (periodoSeleccionado && periodoSeleccionado !== 'todos') {
-        <span>
-          Mostrando datos del período: <strong>{{ getPeriodoTexto(periodoSeleccionado) }}</strong>
-        </span>
-      }
-      @if (!periodoSeleccionado) {
-        <span>
-          Mostrando datos del <strong>período académico actual</strong>
-        </span>
+      @switch (periodoSeleccionado()) {
+        @case ('todos') {
+          <span>
+            Mostrando <strong>todos los cursos</strong> de todos los períodos
+          </span>
+        }
+        @case ('') {
+          <span>
+            Mostrando datos del <strong>período académico actual</strong>
+          </span>
+        }
+        @default {
+          <span>
+            Mostrando datos del período: <strong>{{ getPeriodoTexto(periodoSeleccionado()) }}</strong>
+          </span>
+        }
       }
     </div>
   }

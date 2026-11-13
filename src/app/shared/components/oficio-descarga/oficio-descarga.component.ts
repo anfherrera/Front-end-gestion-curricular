@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,9 +13,10 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
   styleUrls: ['./oficio-descarga.component.css']
 })
 export class OficioDescargaComponent {
-  @Input() solicitud!: Solicitud;
+  readonly solicitud = input.required<Solicitud>();
 
   get puedeDescargar(): boolean {
-    return normalizarEstado(this.solicitud.estado) === EstadosSolicitud.APROBADA && !!this.solicitud.oficioUrl;
+    const solicitud = this.solicitud();
+    return normalizarEstado(solicitud.estado) === EstadosSolicitud.APROBADA && !!solicitud.oficioUrl;
   }
 }

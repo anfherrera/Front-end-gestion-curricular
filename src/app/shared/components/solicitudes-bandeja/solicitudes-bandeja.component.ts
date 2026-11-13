@@ -1,8 +1,7 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, computed, input, output, viewChild } from '@angular/core';
 
 import { MatTabsModule } from '@angular/material/tabs';
 
-import { Solicitud } from '@core/models/procesos.model';
 import { SolicitudRevisable } from '@core/models/solicitud-revision.model';
 import { aFilaSolicitud } from '@core/utils/fila-solicitud.util';
 import { CardContainerComponent } from '../card-container/card-container.component';
@@ -21,28 +20,21 @@ import { PeriodoFiltroSelectorComponent } from '../periodo-filtro-selector/perio
   styleUrls: ['./solicitudes-bandeja.component.css']
 })
 export class SolicitudesBandejaComponent<S extends SolicitudRevisable = SolicitudRevisable> {
-  @Input() set pendientes(solicitudes: S[]) {
-    this.pendientesOriginales = solicitudes ?? [];
-    this.filasPendientes = this.pendientesOriginales.map(aFilaSolicitud);
-  }
-
-  @Input() set procesadas(solicitudes: S[]) {
-    this.filasProcesadas = (solicitudes ?? []).map(aFilaSolicitud);
-  }
+  readonly pendientes = input<S[] | null | undefined>([]);
+  readonly procesadas = input<S[] | null | undefined>([]);
 
   /** Solicitud pendiente elegida, o null al quitar la selección. */
-  @Output() solicitudSeleccionada = new EventEmitter<S | null>();
+  readonly solicitudSeleccionada = output<S | null>();
   /** Período del historial; null significa todos los períodos. */
-  @Output() periodoChange = new EventEmitter<string | null>();
+  readonly periodoChange = output<string | null>();
 
-  @ViewChild('tablaPendientes') private tablaPendientes?: RequestStatusTableComponent;
+  private readonly tablaPendientes = viewChild<RequestStatusTableComponent>('tablaPendientes');
 
-  filasPendientes: Solicitud[] = [];
-  filasProcesadas: Solicitud[] = [];
-  private pendientesOriginales: S[] = [];
+  readonly filasPendientes = computed(() => (this.pendientes() ?? []).map(aFilaSolicitud));
+  readonly filasProcesadas = computed(() => (this.procesadas() ?? []).map(aFilaSolicitud));
 
   onFilaSeleccionada(id: number | null): void {
-    const solicitud = id === null ? undefined : this.pendientesOriginales.find(sol => sol.id_solicitud === id);
+    const solicitud = id === null ? undefined : (this.pendientes() ?? []).find(sol => sol.id_solicitud === id);
     this.solicitudSeleccionada.emit(solicitud ?? null);
   }
 
@@ -52,6 +44,6 @@ export class SolicitudesBandejaComponent<S extends SolicitudRevisable = Solicitu
 
   /** Quita la selección de la tabla de pendientes (tras aprobar o rechazar). */
   resetSelection(): void {
-    this.tablaPendientes?.resetSelection();
+    this.tablaPendientes()?.resetSelection();
   }
 }
