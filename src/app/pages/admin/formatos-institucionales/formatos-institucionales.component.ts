@@ -17,7 +17,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-formatos-institucionales',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

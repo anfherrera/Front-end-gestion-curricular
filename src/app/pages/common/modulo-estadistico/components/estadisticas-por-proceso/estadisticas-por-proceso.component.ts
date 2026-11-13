@@ -24,7 +24,6 @@ interface ProcesoData {
 
 @Component({
   selector: 'app-estadisticas-por-proceso',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

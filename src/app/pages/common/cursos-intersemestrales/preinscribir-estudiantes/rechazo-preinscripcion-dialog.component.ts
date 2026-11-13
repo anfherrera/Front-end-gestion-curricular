@@ -12,7 +12,6 @@ import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-i
 // Componente del modal para rechazar preinscripción
 @Component({
   selector: 'app-rechazo-preinscripcion-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

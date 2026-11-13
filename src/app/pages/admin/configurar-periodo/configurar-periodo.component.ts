@@ -14,7 +14,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-configurar-periodo',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

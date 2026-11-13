@@ -11,7 +11,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-file-upload',
-  standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './file-upload-dialog.component.html',
   styleUrls: ['./file-upload-dialog.component.css']

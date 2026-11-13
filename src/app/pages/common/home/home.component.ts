@@ -11,7 +11,6 @@ import { PazSalvoDialogComponent } from '../../estudiante/paz-salvo/paz-salvo-di
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [
     CommonModule,
     RouterModule,

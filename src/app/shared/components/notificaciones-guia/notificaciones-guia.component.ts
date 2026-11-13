@@ -9,7 +9,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-notificaciones-guia',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './notificaciones-guia.component.html',
   styleUrls: ['./notificaciones-guia.component.css']

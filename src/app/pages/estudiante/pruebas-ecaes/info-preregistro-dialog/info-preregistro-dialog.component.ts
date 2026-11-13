@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-info-preregistro-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,

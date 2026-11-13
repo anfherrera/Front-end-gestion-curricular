@@ -4,7 +4,6 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-paz-salvo-dialog',
-  standalone: true,
   template: `
     <h2 mat-dialog-title>Aviso Importante – Solicitud de Paz y Salvo Académico</h2>
     <mat-dialog-content>

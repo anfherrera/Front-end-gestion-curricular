@@ -8,7 +8,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-cursos-intersemestrales-gestion',
-  standalone: true,
   imports: [
     CommonModule,
     RouterModule,

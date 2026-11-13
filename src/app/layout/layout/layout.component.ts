@@ -7,7 +7,6 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 
 @Component({
   selector: 'app-layout',
-  standalone: true,
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
   imports: [

@@ -11,7 +11,6 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-estadisticas-por-estado',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

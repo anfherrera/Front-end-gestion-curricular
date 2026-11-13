@@ -24,7 +24,6 @@ import { DetallesPreinscripcionDialogComponent } from './detalles-preinscripcion
 import { RechazoPreinscripcionDialogComponent } from './rechazo-preinscripcion-dialog.component';
 @Component({
   selector: 'app-preinscribir-estudiantes',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

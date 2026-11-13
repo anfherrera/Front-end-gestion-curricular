@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-welcome',
-  standalone: true,
   imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.css']

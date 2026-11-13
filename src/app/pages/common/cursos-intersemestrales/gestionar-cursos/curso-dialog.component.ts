@@ -36,7 +36,6 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
 /** Crear un curso o editar sus campos editables. El formulario lo crea gestionar-cursos. */
 @Component({
   selector: 'app-curso-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

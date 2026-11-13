@@ -48,7 +48,6 @@ interface DatosSolicitudPazSalvo {
 
 @Component({
   selector: 'app-paz-salvo',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

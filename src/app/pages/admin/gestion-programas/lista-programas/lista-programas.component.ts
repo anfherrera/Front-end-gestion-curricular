@@ -22,7 +22,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-lista-programas',
-  standalone: true,
   imports: [
     CommonModule,
     RouterModule,

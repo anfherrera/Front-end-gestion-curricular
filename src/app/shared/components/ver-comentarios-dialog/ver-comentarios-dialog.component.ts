@@ -15,7 +15,6 @@ export interface VerComentariosDialogData {
 
 @Component({
   selector: 'app-ver-comentarios-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,

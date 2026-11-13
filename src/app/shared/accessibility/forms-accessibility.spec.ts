@@ -10,7 +10,6 @@ import { CommonModule } from '@angular/common';
 // Componente de prueba con formulario típico
 @Component({
   selector: 'app-test-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
     <form [formGroup]="testForm">

@@ -15,7 +15,6 @@ export interface MotivoRechazoDialogData {
 /** Muestra el motivo (o las observaciones) del estado actual de una solicitud. */
 @Component({
   selector: 'app-motivo-rechazo-dialog',
-  standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   template: `
     <h2 mat-dialog-title>{{ data.titulo }}</h2>

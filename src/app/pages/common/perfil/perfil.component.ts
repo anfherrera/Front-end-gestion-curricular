@@ -10,7 +10,6 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 
 @Component({
   selector: 'app-perfil',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

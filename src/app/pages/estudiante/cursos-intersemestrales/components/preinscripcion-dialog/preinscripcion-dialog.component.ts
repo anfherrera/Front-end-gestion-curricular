@@ -26,7 +26,6 @@ const ERRORES_POR_CODIGO: Record<string, string> = {
 
 @Component({
   selector: 'app-preinscripcion-dialog',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ...MATERIAL_IMPORTS, NombreDocentePipe],
   templateUrl: './preinscripcion-dialog.component.html',
   styleUrls: ['./preinscripcion-dialog.component.css']

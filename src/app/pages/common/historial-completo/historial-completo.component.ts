@@ -24,7 +24,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-historial-completo',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

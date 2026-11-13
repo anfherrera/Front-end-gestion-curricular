@@ -12,7 +12,6 @@ import { SolicitudCursoVerano, EstadoSolicitudDetalle } from '@core/models/curso
 // Componente del dialog para ver detalles de preinscripción
 @Component({
   selector: 'app-detalles-preinscripcion-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

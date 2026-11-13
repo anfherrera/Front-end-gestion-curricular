@@ -40,7 +40,6 @@ const ESTADOS_TEXTO: Record<string, string> = {
 /** Solicitudes de cursos intersemestrales filtradas por materia y período, con exportación a Excel. */
 @Component({
   selector: 'app-visualizar-solicitudes',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

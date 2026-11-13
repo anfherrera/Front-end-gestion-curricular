@@ -8,7 +8,6 @@ import { EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
 import { normalizarEstado } from '@core/utils/estado-solicitud.util';
 @Component({
   selector: 'app-oficio-descarga',
-  standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
   templateUrl: './oficio-descarga.component.html',
   styleUrls: ['./oficio-descarga.component.css']

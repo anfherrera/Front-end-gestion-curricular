@@ -39,7 +39,6 @@ const INSCRIPCION_RECHAZADA = ['PAGO_RECHAZADO', 'PAGO RECHAZADO', 'RECHAZADO'];
  */
 @Component({
   selector: 'app-ver-solicitud',
-  standalone: true,
   imports: [CommonModule, CardContainerComponent, ...MATERIAL_IMPORTS],
   templateUrl: './ver-solicitud.component.html',
   styleUrls: ['./ver-solicitud.component.css']

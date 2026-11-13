@@ -35,7 +35,6 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
 
 @Component({
   selector: 'app-reingreso-estudiante',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

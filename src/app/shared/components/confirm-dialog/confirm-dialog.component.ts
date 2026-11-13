@@ -18,7 +18,6 @@ export interface ConfirmDialogData {
 /** Pregunta de sí/no. Se cierra con `true` si se confirma y `false` si se cancela. */
 @Component({
   selector: 'app-confirm-dialog',
-  standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   template: `
     <h2 mat-dialog-title class="titulo">

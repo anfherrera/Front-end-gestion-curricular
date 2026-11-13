@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
 // Componente de prueba con elementos interactivos
 @Component({
   selector: 'app-test-keyboard',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="container">

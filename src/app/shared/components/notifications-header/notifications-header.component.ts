@@ -23,7 +23,6 @@ import {
 
 @Component({
   selector: 'app-notifications-header',
-  standalone: true,
   imports: [
     CommonModule,
     MatIconModule,

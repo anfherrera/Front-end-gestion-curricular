@@ -52,7 +52,6 @@ type NombreGrafico = 'chartProcesos' | 'chartTendencia' | 'chartDistribucion';
  */
 @Component({
   selector: 'app-dashboard-estadistico',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

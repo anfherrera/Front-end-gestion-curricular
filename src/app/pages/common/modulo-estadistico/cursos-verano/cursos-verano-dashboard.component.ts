@@ -36,7 +36,6 @@ Chart.register(...registerables);
 
 @Component({
   selector: 'app-cursos-verano-dashboard',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

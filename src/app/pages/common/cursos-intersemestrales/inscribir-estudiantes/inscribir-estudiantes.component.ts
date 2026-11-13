@@ -29,7 +29,6 @@ import { DetallesInscripcionDialogComponent } from './detalles-inscripcion-dialo
 import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripcion-dialog.component';
 @Component({
   selector: 'app-inscribir-estudiantes',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

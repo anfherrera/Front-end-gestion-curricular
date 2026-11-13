@@ -22,7 +22,6 @@ export interface Documento {
  */
 @Component({
   selector: 'app-required-docs',
-  standalone: true,
   imports: [CommonModule, MatCardModule, MatIconModule],
   templateUrl: './required-docs.component.html',
   styleUrls: ['./required-docs.component.css'],

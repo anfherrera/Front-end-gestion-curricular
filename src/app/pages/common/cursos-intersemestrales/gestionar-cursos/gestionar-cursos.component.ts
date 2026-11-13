@@ -21,7 +21,6 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
 
 @Component({
   selector: 'app-gestionar-cursos',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

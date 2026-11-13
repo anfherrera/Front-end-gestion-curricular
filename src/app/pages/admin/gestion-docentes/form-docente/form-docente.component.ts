@@ -15,7 +15,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-form-docente',
-  standalone: true,
   imports: [
     CommonModule,
     RouterModule,

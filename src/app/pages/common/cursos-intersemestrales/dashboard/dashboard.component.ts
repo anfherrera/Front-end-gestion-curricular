@@ -18,7 +18,6 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 
 @Component({
   selector: 'app-dashboard-cursos-intersemestrales',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

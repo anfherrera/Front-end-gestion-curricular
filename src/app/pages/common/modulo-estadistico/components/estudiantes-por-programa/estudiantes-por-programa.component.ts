@@ -11,7 +11,6 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '@core/models/estad
 
 @Component({
   selector: 'app-estudiantes-por-programa',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

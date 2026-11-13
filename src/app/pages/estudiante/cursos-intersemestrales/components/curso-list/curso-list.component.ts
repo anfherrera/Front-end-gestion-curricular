@@ -25,7 +25,6 @@ export interface Curso {
 
 @Component({
   selector: 'app-curso-list',
-  standalone: true,
   imports: [...MATERIAL_IMPORTS, FechaPipe],
   templateUrl: './curso-list.component.html',
   styleUrls: ['./curso-list.component.css']

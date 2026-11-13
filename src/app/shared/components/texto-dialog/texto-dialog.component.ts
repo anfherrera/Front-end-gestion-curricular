@@ -40,7 +40,6 @@ export function datosRechazo(
 
 @Component({
   selector: 'app-texto-dialog',
-  standalone: true,
   imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './texto-dialog.component.html',
   styleUrls: ['./texto-dialog.component.css']

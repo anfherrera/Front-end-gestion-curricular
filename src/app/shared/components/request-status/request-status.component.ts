@@ -18,7 +18,6 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
  */
 @Component({
   selector: 'app-request-status-table',
-  standalone: true,
   imports: [
     CommonModule,
     MatTableModule,

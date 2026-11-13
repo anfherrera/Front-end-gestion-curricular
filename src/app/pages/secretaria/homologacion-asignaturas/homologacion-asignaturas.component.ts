@@ -23,7 +23,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
-  standalone: true,
   imports: [
     CommonModule,
     MatButtonModule,

@@ -13,7 +13,6 @@ import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate } from '@cor
 
 @Component({
   selector: 'app-document-generator',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

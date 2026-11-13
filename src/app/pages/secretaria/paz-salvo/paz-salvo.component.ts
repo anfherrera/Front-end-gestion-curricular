@@ -24,7 +24,6 @@ import { aDocumentos } from '../../common/paz-salvo-revision/paz-salvo-filas';
  */
 @Component({
   selector: 'app-secretaria-paz-salvo',
-  standalone: true,
   imports: [
     CommonModule,
     MatButtonModule,

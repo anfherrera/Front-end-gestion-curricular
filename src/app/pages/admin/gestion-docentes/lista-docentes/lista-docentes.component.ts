@@ -22,7 +22,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-lista-docentes',
-  standalone: true,
   imports: [
     CommonModule,
     RouterModule,

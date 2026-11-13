@@ -9,7 +9,6 @@ import { FormatoFecha, formatearFecha } from '@core/utils/fecha.util';
  */
 @Pipe({
   name: 'fecha',
-  standalone: true
 })
 export class FechaPipe implements PipeTransform {
   transform(valor: string | Date | null | undefined, formato: FormatoFecha = 'corta', vacio = ''): string {

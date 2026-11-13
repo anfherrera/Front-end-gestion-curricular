@@ -12,7 +12,6 @@ import { RolesAdminService } from '@core/services/roles-admin.service';
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
   imports: [
     CommonModule,
     RouterModule,

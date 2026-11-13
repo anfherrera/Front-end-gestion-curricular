@@ -6,7 +6,6 @@ import { filter } from 'rxjs/operators';
 /** Miga de pan según Sistema de Diseño TIC (pág. 49) - Solo cuando hay más de 3 niveles */
 @Component({
   selector: 'app-breadcrumb',
-  standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
     @if (items.length > 0) {

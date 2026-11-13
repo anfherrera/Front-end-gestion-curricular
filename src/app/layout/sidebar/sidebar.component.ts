@@ -15,7 +15,6 @@ import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-sa
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush, // OnPush - menu items estáticos
   imports: [CommonModule, MatIconModule, MatButtonModule, RouterModule]
 })

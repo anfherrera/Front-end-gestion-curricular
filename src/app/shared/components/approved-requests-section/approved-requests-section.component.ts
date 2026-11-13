@@ -8,7 +8,6 @@ import { CardContainerComponent } from '../card-container/card-container.compone
 import { RequestStatusTableComponent } from '../request-status/request-status.component';
 @Component({
   selector: 'app-approved-requests-section',
-  standalone: true,
   imports: [
     CommonModule,
     MatButtonModule,

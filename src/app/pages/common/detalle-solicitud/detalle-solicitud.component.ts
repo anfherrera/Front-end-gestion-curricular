@@ -64,7 +64,6 @@ interface DetalleSolicitud {
 
 @Component({
   selector: 'app-detalle-solicitud',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

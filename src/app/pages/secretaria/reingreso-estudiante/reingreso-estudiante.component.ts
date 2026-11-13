@@ -30,7 +30,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-reingreso-estudiante',
-  standalone: true,
   imports: [
     CommonModule,
     MatTableModule,

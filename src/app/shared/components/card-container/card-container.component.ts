@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
  */
 @Component({
   selector: 'app-card-container',
-  standalone: true,
   imports: [CommonModule, MatCardModule, MatIconModule],
   templateUrl: './card-container.component.html',
   styleUrls: ['./card-container.component.css'],

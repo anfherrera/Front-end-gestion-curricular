@@ -195,7 +195,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Spec ajustado: SEC-035-A creaba `new AuthService(router, http, …)`; ahora lo crea con `TestBed.runInInjectionContext(() => new AuthService())`
   - Sin cambios visibles esperados
 - [ ] **Control flow**: hay 505 `*ngIf`, `*ngFor` y `*ngSwitch`. Migrar a `@if`, `@for` y `@switch` con `ng generate @angular/core:control-flow`
-- [ ] **`standalone: true`** sobra en Angular 19 porque ya es el valor por defecto; quitarlo de los 92 archivos
+- [x] **`standalone: true`** se quita de los 89 archivos donde quedaba (84 componentes y 5 pipes), por script. Sin cambios visibles esperados
 - [ ] **Entradas y salidas**: pasar `@Input` y `@Output` a `input()` y `output()`, y el estado local a `signal()` (hoy hay 0 signals)
 - [ ] **OnPush**: solo 5 de 88 componentes lo usan. Activarlo empezando por los de `shared`
 

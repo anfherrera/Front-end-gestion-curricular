@@ -13,7 +13,6 @@ import { estadoCurso } from '@core/utils/cursos-verano.utils';
 
 @Component({
   selector: 'app-estado-filters',
-  standalone: true,
   imports: [
     CommonModule,
     MatFormFieldModule,

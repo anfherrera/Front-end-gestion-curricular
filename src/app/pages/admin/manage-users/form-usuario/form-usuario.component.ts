@@ -18,7 +18,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-form-usuario',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

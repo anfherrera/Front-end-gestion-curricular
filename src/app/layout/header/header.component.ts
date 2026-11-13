@@ -14,7 +14,6 @@ import { formatearPeriodo } from '@core/utils/periodo.utils';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush, // OnPush - datos no cambian constantemente

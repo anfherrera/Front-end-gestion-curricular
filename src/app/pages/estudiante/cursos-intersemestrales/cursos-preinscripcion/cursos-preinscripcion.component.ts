@@ -16,7 +16,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 /** Cursos en preinscripción: el estudiante elige uno y se preinscribe desde un diálogo. */
 @Component({
   selector: 'app-cursos-preinscripcion',
-  standalone: true,
   imports: [CommonModule, CardContainerComponent, CursoListComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-preinscripcion.component.html',
   styleUrls: ['./cursos-preinscripcion.component.css']

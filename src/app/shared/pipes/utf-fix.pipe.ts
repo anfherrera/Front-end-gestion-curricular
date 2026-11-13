@@ -2,7 +2,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'utfFix',
-  standalone: true
 })
 export class UtfFixPipe implements PipeTransform {
   transform(value: any): any {

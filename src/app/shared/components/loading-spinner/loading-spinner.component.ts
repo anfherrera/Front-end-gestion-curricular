@@ -4,7 +4,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-loading-spinner',
-  standalone: true,
   imports: [CommonModule, MatProgressSpinnerModule],
   template: `
     <div class="loading-container" [class.overlay]="overlay">

@@ -6,7 +6,6 @@ import { CursosVeranoDashboardComponent } from './cursos-verano/cursos-verano-da
 
 @Component({
   selector: 'app-modulo-estadistico',
-  standalone: true,
   imports: [
     CommonModule,
     MatTabsModule,

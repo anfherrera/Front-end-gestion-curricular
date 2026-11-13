@@ -11,7 +11,6 @@ import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
 // Componente del modal de confirmación de inscripción
 @Component({
   selector: 'app-confirmacion-inscripcion-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

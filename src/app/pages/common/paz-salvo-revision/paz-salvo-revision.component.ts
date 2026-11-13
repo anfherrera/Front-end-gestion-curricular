@@ -41,7 +41,6 @@ interface ConfigRevision {
  */
 @Component({
   selector: 'app-paz-salvo-revision',
-  standalone: true,
   imports: [
     CommonModule,
     MatButtonModule,

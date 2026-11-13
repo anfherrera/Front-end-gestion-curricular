@@ -23,7 +23,6 @@ const ERRORES_ENVIO: Record<number, string> = {
 /** Solicitud de apertura de un curso intersemestral nuevo. */
 @Component({
   selector: 'app-solicitudes',
-  standalone: true,
   imports: [CommonModule, CardContainerComponent, ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './solicitudes.component.html',
   styleUrls: ['./solicitudes.component.css']

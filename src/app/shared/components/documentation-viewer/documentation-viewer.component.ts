@@ -25,7 +25,6 @@ export interface ServicioDocumentos {
 
 @Component({
   selector: 'app-documentation-viewer',
-  standalone: true,
   imports: [
     CommonModule,
     MatTableModule,

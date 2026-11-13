@@ -12,7 +12,6 @@ import { estadoCurso, nombreDocente, periodoCurso } from '@core/utils/cursos-ver
 /** Cursos ofertados (solo consulta). Si el período actual no tiene cursos, muestra los de todos los períodos. */
 @Component({
   selector: 'app-cursos-ofertados',
-  standalone: true,
   imports: [CommonModule, CardContainerComponent, CursoListComponent, PeriodoFiltroSelectorComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-ofertados.component.html',
   styleUrls: ['./cursos-ofertados.component.css']

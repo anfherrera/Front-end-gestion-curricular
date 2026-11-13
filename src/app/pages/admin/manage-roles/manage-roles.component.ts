@@ -22,7 +22,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-manage-roles',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

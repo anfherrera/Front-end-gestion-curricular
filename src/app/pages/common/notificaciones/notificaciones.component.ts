@@ -29,7 +29,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-notificaciones',
-  standalone: true,
   imports: [
     CommonModule,
     MatCardModule,

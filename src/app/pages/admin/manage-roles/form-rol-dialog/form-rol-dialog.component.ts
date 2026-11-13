@@ -19,7 +19,6 @@ export interface FormRolDialogData {
 
 @Component({
   selector: 'app-form-rol-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

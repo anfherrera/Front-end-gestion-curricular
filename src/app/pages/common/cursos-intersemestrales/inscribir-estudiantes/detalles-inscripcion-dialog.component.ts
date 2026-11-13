@@ -21,7 +21,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 // Componente del dialog para ver detalles de inscripción
 @Component({
   selector: 'app-detalles-inscripcion-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

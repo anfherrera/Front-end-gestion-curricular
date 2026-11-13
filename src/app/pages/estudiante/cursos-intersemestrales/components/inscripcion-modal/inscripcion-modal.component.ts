@@ -33,7 +33,6 @@ const ERRORES_INSCRIPCION: Record<number, string> = {
  */
 @Component({
   selector: 'app-inscripcion-modal',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './inscripcion-modal.component.html',
   styleUrls: ['./inscripcion-modal.component.css']

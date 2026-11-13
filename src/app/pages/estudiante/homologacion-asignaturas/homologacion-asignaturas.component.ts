@@ -39,7 +39,6 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
 
 @Component({
   selector: 'app-solicitud-homologacion',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

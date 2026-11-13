@@ -26,7 +26,6 @@ interface OpcionPeriodo {
  */
 @Component({
   selector: 'app-periodo-filtro-selector',
-  standalone: true,
   imports: [
     CommonModule,
     MatFormFieldModule,

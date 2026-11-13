@@ -9,7 +9,6 @@ import { Subject, takeUntil, filter } from 'rxjs';
 
 @Component({
   selector: 'app-cursos-intersemestrales',
-  standalone: true,
   imports: [
     CommonModule, 
     RouterModule, 

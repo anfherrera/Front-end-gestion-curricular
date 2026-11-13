@@ -28,7 +28,6 @@ const ERRORES_EXPORTAR: Record<number, string> = {
 /** Preinscritos e inscritos de un curso, con exportación a PDF. */
 @Component({
   selector: 'app-estudiantes-curso-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,

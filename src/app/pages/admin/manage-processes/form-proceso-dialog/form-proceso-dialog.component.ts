@@ -20,7 +20,6 @@ export interface FormProcesoDialogData {
 
 @Component({
   selector: 'app-form-proceso-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
