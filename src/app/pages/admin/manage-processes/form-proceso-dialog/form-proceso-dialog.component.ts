@@ -8,11 +8,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { ApiService } from '../../../../core/services/api.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ProcesosService } from '../../../../core/services/procesos.service';
+import { ProcesoDTOPeticion, ProcesoDTORespuesta } from '../../../../core/models/proceso.interface';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 export interface FormProcesoDialogData {
-  proceso: any | null;
+  proceso: ProcesoDTORespuesta | null;
   isEditMode: boolean;
 }
 
@@ -39,7 +41,7 @@ export class FormProcesoDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private apiService: ApiService,
+    private procesosService: ProcesosService,
     private snackbar: SnackbarService,
     public dialogRef: MatDialogRef<FormProcesoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FormProcesoDialogData
@@ -76,7 +78,7 @@ export class FormProcesoDialogComponent implements OnInit {
 
     this.loading = true;
     
-    const procesoData = {
+    const procesoData: ProcesoDTOPeticion = {
       ...this.procesoForm.value
     };
 
@@ -88,13 +90,13 @@ export class FormProcesoDialogComponent implements OnInit {
     }
   }
 
-  crearProceso(data: any): void {
-    this.apiService.post('procesos/crearProceso', data).subscribe({
+  crearProceso(data: ProcesoDTOPeticion): void {
+    this.procesosService.crearProceso(data).subscribe({
       next: () => {
         this.snackbar.exito('Proceso creado exitosamente');
         this.dialogRef.close(true);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.mensaje || 'Error al crear el proceso';
         this.snackbar.error(mensaje);
         this.loading = false;
@@ -102,13 +104,13 @@ export class FormProcesoDialogComponent implements OnInit {
     });
   }
 
-  actualizarProceso(data: any): void {
-    this.apiService.put('procesos/actualizarProceso', data).subscribe({
+  actualizarProceso(data: ProcesoDTOPeticion): void {
+    this.procesosService.actualizarProceso(data).subscribe({
       next: () => {
         this.snackbar.exito('Proceso actualizado exitosamente');
         this.dialogRef.close(true);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el proceso';
         this.snackbar.error(mensaje);
         this.loading = false;

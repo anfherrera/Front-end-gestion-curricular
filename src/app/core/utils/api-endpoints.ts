@@ -5,30 +5,7 @@ export class ApiEndpoints {
 
   // ===== AUTENTICACIÓN =====
   static readonly AUTH = {
-    LOGIN: `${this.BASE_URL}/usuarios/login`, // Endpoint real del backend
-    REFRESH: `${this.BASE_URL}/auth/refresh`,
-    LOGOUT: `${this.BASE_URL}/auth/logout`,
-    PROFILE: `${this.BASE_URL}/auth/profile`
-  };
-
-  // ===== USUARIOS =====
-  static readonly USUARIOS = {
-    BASE: `${this.BASE_URL}/usuarios`,
-    BY_ID: (id: string) => `${this.BASE_URL}/usuarios/${id}`,
-    BY_EMAIL: (email: string) => `${this.BASE_URL}/usuarios/email/${email}`,
-    BY_ROLE: (role: string) => `${this.BASE_URL}/usuarios/role/${role}`,
-    UPDATE: (id: string) => `${this.BASE_URL}/usuarios/${id}`,
-    DELETE: (id: string) => `${this.BASE_URL}/usuarios/${id}`
-  };
-
-  // ===== PROCESOS =====
-  static readonly PROCESOS = {
-    BASE: `${this.BASE_URL}/procesos`,
-    BY_ID: (id: string) => `${this.BASE_URL}/procesos/${id}`,
-    BY_ESTADO: (estado: string) => `${this.BASE_URL}/procesos/estado/${estado}`,
-    BY_USUARIO: (usuarioId: string) => `${this.BASE_URL}/procesos/usuario/${usuarioId}`,
-    UPDATE: (id: string) => `${this.BASE_URL}/procesos/${id}`,
-    DELETE: (id: string) => `${this.BASE_URL}/procesos/${id}`
+    LOGIN: `${this.BASE_URL}/usuarios/login`
   };
 
   // ===== PERÍODOS ACADÉMICOS =====

@@ -3,7 +3,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 
 import { ManageProcessesComponent } from './manage-processes.component';
-import { ApiService } from '../../../core/services/api.service';
+import { ProcesosService } from '../../../core/services/procesos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -12,10 +12,10 @@ describe('ManageProcessesComponent', () => {
   let fixture: ComponentFixture<ManageProcessesComponent>;
 
   beforeEach(async () => {
-    const apiServiceSpy = jasmine.createSpyObj('ApiService', ['get', 'put', 'delete']);
-    apiServiceSpy.get.and.returnValue(of([]));
-    apiServiceSpy.put.and.returnValue(of({}));
-    apiServiceSpy.delete.and.returnValue(of({}));
+    const procesosSpy = jasmine.createSpyObj('ProcesosService', ['listarProcesos', 'actualizarEstado', 'eliminarProceso']);
+    procesosSpy.listarProcesos.and.returnValue(of([]));
+    procesosSpy.actualizarEstado.and.returnValue(of({}));
+    procesosSpy.eliminarProceso.and.returnValue(of({}));
 
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
@@ -26,7 +26,7 @@ describe('ManageProcessesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ManageProcessesComponent, NoopAnimationsModule],
       providers: [
-        { provide: ApiService, useValue: apiServiceSpy },
+        { provide: ProcesosService, useValue: procesosSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: MatDialog, useValue: matDialogSpy }
       ]

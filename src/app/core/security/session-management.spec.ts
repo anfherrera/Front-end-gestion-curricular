@@ -4,8 +4,10 @@
 
 import { TestBed, fakeAsync, tick, discardPeriodicTasks } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { ApiEndpoints } from '../utils/api-endpoints';
 import { AuthService } from '../services/auth.service';
-import { ApiService } from '../services/api.service';
 import { ActivityMonitorService } from '../services/activity-monitor.service';
 import { UserRole } from '../enums/roles.enum';
 import { of } from 'rxjs';
@@ -13,13 +15,11 @@ import { of } from 'rxjs';
 describe('Seguridad - Manejo de sesiones', () => {
   let authService: AuthService;
   let router: jasmine.SpyObj<Router>;
-  let apiService: jasmine.SpyObj<ApiService>;
   let activityMonitor: jasmine.SpyObj<ActivityMonitorService>;
   let localStorageSpy: jasmine.SpyObj<Storage>;
 
   beforeEach(() => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const apiServiceSpy = jasmine.createSpyObj('ApiService', ['login']);
     const activityMonitorSpy = jasmine.createSpyObj('ActivityMonitorService', [
       'setLogoutCallback',
       'startMonitoring',
@@ -34,21 +34,32 @@ describe('Seguridad - Manejo de sesiones', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: Router, useValue: routerSpy },
-        { provide: ApiService, useValue: apiServiceSpy },
         { provide: ActivityMonitorService, useValue: activityMonitorSpy }
       ]
     });
 
     authService = TestBed.inject(AuthService);
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    apiService = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
     activityMonitor = TestBed.inject(ActivityMonitorService) as jasmine.SpyObj<ActivityMonitorService>;
 
     // Mock localStorage
     spyOn(localStorage, 'getItem').and.callFake(localStorageSpy.getItem);
     spyOn(localStorage, 'setItem').and.callFake(localStorageSpy.setItem);
     spyOn(localStorage, 'removeItem').and.callFake(localStorageSpy.removeItem);
+  });
+
+  it('login hace POST a /usuarios/login con correo y contraseña', () => {
+    const http = TestBed.inject(HttpTestingController);
+    const respuesta = { token: 't', usuario: { id_usuario: 1, nombre_completo: 'Test' } };
+    authService.login('a@unicauca.edu.co', 'clave1234').subscribe(r => expect(r).toEqual(respuesta));
+    const req = http.expectOne(ApiEndpoints.AUTH.LOGIN);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ correo: 'a@unicauca.edu.co', password: 'clave1234' });
+    req.flush(respuesta);
+    http.verify();
   });
 
   // =====================================
@@ -275,7 +286,7 @@ describe('Seguridad - Manejo de sesiones', () => {
       });
 
       // Crear nueva instancia del servicio
-      const newAuthService = new AuthService(router, apiService, activityMonitor, 'browser' as any);
+      const newAuthService = new AuthService(router, TestBed.inject(HttpClient), activityMonitor, 'browser' as any);
 
       expect(newAuthService.getRole()).toBe(UserRole.ESTUDIANTE);
     });

@@ -7,13 +7,12 @@ import { of, throwError, delay } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 import { AuthService } from '../../core/services/auth.service';
-import { ApiService } from '../../core/services/api.service';
+import { LoginRespuesta } from '../../core/models/usuario-sesion.model';
 
 describe('LoginComponent - Pruebas Unitarias', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let authService: jasmine.SpyObj<AuthService>;
-  let apiService: jasmine.SpyObj<ApiService>;
   let router: jasmine.SpyObj<Router>;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
   let compiled: HTMLElement;
@@ -36,9 +35,9 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       'setUsuario',
       'setRole',
       'restoreSession',
-      'isAuthenticated'
+      'isAuthenticated',
+      'login'
     ]);
-    const apiServiceSpy = jasmine.createSpyObj('ApiService', ['login']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
@@ -50,7 +49,6 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       ],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
-        { provide: ApiService, useValue: apiServiceSpy },
         { provide: Router, useValue: routerSpy }
       ]
     })
@@ -58,7 +56,6 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     .compileComponents();
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    apiService = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
 
@@ -228,15 +225,15 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     });
 
     it('LOG-022: Debe llamar al servicio de API con credenciales correctas', () => {
-      apiService.login.and.returnValue(of(mockLoginResponse));
+      authService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       
-      expect(apiService.login).toHaveBeenCalledWith('test@unicauca.edu.co', 'password123');
+      expect(authService.login).toHaveBeenCalledWith('test@unicauca.edu.co', 'password123');
     });
 
     it('LOG-023: Debe guardar el token en AuthService', fakeAsync(() => {
-      apiService.login.and.returnValue(of(mockLoginResponse));
+      authService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       tick();
@@ -245,7 +242,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     }));
 
     it('LOG-024: Debe guardar el usuario en AuthService', fakeAsync(() => {
-      apiService.login.and.returnValue(of(mockLoginResponse));
+      authService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       tick();
@@ -254,7 +251,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     }));
 
     it('LOG-025: Debe guardar el rol del usuario', fakeAsync(() => {
-      apiService.login.and.returnValue(of(mockLoginResponse));
+      authService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       tick();
@@ -263,7 +260,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     }));
 
     it('LOG-026: Debe restaurar la sesión', fakeAsync(() => {
-      apiService.login.and.returnValue(of(mockLoginResponse));
+      authService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       tick();
@@ -272,7 +269,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     }));
 
     it('LOG-027: Debe mostrar mensaje de bienvenida', fakeAsync(() => {
-      apiService.login.and.returnValue(of(mockLoginResponse));
+      authService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       tick(100); // Dar tiempo para que se complete el observable
@@ -289,7 +286,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     }));
 
     it('LOG-028: Debe navegar a /welcome después del login', fakeAsync(() => {
-      apiService.login.and.returnValue(of(mockLoginResponse));
+      authService.login.and.returnValue(of(mockLoginResponse));
       
       component.onLogin();
       tick();
@@ -299,7 +296,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     it('LOG-029: Debe cambiar el estado de cargando durante el proceso', fakeAsync(() => {
       // Usar delay para simular mejor el comportamiento asíncrono
-      apiService.login.and.returnValue(of(mockLoginResponse).pipe(delay(50)));
+      authService.login.and.returnValue(of(mockLoginResponse).pipe(delay(50)));
       
       expect(component.cargando).toBe(false);
       
@@ -323,7 +320,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     it('LOG-030: Debe manejar error 401 (credenciales incorrectas)', fakeAsync(() => {
       const error = { status: 401, message: 'Unauthorized' };
-      apiService.login.and.returnValue(throwError(() => error));
+      authService.login.and.returnValue(throwError(() => error));
       
       component.onLogin();
       tick(100); // Dar tiempo para que se maneje el error
@@ -335,7 +332,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     it('LOG-031: Debe manejar error 403 (cuenta deshabilitada)', fakeAsync(() => {
       const error = { status: 403, message: 'Forbidden' };
-      apiService.login.and.returnValue(throwError(() => error));
+      authService.login.and.returnValue(throwError(() => error));
       
       component.onLogin();
       tick();
@@ -345,7 +342,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     it('LOG-032: Debe manejar error 0 (sin conexión)', fakeAsync(() => {
       const error = { status: 0, message: 'Network error' };
-      apiService.login.and.returnValue(throwError(() => error));
+      authService.login.and.returnValue(throwError(() => error));
       
       component.onLogin();
       tick();
@@ -355,7 +352,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     it('LOG-033: Debe manejar error 500 (error del servidor)', fakeAsync(() => {
       const error = { status: 500, message: 'Internal Server Error' };
-      apiService.login.and.returnValue(throwError(() => error));
+      authService.login.and.returnValue(throwError(() => error));
       
       component.onLogin();
       tick();
@@ -365,7 +362,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     it('LOG-034: Debe desactivar estado de cargando después de error', fakeAsync(() => {
       const error = { status: 401, message: 'Unauthorized' };
-      apiService.login.and.returnValue(throwError(() => error));
+      authService.login.and.returnValue(throwError(() => error));
       
       component.onLogin();
       tick();
@@ -383,7 +380,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       
       component.onLogin();
       
-      expect(apiService.login).not.toHaveBeenCalled();
+      expect(authService.login).not.toHaveBeenCalled();
     });
 
     it('LOG-036: Debe marcar todos los campos como tocados si formulario inválido', () => {
@@ -447,7 +444,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
   describe('10. Respuesta Inválida del Servidor', () => {
     it('LOG-041: Debe manejar respuesta sin token', fakeAsync(() => {
       const invalidResponse = { usuario: mockUsuario };
-      apiService.login.and.returnValue(of(invalidResponse));
+      authService.login.and.returnValue(of(invalidResponse as unknown as LoginRespuesta));
       
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
@@ -462,7 +459,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     it('LOG-042: Debe manejar respuesta sin usuario', fakeAsync(() => {
       const invalidResponse = { token: 'mock-token' };
-      apiService.login.and.returnValue(of(invalidResponse));
+      authService.login.and.returnValue(of(invalidResponse as unknown as LoginRespuesta));
       
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',

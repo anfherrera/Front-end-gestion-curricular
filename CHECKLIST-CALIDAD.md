@@ -44,15 +44,19 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 
 ---
 
-## Fase 2 — Código repetido (servicios, utilidades y componentes pequeños)
+## Fase 2 — Código repetido (servicios, utilidades y componentes pequeños) ✅ (terminada el 2026-11-13)
 
-Hecha el 2026-11-13 salvo `ApiService`. Cada bloque se verificó con `ng build`, `ng test` (526/526 al terminar; 499 al empezar) y `test:navegacion` sin backend.
+Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al empezar) y `test:navegacion` sin backend.
 
 ### Servicios duplicados
 - [x] Hay dos `ErrorHandlerService`: queda solo [core/services/error-handler.service.ts](src/app/core/services/error-handler.service.ts). El de `shared/components/error-handler/` (264 líneas) se borra: su único uso real era `handleCargaError('cursos')` en `gestionar-cursos`, que pasa a `SnackbarService.warning()`
 - [x] Notificaciones: [SnackbarService](src/app/core/services/snackbar.service.ts) con `exito()`, `error()`, `advertencia()`, `info()` y `mostrar(msg, tipo, duración)` (tipo `destacado` para el aviso de cambio de período). Lo usan 51 archivos y `MatSnackBar` ya solo aparece dentro del servicio. Se borran `snackbarConfig()`, los `MatSnackBarModule` de los componentes y los `mostrarMensaje` de las páginas del estudiante
   - Cambio visible esperado: homologación y reingreso del estudiante mostraban los avisos centrados (4 o 6 s) y ahora salen arriba a la derecha (5 s) como el resto; el aviso de cambio de período pasa de abajo al centro a arriba a la derecha (sigue con fondo institucional y 8 s)
-- [ ] `ApiService` lo usan solo `auth`, `login` y `manage-processes` (y tiene 20 `any`). Que todos los servicios lo usen o eliminarlo y usar `HttpClient` en todos
+- [x] Se borra `ApiService` (20 `any`); todos los servicios usan `HttpClient` con tipos
+  - `AuthService.login()` hace el POST a `/usuarios/login` y devuelve `LoginRespuesta` ([usuario-sesion.model.ts](src/app/core/models/usuario-sesion.model.ts)); `login.component` lo llama en lugar de `ApiService`
+  - `manage-processes` y `form-proceso-dialog` usan el nuevo [ProcesosService](src/app/core/services/procesos.service.ts) con `ProcesoDTOPeticion`/`ProcesoDTORespuesta` ([proceso.interface.ts](src/app/core/models/proceso.interface.ts)), igual que `ProgramasService`. Así no entra `HttpClient` en los componentes (Fase 4)
+  - Se borran de `ApiEndpoints` las constantes que solo usaba `ApiService` (`AUTH.REFRESH/LOGOUT/PROFILE`, `USUARIOS`, `PROCESOS`), que además apuntaban a rutas que el backend no tiene
+  - Specs: `login` y `session-management` dejan de simular `ApiService`; se añaden `procesos.service.spec.ts` y una prueba del POST de `AuthService.login`
 
 ### Estados de solicitud
 - [x] Un solo enum: [estados-solicitud.enum.ts](src/app/core/enums/estados-solicitud.enum.ts) (`EstadosSolicitud`) con los códigos del backend y `ESTADOS_SOLICITUD_LABELS`. Se borra `solicitud-status.enum.ts`, cuyos valores eran textos ("Aprobada") aunque los componentes le metían códigos con un cast. `Solicitud.estado` pasa a `string`

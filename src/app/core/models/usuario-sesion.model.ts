@@ -7,3 +7,9 @@ export interface UsuarioSesion {
   rol?: { id_rol?: number; nombre: string };
   objPrograma?: { id_programa: number; nombre_programa: string };
 }
+
+/** Respuesta de POST /usuarios/login. */
+export interface LoginRespuesta {
+  token: string;
+  usuario: UsuarioSesion;
+}

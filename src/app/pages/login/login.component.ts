@@ -10,7 +10,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { ApiService } from '../../core/services/api.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { interval, Subscription } from 'rxjs';
 import { getLoginCooldownRemainingSeconds } from '../../core/interceptors/login-rate-limit.interceptor';
@@ -45,7 +44,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private apiService: ApiService,
     private router: Router,
     private snackbar: SnackbarService,
     private logger: LoggerService
@@ -124,8 +122,8 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.cargando = true;
       this.errorMensaje = '';
 
-      this.apiService.login(correo, password).subscribe({
-        next: (response: any) => {
+      this.authService.login(correo, password).subscribe({
+        next: (response) => {
 
           if (response.token && response.usuario) {
             // Guardar token JWT después del login exitoso

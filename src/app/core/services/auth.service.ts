@@ -4,7 +4,9 @@ import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { UserRole } from '../enums/roles.enum';
-import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
+import { ApiEndpoints } from '../utils/api-endpoints';
+import { LoginRespuesta } from '../models/usuario-sesion.model';
 import { ActivityMonitorService } from './activity-monitor.service';
 import { SnackbarService } from './snackbar.service';
 
@@ -25,7 +27,7 @@ export class AuthService {
 
   constructor(
     private router: Router,
-    private apiService: ApiService,
+    private http: HttpClient,
     private activityMonitor: ActivityMonitorService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private snackbar?: SnackbarService
@@ -187,8 +189,8 @@ export class AuthService {
    * @param password Contraseña del usuario
    * @returns Observable con la respuesta del servidor
    */
-  login(correo: string, password: string): Observable<any> {
-    return this.apiService.login(correo, password);
+  login(correo: string, password: string): Observable<LoginRespuesta> {
+    return this.http.post<LoginRespuesta>(ApiEndpoints.AUTH.LOGIN, { correo, password });
   }
 
   /**

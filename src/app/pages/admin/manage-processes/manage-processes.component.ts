@@ -10,7 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ApiService } from '../../../core/services/api.service';
+import { ProcesosService } from '../../../core/services/procesos.service';
+import { ProcesoDTORespuesta } from '../../../core/models/proceso.interface';
 import { FormProcesoDialogComponent } from './form-proceso-dialog/form-proceso-dialog.component';
 import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
@@ -36,13 +37,13 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
   styleUrl: './manage-processes.component.css'
 })
 export class ManageProcessesComponent implements OnInit {
-  procesos: any[] = [];
+  procesos: ProcesoDTORespuesta[] = [];
   displayedColumns: string[] = ['id_proceso', 'nombre_proceso', 'descripcion', 'estado', 'acciones'];
   loading = false;
   searchTerm = '';
 
   constructor(
-    private apiService: ApiService,
+    private procesosService: ProcesosService,
     private snackbar: SnackbarService,
     private dialog: MatDialog
   ) {}
@@ -54,12 +55,12 @@ export class ManageProcessesComponent implements OnInit {
   cargarProcesos(): void {
     this.loading = true;
     
-    this.apiService.get('procesos/listarProcesos').subscribe({
-      next: (data: any) => {
+    this.procesosService.listarProcesos().subscribe({
+      next: (data) => {
         this.procesos = data;
         this.loading = false;
       },
-      error: (err: any) => {
+      error: () => {
         this.snackbar.error('Error al cargar procesos');
         this.loading = false;
       }
@@ -86,7 +87,7 @@ export class ManageProcessesComponent implements OnInit {
     this.cargarProcesos();
   }
 
-  cambiarEstado(proceso: any): void {
+  cambiarEstado(proceso: ProcesoDTORespuesta): void {
     const nuevoEstado = !proceso.estado_proceso;
     const mensaje = nuevoEstado ? 'activar' : 'desactivar';
     
@@ -96,19 +97,19 @@ export class ManageProcessesComponent implements OnInit {
       peligro: !nuevoEstado,
       mensaje: `¿Está seguro de ${mensaje} el proceso "${proceso.nombre_proceso}"?`
     }).pipe(filter(Boolean)).subscribe(() => {
-      this.apiService.put(`procesos/actualizarEstado/${proceso.id_proceso}`, { estado_proceso: nuevoEstado }).subscribe({
+      this.procesosService.actualizarEstado(proceso.id_proceso, nuevoEstado).subscribe({
         next: () => {
           this.snackbar.exito(`Proceso ${mensaje}do exitosamente`);
           this.cargarProcesos();
         },
-        error: (err: any) => {
+        error: () => {
           this.snackbar.error('Error al cambiar el estado del proceso');
         }
       });
     });
   }
 
-  editarProceso(proceso: any): void {
+  editarProceso(proceso: ProcesoDTORespuesta): void {
     const dialogRef = this.dialog.open(FormProcesoDialogComponent, {
       width: '600px',
       data: { proceso, isEditMode: true }
@@ -134,17 +135,17 @@ export class ManageProcessesComponent implements OnInit {
     });
   }
 
-  eliminarProceso(proceso: any): void {
+  eliminarProceso(proceso: ProcesoDTORespuesta): void {
     confirmar(this.dialog, {
       titulo: 'Eliminar proceso', textoConfirmar: 'Eliminar', peligro: true,
       mensaje: `¿Está seguro de ELIMINAR el proceso "${proceso.nombre_proceso}"?`
     }).pipe(filter(Boolean)).subscribe(() => {
-      this.apiService.delete(`procesos/eliminarProceso/${proceso.id_proceso}`).subscribe({
+      this.procesosService.eliminarProceso(proceso.id_proceso).subscribe({
         next: () => {
           this.snackbar.exito('Proceso eliminado exitosamente');
           this.cargarProcesos();
         },
-        error: (err: any) => {
+        error: () => {
           this.snackbar.error('Error al eliminar el proceso');
         }
       });
