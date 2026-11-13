@@ -22,119 +22,147 @@
             <input matInput [matDatepicker]="picker" formControlName="fecha_terminacion_plan" [max]="maxDate" readonly placeholder="Seleccione la fecha">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
-            <mat-error *ngIf="solicitudForm.get('fecha_terminacion_plan')?.hasError('required')">
-              La fecha de terminación del plan de estudios es obligatoria
-            </mat-error>
+            @if (solicitudForm.get('fecha_terminacion_plan')?.hasError('required')) {
+              <mat-error>
+                La fecha de terminación del plan de estudios es obligatoria
+              </mat-error>
+            }
           </mat-form-field>
         </div>
 
         <!-- Campos de trabajo de grado (solo si es requerido) -->
-        <div *ngIf="requiereTrabajoGrado" class="trabajo-grado-section">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field-full">
-              <mat-label>Título del Trabajo de Grado</mat-label>
-              <textarea matInput formControlName="titulo_trabajo_grado" rows="3" maxlength="500" 
-                        placeholder="Ej: Sistema de información para la gestión de prácticas académicas"></textarea>
-              <mat-hint>{{ solicitudForm.get('titulo_trabajo_grado')?.value?.length || 0 }}/500 caracteres</mat-hint>
-              <mat-error *ngIf="solicitudForm.get('titulo_trabajo_grado')?.hasError('required')">
-                El título del trabajo de grado es obligatorio
-              </mat-error>
-              <mat-error *ngIf="solicitudForm.get('titulo_trabajo_grado')?.hasError('maxlength')">
-                El título no puede exceder 500 caracteres
-              </mat-error>
-            </mat-form-field>
-          </div>
+        @if (requiereTrabajoGrado) {
+          <div class="trabajo-grado-section">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Título del Trabajo de Grado</mat-label>
+                <textarea matInput formControlName="titulo_trabajo_grado" rows="3" maxlength="500"
+                placeholder="Ej: Sistema de información para la gestión de prácticas académicas"></textarea>
+                <mat-hint>{{ solicitudForm.get('titulo_trabajo_grado')?.value?.length || 0 }}/500 caracteres</mat-hint>
+                @if (solicitudForm.get('titulo_trabajo_grado')?.hasError('required')) {
+                  <mat-error>
+                    El título del trabajo de grado es obligatorio
+                  </mat-error>
+                }
+                @if (solicitudForm.get('titulo_trabajo_grado')?.hasError('maxlength')) {
+                  <mat-error>
+                    El título no puede exceder 500 caracteres
+                  </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Director del Trabajo de Grado</mat-label>
+                <input matInput formControlName="director_trabajo_grado" maxlength="200"
+                  placeholder="Ej: Mg. Nombre Apellido">
+                  <mat-hint>{{ solicitudForm.get('director_trabajo_grado')?.value?.length || 0 }}/200 caracteres</mat-hint>
+                  @if (solicitudForm.get('director_trabajo_grado')?.hasError('required')) {
+                    <mat-error>
+                      El director del trabajo de grado es obligatorio
+                    </mat-error>
+                  }
+                  @if (solicitudForm.get('director_trabajo_grado')?.hasError('maxlength')) {
+                    <mat-error>
+                      El director no puede exceder 200 caracteres
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          }
 
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field-full">
-              <mat-label>Director del Trabajo de Grado</mat-label>
-              <input matInput formControlName="director_trabajo_grado" maxlength="200" 
-                     placeholder="Ej: Mg. Nombre Apellido">
-              <mat-hint>{{ solicitudForm.get('director_trabajo_grado')?.value?.length || 0 }}/200 caracteres</mat-hint>
-              <mat-error *ngIf="solicitudForm.get('director_trabajo_grado')?.hasError('required')">
-                El director del trabajo de grado es obligatorio
-              </mat-error>
-              <mat-error *ngIf="solicitudForm.get('director_trabajo_grado')?.hasError('maxlength')">
-                El director no puede exceder 200 caracteres
-              </mat-error>
-            </mat-form-field>
-          </div>
+          <!-- Mensaje informativo para Telemática -->
+          @if (!requiereTrabajoGrado && usuario && (usuario?.objPrograma?.nombre_programa || usuario?.objPrograma?.nombre || '').toLowerCase().includes('telematica')) {
+            <div
+              class="info-telematica">
+              <mat-icon>info</mat-icon>
+              <div>
+                <strong>Nota:</strong> Los estudiantes de Tecnología en Telemática no requieren
+                trabajo de grado para obtener el título de Tecnólogo en Telemática.
+              </div>
+            </div>
+          }
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Subir Archivos -->
+    <mat-card class="card-section">
+      <mat-card-title class="card-title">Subir Archivos</mat-card-title>
+      <mat-card-content>
+        <app-file-upload
+          [archivos]="archivosActuales"
+          (archivosChange)="onArchivosChange($event)"
+          [reset]="resetFileUpload"
+          [archivosExclusivos]="archivosExclusivos"
+          [proceso]="'paz-salvo'">
+        </app-file-upload>
+
+        <div class="enviar-solicitud mt-4">
+          @if (!puedeEnviar() && archivosActuales.length > 0) {
+            <div class="validacion-mensaje">
+              <mat-icon color="warn">warning</mat-icon>
+              <span>
+                <strong>Información faltante:</strong>
+                <ul class="documentos-faltantes">
+                  @for (doc of obtenerDocumentosFaltantes(); track doc) {
+                    <li>{{ doc }}</li>
+                  }
+                  @if (!solicitudForm.get('fecha_terminacion_plan')?.value) {
+                    <li>Fecha de terminación del plan de estudios</li>
+                  }
+                  @if (requiereTrabajoGrado && !solicitudForm.get('titulo_trabajo_grado')?.value?.trim()) {
+                    <li>Título del trabajo de grado</li>
+                  }
+                  @if (requiereTrabajoGrado && !solicitudForm.get('director_trabajo_grado')?.value?.trim()) {
+                    <li>Director del trabajo de grado</li>
+                  }
+                </ul>
+              </span>
+            </div>
+          }
+          <button mat-raised-button color="primary"
+            class="btn-enviar"
+            [disabled]="!puedeEnviar()"
+            (click)="onSolicitudEnviada()">
+            Enviar Solicitud
+          </button>
         </div>
 
-        <!-- Mensaje informativo para Telemática -->
-        <div *ngIf="!requiereTrabajoGrado && usuario && (usuario?.objPrograma?.nombre_programa || usuario?.objPrograma?.nombre || '').toLowerCase().includes('telematica')" 
-             class="info-telematica">
-          <mat-icon>info</mat-icon>
-          <div>
-            <strong>Nota:</strong> Los estudiantes de Tecnología en Telemática no requieren 
-            trabajo de grado para obtener el título de Tecnólogo en Telemática.
+        @if (solicitudes.at(-1)?.estado === 'Rechazada') {
+          <div class="rechazo-box">
+            <mat-icon color="warn">error</mat-icon>
+            <span>
+              <strong>Solicitud rechazada:</strong>
+              {{ solicitudes.at(-1)?.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
+            </span>
           </div>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
+        }
+      </mat-card-content>
+    </mat-card>
 
-  <!-- Subir Archivos -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Subir Archivos</mat-card-title>
-    <mat-card-content>
-      <app-file-upload
-        [archivos]="archivosActuales"
-        (archivosChange)="onArchivosChange($event)"
-        [reset]="resetFileUpload"
-        [archivosExclusivos]="archivosExclusivos"
-        [proceso]="'paz-salvo'">
-      </app-file-upload>
+    <!-- Seguimiento de solicitud -->
+    <mat-card class="card-section">
+      <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
+      <mat-card-content>
+        @if (solicitudes.length === 0) {
+          <p class="sin-solicitudes">
+            No se ha enviado ninguna solicitud aún.
+          </p>
+        }
 
-      <div class="enviar-solicitud mt-4">
-        <div *ngIf="!puedeEnviar() && archivosActuales.length > 0" class="validacion-mensaje">
-          <mat-icon color="warn">warning</mat-icon>
-          <span>
-            <strong>Información faltante:</strong>
-            <ul class="documentos-faltantes">
-              <li *ngFor="let doc of obtenerDocumentosFaltantes()">{{ doc }}</li>
-              <li *ngIf="!solicitudForm.get('fecha_terminacion_plan')?.value">Fecha de terminación del plan de estudios</li>
-              <li *ngIf="requiereTrabajoGrado && !solicitudForm.get('titulo_trabajo_grado')?.value?.trim()">Título del trabajo de grado</li>
-              <li *ngIf="requiereTrabajoGrado && !solicitudForm.get('director_trabajo_grado')?.value?.trim()">Director del trabajo de grado</li>
-            </ul>
-          </span>
-        </div>
-        <button mat-raised-button color="primary"
-                class="btn-enviar"
-                [disabled]="!puedeEnviar()"
-                (click)="onSolicitudEnviada()">
-          Enviar Solicitud
-        </button>
-      </div>
+        @if (solicitudes.length > 0) {
+          <app-request-status-table
+            [solicitudes]="solicitudes"
+            [showOficio]="true"
+            [showComentarios]="true"
+            (verComentarios)="verComentarios($event)"
+            (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
+          </app-request-status-table>
+        }
 
-      <div *ngIf="solicitudes.at(-1)?.estado === 'Rechazada'" class="rechazo-box">
-        <mat-icon color="warn">error</mat-icon>
-        <span>
-          <strong>Solicitud rechazada:</strong>
-          {{ solicitudes.at(-1)?.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
-        </span>
-      </div>
-    </mat-card-content>
-  </mat-card>
+      </mat-card-content>
+    </mat-card>
 
-  <!-- Seguimiento de solicitud -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
-    <mat-card-content>
-      <p *ngIf="solicitudes.length === 0" class="sin-solicitudes">
-        No se ha enviado ninguna solicitud aún.
-      </p>
-
-      <app-request-status-table
-        *ngIf="solicitudes.length > 0"
-        [solicitudes]="solicitudes"
-        [showOficio]="true"
-        [showComentarios]="true"
-        (verComentarios)="verComentarios($event)"
-        (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)">
-      </app-request-status-table>
-
-    </mat-card-content>
-  </mat-card>
-
-</div>
+  </div>

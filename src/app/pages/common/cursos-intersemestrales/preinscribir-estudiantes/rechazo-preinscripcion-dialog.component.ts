@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,14 +13,13 @@ import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-i
 @Component({
   selector: 'app-rechazo-preinscripcion-dialog',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule
-  ],
+],
   templateUrl: './rechazo-preinscripcion-dialog.component.html',
   styleUrl: './rechazo-preinscripcion-dialog.component.css'
 })

@@ -52,71 +52,81 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Número de {{ template.nombre }}</mat-label>
           <input matInput
-                 formControlName="numeroDocumento"
-                 placeholder="Ej: 001-2024"
-                 [class.error]="hasError('numeroDocumento')">
-          <mat-icon matSuffix>description</mat-icon>
-          <mat-error *ngIf="hasError('numeroDocumento')">
-            {{ getFieldError('numeroDocumento') }}
-          </mat-error>
-        </mat-form-field>
+            formControlName="numeroDocumento"
+            placeholder="Ej: 001-2024"
+            [class.error]="hasError('numeroDocumento')">
+            <mat-icon matSuffix>description</mat-icon>
+            @if (hasError('numeroDocumento')) {
+              <mat-error>
+                {{ getFieldError('numeroDocumento') }}
+              </mat-error>
+            }
+          </mat-form-field>
 
-        <!-- Fecha del documento -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Fecha del documento</mat-label>
-          <input matInput
-                 [matDatepicker]="picker"
-                 formControlName="fechaDocumento"
-                 [class.error]="hasError('fechaDocumento')">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="hasError('fechaDocumento')">
-            {{ getFieldError('fechaDocumento') }}
-          </mat-error>
-        </mat-form-field>
+          <!-- Fecha del documento -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Fecha del documento</mat-label>
+            <input matInput
+              [matDatepicker]="picker"
+              formControlName="fechaDocumento"
+              [class.error]="hasError('fechaDocumento')">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              @if (hasError('fechaDocumento')) {
+                <mat-error>
+                  {{ getFieldError('fechaDocumento') }}
+                </mat-error>
+              }
+            </mat-form-field>
 
-        <!-- Observaciones -->
-        <mat-form-field *ngIf="mostrarObservaciones" appearance="outline" class="full-width">
-          <mat-label>Observaciones</mat-label>
-          <textarea matInput
-                    formControlName="observaciones"
-                    rows="3"
-                    placeholder="Observaciones adicionales..."></textarea>
-          <mat-icon matSuffix>note</mat-icon>
-        </mat-form-field>
+            <!-- Observaciones -->
+            @if (mostrarObservaciones) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Observaciones</mat-label>
+                <textarea matInput
+                  formControlName="observaciones"
+                  rows="3"
+                placeholder="Observaciones adicionales..."></textarea>
+                <mat-icon matSuffix>note</mat-icon>
+              </mat-form-field>
+            }
 
-      </form>
-    </mat-card-content>
+          </form>
+        </mat-card-content>
 
-    <mat-card-actions class="form-actions">
-      <button mat-button
-              type="button"
-              (click)="onCancel()"
-              [disabled]="loading">
-        <mat-icon>cancel</mat-icon>
-        Cancelar
-      </button>
+        <mat-card-actions class="form-actions">
+          <button mat-button
+            type="button"
+            (click)="onCancel()"
+            [disabled]="loading">
+            <mat-icon>cancel</mat-icon>
+            Cancelar
+          </button>
 
-      <button mat-raised-button
-              color="primary"
-              type="submit"
-              (click)="onSubmit()"
-              [disabled]="documentForm.invalid || loading">
-        <mat-icon *ngIf="!loading">description</mat-icon>
-        <mat-icon *ngIf="loading" class="spinning">refresh</mat-icon>
-        {{ loading ? 'Generando...' : 'Generar ' + template.nombre }}
-      </button>
+          <button mat-raised-button
+            color="primary"
+            type="submit"
+            (click)="onSubmit()"
+            [disabled]="documentForm.invalid || loading">
+            @if (!loading) {
+              <mat-icon>description</mat-icon>
+            }
+            @if (loading) {
+              <mat-icon class="spinning">refresh</mat-icon>
+            }
+            {{ loading ? 'Generando...' : 'Generar ' + template.nombre }}
+          </button>
 
-      <button mat-raised-button
-              color="accent"
-              type="button"
-              (click)="onTengoDocumento()"
-              [disabled]="loading">
-        <mat-icon>upload_file</mat-icon>
-        Tengo un documento
-      </button>
-    </mat-card-actions>
-  </mat-card>
+          <button mat-raised-button
+            color="accent"
+            type="button"
+            (click)="onTengoDocumento()"
+            [disabled]="loading">
+            <mat-icon>upload_file</mat-icon>
+            Tengo un documento
+          </button>
+        </mat-card-actions>
+      </mat-card>
 
-</div>
+    </div>
 

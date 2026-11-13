@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Archivo } from '@core/models/procesos.model';
@@ -11,7 +11,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-file-upload',
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule],
   templateUrl: './file-upload-dialog.component.html',
   styleUrls: ['./file-upload-dialog.component.css']
 })

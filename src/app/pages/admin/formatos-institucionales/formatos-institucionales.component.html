@@ -17,52 +17,62 @@
       </div>
 
       <div class="formatos-list">
-        <div *ngFor="let f of formatos" class="formato-block">
-          <h4 class="formato-proceso">
-            <mat-icon>folder_open</mat-icon>
-            {{ f.procesoLabel }}
-          </h4>
-
-          <div *ngIf="!estaEditando(f.id)" class="formato-valores">
-            <div class="valor-fila">
-              <span class="label">Nombre del formato:</span>
-              <span class="valor">{{ f.nombre }}</span>
-              <button mat-stroked-button color="primary" type="button" (click)="iniciarEdicion(f)">
-                <mat-icon>edit</mat-icon>
-                Modificar
-              </button>
-            </div>
-            <div class="valor-fila">
-              <span class="label">Link de descarga:</span>
-              <a [href]="f.url" target="_blank" rel="noopener noreferrer" class="link-preview">{{ truncarUrl(f.url) }}</a>
-              <button mat-stroked-button color="primary" type="button" (click)="iniciarEdicion(f)">
-                <mat-icon>edit</mat-icon>
-                Modificar
-              </button>
-            </div>
+        @for (f of formatos; track f) {
+          <div class="formato-block">
+            <h4 class="formato-proceso">
+              <mat-icon>folder_open</mat-icon>
+              {{ f.procesoLabel }}
+            </h4>
+            @if (!estaEditando(f.id)) {
+              <div class="formato-valores">
+                <div class="valor-fila">
+                  <span class="label">Nombre del formato:</span>
+                  <span class="valor">{{ f.nombre }}</span>
+                  <button mat-stroked-button color="primary" type="button" (click)="iniciarEdicion(f)">
+                    <mat-icon>edit</mat-icon>
+                    Modificar
+                  </button>
+                </div>
+                <div class="valor-fila">
+                  <span class="label">Link de descarga:</span>
+                  <a [href]="f.url" target="_blank" rel="noopener noreferrer" class="link-preview">{{ truncarUrl(f.url) }}</a>
+                  <button mat-stroked-button color="primary" type="button" (click)="iniciarEdicion(f)">
+                    <mat-icon>edit</mat-icon>
+                    Modificar
+                  </button>
+                </div>
+              </div>
+            }
+            @if (estaEditando(f.id)) {
+              <form [formGroup]="editForm" (ngSubmit)="guardarEdicion()" class="edit-form">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nombre del formato</mat-label>
+                  <input matInput formControlName="nombre" placeholder="Ej: PM-FO-4-FOR-17 Solicitud de Reingreso V2" />
+                  @if (editForm.get('nombre')?.hasError('required')) {
+                    <mat-error>El nombre es obligatorio</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>URL de descarga</mat-label>
+                  <input matInput formControlName="url" placeholder="https://..." />
+                  @if (editForm.get('url')?.hasError('required')) {
+                    <mat-error>La URL es obligatoria</mat-error>
+                  }
+                  @if (editForm.get('url')?.hasError('minlength')) {
+                    <mat-error>URL demasiado corta</mat-error>
+                  }
+                </mat-form-field>
+                <div class="form-actions">
+                  <button mat-button type="button" (click)="cancelarEdicion()">Cancelar</button>
+                  <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">
+                    <mat-icon>save</mat-icon>
+                    Guardar
+                  </button>
+                </div>
+              </form>
+            }
           </div>
-
-          <form *ngIf="estaEditando(f.id)" [formGroup]="editForm" (ngSubmit)="guardarEdicion()" class="edit-form">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nombre del formato</mat-label>
-              <input matInput formControlName="nombre" placeholder="Ej: PM-FO-4-FOR-17 Solicitud de Reingreso V2" />
-              <mat-error *ngIf="editForm.get('nombre')?.hasError('required')">El nombre es obligatorio</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>URL de descarga</mat-label>
-              <input matInput formControlName="url" placeholder="https://..." />
-              <mat-error *ngIf="editForm.get('url')?.hasError('required')">La URL es obligatoria</mat-error>
-              <mat-error *ngIf="editForm.get('url')?.hasError('minlength')">URL demasiado corta</mat-error>
-            </mat-form-field>
-            <div class="form-actions">
-              <button mat-button type="button" (click)="cancelarEdicion()">Cancelar</button>
-              <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">
-                <mat-icon>save</mat-icon>
-                Guardar
-              </button>
-            </div>
-          </form>
-        </div>
+        }
       </div>
     </mat-card-content>
   </mat-card>

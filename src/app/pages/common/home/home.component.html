@@ -5,12 +5,13 @@
 </section>
 
 <section class="dashboard-container">
-  <mat-card
-    class="dashboard-card"
-    *ngFor="let p of availableProcesses"
-    (click)="handleProcessClick(p)"
-  >
-    <mat-icon class="dashboard-icon" [ngClass]="p.color">{{ p.icon }}</mat-icon>
-    <span>{{ p.name }}</span>
-  </mat-card>
+  @for (p of availableProcesses; track p) {
+    <mat-card
+      class="dashboard-card"
+      (click)="handleProcessClick(p)"
+      >
+      <mat-icon class="dashboard-icon" [ngClass]="p.color">{{ p.icon }}</mat-icon>
+      <span>{{ p.name }}</span>
+    </mat-card>
+  }
 </section>

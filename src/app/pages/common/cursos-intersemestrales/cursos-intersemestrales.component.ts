@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -9,13 +9,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-cursos-intersemestrales-gestion',
   imports: [
-    CommonModule,
     RouterModule,
     MatIconModule,
     MatBadgeModule,
     MatButtonModule,
     MatTooltipModule
-  ],
+],
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['./menu-cursos-comun.css', './cursos-intersemestrales.component.css']
 })

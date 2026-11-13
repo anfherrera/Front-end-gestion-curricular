@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,13 +16,12 @@ export interface VerComentariosDialogData {
 @Component({
   selector: 'app-ver-comentarios-dialog',
   imports: [
-    CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
     MatDividerModule
-  ],
+],
   templateUrl: './ver-comentarios-dialog.component.html',
   styleUrl: './ver-comentarios-dialog.component.css'
 })

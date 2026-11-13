@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,7 +20,6 @@ export interface FormRolDialogData {
 @Component({
   selector: 'app-form-rol-dialog',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -28,7 +27,7 @@ export interface FormRolDialogData {
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule
-  ],
+],
   templateUrl: './form-rol-dialog.component.html',
   styleUrls: ['./form-rol-dialog.component.css']
 })

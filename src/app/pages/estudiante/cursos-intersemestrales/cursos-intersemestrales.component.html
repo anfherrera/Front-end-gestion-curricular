@@ -4,67 +4,63 @@
   </header>
 
   <nav class="menu" role="navigation">
-    <a *ngFor="let opcion of opciones"
-       [routerLink]="opcion.ruta"
-       routerLinkActive="active"
-       [routerLinkActiveOptions]="{ exact: true }"
-       class="menu-item">
-      
-      <div class="menu-content">
-        <mat-icon class="menu-icon">{{ opcion.icon }}</mat-icon>
-        <span class="menu-text">{{ opcion.titulo }}</span>
-        
-      </div>
-    </a>
+    @for (opcion of opciones; track opcion) {
+      <a
+        [routerLink]="opcion.ruta"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="menu-item">
+        <div class="menu-content">
+          <mat-icon class="menu-icon">{{ opcion.icon }}</mat-icon>
+          <span class="menu-text">{{ opcion.titulo }}</span>
+        </div>
+      </a>
+    }
   </nav>
 
   <main class="content">
     <!-- Texto informativo cuando no hay ruta activa -->
-    <div *ngIf="!hasActiveRoute()" class="info-container">
-      <div class="info-content">
-        <mat-icon class="info-icon">info</mat-icon>
-        <h2>Cursos intersemestrales de verano</h2>
-        <p>En esta sección puedes realizar diferentes acciones relacionadas con los cursos intersemestrales:</p>
-        
-        <div class="info-options">
-          <div class="info-option">
-            <mat-icon class="option-icon">add_circle</mat-icon>
-            <div class="option-text">
-              <h3>Realizar Solicitud</h3>
-              <p>Solicita la apertura de un curso nuevo que no esté en la lista de cursos ofertados</p>
+    @if (!hasActiveRoute()) {
+      <div class="info-container">
+        <div class="info-content">
+          <mat-icon class="info-icon">info</mat-icon>
+          <h2>Cursos intersemestrales de verano</h2>
+          <p>En esta sección puedes realizar diferentes acciones relacionadas con los cursos intersemestrales:</p>
+          <div class="info-options">
+            <div class="info-option">
+              <mat-icon class="option-icon">add_circle</mat-icon>
+              <div class="option-text">
+                <h3>Realizar Solicitud</h3>
+                <p>Solicita la apertura de un curso nuevo que no esté en la lista de cursos ofertados</p>
+              </div>
+            </div>
+            <div class="info-option">
+              <mat-icon class="option-icon">school</mat-icon>
+              <div class="option-text">
+                <h3>Cursos Disponibles</h3>
+                <p>Consulta todos los cursos intersemestrales disponibles para el período de verano</p>
+              </div>
+            </div>
+            <div class="info-option">
+              <mat-icon class="option-icon">playlist_add</mat-icon>
+              <div class="option-text">
+                <h3>Ver Lista de Cursos para Preinscripción</h3>
+                <p>Revisa los cursos disponibles para preinscribirte y selecciona el que desees</p>
+              </div>
+            </div>
+            <div class="info-option">
+              <mat-icon class="option-icon">list_alt</mat-icon>
+              <div class="option-text">
+                <h3>Seguimiento</h3>
+                <p>Consulta el estado y seguimiento de todas tus solicitudes e inscripciones</p>
+              </div>
             </div>
           </div>
-          
-          <div class="info-option">
-            <mat-icon class="option-icon">school</mat-icon>
-            <div class="option-text">
-              <h3>Cursos Disponibles</h3>
-              <p>Consulta todos los cursos intersemestrales disponibles para el período de verano</p>
-            </div>
-          </div>
-          
-          <div class="info-option">
-            <mat-icon class="option-icon">playlist_add</mat-icon>
-            <div class="option-text">
-              <h3>Ver Lista de Cursos para Preinscripción</h3>
-              <p>Revisa los cursos disponibles para preinscribirte y selecciona el que desees</p>
-            </div>
-          </div>
-          
-          
-          <div class="info-option">
-            <mat-icon class="option-icon">list_alt</mat-icon>
-            <div class="option-text">
-              <h3>Seguimiento</h3>
-              <p>Consulta el estado y seguimiento de todas tus solicitudes e inscripciones</p>
-            </div>
-          </div>
+          <p class="info-footer">Selecciona una opción del menú superior para comenzar</p>
         </div>
-        
-        <p class="info-footer">Selecciona una opción del menú superior para comenzar</p>
       </div>
-    </div>
-    
+    }
+
     <router-outlet></router-outlet>
   </main>
 </div>

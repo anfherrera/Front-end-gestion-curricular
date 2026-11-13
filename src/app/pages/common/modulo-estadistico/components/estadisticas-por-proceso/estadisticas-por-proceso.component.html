@@ -10,105 +10,122 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div *ngIf="loading" class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Cargando estadísticas...</p>
-    </div>
+    @if (loading) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando estadísticas...</p>
+      </div>
+    }
 
-    <div *ngIf="error" class="error-container">
-      <mat-icon class="error-icon">error</mat-icon>
-      <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="cargarDatos()">
-        <mat-icon>refresh</mat-icon>
-        Reintentar
-      </button>
-    </div>
+    @if (error) {
+      <div class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="cargarDatos()">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+      </div>
+    }
 
-    <div *ngIf="!loading && !error && procesosData.length > 0" class="procesos-container">
-      <div class="procesos-grid">
-        <div *ngFor="let proceso of procesosData"
-             class="proceso-card"
-             [class]="'proceso-' + getProcesoClass(proceso.nombre)">
-
-          <div class="proceso-header">
-            <div class="proceso-icon">
-              <mat-icon>{{ getProcesoIcon(proceso.nombre) }}</mat-icon>
+    @if (!loading && !error && procesosData.length > 0) {
+      <div class="procesos-container">
+        <div class="procesos-grid">
+          @for (proceso of procesosData; track proceso) {
+            <div
+              class="proceso-card"
+              [class]="'proceso-' + getProcesoClass(proceso.nombre)">
+              <div class="proceso-header">
+                <div class="proceso-icon">
+                  <mat-icon>{{ getProcesoIcon(proceso.nombre) }}</mat-icon>
+                </div>
+                <div class="proceso-info">
+                  <h3 class="proceso-nombre">{{ proceso.nombreFormateado }}</h3>
+                  <div class="proceso-total">
+                    <span class="total-solicitudes">{{ proceso.totalSolicitudes || 0 }}</span>
+                    <span class="label">solicitudes</span>
+                  </div>
+                </div>
+              </div>
+              @if (proceso.totalSolicitudes && proceso.totalSolicitudes > 0) {
+                <div class="proceso-stats">
+                  <div class="stat-row">
+                    <div class="stat-item aprobadas">
+                      <mat-icon>check_circle</mat-icon>
+                      <span class="stat-value">{{ proceso.aprobadas || 0 }}</span>
+                      <span class="stat-label">Aprobadas</span>
+                    </div>
+                    <div class="stat-item rechazadas">
+                      <mat-icon>cancel</mat-icon>
+                      <span class="stat-value">{{ proceso.rechazadas || 0 }}</span>
+                      <span class="stat-label">Rechazadas</span>
+                    </div>
+                  </div>
+                  <div class="stat-row">
+                    <div class="stat-item en-proceso">
+                      <mat-icon>pending</mat-icon>
+                      <span class="stat-value">{{ proceso.enProceso || 0 }}</span>
+                      <span class="stat-label">En Proceso</span>
+                    </div>
+                    <div class="stat-item enviadas">
+                      <mat-icon>send</mat-icon>
+                      <span class="stat-value">{{ proceso.enviadas || 0 }}</span>
+                      <span class="stat-label">Enviadas</span>
+                    </div>
+                  </div>
+                  <div class="stat-row">
+                    @if (proceso.porcentajeAprobacion !== undefined) {
+                      <div class="stat-item porcentaje">
+                        <mat-icon>trending_up</mat-icon>
+                        <span class="stat-value">{{ proceso.porcentajeAprobacion | number:'1.1-1' }}%</span>
+                        <span class="stat-label">Aprobación</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+              @if (mostrarDatosRaw) {
+                <div class="proceso-datos-raw">
+                  <mat-chip-set>
+                    @for (key of getDatosKeys(proceso.datos); track key) {
+                      <mat-chip
+                        [matTooltip]="(proceso.datos[key] ?? '') + ''">
+                        {{ key }}: {{ proceso.datos[key] }}
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                </div>
+              }
             </div>
-            <div class="proceso-info">
-              <h3 class="proceso-nombre">{{ proceso.nombreFormateado }}</h3>
-              <div class="proceso-total">
-                <span class="total-solicitudes">{{ proceso.totalSolicitudes || 0 }}</span>
-                <span class="label">solicitudes</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="proceso-stats" *ngIf="proceso.totalSolicitudes && proceso.totalSolicitudes > 0">
-            <div class="stat-row">
-              <div class="stat-item aprobadas">
-                <mat-icon>check_circle</mat-icon>
-                <span class="stat-value">{{ proceso.aprobadas || 0 }}</span>
-                <span class="stat-label">Aprobadas</span>
-              </div>
-              <div class="stat-item rechazadas">
-                <mat-icon>cancel</mat-icon>
-                <span class="stat-value">{{ proceso.rechazadas || 0 }}</span>
-                <span class="stat-label">Rechazadas</span>
-              </div>
-            </div>
-
-            <div class="stat-row">
-              <div class="stat-item en-proceso">
-                <mat-icon>pending</mat-icon>
-                <span class="stat-value">{{ proceso.enProceso || 0 }}</span>
-                <span class="stat-label">En Proceso</span>
-              </div>
-              <div class="stat-item enviadas">
-                <mat-icon>send</mat-icon>
-                <span class="stat-value">{{ proceso.enviadas || 0 }}</span>
-                <span class="stat-label">Enviadas</span>
-              </div>
-            </div>
-
-            <div class="stat-row">
-              <div class="stat-item porcentaje" *ngIf="proceso.porcentajeAprobacion !== undefined">
-                <mat-icon>trending_up</mat-icon>
-                <span class="stat-value">{{ proceso.porcentajeAprobacion | number:'1.1-1' }}%</span>
-                <span class="stat-label">Aprobación</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="proceso-datos-raw" *ngIf="mostrarDatosRaw">
-            <mat-chip-set>
-              <mat-chip *ngFor="let key of getDatosKeys(proceso.datos)"
-                       [matTooltip]="(proceso.datos[key] ?? '') + ''">
-                {{ key }}: {{ proceso.datos[key] }}
-              </mat-chip>
-            </mat-chip-set>
-          </div>
+          }
         </div>
       </div>
-    </div>
+    }
 
-    <div *ngIf="!loading && !error && procesosData.length === 0" class="no-data">
-      <mat-icon>info</mat-icon>
-      <p>No hay estadísticas de procesos disponibles</p>
-    </div>
+    @if (!loading && !error && procesosData.length === 0) {
+      <div class="no-data">
+        <mat-icon>info</mat-icon>
+        <p>No hay estadísticas de procesos disponibles</p>
+      </div>
+    }
   </mat-card-content>
 
-  <mat-card-actions *ngIf="!loading">
-    <button mat-icon-button (click)="toggleDatosRaw()"
-            matTooltip="Mostrar/ocultar datos detallados">
-      <mat-icon>{{ mostrarDatosRaw ? 'visibility_off' : 'visibility' }}</mat-icon>
-    </button>
-    <button mat-icon-button (click)="cargarDatos()"
-            matTooltip="Actualizar datos">
-      <mat-icon>refresh</mat-icon>
-    </button>
-    <span class="spacer"></span>
-    <small *ngIf="fechaConsulta" class="fecha-actualizacion">
-      Actualizado: {{ fechaConsulta | date:'short' }}
-    </small>
-  </mat-card-actions>
+  @if (!loading) {
+    <mat-card-actions>
+      <button mat-icon-button (click)="toggleDatosRaw()"
+        matTooltip="Mostrar/ocultar datos detallados">
+        <mat-icon>{{ mostrarDatosRaw ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <button mat-icon-button (click)="cargarDatos()"
+        matTooltip="Actualizar datos">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <span class="spacer"></span>
+      @if (fechaConsulta) {
+        <small class="fecha-actualizacion">
+          Actualizado: {{ fechaConsulta | date:'short' }}
+        </small>
+      }
+    </mat-card-actions>
+  }
 </mat-card>

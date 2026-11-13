@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -49,7 +49,6 @@ interface DatosSolicitudPazSalvo {
 @Component({
   selector: 'app-paz-salvo',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
@@ -62,7 +61,7 @@ interface DatosSolicitudPazSalvo {
     RequestStatusTableComponent,
     FileUploadComponent,
     RequiredDocsComponent
-  ],
+],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css']
 })

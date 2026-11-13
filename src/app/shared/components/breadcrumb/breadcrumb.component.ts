@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 /** Miga de pan según Sistema de Diseño TIC (pág. 49) - Solo cuando hay más de 3 niveles */
 @Component({
   selector: 'app-breadcrumb',
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   template: `
     @if (items.length > 0) {
       <nav class="breadcrumb" aria-label="Miga de pan">

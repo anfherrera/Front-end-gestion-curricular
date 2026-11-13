@@ -2,162 +2,198 @@
 
 <form [formGroup]="data.form" (ngSubmit)="guardarCurso()">
   <div mat-dialog-content class="form-container">
-    
-    <!-- Información básica (solo para crear) -->
-    <div class="form-section" *ngIf="!data.soloEdicion">
-      <h3>Información Básica</h3>
-      
-      <!-- NOTA: nombre_curso, codigo_curso y descripcion se obtienen automáticamente de la materia seleccionada -->
-      <!-- Estos campos NO se muestran porque el backend los genera automáticamente -->
-      
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Materia</mat-label>
-        <mat-select formControlName="id_materia">
-          <mat-option *ngFor="let materia of data.materias" [value]="materia.id_materia">
-            {{ materia.nombre }} ({{ materia.codigo }}) - {{ materia.creditos }} créditos
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="data.form.get('id_materia')?.hasError('required')">
-          La materia es requerida
-        </mat-error>
-        <mat-hint>El nombre y código del curso se obtendrán automáticamente de la materia seleccionada</mat-hint>
-      </mat-form-field>
 
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Docente</mat-label>
-        <mat-select formControlName="id_docente">
-          <mat-option *ngFor="let docente of data.docentes" [value]="docente.id_docente">
-            {{ docente.nombre_docente }} ({{ docente.codigo_docente }})
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="data.form.get('id_docente')?.hasError('required')">
-          El docente es requerido
-        </mat-error>
-      </mat-form-field>
-    </div>
+    <!-- Información básica (solo para crear) -->
+    @if (!data.soloEdicion) {
+      <div class="form-section">
+        <h3>Información Básica</h3>
+        <!-- NOTA: nombre_curso, codigo_curso y descripcion se obtienen automáticamente de la materia seleccionada -->
+        <!-- Estos campos NO se muestran porque el backend los genera automáticamente -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Materia</mat-label>
+          <mat-select formControlName="id_materia">
+            @for (materia of data.materias; track materia) {
+              <mat-option [value]="materia.id_materia">
+                {{ materia.nombre }} ({{ materia.codigo }}) - {{ materia.creditos }} créditos
+              </mat-option>
+            }
+          </mat-select>
+          @if (data.form.get('id_materia')?.hasError('required')) {
+            <mat-error>
+              La materia es requerida
+            </mat-error>
+          }
+          <mat-hint>El nombre y código del curso se obtendrán automáticamente de la materia seleccionada</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Docente</mat-label>
+          <mat-select formControlName="id_docente">
+            @for (docente of data.docentes; track docente) {
+              <mat-option [value]="docente.id_docente">
+                {{ docente.nombre_docente }} ({{ docente.codigo_docente }})
+              </mat-option>
+            }
+          </mat-select>
+          @if (data.form.get('id_docente')?.hasError('required')) {
+            <mat-error>
+              El docente es requerido
+            </mat-error>
+          }
+        </mat-form-field>
+      </div>
+    }
 
     <!-- Información del curso (solo para edición) -->
-    <div class="form-section" *ngIf="data.soloEdicion && data.cursoEditando">
-      <h3>Información del Curso</h3>
-      <div class="info-display">
-        <div class="info-item">
-          <strong>Nombre:</strong> {{ data.cursoEditando.nombre_curso }}
-        </div>
-        <div class="info-item">
-          <strong>Código:</strong> {{ data.cursoEditando.codigo_curso }}
-        </div>
-        <div class="info-item">
-          <strong>Materia:</strong> {{ data.cursoEditando.objMateria.nombre }} ({{ data.cursoEditando.objMateria.codigo }})
-        </div>
-        <div class="info-item">
-          <strong>Docente:</strong> {{ data.cursoEditando | nombreDocente }}
-        </div>
-        <div class="info-item" *ngIf="data.cursoEditando.grupo">
-          <strong>Grupo:</strong> {{ data.cursoEditando.grupo }}
+    @if (data.soloEdicion && data.cursoEditando) {
+      <div class="form-section">
+        <h3>Información del Curso</h3>
+        <div class="info-display">
+          <div class="info-item">
+            <strong>Nombre:</strong> {{ data.cursoEditando.nombre_curso }}
+          </div>
+          <div class="info-item">
+            <strong>Código:</strong> {{ data.cursoEditando.codigo_curso }}
+          </div>
+          <div class="info-item">
+            <strong>Materia:</strong> {{ data.cursoEditando.objMateria.nombre }} ({{ data.cursoEditando.objMateria.codigo }})
+          </div>
+          <div class="info-item">
+            <strong>Docente:</strong> {{ data.cursoEditando | nombreDocente }}
+          </div>
+          @if (data.cursoEditando.grupo) {
+            <div class="info-item">
+              <strong>Grupo:</strong> {{ data.cursoEditando.grupo }}
+            </div>
+          }
         </div>
       </div>
-    </div>
+    }
 
     <!-- Fechas y cupos (solo para crear) -->
-    <div class="form-section" *ngIf="!data.soloEdicion">
-      <h3>Período y Fechas</h3>
-      
-      <!-- Período Académico -->
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Período Académico</mat-label>
-        <mat-select formControlName="periodoAcademico">
-          <mat-option *ngFor="let periodo of periodos" [value]="periodo">
-            {{ formatearPeriodo(periodo) }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="data.form.get('periodoAcademico')?.hasError('required')">
-          El período académico es requerido
-        </mat-error>
-        <mat-hint>Selecciona un período académico válido del listado</mat-hint>
-      </mat-form-field>
-
-      <!-- Grupo -->
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Grupo</mat-label>
-        <mat-select formControlName="grupo">
-          <mat-option value="A">Grupo A</mat-option>
-          <mat-option value="B">Grupo B</mat-option>
-          <mat-option value="C">Grupo C</mat-option>
-          <mat-option value="D">Grupo D</mat-option>
-        </mat-select>
-        <mat-hint>Opcional. Puedes crear múltiples grupos (A, B, C, D) de la misma materia. Si no se selecciona, se asignará "A" por defecto.</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Fecha de Inicio</mat-label>
-        <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio" placeholder="Selecciona la fecha de inicio" (dateChange)="onFechaChange()">
-        <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-        <mat-datepicker #pickerInicio></mat-datepicker>
-        <mat-error *ngIf="data.form.get('fecha_inicio')?.hasError('required')">
-          La fecha de inicio es requerida
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Fecha de Fin</mat-label>
-        <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin" placeholder="Selecciona la fecha de fin" (dateChange)="onFechaChange()">
-        <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
-        <mat-datepicker #pickerFin></mat-datepicker>
-        <mat-error *ngIf="data.form.get('fecha_fin')?.hasError('required')">
-          La fecha de fin es requerida
-        </mat-error>
-        <mat-error *ngIf="errorFechas">
-          {{ errorFechas }}
-        </mat-error>
-      </mat-form-field>
-
-      <!-- Información de duración -->
-      <div class="duracion-info" *ngIf="mostrarDuracion">
-        <mat-icon>schedule</mat-icon>
-        <span>Duración: <strong>{{ duracionSemanas }} {{ duracionSemanas === 1 ? 'semana' : 'semanas' }}</strong></span>
+    @if (!data.soloEdicion) {
+      <div class="form-section">
+        <h3>Período y Fechas</h3>
+        <!-- Período Académico -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Período Académico</mat-label>
+          <mat-select formControlName="periodoAcademico">
+            @for (periodo of periodos; track periodo) {
+              <mat-option [value]="periodo">
+                {{ formatearPeriodo(periodo) }}
+              </mat-option>
+            }
+          </mat-select>
+          @if (data.form.get('periodoAcademico')?.hasError('required')) {
+            <mat-error>
+              El período académico es requerido
+            </mat-error>
+          }
+          <mat-hint>Selecciona un período académico válido del listado</mat-hint>
+        </mat-form-field>
+        <!-- Grupo -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Grupo</mat-label>
+          <mat-select formControlName="grupo">
+            <mat-option value="A">Grupo A</mat-option>
+            <mat-option value="B">Grupo B</mat-option>
+            <mat-option value="C">Grupo C</mat-option>
+            <mat-option value="D">Grupo D</mat-option>
+          </mat-select>
+          <mat-hint>Opcional. Puedes crear múltiples grupos (A, B, C, D) de la misma materia. Si no se selecciona, se asignará "A" por defecto.</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Fecha de Inicio</mat-label>
+          <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio" placeholder="Selecciona la fecha de inicio" (dateChange)="onFechaChange()">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInicio></mat-datepicker>
+          @if (data.form.get('fecha_inicio')?.hasError('required')) {
+            <mat-error>
+              La fecha de inicio es requerida
+            </mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Fecha de Fin</mat-label>
+          <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin" placeholder="Selecciona la fecha de fin" (dateChange)="onFechaChange()">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFin></mat-datepicker>
+          @if (data.form.get('fecha_fin')?.hasError('required')) {
+            <mat-error>
+              La fecha de fin es requerida
+            </mat-error>
+          }
+          @if (errorFechas) {
+            <mat-error>
+              {{ errorFechas }}
+            </mat-error>
+          }
+        </mat-form-field>
+        <!-- Información de duración -->
+        @if (mostrarDuracion) {
+          <div class="duracion-info">
+            <mat-icon>schedule</mat-icon>
+            <span>Duración: <strong>{{ duracionSemanas }} {{ duracionSemanas === 1 ? 'semana' : 'semanas' }}</strong></span>
+          </div>
+        }
+        <!-- NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
+        <!-- Este campo NO se muestra porque el backend lo calcula automáticamente -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Cupo Estimado</mat-label>
+          <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
+          @if (data.form.get('cupo_estimado')?.hasError('required')) {
+            <mat-error>
+              El cupo estimado es requerido
+            </mat-error>
+          }
+          @if (data.form.get('cupo_estimado')?.hasError('min')) {
+            <mat-error>
+              El cupo debe ser mayor a 0
+            </mat-error>
+          }
+          @if (data.form.get('cupo_estimado')?.hasError('max')) {
+            <mat-error>
+              El cupo no puede ser mayor a 100
+            </mat-error>
+          }
+          <mat-hint>El cupo máximo será igual al cupo estimado</mat-hint>
+        </mat-form-field>
       </div>
-
-      <!-- NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
-      <!-- Este campo NO se muestra porque el backend lo calcula automáticamente -->
-
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Cupo Estimado</mat-label>
-        <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
-        <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('required')">
-          El cupo estimado es requerido
-        </mat-error>
-        <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('min')">
-          El cupo debe ser mayor a 0
-        </mat-error>
-        <mat-error *ngIf="data.form.get('cupo_estimado')?.hasError('max')">
-          El cupo no puede ser mayor a 100
-        </mat-error>
-        <mat-hint>El cupo máximo será igual al cupo estimado</mat-hint>
-      </mat-form-field>
-    </div>
+    }
 
     <!-- Configuración editable -->
     <div class="form-section">
       <h3>{{ data.soloEdicion ? 'Configuración Editable' : 'Configuración' }}</h3>
-      
+
       <mat-form-field appearance="outline" class="form-field">
         <mat-label>Salón Asignado</mat-label>
         <mat-select formControlName="id_salon">
           <mat-option value="">Seleccione un salón</mat-option>
-          <mat-option *ngFor="let salon of salones" [value]="salon.id_salon">
-            {{ salon.descripcion }}
-          </mat-option>
+          @for (salon of salones; track salon) {
+            <mat-option [value]="salon.id_salon">
+              {{ salon.descripcion }}
+            </mat-option>
+          }
         </mat-select>
-        <mat-error *ngIf="data.form.get('id_salon')?.hasError('required')">
-          El salón es requerido
-        </mat-error>
-        <mat-hint *ngIf="!cargandoSalones">
-          <span *ngIf="!data.soloEdicion">Seleccione un salón de la lista disponible</span>
-          <span *ngIf="data.soloEdicion && data.cursoEditando">
-            Salón actual: {{ data.cursoEditando.salonInfo?.descripcion || data.cursoEditando.salon || data.cursoEditando.espacio_asignado || 'No asignado' }}
-          </span>
-        </mat-hint>
-        <mat-hint *ngIf="cargandoSalones">Cargando salones...</mat-hint>
+        @if (data.form.get('id_salon')?.hasError('required')) {
+          <mat-error>
+            El salón es requerido
+          </mat-error>
+        }
+        @if (!cargandoSalones) {
+          <mat-hint>
+            @if (!data.soloEdicion) {
+              <span>Seleccione un salón de la lista disponible</span>
+            }
+            @if (data.soloEdicion && data.cursoEditando) {
+              <span>
+                Salón actual: {{ data.cursoEditando.salonInfo?.descripcion || data.cursoEditando.salon || data.cursoEditando.espacio_asignado || 'No asignado' }}
+              </span>
+            }
+          </mat-hint>
+        }
+        @if (cargandoSalones) {
+          <mat-hint>Cargando salones...</mat-hint>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="form-field">
@@ -178,16 +214,18 @@
 
   <!-- Botones del dialog -->
   <div mat-dialog-actions class="dialog-actions">
-    <button mat-button type="button" (click)="limpiarFormulario()" *ngIf="!data.soloEdicion">
-      Limpiar
-    </button>
+    @if (!data.soloEdicion) {
+      <button mat-button type="button" (click)="limpiarFormulario()">
+        Limpiar
+      </button>
+    }
     <button mat-button type="button" (click)="cerrarDialog()">
       Cancelar
     </button>
-    <button mat-raised-button 
-            color="primary" 
-            type="submit"
-            [disabled]="data.form.invalid">
+    <button mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="data.form.invalid">
       {{ data.editando ? 'Actualizar' : 'Crear' }} Curso
     </button>
   </div>

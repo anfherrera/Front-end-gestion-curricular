@@ -426,17 +426,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   // ===== Plantilla =====
 
-  trackByIndex(index: number): number {
-    return index;
-  }
 
-  trackByProgramaId(index: number, programa: { id: number }): number {
-    return programa.id || index;
-  }
 
-  trackByKpiTitulo(index: number, kpi: KPIData): string {
-    return kpi.titulo || index.toString();
-  }
 
   private mostrarExito(mensaje: string): void {
     this.snackbar.exito(mensaje);

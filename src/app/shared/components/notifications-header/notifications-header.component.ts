@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ViewChild, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,7 +24,6 @@ import {
 @Component({
   selector: 'app-notifications-header',
   imports: [
-    CommonModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
@@ -32,7 +31,7 @@ import {
     MatTooltipModule,
     MatDividerModule,
     MatChipsModule
-  ],
+],
   templateUrl: './notifications-header.component.html',
   styleUrls: ['./notifications-header.component.css']
 })
@@ -230,9 +229,6 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/notificaciones']);
   }
 
-  trackByNotificationId(index: number, notificacion: Notificacion): number {
-    return notificacion.id_notificacion;
-  }
 
   tieneNotificacionesUrgentes(): boolean {
     return this.notificaciones.some(n => n.esUrgente);

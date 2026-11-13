@@ -17,62 +17,77 @@
         class="estado-chip">
         <mat-icon>list</mat-icon>
         <span>TODOS</span>
-        <span class="count" *ngIf="cursos.length > 0">
-          ({{ cursos.length }})
-        </span>
-        <mat-spinner *ngIf="cargandoFiltro && estadoSeleccionado === ''" diameter="16" class="chip-spinner"></mat-spinner>
+        @if (cursos.length > 0) {
+          <span class="count">
+            ({{ cursos.length }})
+          </span>
+        }
+        @if (cargandoFiltro && estadoSeleccionado === '') {
+          <mat-spinner diameter="16" class="chip-spinner"></mat-spinner>
+        }
       </mat-chip>
 
       <!-- Estados específicos -->
-      <mat-chip
-        *ngFor="let estado of estadosDisponibles"
-        (click)="onEstadoChange(estado.value)"
-        [style.background-color]="estadoSeleccionado === estado.value ? estado.color : 'transparent'"
-        [style.color]="estadoSeleccionado === estado.value ? 'white' : estado.color"
-        [style.border]="'2px solid ' + estado.color"
-        [class.selected]="estadoSeleccionado === estado.value"
-        [class.loading]="cargandoFiltro"
-        class="estado-chip">
-        <mat-icon [style.color]="estadoSeleccionado === estado.value ? 'white' : estado.color">{{ estado.icon }}</mat-icon>
-        <span>{{ estado.label }}</span>
-        <span class="count" *ngIf="conteosEstados[estado.value] > 0">
-          ({{ conteosEstados[estado.value] }})
-        </span>
-        <mat-spinner *ngIf="cargandoFiltro && estadoSeleccionado === estado.value" diameter="16" class="chip-spinner"></mat-spinner>
-      </mat-chip>
+      @for (estado of estadosDisponibles; track estado) {
+        <mat-chip
+          (click)="onEstadoChange(estado.value)"
+          [style.background-color]="estadoSeleccionado === estado.value ? estado.color : 'transparent'"
+          [style.color]="estadoSeleccionado === estado.value ? 'white' : estado.color"
+          [style.border]="'2px solid ' + estado.color"
+          [class.selected]="estadoSeleccionado === estado.value"
+          [class.loading]="cargandoFiltro"
+          class="estado-chip">
+          <mat-icon [style.color]="estadoSeleccionado === estado.value ? 'white' : estado.color">{{ estado.icon }}</mat-icon>
+          <span>{{ estado.label }}</span>
+          @if (conteosEstados[estado.value] > 0) {
+            <span class="count">
+              ({{ conteosEstados[estado.value] }})
+            </span>
+          }
+          @if (cargandoFiltro && estadoSeleccionado === estado.value) {
+            <mat-spinner diameter="16" class="chip-spinner"></mat-spinner>
+          }
+        </mat-chip>
+      }
     </div>
   </div>
 
   <!-- Información del estado seleccionado (solo para estados específicos) -->
-  <div *ngIf="estadoSeleccionado && estadoInfo" class="estado-info">
-    <div class="info-card">
-      <div class="info-header">
-        <h4>{{ estadoInfo.label }}</h4>
-      </div>
-      <p>{{ estadoInfo.descripcion }}</p>
-      <div class="info-stats">
-        <span class="stat">
-          <strong>{{ cursosFiltrados.length }}</strong> cursos
-        </span>
-        <span class="stat" *ngIf="conteosEstados[estadoSeleccionado] > 0">
-          <strong>{{ conteosEstados[estadoSeleccionado] }}</strong> total
-        </span>
+  @if (estadoSeleccionado && estadoInfo) {
+    <div class="estado-info">
+      <div class="info-card">
+        <div class="info-header">
+          <h4>{{ estadoInfo.label }}</h4>
+        </div>
+        <p>{{ estadoInfo.descripcion }}</p>
+        <div class="info-stats">
+          <span class="stat">
+            <strong>{{ cursosFiltrados.length }}</strong> cursos
+          </span>
+          @if (conteosEstados[estadoSeleccionado] > 0) {
+            <span class="stat">
+              <strong>{{ conteosEstados[estadoSeleccionado] }}</strong> total
+            </span>
+          }
+        </div>
       </div>
     </div>
-  </div>
+  }
 
   <!-- Información para TODOS los cursos -->
-  <div *ngIf="!estadoSeleccionado" class="estado-info">
-    <div class="info-card">
-      <div class="info-header">
-        <h4>Todos los Cursos</h4>
-      </div>
-      <p>Mostrando todos los cursos disponibles en el sistema</p>
-      <div class="info-stats">
-        <span class="stat">
-          <strong>{{ cursos.length }}</strong> cursos totales
-        </span>
+  @if (!estadoSeleccionado) {
+    <div class="estado-info">
+      <div class="info-card">
+        <div class="info-header">
+          <h4>Todos los Cursos</h4>
+        </div>
+        <p>Mostrando todos los cursos disponibles en el sistema</p>
+        <div class="info-stats">
+          <span class="stat">
+            <strong>{{ cursos.length }}</strong> cursos totales
+          </span>
+        </div>
       </div>
     </div>
-  </div>
+  }
 </div>

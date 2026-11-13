@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +18,7 @@ export interface ConfirmDialogData {
 /** Pregunta de sí/no. Se cierra con `true` si se confirma y `false` si se cancela. */
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule],
   template: `
     <h2 mat-dialog-title class="titulo">
       <mat-icon [class.peligro]="data.peligro">{{ data.peligro ? 'warning' : 'help_outline' }}</mat-icon>

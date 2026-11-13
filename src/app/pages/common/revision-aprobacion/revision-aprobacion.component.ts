@@ -1,6 +1,6 @@
 import { Component, DestroyRef, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute } from '@angular/router';
 import { Observable, catchError, filter, map, of, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -47,7 +47,7 @@ interface Aviso {
  */
 @Component({
   selector: 'app-revision-aprobacion',
-  imports: [CommonModule, MatButtonModule, CardContainerComponent, DocumentationViewerComponent, SolicitudesBandejaComponent],
+  imports: [MatButtonModule, CardContainerComponent, DocumentationViewerComponent, SolicitudesBandejaComponent],
   templateUrl: './revision-aprobacion.component.html',
   styleUrls: ['./revision-aprobacion.component.css']
 })

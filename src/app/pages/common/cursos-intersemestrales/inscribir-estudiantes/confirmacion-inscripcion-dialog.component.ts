@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,13 +12,12 @@ import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
 @Component({
   selector: 'app-confirmacion-inscripcion-dialog',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
     UtfFixPipe
-  ],
+],
   templateUrl: './confirmacion-inscripcion-dialog.component.html',
   styleUrl: './confirmacion-inscripcion-dialog.component.css'
 })

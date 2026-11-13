@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -25,7 +25,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-historial-completo',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatTableModule,
@@ -42,7 +41,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     EstadoClasePipe,
     EstadoLabelPipe,
     FechaPipe
-  ],
+],
   templateUrl: './historial-completo.component.html',
   styleUrls: ['../estados-solicitud-comun.css', './historial-completo.component.css']
 })

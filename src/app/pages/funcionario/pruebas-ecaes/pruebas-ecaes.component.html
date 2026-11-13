@@ -4,93 +4,95 @@
   <app-card-container title="Pre-Registros Pendientes" icon="pending_actions">
 
     <!-- Mensaje cuando no hay solicitudes -->
-    <div class="sin-solicitudes" *ngIf="solicitudesPendientes.length === 0">
-      <mat-icon>info</mat-icon>
-      <p>No hay solicitudes pre-registro pendientes.</p>
-    </div>
+    @if (solicitudesPendientes.length === 0) {
+      <div class="sin-solicitudes">
+        <mat-icon>info</mat-icon>
+        <p>No hay solicitudes pre-registro pendientes.</p>
+      </div>
+    }
 
     <!-- Tabla de solicitudes pendientes -->
-    <app-request-status-table
-      *ngIf="solicitudesPendientes.length > 0"
-      [solicitudes]="solicitudesPendientes"
-      [showOficio]="false"
-      [showComentarios]="true"
-      [showSeleccionar]="true"
-      (verComentarios)="verComentarios($event)"
-      (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
-    </app-request-status-table>
+    @if (solicitudesPendientes.length > 0) {
+      <app-request-status-table
+        [solicitudes]="solicitudesPendientes"
+        [showOficio]="false"
+        [showComentarios]="true"
+        [showSeleccionar]="true"
+        (verComentarios)="verComentarios($event)"
+        (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+      </app-request-status-table>
+    }
 
   </app-card-container>
 
   <!-- Segunda Sección: Documentación Adjunta (visible al seleccionar una solicitud) -->
-  <app-card-container
-    *ngIf="selectedSolicitud"
-    title="Documentación Adjunta"
-    icon="description">
-
-    <!-- Información de la Solicitud ECAES -->
-    <mat-card class="info-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>info</mat-icon>
-          Información de la Solicitud
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Tipo de Documento:</span>
-            <span class="info-value">{{ obtenerTipoDocumentoLabel(selectedSolicitud.tipoDocumento) }}</span>
+  @if (selectedSolicitud) {
+    <app-card-container
+      title="Documentación Adjunta"
+      icon="description">
+      <!-- Información de la Solicitud ECAES -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Información de la Solicitud
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Tipo de Documento:</span>
+              <span class="info-value">{{ obtenerTipoDocumentoLabel(selectedSolicitud.tipoDocumento) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Número de Documento:</span>
+              <span class="info-value">{{ selectedSolicitud.numero_documento || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fecha de Expedición:</span>
+              <span class="info-value">{{ selectedSolicitud.fecha_expedicion | fecha:'corta':'-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fecha de Nacimiento:</span>
+              <span class="info-value">{{ selectedSolicitud.fecha_nacimiento | fecha:'corta':'-' }}</span>
+            </div>
           </div>
-          <div class="info-item">
-            <span class="info-label">Número de Documento:</span>
-            <span class="info-value">{{ selectedSolicitud.numero_documento || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Fecha de Expedición:</span>
-            <span class="info-value">{{ selectedSolicitud.fecha_expedicion | fecha:'corta':'-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Fecha de Nacimiento:</span>
-            <span class="info-value">{{ selectedSolicitud.fecha_nacimiento | fecha:'corta':'-' }}</span>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <app-documentation-viewer
-      [documentos]="selectedSolicitud.documentos || []"
-      [solicitudId]="selectedSolicitud.id_solicitud"
-      [proceso]="'ecaes'"
-      [servicio]="pruebasEcaesService"
-      [puedeAgregarComentarios]="true"
-      (comentarioAgregado)="onComentarioAgregado($event)">
-    </app-documentation-viewer>
-
-  </app-card-container>
+        </mat-card-content>
+      </mat-card>
+      <app-documentation-viewer
+        [documentos]="selectedSolicitud.documentos || []"
+        [solicitudId]="selectedSolicitud.id_solicitud"
+        [proceso]="'ecaes'"
+        [servicio]="pruebasEcaesService"
+        [puedeAgregarComentarios]="true"
+        (comentarioAgregado)="onComentarioAgregado($event)">
+      </app-documentation-viewer>
+    </app-card-container>
+  }
 
   <!-- Mensaje cuando no hay solicitud seleccionada -->
-  <app-card-container
-    *ngIf="!selectedSolicitud && solicitudesPendientes.length > 0"
-    title="Documentación Adjunta"
-    icon="description">
-
-    <div class="sin-solicitudes">
-      <mat-icon>info</mat-icon>
-      <p>Seleccione una solicitud para ver su documentación adjunta.</p>
-    </div>
-
-  </app-card-container>
+  @if (!selectedSolicitud && solicitudesPendientes.length > 0) {
+    <app-card-container
+      title="Documentación Adjunta"
+      icon="description">
+      <div class="sin-solicitudes">
+        <mat-icon>info</mat-icon>
+        <p>Seleccione una solicitud para ver su documentación adjunta.</p>
+      </div>
+    </app-card-container>
+  }
 
   <!-- Botones de acción para la solicitud -->
-  <div class="botones-acciones" *ngIf="selectedSolicitud">
-    <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
-      Marcar como Pre-registrada
-    </button>
-    <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
-      Rechazar Solicitud
-    </button>
-  </div>
+  @if (selectedSolicitud) {
+    <div class="botones-acciones">
+      <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
+        Marcar como Pre-registrada
+      </button>
+      <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
+        Rechazar Solicitud
+      </button>
+    </div>
+  }
 
   <!-- Tercera Sección: Publicar Fechas -->
   <app-card-container title="Publicar fechas" icon="event">
@@ -102,13 +104,17 @@
         <mat-form-field appearance="outline" class="periodo-field">
           <mat-label>Período Académico</mat-label>
           <mat-select formControlName="periodoAcademico" placeholder="Seleccione un período">
-            <mat-option *ngFor="let periodo of periodosAcademicos" [value]="periodo">
-              {{ periodo }}
-            </mat-option>
+            @for (periodo of periodosAcademicos; track periodo) {
+              <mat-option [value]="periodo">
+                {{ periodo }}
+              </mat-option>
+            }
           </mat-select>
-          <mat-error *ngIf="esCampoInvalido('periodoAcademico')">
-            {{ obtenerMensajeError('periodoAcademico') }}
-          </mat-error>
+          @if (esCampoInvalido('periodoAcademico')) {
+            <mat-error>
+              {{ obtenerMensajeError('periodoAcademico') }}
+            </mat-error>
+          }
         </mat-form-field>
       </div>
 
@@ -122,9 +128,11 @@
             <input matInput id="ecaes-inscripcion_est_by_facultad" [matDatepicker]="inscripcionPicker" formControlName="inscripcion_est_by_facultad">
             <mat-datepicker-toggle matSuffix [for]="inscripcionPicker"></mat-datepicker-toggle>
             <mat-datepicker #inscripcionPicker></mat-datepicker>
-            <mat-error *ngIf="esCampoInvalido('inscripcion_est_by_facultad')">
-              {{ obtenerMensajeError('inscripcion_est_by_facultad') }}
-            </mat-error>
+            @if (esCampoInvalido('inscripcion_est_by_facultad')) {
+              <mat-error>
+                {{ obtenerMensajeError('inscripcion_est_by_facultad') }}
+              </mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -135,9 +143,11 @@
             <input matInput id="ecaes-registro_recaudo_ordinario" [matDatepicker]="recaudoOrdinarioPicker" formControlName="registro_recaudo_ordinario">
             <mat-datepicker-toggle matSuffix [for]="recaudoOrdinarioPicker"></mat-datepicker-toggle>
             <mat-datepicker #recaudoOrdinarioPicker></mat-datepicker>
-            <mat-error *ngIf="esCampoInvalido('registro_recaudo_ordinario')">
-              {{ obtenerMensajeError('registro_recaudo_ordinario') }}
-            </mat-error>
+            @if (esCampoInvalido('registro_recaudo_ordinario')) {
+              <mat-error>
+                {{ obtenerMensajeError('registro_recaudo_ordinario') }}
+              </mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -148,9 +158,11 @@
             <input matInput id="ecaes-registro_recaudo_extraordinario" [matDatepicker]="recaudoExtraordinarioPicker" formControlName="registro_recaudo_extraordinario">
             <mat-datepicker-toggle matSuffix [for]="recaudoExtraordinarioPicker"></mat-datepicker-toggle>
             <mat-datepicker #recaudoExtraordinarioPicker></mat-datepicker>
-            <mat-error *ngIf="esCampoInvalido('registro_recaudo_extraordinario')">
-              {{ obtenerMensajeError('registro_recaudo_extraordinario') }}
-            </mat-error>
+            @if (esCampoInvalido('registro_recaudo_extraordinario')) {
+              <mat-error>
+                {{ obtenerMensajeError('registro_recaudo_extraordinario') }}
+              </mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -161,9 +173,11 @@
             <input matInput id="ecaes-citacion" [matDatepicker]="citacionPicker" formControlName="citacion">
             <mat-datepicker-toggle matSuffix [for]="citacionPicker"></mat-datepicker-toggle>
             <mat-datepicker #citacionPicker></mat-datepicker>
-            <mat-error *ngIf="esCampoInvalido('citacion')">
-              {{ obtenerMensajeError('citacion') }}
-            </mat-error>
+            @if (esCampoInvalido('citacion')) {
+              <mat-error>
+                {{ obtenerMensajeError('citacion') }}
+              </mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -174,9 +188,11 @@
             <input matInput id="ecaes-aplicacion" [matDatepicker]="aplicacionPicker" formControlName="aplicacion">
             <mat-datepicker-toggle matSuffix [for]="aplicacionPicker"></mat-datepicker-toggle>
             <mat-datepicker #aplicacionPicker></mat-datepicker>
-            <mat-error *ngIf="esCampoInvalido('aplicacion')">
-              {{ obtenerMensajeError('aplicacion') }}
-            </mat-error>
+            @if (esCampoInvalido('aplicacion')) {
+              <mat-error>
+                {{ obtenerMensajeError('aplicacion') }}
+              </mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -187,9 +203,11 @@
             <input matInput id="ecaes-resultados_individuales" [matDatepicker]="resultadosPicker" formControlName="resultados_individuales">
             <mat-datepicker-toggle matSuffix [for]="resultadosPicker"></mat-datepicker-toggle>
             <mat-datepicker #resultadosPicker></mat-datepicker>
-            <mat-error *ngIf="esCampoInvalido('resultados_individuales')">
-              {{ obtenerMensajeError('resultados_individuales') }}
-            </mat-error>
+            @if (esCampoInvalido('resultados_individuales')) {
+              <mat-error>
+                {{ obtenerMensajeError('resultados_individuales') }}
+              </mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -203,11 +221,15 @@
           (click)="publicarFechas()"
           [disabled]="publicandoFechas || fechasForm.invalid"
           class="btn-publicar">
-          <mat-icon *ngIf="!publicandoFechas">{{ esModoEdicion ? 'save' : 'publish' }}</mat-icon>
-          <mat-icon *ngIf="publicandoFechas" class="spinning">refresh</mat-icon>
-          {{ publicandoFechas 
-            ? (esModoEdicion ? 'Actualizando...' : 'Publicando...') 
-            : (esModoEdicion ? 'Actualizar Fechas' : 'Publicar Fechas') 
+          @if (!publicandoFechas) {
+            <mat-icon>{{ esModoEdicion ? 'save' : 'publish' }}</mat-icon>
+          }
+          @if (publicandoFechas) {
+            <mat-icon class="spinning">refresh</mat-icon>
+          }
+          {{ publicandoFechas
+          ? (esModoEdicion ? 'Actualizando...' : 'Publicando...')
+          : (esModoEdicion ? 'Actualizar Fechas' : 'Publicar Fechas')
           }}
         </button>
       </div>

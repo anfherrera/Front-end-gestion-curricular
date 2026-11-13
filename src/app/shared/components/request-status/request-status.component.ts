@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -19,7 +19,6 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
 @Component({
   selector: 'app-request-status-table',
   imports: [
-    CommonModule,
     MatTableModule,
     MatIconModule,
     MatTooltipModule,
@@ -29,7 +28,7 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
     EstadoColorPipe,
     EstadoIconoPipe,
     EstadoLabelPipe
-  ],
+],
   templateUrl: './request-status.component.html',
   styleUrls: ['./request-status.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

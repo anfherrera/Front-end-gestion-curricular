@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
@@ -14,13 +14,12 @@ import { estadoCurso } from '@core/utils/cursos-verano.utils';
 @Component({
   selector: 'app-estado-filters',
   imports: [
-    CommonModule,
     MatFormFieldModule,
     MatSelectModule,
     MatChipsModule,
     MatIconModule,
     MatProgressSpinnerModule
-  ],
+],
   templateUrl: './estado-filters.component.html',
   styleUrl: './estado-filters.component.css'
 })

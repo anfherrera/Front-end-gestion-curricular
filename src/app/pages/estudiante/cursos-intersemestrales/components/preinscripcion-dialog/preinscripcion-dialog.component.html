@@ -12,7 +12,9 @@
         <p><strong>Código:</strong> {{ data.curso.codigo_curso || data.curso.id_curso }}</p>
         <p><strong>Créditos:</strong> {{ data.curso.objMateria.creditos }}</p>
         <p><strong>Docente:</strong> {{ data.curso | nombreDocente }}</p>
-        <p *ngIf="data.curso.grupo"><strong>Grupo:</strong> {{ data.curso.grupo }}</p>
+        @if (data.curso.grupo) {
+          <p><strong>Grupo:</strong> {{ data.curso.grupo }}</p>
+        }
         <p><strong>Cupo Estimado:</strong> {{ data.curso.cupo_estimado || data.curso.cupo_disponible }}</p>
         <p><strong>Espacio:</strong> {{ data.curso.espacio_asignado || 'Por asignar' }}</p>
       </div>
@@ -20,15 +22,17 @@
 
     <!-- Formulario de preinscripción -->
     <form [formGroup]="preinscripcionForm" (ngSubmit)="onSubmitPreinscripcion()" class="preinscripcion-form">
-      
+
       <!-- Nombre Completo -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nombre Completo</mat-label>
         <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo">
         <mat-icon matSuffix>person</mat-icon>
-        <mat-error *ngIf="preinscripcionForm.get('nombreCompleto')?.hasError('required')">
-          El nombre completo es requerido
-        </mat-error>
+        @if (preinscripcionForm.get('nombreCompleto')?.hasError('required')) {
+          <mat-error>
+            El nombre completo es requerido
+          </mat-error>
+        }
       </mat-form-field>
 
       <!-- Código del Estudiante -->
@@ -36,23 +40,29 @@
         <mat-label>Código</mat-label>
         <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante">
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error *ngIf="preinscripcionForm.get('codigo')?.hasError('required')">
-          El código es requerido
-        </mat-error>
+        @if (preinscripcionForm.get('codigo')?.hasError('required')) {
+          <mat-error>
+            El código es requerido
+          </mat-error>
+        }
       </mat-form-field>
 
       <!-- Condición -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Condición</mat-label>
         <mat-select formControlName="condicion" placeholder="Selecciona la condición de tu preinscripción">
-          <mat-option *ngFor="let condicion of condiciones" [value]="condicion">
-            {{ getCondicionDisplayName(condicion) }}
-          </mat-option>
+          @for (condicion of condiciones; track condicion) {
+            <mat-option [value]="condicion">
+              {{ getCondicionDisplayName(condicion) }}
+            </mat-option>
+          }
         </mat-select>
         <mat-icon matSuffix>assignment</mat-icon>
-        <mat-error *ngIf="preinscripcionForm.get('condicion')?.hasError('required')">
-          Debes seleccionar una condición
-        </mat-error>
+        @if (preinscripcionForm.get('condicion')?.hasError('required')) {
+          <mat-error>
+            Debes seleccionar una condición
+          </mat-error>
+        }
       </mat-form-field>
 
     </form>
@@ -62,11 +72,15 @@
     <button mat-button (click)="onCancel()" [disabled]="loading">
       Cancelar
     </button>
-    <button mat-raised-button color="primary" 
-            (click)="onSubmitPreinscripcion()"
-            [disabled]="preinscripcionForm.invalid || loading">
-      <mat-icon *ngIf="!loading">send</mat-icon>
-      <mat-icon *ngIf="loading">hourglass_empty</mat-icon>
+    <button mat-raised-button color="primary"
+      (click)="onSubmitPreinscripcion()"
+      [disabled]="preinscripcionForm.invalid || loading">
+      @if (!loading) {
+        <mat-icon>send</mat-icon>
+      }
+      @if (loading) {
+        <mat-icon>hourglass_empty</mat-icon>
+      }
       {{ loading ? 'Enviando...' : 'Enviar Preinscripción' }}
     </button>
   </mat-dialog-actions>

@@ -8,47 +8,47 @@
     (periodoChange)="onPeriodoChange($event)">
   </app-solicitudes-bandeja>
 
-      <!-- Contenedor para generar documento usando componente genérico -->
-      <app-card-container
-        *ngIf="selectedSolicitud"
-        title="Generar Documento Oficio/Resolución">
+  <!-- Contenedor para generar documento usando componente genérico -->
+  @if (selectedSolicitud) {
+    <app-card-container
+      title="Generar Documento Oficio/Resolución">
+      <app-document-generator
+        [solicitud]="selectedSolicitud"
+        [template]="template"
+        [proceso]="'paz-salvo'"
+        [loading]="loading"
+        [mostrarObservaciones]="false"
+        (generarDocumento)="onGenerarDocumento($event)"
+        (cancelar)="onCancelarGeneracion()"
+        (tengoDocumento)="onTengoDocumento()">
+      </app-document-generator>
+    </app-card-container>
+  }
 
-        <app-document-generator
-          [solicitud]="selectedSolicitud"
-          [template]="template"
-          [proceso]="'paz-salvo'"
-          [loading]="loading"
-          [mostrarObservaciones]="false"
-          (generarDocumento)="onGenerarDocumento($event)"
-          (cancelar)="onCancelarGeneracion()"
-          (tengoDocumento)="onTengoDocumento()">
-        </app-document-generator>
-
-      </app-card-container>
-
-      <!-- Contenedor para subir PDF y enviar al estudiante -->
-      <app-card-container
-        *ngIf="selectedSolicitud && (documentoGenerado || documentoHabilitado)"
-        title="Subir PDF y Enviar al Estudiante">
-
-        <div class="pdf-upload-section">
-          <p class="instruction" *ngIf="documentoGenerado">
+  <!-- Contenedor para subir PDF y enviar al estudiante -->
+  @if (selectedSolicitud && (documentoGenerado || documentoHabilitado)) {
+    <app-card-container
+      title="Subir PDF y Enviar al Estudiante">
+      <div class="pdf-upload-section">
+        @if (documentoGenerado) {
+          <p class="instruction">
             <strong>Paso 1:</strong> El documento Word ha sido generado y descargado.<br>
             <strong>Paso 2:</strong> Selecciona el archivo PDF y envíalo al estudiante.
           </p>
-          <p class="instruction" *ngIf="!documentoGenerado && documentoHabilitado">
+        }
+        @if (!documentoGenerado && documentoHabilitado) {
+          <p class="instruction">
             <strong>Sube tu documento PDF:</strong> Selecciona el archivo PDF que ya tienes listo y envíalo al estudiante.
           </p>
-
-          <!-- Selección de archivo PDF -->
-          <div class="file-selection">
-            <input
-              type="file"
-              accept=".pdf"
-              (change)="onArchivoSeleccionado($event)"
-              #fileInput
-              class="file-input">
-
+        }
+        <!-- Selección de archivo PDF -->
+        <div class="file-selection">
+          <input
+            type="file"
+            accept=".pdf"
+            (change)="onArchivoSeleccionado($event)"
+            #fileInput
+            class="file-input">
             <button
               mat-raised-button
               color="primary"
@@ -57,12 +57,12 @@
               <mat-icon>attach_file</mat-icon>
               Seleccionar PDF
             </button>
-
-            <span *ngIf="archivoPDF" class="selected-file">
-              {{ archivoPDF.name }}
-            </span>
+            @if (archivoPDF) {
+              <span class="selected-file">
+                {{ archivoPDF.name }}
+              </span>
+            }
           </div>
-
           <!-- Botón único: Subir y Enviar al Estudiante -->
           <div class="action-buttons">
             <button
@@ -72,19 +72,23 @@
               (click)="enviarDocumento()"
               class="upload-send-btn">
               <mat-icon>publish</mat-icon>
-              <span *ngIf="subiendoPDF || enviandoPDF">Procesando...</span>
-              <span *ngIf="!subiendoPDF && !enviandoPDF">Subir y Enviar</span>
+              @if (subiendoPDF || enviandoPDF) {
+                <span>Procesando...</span>
+              }
+              @if (!subiendoPDF && !enviandoPDF) {
+                <span>Subir y Enviar</span>
+              }
             </button>
           </div>
-
           <!-- Barra de progreso -->
-          <mat-progress-bar
-            *ngIf="subiendoPDF || enviandoPDF"
-            mode="indeterminate"
-            class="progress-bar">
-          </mat-progress-bar>
+          @if (subiendoPDF || enviandoPDF) {
+            <mat-progress-bar
+              mode="indeterminate"
+              class="progress-bar">
+            </mat-progress-bar>
+          }
         </div>
-
       </app-card-container>
+    }
 
-</div>
+  </div>

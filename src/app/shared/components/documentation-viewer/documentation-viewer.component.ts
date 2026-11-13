@@ -2,7 +2,7 @@ import { Component, DestroyRef, Input, Output, EventEmitter, OnInit, inject } fr
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
+
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,14 +26,13 @@ export interface ServicioDocumentos {
 @Component({
   selector: 'app-documentation-viewer',
   imports: [
-    CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
     MatDialogModule,
     FechaPipe
-  ],
+],
   templateUrl: './documentation-viewer.component.html',
   styleUrls: ['./documentation-viewer.component.css']
 })

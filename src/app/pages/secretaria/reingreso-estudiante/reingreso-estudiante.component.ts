@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +31,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-reingreso-estudiante',
   imports: [
-    CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -43,7 +42,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     DocumentGeneratorComponent,
     DocumentationViewerComponent,
     ApprovedRequestsSectionComponent
-  ],
+],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['../secretaria-comun.css', './reingreso-estudiante.component.css']
 })

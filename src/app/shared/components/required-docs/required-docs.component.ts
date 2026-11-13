@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -22,7 +22,7 @@ export interface Documento {
  */
 @Component({
   selector: 'app-required-docs',
-  imports: [CommonModule, MatCardModule, MatIconModule],
+  imports: [MatCardModule, MatIconModule],
   templateUrl: './required-docs.component.html',
   styleUrls: ['./required-docs.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

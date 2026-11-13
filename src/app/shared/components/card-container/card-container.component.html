@@ -1,8 +1,12 @@
 <mat-card class="card-container card-animated animate-fade-in-up">
   <mat-card-header>
-    <mat-icon *ngIf="icon" class="icon-bounce">{{ icon }}</mat-icon>
+    @if (icon) {
+      <mat-icon class="icon-bounce">{{ icon }}</mat-icon>
+    }
     <mat-card-title>{{ title }}</mat-card-title>
-    <mat-card-subtitle *ngIf="subtitle">{{ subtitle }}</mat-card-subtitle>
+    @if (subtitle) {
+      <mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
+    }
   </mat-card-header>
 
   <mat-card-content>

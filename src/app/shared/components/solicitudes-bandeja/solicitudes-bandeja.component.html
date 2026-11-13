@@ -12,9 +12,11 @@
           (solicitudSeleccionada)="onFilaSeleccionada($event)">
         </app-request-status-table>
 
-        <p *ngIf="filasPendientes.length === 0" class="no-solicitudes">
-          No hay solicitudes pendientes de procesar
-        </p>
+        @if (filasPendientes.length === 0) {
+          <p class="no-solicitudes">
+            No hay solicitudes pendientes de procesar
+          </p>
+        }
       </app-card-container>
     </div>
   </mat-tab>
@@ -39,9 +41,11 @@
           [showSeleccionar]="false">
         </app-request-status-table>
 
-        <p *ngIf="filasProcesadas.length === 0" class="no-solicitudes">
-          No hay solicitudes procesadas todavía
-        </p>
+        @if (filasProcesadas.length === 0) {
+          <p class="no-solicitudes">
+            No hay solicitudes procesadas todavía
+          </p>
+        }
       </app-card-container>
     </div>
   </mat-tab>

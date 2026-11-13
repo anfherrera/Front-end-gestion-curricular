@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,7 +30,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-notificaciones',
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -40,7 +39,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatMenuModule,
     MatDividerModule,
     MatTooltipModule
-  ],
+],
   templateUrl: './notificaciones.component.html',
   styleUrls: ['./notificaciones.component.css']
 })
@@ -247,9 +246,6 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     return getCategoriaDisplay(tipoSolicitud);
   }
 
-  trackByNotificationId(index: number, notificacion: Notificacion): number {
-    return notificacion.id_notificacion;
-  }
 }
 
 

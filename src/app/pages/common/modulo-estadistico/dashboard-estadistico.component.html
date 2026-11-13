@@ -37,197 +37,211 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <form *ngIf="filtrosForm && filtrosForm.controls" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
-        <div class="filters-grid">
-          <div class="filter-item">
-            <mat-form-field *ngIf="filtrosForm?.get('proceso')" appearance="outline">
-              <mat-label>Proceso</mat-label>
-              <mat-select formControlName="proceso">
-                <mat-option value="">Todos los procesos</mat-option>
-                <mat-option *ngFor="let proceso of procesosDisponibles; trackBy: trackByIndex" [value]="proceso">
-                  {{ formatearNombreProceso(proceso) }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+      @if (filtrosForm && filtrosForm.controls) {
+        <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+          <div class="filters-grid">
+            <div class="filter-item">
+              @if (filtrosForm?.get('proceso')) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Proceso</mat-label>
+                  <mat-select formControlName="proceso">
+                    <mat-option value="">Todos los procesos</mat-option>
+                    @for (proceso of procesosDisponibles; track $index) {
+                      <mat-option [value]="proceso">
+                        {{ formatearNombreProceso(proceso) }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+            </div>
+            <div class="filter-item">
+              @if (filtrosForm?.get('idPrograma')) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Programa</mat-label>
+                  <mat-select formControlName="idPrograma">
+                    <mat-option value="">Todos los programas</mat-option>
+                    @for (programa of programasDisponibles; track programa.id || $index) {
+                      <mat-option [value]="programa.id">
+                        {{ programa.nombre }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+            </div>
+            <!-- Filtro por Período Académico -->
+            <div class="filter-item">
+              @if (filtrosForm?.get('periodoAcademico')) {
+                <app-periodo-filtro-selector
+                  label="Período Académico"
+                  [mostrarTodos]="true"
+                  [incluirActual]="true"
+                  [mostrarInfo]="false"
+                  (periodoChange)="onPeriodoChange($event)">
+                </app-periodo-filtro-selector>
+              }
+            </div>
           </div>
-
-          <div class="filter-item">
-            <mat-form-field *ngIf="filtrosForm?.get('idPrograma')" appearance="outline">
-              <mat-label>Programa</mat-label>
-              <mat-select formControlName="idPrograma">
-                <mat-option value="">Todos los programas</mat-option>
-                <mat-option *ngFor="let programa of programasDisponibles; trackBy: trackByProgramaId" [value]="programa.id">
-                  {{ programa.nombre }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+          <div class="filter-actions">
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading || !filtrosForm.valid">
+              <mat-icon>search</mat-icon>
+              Aplicar Filtros
+            </button>
+            <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading">
+              <mat-icon>clear</mat-icon>
+              Limpiar
+            </button>
           </div>
-
-          <!-- Filtro por Período Académico -->
-          <div class="filter-item">
-            <app-periodo-filtro-selector
-              *ngIf="filtrosForm?.get('periodoAcademico')"
-              label="Período Académico"
-              [mostrarTodos]="true"
-              [incluirActual]="true"
-              [mostrarInfo]="false"
-              (periodoChange)="onPeriodoChange($event)">
-            </app-periodo-filtro-selector>
-          </div>
-        </div>
-
-        <div class="filter-actions">
-          <button mat-raised-button color="primary" type="submit" [disabled]="loading || !filtrosForm.valid">
-            <mat-icon>search</mat-icon>
-            Aplicar Filtros
-          </button>
-          <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading">
-            <mat-icon>clear</mat-icon>
-            Limpiar
-          </button>
-        </div>
-      </form>
+        </form>
+      }
     </mat-card-content>
   </mat-card>
 
   <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
-    <app-loading-spinner></app-loading-spinner>
-    <p>Cargando estadísticas...</p>
-  </div>
+  @if (loading) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Cargando estadísticas...</p>
+    </div>
+  }
 
   <!-- Error State -->
-  <div *ngIf="error && !loading" class="error-container">
-    <mat-icon class="error-icon">error</mat-icon>
-    <h3>Error al cargar las estadísticas</h3>
-    <p>{{ errorMensaje || 'No se pudieron cargar los datos del dashboard. Por favor, inténtalo de nuevo.' }}</p>
-    <button mat-raised-button color="primary" (click)="cargarDatos()">
-      <mat-icon>refresh</mat-icon>
-      Reintentar
-    </button>
-  </div>
+  @if (error && !loading) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error</mat-icon>
+      <h3>Error al cargar las estadísticas</h3>
+      <p>{{ errorMensaje || 'No se pudieron cargar los datos del dashboard. Por favor, inténtalo de nuevo.' }}</p>
+      <button mat-raised-button color="primary" (click)="cargarDatos()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  }
 
   <!-- Dashboard Content -->
-  <div *ngIf="!loading && !error" class="dashboard-content">
-    
-    <!-- KPIs Cards -->
-    <div class="kpis-section">
-      <h2 class="section-title">
-        <mat-icon>analytics</mat-icon>
-        Indicadores Clave (KPIs)
-      </h2>
-      <div class="kpis-grid">
-        <mat-card *ngFor="let kpi of kpis; trackBy: trackByKpiTitulo" class="kpi-card" [class]="'kpi-' + kpi.color" [class.loading]="kpi.titulo === 'Estudiantes' && loadingEstudiantes">
-          <mat-card-content>
-            <div class="kpi-content">
-              <div class="kpi-icon">
-                <mat-icon>{{ kpi.icono }}</mat-icon>
-              </div>
-              <div class="kpi-data">
-                <h3 class="kpi-value">
-                  <span *ngIf="kpi.titulo === 'Estudiantes' && loadingEstudiantes">...</span>
-                  <span *ngIf="!(kpi.titulo === 'Estudiantes' && loadingEstudiantes)">{{ kpi.valor | number }}</span>
-                </h3>
-                <p class="kpi-title">{{ kpi.titulo }}</p>
-                <p *ngIf="kpi.descripcion" class="kpi-description">{{ kpi.descripcion }}</p>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
+  @if (!loading && !error) {
+    <div class="dashboard-content">
+      <!-- KPIs Cards -->
+      <div class="kpis-section">
+        <h2 class="section-title">
+          <mat-icon>analytics</mat-icon>
+          Indicadores Clave (KPIs)
+        </h2>
+        <div class="kpis-grid">
+          @for (kpi of kpis; track kpi.titulo || $index) {
+            <mat-card class="kpi-card" [class]="'kpi-' + kpi.color" [class.loading]="kpi.titulo === 'Estudiantes' && loadingEstudiantes">
+              <mat-card-content>
+                <div class="kpi-content">
+                  <div class="kpi-icon">
+                    <mat-icon>{{ kpi.icono }}</mat-icon>
+                  </div>
+                  <div class="kpi-data">
+                    <h3 class="kpi-value">
+                      @if (kpi.titulo === 'Estudiantes' && loadingEstudiantes) {
+                        <span>...</span>
+                      }
+                      @if (!(kpi.titulo === 'Estudiantes' && loadingEstudiantes)) {
+                        <span>{{ kpi.valor | number }}</span>
+                      }
+                    </h3>
+                    <p class="kpi-title">{{ kpi.titulo }}</p>
+                    @if (kpi.descripcion) {
+                      <p class="kpi-description">{{ kpi.descripcion }}</p>
+                    }
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
       </div>
-    </div>
-
-    <!-- Nuevos Componentes de Estadísticas -->
-    <div class="nuevas-estadisticas-section">
-      <h2 class="section-title">
-        <mat-icon>insights</mat-icon>
-        Estadísticas Detalladas
-      </h2>
-      
+      <!-- Nuevos Componentes de Estadísticas -->
+      <div class="nuevas-estadisticas-section">
+        <h2 class="section-title">
+          <mat-icon>insights</mat-icon>
+          Estadísticas Detalladas
+        </h2>
         <div class="nuevas-estadisticas-grid">
           <!-- Componente de Estudiantes por Programa -->
-          <app-estudiantes-por-programa 
+          <app-estudiantes-por-programa
             [periodoAcademico]="filtros.periodoAcademico"
             [idPrograma]="filtros.idPrograma">
           </app-estudiantes-por-programa>
-
           <!-- Componente de Estadísticas por Proceso -->
-          <app-estadisticas-por-proceso 
+          <app-estadisticas-por-proceso
             [periodoAcademico]="filtros.periodoAcademico"
             [idPrograma]="filtros.idPrograma">
           </app-estadisticas-por-proceso>
         </div>
-
         <!-- Componente de Estadísticas por Estado -->
         <div class="estadisticas-estado-section">
-          <app-estadisticas-por-estado 
+          <app-estadisticas-por-estado
             [periodoAcademico]="filtros.periodoAcademico"
             [idPrograma]="filtros.idPrograma">
           </app-estadisticas-por-estado>
         </div>
-    </div>
-
-    <!-- NUEVA SECCIÓN - Tendencias y Comparativas -->
-    <div class="tendencias-comparativas-section">
-      <app-tendencias-comparativas 
-        [periodoAcademico]="filtros.periodoAcademico"
-        [idPrograma]="filtros.idPrograma">
-      </app-tendencias-comparativas>
-    </div>
-
-    <!-- ELIMINADO: Sección "Predicciones con Regresión Lineal" (ya no disponible en /api/estadisticas/globales) -->
-
-    <!-- Charts Section -->
-    <div class="charts-section">
-      <h2 class="section-title">
-        <mat-icon>bar_chart</mat-icon>
-        Análisis Visual
-      </h2>
-      
-      <div class="charts-grid">
-        <!-- Chart de Distribución por Procesos -->
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title>Distribución por Procesos</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="chart-container">
-              <canvas id="chartProcesos"></canvas>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- Chart de Tendencia -->
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title>Tendencia Mensual</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="chart-container" [hidden]="tendenciaSinDatos">
-              <canvas id="chartTendencia"></canvas>
-            </div>
-            <p *ngIf="tendenciaSinDatos" class="sin-datos">No hay datos mensuales disponibles para los filtros seleccionados.</p>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- Chart de Distribución por Programa -->
-        <mat-card class="chart-card chart-wide">
-          <mat-card-header>
-            <mat-card-title>Solicitudes por Programa</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="chart-container">
-              <canvas id="chartDistribucion"></canvas>
-            </div>
-          </mat-card-content>
-        </mat-card>
       </div>
+      <!-- NUEVA SECCIÓN - Tendencias y Comparativas -->
+      <div class="tendencias-comparativas-section">
+        <app-tendencias-comparativas
+          [periodoAcademico]="filtros.periodoAcademico"
+          [idPrograma]="filtros.idPrograma">
+        </app-tendencias-comparativas>
+      </div>
+      <!-- ELIMINADO: Sección "Predicciones con Regresión Lineal" (ya no disponible en /api/estadisticas/globales) -->
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <h2 class="section-title">
+          <mat-icon>bar_chart</mat-icon>
+          Análisis Visual
+        </h2>
+        <div class="charts-grid">
+          <!-- Chart de Distribución por Procesos -->
+          <mat-card class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Distribución por Procesos</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="chart-container">
+                <canvas id="chartProcesos"></canvas>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <!-- Chart de Tendencia -->
+          <mat-card class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Tendencia Mensual</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="chart-container" [hidden]="tendenciaSinDatos">
+                <canvas id="chartTendencia"></canvas>
+              </div>
+              @if (tendenciaSinDatos) {
+                <p class="sin-datos">No hay datos mensuales disponibles para los filtros seleccionados.</p>
+              }
+            </mat-card-content>
+          </mat-card>
+          <!-- Chart de Distribución por Programa -->
+          <mat-card class="chart-card chart-wide">
+            <mat-card-header>
+              <mat-card-title>Solicitudes por Programa</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="chart-container">
+                <canvas id="chartDistribucion"></canvas>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      <!-- Información de Actualización -->
+      @if (resumenCompleto) {
+        <div class="update-info">
+          <mat-icon>update</mat-icon>
+          <span>Última actualización: {{ resumenCompleto.ultimaActualizacion | date:'short' }}</span>
+        </div>
+      }
     </div>
-
-    <!-- Información de Actualización -->
-    <div *ngIf="resumenCompleto" class="update-info">
-      <mat-icon>update</mat-icon>
-      <span>Última actualización: {{ resumenCompleto.ultimaActualizacion | date:'short' }}</span>
-    </div>
-  </div>
+  }
 </div>

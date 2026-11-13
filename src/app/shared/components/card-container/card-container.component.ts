@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
  */
 @Component({
   selector: 'app-card-container',
-  imports: [CommonModule, MatCardModule, MatIconModule],
+  imports: [MatCardModule, MatIconModule],
   templateUrl: './card-container.component.html',
   styleUrls: ['./card-container.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

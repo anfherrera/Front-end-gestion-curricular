@@ -7,17 +7,17 @@
         <h1>Notificaciones</h1>
       </div>
       <div class="header-actions">
-        <button mat-raised-button 
-                color="primary"
-                (click)="cargarNotificaciones()"
-                [disabled]="isLoading">
+        <button mat-raised-button
+          color="primary"
+          (click)="cargarNotificaciones()"
+          [disabled]="isLoading">
           <mat-icon>refresh</mat-icon>
           Actualizar
         </button>
-        <button mat-raised-button 
-                color="accent"
-                (click)="marcarTodasComoLeidas()"
-                [disabled]="isLoading || notificacionesNoLeidas.length === 0">
+        <button mat-raised-button
+          color="accent"
+          (click)="marcarTodasComoLeidas()"
+          [disabled]="isLoading || notificacionesNoLeidas.length === 0">
           <mat-icon>done_all</mat-icon>
           Marcar todas como leídas
         </button>
@@ -28,12 +28,13 @@
   <!-- Filtros -->
   <div class="filters-section">
     <mat-chip-listbox>
-      <mat-chip-option 
-        *ngFor="let tipo of tiposSolicitud"
-        [selected]="filtroTipoSolicitud === tipo.valor"
-        (click)="cambiarFiltroTipoSolicitud(tipo.valor)">
-        {{ tipo.etiqueta }}
-      </mat-chip-option>
+      @for (tipo of tiposSolicitud; track tipo) {
+        <mat-chip-option
+          [selected]="filtroTipoSolicitud === tipo.valor"
+          (click)="cambiarFiltroTipoSolicitud(tipo.valor)">
+          {{ tipo.etiqueta }}
+        </mat-chip-option>
+      }
     </mat-chip-listbox>
   </div>
 
@@ -43,19 +44,23 @@
       <ng-template mat-tab-label>
         <mat-icon>list</mat-icon>
         Todas
-        <span class="tab-badge" *ngIf="todasLasNotificaciones.length > 0">
-          {{ todasLasNotificaciones.length }}
-        </span>
+        @if (todasLasNotificaciones.length > 0) {
+          <span class="tab-badge">
+            {{ todasLasNotificaciones.length }}
+          </span>
+        }
       </ng-template>
     </mat-tab>
-    
+
     <mat-tab label="No Leídas">
       <ng-template mat-tab-label>
         <mat-icon>mark_email_unread</mat-icon>
         No Leídas
-        <span class="tab-badge" *ngIf="notificacionesNoLeidas.length > 0">
-          {{ notificacionesNoLeidas.length }}
-        </span>
+        @if (notificacionesNoLeidas.length > 0) {
+          <span class="tab-badge">
+            {{ notificacionesNoLeidas.length }}
+          </span>
+        }
       </ng-template>
     </mat-tab>
   </mat-tab-group>
@@ -63,85 +68,100 @@
   <!-- Contenido -->
   <div class="content-section">
     <!-- Loading -->
-    <div class="loading-container" *ngIf="isLoading">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p>Cargando notificaciones...</p>
-    </div>
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Cargando notificaciones...</p>
+      </div>
+    }
 
     <!-- Lista de notificaciones -->
-    <div class="notificaciones-list" *ngIf="!isLoading">
-      <!-- Estado vacío -->
-      <div class="empty-state" *ngIf="notificacionesFiltradas.length === 0">
-        <mat-icon class="empty-icon">notifications_none</mat-icon>
-        <h2>No hay notificaciones</h2>
-        <p *ngIf="filtroTipoSolicitud">
-          No hay notificaciones para el filtro seleccionado.
-        </p>
-        <p *ngIf="!filtroTipoSolicitud">
-          No tienes notificaciones en este momento.
-        </p>
-      </div>
-
-      <!-- Items de notificaciones -->
-      <mat-card 
-        *ngFor="let notificacion of notificacionesFiltradas; trackBy: trackByNotificationId"
-        class="notificacion-card"
-        [class.unread]="!notificacion.leida"
-        [class.urgent]="notificacion.esUrgente"
-        (click)="navegarANotificacion(notificacion)">
-        
-        <mat-card-header>
-          <div class="card-header-content">
-            <div class="icon-section">
-              <mat-icon 
-                [style.color]="getColorPorTipo(notificacion.tipoSolicitud)"
-                class="tipo-icon">
-                {{ getIconoPorTipo(notificacion.tipoSolicitud) }}
-              </mat-icon>
-              <div class="unread-indicator" *ngIf="!notificacion.leida"></div>
-            </div>
-            
-            <div class="title-section">
-              <mat-card-title>{{ notificacion.titulo }}</mat-card-title>
-              <mat-card-subtitle>
-                <span class="categoria-chip" 
+    @if (!isLoading) {
+      <div class="notificaciones-list">
+        <!-- Estado vacío -->
+        @if (notificacionesFiltradas.length === 0) {
+          <div class="empty-state">
+            <mat-icon class="empty-icon">notifications_none</mat-icon>
+            <h2>No hay notificaciones</h2>
+            @if (filtroTipoSolicitud) {
+              <p>
+                No hay notificaciones para el filtro seleccionado.
+              </p>
+            }
+            @if (!filtroTipoSolicitud) {
+              <p>
+                No tienes notificaciones en este momento.
+              </p>
+            }
+          </div>
+        }
+        <!-- Items de notificaciones -->
+        @for (notificacion of notificacionesFiltradas; track notificacion.id_notificacion) {
+          <mat-card
+            class="notificacion-card"
+            [class.unread]="!notificacion.leida"
+            [class.urgent]="notificacion.esUrgente"
+            (click)="navegarANotificacion(notificacion)">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div class="icon-section">
+                  <mat-icon
+                    [style.color]="getColorPorTipo(notificacion.tipoSolicitud)"
+                    class="tipo-icon">
+                    {{ getIconoPorTipo(notificacion.tipoSolicitud) }}
+                  </mat-icon>
+                  @if (!notificacion.leida) {
+                    <div class="unread-indicator"></div>
+                  }
+                </div>
+                <div class="title-section">
+                  <mat-card-title>{{ notificacion.titulo }}</mat-card-title>
+                  <mat-card-subtitle>
+                    <span class="categoria-chip"
                       [style.background-color]="getColorPorTipo(notificacion.tipoSolicitud) + '20'"
                       [style.color]="getColorPorTipo(notificacion.tipoSolicitud)">
-                  {{ getCategoriaDisplay(notificacion.tipoSolicitud) }}
-                </span>
-                <span class="fecha">{{ notificacion.tiempoTranscurrido }}</span>
-              </mat-card-subtitle>
-            </div>
-
-            <div class="actions-section">
-              <button mat-icon-button 
-                      *ngIf="!notificacion.leida"
+                      {{ getCategoriaDisplay(notificacion.tipoSolicitud) }}
+                    </span>
+                    <span class="fecha">{{ notificacion.tiempoTranscurrido }}</span>
+                  </mat-card-subtitle>
+                </div>
+                <div class="actions-section">
+                  @if (!notificacion.leida) {
+                    <button mat-icon-button
                       (click)="marcarComoLeida(notificacion, $event)"
                       matTooltip="Marcar como leída">
-                <mat-icon>mark_email_read</mat-icon>
-              </button>
-              <mat-icon class="urgent-icon" *ngIf="notificacion.esUrgente">priority_high</mat-icon>
-            </div>
-          </div>
-        </mat-card-header>
-
-        <mat-card-content>
-          <p class="mensaje">{{ notificacion.mensaje }}</p>
-          
-          <div class="metadata" *ngIf="notificacion.nombreSolicitud || notificacion.nombreCurso">
-            <div class="metadata-item" *ngIf="notificacion.nombreSolicitud">
-              <mat-icon>description</mat-icon>
-              <span>{{ notificacion.nombreSolicitud }}</span>
-            </div>
-            <div class="metadata-item" *ngIf="notificacion.nombreCurso">
-              <mat-icon>school</mat-icon>
-              <span>{{ notificacion.nombreCurso }}</span>
-            </div>
-          </div>
-
-        </mat-card-content>
-      </mat-card>
-    </div>
+                      <mat-icon>mark_email_read</mat-icon>
+                    </button>
+                  }
+                  @if (notificacion.esUrgente) {
+                    <mat-icon class="urgent-icon">priority_high</mat-icon>
+                  }
+                </div>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="mensaje">{{ notificacion.mensaje }}</p>
+              @if (notificacion.nombreSolicitud || notificacion.nombreCurso) {
+                <div class="metadata">
+                  @if (notificacion.nombreSolicitud) {
+                    <div class="metadata-item">
+                      <mat-icon>description</mat-icon>
+                      <span>{{ notificacion.nombreSolicitud }}</span>
+                    </div>
+                  }
+                  @if (notificacion.nombreCurso) {
+                    <div class="metadata-item">
+                      <mat-icon>school</mat-icon>
+                      <span>{{ notificacion.nombreCurso }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
   </div>
 </div>
 

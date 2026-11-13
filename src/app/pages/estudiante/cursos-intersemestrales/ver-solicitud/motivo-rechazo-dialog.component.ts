@@ -23,7 +23,9 @@ export interface MotivoRechazoDialogData {
         <mat-icon>{{ data.esRechazo ? 'error_outline' : 'info' }}</mat-icon>
         <div class="motivo-dialog__estado">
           <span class="motivo-dialog__estado-texto">{{ data.estado }}</span>
-          <span *ngIf="data.fecha" class="motivo-dialog__fecha">{{ data.fecha }}</span>
+          @if (data.fecha) {
+            <span class="motivo-dialog__fecha">{{ data.fecha }}</span>
+          }
         </div>
       </div>
       <p class="motivo-dialog__mensaje">{{ data.motivo }}</p>
@@ -31,7 +33,7 @@ export interface MotivoRechazoDialogData {
     <div mat-dialog-actions>
       <button mat-button mat-dialog-close>Cerrar</button>
     </div>
-  `,
+    `,
   styles: [`
     .motivo-dialog {
       display: flex;

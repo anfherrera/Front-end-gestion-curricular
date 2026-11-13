@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -23,7 +23,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-lista-programas',
   imports: [
-    CommonModule,
     RouterModule,
     FormsModule,
     MatTableModule,
@@ -33,7 +32,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule
-  ],
+],
   templateUrl: './lista-programas.component.html',
   styleUrls: ['./lista-programas.component.css']
 })

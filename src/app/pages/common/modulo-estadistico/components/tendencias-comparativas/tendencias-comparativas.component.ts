@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, OnChanges, Input, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -13,12 +13,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-tendencias-comparativas',
   imports: [
-    CommonModule,
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatButtonModule
-  ],
+],
   templateUrl: './tendencias-comparativas.component.html',
   styleUrls: ['./tendencias-comparativas.component.css']
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,6 @@ export interface FormProcesoDialogData {
 @Component({
   selector: 'app-form-proceso-dialog',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -30,7 +29,7 @@ export interface FormProcesoDialogData {
     MatIconModule,
     MatProgressSpinnerModule,
     MatCheckboxModule
-  ],
+],
   templateUrl: './form-proceso-dialog.component.html',
   styleUrl: './form-proceso-dialog.component.css'
 })

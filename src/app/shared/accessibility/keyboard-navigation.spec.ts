@@ -4,40 +4,43 @@
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 // Componente de prueba con elementos interactivos
 @Component({
   selector: 'app-test-keyboard',
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="container">
       <button id="btn1" (click)="handleClick()">Botón 1</button>
       <button id="btn2" (click)="handleClick()">Botón 2</button>
       <input id="input1" type="text" placeholder="Input 1" />
       <a id="link1" href="javascript:void(0)" (click)="handleClick()">Enlace 1</a>
-      
+    
       <div class="list" role="list" aria-label="Lista de opciones">
-        <div 
-          class="list-item" 
-          *ngFor="let item of items; let i = index"
-          role="listitem"
-          [attr.tabindex]="selectedIndex === i ? 0 : -1"
-          [attr.aria-selected]="selectedIndex === i"
-          (keydown)="onKeyDown($event, i)"
-          [id]="'item-' + i"
-        >
-          {{ item }}
+        @for (item of items; track item; let i = $index) {
+          <div
+            class="list-item"
+            role="listitem"
+            [attr.tabindex]="selectedIndex === i ? 0 : -1"
+            [attr.aria-selected]="selectedIndex === i"
+            (keydown)="onKeyDown($event, i)"
+            [id]="'item-' + i"
+            >
+            {{ item }}
+          </div>
+        }
+      </div>
+    
+      @if (showModal) {
+        <div class="modal" role="dialog" aria-modal="true">
+          <button id="modal-close" (click)="closeModal()">Cerrar</button>
+          <input id="modal-input" type="text" />
+          <button id="modal-confirm" (click)="closeModal()">Confirmar</button>
         </div>
-      </div>
-
-      <div class="modal" *ngIf="showModal" role="dialog" aria-modal="true">
-        <button id="modal-close" (click)="closeModal()">Cerrar</button>
-        <input id="modal-input" type="text" />
-        <button id="modal-confirm" (click)="closeModal()">Confirmar</button>
-      </div>
+      }
     </div>
-  `
+    `
 })
 class TestKeyboardComponent {
   @ViewChild('btn1') btn1!: ElementRef;

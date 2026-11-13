@@ -35,44 +35,46 @@
   <div class="form-section">
     <h3>Comprobante de Pago</h3>
     <div class="info-grid">
-      <div class="info-item" *ngIf="data.estudiante.archivoPago; else sinComprobante">
-        <div class="comprobante-info">
-          <strong>Nombre del Archivo:</strong> {{ data.estudiante.archivoPago.nombre }}
-          <br>
-          <strong>Fecha de Subida:</strong>
-          {{ data.estudiante.archivoPago.fecha ? (data.estudiante.archivoPago.fecha | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}
-          <br>
-          <strong>Estado del Pago:</strong> Pago Validado
-          <br><br>
-
-          <!-- Botones de acción para el comprobante -->
-          <div class="comprobante-actions">
-            <button mat-raised-button
-                    color="primary"
-                    (click)="descargarComprobante()"
-                    *ngIf="data.estudiante.archivoPago?.url"
-                    class="boton-descargar">
-              <mat-icon>download</mat-icon>
-              Descargar Comprobante
-            </button>
-          </div>
+      @if (data.estudiante.archivoPago) {
+        <div class="info-item">
+          <div class="comprobante-info">
+            <strong>Nombre del Archivo:</strong> {{ data.estudiante.archivoPago.nombre }}
+            <br>
+              <strong>Fecha de Subida:</strong>
+              {{ data.estudiante.archivoPago.fecha ? (data.estudiante.archivoPago.fecha | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}
+              <br>
+                <strong>Estado del Pago:</strong> Pago Validado
+                <br><br>
+                <!-- Botones de acción para el comprobante -->
+                <div class="comprobante-actions">
+                  @if (data.estudiante.archivoPago?.url) {
+                    <button mat-raised-button
+                      color="primary"
+                      (click)="descargarComprobante()"
+                      class="boton-descargar">
+                      <mat-icon>download</mat-icon>
+                      Descargar Comprobante
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="info-item">
+              <strong>Estado:</strong> Sin comprobante de pago
+            </div>
+          }
         </div>
       </div>
-      <ng-template #sinComprobante>
-        <div class="info-item">
-          <strong>Estado:</strong> Sin comprobante de pago
-        </div>
-      </ng-template>
     </div>
-  </div>
-</div>
 
-<div mat-dialog-actions class="dialog-actions">
-  <button mat-button (click)="dialogRef.close()">Cerrar</button>
-  <button mat-raised-button
-          *ngIf="data.estudiante.estado_inscripcion !== 'Inscripcion_Completada'"
+    <div mat-dialog-actions class="dialog-actions">
+      <button mat-button (click)="dialogRef.close()">Cerrar</button>
+      @if (data.estudiante.estado_inscripcion !== 'Inscripcion_Completada') {
+        <button mat-raised-button
           color="primary"
           (click)="confirmarInscripcion()">
-    Confirmar Inscripción Oficial
-  </button>
-</div>
+          Confirmar Inscripción Oficial
+        </button>
+      }
+    </div>

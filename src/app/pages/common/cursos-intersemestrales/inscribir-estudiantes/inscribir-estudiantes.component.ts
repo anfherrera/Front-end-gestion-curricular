@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -30,7 +30,6 @@ import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripci
 @Component({
   selector: 'app-inscribir-estudiantes',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatSelectModule,
     MatTableModule,
@@ -46,7 +45,7 @@ import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripci
     CardContainerComponent,
     UtfFixPipe,
     NombreDocentePipe
-  ],
+],
   templateUrl: './inscribir-estudiantes.component.html',
   styleUrls: ['../filtro-curso-comun.css', './inscribir-estudiantes.component.css']
 })

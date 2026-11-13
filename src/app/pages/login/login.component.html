@@ -1,65 +1,79 @@
 <div class="login-wrapper">
   <div class="login-left">
     <div class="login-content">
-      <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png" 
-           alt="Logo Universidad del Cauca" 
-           class="login-logo">
+      <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png"
+        alt="Logo Universidad del Cauca"
+        class="login-logo">
 
-      <h2 class="login-title">Sistema de Atención a Estudiantes<br>de Pregrado</h2>
+        <h2 class="login-title">Sistema de Atención a Estudiantes<br>de Pregrado</h2>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
-        <mat-form-field appearance="outline" class="login-input">
-          <mat-label>Correo<span class="required-asterisk">*</span></mat-label>
-          <input matInput 
-                 type="email" 
-                 formControlName="correo" 
-                 placeholder="correo@unicauca.edu.co"
-                 (focus)="clearError()"
-                 autocomplete="email"
-                 required>
-          <mat-icon matPrefix>mail</mat-icon>
-          <mat-error *ngIf="loginForm.controls['correo'].invalid && loginForm.controls['correo'].touched">
-            {{ getEmailErrorMessage() }}
-          </mat-error>
-        </mat-form-field>
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+          <mat-form-field appearance="outline" class="login-input">
+            <mat-label>Correo<span class="required-asterisk">*</span></mat-label>
+            <input matInput
+              type="email"
+              formControlName="correo"
+              placeholder="correo@unicauca.edu.co"
+              (focus)="clearError()"
+              autocomplete="email"
+              required>
+              <mat-icon matPrefix>mail</mat-icon>
+              @if (loginForm.controls['correo'].invalid && loginForm.controls['correo'].touched) {
+                <mat-error>
+                  {{ getEmailErrorMessage() }}
+                </mat-error>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline" class="login-input">
-          <mat-label>Contraseña<span class="required-asterisk">*</span></mat-label>
-          <input matInput 
-                 [type]="hide ? 'password' : 'text'" 
-                 formControlName="password" 
-                 placeholder="Min. 8 caracteres"
-                 (focus)="clearError()"
-                 autocomplete="current-password"
-                 required>
-          <mat-icon matPrefix>lock</mat-icon>
-          <button mat-icon-button matSuffix type="button" (click)="hide = !hide" [attr.aria-label]="hide ? 'Mostrar contraseña' : 'Ocultar contraseña'">
-            <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          <mat-error *ngIf="loginForm.controls['password'].invalid && loginForm.controls['password'].touched">
-            {{ getPasswordErrorMessage() }}
-          </mat-error>
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="login-input">
+              <mat-label>Contraseña<span class="required-asterisk">*</span></mat-label>
+              <input matInput
+                [type]="hide ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Min. 8 caracteres"
+                (focus)="clearError()"
+                autocomplete="current-password"
+                required>
+                <mat-icon matPrefix>lock</mat-icon>
+                <button mat-icon-button matSuffix type="button" (click)="hide = !hide" [attr.aria-label]="hide ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+                  <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                @if (loginForm.controls['password'].invalid && loginForm.controls['password'].touched) {
+                  <mat-error>
+                    {{ getPasswordErrorMessage() }}
+                  </mat-error>
+                }
+              </mat-form-field>
 
 
-        <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
+              <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
 
-        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando || loginDisabled">
-          <mat-spinner *ngIf="cargando" diameter="20" class="login-spinner"></mat-spinner>
-          <span *ngIf="!cargando && !loginDisabled">Ingresar</span>
-          <span *ngIf="!cargando && loginDisabled">Espera {{ rateRemaining }}s</span>
-          <span *ngIf="cargando">Ingresando...</span>
-        </button>
+              <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando || loginDisabled">
+                @if (cargando) {
+                  <mat-spinner diameter="20" class="login-spinner"></mat-spinner>
+                }
+                @if (!cargando && !loginDisabled) {
+                  <span>Ingresar</span>
+                }
+                @if (!cargando && loginDisabled) {
+                  <span>Espera {{ rateRemaining }}s</span>
+                }
+                @if (cargando) {
+                  <span>Ingresando...</span>
+                }
+              </button>
 
-        <p class="error-message" *ngIf="errorMensaje">{{ errorMensaje }}</p>
+              @if (errorMensaje) {
+                <p class="error-message">{{ errorMensaje }}</p>
+              }
 
-        <a class="login-register" routerLink="/register">Registrarse</a>
-      </form>
-    </div>
-  </div>
+              <a class="login-register" routerLink="/register">Registrarse</a>
+            </form>
+          </div>
+        </div>
 
-  <div class="login-right">
-    <div class="overlay"></div>
-    <img src="assets/images/Pintura-FIET.jpg" alt="Mural Universidad del Cauca" class="login-image">
-  </div>
-</div>
+        <div class="login-right">
+          <div class="overlay"></div>
+          <img src="assets/images/Pintura-FIET.jpg" alt="Mural Universidad del Cauca" class="login-image">
+        </div>
+      </div>

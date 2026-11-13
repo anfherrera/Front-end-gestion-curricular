@@ -8,191 +8,191 @@
       </mat-card-title>
       <mat-card-subtitle>Análisis estratégico de tendencias y comparativas</mat-card-subtitle>
     </mat-card-header>
-    
+
     <mat-card-content>
       <!-- Loading State -->
-      <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>Cargando tendencias y comparativas...</p>
-      </div>
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Cargando tendencias y comparativas...</p>
+        </div>
+      }
 
       <!-- Error State -->
-      <div *ngIf="error && !loading" class="error-container">
-        <mat-icon class="error-icon">error</mat-icon>
-        <p>Error al cargar las tendencias y comparativas</p>
-        <button mat-raised-button color="primary" (click)="cargarTendenciasComparativas()">
-          Reintentar
-        </button>
-      </div>
+      @if (error && !loading) {
+        <div class="error-container">
+          <mat-icon class="error-icon">error</mat-icon>
+          <p>Error al cargar las tendencias y comparativas</p>
+          <button mat-raised-button color="primary" (click)="cargarTendenciasComparativas()">
+            Reintentar
+          </button>
+        </div>
+      }
 
       <!-- Data Content -->
-      <div *ngIf="data && !loading" class="data-content">
-        
-        <!-- Grid Principal -->
-        <div class="main-grid">
-          
-          <!-- Crecimiento Temporal -->
-          <div class="grid-item crecimiento-temporal">
-            <mat-card class="section-card">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon>timeline</mat-icon>
-                  Crecimiento Temporal
-                </mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="tendencias-grid">
-                  <div class="tendencia-item">
-                    <h4>Solicitudes</h4>
-                    <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva')">
-                      <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
-                      {{ data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva' }}
+      @if (data && !loading) {
+        <div class="data-content">
+          <!-- Grid Principal -->
+          <div class="main-grid">
+            <!-- Crecimiento Temporal -->
+            <div class="grid-item crecimiento-temporal">
+              <mat-card class="section-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>timeline</mat-icon>
+                    Crecimiento Temporal
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="tendencias-grid">
+                    <div class="tendencia-item">
+                      <h4>Solicitudes</h4>
+                      <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva')">
+                        <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
+                        {{ data.crecimientoTemporal.tendenciaSolicitudes || data.crecimientoTemporal.tendencia || 'Nueva' }}
+                      </div>
+                      <div class="tendencia-porcentaje">
+                        {{ formatPorcentaje(data.crecimientoTemporal.crecimientoSolicitudes) }} vs mes anterior
+                      </div>
                     </div>
-                    <div class="tendencia-porcentaje">
-                      {{ formatPorcentaje(data.crecimientoTemporal.crecimientoSolicitudes) }} vs mes anterior
-                    </div>
-                  </div>
-                  
-                  <div class="tendencia-item">
-                    <h4>Estudiantes</h4>
-                    <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva')">
-                      <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
-                      {{ data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva' }}
-                    </div>
-                    <div class="tendencia-porcentaje">
-                      {{ formatPorcentaje(data.crecimientoTemporal.crecimientoEstudiantes) }} vs mes anterior
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="analisis-info">
-                  <span *ngIf="data.crecimientoTemporal.mesesAnalizados === 1">
-                    Analizado en 1 mes. Se necesita más tiempo para calcular tendencias.
-                  </span>
-                  <span *ngIf="data.crecimientoTemporal.mesesAnalizados > 1">
-                    Analizado en {{ data.crecimientoTemporal.mesesAnalizados }} meses
-                  </span>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-
-          <!-- Comparativa de Procesos -->
-          <div class="grid-item comparativa-procesos">
-            <mat-card class="section-card">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon>compare_arrows</mat-icon>
-                  Comparativa de Procesos
-                </mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="procesos-highlights">
-                  <div class="highlight-item mas-demandado">
-                    <h4>Más Demandado</h4>
-                    <div class="highlight-valor">{{ data.comparativaProcesos.procesoMasDemandado }}</div>
-                    <div class="highlight-descripcion">{{ data.comparativaProcesos.demandaMasAlta }} solicitudes</div>
-                  </div>
-                  
-                  <div class="highlight-item mas-eficiente">
-                    <h4>Más Eficiente</h4>
-                    <div class="highlight-valor">{{ data.comparativaProcesos.procesoMasEficiente || 'N/A' }}</div>
-                    <div class="highlight-descripcion">{{ formatPorcentaje(data.comparativaProcesos.eficienciaMasAlta) }} aprobación</div>
-                  </div>
-                </div>
-                
-                <div class="procesos-lista">
-                  <h5>Detalle por Proceso:</h5>
-                  <div class="proceso-item" *ngFor="let proceso of getObjectKeys(data.comparativaProcesos.solicitudesPorProceso)">
-                    <div class="proceso-info">
-                      <span class="proceso-nombre">{{ proceso }}</span>
-                      <span class="proceso-cantidad">{{ data.comparativaProcesos.solicitudesPorProceso[proceso] }} solicitudes</span>
-                    </div>
-                  </div>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-
-          <!-- Comparativa de Programas -->
-          <div class="grid-item comparativa-programas">
-            <mat-card class="section-card">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon>school</mat-icon>
-                  Comparativa de Programas
-                </mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="programas-highlights">
-                  <div class="highlight-item mas-activo">
-                    <h4>Más Activo</h4>
-                    <div class="highlight-valor">{{ data.comparativaProgramas.programaMasActivo }}</div>
-                    <div class="highlight-descripcion">{{ data.comparativaProgramas.maxSolicitudes }} solicitudes</div>
-                  </div>
-                  
-                  <div class="highlight-item mas-estudiantes">
-                    <h4>Más Estudiantes</h4>
-                    <div class="highlight-valor">{{ data.comparativaProgramas.programaConMasEstudiantes }}</div>
-                    <div class="highlight-descripcion">{{ data.comparativaProgramas.maxEstudiantes }} estudiantes</div>
-                  </div>
-                </div>
-                
-                <div class="programas-lista">
-                  <h5>Detalle por Programa:</h5>
-                  <div class="programa-item" *ngFor="let programa of getObjectKeys(data.comparativaProgramas.solicitudesPorPrograma)">
-                    <div class="programa-info">
-                      <span class="programa-nombre">{{ programa }}</span>
-                      <div class="programa-metrics">
-                        <span class="programa-solicitudes">{{ data.comparativaProgramas.solicitudesPorPrograma[programa] }} solicitudes</span>
-                        <span class="programa-estudiantes">{{ data.comparativaProgramas.estudiantesPorPrograma[programa] }} estudiantes</span>
+                    <div class="tendencia-item">
+                      <h4>Estudiantes</h4>
+                      <div class="tendencia-valor" [style.color]="getTendenciaColor(data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva')">
+                        <mat-icon>{{ getTendenciaIcon(data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
+                        {{ data.crecimientoTemporal.tendenciaEstudiantes || data.crecimientoTemporal.tendencia || 'Nueva' }}
+                      </div>
+                      <div class="tendencia-porcentaje">
+                        {{ formatPorcentaje(data.crecimientoTemporal.crecimientoEstudiantes) }} vs mes anterior
                       </div>
                     </div>
                   </div>
-                </div>
-              </mat-card-content>
-            </mat-card>
+                  <div class="analisis-info">
+                    @if (data.crecimientoTemporal.mesesAnalizados === 1) {
+                      <span>
+                        Analizado en 1 mes. Se necesita más tiempo para calcular tendencias.
+                      </span>
+                    }
+                    @if (data.crecimientoTemporal.mesesAnalizados > 1) {
+                      <span>
+                        Analizado en {{ data.crecimientoTemporal.mesesAnalizados }} meses
+                      </span>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <!-- Comparativa de Procesos -->
+            <div class="grid-item comparativa-procesos">
+              <mat-card class="section-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>compare_arrows</mat-icon>
+                    Comparativa de Procesos
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="procesos-highlights">
+                    <div class="highlight-item mas-demandado">
+                      <h4>Más Demandado</h4>
+                      <div class="highlight-valor">{{ data.comparativaProcesos.procesoMasDemandado }}</div>
+                      <div class="highlight-descripcion">{{ data.comparativaProcesos.demandaMasAlta }} solicitudes</div>
+                    </div>
+                    <div class="highlight-item mas-eficiente">
+                      <h4>Más Eficiente</h4>
+                      <div class="highlight-valor">{{ data.comparativaProcesos.procesoMasEficiente || 'N/A' }}</div>
+                      <div class="highlight-descripcion">{{ formatPorcentaje(data.comparativaProcesos.eficienciaMasAlta) }} aprobación</div>
+                    </div>
+                  </div>
+                  <div class="procesos-lista">
+                    <h5>Detalle por Proceso:</h5>
+                    @for (proceso of getObjectKeys(data.comparativaProcesos.solicitudesPorProceso); track proceso) {
+                      <div class="proceso-item">
+                        <div class="proceso-info">
+                          <span class="proceso-nombre">{{ proceso }}</span>
+                          <span class="proceso-cantidad">{{ data.comparativaProcesos.solicitudesPorProceso[proceso] }} solicitudes</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <!-- Comparativa de Programas -->
+            <div class="grid-item comparativa-programas">
+              <mat-card class="section-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>school</mat-icon>
+                    Comparativa de Programas
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="programas-highlights">
+                    <div class="highlight-item mas-activo">
+                      <h4>Más Activo</h4>
+                      <div class="highlight-valor">{{ data.comparativaProgramas.programaMasActivo }}</div>
+                      <div class="highlight-descripcion">{{ data.comparativaProgramas.maxSolicitudes }} solicitudes</div>
+                    </div>
+                    <div class="highlight-item mas-estudiantes">
+                      <h4>Más Estudiantes</h4>
+                      <div class="highlight-valor">{{ data.comparativaProgramas.programaConMasEstudiantes }}</div>
+                      <div class="highlight-descripcion">{{ data.comparativaProgramas.maxEstudiantes }} estudiantes</div>
+                    </div>
+                  </div>
+                  <div class="programas-lista">
+                    <h5>Detalle por Programa:</h5>
+                    @for (programa of getObjectKeys(data.comparativaProgramas.solicitudesPorPrograma); track programa) {
+                      <div class="programa-item">
+                        <div class="programa-info">
+                          <span class="programa-nombre">{{ programa }}</span>
+                          <div class="programa-metrics">
+                            <span class="programa-solicitudes">{{ data.comparativaProgramas.solicitudesPorPrograma[programa] }} solicitudes</span>
+                            <span class="programa-estudiantes">{{ data.comparativaProgramas.estudiantesPorPrograma[programa] }} estudiantes</span>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <!-- Resumen Estratégico -->
+            <div class="grid-item resumen-estrategico">
+              <mat-card class="section-card resumen-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>insights</mat-icon>
+                    Resumen Estratégico
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="resumen-metrics">
+                    <div class="metric-item">
+                      <div class="metric-valor">{{ data.resumenEstrategico.totalSolicitudes }}</div>
+                      <div class="metric-label">Total Solicitudes</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-valor">{{ data.resumenEstrategico.totalEstudiantes }}</div>
+                      <div class="metric-label">Total Estudiantes</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-valor">{{ data.resumenEstrategico.totalProgramas }}</div>
+                      <div class="metric-label">Total Programas</div>
+                    </div>
+                  </div>
+                  <div class="recomendacion">
+                    <h4>Recomendación Estratégica</h4>
+                    <p>{{ data.resumenEstrategico.recomendacionEstrategica }}</p>
+                  </div>
+                  <div class="periodo-info">
+                    Período analizado: {{ data.resumenEstrategico.periodoAnalizado }}
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
           </div>
-
-          <!-- Resumen Estratégico -->
-          <div class="grid-item resumen-estrategico">
-            <mat-card class="section-card resumen-card">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon>insights</mat-icon>
-                  Resumen Estratégico
-                </mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="resumen-metrics">
-                  <div class="metric-item">
-                    <div class="metric-valor">{{ data.resumenEstrategico.totalSolicitudes }}</div>
-                    <div class="metric-label">Total Solicitudes</div>
-                  </div>
-                  <div class="metric-item">
-                    <div class="metric-valor">{{ data.resumenEstrategico.totalEstudiantes }}</div>
-                    <div class="metric-label">Total Estudiantes</div>
-                  </div>
-                  <div class="metric-item">
-                    <div class="metric-valor">{{ data.resumenEstrategico.totalProgramas }}</div>
-                    <div class="metric-label">Total Programas</div>
-                  </div>
-                </div>
-                
-                <div class="recomendacion">
-                  <h4>Recomendación Estratégica</h4>
-                  <p>{{ data.resumenEstrategico.recomendacionEstrategica }}</p>
-                </div>
-                
-                <div class="periodo-info">
-                  Período analizado: {{ data.resumenEstrategico.periodoAnalizado }}
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-
         </div>
-      </div>
+      }
     </mat-card-content>
   </mat-card>
 </div>

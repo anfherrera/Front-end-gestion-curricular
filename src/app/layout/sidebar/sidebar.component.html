@@ -1,28 +1,35 @@
 <!-- sidebar.component.html -->
 <nav [class.closed]="!isSidebarOpen" class="sidebar">
   <ul>
-    <li *ngFor="let item of menuItems; trackBy: trackByLabel">
-      <!-- Separador visual -->
-      <div *ngIf="item.action === 'separator'" class="sidebar-separator">
-        <hr>
-      </div>
-      
-      <!-- Items normales -->
-      <button *ngIf="item.action !== 'separator' && !item.route" 
-              class="sidebar-link" 
+    @for (item of menuItems; track item.label) {
+      <li>
+        <!-- Separador visual -->
+        @if (item.action === 'separator') {
+          <div class="sidebar-separator">
+            <hr>
+            </div>
+          }
+          <!-- Items normales -->
+          @if (item.action !== 'separator' && !item.route) {
+            <button
+              class="sidebar-link"
               (click)="onItemClick(item)"
               [class.logout-item]="item.action === 'logout'">
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.label }}</span>
-      </button>
-      <a *ngIf="item.action !== 'separator' && item.route" 
-         class="sidebar-link" 
-         [routerLink]="item.route"
-         routerLinkActive="active"
-         [class.logout-item]="item.action === 'logout'">
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.label }}</span>
-      </a>
-    </li>
-  </ul>
-</nav>
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </button>
+          }
+          @if (item.action !== 'separator' && item.route) {
+            <a
+              class="sidebar-link"
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              [class.logout-item]="item.action === 'logout'">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </li>
+      }
+    </ul>
+  </nav>

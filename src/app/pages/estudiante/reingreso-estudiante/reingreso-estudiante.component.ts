@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,7 +36,6 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
 @Component({
   selector: 'app-reingreso-estudiante',
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -44,7 +43,7 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     FileUploadComponent,
     RequiredDocsComponent,
     RequestStatusTableComponent
-  ],
+],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css']
 })

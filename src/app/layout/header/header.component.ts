@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,14 +18,13 @@ import { formatearPeriodo } from '@core/utils/periodo.utils';
   styleUrls: ['./header.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush, // OnPush - datos no cambian constantemente
   imports: [
-    CommonModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
     NotificationsHeaderComponent
-  ]
+]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);

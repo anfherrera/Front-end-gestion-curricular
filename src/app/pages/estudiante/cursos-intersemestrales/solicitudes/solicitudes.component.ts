@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -23,7 +23,7 @@ const ERRORES_ENVIO: Record<number, string> = {
 /** Solicitud de apertura de un curso intersemestral nuevo. */
 @Component({
   selector: 'app-solicitudes',
-  imports: [CommonModule, CardContainerComponent, ReactiveFormsModule, ...MATERIAL_IMPORTS],
+  imports: [CardContainerComponent, ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './solicitudes.component.html',
   styleUrls: ['./solicitudes.component.css']
 })

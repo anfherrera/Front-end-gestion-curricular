@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
@@ -23,7 +23,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-manage-roles',
   imports: [
-    CommonModule,
     FormsModule,
     MatTableModule,
     MatButtonModule,
@@ -33,7 +32,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule
-  ],
+],
   templateUrl: './manage-roles.component.html',
   styleUrls: ['./manage-roles.component.css']
 })

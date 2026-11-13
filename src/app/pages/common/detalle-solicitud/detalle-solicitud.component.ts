@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -65,7 +65,6 @@ interface DetalleSolicitud {
 @Component({
   selector: 'app-detalle-solicitud',
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -78,7 +77,7 @@ interface DetalleSolicitud {
     EstadoClasePipe,
     EstadoLabelPipe,
     FechaPipe
-  ],
+],
   templateUrl: './detalle-solicitud.component.html',
   styleUrls: ['../estados-solicitud-comun.css', './detalle-solicitud.component.css']
 })

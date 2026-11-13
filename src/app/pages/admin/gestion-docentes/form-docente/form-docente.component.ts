@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,7 +16,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-form-docente',
   imports: [
-    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -25,7 +24,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatIconModule,
     MatProgressSpinnerModule,
     MatCardModule
-  ],
+],
   templateUrl: './form-docente.component.html',
   styleUrls: ['./form-docente.component.css']
 })

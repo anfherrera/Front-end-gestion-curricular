@@ -9,38 +9,40 @@
   </app-solicitudes-bandeja>
 
   <!-- Documentación de la solicitud seleccionada -->
-  <app-card-container
-    *ngIf="selectedSolicitud"
-    title="Documentación Adjunta">
-
-    <!-- Mostrar comentario de rechazo si la solicitud está rechazada -->
-    <div *ngIf="estaRechazada() && obtenerComentarioRechazo(selectedSolicitud)" class="comentario-rechazo">
-      <mat-icon>error_outline</mat-icon>
-      <div class="comentario-rechazo-content">
-        <strong>Motivo del rechazo:</strong>
-        <p>{{ obtenerComentarioRechazo(selectedSolicitud) }}</p>
-      </div>
-    </div>
-
-    <app-documentation-viewer
-      [documentos]="documentosDelEstudiante"
-      [solicitudId]="selectedSolicitud.id_solicitud"
-      [proceso]="'paz-salvo'"
-      [servicio]="pazSalvoService"
-      [puedeAgregarComentarios]="true"
-      (comentarioAgregado)="onComentarioAgregado($event)">
-    </app-documentation-viewer>
-
-  </app-card-container>
+  @if (selectedSolicitud) {
+    <app-card-container
+      title="Documentación Adjunta">
+      <!-- Mostrar comentario de rechazo si la solicitud está rechazada -->
+      @if (estaRechazada() && obtenerComentarioRechazo(selectedSolicitud)) {
+        <div class="comentario-rechazo">
+          <mat-icon>error_outline</mat-icon>
+          <div class="comentario-rechazo-content">
+            <strong>Motivo del rechazo:</strong>
+            <p>{{ obtenerComentarioRechazo(selectedSolicitud) }}</p>
+          </div>
+        </div>
+      }
+      <app-documentation-viewer
+        [documentos]="documentosDelEstudiante"
+        [solicitudId]="selectedSolicitud.id_solicitud"
+        [proceso]="'paz-salvo'"
+        [servicio]="pazSalvoService"
+        [puedeAgregarComentarios]="true"
+        (comentarioAgregado)="onComentarioAgregado($event)">
+      </app-documentation-viewer>
+    </app-card-container>
+  }
 
   <!-- Botones de acción para la solicitud -->
-  <div class="botones-acciones" *ngIf="selectedSolicitud">
-    <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
-      {{ config.textoAprobar }}
-    </button>
-    <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
-      Rechazar Paz y Salvo
-    </button>
-  </div>
+  @if (selectedSolicitud) {
+    <div class="botones-acciones">
+      <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
+        {{ config.textoAprobar }}
+      </button>
+      <button mat-raised-button color="warn" (click)="rechazarSolicitudSeleccionada()">
+        Rechazar Paz y Salvo
+      </button>
+    </div>
+  }
 
 </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -28,7 +28,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
   imports: [
-    CommonModule,
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
@@ -45,7 +44,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     RequestStatusTableComponent,
     DocumentationViewerComponent,
     FechaPipe
-  ],
+],
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
 })

@@ -1,6 +1,6 @@
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,12 +27,11 @@ interface OpcionPeriodo {
 @Component({
   selector: 'app-periodo-filtro-selector',
   imports: [
-    CommonModule,
     MatFormFieldModule,
     MatSelectModule,
     MatIconModule,
     MatProgressSpinnerModule
-  ],
+],
   templateUrl: './periodo-filtro-selector.component.html',
   styleUrl: './periodo-filtro-selector.component.css'
 })

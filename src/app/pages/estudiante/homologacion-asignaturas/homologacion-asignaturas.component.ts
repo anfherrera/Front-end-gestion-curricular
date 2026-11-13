@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,7 +40,6 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
 @Component({
   selector: 'app-solicitud-homologacion',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
@@ -51,7 +50,7 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     FileUploadComponent,
     RequiredDocsComponent,
     RequestStatusTableComponent
-  ],
+],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css']
 })

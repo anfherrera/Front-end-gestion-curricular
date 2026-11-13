@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTabsModule } from '@angular/material/tabs';
 
 import { Solicitud } from '@core/models/procesos.model';
@@ -16,7 +16,7 @@ import { PeriodoFiltroSelectorComponent } from '../periodo-filtro-selector/perio
  */
 @Component({
   selector: 'app-solicitudes-bandeja',
-  imports: [CommonModule, MatTabsModule, CardContainerComponent, RequestStatusTableComponent, PeriodoFiltroSelectorComponent],
+  imports: [MatTabsModule, CardContainerComponent, RequestStatusTableComponent, PeriodoFiltroSelectorComponent],
   templateUrl: './solicitudes-bandeja.component.html',
   styleUrls: ['./solicitudes-bandeja.component.css']
 })

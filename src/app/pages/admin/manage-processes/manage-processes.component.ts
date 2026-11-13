@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,7 +20,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-manage-processes',
   imports: [
-    CommonModule,
     FormsModule,
     MatTableModule,
     MatButtonModule,
@@ -31,7 +30,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule,
     MatChipsModule,
     MatDialogModule
-  ],
+],
   templateUrl: './manage-processes.component.html',
   styleUrl: './manage-processes.component.css'
 })

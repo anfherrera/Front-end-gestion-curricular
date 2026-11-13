@@ -430,9 +430,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   /**
    * TrackBy function para programas
    */
-  trackByProgramaId(index: number, programa: { id: number }): number {
-    return programa?.id || index;
-  }
 
   /**
    * Maneja el cambio de período académico desde el selector

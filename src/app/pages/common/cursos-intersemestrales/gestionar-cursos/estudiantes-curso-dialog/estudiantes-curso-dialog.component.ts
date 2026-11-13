@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -29,14 +29,13 @@ const ERRORES_EXPORTAR: Record<number, string> = {
 @Component({
   selector: 'app-estudiantes-curso-dialog',
   imports: [
-    CommonModule,
     MatDialogModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
     MatProgressSpinnerModule
-  ],
+],
   templateUrl: './estudiantes-curso-dialog.component.html',
   styleUrls: ['./estudiantes-curso-dialog.component.css']
 })

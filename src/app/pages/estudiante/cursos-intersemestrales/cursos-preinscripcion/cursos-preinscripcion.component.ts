@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
@@ -16,7 +16,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
 /** Cursos en preinscripción: el estudiante elige uno y se preinscribe desde un diálogo. */
 @Component({
   selector: 'app-cursos-preinscripcion',
-  imports: [CommonModule, CardContainerComponent, CursoListComponent, ...MATERIAL_IMPORTS],
+  imports: [CardContainerComponent, CursoListComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-preinscripcion.component.html',
   styleUrls: ['./cursos-preinscripcion.component.css']
 })

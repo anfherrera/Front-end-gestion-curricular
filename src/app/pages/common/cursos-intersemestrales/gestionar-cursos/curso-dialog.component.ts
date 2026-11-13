@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -37,7 +37,6 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
 @Component({
   selector: 'app-curso-dialog',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -48,7 +47,7 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
     MatNativeDateModule,
     MatIconModule,
     NombreDocentePipe
-  ],
+],
   templateUrl: './curso-dialog.component.html',
   styleUrls: ['./curso-dialog.component.css']
 })

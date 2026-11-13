@@ -36,17 +36,21 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Ingrese el motivo del rechazo</mat-label>
           <textarea matInput
-                    formControlName="motivo"
-                    placeholder="Ej: No cumple con los requisitos académicos, cupo lleno, documentación incompleta..."
-                    rows="4"
-                    required>
+            formControlName="motivo"
+            placeholder="Ej: No cumple con los requisitos académicos, cupo lleno, documentación incompleta..."
+            rows="4"
+            required>
           </textarea>
-          <mat-error *ngIf="rechazoForm.get('motivo')?.hasError('required')">
-            El motivo del rechazo es obligatorio
-          </mat-error>
-          <mat-error *ngIf="rechazoForm.get('motivo')?.hasError('minlength')">
-            El motivo debe tener al menos 10 caracteres
-          </mat-error>
+          @if (rechazoForm.get('motivo')?.hasError('required')) {
+            <mat-error>
+              El motivo del rechazo es obligatorio
+            </mat-error>
+          }
+          @if (rechazoForm.get('motivo')?.hasError('minlength')) {
+            <mat-error>
+              El motivo debe tener al menos 10 caracteres
+            </mat-error>
+          }
         </mat-form-field>
       </form>
     </div>
@@ -58,10 +62,10 @@
       Cancelar
     </button>
     <button mat-raised-button
-            color="warn"
-            (click)="confirmarRechazo()"
-            [disabled]="rechazoForm.invalid"
-            class="btn-reject">
+      color="warn"
+      (click)="confirmarRechazo()"
+      [disabled]="rechazoForm.invalid"
+      class="btn-reject">
       <mat-icon>cancel</mat-icon>
       Confirmar Rechazo
     </button>

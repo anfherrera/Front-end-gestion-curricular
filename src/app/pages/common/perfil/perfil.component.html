@@ -52,38 +52,41 @@
     </mat-card>
 
     <!-- Información Adicional según Rol -->
-    <mat-card class="additional-info-card" *ngIf="usuario?.rol">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>info</mat-icon>
-          Información Adicional
-        </mat-card-title>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <div class="info-grid">
-          <div class="info-item">
-            <mat-icon class="info-icon">admin_panel_settings</mat-icon>
-            <div class="info-content">
-              <span class="info-label">Rol en el Sistema</span>
-              <span class="info-value">{{ usuario.rol.nombre || usuario.rol.nombre_rol || userRole }}</span>
+    @if (usuario?.rol) {
+      <mat-card class="additional-info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Información Adicional
+          </mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <mat-icon class="info-icon">admin_panel_settings</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Rol en el Sistema</span>
+                <span class="info-value">{{ usuario.rol.nombre || usuario.rol.nombre_rol || userRole }}</span>
+              </div>
             </div>
+            @if (usuario?.estado_usuario !== undefined) {
+              <div class="info-item">
+                <mat-icon class="info-icon">check_circle</mat-icon>
+                <div class="info-content">
+                  <span class="info-label">Estado</span>
+                  <span class="info-value">
+                    <mat-chip [class]="usuario.estado_usuario ? 'status-active' : 'status-inactive'">
+                      {{ usuario.estado_usuario ? 'Activo' : 'Inactivo' }}
+                    </mat-chip>
+                  </span>
+                </div>
+              </div>
+            }
           </div>
-
-          <div class="info-item" *ngIf="usuario?.estado_usuario !== undefined">
-            <mat-icon class="info-icon">check_circle</mat-icon>
-            <div class="info-content">
-              <span class="info-label">Estado</span>
-              <span class="info-value">
-                <mat-chip [class]="usuario.estado_usuario ? 'status-active' : 'status-inactive'">
-                  {{ usuario.estado_usuario ? 'Activo' : 'Inactivo' }}
-                </mat-chip>
-              </span>
-            </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+        </mat-card-content>
+      </mat-card>
+    }
   </div>
 </app-card-container>
 

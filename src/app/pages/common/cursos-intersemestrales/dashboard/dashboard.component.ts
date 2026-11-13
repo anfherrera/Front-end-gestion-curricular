@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,6 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 @Component({
   selector: 'app-dashboard-cursos-intersemestrales',
   imports: [
-    CommonModule,
     MatCardModule,
     MatIconModule,
     MatButtonModule,
@@ -27,7 +26,7 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
     MatDividerModule,
     RouterModule,
     NombreDocentePipe
-  ],
+],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -139,9 +138,6 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
   }
 
   // TrackBy functions para optimizar ngFor
-  trackByCursoId(index: number, curso: CursoOfertadoVerano): number {
-    return curso.id_curso;
-  }
 
   obtenerNombreMateria(curso: CursoOfertadoVerano): string {
     if (!curso.objMateria) {

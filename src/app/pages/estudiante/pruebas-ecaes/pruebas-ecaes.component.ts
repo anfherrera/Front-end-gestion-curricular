@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,7 +35,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-pruebas-ecaes',
   imports: [
-    CommonModule,
     MatSelectModule,
     MatTableModule,
     MatFormFieldModule,
@@ -50,7 +49,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     CardContainerComponent,
     FileUploadComponent,
     RequestStatusTableComponent
-  ],
+],
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
 })

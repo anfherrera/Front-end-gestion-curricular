@@ -8,42 +8,45 @@
       <mat-form-field appearance="outline" class="periodo-select">
         <mat-label>Seleccionar Período Académico</mat-label>
         <mat-select [(ngModel)]="periodoSeleccionado" (selectionChange)="onPeriodoChange()">
-          <mat-option *ngFor="let fecha of fechasEcaes" [value]="fecha.periodoAcademico">
-            {{ fecha.periodoAcademico }}
-          </mat-option>
+          @for (fecha of fechasEcaes; track fecha) {
+            <mat-option [value]="fecha.periodoAcademico">
+              {{ fecha.periodoAcademico }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
 
     <!-- Tabla de fechas -->
-    <div class="tabla-fechas" *ngIf="fechasSeleccionadas">
-      <table mat-table [dataSource]="conceptosFechas" class="fechas-table">
-
-        <!-- Columna Concepto -->
-        <ng-container matColumnDef="concepto">
-          <th mat-header-cell *matHeaderCellDef class="header-cell">Concepto</th>
-          <td mat-cell *matCellDef="let element" class="concepto-cell">
-            {{ element.concepto }}
-          </td>
-        </ng-container>
-
-        <!-- Columna Fecha -->
-        <ng-container matColumnDef="fecha">
-          <th mat-header-cell *matHeaderCellDef class="header-cell">Fecha</th>
-          <td mat-cell *matCellDef="let element" class="fecha-cell">
-            {{ getConceptoFecha(element.campo) }}
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
-      </table>
-    </div>
+    @if (fechasSeleccionadas) {
+      <div class="tabla-fechas">
+        <table mat-table [dataSource]="conceptosFechas" class="fechas-table">
+          <!-- Columna Concepto -->
+          <ng-container matColumnDef="concepto">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">Concepto</th>
+            <td mat-cell *matCellDef="let element" class="concepto-cell">
+              {{ element.concepto }}
+            </td>
+          </ng-container>
+          <!-- Columna Fecha -->
+          <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">Fecha</th>
+            <td mat-cell *matCellDef="let element" class="fecha-cell">
+              {{ getConceptoFecha(element.campo) }}
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
+        </table>
+      </div>
+    }
 
     <!-- Mensaje cuando no hay fechas -->
-    <div class="mensaje-vacio" *ngIf="!fechasSeleccionadas && fechasEcaes.length === 0">
-      <p>No hay fechas disponibles para mostrar.</p>
-    </div>
+    @if (!fechasSeleccionadas && fechasEcaes.length === 0) {
+      <div class="mensaje-vacio">
+        <p>No hay fechas disponibles para mostrar.</p>
+      </div>
+    }
 
   </app-card-container>
 
@@ -58,24 +61,32 @@
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Tipo de Documento</mat-label>
           <mat-select formControlName="tipoDocumento">
-            <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo.value">
-              {{ tipo.label }}
-            </mat-option>
+            @for (tipo of tiposDocumento; track tipo) {
+              <mat-option [value]="tipo.value">
+                {{ tipo.label }}
+              </mat-option>
+            }
           </mat-select>
-          <mat-error *ngIf="esCampoInvalido('tipoDocumento')">
-            {{ obtenerMensajeError('tipoDocumento') }}
-          </mat-error>
-          <mat-error *ngIf="solicitudForm.get('tipoDocumento')?.hasError('tipoDocumentoInvalido')">
-            Solo se aceptan Cédula de Ciudadanía (CC) o Cédula de Extranjería (CE)
-          </mat-error>
+          @if (esCampoInvalido('tipoDocumento')) {
+            <mat-error>
+              {{ obtenerMensajeError('tipoDocumento') }}
+            </mat-error>
+          }
+          @if (solicitudForm.get('tipoDocumento')?.hasError('tipoDocumentoInvalido')) {
+            <mat-error>
+              Solo se aceptan Cédula de Ciudadanía (CC) o Cédula de Extranjería (CE)
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Número de Documento</mat-label>
           <input matInput formControlName="numero_documento" placeholder="Ej: 1007914110">
-          <mat-error *ngIf="esCampoInvalido('numero_documento')">
-            {{ obtenerMensajeError('numero_documento') }}
-          </mat-error>
+          @if (esCampoInvalido('numero_documento')) {
+            <mat-error>
+              {{ obtenerMensajeError('numero_documento') }}
+            </mat-error>
+          }
         </mat-form-field>
       </div>
 
@@ -86,9 +97,11 @@
           <input matInput [matDatepicker]="nacimientoPicker" formControlName="fecha_nacimiento">
           <mat-datepicker-toggle matSuffix [for]="nacimientoPicker"></mat-datepicker-toggle>
           <mat-datepicker #nacimientoPicker></mat-datepicker>
-          <mat-error *ngIf="esCampoInvalido('fecha_nacimiento')">
-            {{ obtenerMensajeError('fecha_nacimiento') }}
-          </mat-error>
+          @if (esCampoInvalido('fecha_nacimiento')) {
+            <mat-error>
+              {{ obtenerMensajeError('fecha_nacimiento') }}
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">
@@ -96,9 +109,11 @@
           <input matInput [matDatepicker]="expedicionPicker" formControlName="fecha_expedicion">
           <mat-datepicker-toggle matSuffix [for]="expedicionPicker"></mat-datepicker-toggle>
           <mat-datepicker #expedicionPicker></mat-datepicker>
-          <mat-error *ngIf="esCampoInvalido('fecha_expedicion')">
-            {{ obtenerMensajeError('fecha_expedicion') }}
-          </mat-error>
+          @if (esCampoInvalido('fecha_expedicion')) {
+            <mat-error>
+              {{ obtenerMensajeError('fecha_expedicion') }}
+            </mat-error>
+          }
         </mat-form-field>
       </div>
 
@@ -126,35 +141,42 @@
         (click)="enviarSolicitud()"
         [disabled]="enviandoSolicitud || solicitudForm.invalid || archivos.length === 0"
         class="btn-enviar">
-        <mat-icon *ngIf="!enviandoSolicitud">send</mat-icon>
-        <mat-icon *ngIf="enviandoSolicitud" class="spinning">refresh</mat-icon>
+        @if (!enviandoSolicitud) {
+          <mat-icon>send</mat-icon>
+        }
+        @if (enviandoSolicitud) {
+          <mat-icon class="spinning">refresh</mat-icon>
+        }
         {{ enviandoSolicitud ? 'Enviando...' : 'Enviar Solicitud' }}
       </button>
     </div>
 
   </app-card-container>
 
-      <!-- Tercera Sección: Seguimiento de Solicitud -->
-      <app-card-container title="Seguimiento de Solicitud" icon="track_changes">
+  <!-- Tercera Sección: Seguimiento de Solicitud -->
+  <app-card-container title="Seguimiento de Solicitud" icon="track_changes">
 
-        <!-- Mensaje cuando no hay solicitudes -->
-        <div class="sin-solicitudes" *ngIf="solicitudes.length === 0">
-          <mat-icon>info</mat-icon>
-          <p>No se ha enviado ninguna solicitud aún.</p>
-        </div>
+    <!-- Mensaje cuando no hay solicitudes -->
+    @if (solicitudes.length === 0) {
+      <div class="sin-solicitudes">
+        <mat-icon>info</mat-icon>
+        <p>No se ha enviado ninguna solicitud aún.</p>
+      </div>
+    }
 
-        <!-- Tabla de seguimiento -->
-        <app-request-status-table
-          *ngIf="solicitudes.length > 0"
-          [solicitudes]="solicitudes"
-          [showOficio]="true"
-          [showComentarios]="true"
-          [headerAcciones]="'Información'"
-          (verComentarios)="verComentarios($event)"
-          (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)"
-          (mostrarInfoPreregistro)="mostrarInfoPreregistro()">
-        </app-request-status-table>
+    <!-- Tabla de seguimiento -->
+    @if (solicitudes.length > 0) {
+      <app-request-status-table
+        [solicitudes]="solicitudes"
+        [showOficio]="true"
+        [showComentarios]="true"
+        [headerAcciones]="'Información'"
+        (verComentarios)="verComentarios($event)"
+        (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)"
+        (mostrarInfoPreregistro)="mostrarInfoPreregistro()">
+      </app-request-status-table>
+    }
 
-      </app-card-container>
+  </app-card-container>
 
 </div>

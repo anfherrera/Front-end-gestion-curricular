@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { CursoListComponent, Curso } from '../components/curso-list/curso-list.component';
@@ -12,7 +12,7 @@ import { estadoCurso, nombreDocente, periodoCurso } from '@core/utils/cursos-ver
 /** Cursos ofertados (solo consulta). Si el período actual no tiene cursos, muestra los de todos los períodos. */
 @Component({
   selector: 'app-cursos-ofertados',
-  imports: [CommonModule, CardContainerComponent, CursoListComponent, PeriodoFiltroSelectorComponent, ...MATERIAL_IMPORTS],
+  imports: [CardContainerComponent, CursoListComponent, PeriodoFiltroSelectorComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-ofertados.component.html',
   styleUrls: ['./cursos-ofertados.component.css']
 })

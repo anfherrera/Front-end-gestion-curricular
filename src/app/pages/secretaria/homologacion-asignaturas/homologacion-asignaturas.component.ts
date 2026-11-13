@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -24,7 +24,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-homologacion-asignaturas',
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
@@ -33,7 +32,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     DocumentGeneratorComponent,
     DocumentationViewerComponent,
     ApprovedRequestsSectionComponent
-  ],
+],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['../secretaria-comun.css', './homologacion-asignaturas.component.css']
 })

@@ -47,7 +47,7 @@
   <div class="content-grid">
     <!-- Cursos activos -->
 
-    
+
     <mat-card class="content-card">
       <mat-card-header>
         <mat-card-title>
@@ -57,44 +57,52 @@
         <mat-card-subtitle>Gestión de cursos disponibles</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div class="cursos-list" *ngIf="cursosActivos.length > 0; else noCursos">
-          <div *ngFor="let curso of cursosActivos; trackBy: trackByCursoId" class="curso-item">
-            <div class="curso-info">
-              <h4>{{ curso.nombre_curso || 'Sin nombre' }}</h4>
-              <p>{{ obtenerNombreMateria(curso) }} - {{ curso | nombreDocente }}</p>
-              <small *ngIf="curso.fecha_inicio || curso.fecha_fin; else sinFechas">
-                {{ formatearRangoFechas(curso.fecha_inicio, curso.fecha_fin) }}
-              </small>
-              <ng-template #sinFechas>
-                <small class="text-muted">Fechas no definidas</small>
-              </ng-template>
-              <small *ngIf="obtenerPeriodo(curso) !== 'N/A'" class="periodo-info">
-                • Período: {{ obtenerPeriodo(curso) }}
-              </small>
-              <small *ngIf="curso.grupo" class="grupo-info">
-                • Grupo: {{ curso.grupo }}
-              </small>
-            </div>
-            <div class="curso-status">
-              <mat-chip 
-                [style.background-color]="getEstadoColor(obtenerEstadoActual(curso))"
-                [style.color]="'white'"
-                [style.border]="'none'"
-                [style.outline]="'none'"
-                [style.--mdc-chip-label-text-color]="'white'"
-                [style.--mdc-chip-container-color]="getEstadoColor(obtenerEstadoActual(curso))"
-                [style.--mdc-chip-outline-color]="'transparent'"
-                [style.--mdc-chip-outline-width]="'0'"
-                class="custom-chip">
-                <span [style.color]="'white'">{{ obtenerEstadoActual(curso) }}</span>
-              </mat-chip>
-              <div class="cupos-info">
-                <small>{{ curso.cupo_disponible || curso.cupo_estimado || 0 }} / {{ curso.cupo_maximo || curso.cupo_estimado || 0 }} cupos</small>
+        @if (cursosActivos.length > 0) {
+          <div class="cursos-list">
+            @for (curso of cursosActivos; track curso.id_curso) {
+              <div class="curso-item">
+                <div class="curso-info">
+                  <h4>{{ curso.nombre_curso || 'Sin nombre' }}</h4>
+                  <p>{{ obtenerNombreMateria(curso) }} - {{ curso | nombreDocente }}</p>
+                  @if (curso.fecha_inicio || curso.fecha_fin) {
+                    <small>
+                      {{ formatearRangoFechas(curso.fecha_inicio, curso.fecha_fin) }}
+                    </small>
+                  } @else {
+                    <small class="text-muted">Fechas no definidas</small>
+                  }
+                  @if (obtenerPeriodo(curso) !== 'N/A') {
+                    <small class="periodo-info">
+                      • Período: {{ obtenerPeriodo(curso) }}
+                    </small>
+                  }
+                  @if (curso.grupo) {
+                    <small class="grupo-info">
+                      • Grupo: {{ curso.grupo }}
+                    </small>
+                  }
+                </div>
+                <div class="curso-status">
+                  <mat-chip
+                    [style.background-color]="getEstadoColor(obtenerEstadoActual(curso))"
+                    [style.color]="'white'"
+                    [style.border]="'none'"
+                    [style.outline]="'none'"
+                    [style.--mdc-chip-label-text-color]="'white'"
+                    [style.--mdc-chip-container-color]="getEstadoColor(obtenerEstadoActual(curso))"
+                    [style.--mdc-chip-outline-color]="'transparent'"
+                    [style.--mdc-chip-outline-width]="'0'"
+                    class="custom-chip">
+                    <span [style.color]="'white'">{{ obtenerEstadoActual(curso) }}</span>
+                  </mat-chip>
+                  <div class="cupos-info">
+                    <small>{{ curso.cupo_disponible || curso.cupo_estimado || 0 }} / {{ curso.cupo_maximo || curso.cupo_estimado || 0 }} cupos</small>
+                  </div>
+                </div>
               </div>
-            </div>
+            }
           </div>
-        </div>
-        <ng-template #noCursos>
+        } @else {
           <div class="empty-state">
             <mat-icon>school</mat-icon>
             <p>No hay cursos activos</p>
@@ -102,7 +110,7 @@
               Crear Nuevo Curso
             </button>
           </div>
-        </ng-template>
+        }
       </mat-card-content>
     </mat-card>
   </div>

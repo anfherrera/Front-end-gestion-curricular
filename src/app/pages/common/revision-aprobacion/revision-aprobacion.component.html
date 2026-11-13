@@ -9,30 +9,31 @@
   </app-solicitudes-bandeja>
 
   <!-- Documentación de la solicitud seleccionada -->
-  <app-card-container
-    *ngIf="seleccionada"
-    title="Documentación Adjunta"
-    icon="description">
-
-    <app-documentation-viewer
-      [documentos]="documentos"
-      [solicitudId]="seleccionada.id_solicitud"
-      [proceso]="config.proceso"
-      [servicio]="config.servicio"
-      [puedeAgregarComentarios]="true"
-      (comentarioAgregado)="onComentarioAgregado($event)">
-    </app-documentation-viewer>
-
-  </app-card-container>
+  @if (seleccionada) {
+    <app-card-container
+      title="Documentación Adjunta"
+      icon="description">
+      <app-documentation-viewer
+        [documentos]="documentos"
+        [solicitudId]="seleccionada.id_solicitud"
+        [proceso]="config.proceso"
+        [servicio]="config.servicio"
+        [puedeAgregarComentarios]="true"
+        (comentarioAgregado)="onComentarioAgregado($event)">
+      </app-documentation-viewer>
+    </app-card-container>
+  }
 
   <!-- Botones de acción para la solicitud -->
-  <div class="botones-acciones" *ngIf="seleccionada">
-    <button mat-raised-button color="primary" [disabled]="!puedeDecidir" (click)="aprobar()">
-      {{ textoAprobar }}
-    </button>
-    <button mat-raised-button color="warn" [disabled]="!puedeDecidir" (click)="rechazar()">
-      Rechazar {{ config.nombreProceso }}
-    </button>
-  </div>
+  @if (seleccionada) {
+    <div class="botones-acciones">
+      <button mat-raised-button color="primary" [disabled]="!puedeDecidir" (click)="aprobar()">
+        {{ textoAprobar }}
+      </button>
+      <button mat-raised-button color="warn" [disabled]="!puedeDecidir" (click)="rechazar()">
+        Rechazar {{ config.nombreProceso }}
+      </button>
+    </div>
+  }
 
 </div>

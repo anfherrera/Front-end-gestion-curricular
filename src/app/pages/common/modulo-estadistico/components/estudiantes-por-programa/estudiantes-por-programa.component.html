@@ -10,64 +10,79 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div *ngIf="loading" class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Cargando datos...</p>
-    </div>
+    @if (loading) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando datos...</p>
+      </div>
+    }
 
-    <div *ngIf="error" class="error-container">
-      <mat-icon class="error-icon">error</mat-icon>
-      <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="cargarDatos()">
-        <mat-icon>refresh</mat-icon>
-        Reintentar
-      </button>
-    </div>
+    @if (error) {
+      <div class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="cargarDatos()">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+      </div>
+    }
 
-    <div *ngIf="!loading && !error && programasData.length > 0" class="programas-container">
-      <div class="programas-list">
-        <div *ngFor="let programa of programasData; let i = index"
-             class="programa-item"
-             [class.odd]="i % 2 === 1">
-          <div class="programa-info">
-            <div class="programa-nombre">{{ programa.nombre }}</div>
-            <div class="programa-porcentaje" *ngIf="programa.porcentaje">
-              {{ programa.porcentaje | number:'1.1-1' }}%
+    @if (!loading && !error && programasData.length > 0) {
+      <div class="programas-container">
+        <div class="programas-list">
+          @for (programa of programasData; track programa; let i = $index) {
+            <div
+              class="programa-item"
+              [class.odd]="i % 2 === 1">
+              <div class="programa-info">
+                <div class="programa-nombre">{{ programa.nombre }}</div>
+                @if (programa.porcentaje) {
+                  <div class="programa-porcentaje">
+                    {{ programa.porcentaje | number:'1.1-1' }}%
+                  </div>
+                }
+              </div>
+              <div class="programa-cantidad">
+                <span class="numero">{{ programa.cantidad }}</span>
+                <span class="label">estudiantes</span>
+              </div>
             </div>
+          }
+        </div>
+        <div class="resumen">
+          <div class="total-estudiantes">
+            <mat-icon>people</mat-icon>
+            <span>Total: {{ totalEstudiantes }} estudiantes</span>
           </div>
-          <div class="programa-cantidad">
-            <span class="numero">{{ programa.cantidad }}</span>
-            <span class="label">estudiantes</span>
+          <div class="total-programas">
+            <mat-icon>school</mat-icon>
+            <span>{{ programasData.length }} programas</span>
           </div>
         </div>
       </div>
+    }
 
-      <div class="resumen">
-        <div class="total-estudiantes">
-          <mat-icon>people</mat-icon>
-          <span>Total: {{ totalEstudiantes }} estudiantes</span>
-        </div>
-        <div class="total-programas">
-          <mat-icon>school</mat-icon>
-          <span>{{ programasData.length }} programas</span>
-        </div>
+    @if (!loading && !error && programasData.length === 0) {
+      <div class="no-data">
+        <mat-icon>info</mat-icon>
+        <p>No hay datos de estudiantes por programa disponibles</p>
       </div>
-    </div>
-
-    <div *ngIf="!loading && !error && programasData.length === 0" class="no-data">
-      <mat-icon>info</mat-icon>
-      <p>No hay datos de estudiantes por programa disponibles</p>
-    </div>
+    }
   </mat-card-content>
 
-  <mat-card-actions *ngIf="!loading">
-    <button mat-icon-button (click)="cargarDatos()"
-            matTooltip="Actualizar datos">
-      <mat-icon>refresh</mat-icon>
-    </button>
-    <span class="spacer"></span>
-    <small *ngIf="fechaConsulta" class="fecha-actualizacion">
-      Actualizado: {{ fechaConsulta | date:'short' }}
-    </small>
-  </mat-card-actions>
+  @if (!loading) {
+    <mat-card-actions>
+      <button mat-icon-button (click)="cargarDatos()"
+        matTooltip="Actualizar datos">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <span class="spacer"></span>
+      @if (fechaConsulta) {
+        <small class="fecha-actualizacion">
+          Actualizado: {{ fechaConsulta | date:'short' }}
+        </small>
+      }
+    </mat-card-actions>
+  }
 </mat-card>

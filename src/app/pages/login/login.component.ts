@@ -1,7 +1,7 @@
 
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +18,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-login',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatInputModule,
     MatButtonModule,
@@ -26,7 +25,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatFormFieldModule,
     MatCheckboxModule,
     MatProgressSpinnerModule
-  ],
+],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

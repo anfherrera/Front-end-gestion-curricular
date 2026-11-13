@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,13 +10,12 @@ import { Subject, takeUntil, filter } from 'rxjs';
 @Component({
   selector: 'app-cursos-intersemestrales',
   imports: [
-    CommonModule, 
-    RouterModule, 
-    MatIconModule, 
-    MatBadgeModule, 
-    MatButtonModule, 
+    RouterModule,
+    MatIconModule,
+    MatBadgeModule,
+    MatButtonModule,
     MatTooltipModule
-  ],
+],
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css']
 })

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute } from '@angular/router';
 import { Observable, catchError, filter, map, of, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -42,13 +42,12 @@ interface ConfigRevision {
 @Component({
   selector: 'app-paz-salvo-revision',
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     CardContainerComponent,
     DocumentationViewerComponent,
     SolicitudesBandejaComponent
-  ],
+],
   templateUrl: './paz-salvo-revision.component.html',
   styleUrls: ['./paz-salvo-revision.component.css']
 })

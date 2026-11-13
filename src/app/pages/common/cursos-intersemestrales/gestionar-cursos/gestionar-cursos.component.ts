@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
@@ -22,7 +22,6 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
 @Component({
   selector: 'app-gestionar-cursos',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatChipsModule,
@@ -32,7 +31,7 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
     ...MATERIAL_IMPORTS,
     FechaPipe,
     NombreDocentePipe
-  ],
+],
   templateUrl: './gestionar-cursos.component.html',
   styleUrls: ['./gestionar-cursos.component.css']
 })

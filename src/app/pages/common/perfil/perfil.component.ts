@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,14 +11,13 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 @Component({
   selector: 'app-perfil',
   imports: [
-    CommonModule,
     MatCardModule,
     MatIconModule,
     MatButtonModule,
     MatDividerModule,
     MatChipsModule,
     CardContainerComponent
-  ],
+],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })

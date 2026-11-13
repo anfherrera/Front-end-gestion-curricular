@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,14 +18,13 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-formatos-institucionales',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule
-  ],
+],
   templateUrl: './formatos-institucionales.component.html',
   styleUrls: ['./formatos-institucionales.component.css']
 })

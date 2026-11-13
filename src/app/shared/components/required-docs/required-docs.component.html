@@ -2,85 +2,103 @@
   <mat-card-title class="card-title">Documentación requerida</mat-card-title>
   <mat-card-content>
     <!-- Texto introductorio solo para Paz y Salvo -->
-    <p class="info-intro" *ngIf="esPazYSalvo">Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva programada por la Secretaría General de la Universidad del Cauca.</p>
-    
+    @if (esPazYSalvo) {
+      <p class="info-intro">Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva programada por la Secretaría General de la Universidad del Cauca.</p>
+    }
+
     <p class="info-text">Debes subir los siguientes documentos necesarios en formato PDF. Todos los formatos deben estar debidamente diligenciados y firmados:</p>
-    
+
     <!-- Notas específicas solo para Paz y Salvo -->
-    <ng-container *ngIf="esPazYSalvo">
+    @if (esPazYSalvo) {
       <!-- Nota para Sistemas, Electrónica y Automática -->
-      <div class="info-ayuda-sistemas" *ngIf="esSistemasElectronicaAutomatica && !esTelematica">
-        <p><strong>Importante para estudiantes de Sistemas, Electrónica y Automática:</strong></p>
-        <ul class="lista-requisitos">
-          <li>Debes subir los 4 documentos obligatorios marcados con (*)</li>
-          <li><strong>Además, debes subir OBLIGATORIAMENTE uno de estos formatos:</strong> PPH o TIH (solo uno de los dos, marcado con *)</li>
-          <li><strong>Y según tu modalidad de trabajo de grado:</strong> Si es TRABAJO DE INVESTIGACIÓN, sube TI-G y TI-H. Si es PRÁCTICA PROFESIONAL, sube PP-G y PP-H. <strong>NO subas ambos grupos</strong></li>
-        </ul>
-      </div>
-
+      @if (esSistemasElectronicaAutomatica && !esTelematica) {
+        <div class="info-ayuda-sistemas">
+          <p><strong>Importante para estudiantes de Sistemas, Electrónica y Automática:</strong></p>
+          <ul class="lista-requisitos">
+            <li>Debes subir los 4 documentos obligatorios marcados con (*)</li>
+            <li><strong>Además, debes subir OBLIGATORIAMENTE uno de estos formatos:</strong> PPH o TIH (solo uno de los dos, marcado con *)</li>
+            <li><strong>Y según tu modalidad de trabajo de grado:</strong> Si es TRABAJO DE INVESTIGACIÓN, sube TI-G y TI-H. Si es PRÁCTICA PROFESIONAL, sube PP-G y PP-H. <strong>NO subas ambos grupos</strong></li>
+          </ul>
+        </div>
+      }
       <!-- Nota para Telemática -->
-      <p class="info-ayuda-telematica" *ngIf="esTelematica">
-        <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir la fotocopia de tu cédula (marcada con *). Los formatos TI-G/TI-H, PP-G/PP-H, PPH/TIH y los demás documentos no aplican para tu programa.
-      </p>
-
+      @if (esTelematica) {
+        <p class="info-ayuda-telematica">
+          <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir la fotocopia de tu cédula (marcada con *). Los formatos TI-G/TI-H, PP-G/PP-H, PPH/TIH y los demás documentos no aplican para tu programa.
+        </p>
+      }
       <!-- Nota para otros programas -->
-      <p class="info-ayuda" *ngIf="!esTelematica && !esSistemasElectronicaAutomatica">
-        <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
-      </p>
-    </ng-container>
+      @if (!esTelematica && !esSistemasElectronicaAutomatica) {
+        <p class="info-ayuda">
+          <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
+        </p>
+      }
+    }
 
     <ul class="required-list">
       <!-- Documentos obligatorios para todos -->
-      <li *ngFor="let doc of documentosObligatorios" class="required-list-item-with-link">
-        <mat-icon>description</mat-icon>
-        <span class="required-list-label">
-          {{ doc.label }} <span class="asterisco-obligatorio">*</span>
-          <ng-container *ngIf="doc.formatoDisponibleUrl">
-            <span class="formato-disponible-wrap">
-              <span class="formato-disponible-texto">Formato disponible en:</span>
-              <a [href]="doc.formatoDisponibleUrl" target="_blank" rel="noopener noreferrer" class="formato-disponible-link" title="Abrir formato en nueva pestaña">
-                <mat-icon class="formato-disponible-icon">download</mat-icon> Descargar formato
-              </a>
-            </span>
-          </ng-container>
-        </span>
-      </li>
+      @for (doc of documentosObligatorios; track doc) {
+        <li class="required-list-item-with-link">
+          <mat-icon>description</mat-icon>
+          <span class="required-list-label">
+            {{ doc.label }} <span class="asterisco-obligatorio">*</span>
+            @if (doc.formatoDisponibleUrl) {
+              <span class="formato-disponible-wrap">
+                <span class="formato-disponible-texto">Formato disponible en:</span>
+                <a [href]="doc.formatoDisponibleUrl" target="_blank" rel="noopener noreferrer" class="formato-disponible-link" title="Abrir formato en nueva pestaña">
+                  <mat-icon class="formato-disponible-icon">download</mat-icon> Descargar formato
+                </a>
+              </span>
+            }
+          </span>
+        </li>
+      }
 
       <!-- Archivos exclusivos (solo para Sistemas, Electrónica, Automática) -->
-      <li *ngIf="archivosExclusivosFiltrados.length" class="obligatorio-exclusivo">
-        <mat-icon>description</mat-icon>
-        {{ archivosExclusivosFiltrados.join(' o ') }} 
-        <span class="asterisco-obligatorio">*</span>
-        <span class="nota">(solo uno)</span>
-      </li>
+      @if (archivosExclusivosFiltrados.length) {
+        <li class="obligatorio-exclusivo">
+          <mat-icon>description</mat-icon>
+          {{ archivosExclusivosFiltrados.join(' o ') }}
+          <span class="asterisco-obligatorio">*</span>
+          <span class="nota">(solo uno)</span>
+        </li>
+      }
 
       <!-- Cédula obligatoria para Telemática -->
-      <li *ngFor="let file of archivosObligatoriosTelematica" class="obligatorio-telematica">
-        <mat-icon>description</mat-icon>
-        <strong>{{ file }}</strong> 
-        <span class="asterisco-obligatorio">*</span>
-      </li>
+      @for (file of archivosObligatoriosTelematica; track file) {
+        <li class="obligatorio-telematica">
+          <mat-icon>description</mat-icon>
+          <strong>{{ file }}</strong>
+          <span class="asterisco-obligatorio">*</span>
+        </li>
+      }
 
       <!-- Documentos según modalidad (no para Telemática) -->
-      <li *ngFor="let doc of documentosSegunModalidad">
-        <mat-icon>description</mat-icon>
-        {{ doc.label }}
-      </li>
+      @for (doc of documentosSegunModalidad; track doc) {
+        <li>
+          <mat-icon>description</mat-icon>
+          {{ doc.label }}
+        </li>
+      }
 
       <!-- Documentos opcionales -->
-      <li *ngFor="let doc of documentosOpcionales">
-        <mat-icon>description</mat-icon>
-        {{ doc.label }}
-      </li>
+      @for (doc of documentosOpcionales; track doc) {
+        <li>
+          <mat-icon>description</mat-icon>
+          {{ doc.label }}
+        </li>
+      }
     </ul>
     <!-- Información adicional solo para Paz y Salvo -->
-    <div class="info-adicional" *ngIf="esPazYSalvo">
-      <p class="info-nota">
-        <strong>Nota importante sobre pruebas ECAES:</strong> Los resultados de las pruebas ECAES deben estar registrados en la historia académica. De lo contrario, el estudiante debe presentar el resultado a DARCA para su inclusión.
-      </p>
-      <p class="info-nota">
-        <strong>Descuento en derechos de grado:</strong> Los estudiantes que obtengan un percentil igual o superior al 75 en las pruebas SABER-PRO y SABER TyT, realizadas en los 18 meses previos a la graduación, tendrán un descuento del 50% en los derechos de grado.
-      </p>
-    </div>
+    @if (esPazYSalvo) {
+      <div class="info-adicional">
+        <p class="info-nota">
+          <strong>Nota importante sobre pruebas ECAES:</strong> Los resultados de las pruebas ECAES deben estar registrados en la historia académica. De lo contrario, el estudiante debe presentar el resultado a DARCA para su inclusión.
+        </p>
+        <p class="info-nota">
+          <strong>Descuento en derechos de grado:</strong> Los estudiantes que obtengan un percentil igual o superior al 75 en las pruebas SABER-PRO y SABER TyT, realizadas en los 18 meses previos a la graduación, tendrán un descuento del 50% en los derechos de grado.
+        </p>
+      </div>
+    }
   </mat-card-content>
 </mat-card>

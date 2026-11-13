@@ -1,38 +1,50 @@
 <app-card-container title="Cursos Ofertados">
   <!-- Selector de período -->
-  <app-periodo-filtro-selector
-    *ngIf="!cargando"
-    fuente="con-cursos"
-    [periodoInicial]="periodoSeleccionado"
-    (periodoChange)="onPeriodoChange($event)"
-  ></app-periodo-filtro-selector>
+  @if (!cargando) {
+    <app-periodo-filtro-selector
+      fuente="con-cursos"
+      [periodoInicial]="periodoSeleccionado"
+      (periodoChange)="onPeriodoChange($event)"
+    ></app-periodo-filtro-selector>
+  }
 
-  <div *ngIf="cargando" class="cargando">Cargando cursos...</div>
+  @if (cargando) {
+    <div class="cargando">Cargando cursos...</div>
+  }
 
-  <app-curso-list
-    *ngIf="!cargando"
-    [cursos]="cursos"
-    [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','periodo','fecha_inicio','fecha_fin','duracion','estado']"
-    [acciones]="[]"
-  ></app-curso-list>
+  @if (!cargando) {
+    <app-curso-list
+      [cursos]="cursos"
+      [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','periodo','fecha_inicio','fecha_fin','duracion','estado']"
+      [acciones]="[]"
+    ></app-curso-list>
+  }
 
-  <div *ngIf="!cargando && cursos.length === 0" class="sin-datos">
-    <div class="mensaje-vacio">
-      <mat-icon class="icono-vacio">school</mat-icon>
-      <h3>No hay cursos disponibles</h3>
-      <p *ngIf="!periodoSeleccionado || periodoSeleccionado === ''">
-        No hay cursos disponibles para el período académico actual.
-        <br>
-        <span class="sugerencia">Puedes seleccionar un período específico en el filtro de arriba.</span>
-      </p>
-      <p *ngIf="periodoSeleccionado && periodoSeleccionado !== 'todos' && periodoSeleccionado !== ''">
-        No hay cursos disponibles para el período seleccionado: <strong>{{ periodoSeleccionado }}</strong>.
-        <br>
-        <span class="sugerencia">Intenta seleccionar otro período o el período actual.</span>
-      </p>
-      <p *ngIf="periodoSeleccionado === 'todos'">
-        No hay cursos disponibles en ningún período.
-      </p>
-    </div>
-  </div>
-</app-card-container>
+  @if (!cargando && cursos.length === 0) {
+    <div class="sin-datos">
+      <div class="mensaje-vacio">
+        <mat-icon class="icono-vacio">school</mat-icon>
+        <h3>No hay cursos disponibles</h3>
+        @if (!periodoSeleccionado || periodoSeleccionado === '') {
+          <p>
+            No hay cursos disponibles para el período académico actual.
+            <br>
+              <span class="sugerencia">Puedes seleccionar un período específico en el filtro de arriba.</span>
+            </p>
+          }
+          @if (periodoSeleccionado && periodoSeleccionado !== 'todos' && periodoSeleccionado !== '') {
+            <p>
+              No hay cursos disponibles para el período seleccionado: <strong>{{ periodoSeleccionado }}</strong>.
+              <br>
+                <span class="sugerencia">Intenta seleccionar otro período o el período actual.</span>
+              </p>
+            }
+            @if (periodoSeleccionado === 'todos') {
+              <p>
+                No hay cursos disponibles en ningún período.
+              </p>
+            }
+          </div>
+        </div>
+      }
+    </app-card-container>

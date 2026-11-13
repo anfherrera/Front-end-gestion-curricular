@@ -5,64 +5,66 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 // Componente de prueba con formulario típico
 @Component({
   selector: 'app-test-form',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   template: `
     <form [formGroup]="testForm">
       <div class="form-field">
         <label for="email">Correo Electrónico</label>
-        <input 
-          id="email" 
-          type="email" 
+        <input
+          id="email"
+          type="email"
           formControlName="email"
           placeholder="correo@unicauca.edu.co"
           aria-required="true"
           aria-describedby="email-error"
-        />
-        <span id="email-error" *ngIf="testForm.get('email')?.invalid && (testForm.get('email')?.touched || testForm.get('email')?.dirty)" class="error-message">
-          El correo es requerido
-        </span>
-      </div>
-
-      <div class="form-field">
-        <label for="password">Contraseña</label>
-        <input 
-          id="password" 
-          type="password" 
-          formControlName="password"
-          aria-required="true"
-          aria-describedby="password-hint"
-        />
-        <span id="password-hint" class="hint">Mínimo 8 caracteres</span>
-      </div>
-
-      <div class="form-field">
-        <label for="role">Rol</label>
-        <select 
-          id="role" 
-          formControlName="role"
-          aria-required="true"
-        >
-          <option value="">Seleccione un rol</option>
-          <option value="estudiante">Estudiante</option>
-          <option value="coordinador">Coordinador</option>
-        </select>
-      </div>
-
-      <button 
-        id="submit"
-        type="submit" 
-        [disabled]="testForm.invalid"
-        aria-label="Enviar formulario"
-      >
-        Enviar
-      </button>
-    </form>
-  `,
+          />
+          @if (testForm.get('email')?.invalid && (testForm.get('email')?.touched || testForm.get('email')?.dirty)) {
+            <span id="email-error" class="error-message">
+              El correo es requerido
+            </span>
+          }
+        </div>
+    
+        <div class="form-field">
+          <label for="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            aria-required="true"
+            aria-describedby="password-hint"
+            />
+            <span id="password-hint" class="hint">Mínimo 8 caracteres</span>
+          </div>
+    
+          <div class="form-field">
+            <label for="role">Rol</label>
+            <select
+              id="role"
+              formControlName="role"
+              aria-required="true"
+              >
+              <option value="">Seleccione un rol</option>
+              <option value="estudiante">Estudiante</option>
+              <option value="coordinador">Coordinador</option>
+            </select>
+          </div>
+    
+          <button
+            id="submit"
+            type="submit"
+            [disabled]="testForm.invalid"
+            aria-label="Enviar formulario"
+            >
+            Enviar
+          </button>
+        </form>
+    `,
   styles: [`
     .error-message { color: #d32f2f; }
     .hint { color: #666; font-size: 0.875rem; }

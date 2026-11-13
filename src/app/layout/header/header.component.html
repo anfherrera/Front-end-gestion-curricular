@@ -6,49 +6,51 @@
     </button>
 
     <img src="assets/images/Logo-Universidad-del-Cauca-vertical-1.png"
-         alt="Logo Universidad del Cauca" class="logo" />
+      alt="Logo Universidad del Cauca" class="logo" />
 
-    <div class="header-title">
-      <h1>Universidad del Cauca</h1>
-      <span>Sistema de Gestión Curricular | Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
-    </div>
-  </div>
-
-  <!-- Usuario e iconos -->
-  <div class="header-right">
-    <!-- Período Académico Actual -->
-    <div class="periodo-header" *ngIf="periodoActual">
-      <mat-icon class="periodo-icon">calendar_today</mat-icon>
-      <span class="periodo-text">{{ periodoFormateado }}</span>
+      <div class="header-title">
+        <h1>Universidad del Cauca</h1>
+        <span>Sistema de Gestión Curricular | Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
+      </div>
     </div>
 
-    <!-- Componente de notificaciones -->
-    <app-notifications-header></app-notifications-header>
-
-    <div class="user-menu">
-      <button mat-button class="user-profile-btn" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
-        <div class="user-avatar">
-          <span class="user-initials">{{ getUserInitials() }}</span>
+    <!-- Usuario e iconos -->
+    <div class="header-right">
+      <!-- Período Académico Actual -->
+      @if (periodoActual) {
+        <div class="periodo-header">
+          <mat-icon class="periodo-icon">calendar_today</mat-icon>
+          <span class="periodo-text">{{ periodoFormateado }}</span>
         </div>
-        <span class="user-name-horizontal">{{ userName }}</span>
-        <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-      </button>
-      <mat-menu #userMenu="matMenu">
-        <div class="user-menu-header">
-          <div class="user-name">{{ userName }}</div>
-          <div class="user-email">{{ userEmail }}</div>
-        </div>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="goToProfile()">
-          <mat-icon>person</mat-icon>
-          <span>Mi Perfil</span>
+      }
+
+      <!-- Componente de notificaciones -->
+      <app-notifications-header></app-notifications-header>
+
+      <div class="user-menu">
+        <button mat-button class="user-profile-btn" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
+          <div class="user-avatar">
+            <span class="user-initials">{{ getUserInitials() }}</span>
+          </div>
+          <span class="user-name-horizontal">{{ userName }}</span>
+          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
         </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="logout()" class="logout-item">
-          <mat-icon>logout</mat-icon>
-          <span>Cerrar Sesión</span>
-        </button>
-      </mat-menu>
+        <mat-menu #userMenu="matMenu">
+          <div class="user-menu-header">
+            <div class="user-name">{{ userName }}</div>
+            <div class="user-email">{{ userEmail }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="goToProfile()">
+            <mat-icon>person</mat-icon>
+            <span>Mi Perfil</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()" class="logout-item">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar Sesión</span>
+          </button>
+        </mat-menu>
+      </div>
     </div>
-  </div>
-</header>
+  </header>

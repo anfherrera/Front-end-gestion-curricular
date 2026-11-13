@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -33,7 +33,7 @@ const ERRORES_INSCRIPCION: Record<number, string> = {
  */
 @Component({
   selector: 'app-inscripcion-modal',
-  imports: [CommonModule, ReactiveFormsModule, ...MATERIAL_IMPORTS],
+  imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './inscripcion-modal.component.html',
   styleUrls: ['./inscripcion-modal.component.css']
 })

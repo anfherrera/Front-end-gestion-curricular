@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -26,7 +26,7 @@ const ERRORES_POR_CODIGO: Record<string, string> = {
 
 @Component({
   selector: 'app-preinscripcion-dialog',
-  imports: [CommonModule, ReactiveFormsModule, ...MATERIAL_IMPORTS, NombreDocentePipe],
+  imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS, NombreDocentePipe],
   templateUrl: './preinscripcion-dialog.component.html',
   styleUrls: ['./preinscripcion-dialog.component.css']
 })

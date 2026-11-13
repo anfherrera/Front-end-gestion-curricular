@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,7 +19,6 @@ import { SnackbarService } from '@core/services/snackbar.service';
 @Component({
   selector: 'app-form-usuario',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     RouterModule,
     MatFormFieldModule,
@@ -29,7 +28,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatIconModule,
     MatProgressSpinnerModule,
     MatCardModule
-  ],
+],
   templateUrl: './form-usuario.component.html',
   styleUrls: ['./form-usuario.component.css']
 })
