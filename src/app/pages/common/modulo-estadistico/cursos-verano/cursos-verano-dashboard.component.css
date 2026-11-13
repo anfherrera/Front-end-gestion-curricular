@@ -4,7 +4,7 @@
   justify-content: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--gris-650);
   margin-top: 8px;
 }
 
@@ -22,10 +22,10 @@
   justify-content: center;
   gap: 12px;
   padding: 20px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
   margin: 20px 0;
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 0.9rem;
 }
 
@@ -40,17 +40,17 @@
   border-radius: 12px;
   box-shadow: var(--sombra-2);
   margin: 20px 0;
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid var(--estado-peligro);
 }
 
 .error-icon {
   font-size: 3rem;
-  color: #dc3545;
+  color: var(--estado-peligro);
   margin-bottom: 1rem;
 }
 
 .error-container h3 {
-  color: #dc3545;
+  color: var(--estado-peligro);
   margin-bottom: 0.5rem;
 }
 
@@ -191,15 +191,15 @@
 }
 
 .kpi-card.materias-unicas {
-  border-left-color: #28a745;
+  border-left-color: var(--estado-exito);
 }
 
 .kpi-card.programas-participantes {
-  border-left-color: #17a2b8;
+  border-left-color: var(--estado-info);
 }
 
 .kpi-card.tasa-aprobacion {
-  border-left-color: #ffc107;
+  border-left-color: var(--estado-advertencia);
 }
 
 .kpi-card mat-card-header,
@@ -226,7 +226,7 @@
 }
 
 .kpi-description {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 0.9rem;
 }
 
@@ -235,7 +235,7 @@
 }
 
 .predicciones-content {
-  background: #f8f9fa;
+  background: var(--gris-50);
   margin: -2rem;
   padding: 2rem;
 }
@@ -299,19 +299,19 @@
 }
 
 .estado-card.aprobada {
-  border-left-color: #28a745;
+  border-left-color: var(--estado-exito);
 }
 
 .estado-card.enviada {
-  border-left-color: #ffc107;
+  border-left-color: var(--estado-advertencia);
 }
 
 .estado-card.en-proceso {
-  border-left-color: #17a2b8;
+  border-left-color: var(--estado-info);
 }
 
 .estado-card.rechazada {
-  border-left-color: #dc3545;
+  border-left-color: var(--estado-peligro);
 }
 
 .estado-header {
@@ -327,42 +327,42 @@
 
 /* Colores para los iconos de cada estado */
 .estado-card.aprobada mat-icon {
-  color: #28a745;
+  color: var(--estado-exito);
 }
 
 .estado-card.enviada mat-icon {
-  color: #ffc107;
+  color: var(--estado-advertencia);
 }
 
 .estado-card.en-proceso mat-icon {
-  color: #17a2b8;
+  color: var(--estado-info);
 }
 
 .estado-card.rechazada mat-icon {
-  color: #dc3545;
+  color: var(--estado-peligro);
 }
 
 .estado-nombre {
   font-weight: 600;
   font-size: 1rem;
-  color: #333;
+  color: var(--gris-900);
 }
 
 /* Colores específicos para cada estado */
 .estado-card.aprobada .estado-nombre {
-  color: #28a745;
+  color: var(--estado-exito);
 }
 
 .estado-card.enviada .estado-nombre {
-  color: #ffc107;
+  color: var(--estado-advertencia);
 }
 
 .estado-card.en-proceso .estado-nombre {
-  color: #17a2b8;
+  color: var(--estado-info);
 }
 
 .estado-card.rechazada .estado-nombre {
-  color: #dc3545;
+  color: var(--estado-peligro);
 }
 
 .estado-valor {
@@ -405,13 +405,13 @@
 .resumen-item {
   text-align: center;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
 }
 
 .resumen-label {
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--gris-650);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
@@ -431,19 +431,19 @@
 
 .confiabilidad-alta {
   background: rgba(40, 167, 69, 0.1);
-  color: #28a745;
+  color: var(--estado-exito);
   border: 1px solid rgba(40, 167, 69, 0.3);
 }
 
 .confiabilidad-media {
   background: rgba(255, 193, 7, 0.1);
-  color: #ffc107;
+  color: var(--estado-advertencia);
   border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
 .confiabilidad-baja {
   background: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
+  color: var(--estado-peligro);
   border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
@@ -460,8 +460,8 @@
 }
 
 .tendencia-card {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--gris-50);
+  border: 1px solid var(--gris-100);
   border-radius: 8px;
   box-shadow: var(--sombra-2);
   padding: 15px;
@@ -473,21 +473,21 @@
 }
 
 .tendencia-card:hover {
-  background: #e9ecef;
+  background: var(--gris-100);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
 
 .tendencia-card.creciente {
-  border-left-color: #28a745;
+  border-left-color: var(--estado-exito);
 }
 
 .tendencia-card.decreciente {
-  border-left-color: #dc3545;
+  border-left-color: var(--estado-peligro);
 }
 
 .tendencia-card.estable {
-  border-left-color: #ffc107;
+  border-left-color: var(--estado-advertencia);
 }
 
 .tendencia-header {
@@ -518,7 +518,7 @@
 
 .dato-label {
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--gris-650);
 }
 
 .dato-valor {
@@ -528,7 +528,7 @@
 
 /* Iconos de Tendencia */
 .tendencia-creciente {
-  color: #28a745;
+  color: var(--estado-exito);
   font-weight: bold;
   background: rgba(40, 167, 69, 0.1);
   padding: 0.25rem 0.5rem;
@@ -538,7 +538,7 @@
 }
 
 .tendencia-decreciente {
-  color: #dc3545;
+  color: var(--estado-peligro);
   font-weight: bold;
   background: rgba(220, 53, 69, 0.1);
   padding: 0.25rem 0.5rem;
@@ -548,7 +548,7 @@
 }
 
 .tendencia-estable {
-  color: #ffc107;
+  color: var(--estado-advertencia);
   font-weight: bold;
   background: rgba(255, 193, 7, 0.1);
   padding: 0.25rem 0.5rem;
@@ -642,12 +642,12 @@
 }
 
 .mat-expansion-panel-header {
-  background: #f8f9fa !important;
+  background: var(--gris-50) !important;
   border-radius: 12px 12px 0 0 !important;
 }
 
 .mat-expansion-panel-header:hover {
-  background: #e9ecef !important;
+  background: var(--gris-100) !important;
 }
 
 /* ===== ESTILOS PARA DATOS CONECTADOS ===== */
@@ -656,14 +656,14 @@
 .chart-data {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--gris-150);
 }
 
 /* Materia Items */
 .materia-item, .programa-item {
   padding: 10px;
   margin: 5px 0;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--gris-150);
   border-radius: 5px;
   background: #f9f9f9;
   transition: all 0.3s ease;
@@ -682,13 +682,13 @@
 }
 
 .materia-solicitudes, .programa-solicitudes, .tendencia-solicitudes {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
 }
 
 .materia-porcentaje, .programa-porcentaje, .tendencia-porcentaje {
-  color: #28a745;
+  color: var(--estado-exito);
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -711,12 +711,12 @@
 }
 
 .demanda-estimada {
-  color: #28a745;
+  color: var(--estado-exito);
   font-weight: 500;
 }
 
 .variacion {
-  color: #ffc107;
+  color: var(--estado-advertencia);
   font-weight: 600;
 }
 
@@ -730,18 +730,18 @@
 .meses-recomendados {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--gris-650);
 }
 
 /* No Data */
 .no-data {
   text-align: center;
-  color: #6c757d;
+  color: var(--gris-650);
   font-style: italic;
   padding: 40px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
-  border: 2px dashed #dee2e6;
+  border: 2px dashed var(--gris-200);
   width: 100%;
 }
 
@@ -764,7 +764,7 @@
 /* Estilos para tarjetas de predicciones */
 .prediccion-materia-card, .prediccion-programa-card, .prediccion-temporal-card {
   background: #f0f8ff;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--gris-150);
   border-radius: 8px;
   padding: 15px;
   display: flex;
@@ -795,7 +795,7 @@
 .dashboard-tabs {
   display: flex;
   margin-bottom: 0;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid var(--gris-100);
   background: white;
   border-radius: 8px 8px 0 0;
   padding: 0;
@@ -810,7 +810,7 @@
   transition: all 0.3s ease;
   font-size: 1rem;
   font-weight: 500;
-  color: #6c757d;
+  color: var(--gris-650);
   flex: 1;
   text-align: center;
 }
@@ -819,11 +819,11 @@
   border-bottom-color: var(--color-primario);
   color: var(--color-primario);
   font-weight: bold;
-  background: #f8f9fa;
+  background: var(--gris-50);
 }
 
 .tab-button:hover {
-  background-color: #f8f9fa;
+  background-color: var(--gris-50);
   color: var(--color-primario);
 }
 
@@ -842,11 +842,11 @@
   align-items: center;
   justify-content: center;
   height: 200px;
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 1.1em;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
-  border: 2px dashed #dee2e6;
+  border: 2px dashed var(--gris-200);
 }
 
 .chart-loading i {
@@ -869,7 +869,7 @@ canvas {
   }
   
   .tab-button {
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--gris-100);
     border-radius: 0;
   }
   
@@ -919,7 +919,7 @@ canvas {
 }
 
 .prediccion-temporal-card .demanda-estimada {
-  color: #28a745;
+  color: var(--estado-exito);
   font-weight: 500;
   font-size: 1rem;
 }
@@ -927,7 +927,7 @@ canvas {
 .prediccion-temporal-card .meses-recomendados {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--gris-650);
 }
 
 /* Responsive para datos */

@@ -1,38 +1,6 @@
 /* Estilos para el componente de preinscribir estudiantes */
 
-.filtro-section {
-  margin-bottom: 24px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #e3f2fd;
-}
 
-.filtro-section h3 {
-  color: var(--color-primario);
-  margin-bottom: 16px;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.curso-selector {
-  width: 100%;
-  max-width: 500px;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: #666;
-}
-
-.loading-container p {
-  margin-top: 16px;
-  font-size: 14px;
-}
 
 .preinscripciones-section {
   margin-bottom: 24px;
@@ -47,31 +15,7 @@
   padding-bottom: 8px;
 }
 
-.no-data {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: #666;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #ddd;
-}
 
-.no-data mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 16px;
-  color: var(--color-primario);
-}
-
-.table-container {
-  overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: var(--sombra-1);
-}
 
 .preinscripciones-table {
   width: 100%;
@@ -92,54 +36,40 @@
 }
 
 .preinscripciones-table td {
-  border-bottom: 1px solid #e0e0e0;
-  color: #333 !important;
+  border-bottom: 1px solid var(--gris-150);
+  color: var(--gris-900) !important;
 }
 
 .preinscripciones-table td * {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
-.estudiante-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
 
-.estudiante-info strong {
-  color: #333 !important;
-  font-size: 14px;
-}
-
-.estudiante-info small {
-  color: #666 !important;
-  font-size: 12px;
-}
 
 .observaciones-cell {
   max-width: 200px;
   word-wrap: break-word;
   padding: 8px 12px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 6px;
   border-left: 3px solid var(--color-primario);
   margin: 4px 0;
 }
 
 .observaciones-cell span {
-  color: #333 !important;
+  color: var(--gris-900) !important;
   font-size: 13px;
   line-height: 1.4;
 }
 
 .sin-observaciones {
-  color: #999 !important;
+  color: var(--gris-500) !important;
   font-style: italic;
   font-size: 12px;
-  background: #f5f5f5;
+  background: var(--gris-75);
   padding: 4px 8px;
   border-radius: 4px;
-  border-left: 2px solid #ddd;
+  border-left: 2px solid var(--gris-250);
 }
 
 /* Contenedor de acciones */
@@ -150,42 +80,7 @@
   justify-content: center;
 }
 
-.curso-info {
-  margin-top: 24px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #e3f2fd;
-}
 
-.curso-info h4 {
-  color: var(--color-primario);
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: white;
-  border-radius: 6px;
-  border-left: 3px solid var(--color-primario);
-}
-
-.info-item strong {
-  color: var(--color-primario);
-  min-width: 120px;
-  font-size: 13px;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -213,26 +108,7 @@
   }
 }
 
-/* Estilos para mat-form-field */
-::ng-deep .mat-mdc-form-field {
-  width: 100%;
-}
 
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
-  color: #e3f2fd;
-}
-
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
-  color: var(--color-primario);
-}
-
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
-  color: #6c757d;
-}
-
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-  color: var(--color-primario);
-}
 
 /* Estilos para mat-chip - FORZAR ESTILOS */
 ::ng-deep .mat-mdc-chip {
@@ -309,7 +185,7 @@
 
 /* Forzar color del texto en toda la tabla */
 ::ng-deep .preinscripciones-table {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .preinscripciones-table th {
@@ -330,45 +206,45 @@
 }
 
 ::ng-deep .preinscripciones-table td {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .preinscripciones-table td * {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .preinscripciones-table .estudiante-info {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .preinscripciones-table .estudiante-info strong {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .preinscripciones-table .estudiante-info small {
-  color: #666 !important;
+  color: var(--gris-700) !important;
 }
 
 ::ng-deep .preinscripciones-table .observaciones-cell {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .preinscripciones-table .observaciones-cell {
-  color: #333 !important;
-  background: #f8f9fa !important;
+  color: var(--gris-900) !important;
+  background: var(--gris-50) !important;
   border-left: 3px solid var(--color-primario) !important;
   border-radius: 6px !important;
   padding: 8px 12px !important;
 }
 
 ::ng-deep .preinscripciones-table .observaciones-cell span {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .preinscripciones-table .sin-observaciones {
-  color: #999 !important;
-  background: #f5f5f5 !important;
-  border-left: 2px solid #ddd !important;
+  color: var(--gris-500) !important;
+  background: var(--gris-75) !important;
+  border-left: 2px solid var(--gris-250) !important;
   border-radius: 4px !important;
   padding: 4px 8px !important;
 }
@@ -553,4 +429,14 @@
 
 .acciones-container button[mat-icon-button][style*="f44336"]:hover mat-icon {
   color: #e53935 !important;
+}
+
+/* Etiqueta de estado en la tabla (el fondo lo pone el pipe estadoColor) */
+.estado-etiqueta {
+  color: var(--blanco) !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: none !important;
+  display: inline-block;
 }

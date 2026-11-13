@@ -70,17 +70,17 @@
 
 /* Hover según Sistema de Diseño TIC: Contenedor #5056AC */
 .sidebar-link:hover {
-  background: var(--color-primario-light, #5056AC);
+  background: var(--color-primario-light);
   padding-left: 20px;
 }
 
 .sidebar-link:active {
-  background: var(--primario-60, #828AE3);
+  background: var(--primario-60);
 }
 
 /* Estado activo cuando la ruta está seleccionada - Sistema de Diseño TIC */
 .sidebar-link.active {
-  background: var(--color-primario-light, #5056AC);
+  background: var(--color-primario-light);
   font-weight: 600;
   border-left: 3px solid white;
   padding-left: 13px; /* Ajustar padding para compensar el borde */

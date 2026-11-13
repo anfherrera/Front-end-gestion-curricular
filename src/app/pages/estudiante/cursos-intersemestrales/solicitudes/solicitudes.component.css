@@ -16,7 +16,7 @@
   justify-content: flex-end;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--gris-150);
 }
 
 .action-button {
@@ -35,7 +35,7 @@
   padding: 32px;
   background: #e8f5e8;
   border-radius: 12px;
-  border: 2px solid #249337;
+  border: 2px solid var(--notif-exito-borde);
   margin-top: 20px;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .success-icon {
-  color: #249337 !important;
+  color: var(--notif-exito-borde) !important;
 }
 
 .success-message p {
@@ -98,7 +98,7 @@ mat-form-field.mat-form-field-invalid .mat-form-field-outline {
 }
 
 mat-form-field.mat-form-field-valid .mat-form-field-outline {
-  color: #249337;
+  color: var(--notif-exito-borde);
 }
 
 /* Iconos de los campos de formulario - Color azul de la app */
@@ -112,7 +112,7 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
 
 /* Outline del form field con color azul */
 mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
-  color: #dee2e6;
+  color: var(--gris-200);
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {

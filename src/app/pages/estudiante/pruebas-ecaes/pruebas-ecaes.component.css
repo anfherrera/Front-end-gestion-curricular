@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: var(--gris-azulado-50);
   font-family: 'Roboto', sans-serif;
   min-height: 100vh;
 }
@@ -33,7 +33,7 @@
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
-  border: 2px solid #e3f2fd;
+  border: 2px solid var(--azul-50);
   box-shadow: var(--sombra-2);
   background: white;
 }
@@ -67,7 +67,7 @@
 }
 
 .data-row:hover {
-  background: #f8f9ff;
+  background: var(--primario-98);
   transform: translateY(-1px);
   box-shadow: var(--sombra-1);
 }
@@ -101,7 +101,7 @@
   text-align: center;
   width: 35%;
   font-size: 1rem;
-  background: #f8f9ff;
+  background: var(--primario-98);
 }
 
 /* ================================
@@ -110,12 +110,12 @@
 
 .mensaje-vacio {
   text-align: center;
-  color: #888888;
+  color: var(--gris-550);
   font-style: italic;
   padding: 40px 20px;
-  background-color: #f8f9fa;
+  background-color: var(--gris-50);
   border-radius: 8px;
-  border: 2px dashed #e0e0e0;
+  border: 2px dashed var(--gris-150);
 }
 
 .mensaje-vacio p {
@@ -171,9 +171,9 @@
 .seccion-archivos {
   margin-bottom: 32px;
   padding: 24px;
-  background: #f8f9ff;
+  background: var(--primario-98);
   border-radius: 12px;
-  border: 2px solid #e3f2fd;
+  border: 2px solid var(--azul-50);
 }
 
 .boton-envio {
@@ -200,8 +200,8 @@
 }
 
 .btn-enviar:disabled {
-  background: #ccc !important;
-  color: #666 !important;
+  background: var(--gris-300) !important;
+  color: var(--gris-700) !important;
   cursor: not-allowed !important;
   transform: none !important;
   box-shadow: none !important;
@@ -292,10 +292,10 @@
 .sin-solicitudes {
   text-align: center;
   padding: 40px 20px;
-  color: #666;
-  background: #f8f9ff;
+  color: var(--gris-700);
+  background: var(--primario-98);
   border-radius: 12px;
-  border: 2px dashed #e3f2fd;
+  border: 2px dashed var(--azul-50);
   margin: 20px 0;
 }
 

@@ -4,47 +4,25 @@
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: var(--gris-azulado-50);
   font-family: 'Roboto', sans-serif;
 }
 
-/* Tarjetas */
-.card-section {
-  border-radius: 12px;
-  background-color: #fff;
-  overflow: hidden;
-  box-shadow: var(--sombra-2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
 
-.card-section:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
 
 /* Títulos de tarjetas */
 .card-title {
   font-size: 1.2rem;
   font-weight: bold;
   background-color: var(--color-primario);
-  color: #fff;
+  color: var(--blanco);
   padding: 14px 16px;
   display: block;
   border-bottom: 3px solid #001060;
   margin-bottom: 0.5rem;
 }
 
-/* Contenido de la tarjeta */
-mat-card-content {
-  padding: 16px;
-}
 
-/* Mensaje cuando no hay solicitudes */
-.sin-solicitudes {
-  color: #555;
-  font-style: italic;
-  margin-top: 10px;
-}
 
 /* Botón Enviar Solicitud */
 .btn-enviar {
@@ -58,20 +36,11 @@ mat-card-content {
   box-shadow: var(--sombra-1);
 }
 
-.btn-enviar:hover:not(:disabled) {
-  background-color: var(--color-primario-light) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
 
-.btn-enviar:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--sombra-1);
-}
 
 .btn-enviar:disabled {
   background-color: #d3d3d3 !important;
-  color: #888888 !important;
+  color: var(--gris-550) !important;
   cursor: not-allowed;
   opacity: 0.5;
   transform: none;
@@ -85,7 +54,7 @@ mat-card-content {
   background: #fff3f3;
   border: 1px solid #ffcccc;
   border-radius: 8px;
-  color: #c62828;
+  color: var(--rojo-800);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -122,15 +91,15 @@ mat-card-content {
   gap: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  background-color: #e3f2fd;
-  border-left: 4px solid #2196f3;
+  background-color: var(--azul-50);
+  border-left: 4px solid var(--azul-500);
   border-radius: 8px;
   color: #1565c0;
 }
 
 .validacion-mensaje-informativo mat-icon {
   margin-top: 2px;
-  color: #2196f3;
+  color: var(--azul-500);
 }
 
 .validacion-mensaje-informativo strong {
@@ -150,13 +119,4 @@ mat-card-content {
   font-weight: 600;
 }
 
-.documentos-faltantes {
-  margin: 8px 0 0 0;
-  padding-left: 20px;
-  list-style-type: disc;
-}
 
-.documentos-faltantes li {
-  margin-bottom: 4px;
-  font-size: 13px;
-}

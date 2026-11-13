@@ -35,7 +35,7 @@ import { aDocumentos } from '../../common/paz-salvo-revision/paz-salvo-filas';
     SolicitudesBandejaComponent
   ],
   templateUrl: './paz-salvo.component.html',
-  styleUrls: ['./paz-salvo.component.css']
+  styleUrls: ['../secretaria-comun.css', './paz-salvo.component.css']
 })
 export class SecretariaPazSalvoComponent implements OnInit {
   @ViewChild('bandeja') bandeja?: SolicitudesBandejaComponent<SolicitudHomologacionDTORespuesta>;

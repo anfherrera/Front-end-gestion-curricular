@@ -65,7 +65,7 @@ interface DatosSolicitudPazSalvo {
     RequiredDocsComponent
   ],
   templateUrl: './paz-salvo.component.html',
-  styleUrls: ['./paz-salvo.component.css']
+  styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css']
 })
 export class PazSalvoComponent implements OnInit, OnDestroy {
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;

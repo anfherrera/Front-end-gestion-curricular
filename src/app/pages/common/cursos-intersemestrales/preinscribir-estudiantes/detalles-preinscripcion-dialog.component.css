@@ -4,19 +4,19 @@
 }
 
 .curso-info {
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 20px;
-  border-left: 4px solid #000066;
+  border-left: 4px solid var(--color-primario);
 }
 
 .form-section {
   margin-bottom: 24px;
   padding: 16px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
-  border-left: 4px solid #000066;
+  border-left: 4px solid var(--color-primario);
 }
 
 .form-section.historial {
@@ -25,7 +25,7 @@
 
 .form-section h3 {
   margin: 0 0 16px 0;
-  color: #000066;
+  color: var(--color-primario);
   font-size: 16px;
   font-weight: 600;
 }
@@ -47,7 +47,7 @@
 }
 
 .info-item strong {
-  color: #333;
+  color: var(--gris-900);
   min-width: 120px;
 }
 
@@ -60,7 +60,7 @@
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--gris-150);
 }
 
 .timeline {
@@ -131,7 +131,7 @@
 }
 
 .timeline-item--rechazo .timeline-estado {
-  color: #c62828;
+  color: var(--rojo-800);
 }
 
 .timeline-fecha {

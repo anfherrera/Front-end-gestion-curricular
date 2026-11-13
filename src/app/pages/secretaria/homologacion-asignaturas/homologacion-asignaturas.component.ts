@@ -36,7 +36,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     ApprovedRequestsSectionComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
-  styleUrls: ['./homologacion-asignaturas.component.css']
+  styleUrls: ['../secretaria-comun.css', './homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent

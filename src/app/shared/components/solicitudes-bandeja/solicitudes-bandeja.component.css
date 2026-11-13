@@ -4,7 +4,7 @@
 }
 
 :host ::ng-deep .mat-mdc-tab-header {
-  background-color: #fff;
+  background-color: var(--blanco);
   border-radius: 8px 8px 0 0;
   padding: 0 16px;
 }
@@ -20,16 +20,16 @@
 .filtro-periodo {
   margin-bottom: 20px;
   padding: 16px;
-  background-color: #f8f9fa;
+  background-color: var(--gris-50);
   border-radius: 8px;
 }
 
 .no-solicitudes {
   text-align: center;
   padding: 40px 20px;
-  color: #666;
+  color: var(--gris-700);
   font-style: italic;
-  background-color: #f8f9fa;
+  background-color: var(--gris-50);
   border-radius: 8px;
   margin-top: 16px;
 }

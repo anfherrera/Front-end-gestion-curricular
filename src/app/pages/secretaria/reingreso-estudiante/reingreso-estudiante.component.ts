@@ -46,7 +46,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     ApprovedRequestsSectionComponent
   ],
   templateUrl: './reingreso-estudiante.component.html',
-  styleUrls: ['./reingreso-estudiante.component.css']
+  styleUrls: ['../secretaria-comun.css', './reingreso-estudiante.component.css']
 })
 export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   @ViewChild('requestStatusTable') requestStatusTable!: RequestStatusTableComponent;

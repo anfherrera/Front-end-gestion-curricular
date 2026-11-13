@@ -44,7 +44,7 @@ import { RechazoPreinscripcionDialogComponent } from './rechazo-preinscripcion-d
     NombreDocentePipe
   ],
   templateUrl: './preinscribir-estudiantes.component.html',
-  styleUrls: ['./preinscribir-estudiantes.component.css']
+  styleUrls: ['../filtro-curso-comun.css', './preinscribir-estudiantes.component.css']
 })
 export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

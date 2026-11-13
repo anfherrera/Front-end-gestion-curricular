@@ -16,7 +16,7 @@
   align-items: center;
   gap: 12px;
   margin: 0;
-  color: #333;
+  color: var(--gris-900);
 }
 
 .actions {
@@ -61,14 +61,14 @@ table {
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  color: #666;
+  color: var(--gris-700);
 }
 
 .empty-state mat-icon {
   font-size: 64px;
   width: 64px;
   height: 64px;
-  color: #ccc;
+  color: var(--gris-300);
 }
 
 .empty-state p {
@@ -86,7 +86,7 @@ table {
 }
 
 .loading-container p {
-  color: #666;
+  color: var(--gris-700);
   margin: 0;
 }
 

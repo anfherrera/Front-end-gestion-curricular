@@ -28,7 +28,7 @@
 
 .dialog-content {
   padding: 24px;
-  background: #f8f9fa;
+  background: var(--gris-50);
 }
 
 .estudiante-info {
@@ -51,7 +51,7 @@
 }
 
 .info-icon {
-  color: #000066;
+  color: var(--color-primario);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -64,19 +64,19 @@
 }
 
 .info-text strong {
-  color: #000066;
+  color: var(--color-primario);
   font-size: 14px;
   font-weight: 600;
 }
 
 .info-text span {
-  color: #333;
+  color: var(--gris-900);
   font-size: 16px;
 }
 
 .confirmacion-mensaje {
-  background: #e3f2fd;
-  border: 1px solid #2196f3;
+  background: var(--azul-50);
+  border: 1px solid var(--azul-500);
   border-radius: 8px;
   padding: 16px;
   text-align: center;
@@ -84,7 +84,7 @@
 
 .confirmacion-mensaje p {
   margin: 0;
-  color: #1976d2;
+  color: var(--azul-700);
   font-size: 14px;
   font-weight: 500;
 }
@@ -92,28 +92,28 @@
 .dialog-actions {
   padding: 20px 24px;
   background: white;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--gris-150);
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
 .btn-cancelar {
-  color: #666;
-  border: 1px solid #ddd;
+  color: var(--gris-700);
+  border: 1px solid var(--gris-250);
 }
 
 .btn-cancelar:hover {
-  background: #f5f5f5;
+  background: var(--gris-75);
 }
 
 .btn-confirmar {
-  background: #000066;
+  background: var(--color-primario);
   color: white;
 }
 
 .btn-confirmar:hover {
-  background: #5056AC;
+  background: var(--color-primario-light);
 }
 
 .btn-cancelar mat-icon,

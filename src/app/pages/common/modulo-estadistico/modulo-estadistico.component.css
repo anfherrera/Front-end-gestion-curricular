@@ -15,12 +15,12 @@
 }
 
 .tab-content h2 {
-  color: #1976d2;
+  color: var(--azul-700);
   margin-bottom: 20px;
 }
 
 .tab-content p {
-  color: #666;
+  color: var(--gris-700);
   font-size: 1.1rem;
 }
 
@@ -39,8 +39,8 @@
 }
 
 ::ng-deep .mat-mdc-tab-header {
-  background: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
+  background: var(--gris-50);
+  border-bottom: 2px solid var(--gris-200);
 }
 
 ::ng-deep .mat-mdc-tab-body-wrapper {

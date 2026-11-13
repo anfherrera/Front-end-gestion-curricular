@@ -1,6 +1,6 @@
 .historial-completo-container {
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: var(--gris-azulado-50);
   min-height: 100vh;
 }
 
@@ -11,11 +11,6 @@
   justify-content: flex-end;
 }
 
-.header-actions button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .header-actions button mat-spinner {
   margin-right: 8px;
@@ -28,7 +23,7 @@
   background: var(--mat-on-primary);
   border-radius: 12px;
   box-shadow: var(--sombra-2);
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--gris-150);
 }
 
 .filtros-form {
@@ -140,7 +135,7 @@
 }
 
 .filtros-section ::ng-deep .mat-mdc-text-field-wrapper {
-  background-color: #ffffff;
+  background-color: var(--blanco);
   border-radius: 8px;
 }
 
@@ -167,9 +162,9 @@
 .info-filtros {
   margin-bottom: 20px;
   padding: 16px;
-  background-color: #e3f2fd;
+  background-color: var(--azul-50);
   border-radius: 8px;
-  border-left: 4px solid #2196f3;
+  border-left: 4px solid var(--azul-500);
 }
 
 .chips-container {
@@ -191,24 +186,11 @@
   vertical-align: middle;
 }
 
-/* Loading */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  gap: 16px;
-}
 
-.loading-container p {
-  color: #666;
-  font-size: 1rem;
-}
 
 /* Tabla */
 .tabla-container {
-  background-color: #ffffff;
+  background-color: var(--blanco);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--sombra-1);
@@ -219,15 +201,15 @@
 }
 
 .historial-table th {
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
   font-weight: 600;
-  color: #333;
+  color: var(--gris-900);
   padding: 16px;
 }
 
 .historial-table td {
   padding: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--gris-150);
 }
 
 .historial-table tr:hover {
@@ -242,7 +224,7 @@
 }
 
 .icon-solicitud {
-  color: #2196f3;
+  color: var(--azul-500);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -257,52 +239,27 @@
 
 .usuario-nombre {
   font-weight: 500;
-  color: #333;
+  color: var(--gris-900);
 }
 
 .usuario-codigo {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--gris-700);
 }
 
 /* Categoría y Tipo */
 .categoria-texto {
-  color: #333;
+  color: var(--gris-900);
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .tipo-texto {
-  color: #333;
+  color: var(--gris-900);
   font-size: 0.9rem;
 }
 
-/* Chips (mantener para estados) */
 
-.estado-aprobada {
-  background-color: #c8e6c9 !important;
-  color: #2e7d32 !important;
-}
-
-.estado-rechazada {
-  background-color: #ffcdd2 !important;
-  color: #c62828 !important;
-}
-
-.estado-enviada {
-  background-color: #fff9c4 !important;
-  color: #f57f17 !important;
-}
-
-.estado-proceso {
-  background-color: #bbdefb !important;
-  color: #1565c0 !important;
-}
-
-.estado-default {
-  background-color: #e0e0e0 !important;
-  color: #424242 !important;
-}
 
 /* No Solicitudes */
 .no-solicitudes {
@@ -311,7 +268,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: #999;
+  color: var(--gris-500);
   text-align: center;
 }
 

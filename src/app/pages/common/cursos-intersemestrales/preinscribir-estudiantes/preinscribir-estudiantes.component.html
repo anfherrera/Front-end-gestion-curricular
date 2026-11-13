@@ -58,7 +58,7 @@
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let solicitud">
             <span [style.background-color]="solicitud.estado | estadoColor" 
-                  style="color: white !important; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: none !important; display: inline-block;">
+                  class="estado-etiqueta">
               {{ solicitud.estado }}
             </span>
           </td>
@@ -90,8 +90,8 @@
                       *ngIf="puedeVerDetalles(solicitud)"
                       (click)="verDetalles(solicitud)"
                       matTooltip="Ver detalles y agregar observaciones"
-                      style="color: #000066 !important;">
-                <mat-icon style="color: #000066 !important;">visibility</mat-icon>
+                      class="accion-ver">
+                <mat-icon>visibility</mat-icon>
               </button>
               
               <!-- Botón Aprobar (solo si tiene permisos y estado válido) -->
@@ -99,8 +99,8 @@
                       *ngIf="puedeAprobar(solicitud)"
                       (click)="aprobarSolicitud(solicitud)"
                       matTooltip="Aprobar preinscripción y pasar a inscripción"
-                      style="color: #4CAF50 !important;">
-                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
+                      class="accion-aprobar">
+                <mat-icon>check_circle</mat-icon>
               </button>
               
               <!-- Botón Rechazar (solo si tiene permisos y estado válido) -->
@@ -108,8 +108,8 @@
                       *ngIf="puedeRechazar(solicitud)"
                       (click)="rechazarSolicitud(solicitud)"
                       matTooltip="Rechazar preinscripción"
-                      style="color: #FF6D0A !important;">
-                <mat-icon style="color: #FF6D0A !important;">cancel</mat-icon>
+                      class="accion-rechazar">
+                <mat-icon>cancel</mat-icon>
               </button>
               
             </div>

@@ -4,8 +4,8 @@
   justify-content: space-between;
   align-items: center;
   background-color: white;
-  color: var(--color-primario, #000066);
-  border-top: 2px solid var(--primario-90, #E0E0FF);
+  color: var(--color-primario);
+  border-top: 2px solid var(--primario-90);
   padding: 16px 24px;
   font-size: 0.85rem;
   font-weight: 400;
@@ -32,18 +32,18 @@
 }
 
 .contact a {
-  color: var(--color-primario, #000066);
+  color: var(--color-primario);
   text-decoration: none;
 }
 
 .contact a:hover {
   text-decoration: underline;
-  color: var(--color-terciario, #1D72D3);
+  color: var(--color-terciario);
 }
 
 .footer-right mat-icon {
   font-size: 22px;
-  color: var(--color-primario, #000066);
+  color: var(--color-primario);
   cursor: pointer;
 }
 
@@ -53,12 +53,12 @@
 }
 
 .social-icons a {
-  color: var(--color-primario, #000066);
+  color: var(--color-primario);
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .social-icons a:hover {
-  color: var(--color-terciario, #1D72D3);
+  color: var(--color-terciario);
   transform: scale(1.2);
 }
 

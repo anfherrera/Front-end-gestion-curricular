@@ -8,7 +8,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-bottom: 2px solid var(--color-primario);
   border-radius: 8px 8px 0 0;
 }
@@ -47,7 +47,7 @@
   justify-content: center;
   padding: 60px 48px;
   gap: 20px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 12px;
   margin: 24px 0;
 }
@@ -84,15 +84,15 @@
 
 .contenido {
   padding: 24px;
-  background: #ffffff;
+  background: var(--blanco);
 }
 
 .resumen-curso {
-  background: #f8f9fa;
+  background: var(--gris-50);
   padding: 24px;
   border-radius: 12px;
   margin-bottom: 24px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--gris-100);
   box-shadow: var(--sombra-1);
 }
 
@@ -118,14 +118,14 @@
   padding: 12px 16px;
   background: white;
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--gris-100);
   min-width: 140px;
   box-shadow: var(--sombra-1);
 }
 
 .stat .label {
   font-size: 11px;
-  color: #666;
+  color: var(--gris-700);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   font-weight: 600;
@@ -144,7 +144,7 @@
   overflow-y: auto;
   border-radius: 8px;
   box-shadow: var(--sombra-1);
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--gris-100);
 }
 
 .tabla-estudiantes {
@@ -169,13 +169,13 @@
 
 .tabla-estudiantes td {
   padding: 14px 12px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--gris-100);
   font-size: 14px;
   color: #424242;
 }
 
 .tabla-estudiantes tr:hover {
-  background: #f8f9fa !important;
+  background: var(--gris-50) !important;
   transition: background-color 0.2s ease;
 }
 
@@ -191,7 +191,7 @@
 }
 
 .sin-estado {
-  color: #999;
+  color: var(--gris-500);
   font-style: italic;
   font-size: 14px;
 }
@@ -215,10 +215,10 @@
   justify-content: center;
   padding: 60px 48px;
   gap: 20px;
-  color: #666;
-  background: #f8f9fa;
+  color: var(--gris-700);
+  background: var(--gris-50);
   border-radius: 12px;
-  border: 2px dashed #e9ecef;
+  border: 2px dashed var(--gris-100);
   margin: 24px 0;
 }
 
@@ -233,14 +233,14 @@
 .sin-estudiantes p {
   font-size: 16px;
   font-weight: 500;
-  color: #666;
+  color: var(--gris-700);
   margin: 0;
 }
 
 mat-dialog-actions {
   padding: 20px 24px;
-  border-top: 1px solid #e9ecef;
-  background: #f8f9fa;
+  border-top: 1px solid var(--gris-100);
+  background: var(--gris-50);
   border-radius: 0 0 8px 8px;
   display: flex;
   justify-content: space-between;
@@ -284,13 +284,13 @@ mat-dialog-actions button[mat-raised-button][disabled] {
 }
 
 .btn-exportar {
-  border-color: #d32f2f !important;
-  color: #d32f2f !important;
+  border-color: var(--rojo-700) !important;
+  color: var(--rojo-700) !important;
   font-weight: 500;
 }
 
 .btn-exportar:hover:not([disabled]) {
-  background-color: #d32f2f !important;
+  background-color: var(--rojo-700) !important;
   color: white !important;
 }
 

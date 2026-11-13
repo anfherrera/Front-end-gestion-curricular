@@ -1,7 +1,7 @@
 .card-container {
   margin-bottom: 20px;
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--blanco);
   overflow: visible; /* Cambiado de hidden a visible para permitir scroll horizontal */
   box-shadow: var(--sombra-1);
   transition: box-shadow 0.2s ease;
@@ -15,7 +15,7 @@ mat-card-header {
   align-items: center;
   gap: 8px;
   background-color: var(--color-primario);
-  color: #ffffff;
+  color: var(--blanco);
   padding: 10px 16px;
   margin: 0;
   border-bottom: 2px solid var(--color-primario-light);
@@ -25,7 +25,7 @@ mat-card-header {
 mat-card-title {
   font-weight: 500;
   font-size: 1.1rem;
-  color: #ffffff;
+  color: var(--blanco);
   margin: 0;
 }
 

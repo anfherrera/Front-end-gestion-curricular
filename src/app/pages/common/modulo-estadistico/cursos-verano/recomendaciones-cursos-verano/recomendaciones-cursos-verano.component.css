@@ -1,12 +1,12 @@
 /* No Data */
 .no-data {
   text-align: center;
-  color: #6c757d;
+  color: var(--gris-650);
   font-style: italic;
   padding: 40px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
-  border: 2px dashed #dee2e6;
+  border: 2px dashed var(--gris-200);
   width: 100%;
 }
 
@@ -55,7 +55,7 @@
   border-radius: 12px;
   padding: 2rem 1.5rem;
   text-align: center;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--gris-100);
   transition: all 0.3s ease;
   box-shadow: var(--sombra-1);
 }
@@ -81,42 +81,42 @@
 
 /* Colores por prioridad */
 .stat.alta {
-  border-color: #dc3545;
+  border-color: var(--estado-peligro);
   background: #fff5f5;
 }
 
 .stat.alta .numero {
-  color: #dc3545;
+  color: var(--estado-peligro);
 }
 
 .stat.alta .label {
-  color: #dc3545;
+  color: var(--estado-peligro);
 }
 
 .stat.media {
-  border-color: #ffc107;
+  border-color: var(--estado-advertencia);
   background: #fffbf0;
 }
 
 .stat.media .numero {
-  color: #ffc107;
+  color: var(--estado-advertencia);
 }
 
 .stat.media .label {
-  color: #856404;
+  color: var(--estado-advertencia-texto);
 }
 
 .stat.baja {
-  border-color: #28a745;
+  border-color: var(--estado-exito);
   background: #f0f8f5;
 }
 
 .stat.baja .numero {
-  color: #28a745;
+  color: var(--estado-exito);
 }
 
 .stat.baja .label {
-  color: #28a745;
+  color: var(--estado-exito);
 }
 
 .stat.critica {
@@ -147,7 +147,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: var(--sombra-2);
-  border-left: 5px solid #dc3545;
+  border-left: 5px solid var(--estado-peligro);
   margin: 0 0 2rem 0;
   overflow: hidden;
   animation: pulse-border-alert 2s infinite;
@@ -155,7 +155,7 @@
 
 @keyframes pulse-border-alert {
   0%, 100% {
-    border-left-color: #dc3545;
+    border-left-color: var(--estado-peligro);
     box-shadow: var(--sombra-2);
   }
   50% {
@@ -169,7 +169,7 @@
 }
 
 .alerta-critica-card h3 {
-  color: #dc3545;
+  color: var(--estado-peligro);
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0 0 1rem 0;
@@ -179,7 +179,7 @@
 }
 
 .alerta-critica-card p {
-  color: #495057;
+  color: var(--gris-800);
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 1.25rem;
@@ -187,7 +187,7 @@
 
 .alerta-critica-card .acciones-urgentes {
   background: #fff3cd;
-  border: 2px solid #ffc107;
+  border: 2px solid var(--estado-advertencia);
   border-radius: 10px;
   padding: 1.25rem;
   margin-top: 1rem;
@@ -195,7 +195,7 @@
 
 .alerta-critica-card .acciones-urgentes strong {
   display: block;
-  color: #856404;
+  color: var(--estado-advertencia-texto);
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
@@ -209,7 +209,7 @@
 
 .alerta-critica-card .acciones-urgentes ul li {
   margin-bottom: 0.6rem;
-  color: #856404;
+  color: var(--estado-advertencia-texto);
   font-size: 0.95rem;
   line-height: 1.5;
   position: relative;
@@ -291,7 +291,7 @@
   top: -0.5rem;
   right: -0.75rem;
   background: white;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--gris-100);
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -303,18 +303,18 @@
 }
 
 .rec-card .btn-expandir:hover {
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-color: var(--color-primario);
   transform: scale(1.1);
 }
 
 .rec-card .btn-expandir mat-icon {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 20px;
 }
 
 .rec-card .descripcion {
-  color: #495057;
+  color: var(--gris-800);
   font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
@@ -324,7 +324,7 @@
 .rec-card .seccion {
   margin-bottom: 1.5rem;
   padding: 1.25rem;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 10px;
   border-left: 4px solid var(--color-primario);
   box-shadow: var(--sombra-1);
@@ -340,7 +340,7 @@
 
 .rec-card .seccion p {
   margin: 0;
-  color: #495057;
+  color: var(--gris-800);
   font-size: 0.95rem;
   line-height: 1.6;
 }
@@ -353,7 +353,7 @@
 
 .rec-card .seccion ul li {
   margin-bottom: 0.6rem;
-  color: #495057;
+  color: var(--gris-800);
   font-size: 0.95rem;
   line-height: 1.5;
   position: relative;
@@ -374,7 +374,7 @@
 .rec-card .detalles-expandidos {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 2px dashed #e9ecef;
+  border-top: 2px dashed var(--gris-100);
   animation: slideDown 0.3s ease-out;
 }
 
@@ -391,11 +391,11 @@
 
 .rec-card .seccion.justificacion {
   background: #e8f4fd;
-  border-left-color: #17a2b8;
+  border-left-color: var(--estado-info);
 }
 
 .rec-card .seccion.justificacion strong {
-  color: #17a2b8;
+  color: var(--estado-info);
 }
 
 /* Mensaje sin datos */
@@ -405,7 +405,7 @@
   box-shadow: var(--sombra-2);
   padding: 3rem;
   text-align: center;
-  border: 2px dashed #dee2e6;
+  border: 2px dashed var(--gris-200);
   margin: 0 0 1.5rem 0;
 }
 
@@ -413,12 +413,12 @@
   font-size: 4rem;
   width: 4rem;
   height: 4rem;
-  color: #6c757d;
+  color: var(--gris-650);
   margin-bottom: 1rem;
 }
 
 .no-data-card p {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 1.1rem;
   margin: 0;
 }

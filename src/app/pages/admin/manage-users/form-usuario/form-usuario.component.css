@@ -2,7 +2,7 @@
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  background: #f5f7fa;
+  background: var(--gris-azulado-50);
   min-height: 100vh;
 }
 
@@ -38,7 +38,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--color-primario);
-  background: #e8eaf6;
+  background: var(--indigo-50);
   padding: 6px 16px;
   border-radius: 16px;
   border: 1px solid #c5cae9;
@@ -62,7 +62,7 @@
 }
 
 .loading-overlay p {
-  color: #666;
+  color: var(--gris-700);
   margin: 0;
   font-size: 18px;
   font-weight: 500;
@@ -110,11 +110,11 @@ mat-card {
 }
 
 ::ng-deep .form-container .mat-mdc-text-field-wrapper {
-  background-color: #fafafa;
+  background-color: var(--gris-25);
 }
 
 ::ng-deep .form-container .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
 }
 
 ::ng-deep .form-container .mat-mdc-form-field-focus-overlay {
@@ -164,7 +164,7 @@ mat-card {
 /* Hints más visibles */
 ::ng-deep .form-container mat-hint {
   font-size: 12px;
-  color: #757575;
+  color: var(--gris-600);
   font-style: italic;
 }
 
@@ -174,7 +174,7 @@ mat-card {
   gap: 16px;
   margin-top: 32px;
   padding-top: 32px;
-  border-top: 2px solid #e8eaf6;
+  border-top: 2px solid var(--indigo-50);
 }
 
 .form-actions button {
@@ -198,7 +198,7 @@ mat-card {
 }
 
 .form-actions button:not([color]) mat-icon {
-  color: #757575;
+  color: var(--gris-600);
 }
 
 .form-actions button[color="primary"] {
@@ -211,7 +211,7 @@ mat-card {
 }
 
 .form-actions button:not([color]):hover {
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
 }
 
 mat-spinner {
@@ -230,14 +230,14 @@ mat-spinner {
 
 /* Estados de error más claros */
 ::ng-deep .form-container .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
-  background-color: #ffebee;
+  background-color: var(--rojo-50);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .container-admin {
     padding: 16px;
-    background: #f5f7fa;
+    background: var(--gris-azulado-50);
   }
 
   .header-section {

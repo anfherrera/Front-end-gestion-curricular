@@ -19,11 +19,11 @@
 
 /* Información del curso */
 .curso-info {
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--gris-200);
 }
 
 .curso-info h3 {
@@ -42,7 +42,7 @@
 .curso-details p {
   margin: 0;
   font-size: 14px;
-  color: #495057;
+  color: var(--gris-800);
 }
 
 .curso-details strong {
@@ -105,5 +105,5 @@ mat-form-field.mat-form-field-invalid .mat-form-field-outline {
 }
 
 mat-form-field.mat-form-field-valid .mat-form-field-outline {
-  color: #249337;
+  color: var(--notif-exito-borde);
 }

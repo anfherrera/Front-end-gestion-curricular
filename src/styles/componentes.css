@@ -22,3 +22,33 @@
   margin: 0 8px;
   color: var(--breadcrumb-color);
 }
+
+/* Botones de icono de las tablas de revisión (ver, aprobar, rechazar) */
+.accion-ver,
+.accion-ver .mat-icon {
+  color: var(--color-primario) !important;
+}
+
+.accion-aprobar,
+.accion-aprobar .mat-icon {
+  color: #4CAF50 !important;
+}
+
+.accion-rechazar,
+.accion-rechazar .mat-icon {
+  color: var(--color-error) !important;
+}
+
+/* Insignia sin borde ni sombra, con peso normal (estados y condiciones en tablas) */
+.insignia-plana {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-weight: 400 !important;
+}
+
+/* Spinner pequeño dentro de un botón, antes del texto */
+.spinner-en-boton {
+  display: inline-block;
+  margin-right: 8px;
+}

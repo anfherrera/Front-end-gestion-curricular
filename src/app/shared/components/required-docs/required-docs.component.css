@@ -5,7 +5,7 @@
 
 .card-section {
   border-radius: 12px;
-  background-color: #fff;
+  background-color: var(--blanco);
   overflow: hidden;
   box-shadow: var(--sombra-2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -21,7 +21,7 @@
   font-size: 1.25rem;
   font-weight: bold;
   background-color: var(--color-primario);
-  color: #fff;
+  color: var(--blanco);
   padding: 14px 16px;
   display: block;
   border-bottom: 3px solid #001060;
@@ -32,10 +32,10 @@
 .info-intro {
   margin: 12px 16px;
   font-size: 14px;
-  color: #555;
+  color: var(--gris-750);
   line-height: 1.6;
   padding: 12px;
-  background-color: #e3f2fd;
+  background-color: var(--azul-50);
   border-radius: 8px;
   border-left: 4px solid var(--color-primario);
 }
@@ -43,23 +43,23 @@
 .info-text {
   margin: 12px 16px;
   font-size: 15px;
-  color: #333;
+  color: var(--gris-900);
   font-weight: 500;
 }
 
 .info-ayuda {
   margin: 8px 16px 16px 16px;
   font-size: 13px;
-  color: #555;
+  color: var(--gris-750);
   line-height: 1.5;
   padding: 10px;
   background-color: #fff9e6;
   border-radius: 6px;
-  border-left: 3px solid #ffc107;
+  border-left: 3px solid var(--estado-advertencia);
 }
 
 .info-ayuda strong {
-  color: #856404;
+  color: var(--estado-advertencia-texto);
 }
 
 .info-ayuda-sistemas {
@@ -100,7 +100,7 @@
   padding: 10px;
   background-color: #f8d7da;
   border-radius: 6px;
-  border-left: 3px solid #dc3545;
+  border-left: 3px solid var(--estado-peligro);
 }
 
 .info-ayuda-telematica strong {
@@ -139,18 +139,18 @@
 }
 
 .required-list li.success {
-  color: #333;
+  color: var(--gris-900);
   font-weight: normal;
 }
 
 .nota {
-  color: #666;
+  color: var(--gris-700);
   font-size: 12px;
   margin-left: 4px;
 }
 
 .asterisco-obligatorio {
-  color: #d32f2f;
+  color: var(--rojo-700);
   font-weight: bold;
   font-size: 14px;
   margin-left: 4px;
@@ -161,17 +161,17 @@
 }
 
 .required-list li.obligatorio-exclusivo strong {
-  color: #333;
+  color: var(--gris-900);
 }
 
 .required-list li.obligatorio-telematica {
   background-color: #fff3cd;
-  border-left: 3px solid #ffc107;
+  border-left: 3px solid var(--estado-advertencia);
   font-weight: 500;
 }
 
 .required-list li.obligatorio-telematica strong {
-  color: #856404;
+  color: var(--estado-advertencia-texto);
 }
 
 /* Enlace "Formato disponible en" (ej. Reingreso PM-FO-4-FOR-17) */
@@ -191,7 +191,7 @@
 
 .formato-disponible-texto {
   font-size: 13px;
-  color: #555;
+  color: var(--gris-750);
 }
 
 .formato-disponible-link {
@@ -224,7 +224,7 @@
 .info-adicional {
   margin: 16px;
   padding: 16px;
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
   border-radius: 8px;
   border-left: 4px solid var(--color-primario);
 }
@@ -233,7 +233,7 @@
   margin: 0 0 12px 0;
   font-size: 13px;
   line-height: 1.6;
-  color: #555;
+  color: var(--gris-750);
 }
 
 .info-nota:last-child {

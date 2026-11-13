@@ -81,7 +81,7 @@ interface DetalleSolicitud {
     FechaPipe
   ],
   templateUrl: './detalle-solicitud.component.html',
-  styleUrls: ['./detalle-solicitud.component.css']
+  styleUrls: ['../estados-solicitud-comun.css', './detalle-solicitud.component.css']
 })
 export class DetalleSolicitudComponent implements OnInit {
   solicitud: DetalleSolicitud | null = null;

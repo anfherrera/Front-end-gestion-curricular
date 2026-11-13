@@ -9,7 +9,7 @@
         (click)="exportarPDF()"
         [disabled]="exportandoPDF || loading">
         <mat-icon *ngIf="!exportandoPDF">picture_as_pdf</mat-icon>
-        <mat-spinner *ngIf="exportandoPDF" diameter="16" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+        <mat-spinner *ngIf="exportandoPDF" diameter="16" class="spinner-en-boton"></mat-spinner>
         <span>{{ exportandoPDF ? 'Generando PDF...' : 'Exportar PDF' }}</span>
       </button>
     </div>

@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
   border-radius: 8px;
   width: 100%;
   overflow: visible;
@@ -104,7 +104,7 @@ button {
 }
 
 .inscribir-icon {
-  color: #249337 !important;
+  color: var(--notif-exito-borde) !important;
   font-size: 24px;
 }
 
@@ -113,7 +113,7 @@ button {
 }
 
 .ver-icon {
-  color: #2196f3 !important;
+  color: var(--azul-500) !important;
   font-size: 24px;
 }
 
@@ -122,12 +122,12 @@ button {
 }
 
 .default-icon {
-  color: #666 !important;
+  color: var(--gris-700) !important;
   font-size: 24px;
 }
 
 .default-icon:hover {
-  color: #999 !important;
+  color: var(--gris-500) !important;
 }
 
 /* Responsive Design */

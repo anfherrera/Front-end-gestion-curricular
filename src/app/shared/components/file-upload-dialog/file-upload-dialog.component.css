@@ -12,7 +12,7 @@
   align-items: center;
   gap: 6px;
   background-color: var(--color-primario);
-  color: #fff;
+  color: var(--blanco);
   padding: 6px 14px;
   font-size: 14px;
   font-weight: 600;
@@ -44,11 +44,11 @@
   width: 100%;
   font-weight: 600;
   font-size: 13px;
-  color: #495057;
+  color: var(--gris-800);
   padding: 8px 12px;
   background: #f1f3f5;
   border-radius: 6px;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--gris-200);
 }
 
 /* Lista */
@@ -66,11 +66,11 @@
   display: grid;
   grid-template-columns: 1fr 90px;
   align-items: center;
-  background-color: #ffffff;
+  background-color: var(--blanco);
   padding: 10px 14px;
   border-radius: 6px;
   font-size: 14px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--gris-100);
   box-shadow: var(--sombra-1);
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
@@ -105,7 +105,7 @@
 }
 
 .col-accion button:hover .delete-icon {
-  color: #c62828; /* Rojo más oscuro */
+  color: var(--rojo-800); /* Rojo más oscuro */
   transform: scale(1.2);
 }
 
@@ -118,5 +118,5 @@
 
 .col-accion button:active .delete-icon,
 .col-accion button:focus .delete-icon {
-  color: #fff !important; /* Ícono blanco */
+  color: var(--blanco) !important; /* Ícono blanco */
 }

@@ -24,7 +24,7 @@
   align-items: center;
   margin-bottom: 24px;
   padding: 16px 0;
-  border-bottom: 2px solid #e3f2fd;
+  border-bottom: 2px solid var(--azul-50);
 }
 
 .modal-header h2 {
@@ -57,7 +57,7 @@
 }
 
 .info-card {
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-left: 4px solid var(--color-primario);
   border-radius: 8px;
   box-shadow: var(--sombra-1);
@@ -82,7 +82,7 @@
 .info-card p {
   margin: 10px 0;
   font-size: 14px;
-  color: #333;
+  color: var(--gris-900);
 }
 
 .estado-aprobado {
@@ -97,7 +97,7 @@
 }
 
 .estado-inscripcion {
-  background-color: #e3f2fd;
+  background-color: var(--azul-50);
   color: var(--color-primario);
   padding: 4px 12px;
   border-radius: 16px;
@@ -114,7 +114,7 @@
 }
 
 .form-section {
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
   padding: 20px;
   border-left: 4px solid var(--color-primario);
@@ -126,7 +126,7 @@
   color: var(--color-primario);
   font-size: 16px;
   font-weight: 600;
-  border-bottom: 2px solid #e3f2fd;
+  border-bottom: 2px solid var(--azul-50);
   padding-bottom: 8px;
   display: flex;
   align-items: center;
@@ -149,7 +149,7 @@
 }
 
 .file-upload-error {
-  background-color: #ffebee;
+  background-color: var(--rojo-50);
   border: 1px solid var(--color-error);
   border-radius: 8px;
   padding: 16px;
@@ -159,7 +159,7 @@
 
 .file-upload-error p {
   margin: 0;
-  color: #d32f2f;
+  color: var(--rojo-700);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -190,7 +190,7 @@
   padding: 24px;
   border: 2px dashed var(--color-primario);
   border-radius: 8px;
-  background: #f8f9ff;
+  background: var(--primario-98);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
@@ -200,7 +200,7 @@
 }
 
 .file-input-label:hover {
-  background: #e3f2fd;
+  background: var(--azul-50);
   border-color: var(--color-primario-light);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
@@ -220,7 +220,7 @@
   padding: 12px 16px;
   background: #e8f5e8;
   border-radius: 8px;
-  border-left: 4px solid #249337;
+  border-left: 4px solid var(--notif-exito-borde);
   box-shadow: var(--sombra-1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -241,11 +241,11 @@
   flex: 1;
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--gris-900);
 }
 
 .success-icon {
-  color: #249337;
+  color: var(--notif-exito-borde);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -295,7 +295,7 @@
   justify-content: flex-end;
   gap: 12px;
   padding: 24px 0.75rem 0.75rem;
-  border-top: 2px solid #e3f2fd;
+  border-top: 2px solid var(--azul-50);
   flex-shrink: 0;
   background: white;
 }
@@ -323,7 +323,7 @@
 
 .submit-button:disabled {
   background-color: #d3d3d3 !important;
-  color: #888888 !important;
+  color: var(--gris-550) !important;
   cursor: not-allowed !important;
   opacity: 0.6 !important;
   transform: none !important;
@@ -345,7 +345,7 @@
 }
 
 ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
-  color: #e3f2fd;
+  color: var(--azul-50);
 }
 
 ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
@@ -353,7 +353,7 @@
 }
 
 ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
-  color: #6c757d;
+  color: var(--gris-650);
 }
 
 ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
@@ -370,7 +370,7 @@
 
 /* Estilos para el botón cancelar */
 ::ng-deep .modal-footer button[mat-button] {
-  background-color: #dc3545 !important;
+  background-color: var(--estado-peligro) !important;
   color: white !important;
   border: none !important;
   border-radius: 6px !important;
@@ -484,7 +484,7 @@
     position: sticky;
     bottom: 0;
     background: white;
-    border-top: 2px solid #e3f2fd;
+    border-top: 2px solid var(--azul-50);
     margin-top: 16px;
   }
   

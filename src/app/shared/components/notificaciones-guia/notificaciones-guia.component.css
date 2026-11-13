@@ -28,7 +28,7 @@
 
 .notificacion-item {
   background: white;
-  border: 1px solid #ddd;
+  border: 1px solid var(--gris-250);
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 10px;
@@ -43,7 +43,7 @@
 
 .notificacion-item.no-leida {
   border-left: 4px solid #007bff;
-  background-color: #f8f9fa;
+  background-color: var(--gris-50);
 }
 
 .notificacion-item.urgente {
@@ -68,7 +68,7 @@
 }
 
 .badge-tipo {
-  background-color: #6c757d;
+  background-color: var(--gris-650);
   color: white;
   padding: 2px 6px;
   border-radius: 4px;
@@ -76,7 +76,7 @@
 }
 
 .notificacion-mensaje {
-  color: #666;
+  color: var(--gris-700);
   margin-bottom: 8px;
 }
 
@@ -85,7 +85,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
-  color: #999;
+  color: var(--gris-500);
 }
 
 .badge-urgente {
@@ -99,7 +99,7 @@
 .sin-notificaciones {
   text-align: center;
   padding: 40px;
-  color: #999;
+  color: var(--gris-500);
 }
 
 .btn-marcar-todas {

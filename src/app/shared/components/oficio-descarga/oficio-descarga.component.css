@@ -3,7 +3,7 @@
 }
 
 .oficio-container mat-card {
-  background-color: #e3f2fd;
+  background-color: var(--azul-50);
 }
 
 .oficio-container a {
@@ -12,7 +12,7 @@
   gap: 4px;
   margin-top: 8px;
   text-decoration: none;
-  color: #1976d2;
+  color: var(--azul-700);
   font-weight: 500;
 }
 

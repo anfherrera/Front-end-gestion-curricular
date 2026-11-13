@@ -19,7 +19,7 @@ import { Subject, takeUntil, filter } from 'rxjs';
     MatTooltipModule
   ],
   templateUrl: './cursos-intersemestrales.component.html',
-  styleUrls: ['./cursos-intersemestrales.component.css']
+  styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css']
 })
 export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

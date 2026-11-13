@@ -74,7 +74,7 @@
   align-items: flex-start;
   gap: 16px;
   padding: 16px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
   border-left: 4px solid var(--color-primario);
 }
@@ -95,7 +95,7 @@
 }
 
 .info-label {
-  color: #666;
+  color: var(--gris-700);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -103,21 +103,21 @@
 }
 
 .info-value {
-  color: #333;
+  color: var(--gris-900);
   font-size: 0.95rem;
   font-weight: 500;
 }
 
 .status-active {
   background-color: white !important;
-  color: #28a745 !important;
+  color: var(--estado-exito) !important;
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
 }
 
 .status-inactive {
-  background-color: #dc3545 !important;
+  background-color: var(--estado-peligro) !important;
   color: white !important;
 }
 

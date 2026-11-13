@@ -49,7 +49,7 @@ import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripci
     NombreDocentePipe
   ],
   templateUrl: './inscribir-estudiantes.component.html',
-  styleUrls: ['./inscribir-estudiantes.component.css']
+  styleUrls: ['../filtro-curso-comun.css', './inscribir-estudiantes.component.css']
 })
 export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

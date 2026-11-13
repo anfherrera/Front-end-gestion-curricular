@@ -2,12 +2,12 @@
   text-align: center;
   font-style: italic;
   margin: 16px 0;
-  color: #6c757d;
+  color: var(--gris-650);
 }
 
 .sin-datos {
   padding: 40px 24px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 12px;
   border: none;
   box-shadow: var(--sombra-1);
@@ -24,7 +24,7 @@
 
 .sin-datos p {
   margin: 8px 0;
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 14px;
 }
 
@@ -43,7 +43,7 @@
   align-items: center;
   gap: 12px;
   padding: 20px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 12px;
   box-shadow: var(--sombra-1);
   border: none;
@@ -79,7 +79,7 @@
 .resumen-content p {
   margin: 4px 0 0 0;
   font-size: 14px;
-  color: #6c757d;
+  color: var(--gris-650);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -152,7 +152,7 @@ td.mat-cell:last-child {
 
 /* Estados como texto simple */
 .estado-badge {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
@@ -226,23 +226,23 @@ td.mat-cell:last-child {
 }
 
 .motivo-rechazo {
-  background: #ffebee;
+  background: var(--rojo-50);
   border: 1px solid #ef5350;
-  color: #c62828;
+  color: var(--rojo-800);
 }
 
 .motivo-rechazo .motivo-icon {
-  color: #d32f2f;
+  color: var(--rojo-700);
 }
 
 .motivo-informativo {
-  background: #e3f2fd;
+  background: var(--azul-50);
   border: 1px solid #64b5f6;
   color: #1565c0;
 }
 
 .motivo-informativo .motivo-icon {
-  color: #1976d2;
+  color: var(--azul-700);
 }
 
 .motivo-icon {

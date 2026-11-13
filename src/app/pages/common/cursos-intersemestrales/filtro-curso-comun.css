@@ -1,0 +1,134 @@
+/* Filtro por curso: igual en preinscribir e inscribir estudiantes */
+
+.filtro-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--gris-50);
+  border-radius: 12px;
+  border: 1px solid var(--azul-50);
+}
+
+.filtro-section h3 {
+  color: var(--color-primario);
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.curso-selector {
+  width: 100%;
+  max-width: 500px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--gris-700);
+}
+
+.loading-container p {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--gris-700);
+  background: var(--gris-50);
+  border-radius: 8px;
+  border: 2px dashed var(--gris-250);
+}
+
+.no-data mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: var(--color-primario);
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: var(--sombra-1);
+}
+
+.estudiante-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.estudiante-info strong {
+  color: var(--gris-900) !important;
+  font-size: 14px;
+}
+
+.estudiante-info small {
+  color: var(--gris-700) !important;
+  font-size: 12px;
+}
+
+.curso-info {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--gris-50);
+  border-radius: 12px;
+  border: 1px solid var(--azul-50);
+}
+
+.curso-info h4 {
+  color: var(--color-primario);
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  border-left: 3px solid var(--color-primario);
+}
+
+.info-item strong {
+  color: var(--color-primario);
+  min-width: 120px;
+  font-size: 13px;
+}
+
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+  color: var(--azul-50);
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  color: var(--color-primario);
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: var(--gris-650);
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: var(--color-primario);
+}

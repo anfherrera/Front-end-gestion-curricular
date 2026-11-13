@@ -23,9 +23,9 @@
   align-items: center;
   gap: 8px;
   padding: 12px;
-  background-color: #e3f2fd;
+  background-color: var(--azul-50);
   border-radius: 4px;
-  color: #1976d2;
+  color: var(--azul-700);
   font-size: 0.9em;
 }
 

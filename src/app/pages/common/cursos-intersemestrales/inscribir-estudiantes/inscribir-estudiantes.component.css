@@ -1,38 +1,6 @@
 /* Estilos para el estado del proceso */
 
-.filtro-section {
-  margin-bottom: 24px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #e3f2fd;
-}
 
-.filtro-section h3 {
-  color: var(--color-primario);
-  margin-bottom: 16px;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.curso-selector {
-  width: 100%;
-  max-width: 500px;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: #666;
-}
-
-.loading-container p {
-  margin-top: 16px;
-  font-size: 14px;
-}
 
 .inscripciones-section {
   margin-bottom: 24px;
@@ -47,31 +15,7 @@
   padding-bottom: 8px;
 }
 
-.no-data {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: #666;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #ddd;
-}
 
-.no-data mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 16px;
-  color: var(--color-primario);
-}
-
-.table-container {
-  overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: var(--sombra-1);
-}
 
 .inscripciones-table {
   width: 100%;
@@ -92,29 +36,15 @@
 }
 
 .inscripciones-table td {
-  border-bottom: 1px solid #e0e0e0;
-  color: #333 !important;
+  border-bottom: 1px solid var(--gris-150);
+  color: var(--gris-900) !important;
 }
 
 .inscripciones-table td * {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
-.estudiante-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
 
-.estudiante-info strong {
-  color: #333 !important;
-  font-size: 14px;
-}
-
-.estudiante-info small {
-  color: #666 !important;
-  font-size: 12px;
-}
 
 /* Contenedor de acciones */
 .acciones-container {
@@ -134,42 +64,7 @@
   box-shadow: var(--sombra-1);
 }
 
-.curso-info {
-  margin-top: 24px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #e3f2fd;
-}
 
-.curso-info h4 {
-  color: var(--color-primario);
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: white;
-  border-radius: 6px;
-  border-left: 3px solid var(--color-primario);
-}
-
-.info-item strong {
-  color: var(--color-primario);
-  min-width: 120px;
-  font-size: 13px;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -197,30 +92,11 @@
   }
 }
 
-/* Estilos para mat-form-field */
-::ng-deep .mat-mdc-form-field {
-  width: 100%;
-}
 
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
-  color: #e3f2fd;
-}
-
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
-  color: var(--color-primario);
-}
-
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
-  color: #6c757d;
-}
-
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-  color: var(--color-primario);
-}
 
 /* Forzar color del texto en toda la tabla */
 ::ng-deep .inscripciones-table {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .inscripciones-table th {
@@ -241,23 +117,23 @@
 }
 
 ::ng-deep .inscripciones-table td {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .inscripciones-table td * {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .inscripciones-table .estudiante-info {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .inscripciones-table .estudiante-info strong {
-  color: #333 !important;
+  color: var(--gris-900) !important;
 }
 
 ::ng-deep .inscripciones-table .estudiante-info small {
-  color: #666 !important;
+  color: var(--gris-700) !important;
 }
 
 /* Estilos para el icono del ojo en acciones - FORZAR */

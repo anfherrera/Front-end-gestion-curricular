@@ -88,6 +88,51 @@
   --notif-seguridad-texto: #1E257B;
 }
 
+/*
+ * ===== COLORES DE APOYO (Fase 5) =====
+ * Valores que los componentes ya usaban a mano (8 veces o más), con el mismo valor exacto,
+ * para que el aspecto no cambie. Son candidatos a fundirse con los institucionales
+ * (por ejemplo, los tres rojos de error en --color-error) cuando se revise el diseño.
+ */
+:root {
+  /* Grises, de claro a oscuro */
+  --blanco: #FFFFFF;
+  --gris-25: #FAFAFA;
+  --gris-50: #F8F9FA;
+  --gris-75: #F5F5F5;
+  --gris-azulado-50: #F5F7FA;
+  --gris-100: #E9ECEF;
+  --gris-150: #E0E0E0;
+  --gris-200: #DEE2E6;
+  --gris-250: #DDDDDD;
+  --gris-300: #CCCCCC;
+  --gris-500: #999999;
+  --gris-550: #888888;
+  --gris-600: #757575;
+  --gris-650: #6C757D;
+  --gris-700: #666666;
+  --gris-750: #555555;
+  --gris-800: #495057;
+  --gris-900: #333333;
+
+  /* Tintes y azules */
+  --primario-98: #F8F9FF;
+  --azul-50: #E3F2FD;
+  --indigo-50: #E8EAF6;
+  --azul-500: #2196F3;
+  --azul-700: #1976D2;
+
+  /* Estados (heredados de Bootstrap y Material) */
+  --estado-exito: #28A745;
+  --estado-peligro: #DC3545;
+  --estado-advertencia: #FFC107;
+  --estado-advertencia-texto: #856404;
+  --estado-info: #17A2B8;
+  --rojo-50: #FFEBEE;
+  --rojo-700: #D32F2F;
+  --rojo-800: #C62828;
+}
+
 /* ===== TIPOGRAFÍA (Tabla Desarrollo - pág. 26) ===== */
 :root {
   --font-display: 'Titillium Web', sans-serif;

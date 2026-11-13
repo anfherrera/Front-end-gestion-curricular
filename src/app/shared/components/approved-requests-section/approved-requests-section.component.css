@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: center;
   padding: 32px 16px;
-  color: #6c757d;
+  color: var(--gris-650);
   text-align: center;
 }
 

@@ -3,7 +3,7 @@ table {
   margin-top: 8px;
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--gris-100);
   box-shadow: var(--sombra-1);
 }
 
@@ -12,8 +12,8 @@ mat-table {
 }
 
 mat-header-row {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  background-color: var(--gris-50);
+  border-bottom: 1px solid var(--gris-100);
 }
 
 mat-row:hover {
@@ -36,7 +36,7 @@ mat-icon {
 }
 
 .sin-comentarios {
-  color: #999;
+  color: var(--gris-500);
   font-style: italic;
 }
 

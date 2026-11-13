@@ -14,18 +14,18 @@ app-card-container {
   align-items: center;
   margin-bottom: 24px;
   padding: 16px;
-  background-color: #f8f9fa;
+  background-color: var(--gris-50);
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--gris-100);
 }
 
 /* Filtro por período académico */
 .filtro-periodo-section {
   margin-bottom: 24px;
   padding: 20px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 12px;
-  border: 1px solid #e3f2fd;
+  border: 1px solid var(--azul-50);
 }
 
 .filtro-periodo-section h3 {
@@ -67,13 +67,13 @@ app-card-container {
 }
 
 .btn-exportar {
-  border-color: #d32f2f !important;
-  color: #d32f2f !important;
+  border-color: var(--rojo-700) !important;
+  color: var(--rojo-700) !important;
   font-weight: 500;
 }
 
 .btn-exportar:hover:not([disabled]) {
-  background-color: #d32f2f !important;
+  background-color: var(--rojo-700) !important;
   color: white !important;
 }
 
@@ -96,7 +96,7 @@ app-card-container {
 }
 
 .loading-container p {
-  color: #6c757d;
+  color: var(--gris-650);
   margin: 0;
   font-size: 16px;
 }
@@ -125,15 +125,15 @@ table {
 }
 
 .curso-info small {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 12px;
   line-height: 1.3;
 }
 
 /* Código del curso */
 .codigo-curso {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: var(--azul-50);
+  color: var(--azul-700);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
@@ -149,13 +149,13 @@ table {
 }
 
 .materia-info strong {
-  color: #495057;
+  color: var(--gris-800);
   font-size: 14px;
   font-weight: 600;
 }
 
 .materia-info small {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 12px;
 }
 
@@ -172,7 +172,7 @@ table {
   justify-content: center;
   padding: 4px 12px;
   border-radius: 999px;
-  background: #e3f2fd;
+  background: var(--azul-50);
   color: var(--color-primario);
   font-weight: 600;
   font-size: 0.85rem;
@@ -180,7 +180,7 @@ table {
 }
 
 .periodo-descripcion {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 12px;
 }
 
@@ -202,7 +202,7 @@ table {
 
 /* Información del docente */
 .texto-sin-asignar {
-  color: #999;
+  color: var(--gris-500);
   font-style: italic;
   font-size: 0.9em;
 }
@@ -214,13 +214,13 @@ table {
 }
 
 .docente-info strong {
-  color: #495057;
+  color: var(--gris-800);
   font-size: 14px;
   font-weight: 600;
 }
 
 .docente-info small {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 12px;
 }
 
@@ -239,7 +239,7 @@ table {
 }
 
 .cupo-info small {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 12px;
 }
 
@@ -251,12 +251,12 @@ table {
 }
 
 .salon-simple {
-  color: #495057;
+  color: var(--gris-800);
   font-size: 14px;
 }
 
 .sin-salon {
-  color: #999;
+  color: var(--gris-500);
   font-style: italic;
   font-size: 0.9em;
 }
@@ -332,7 +332,7 @@ table {
 }
 
 .btn-estudiantes {
-  color: #1976d2 !important;
+  color: var(--azul-700) !important;
   transition: all 0.2s ease;
 }
 
@@ -352,7 +352,7 @@ table {
 }
 
 .btn-eliminar {
-  color: #dc3545 !important;
+  color: var(--estado-peligro) !important;
   transition: all 0.2s ease;
 }
 
@@ -369,7 +369,7 @@ table {
   justify-content: center;
   padding: 40px;
   gap: 16px;
-  color: #6c757d;
+  color: var(--gris-650);
   text-align: center;
 }
 
@@ -377,7 +377,7 @@ table {
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: #dee2e6;
+  color: var(--gris-200);
 }
 
 .sin-datos p {

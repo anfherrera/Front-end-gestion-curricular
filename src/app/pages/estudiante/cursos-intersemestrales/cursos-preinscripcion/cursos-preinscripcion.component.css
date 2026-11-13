@@ -1,14 +1,14 @@
 .cargando {
   text-align: center;
   font-size: 16px;
-  color: #555;
+  color: var(--gris-750);
   padding: 16px 0;
 }
 
 .sin-datos {
   text-align: center;
   font-size: 14px;
-  color: #999;
+  color: var(--gris-500);
   padding: 16px 0;
 }
 

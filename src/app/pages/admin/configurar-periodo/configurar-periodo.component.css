@@ -48,7 +48,7 @@ mat-card-content {
 .info-section {
   margin-bottom: 32px;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
   border-radius: 8px;
   border-left: 4px solid var(--color-primario);
 }
@@ -80,13 +80,13 @@ mat-card-content {
 
 .periodo-item .label {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--gris-700);
   font-weight: 500;
 }
 
 .periodo-item .value {
   font-size: 1rem;
-  color: #333;
+  color: var(--gris-900);
   font-weight: 600;
 }
 
@@ -105,8 +105,8 @@ mat-card-content {
 }
 
 .modo-badge.automatico {
-  background-color: #e3f2fd;
-  color: #5056AC;
+  background-color: var(--azul-50);
+  color: var(--color-primario-light);
 }
 
 .modo-badge.manual {
@@ -121,14 +121,14 @@ mat-card-content {
 }
 
 .descripcion {
-  color: #666;
+  color: var(--gris-700);
   margin: 8px 0;
   font-size: 0.9rem;
 }
 
 .periodo-configurado {
   margin-top: 8px;
-  color: #333;
+  color: var(--gris-900);
 }
 
 .config-form {
@@ -155,7 +155,7 @@ mat-card-content {
 }
 
 .radio-option {
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--gris-150);
   border-radius: 8px;
   padding: 16px;
   transition: all 0.3s ease;
@@ -163,12 +163,12 @@ mat-card-content {
 
 .radio-option:hover {
   border-color: var(--color-primario);
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
 }
 
 .radio-option.mat-radio-checked {
   border-color: var(--color-primario);
-  background-color: #e3f2fd;
+  background-color: var(--azul-50);
 }
 
 .radio-content {
@@ -194,7 +194,7 @@ mat-card-content {
 
 .radio-content p {
   margin: 0;
-  color: #666;
+  color: var(--gris-700);
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -210,7 +210,7 @@ mat-card-content {
   gap: 12px;
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--gris-150);
 }
 
 .form-actions button {

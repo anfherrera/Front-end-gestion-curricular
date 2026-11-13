@@ -47,7 +47,7 @@
 }
 
 .error-container p {
-  color: #666;
+  color: var(--gris-700);
   margin-bottom: 20px;
 }
 
@@ -82,7 +82,7 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--sombra-2);
-  background-color: #fff;
+  background-color: var(--blanco);
   border-left: 4px solid;
 }
 
@@ -91,19 +91,19 @@
 }
 
 .kpi-success {
-  border-left-color: #28a745;
+  border-left-color: var(--estado-exito);
 }
 
 .kpi-warning {
-  border-left-color: #ffc107;
+  border-left-color: var(--estado-advertencia);
 }
 
 .kpi-error {
-  border-left-color: #dc3545;
+  border-left-color: var(--estado-peligro);
 }
 
 .kpi-info {
-  border-left-color: #17a2b8;
+  border-left-color: var(--estado-info);
 }
 
 .kpi-secondary {
@@ -123,7 +123,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #f5f5f5;
+  background: var(--gris-75);
 }
 
 .kpi-primary .kpi-icon {
@@ -132,22 +132,22 @@
 }
 
 .kpi-success .kpi-icon {
-  background: #28a745;
+  background: var(--estado-exito);
   color: white;
 }
 
 .kpi-warning .kpi-icon {
-  background: #ffc107;
+  background: var(--estado-advertencia);
   color: #3d2c00; /* blanco sobre amarillo no tiene contraste suficiente */
 }
 
 .kpi-error .kpi-icon {
-  background: #dc3545;
+  background: var(--estado-peligro);
   color: white;
 }
 
 .kpi-info .kpi-icon {
-  background: #17a2b8;
+  background: var(--estado-info);
   color: white;
 }
 
@@ -164,19 +164,19 @@
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
-  color: #333;
+  color: var(--gris-900);
 }
 
 .kpi-title {
   font-size: 1rem;
   font-weight: 500;
   margin: 5px 0;
-  color: #666;
+  color: var(--gris-700);
 }
 
 .kpi-description {
   font-size: 0.85rem;
-  color: #999;
+  color: var(--gris-500);
   margin: 0;
 }
 
@@ -221,7 +221,7 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--sombra-2);
-  background-color: #fff;
+  background-color: var(--blanco);
 }
 
 .chart-card:hover {
@@ -263,7 +263,7 @@
   margin: 20px 0;
   padding: 40px 16px;
   text-align: center;
-  color: #666;
+  color: var(--gris-700);
 }
 
 /* Update Info */
@@ -273,9 +273,9 @@
   justify-content: center;
   gap: 8px;
   padding: 15px;
-  background: #f5f5f5;
+  background: var(--gris-75);
   border-radius: 8px;
-  color: #666;
+  color: var(--gris-700);
   font-size: 0.9rem;
 }
 

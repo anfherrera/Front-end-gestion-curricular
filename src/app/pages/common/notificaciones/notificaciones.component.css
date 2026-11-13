@@ -46,7 +46,7 @@ h1 {
 .filters-section {
   margin-bottom: 24px;
   padding: 16px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 8px;
 }
 
@@ -123,7 +123,7 @@ h1 {
 }
 
 .loading-container p {
-  color: #666;
+  color: var(--gris-700);
   font-size: 14px;
 }
 
@@ -208,7 +208,7 @@ mat-card-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: #333;
+  color: var(--gris-900);
 }
 
 mat-card-subtitle {
@@ -227,7 +227,7 @@ mat-card-subtitle {
 }
 
 .fecha {
-  color: #888;
+  color: var(--gris-550);
   font-size: 13px;
 }
 
@@ -256,7 +256,7 @@ mat-card-subtitle {
 
 /* Contenido del card */
 .mensaje {
-  color: #666;
+  color: var(--gris-700);
   font-size: 14px;
   line-height: 1.6;
   margin: 16px 0;
@@ -268,7 +268,7 @@ mat-card-subtitle {
   gap: 8px;
   margin: 16px 0;
   padding: 12px;
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 6px;
 }
 
@@ -276,7 +276,7 @@ mat-card-subtitle {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #555;
+  color: var(--gris-750);
   font-size: 13px;
 }
 
@@ -317,20 +317,20 @@ mat-card-subtitle {
   font-size: 80px;
   width: 80px;
   height: 80px;
-  color: #ccc;
+  color: var(--gris-300);
   margin-bottom: 24px;
 }
 
 .empty-state h2 {
   font-size: 24px;
   font-weight: 600;
-  color: #666;
+  color: var(--gris-700);
   margin: 0 0 12px 0;
 }
 
 .empty-state p {
   font-size: 16px;
-  color: #888;
+  color: var(--gris-550);
   margin: 0;
 }
 

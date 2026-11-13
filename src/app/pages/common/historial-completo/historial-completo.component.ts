@@ -45,7 +45,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     FechaPipe
   ],
   templateUrl: './historial-completo.component.html',
-  styleUrls: ['./historial-completo.component.css']
+  styleUrls: ['../estados-solicitud-comun.css', './historial-completo.component.css']
 })
 export class HistorialCompletoComponent implements OnInit, OnDestroy {
   filtrosForm: FormGroup;

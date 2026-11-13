@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule
   ],
   templateUrl: './cursos-intersemestrales.component.html',
-  styleUrls: ['./cursos-intersemestrales.component.css']
+  styleUrls: ['./menu-cursos-comun.css', './cursos-intersemestrales.component.css']
 })
 export class CursosIntersemestralesGestionComponent {
   opciones = [

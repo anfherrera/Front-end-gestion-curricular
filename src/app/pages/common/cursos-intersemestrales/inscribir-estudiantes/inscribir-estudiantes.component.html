@@ -95,24 +95,24 @@
               <button mat-icon-button 
                       (click)="verDetalles(estudiante)"
                       matTooltip="Ver detalles de inscripción y comprobante"
-                      style="color: #000066 !important;">
-                <mat-icon style="color: #000066 !important;">visibility</mat-icon>
+                      class="accion-ver">
+                <mat-icon>visibility</mat-icon>
               </button>
               
               <button mat-icon-button 
                       *ngIf="estudiante.tiene_inscripcion_formal"
                       (click)="confirmarInscripcion(estudiante)"
                       matTooltip="Confirmar inscripción oficial - El estudiante completó todos los requisitos y pago validado"
-                      style="color: #4CAF50 !important;">
-                <mat-icon style="color: #4CAF50 !important;">check_circle</mat-icon>
+                      class="accion-aprobar">
+                <mat-icon>check_circle</mat-icon>
               </button>
               
               <button mat-icon-button 
                       *ngIf="estudiante.tiene_inscripcion_formal"
                       (click)="rechazarInscripcion(estudiante)"
                       matTooltip="Rechazar inscripción"
-                      style="color: #FF6D0A !important;">
-                <mat-icon style="color: #FF6D0A !important;">cancel</mat-icon>
+                      class="accion-rechazar">
+                <mat-icon>cancel</mat-icon>
               </button>
             </div>
           </td>

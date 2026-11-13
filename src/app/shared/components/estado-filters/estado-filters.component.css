@@ -1,10 +1,10 @@
 .filters-container {
-  background: #f8f9fa;
+  background: var(--gris-50);
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 24px;
   box-shadow: var(--sombra-2);
-  border: 1px solid #e3f2fd;
+  border: 1px solid var(--azul-50);
 }
 
 .filters-header {
@@ -13,14 +13,14 @@
 }
 
 .filters-header h3 {
-  color: #000066;
+  color: var(--color-primario);
   margin: 0 0 8px 0;
   font-size: 1.3rem;
   font-weight: 600;
 }
 
 .filters-header p {
-  color: #666;
+  color: var(--gris-700);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -53,7 +53,7 @@
   align-items: center;
   gap: 8px;
   min-height: 36px;
-  background: #ffffff;
+  background: var(--blanco);
   box-shadow: var(--sombra-1);
   font-size: 13px;
   position: relative;
@@ -122,24 +122,24 @@
 
 /* Estilos específicos para el botón TODOS */
 .todos-chip {
-  border: 2px solid #000066 !important;
+  border: 2px solid var(--color-primario) !important;
 }
 
 .todos-chip:not(.todos-selected) {
   background: transparent !important;
-  color: #000066 !important;
+  color: var(--color-primario) !important;
 }
 
 .todos-chip:not(.todos-selected) mat-icon {
-  color: #000066 !important;
+  color: var(--color-primario) !important;
 }
 
 .todos-chip:not(.todos-selected) .count {
-  color: #000066 !important;
+  color: var(--color-primario) !important;
 }
 
 .todos-chip.todos-selected {
-  background: #000066 !important;
+  background: var(--color-primario) !important;
   color: white !important;
 }
 
@@ -164,7 +164,7 @@
   background: white;
   border-radius: 8px;
   padding: 20px;
-  border-left: 4px solid #000066;
+  border-left: 4px solid var(--color-primario);
   box-shadow: var(--sombra-1);
 }
 
@@ -183,14 +183,14 @@
 
 .info-header h4 {
   margin: 0;
-  color: #000066;
+  color: var(--color-primario);
   font-size: 1.1rem;
   font-weight: 600;
 }
 
 .info-card p {
   margin: 0 0 16px 0;
-  color: #666;
+  color: var(--gris-700);
   line-height: 1.5;
 }
 
@@ -203,11 +203,11 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #333;
+  color: var(--gris-900);
 }
 
 .stat strong {
-  color: #000066;
+  color: var(--color-primario);
   font-weight: 600;
 }
 

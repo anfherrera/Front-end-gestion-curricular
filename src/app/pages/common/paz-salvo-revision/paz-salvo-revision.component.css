@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: var(--gris-azulado-50);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -13,14 +13,14 @@
   gap: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  background-color: #ffebee;
-  border-left: 4px solid #c62828;
+  background-color: var(--rojo-50);
+  border-left: 4px solid var(--rojo-800);
   border-radius: 4px;
   align-items: flex-start;
 }
 
 .comentario-rechazo mat-icon {
-  color: #c62828;
+  color: var(--rojo-800);
   font-size: 24px;
   width: 24px;
   height: 24px;
@@ -34,13 +34,13 @@
 .comentario-rechazo-content strong {
   display: block;
   margin-bottom: 8px;
-  color: #c62828;
+  color: var(--rojo-800);
   font-size: 0.95rem;
 }
 
 .comentario-rechazo-content p {
   margin: 0;
-  color: #333;
+  color: var(--gris-900);
   font-size: 0.9rem;
   line-height: 1.5;
   white-space: pre-wrap;
@@ -72,11 +72,11 @@
 }
 
 .botones-acciones button[color="warn"] {
-  background-color: #d32f2f !important;
+  background-color: var(--rojo-700) !important;
 }
 
 .botones-acciones button[color="warn"]:hover {
-  background-color: #c62828 !important;
+  background-color: var(--rojo-800) !important;
 }
 
 .botones-acciones button[color="accent"] {

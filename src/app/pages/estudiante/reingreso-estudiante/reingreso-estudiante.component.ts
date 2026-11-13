@@ -47,7 +47,7 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     RequestStatusTableComponent
   ],
   templateUrl: './reingreso-estudiante.component.html',
-  styleUrls: ['./reingreso-estudiante.component.css']
+  styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css']
 })
 export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;

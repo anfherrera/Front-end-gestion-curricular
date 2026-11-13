@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: var(--gris-azulado-50);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -38,11 +38,11 @@
 }
 
 .botones-acciones button[color="warn"] {
-  background-color: #d32f2f !important;
+  background-color: var(--rojo-700) !important;
 }
 
 .botones-acciones button[color="warn"]:hover {
-  background-color: #c62828 !important;
+  background-color: var(--rojo-800) !important;
 }
 
 .botones-acciones button[disabled] {

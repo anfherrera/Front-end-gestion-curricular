@@ -22,14 +22,14 @@
   }
 
 ::ng-deep .dialog-content .mat-mdc-text-field-wrapper {
-  background-color: #fafafa;
+  background-color: var(--gris-25);
 }
 
 ::ng-deep .dialog-content .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-  background-color: #f5f5f5;
+  background-color: var(--gris-75);
 }
 
 /* Estados de error */
 ::ng-deep .dialog-content .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
-  background-color: #ffebee;
+  background-color: var(--rojo-50);
 }

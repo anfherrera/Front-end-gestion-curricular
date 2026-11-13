@@ -2,7 +2,7 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  background: #f5f7fa;
+  background: var(--gris-azulado-50);
   min-height: 100vh;
 }
 
@@ -70,7 +70,7 @@
 }
 
 ::ng-deep .search-section .mat-mdc-text-field-wrapper {
-  background-color: #fafafa;
+  background-color: var(--gris-25);
 }
 
 .table-container {
@@ -79,7 +79,7 @@
   padding: 24px;
   box-shadow: var(--sombra-2);
   animation: fadeInUp 0.4s ease 0.2s both;
-  border: 1px solid #e8eaf6;
+  border: 1px solid var(--indigo-50);
 }
 
 @keyframes fadeInUp {
@@ -111,15 +111,15 @@ mat-table {
 
 ::ng-deep .table-container .mat-mdc-row {
   transition: background-color 0.2s ease;
-  border-bottom: 1px solid #e0e0e0 !important;
+  border-bottom: 1px solid var(--gris-150) !important;
 }
 
 ::ng-deep .table-container .mat-mdc-row .mat-mdc-cell {
-  border-bottom-color: #e0e0e0 !important;
+  border-bottom-color: var(--gris-150) !important;
 }
 
 ::ng-deep .table-container .mat-mdc-row:hover {
-  background-color: #f8f9ff !important;
+  background-color: var(--primario-98) !important;
 }
 
 .actions-column {
@@ -161,7 +161,7 @@ mat-table {
 }
 
 .loading-container p {
-  color: #666;
+  color: var(--gris-700);
   font-size: 18px;
   font-weight: 500;
   margin: 0;
@@ -189,7 +189,7 @@ button[color="primary"] mat-icon {
 @media (max-width: 768px) {
   .container-admin {
     padding: 16px;
-    background: #f5f7fa;
+    background: var(--gris-azulado-50);
   }
 
   .header-section {

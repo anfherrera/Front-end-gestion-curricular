@@ -54,7 +54,7 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     RequestStatusTableComponent
   ],
   templateUrl: './homologacion-asignaturas.component.html',
-  styleUrls: ['./homologacion-asignaturas.component.css']
+  styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css']
 })
 export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;

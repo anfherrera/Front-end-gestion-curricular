@@ -170,9 +170,20 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 
 ## Fase 5 — Estilos
 
-- [ ] Hay 1059 colores en hexadecimal escritos a mano en los `.css` de componentes, frente a 772 usos de `var(--…)`. Pasarlos a los tokens de [tokens.css](src/app/core/design-system/tokens.css)
-- [ ] Mover los 18 `style="…"` de las plantillas a clases
-- [ ] Buscar bloques CSS repetidos entre componentes (tablas, tarjetas, cabeceras) y llevarlos a [componentes.css](src/styles/componentes.css)
+- [x] **Colores a tokens** (2026-11-13): de 1156 hexadecimales en los `.css` de componentes quedan 245 (sin contar comentarios), y los `var(--…)` pasan de 778 a 1645. Por script y solo con valores idénticos, así que no cambia ningún color:
+  - 92 coincidían con un token institucional (`--color-primario`, `--color-error`, `--primario-NN`, `--notif-*`…)
+  - Para los demás colores que se repetían 8 veces o más se añaden a [tokens.css](src/app/core/design-system/tokens.css) **colores de apoyo** con el mismo valor: escala `--gris-25` a `--gris-900`, `--blanco`, `--primario-98`, `--azul-50/500/700`, `--indigo-50`, `--estado-exito/peligro/advertencia/info` y `--rojo-50/700/800` (775 usos)
+  - Se quitan 40 valores de reserva redundantes (`var(--color-primario, #000066)` → `var(--color-primario)`): los tokens siempre están definidos
+  - Pendiente de diseño, no de código: fundir colores casi iguales (hay tres rojos de error: `--estado-peligro`, `--rojo-700` y `--color-error`; y verdes `#4CAF50`/`--estado-exito`). Eso sí cambia el aspecto y conviene decidirlo con el Sistema de Diseño TIC
+- [x] **`style="…"` a clases**: los 18 se quitan. Globales en [componentes.css](src/styles/componentes.css): `.accion-ver`, `.accion-aprobar` y `.accion-rechazar` (botones de icono de inscribir y preinscribir), `.insignia-plana` (estado y condición en visualizar-solicitudes) y `.spinner-en-boton` (historial). Locales: `.estado-etiqueta` (preinscribir), `.btn-exportar-excel` (visualizar-solicitudes) y `.boton-descargar` (detalles de inscripción)
+  - Sin cambios visibles esperados (mismas propiedades; los colores ya eran `!important`)
+- [x] **Bloques CSS repetidos**: llevarlos a `componentes.css` (global) les quitaba el atributo de encapsulación y bajaba su especificidad, lo que podía cambiar la cascada. En su lugar, las reglas idénticas en todo un grupo de páginas pasan a un CSS compartido que esas páginas cargan primero en `styleUrls` (igual que ya hacía `dashboard-comun.css`), sin cambiar la especificidad:
+  - [secretaria-comun.css](src/app/pages/secretaria/secretaria-comun.css): 8 reglas de las tres páginas de secretaría (contenedor, instrucciones, selección y subida del PDF)
+  - [solicitud-estudiante-comun.css](src/app/pages/estudiante/solicitud-estudiante-comun.css): 8 reglas de paz y salvo, homologación y reingreso del estudiante
+  - [menu-cursos-comun.css](src/app/pages/common/cursos-intersemestrales/menu-cursos-comun.css): 10 reglas del menú de cursos intersemestrales (estudiante y funcionario/coordinador)
+  - [filtro-curso-comun.css](src/app/pages/common/cursos-intersemestrales/filtro-curso-comun.css): 21 reglas de preinscribir e inscribir estudiantes
+  - [estados-solicitud-comun.css](src/app/pages/common/estados-solicitud-comun.css): 8 reglas de colores de estado de detalle-solicitud e historial-completo
+  - En total se quitan 775 líneas repetidas. Sin cambios visibles esperados
 
 ---
 

@@ -4,7 +4,7 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  background-color: #f5f7fa;
+  background-color: var(--gris-azulado-50);
   font-family: 'Roboto', sans-serif;
   min-height: 100vh;
 }
@@ -54,7 +54,7 @@
 }
 
 .dashboard-subtitle {
-  color: #6c757d;
+  color: var(--gris-650);
   font-size: 1.1rem;
   margin: 0;
   font-weight: 500;
@@ -65,7 +65,7 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--sombra-2);
-  background-color: #fff;
+  background-color: var(--blanco);
 }
 
 .filters-card mat-card-header {
