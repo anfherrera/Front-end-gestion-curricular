@@ -50,7 +50,15 @@ module.exports = function (config) {
       ]
     },
     reporters: ['progress', 'kjhtml'],
+    // Local: ChromeHeadless (con Edge si no hay Chrome, ver arriba).
+    // CI (GitHub Actions): `ng test --browsers=ChromeHeadlessCI`, sin sandbox porque el runner lo exige.
     browsers: ['ChromeHeadless'],
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
+      }
+    },
     restartOnFileChange: true
   });
 };
