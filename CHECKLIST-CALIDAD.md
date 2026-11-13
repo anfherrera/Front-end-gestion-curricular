@@ -179,7 +179,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [ ] Prettier más `.prettierrc` (ya existe `.editorconfig`)
 - [x] CI en GitHub Actions: [.github/workflows/ci.yml](.github/workflows/ci.yml) corre en cada push y PR a `main` (Node 22): `npm ci` (sin bajar el binario de Cypress), `npm run lint`, `ng build` y `ng test --watch=false --browsers=ChromeHeadlessCI`
   - `karma.conf.js` tiene el launcher `ChromeHeadlessCI` (`--no-sandbox`, `--disable-gpu`, `--disable-dev-shm-usage`); en local se sigue usando `ChromeHeadless` con Edge y los dos funcionan
-  - Pendiente: confirmar la primera ejecución en GitHub después del push (en Linux no se probó en local)
+  - Primera ejecución en GitHub confirmada: el push de `fb82260` pasó en 1m52s (run 43480529339, 2026-11-13)
 - [ ] Cobertura mínima en `karma.conf.js` (por ejemplo 60 %)
 - [ ] Opcional: Husky con lint-staged para correr lint antes de cada commit
 - [ ] README: sección de arquitectura (core/shared/pages, el patrón de revisión por rol), variables de entorno y la lista de scripts de test
