@@ -1,0 +1,134 @@
+.confirmacion-dialog {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dialog-header {
+  background: var(--color-primario);
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.dialog-content {
+  padding: 24px;
+  background: #f8f9fa;
+}
+
+.estudiante-info {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--sombra-1);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-icon {
+  color: #000066;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-text strong {
+  color: #000066;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.info-text span {
+  color: #333;
+  font-size: 16px;
+}
+
+.confirmacion-mensaje {
+  background: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.confirmacion-mensaje p {
+  margin: 0;
+  color: #1976d2;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dialog-actions {
+  padding: 20px 24px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancelar {
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.btn-cancelar:hover {
+  background: #f5f5f5;
+}
+
+.btn-confirmar {
+  background: #000066;
+  color: white;
+}
+
+.btn-confirmar:hover {
+  background: #5056AC;
+}
+
+.btn-cancelar mat-icon,
+.btn-confirmar mat-icon {
+  margin-right: 8px;
+}
+
+@media (max-width: 480px) {
+  .dialog-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancelar,
+  .btn-confirmar {
+    width: 100%;
+    justify-content: center;
+  }
+}

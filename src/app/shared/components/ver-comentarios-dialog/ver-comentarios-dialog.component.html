@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>{{ data.titulo }}</h2>
+
+<mat-dialog-content>
+  <!-- Comentario de rechazo de la solicitud -->
+  <div *ngIf="tieneComentarioRechazo()" class="comentario-rechazo">
+    <mat-card class="rechazo-card">
+      <mat-card-header>
+        <mat-card-title class="rechazo-titulo">
+          <mat-icon color="warn">cancel</mat-icon>
+          Comentario de Rechazo
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="comentario-rechazo-contenido">
+          <span class="comentario-rechazo-texto">{{ data.comentarioRechazo }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <mat-divider *ngIf="tieneDocumentosConComentarios()"></mat-divider>
+  </div>
+
+  <!-- Comentarios de documentos -->
+  <div *ngIf="tieneDocumentosConComentarios()">
+    <h3 class="seccion-titulo">
+      <mat-icon>description</mat-icon>
+      Comentarios por Documento
+    </h3>
+
+    <div *ngFor="let documento of documentosConComentarios; let i = index" class="documento-comentario">
+      <mat-card class="comentario-card">
+        <mat-card-header>
+          <mat-card-title class="documento-nombre">
+            <mat-icon>description</mat-icon>
+            {{ documento.nombre }}
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="comentario-contenido">
+            <mat-icon class="comentario-icon">comment</mat-icon>
+            <span class="comentario-texto">{{ documento.comentario }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-divider *ngIf="i < documentosConComentarios.length - 1"></mat-divider>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay comentarios -->
+  <div *ngIf="!tieneComentarios()" class="sin-comentarios">
+    <mat-icon>info</mat-icon>
+    <p>{{ data.mensaje || 'No hay comentarios disponibles para esta solicitud' }}</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Cerrar</button>
+</mat-dialog-actions>

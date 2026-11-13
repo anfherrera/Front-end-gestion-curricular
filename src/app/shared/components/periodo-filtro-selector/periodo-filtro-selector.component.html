@@ -1,0 +1,33 @@
+<div class="periodo-filtro-container">
+  <mat-form-field appearance="outline" class="periodo-selector">
+    <mat-label>{{ label || 'Filtrar por período académico' }}</mat-label>
+    <mat-select
+      [value]="periodoSeleccionado"
+      (selectionChange)="onPeriodoChange($event.value)"
+      [disabled]="cargando">
+      <mat-option [value]="'todos'" *ngIf="mostrarTodos">
+        <span class="option-text">Todos los Períodos</span>
+      </mat-option>
+      <mat-option [value]="''" *ngIf="incluirActual">
+        <span class="option-text">Período actual{{ periodoActualTexto ? ' (' + periodoActualTexto + ')' : '' }}</span>
+      </mat-option>
+      <mat-option *ngFor="let opcion of opciones" [value]="opcion.valor">
+        <span class="option-text">{{ opcion.texto }}</span>
+      </mat-option>
+    </mat-select>
+    <mat-spinner *ngIf="cargando" diameter="20" class="spinner"></mat-spinner>
+  </mat-form-field>
+
+  <div class="info-periodo" *ngIf="mostrarInfo">
+    <mat-icon>info</mat-icon>
+    <span *ngIf="periodoSeleccionado === 'todos'">
+      Mostrando <strong>todos los cursos</strong> de todos los períodos
+    </span>
+    <span *ngIf="periodoSeleccionado && periodoSeleccionado !== 'todos'">
+      Mostrando datos del período: <strong>{{ getPeriodoTexto(periodoSeleccionado) }}</strong>
+    </span>
+    <span *ngIf="!periodoSeleccionado">
+      Mostrando datos del <strong>período académico actual</strong>
+    </span>
+  </div>
+</div>

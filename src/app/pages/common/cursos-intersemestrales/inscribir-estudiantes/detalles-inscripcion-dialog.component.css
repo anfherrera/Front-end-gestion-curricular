@@ -1,0 +1,97 @@
+.dialog-content {
+  max-width: 800px;
+  padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.form-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #000066;
+}
+
+.form-section h3 {
+  margin: 0 0 16px 0;
+  color: #000066;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item strong {
+  color: #333;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.comprobante-info {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.comprobante-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.comprobante-actions button {
+  flex: 1;
+  min-width: 140px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+::ng-deep .mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background-color: white;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dialog-content {
+    max-width: 95vw;
+    padding: 16px;
+  }
+
+  .comprobante-actions {
+    flex-direction: column;
+  }
+
+  .comprobante-actions button {
+    width: 100%;
+    min-width: unset;
+  }
+}

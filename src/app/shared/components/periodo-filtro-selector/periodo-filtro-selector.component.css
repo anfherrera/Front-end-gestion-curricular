@@ -1,0 +1,46 @@
+.periodo-filtro-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.periodo-selector {
+  width: 100%;
+  max-width: 350px;
+  position: relative;
+}
+
+.spinner {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.info-periodo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  color: #1976d2;
+  font-size: 0.9em;
+}
+
+.info-periodo mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.option-text {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .periodo-selector {
+    max-width: 100%;
+  }
+}

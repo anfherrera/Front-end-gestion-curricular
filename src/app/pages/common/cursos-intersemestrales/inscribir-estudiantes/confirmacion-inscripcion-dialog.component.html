@@ -1,0 +1,49 @@
+<div class="confirmacion-dialog">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">school</mat-icon>
+    <h2 mat-dialog-title>Confirmar Inscripción</h2>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <div class="estudiante-info">
+      <div class="info-item">
+        <mat-icon class="info-icon">person</mat-icon>
+        <div class="info-text">
+          <strong>Estudiante:</strong>
+          <span>{{ data.estudiante.nombre_completo | utfFix }}</span>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <mat-icon class="info-icon">badge</mat-icon>
+        <div class="info-text">
+          <strong>Código:</strong>
+          <span>{{ data.estudiante.codigo }}</span>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <mat-icon class="info-icon">book</mat-icon>
+        <div class="info-text">
+          <strong>Curso:</strong>
+          <span>{{ (data.curso?.nombre_curso || 'No especificado') | utfFix }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="confirmacion-mensaje">
+      <p>Al confirmar, el estudiante quedará oficialmente inscrito en el curso.</p>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="dialogRef.close()" class="btn-cancelar">
+      <mat-icon>close</mat-icon>
+      Cancelar
+    </button>
+    <button mat-raised-button (click)="confirmar()" class="btn-confirmar">
+      <mat-icon>check</mat-icon>
+      Confirmar Inscripción
+    </button>
+  </div>
+</div>
