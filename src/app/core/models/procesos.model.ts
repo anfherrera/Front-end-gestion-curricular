@@ -1,4 +1,3 @@
-import { SolicitudStatusEnum } from '../enums/solicitud-status.enum';
 import { UserRole } from '../enums/roles.enum';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado' | 'error';
@@ -33,7 +32,8 @@ export interface Solicitud {
   id: number;
   nombre: string;
   fecha: string;
-  estado: SolicitudStatusEnum;
+  /** Código del backend (ver EstadosSolicitud) o "Pendiente" si no tiene historial. */
+  estado: string;
   usuario?: Usuario;
   archivos?: Archivo[];
   oficioUrl?: string;

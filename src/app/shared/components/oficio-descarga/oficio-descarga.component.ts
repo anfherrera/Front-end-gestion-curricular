@@ -4,7 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Solicitud } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
+import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
 @Component({
   selector: 'app-oficio-descarga',
   standalone: true,
@@ -16,6 +17,6 @@ export class OficioDescargaComponent {
   @Input() solicitud!: Solicitud;
 
   get puedeDescargar(): boolean {
-    return this.solicitud.estado === SolicitudStatusEnum.APROBADA && !!this.solicitud.oficioUrl;
+    return normalizarEstado(this.solicitud.estado) === EstadosSolicitud.APROBADA && !!this.solicitud.oficioUrl;
   }
 }

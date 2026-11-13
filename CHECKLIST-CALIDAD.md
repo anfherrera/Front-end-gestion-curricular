@@ -52,8 +52,13 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - [ ] `ApiService` lo usan solo `auth`, `login` y `manage-processes` (y tiene 20 `any`). Que todos los servicios lo usen o eliminarlo y usar `HttpClient` en todos
 
 ### Estados de solicitud
-- [ ] Hay dos enums de estado: [estados-solicitud.enum.ts](src/app/core/enums/estados-solicitud.enum.ts) (`EstadosSolicitud`, con labels y colores) y [solicitud-status.enum.ts](src/app/core/enums/solicitud-status.enum.ts) (`SolicitudStatusEnum`). Unificarlos en uno solo
-- [ ] `getEstadoColor` (8 copias), `getEstadoActual` (7), `getEstadoLabel` (4) y `getEstadoClass` (3) están repetidos en varios componentes. Sacarlos a una utilidad o a pipes (`estadoLabel`, `estadoColor`)
+- [x] Un solo enum: [estados-solicitud.enum.ts](src/app/core/enums/estados-solicitud.enum.ts) (`EstadosSolicitud`) con los códigos del backend y `ESTADOS_SOLICITUD_LABELS`. Se borra `solicitud-status.enum.ts`, cuyos valores eran textos ("Aprobada") aunque los componentes le metían códigos con un cast. `Solicitud.estado` pasa a `string`
+- [x] Helpers de estado en [estado-solicitud.util.ts](src/app/core/utils/estado-solicitud.util.ts) (`normalizarEstado`, `ultimoEstado`, `estadoActual`, `estadoLabel`, `estadoColor`, `estadoIcono`, `estadoClase`) y pipes en [estado.pipes.ts](src/app/shared/pipes/estado.pipes.ts) (`estadoLabel`, `estadoColor`, `estadoIcono`, `estadoClase`)
+  - `getEstadoActual`: 7 copias + `estadoActual` de paz-salvo-filas → `estadoActual()`; la de estudiante/homologación no se usaba y se borra
+  - `getEstadoColor`/`getEstadoLabel` y los mapas `ESTADOS_SOLICITUD_LABELS/COLORS` en reingreso (3) y homologación coordinador: ninguna plantilla los usaba, se borran
+  - `getEstadoClass` (detalle, historial, visualizar-solicitudes) → pipe `estadoClase`; `getEstadoColor` de preinscribir y `getEstadoColor/Icon` de request-status → pipes
+  - Los `getEstadoColor` de dashboard y gestionar-cursos son de estados de **curso** y ya delegan en `CursoEstadosService`; se dejan
+  - Cambio visible esperado: la tabla de seguimiento, detalle-solicitud e historial muestran el texto ("Aprobada por Funcionario") en lugar del código (`APROBADA_FUNCIONARIO`); en preinscribir, ENVIADA y PENDIENTE usan los colores institucionales (#1D72D3 y #FF6D0A en lugar de #2196f3 y #ff9800)
 
 ### Fechas y textos
 - [ ] `formatearFecha` está copiado en 6 componentes y hay `toLocaleDateString` suelto en 20 archivos. Usar siempre [FechaPipe](src/app/shared/pipes/fecha.pipe.ts) (hoy solo lo usa 1 archivo)

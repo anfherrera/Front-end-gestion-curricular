@@ -6,10 +6,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 
 import { Solicitud } from '../../../core/models/procesos.model';
-import { COLORS_BY_STATE, ICONS_BY_STATE, COLORS } from '../../../core/design-system/design-tokens';
-import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
 import { OficioDescargaComponent } from '../oficio-descarga/oficio-descarga.component';
 import { FechaPipe } from '../../pipes/fecha.pipe';
+import { EstadoColorPipe, EstadoIconoPipe, EstadoLabelPipe } from '../../pipes/estado.pipes';
+import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
+import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
 
 /**
  * Componente de tabla para mostrar el estado de solicitudes
@@ -25,7 +26,10 @@ import { FechaPipe } from '../../pipes/fecha.pipe';
     MatTooltipModule,
     MatButtonModule,
     OficioDescargaComponent,
-    FechaPipe
+    FechaPipe,
+    EstadoColorPipe,
+    EstadoIconoPipe,
+    EstadoLabelPipe
   ],
   templateUrl: './request-status.component.html',
   styleUrls: ['./request-status.component.css'],
@@ -112,26 +116,14 @@ export class RequestStatusTableComponent implements OnInit {
   }
 
   puedeDescargarOficio(estado: string): boolean {
-    const estadoUpper = estado.toUpperCase();
-    return estadoUpper === 'APROBADA';
+    return normalizarEstado(estado) === EstadosSolicitud.APROBADA;
   }
 
   esEstadoPreregistrado(estado: string): boolean {
-    const estadoUpper = estado.toUpperCase();
-    return estadoUpper === 'PRE_REGISTRADO' || estadoUpper === 'PRE-REGISTRADO' || estadoUpper === 'PREREGISTRADO';
+    return normalizarEstado(estado) === EstadosSolicitud.PRE_REGISTRADO;
   }
 
   esSolicitudRechazada(estado: string): boolean {
-    return estado === 'RECHAZADA' || estado === 'Rechazada';
-  }
-
-  getEstadoIcon(estado: string): string {
-    const key = estado.toUpperCase().replace(/\s/g, '_').replace(/Í/g, 'I');
-    return ICONS_BY_STATE[key] ?? ICONS_BY_STATE[estado.toUpperCase()] ?? 'info';
-  }
-
-  getEstadoColor(estado: string): string {
-    const key = estado.toUpperCase().replace(/\s/g, '_').replace(/Í/g, 'I');
-    return COLORS_BY_STATE[key] ?? COLORS_BY_STATE[estado.toUpperCase()] ?? COLORS.neutralText;
+    return normalizarEstado(estado) === EstadosSolicitud.RECHAZADA;
   }
 }

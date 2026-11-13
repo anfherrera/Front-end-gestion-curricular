@@ -153,8 +153,8 @@
         <ng-container matColumnDef="estado_actual">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let solicitud">
-            <mat-chip [class]="getEstadoClass(obtenerEstadoActual(solicitud))">
-              {{ obtenerEstadoActual(solicitud) }}
+            <mat-chip [class]="obtenerEstadoActual(solicitud) | estadoClase">
+              {{ obtenerEstadoActual(solicitud) | estadoLabel }}
             </mat-chip>
           </td>
         </ng-container>

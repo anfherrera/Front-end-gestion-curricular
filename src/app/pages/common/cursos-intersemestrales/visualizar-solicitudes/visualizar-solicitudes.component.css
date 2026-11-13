@@ -296,7 +296,7 @@ app-card-container {
   -moz-border: 0 !important;
 }
 
-.estado-aprobado {
+.estado-aprobada {
   background-color: #d4edda !important;
   color: #155724 !important;
   border: 0 !important;
@@ -318,7 +318,7 @@ app-card-container {
   -moz-border: 0 !important;
 }
 
-.estado-rechazado {
+.estado-rechazada {
   background-color: #f8d7da !important;
   color: #721c24 !important;
   border: 0 !important;
@@ -366,8 +366,8 @@ app-card-container {
 ::ng-deep .solicitudes-table .condicion-badge,
 ::ng-deep .solicitudes-table .estado-badge,
 ::ng-deep .solicitudes-table .estado-enviada,
-::ng-deep .solicitudes-table .estado-aprobado,
-::ng-deep .solicitudes-table .estado-rechazado,
+::ng-deep .solicitudes-table .estado-aprobada,
+::ng-deep .solicitudes-table .estado-rechazada,
 ::ng-deep .solicitudes-table .estado-default {
   border: none !important;
   border-width: 0 !important;
@@ -381,8 +381,8 @@ app-card-container {
 ::ng-deep .solicitudes-table span.condicion-badge,
 ::ng-deep .solicitudes-table span.estado-badge,
 ::ng-deep .solicitudes-table span.estado-enviada,
-::ng-deep .solicitudes-table span.estado-aprobado,
-::ng-deep .solicitudes-table span.estado-rechazado,
+::ng-deep .solicitudes-table span.estado-aprobada,
+::ng-deep .solicitudes-table span.estado-rechazada,
 ::ng-deep .solicitudes-table span.estado-default {
   border: none !important;
   border-width: 0 !important;

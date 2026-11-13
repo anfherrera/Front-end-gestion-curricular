@@ -19,7 +19,7 @@ import { FileUploadComponent } from '../../../shared/components/file-upload-dial
 import { RequiredDocsComponent } from '../../../shared/components/required-docs/required-docs.component';
 import { ComentariosDialogComponent, ComentariosDialogData } from '../../../shared/components/comentarios-dialog/comentarios-dialog.component';
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
-import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { estadoActual, ultimoEstado } from '../../../core/utils/estado-solicitud.util';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -80,8 +80,6 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   solicitudForm: FormGroup;
   requiereTrabajoGrado = false;
   maxDate: Date = new Date();
-
-  SolicitudStatusEnum = SolicitudStatusEnum;
 
   documentosRequeridos = [
     { label: 'Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf', obligatorio: true },
@@ -278,15 +276,12 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
   /** Convierte la respuesta del backend en la fila de la tabla de seguimiento. */
   private aSolicitud(sol: SolicitudHomologacionDTORespuesta): Solicitud {
-    const estados = sol.estadosSolicitud || [];
-    const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
-
     return {
       id: sol.id_solicitud,
       nombre: sol.nombre_solicitud,
       fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-      estado: (ultimoEstado?.estado_actual || 'Pendiente') as SolicitudStatusEnum,
-      comentarios: ultimoEstado?.comentario || ''
+      estado: estadoActual(sol),
+      comentarios: ultimoEstado(sol)?.comentario || ''
     };
   }
 

@@ -24,7 +24,8 @@ import { RequestStatusTableComponent } from '../../../shared/components/request-
 import { InfoPreregistroDialogComponent } from '../../../shared/components/info-preregistro-dialog/info-preregistro-dialog.component';
 import { ComentariosDialogComponent, ComentariosDialogData } from '../../../shared/components/comentarios-dialog/comentarios-dialog.component';
 import { Archivo, Solicitud } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { ESTADOS_SOLICITUD_LABELS, EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
+import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -579,30 +580,10 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
   // Métodos auxiliares
   // ================================
 
-  private mapearEstado(estadoString: string): SolicitudStatusEnum {
-    switch (estadoString.toLowerCase()) {
-      case 'enviada':
-        return SolicitudStatusEnum.ENVIADA;
-      case 'en revisión por secretaría':
-      case 'en_revision_secretaria':
-        return SolicitudStatusEnum.EN_REVISION_SECRETARIA;
-      case 'en revisión por funcionario':
-      case 'en_revision_funcionario':
-        return SolicitudStatusEnum.EN_REVISION_FUNCIONARIO;
-      case 'en revisión por coordinador':
-      case 'en_revision_coordinador':
-        return SolicitudStatusEnum.EN_REVISION_COORDINADOR;
-      case 'aprobada':
-        return SolicitudStatusEnum.APROBADA;
-      case 'rechazada':
-        return SolicitudStatusEnum.RECHAZADA;
-      case 'pre_registrado':
-      case 'pre-registrado':
-      case 'preregistrado':
-        return SolicitudStatusEnum.PRE_REGISTRADO;
-      default:
-        return SolicitudStatusEnum.ENVIADA; // Estado por defecto
-    }
+  /** Código del backend; si no es un estado conocido (p. ej. "Pendiente") se muestra como enviada. */
+  private mapearEstado(estadoString: string): string {
+    const codigo = normalizarEstado(estadoString);
+    return codigo in ESTADOS_SOLICITUD_LABELS ? codigo : EstadosSolicitud.ENVIADA;
   }
 
   // ================================

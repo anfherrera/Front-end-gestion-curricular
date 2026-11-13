@@ -21,10 +21,11 @@ import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
-import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
+import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -65,11 +66,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
 
   documentoHabilitado: boolean = false;
-
-  // Enums para estados
-  EstadosSolicitud = EstadosSolicitud;
-  ESTADOS_SOLICITUD_LABELS = ESTADOS_SOLICITUD_LABELS;
-  ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
   private destroy$ = new Subject<void>();
 
@@ -119,7 +115,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(sol),
+          estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''
         }));
@@ -133,14 +129,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
   }
 
-  getEstadoActual(solicitud: SolicitudReingresoDTORespuesta): string {
-    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-      return ultimoEstado.estado_actual;
-    }
-    return 'Pendiente';
-  }
-
   cargarSolicitudesAprobadas(): void {
     this.cargandoSolicitudesAprobadas = true;
 
@@ -152,7 +140,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           id: solicitud.id_solicitud,
           nombre: solicitud.nombre_solicitud,
           fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(solicitud),
+          estado: estadoActual(solicitud),
           rutaArchivo: '',
           comentarios: solicitud.estadosSolicitud?.slice(-1)[0]?.comentario ?? ''
         }));
@@ -419,14 +407,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   seleccionarSolicitud(solicitud: SolicitudReingresoDTORespuesta): void {
     this.selectedSolicitud = solicitud;
-  }
-
-  getEstadoColor(estado: string): string {
-    return this.ESTADOS_SOLICITUD_COLORS[estado as EstadosSolicitud] || 'primary';
-  }
-
-  getEstadoLabel(estado: string): string {
-    return this.ESTADOS_SOLICITUD_LABELS[estado as EstadosSolicitud] || estado;
   }
 
   verDocumento(documento: DocumentosDTORespuesta): void {
@@ -708,27 +688,27 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   // Validar si se puede realizar una acción según el estado actual
   puedeAprobar(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     this.logger.debug('Estado actual para aprobar (secretaria):', estado);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 
   puedeRechazar(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     this.logger.debug('Estado actual para rechazar (secretaria):', estado);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 
   puedeGenerarOficio(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 
   puedeDescargarOficio(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 

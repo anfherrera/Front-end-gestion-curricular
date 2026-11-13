@@ -20,6 +20,7 @@ import { UtfFixPipe } from '../../../shared/pipes/utf-fix.pipe';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
 
 @Component({
   selector: 'app-historial-completo',
@@ -39,7 +40,9 @@ import { snackbarConfig } from '../../../core/design-system/design-tokens';
     MatChipsModule,
     PeriodoFiltroSelectorComponent,
     CardContainerComponent,
-    UtfFixPipe
+    UtfFixPipe,
+    EstadoClasePipe,
+    EstadoLabelPipe
   ],
   templateUrl: './historial-completo.component.html',
   styleUrls: ['./historial-completo.component.css']
@@ -143,20 +146,6 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
 
   onPeriodoChange(periodo: string): void {
     this.filtrosForm.patchValue({ periodoAcademico: periodo || '' });
-  }
-
-  getEstadoClass(estado: string): string {
-    const estadoLower = estado.toLowerCase();
-    if (estadoLower.includes('aprobada')) {
-      return 'estado-aprobada';
-    } else if (estadoLower.includes('rechazada')) {
-      return 'estado-rechazada';
-    } else if (estadoLower.includes('enviada')) {
-      return 'estado-enviada';
-    } else if (estadoLower.includes('proceso')) {
-      return 'estado-proceso';
-    }
-    return 'estado-default';
   }
 
   formatearFecha(fecha: string): string {

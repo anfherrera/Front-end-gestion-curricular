@@ -16,7 +16,8 @@ import { DocumentationViewerComponent } from '../../../shared/components/documen
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { PazSalvoBandejaComponent } from './paz-salvo-bandeja.component';
-import { aDocumentos, aFilaHistorial, aFilaTabla, estadoActual } from './paz-salvo-filas';
+import { aDocumentos, aFilaHistorial, aFilaTabla } from './paz-salvo-filas';
+import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 
 /** Roles que revisan paz y salvo con esta pantalla. Secretaría tiene su propio flujo (oficio). */
 export type RolRevisionPazSalvo = 'funcionario' | 'coordinador';

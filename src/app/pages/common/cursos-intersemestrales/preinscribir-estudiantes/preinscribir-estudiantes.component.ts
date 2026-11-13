@@ -21,6 +21,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
+import { EstadoColorPipe } from '../../../../shared/pipes/estado.pipes';
 
 @Component({
   selector: 'app-preinscribir-estudiantes',
@@ -40,7 +41,8 @@ import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
     MatDialogModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    CardContainerComponent
+    CardContainerComponent,
+    EstadoColorPipe
   ],
   templateUrl: './preinscribir-estudiantes.component.html',
   styleUrls: ['./preinscribir-estudiantes.component.css']
@@ -370,25 +372,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   puedeVerDetalles(solicitud: SolicitudCursoVerano): boolean {
     // Todos los funcionarios pueden ver detalles
     return this.puedeGestionarPreinscripciones();
-  }
-
-  /**
-   * Obtener el color del estado para mostrar en la tabla
-   */
-  getEstadoColor(estado: string | undefined): string {
-    if (!estado) return '#9e9e9e';
-    
-    const estadoUpper = estado.toUpperCase();
-    if (estadoUpper === 'APROBADA' || estadoUpper === 'APROBADA_FUNCIONARIO') {
-      return '#249337'; // Verde
-    } else if (estadoUpper === 'RECHAZADA' || estadoUpper === 'RECHAZADO') {
-      return '#FF6D0A'; // Rojo
-    } else if (estadoUpper === 'ENVIADA' || estadoUpper === 'ENVIADO') {
-      return '#2196f3'; // Azul
-    } else if (estadoUpper === 'PENDIENTE') {
-      return '#ff9800'; // Naranja
-    }
-    return '#000066'; // Azul oscuro por defecto
   }
 
   // Obtener nombre del docente de forma segura

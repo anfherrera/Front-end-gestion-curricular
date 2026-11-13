@@ -16,10 +16,11 @@ import { RequestStatusTableComponent } from '../../../shared/components/request-
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
-import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
+import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -43,11 +44,6 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
   solicitudes: any[] = []; // Transformado para RequestStatusTableComponent
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
-
-  // Enums para estados
-  EstadosSolicitud = EstadosSolicitud;
-  ESTADOS_SOLICITUD_LABELS = ESTADOS_SOLICITUD_LABELS;
-  ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
   private destroy$ = new Subject<void>();
 
@@ -78,7 +74,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(sol),
+          estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''
         }));
@@ -90,14 +86,6 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
         this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
-  }
-
-  getEstadoActual(solicitud: SolicitudHomologacionDTORespuesta): string {
-    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-      return ultimoEstado.estado_actual;
-    }
-    return 'Pendiente';
   }
 
   onSolicitudSeleccionada(solicitudId: number | null): void {
@@ -124,14 +112,6 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
   seleccionarSolicitud(solicitud: SolicitudHomologacionDTORespuesta): void {
     this.selectedSolicitud = solicitud;
-  }
-
-  getEstadoColor(estado: string): string {
-    return this.ESTADOS_SOLICITUD_COLORS[estado as EstadosSolicitud] || 'primary';
-  }
-
-  getEstadoLabel(estado: string): string {
-    return this.ESTADOS_SOLICITUD_LABELS[estado as EstadosSolicitud] || estado;
   }
 
   /**
@@ -217,25 +197,25 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   // Validar si se puede realizar una acción según el estado actual
   puedeAprobar(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     return estado === EstadosSolicitud.APROBADA_FUNCIONARIO;
   }
 
   puedeRechazar(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     return estado === EstadosSolicitud.APROBADA_FUNCIONARIO;
   }
 
   puedeAprobarComoCoordinador(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     return estado === EstadosSolicitud.APROBADA_FUNCIONARIO;
   }
 
   puedeAprobarDefinitivamente(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     return estado === EstadosSolicitud.APROBADA_COORDINADOR;
   }
 }

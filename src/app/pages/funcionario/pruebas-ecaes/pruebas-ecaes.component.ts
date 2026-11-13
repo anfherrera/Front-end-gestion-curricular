@@ -24,6 +24,7 @@ import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
@@ -192,7 +193,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(sol),
+          estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''
         }));
@@ -204,14 +205,6 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         this.snackBar.open(mensaje || 'Error al cargar solicitudes ECAES', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
-  }
-
-  getEstadoActual(solicitud: SolicitudEcaesResponse): string {
-    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-      return ultimoEstado.estado_actual;
-    }
-    return 'Pendiente';
   }
 
   /**

@@ -48,9 +48,8 @@ describe('HomologacionAsignaturasComponent (Coordinador)', () => {
     expect(homologacionService.getCoordinadorRequests).toHaveBeenCalled();
   });
 
-  it('HA-C-003: debe tener propiedades de estados (EstadosSolicitud, labels, colors)', () => {
-    expect(component.EstadosSolicitud).toBeDefined();
-    expect(component.ESTADOS_SOLICITUD_LABELS).toBeDefined();
-    expect(component.ESTADOS_SOLICITUD_COLORS).toBeDefined();
+  it('HA-C-003: sin solicitud seleccionada no permite aprobar ni rechazar', () => {
+    expect(component.puedeAprobar()).toBeFalse();
+    expect(component.puedeRechazar()).toBeFalse();
   });
 });

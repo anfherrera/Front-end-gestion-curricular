@@ -16,6 +16,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { mensajeDeError } from '../../../core/utils/http-error.utils';
+import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
 
 interface HistorialEstado {
   id_estado: number;
@@ -74,7 +75,9 @@ interface DetalleSolicitud {
     MatDividerModule,
     MatListModule,
     MatTooltipModule,
-    CardContainerComponent
+    CardContainerComponent,
+    EstadoClasePipe,
+    EstadoLabelPipe
   ],
   templateUrl: './detalle-solicitud.component.html',
   styleUrls: ['./detalle-solicitud.component.css']
@@ -140,20 +143,6 @@ export class DetalleSolicitudComponent implements OnInit {
       month: '2-digit',
       day: '2-digit'
     });
-  }
-
-  getEstadoClass(estado: string): string {
-    const estadoLower = estado.toLowerCase();
-    if (estadoLower.includes('aprobada')) {
-      return 'estado-aprobada';
-    } else if (estadoLower.includes('rechazada')) {
-      return 'estado-rechazada';
-    } else if (estadoLower.includes('enviada')) {
-      return 'estado-enviada';
-    } else if (estadoLower.includes('proceso') || estadoLower.includes('revisión')) {
-      return 'estado-proceso';
-    }
-    return 'estado-default';
   }
 
   descargarDocumento(documento: Documento): void {

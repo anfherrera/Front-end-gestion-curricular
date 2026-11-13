@@ -8,6 +8,7 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
+import { EstadoClasePipe } from '../../../../shared/pipes/estado.pipes';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
 import { MateriaFiltro, SolicitudVisualizar } from '../../../../core/models/cursos-intersemestrales.model';
 import { descargarBlob } from '../../../../core/utils/download.util';
@@ -28,12 +29,13 @@ const CONDICIONES: Record<string, { texto: string; clase: string }> = {
   'Preinscripción': { texto: 'Preinscripción', clase: 'condicion-preinscripcion' }
 };
 
-const ESTADOS: Record<string, { texto: string; clase: string }> = {
-  ENVIADA: { texto: 'Enviada', clase: 'estado-enviada' },
-  APROBADO: { texto: 'Aprobado', clase: 'estado-aprobado' },
-  RECHAZADO: { texto: 'Rechazado', clase: 'estado-rechazado' },
-  PAGO_VALIDADO: { texto: 'Pago Validado', clase: 'estado-aprobado' },
-  PAGO_RECHAZADO: { texto: 'Pago Rechazado', clase: 'estado-rechazado' }
+/** Textos de los estados de solicitudes de cursos (la clase CSS sale del pipe estadoClase). */
+const ESTADOS_TEXTO: Record<string, string> = {
+  ENVIADA: 'Enviada',
+  APROBADO: 'Aprobado',
+  RECHAZADO: 'Rechazado',
+  PAGO_VALIDADO: 'Pago Validado',
+  PAGO_RECHAZADO: 'Pago Rechazado'
 };
 
 /** Solicitudes de cursos intersemestrales filtradas por materia y período, con exportación a Excel. */
@@ -47,7 +49,8 @@ const ESTADOS: Record<string, { texto: string; clase: string }> = {
     PeriodoFiltroSelectorComponent,
     ...MATERIAL_IMPORTS,
     MatSnackBarModule,
-    UtfFixPipe
+    UtfFixPipe,
+    EstadoClasePipe
   ],
   templateUrl: './visualizar-solicitudes.component.html',
   styleUrls: ['./visualizar-solicitudes.component.css']
@@ -122,11 +125,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
   }
 
   getEstadoTexto(estado: string): string {
-    return ESTADOS[estado?.toUpperCase()]?.texto ?? (estado || 'Sin estado');
-  }
-
-  getEstadoClass(estado: string): string {
-    return ESTADOS[estado?.toUpperCase()]?.clase ?? 'estado-default';
+    return ESTADOS_TEXTO[estado?.toUpperCase()] ?? (estado || 'Sin estado');
   }
 
   /**

@@ -18,6 +18,7 @@ import { ApprovedRequestsSectionComponent } from '../../../shared/components/app
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -96,7 +97,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(sol),
+          estado: estadoActual(sol),
           rutaArchivo: '', // Para oficios
           comentarios: ''
         }));
@@ -108,17 +109,6 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
         this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
-  }
-
-  /**
-   * Obtener el estado actual de la solicitud
-   */
-  getEstadoActual(solicitud: SolicitudHomologacionDTORespuesta): string {
-    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-      return ultimoEstado.estado_actual;
-    }
-    return 'Pendiente';
   }
 
   /**
@@ -135,7 +125,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
           id: solicitud.id_solicitud,
           nombre: solicitud.nombre_solicitud,
           fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(solicitud) || 'Aprobada',
+          estado: estadoActual(solicitud) || 'Aprobada',
           rutaArchivo: '',
           comentarios: solicitud.estadosSolicitud?.slice(-1)[0]?.comentario ?? ''
         }));

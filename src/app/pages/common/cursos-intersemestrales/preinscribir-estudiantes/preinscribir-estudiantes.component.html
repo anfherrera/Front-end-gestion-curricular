@@ -57,7 +57,7 @@
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let solicitud">
-            <span [style.background-color]="getEstadoColor(solicitud.estado)" 
+            <span [style.background-color]="solicitud.estado | estadoColor" 
                   style="color: white !important; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: none !important; display: inline-block;">
               {{ solicitud.estado }}
             </span>

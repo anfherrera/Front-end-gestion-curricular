@@ -18,11 +18,11 @@ import { RequestStatusTableComponent } from '../../../shared/components/request-
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
-import { EstadosSolicitud, ESTADOS_SOLICITUD_LABELS, ESTADOS_SOLICITUD_COLORS } from '../../../core/enums/estados-solicitud.enum';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { estadoActual } from '../../../core/utils/estado-solicitud.util';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -51,11 +51,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   solicitudesProcesadas: any[] = []; // Transformado para RequestStatusTableComponent - Procesadas
   selectedSolicitud?: SolicitudReingresoDTORespuesta;
   periodoAcademicoFiltro: string | null = null; // Filtro de período académico para historial
-
-  // Enums para estados
-  EstadosSolicitud = EstadosSolicitud;
-  ESTADOS_SOLICITUD_LABELS = ESTADOS_SOLICITUD_LABELS;
-  ESTADOS_SOLICITUD_COLORS = ESTADOS_SOLICITUD_COLORS;
 
   private destroy$ = new Subject<void>();
 
@@ -87,7 +82,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(sol),
+          estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''
         }));
@@ -99,14 +94,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         this.snackBar.open(mensaje || 'Error al cargar solicitudes', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
-  }
-
-  getEstadoActual(solicitud: SolicitudReingresoDTORespuesta): string {
-    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-      return ultimoEstado.estado_actual;
-    }
-    return 'Pendiente';
   }
 
   onSolicitudSeleccionada(solicitudId: number | null): void {
@@ -133,14 +120,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   seleccionarSolicitud(solicitud: SolicitudReingresoDTORespuesta): void {
     this.selectedSolicitud = solicitud;
-  }
-
-  getEstadoColor(estado: string): string {
-    return this.ESTADOS_SOLICITUD_COLORS[estado as EstadosSolicitud] || 'primary';
-  }
-
-  getEstadoLabel(estado: string): string {
-    return this.ESTADOS_SOLICITUD_LABELS[estado as EstadosSolicitud] || estado;
   }
 
 
@@ -243,7 +222,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   // Validar si se puede realizar una acción según el estado actual
   puedeAprobar(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     this.logger.debug('Estado actual para aprobar:', estado);
     // Para funcionario, puede aprobar cuando el estado es "Enviada" (como se mencionó en el contexto)
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
@@ -251,14 +230,14 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   puedeRechazar(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     this.logger.debug('Estado actual para rechazar:', estado);
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
 
   puedeCompletarValidacion(): boolean {
     if (!this.selectedSolicitud) return false;
-    const estado = this.getEstadoActual(this.selectedSolicitud);
+    const estado = estadoActual(this.selectedSolicitud);
     this.logger.debug('Estado actual para completar validación:', estado);
     return estado === 'Enviada' || estado === 'ENVIADA' || estado === 'Pendiente' || estado === 'PENDIENTE';
   }
@@ -274,7 +253,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           id: solicitud.id_solicitud,
           nombre: solicitud.nombre_solicitud,
           fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
-          estado: this.getEstadoActual(solicitud),
+          estado: estadoActual(solicitud),
           fechaProcesamiento: this.getFechaProcesamiento(solicitud),
           archivos: solicitud.documentos?.map((doc: any) => ({
             id_documento: doc.id_documento,

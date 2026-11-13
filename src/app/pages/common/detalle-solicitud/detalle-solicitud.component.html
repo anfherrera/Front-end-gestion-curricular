@@ -55,8 +55,8 @@
             </div>
             <div class="info-item">
               <span class="info-label">Estado Actual:</span>
-              <mat-chip [class]="getEstadoClass(solicitud.estado_actual)">
-                {{ solicitud.estado_actual }}
+              <mat-chip [class]="solicitud.estado_actual | estadoClase">
+                {{ solicitud.estado_actual | estadoLabel }}
               </mat-chip>
             </div>
             <div class="info-item">
@@ -122,8 +122,8 @@
               </div>
               <div class="timeline-content">
                 <div class="timeline-header">
-                  <mat-chip [class]="getEstadoClass(estado.estado_actual)">
-                    {{ estado.estado_actual }}
+                  <mat-chip [class]="estado.estado_actual | estadoClase">
+                    {{ estado.estado_actual | estadoLabel }}
                   </mat-chip>
                   <span class="timeline-date">{{ formatearFecha(estado.fecha_registro_estado) }}</span>
                 </div>

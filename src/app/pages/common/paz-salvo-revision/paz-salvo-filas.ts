@@ -1,19 +1,13 @@
 import { DocumentoHomologacion, Solicitud, SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
-import { SolicitudStatusEnum } from '../../../core/enums/solicitud-status.enum';
+import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
 import { DocumentoPazSalvoRespuesta } from '../../../core/services/paz-salvo.service';
+import { ultimoEstado } from '../../../core/utils/estado-solicitud.util';
 
 /** Funciones compartidas por las bandejas de paz y salvo (funcionario, coordinador y secretaría). */
 
-/** Estado del último registro de la solicitud. */
-export function estadoActual(sol: SolicitudHomologacionDTORespuesta): string {
-  const estados = sol.estadosSolicitud;
-  return estados && estados.length > 0 ? estados[estados.length - 1].estado_actual : 'Pendiente';
-}
-
 /** Fecha del último estado (cuando se procesó), en formato local. */
 export function fechaProcesamiento(sol: SolicitudHomologacionDTORespuesta): string {
-  const estados = sol.estadosSolicitud;
-  const ultimo = estados && estados.length > 0 ? estados[estados.length - 1] : null;
+  const ultimo = ultimoEstado(sol);
   if (!ultimo?.fecha_registro_estado) return '';
   return new Date(ultimo.fecha_registro_estado).toLocaleString('es-ES', {
     year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
@@ -22,13 +16,13 @@ export function fechaProcesamiento(sol: SolicitudHomologacionDTORespuesta): stri
 
 /** Fila para RequestStatusTableComponent. La fecha va en ISO: el pipe `fecha` la formatea. */
 export function aFilaTabla(sol: SolicitudHomologacionDTORespuesta): Solicitud {
-  const ultimoEstado = sol.estadosSolicitud?.[sol.estadosSolicitud.length - 1];
+  const ultimo = ultimoEstado(sol);
   return {
     id: sol.id_solicitud,
     nombre: sol.nombre_solicitud,
     fecha: sol.fecha_registro_solicitud,
-    estado: (ultimoEstado?.estado_actual as SolicitudStatusEnum) || SolicitudStatusEnum.ENVIADA,
-    comentarios: ultimoEstado?.comentario || '',
+    estado: ultimo?.estado_actual || EstadosSolicitud.ENVIADA,
+    comentarios: ultimo?.comentario || '',
     archivos: sol.documentos?.map((doc: DocumentoHomologacion) => ({
       id_documento: doc.id_documento,
       nombre: doc.nombre,

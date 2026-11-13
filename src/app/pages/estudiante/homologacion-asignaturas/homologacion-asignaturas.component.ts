@@ -715,17 +715,6 @@ private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga
 
 
 /**
- * Obtener el estado actual de una solicitud
- */
-obtenerEstadoActual(solicitud: any): string {
-  if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-    const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-    return ultimoEstado.estado_actual;
-  }
-  return 'Pendiente';
-}
-
-/**
  * Mostrar oficios en la UI
  */
 private mostrarOficiosEnUI(oficios: any[]): void {
