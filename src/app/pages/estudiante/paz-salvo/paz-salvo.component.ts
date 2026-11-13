@@ -22,6 +22,7 @@ import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { estadoActual, ultimoEstado } from '../../../core/utils/estado-solicitud.util';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { normalizarNombreArchivo } from '../../../core/utils/texto.util';
 
 /** Programas cuyo paz y salvo exige trabajo de grado y el formato PPH o TIH. */
 const PROGRAMAS_CON_TRABAJO_DE_GRADO = ['sistemas', 'electronica', 'automatica', 'automatizacion'];
@@ -197,7 +198,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       .map(doc => doc.label);
 
     const tienePphOTih = this.archivosActuales
-      .map(a => this.normalizarNombre(a.nombre))
+      .map(a => normalizarNombreArchivo(a.nombre))
       .some(n => n.includes('pph') || n.includes('tih'));
     if (this.programaConTrabajoDeGrado() && !tienePphOTih) {
       faltantes.push('Formato PPH o TIH (requerido para tu programa)');
@@ -209,7 +210,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   /** Telemática solo exige la cédula; los formatos de trabajo de grado no aplican. */
   private validarDocumentosTelematica(): string[] {
     const errores: string[] = [];
-    const nombres = this.archivosActuales.map(a => this.normalizarNombre(a.nombre));
+    const nombres = this.archivosActuales.map(a => normalizarNombreArchivo(a.nombre));
 
     if (nombres.some(n => n.includes('tig') || n.includes('tih'))) {
       errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
@@ -229,20 +230,11 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
   }
 
   private archivoSubido(nombreDocumento: string): boolean {
-    const nombreNormalizado = this.normalizarNombre(nombreDocumento);
+    const nombreNormalizado = normalizarNombreArchivo(nombreDocumento);
     return this.archivosActuales.some(archivo => {
-      const nombreArchivo = this.normalizarNombre(archivo.nombre);
+      const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
       return nombreArchivo.includes(nombreNormalizado) || nombreNormalizado.includes(nombreArchivo);
     });
-  }
-
-  private normalizarNombre(nombre: string): string {
-    return nombre
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/\.[^/.]+$/, '')
-      .replace(/[^a-z0-9]/g, '');
   }
 
   private mostrarMensaje(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
@@ -279,7 +271,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     return {
       id: sol.id_solicitud,
       nombre: sol.nombre_solicitud,
-      fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+      fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
       estado: estadoActual(sol),
       comentarios: ultimoEstado(sol)?.comentario || ''
     };

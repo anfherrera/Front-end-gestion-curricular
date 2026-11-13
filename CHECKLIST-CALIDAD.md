@@ -61,8 +61,11 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
   - Cambio visible esperado: la tabla de seguimiento, detalle-solicitud e historial muestran el texto ("Aprobada por Funcionario") en lugar del código (`APROBADA_FUNCIONARIO`); en preinscribir, ENVIADA y PENDIENTE usan los colores institucionales (#1D72D3 y #FF6D0A en lugar de #2196f3 y #ff9800)
 
 ### Fechas y textos
-- [ ] `formatearFecha` está copiado en 6 componentes y hay `toLocaleDateString` suelto en 20 archivos. Usar siempre [FechaPipe](src/app/shared/pipes/fecha.pipe.ts) (hoy solo lo usa 1 archivo)
-- [ ] `obtenerNombreDocente` (6 copias), `normalizarNombre` (3) y `obtenerPeriodoActualFallback` (3): moverlos a `core/utils`
+- [x] Fechas: [fecha.util.ts](src/app/core/utils/fecha.util.ts) tiene `formatearFecha(valor, formato, vacío)` (formatos `corta`, `corta-hora`, `media`, `media-hora`, `larga`, `larga-hora`) y `fechaRelativa`; [FechaPipe](src/app/shared/pipes/fecha.pipe.ts) la usa (`| fecha:'larga'`). Ya no queda ningún `toLocaleDateString` ni `formatearFecha` de componente
+  - Las 14 filas de tabla que hacían `new Date(...).toLocaleDateString()` ahora pasan la fecha ISO: la tabla ya aplicaba `| fecha` encima, y con el navegador en español "13/11/2026" no se podía volver a leer
+  - Corrección: "2025-01-15" se lee como día local (antes `new Date()` lo tomaba en UTC y en Colombia mostraba el 14)
+  - Se borran copias muertas: `formatDate` de notificaciones.component, `formatearFechaCorta` de detalle-solicitud, `formatearFecha`/`formatearFechaCorta` de periodo.utils
+- [x] `obtenerNombreDocente` (6 envoltorios de `nombreDocente`) → pipe [nombreDocente](src/app/shared/pipes/nombre-docente.pipe.ts); `normalizarNombre` (3) y `coincidenciaFuzzy` (2, con distintas palabras clave) → [texto.util.ts](src/app/core/utils/texto.util.ts); `obtenerPeriodoActualFallback` (3) era igual a `getPeriodoActual()` de periodo.utils, que es lo que se usa ahora
 
 ### Diálogos
 - [ ] Los nombres `comentario-dialog` y `comentarios-dialog` se confunden. Cambiarlos a algo como `agregar-comentario-dialog` y `ver-comentarios-dialog`

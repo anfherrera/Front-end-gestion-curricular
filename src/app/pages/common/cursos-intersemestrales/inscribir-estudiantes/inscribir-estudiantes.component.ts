@@ -27,8 +27,8 @@ import { PromptDialogComponent, PromptDialogData } from '../../../../shared/comp
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
-import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
 import { descargarBlob } from '../../../../core/utils/download.util';
+import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -49,7 +49,8 @@ import { descargarBlob } from '../../../../core/utils/download.util';
     MatProgressSpinnerModule,
     MatTooltipModule,
     CardContainerComponent,
-    UtfFixPipe
+    UtfFixPipe,
+    NombreDocentePipe
   ],
   templateUrl: './inscribir-estudiantes.component.html',
   styleUrls: ['./inscribir-estudiantes.component.css']
@@ -362,10 +363,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     this.snackBar.open(mensaje, 'Cerrar', snackbarConfig(['error-snackbar']));
   }
 
-  // Obtener nombre del docente de forma segura
-  obtenerNombreDocente(curso: CursoOfertadoVerano | null): string {
-    return nombreDocente(curso);
-  }
 }
 
 // Componente del dialog para ver detalles de inscripción

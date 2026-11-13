@@ -2,17 +2,9 @@ import { DocumentoHomologacion, Solicitud, SolicitudHomologacionDTORespuesta } f
 import { EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
 import { DocumentoPazSalvoRespuesta } from '../../../core/services/paz-salvo.service';
 import { ultimoEstado } from '../../../core/utils/estado-solicitud.util';
+import { formatearFecha } from '../../../core/utils/fecha.util';
 
 /** Funciones compartidas por las bandejas de paz y salvo (funcionario, coordinador y secretaría). */
-
-/** Fecha del último estado (cuando se procesó), en formato local. */
-export function fechaProcesamiento(sol: SolicitudHomologacionDTORespuesta): string {
-  const ultimo = ultimoEstado(sol);
-  if (!ultimo?.fecha_registro_estado) return '';
-  return new Date(ultimo.fecha_registro_estado).toLocaleString('es-ES', {
-    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-  });
-}
 
 /** Fila para RequestStatusTableComponent. La fecha va en ISO: el pipe `fecha` la formatea. */
 export function aFilaTabla(sol: SolicitudHomologacionDTORespuesta): Solicitud {
@@ -36,7 +28,8 @@ export function aFilaTabla(sol: SolicitudHomologacionDTORespuesta): Solicitud {
 
 /** Fila del historial: igual que la de pendientes, con la fecha en que se procesó. */
 export function aFilaHistorial(sol: SolicitudHomologacionDTORespuesta): Solicitud {
-  return { ...aFilaTabla(sol), fechaProcesamiento: fechaProcesamiento(sol) } as Solicitud;
+  const fechaProcesamiento = formatearFecha(ultimoEstado(sol)?.fecha_registro_estado, 'corta-hora');
+  return { ...aFilaTabla(sol), fechaProcesamiento } as Solicitud;
 }
 
 /** Documentos tal como los devuelven los endpoints obtenerOficios / obtenerDocumentos. */

@@ -73,7 +73,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
         this.solicitudes = sols.map(sol => ({
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
-          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
           estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''

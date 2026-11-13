@@ -11,7 +11,8 @@ import { CursoOfertadoVerano, CreatePreinscripcionDTO, CondicionSolicitudVerano 
 import { UsuarioSesion } from '../../../core/models/usuario-sesion.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
-import { CONDICIONES_POR_DEFECTO, nombreCondicion, nombreDocente } from '../../../core/utils/cursos-verano.utils';
+import { CONDICIONES_POR_DEFECTO, nombreCondicion, } from '../../../core/utils/cursos-verano.utils';
+import { NombreDocentePipe } from '../../pipes/nombre-docente.pipe';
 
 export interface PreinscripcionDialogData {
   curso: CursoOfertadoVerano;
@@ -27,7 +28,7 @@ const ERRORES_POR_CODIGO: Record<string, string> = {
 @Component({
   selector: 'app-preinscripcion-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, ReactiveFormsModule, ...MATERIAL_IMPORTS, NombreDocentePipe],
   templateUrl: './preinscripcion-dialog.component.html',
   styleUrls: ['./preinscripcion-dialog.component.css']
 })
@@ -114,7 +115,4 @@ export class PreinscripcionDialogComponent implements OnInit {
     return nombreCondicion(condicion);
   }
 
-  obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    return nombreDocente(curso);
-  }
 }

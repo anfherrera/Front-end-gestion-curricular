@@ -29,7 +29,7 @@
       <ng-container matColumnDef="fecha">
         <th mat-header-cell *matHeaderCellDef>Fecha de Subida</th>
         <td mat-cell *matCellDef="let documento">
-          <span class="file-date">{{ formatearFecha(documento.fecha_documento || documento.fechaSubida) }}</span>
+          <span class="file-date">{{ (documento.fecha_documento || documento.fechaSubida) | fecha:'media-hora' }}</span>
         </td>
       </ng-container>
 

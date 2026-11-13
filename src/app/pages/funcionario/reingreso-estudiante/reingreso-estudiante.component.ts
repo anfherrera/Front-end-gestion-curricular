@@ -22,7 +22,8 @@ import { PeriodoFiltroSelectorComponent } from '../../../shared/components/perio
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
-import { estadoActual } from '../../../core/utils/estado-solicitud.util';
+import { estadoActual, ultimoEstado } from '../../../core/utils/estado-solicitud.util';
+import { formatearFecha } from '../../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -81,7 +82,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         this.solicitudes = sols.map(sol => ({
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
-          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
           estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''
@@ -252,9 +253,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         this.solicitudesProcesadas = sols.map(solicitud => ({
           id: solicitud.id_solicitud,
           nombre: solicitud.nombre_solicitud,
-          fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
+          fecha: solicitud.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
           estado: estadoActual(solicitud),
-          fechaProcesamiento: this.getFechaProcesamiento(solicitud),
+          fechaProcesamiento: formatearFecha(ultimoEstado(solicitud)?.fecha_registro_estado, 'corta-hora'),
           archivos: solicitud.documentos?.map((doc: any) => ({
             id_documento: doc.id_documento,
             nombre: doc.nombre,
@@ -286,19 +287,4 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   }
 
 
-  getFechaProcesamiento(solicitud: SolicitudReingresoDTORespuesta): string {
-    if (solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-      if (ultimoEstado.fecha_registro_estado) {
-        return new Date(ultimoEstado.fecha_registro_estado).toLocaleString('es-ES', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-      }
-    }
-    return '';
-  }
 }

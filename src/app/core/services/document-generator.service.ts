@@ -5,6 +5,7 @@ import { DocumentRequest, DocumentTemplate } from '../../shared/components/docum
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 import { environment } from '../../../environments/environment';
+import { formatearFecha } from '../utils/fecha.util';
 
 @Injectable({
   providedIn: 'root'
@@ -250,7 +251,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `Popayán, ${this.formatearFecha(request.datosDocumento.fechaDocumento)}`,
+            text: `Popayán, ${formatearFecha(request.datosDocumento.fechaDocumento, 'larga')}`,
             size: 24
           })
         ],
@@ -337,7 +338,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `en sección ordinaria del día ${this.formatearFecha(request.datosDocumento.fechaDocumento)} y previa revisión del plan`,
+            text: `en sección ordinaria del día ${formatearFecha(request.datosDocumento.fechaDocumento, 'larga')} y previa revisión del plan`,
             size: 24
           })
         ],
@@ -656,7 +657,7 @@ export class DocumentGeneratorService {
       new Paragraph({
         children: [
           new TextRun({
-            text: `Dada en Popayán, a los ${new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}.`,
+            text: `Dada en Popayán, a los ${formatearFecha(new Date(), 'larga')}.`,
             size: 24
           })
         ],
@@ -730,20 +731,6 @@ export class DocumentGeneratorService {
     // Por ahora, usar la plantilla de homologación como base
     // Se puede personalizar más adelante si es necesario
     return this.crearContenidoHomologacion(request);
-  }
-
-  /**
-   * Formatear fecha para el documento
-   */
-  private formatearFecha(fecha: string | Date): string {
-    if (!fecha) return '';
-
-    const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
-    return fechaObj.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
   }
 
   /**

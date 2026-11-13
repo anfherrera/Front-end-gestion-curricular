@@ -12,7 +12,9 @@ import { CursoOfertadoVerano, DashboardEstadisticas } from '../../../../core/mod
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UsuarioSesion } from '../../../../core/models/usuario-sesion.model';
-import { estadoCurso, nombreDocente } from '../../../../core/utils/cursos-verano.utils';
+import { estadoCurso, } from '../../../../core/utils/cursos-verano.utils';
+import { formatearFecha } from '../../../../core/utils/fecha.util';
+import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
 
 @Component({
   selector: 'app-dashboard-cursos-intersemestrales',
@@ -24,7 +26,8 @@ import { estadoCurso, nombreDocente } from '../../../../core/utils/cursos-verano
     MatButtonModule,
     MatChipsModule,
     MatDividerModule,
-    RouterModule
+    RouterModule,
+    NombreDocentePipe
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -61,8 +64,6 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    // Limpiar cache al destruir componente
-    this.fechasFormateadas.clear();
   }
 
   private cargarDatos(): void {
@@ -122,48 +123,11 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
     }).length;
   }
 
-
-  // Cachear para no recalcular en cada detección de cambios
-  private fechasFormateadas = new Map<string, string>();
-
-  formatearFecha(fecha: Date | string | null | undefined): string {
-    // Manejar casos null/undefined
-    if (!fecha) {
-      return 'N/A';
-    }
-    
-    try {
-      const key = fecha.toString();
-      if (!this.fechasFormateadas.has(key)) {
-        const fechaObj = new Date(fecha);
-        
-        // Validar que la fecha sea válida
-        if (isNaN(fechaObj.getTime())) {
-          return 'Fecha inválida';
-        }
-        
-        this.fechasFormateadas.set(key, fechaObj.toLocaleDateString('es-ES', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        }));
-      }
-      return this.fechasFormateadas.get(key)!;
-    } catch (error) {
-      return 'N/A';
-    }
-  }
-
-  // Formatear rango de fechas de forma segura
   formatearRangoFechas(fechaInicio: Date | string | null | undefined, fechaFin: Date | string | null | undefined): string {
-    const inicio = this.formatearFecha(fechaInicio);
-    const fin = this.formatearFecha(fechaFin);
-    
-    if (inicio === 'N/A' && fin === 'N/A') {
+    if (!fechaInicio && !fechaFin) {
       return 'Fechas no definidas';
     }
-    
-    return `${inicio} - ${fin}`;
+    return `${formatearFecha(fechaInicio, 'media', 'N/A')} - ${formatearFecha(fechaFin, 'media', 'N/A')}`;
   }
 
   // Obtener período académico de forma segura
@@ -179,11 +143,6 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
   // TrackBy functions para optimizar ngFor
   trackByCursoId(index: number, curso: CursoOfertadoVerano): number {
     return curso.id_curso;
-  }
-
-  // Obtener nombre del docente de forma segura
-  obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    return nombreDocente(curso);
   }
 
   obtenerNombreMateria(curso: CursoOfertadoVerano): string {

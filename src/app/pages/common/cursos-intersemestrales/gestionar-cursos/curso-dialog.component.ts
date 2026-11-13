@@ -19,7 +19,7 @@ import {
 } from '../../../../core/models/cursos-intersemestrales.model';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '../../../../core/utils/periodo.utils';
-import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
+import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
 
 export interface CursoDialogData {
   form: FormGroup;
@@ -49,7 +49,8 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
     MatDatepickerModule,
     MatNativeDateModule,
     MatSnackBarModule,
-    MatIconModule
+    MatIconModule,
+    NombreDocentePipe
   ],
   templateUrl: './curso-dialog.component.html',
   styleUrls: ['./curso-dialog.component.css']
@@ -106,10 +107,6 @@ export class CursoDialogComponent implements OnInit {
           this.cargandoSalones = false;
         }
       });
-  }
-
-  obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    return nombreDocente(curso);
   }
 
   /** Períodos de los últimos años en orden cronológico; al crear se preselecciona el primero. */

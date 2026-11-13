@@ -3,46 +3,6 @@
  */
 
 /**
- * Formatea una fecha ISO a formato legible en español
- * @param fechaISO Fecha en formato ISO (ej: "2025-01-15")
- * @returns Fecha formateada (ej: "15 de enero de 2025")
- */
-export function formatearFecha(fechaISO: string | Date): string {
-  if (!fechaISO) return 'Fecha no disponible';
-  
-  try {
-    const fecha = typeof fechaISO === 'string' ? new Date(fechaISO) : fechaISO;
-    return fecha.toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  } catch (error) {
-    return 'Fecha inválida';
-  }
-}
-
-/**
- * Formatea una fecha ISO a formato corto (dd/mm/yyyy)
- * @param fechaISO Fecha en formato ISO (ej: "2025-01-15")
- * @returns Fecha formateada (ej: "15/01/2025")
- */
-export function formatearFechaCorta(fechaISO: string | Date): string {
-  if (!fechaISO) return 'N/A';
-  
-  try {
-    const fecha = typeof fechaISO === 'string' ? new Date(fechaISO) : fechaISO;
-    return fecha.toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  } catch (error) {
-    return 'N/A';
-  }
-}
-
-/**
  * Calcula la duración en semanas entre dos fechas
  * @param fechaInicio Fecha de inicio
  * @param fechaFin Fecha de fin

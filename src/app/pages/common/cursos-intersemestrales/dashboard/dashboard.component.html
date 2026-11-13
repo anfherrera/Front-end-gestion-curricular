@@ -61,7 +61,7 @@
           <div *ngFor="let curso of cursosActivos; trackBy: trackByCursoId" class="curso-item">
             <div class="curso-info">
               <h4>{{ curso.nombre_curso || 'Sin nombre' }}</h4>
-              <p>{{ obtenerNombreMateria(curso) }} - {{ obtenerNombreDocente(curso) }}</p>
+              <p>{{ obtenerNombreMateria(curso) }} - {{ curso | nombreDocente }}</p>
               <small *ngIf="curso.fecha_inicio || curso.fecha_fin; else sinFechas">
                 {{ formatearRangoFechas(curso.fecha_inicio, curso.fecha_fin) }}
               </small>

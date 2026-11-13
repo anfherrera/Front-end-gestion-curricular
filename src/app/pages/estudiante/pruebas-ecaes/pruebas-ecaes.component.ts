@@ -26,12 +26,14 @@ import { ComentariosDialogComponent, ComentariosDialogData } from '../../../shar
 import { Archivo, Solicitud } from '../../../core/models/procesos.model';
 import { ESTADOS_SOLICITUD_LABELS, EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
 import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
+import { formatearFecha } from '../../../core/utils/fecha.util';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { getPeriodoActual } from '../../../core/utils/periodo.utils';
 
 @Component({
   selector: 'app-pruebas-ecaes',
@@ -237,42 +239,11 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     ) || null;
   }
 
-  private parseFechaSinZona(fecha: string): Date | null {
-    if (!fecha) {
-      return null;
-    }
-
-    const soloFecha = fecha.includes('T') ? fecha.split('T')[0] : fecha;
-    const partes = soloFecha.split('-');
-
-    if (partes.length !== 3) {
-      return new Date(fecha);
-    }
-
-    const year = Number(partes[0]);
-    const month = Number(partes[1]) - 1; // JS months 0-based
-    const day = Number(partes[2]);
-
-    return new Date(year, month, day);
-  }
-
-  getFechaFormateada(fecha: string): string {
-    const fechaObj = this.parseFechaSinZona(fecha);
-
-    if (!fechaObj || isNaN(fechaObj.getTime())) {
-      return '';
-    }
-
-    return fechaObj.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  }
-
+  /** Fecha del calendario ECAES (dd/mm/aaaa). Solo cuenta el día: se descarta la hora, si viene. */
   getConceptoFecha(campo: string): string {
     if (!this.fechasSeleccionadas) return '';
-    return this.getFechaFormateada(this.fechasSeleccionadas[campo as keyof FechaEcaes] as string);
+    const valor = this.fechasSeleccionadas[campo as keyof FechaEcaes] as string | undefined;
+    return formatearFecha(valor?.split('T')[0]);
   }
 
   // ================================
@@ -398,7 +369,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
     // Obtener período académico actual
     const periodoActual = this.periodosService.getPeriodoActualValue();
-    const periodoAcademico = periodoActual?.valor || this.obtenerPeriodoActualFallback();
+    const periodoAcademico = periodoActual?.valor || getPeriodoActual();
     
     const solicitud = {
       nombre_solicitud: nombreSolicitud,
@@ -541,7 +512,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
       const solicitudTransformada: Solicitud = {
         id: sol.id_solicitud,
         nombre: nombreConEstudiante,
-        fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+        fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
         estado: this.mapearEstado(ultimoEstado?.estado_actual || 'Pendiente'),
         oficioUrl: '',
         comentarios: ultimoEstado?.comentario || ''
@@ -655,17 +626,6 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.logger.debug('Diálogo de comentarios cerrado');
     });
-  }
-
-  /**
-   * Obtener período académico actual como fallback
-   */
-  private obtenerPeriodoActualFallback(): string {
-    const fecha = new Date();
-    const año = fecha.getFullYear();
-    const mes = fecha.getMonth() + 1; // 0-11 -> 1-12
-    const semestre = mes <= 6 ? 1 : 2;
-    return `${año}-${semestre}`;
   }
 
   /**

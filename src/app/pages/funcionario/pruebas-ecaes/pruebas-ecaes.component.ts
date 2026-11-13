@@ -25,6 +25,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
+import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
 
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
@@ -45,7 +46,8 @@ import { estadoActual } from '../../../core/utils/estado-solicitud.util';
     ReactiveFormsModule,
     CardContainerComponent,
     RequestStatusTableComponent,
-    DocumentationViewerComponent
+    DocumentationViewerComponent,
+    FechaPipe
   ],
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
@@ -192,7 +194,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         this.solicitudesPendientes = solicitudes.map(sol => ({
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
-          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
           estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''
@@ -205,29 +207,6 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
         this.snackBar.open(mensaje || 'Error al cargar solicitudes ECAES', 'Cerrar', snackbarConfig(['error-snackbar']));
       }
     });
-  }
-
-  /**
-   * Formatear fecha en formato corto (DD/MM/YYYY)
-   */
-  formatearFechaCorta(fecha: string | Date | null | undefined): string {
-    if (!fecha) return '-';
-
-    try {
-      const date = new Date(fecha);
-      if (isNaN(date.getTime())) {
-        return '-';
-      }
-
-      return date.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
-    } catch (error) {
-      this.logger.warn('Error al formatear fecha:', fecha, error);
-      return '-';
-    }
   }
 
   /**

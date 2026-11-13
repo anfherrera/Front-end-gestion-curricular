@@ -12,6 +12,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
 import { ComentarioDialogComponent, ComentarioDialogData } from '../comentario-dialog/comentario-dialog.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { FechaPipe } from '../../pipes/fecha.pipe';
 
 type Documento = DocumentosDTORespuesta | DocumentoHomologacion;
 
@@ -33,7 +34,8 @@ export interface ServicioDocumentos {
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule,
+    FechaPipe
   ],
   templateUrl: './documentation-viewer.component.html',
   styleUrls: ['./documentation-viewer.component.css']
@@ -261,22 +263,6 @@ export class DocumentationViewerComponent implements OnInit {
    */
   getNumeroComentarios(documento: Documento): number {
     return (documento.comentario && documento.comentario.trim().length > 0) ? 1 : 0;
-  }
-
-  /**
-   * Formatear fecha para mostrar
-   */
-  formatearFecha(fecha: string | Date | undefined): string {
-    if (!fecha) return '';
-
-    const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
-    return fechaObj.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   }
 
   /**

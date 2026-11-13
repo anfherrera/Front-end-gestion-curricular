@@ -61,15 +61,15 @@
             </div>
             <div class="info-item">
               <span class="info-label">Fecha Registro:</span>
-              <span class="info-value">{{ formatearFecha(solicitud.fecha_registro_solicitud) }}</span>
+              <span class="info-value">{{ solicitud.fecha_registro_solicitud | fecha:'larga-hora':'-' }}</span>
             </div>
             <div class="info-item" *ngIf="solicitud.fecha_ultimo_estado">
               <span class="info-label">Última Actualización:</span>
-              <span class="info-value">{{ formatearFecha(solicitud.fecha_ultimo_estado) }}</span>
+              <span class="info-value">{{ solicitud.fecha_ultimo_estado | fecha:'larga-hora':'-' }}</span>
             </div>
             <div class="info-item" *ngIf="solicitud.fecha_ceremonia">
               <span class="info-label">Fecha Ceremonia:</span>
-              <span class="info-value">{{ formatearFecha(solicitud.fecha_ceremonia) }}</span>
+              <span class="info-value">{{ solicitud.fecha_ceremonia | fecha:'larga-hora':'-' }}</span>
             </div>
           </div>
         </mat-card-content>
@@ -125,7 +125,7 @@
                   <mat-chip [class]="estado.estado_actual | estadoClase">
                     {{ estado.estado_actual | estadoLabel }}
                   </mat-chip>
-                  <span class="timeline-date">{{ formatearFecha(estado.fecha_registro_estado) }}</span>
+                  <span class="timeline-date">{{ estado.fecha_registro_estado | fecha:'larga-hora':'-' }}</span>
                 </div>
                 <p *ngIf="estado.comentario" class="timeline-comentario">
                   <mat-icon>comment</mat-icon>

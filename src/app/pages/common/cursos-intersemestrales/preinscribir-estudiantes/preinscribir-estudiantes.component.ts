@@ -20,8 +20,8 @@ import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
-import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
 import { EstadoColorPipe } from '../../../../shared/pipes/estado.pipes';
+import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
 
 @Component({
   selector: 'app-preinscribir-estudiantes',
@@ -42,7 +42,8 @@ import { EstadoColorPipe } from '../../../../shared/pipes/estado.pipes';
     MatChipsModule,
     MatProgressSpinnerModule,
     CardContainerComponent,
-    EstadoColorPipe
+    EstadoColorPipe,
+    NombreDocentePipe
   ],
   templateUrl: './preinscribir-estudiantes.component.html',
   styleUrls: ['./preinscribir-estudiantes.component.css']
@@ -372,11 +373,6 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   puedeVerDetalles(solicitud: SolicitudCursoVerano): boolean {
     // Todos los funcionarios pueden ver detalles
     return this.puedeGestionarPreinscripciones();
-  }
-
-  // Obtener nombre del docente de forma segura
-  obtenerNombreDocente(curso: CursoOfertadoVerano | null): string {
-    return nombreDocente(curso);
   }
 
 }

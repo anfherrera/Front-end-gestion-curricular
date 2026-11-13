@@ -3,7 +3,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MATERIAL_IMPORTS } from '../material.imports';
-import { formatearFechaCorta, calcularDuracionSemanas, formatearPeriodo } from '../../../core/utils/periodo.utils';
+import { calcularDuracionSemanas, formatearPeriodo } from '../../../core/utils/periodo.utils';
+import { FechaPipe } from '../../pipes/fecha.pipe';
 
 export interface Curso {
   codigo: string;
@@ -25,7 +26,7 @@ export interface Curso {
 @Component({
   selector: 'app-curso-list',
   standalone: true,
-  imports: [...MATERIAL_IMPORTS],
+  imports: [...MATERIAL_IMPORTS, FechaPipe],
   templateUrl: './curso-list.component.html',
   styleUrls: ['./curso-list.component.css']
 })
@@ -98,12 +99,6 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
       default:
         return 'default-icon';
     }
-  }
-
-  // Métodos para formatear fechas y períodos
-  formatearFecha(fecha: Date | string | undefined): string {
-    if (!fecha) return 'N/A';
-    return formatearFechaCorta(fecha);
   }
 
   calcularDuracion(fechaInicio: Date | string | undefined, fechaFin: Date | string | undefined): string {

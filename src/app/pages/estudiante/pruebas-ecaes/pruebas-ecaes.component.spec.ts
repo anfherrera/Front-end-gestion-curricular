@@ -138,10 +138,9 @@ describe('PruebasEcaesComponent', () => {
     expect(component.archivos).toEqual(archivos);
   });
 
-  it('EC-019: Debe formatear fecha correctamente', () => {
-    const fechaStr = '2025-01-15';
-    const resultado = component.getFechaFormateada(fechaStr);
-    expect(resultado).toMatch(/\d{2}\/\d{2}\/\d{4}/);
+  it('EC-019: Debe formatear la fecha del calendario sin correrla de día', () => {
+    component.fechasSeleccionadas = { inscripcion_est_by_facultad: '2025-01-15T00:00:00Z' } as any;
+    expect(component.getConceptoFecha('inscripcion_est_by_facultad')).toBe('15/01/2025');
   });
 
   it('EC-020: getConceptoFecha debe devolver fecha formateada cuando hay fechas seleccionadas', () => {

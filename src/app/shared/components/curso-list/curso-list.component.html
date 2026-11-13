@@ -64,13 +64,13 @@
     <!-- Fecha de Inicio -->
     <ng-container matColumnDef="fecha_inicio">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Inicio</th>
-      <td mat-cell *matCellDef="let curso">{{ formatearFecha(curso.fecha_inicio) }}</td>
+      <td mat-cell *matCellDef="let curso">{{ curso.fecha_inicio | fecha:'corta':'N/A' }}</td>
     </ng-container>
 
     <!-- Fecha de Fin -->
     <ng-container matColumnDef="fecha_fin">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Fin</th>
-      <td mat-cell *matCellDef="let curso">{{ formatearFecha(curso.fecha_fin) }}</td>
+      <td mat-cell *matCellDef="let curso">{{ curso.fecha_fin | fecha:'corta':'N/A' }}</td>
     </ng-container>
 
     <!-- Duración -->

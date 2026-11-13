@@ -50,7 +50,7 @@
           <strong>Materia:</strong> {{ data.cursoEditando.objMateria.nombre }} ({{ data.cursoEditando.objMateria.codigo }})
         </div>
         <div class="info-item">
-          <strong>Docente:</strong> {{ obtenerNombreDocente(data.cursoEditando) }}
+          <strong>Docente:</strong> {{ data.cursoEditando | nombreDocente }}
         </div>
         <div class="info-item" *ngIf="data.cursoEditando.grupo">
           <strong>Grupo:</strong> {{ data.cursoEditando.grupo }}

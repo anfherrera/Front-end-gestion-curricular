@@ -114,7 +114,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         this.solicitudes = sols.map(sol => ({
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
-          fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+          fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
           estado: estadoActual(sol),
           rutaArchivo: '',
           comentarios: ''
@@ -139,7 +139,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         this.solicitudesAprobadas = solicitudes.map((solicitud) => ({
           id: solicitud.id_solicitud,
           nombre: solicitud.nombre_solicitud,
-          fecha: new Date(solicitud.fecha_registro_solicitud).toLocaleDateString(),
+          fecha: solicitud.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
           estado: estadoActual(solicitud),
           rutaArchivo: '',
           comentarios: solicitud.estadosSolicitud?.slice(-1)[0]?.comentario ?? ''

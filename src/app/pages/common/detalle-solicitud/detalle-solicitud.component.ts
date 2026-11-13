@@ -17,6 +17,7 @@ import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { mensajeDeError } from '../../../core/utils/http-error.utils';
 import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
+import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
 
 interface HistorialEstado {
   id_estado: number;
@@ -77,7 +78,8 @@ interface DetalleSolicitud {
     MatTooltipModule,
     CardContainerComponent,
     EstadoClasePipe,
-    EstadoLabelPipe
+    EstadoLabelPipe,
+    FechaPipe
   ],
   templateUrl: './detalle-solicitud.component.html',
   styleUrls: ['./detalle-solicitud.component.css']
@@ -120,28 +122,6 @@ export class DetalleSolicitudComponent implements OnInit {
           this.snackBar.open(this.error, 'Cerrar', snackbarConfig(['error-snackbar']));
         }
       }
-    });
-  }
-
-  formatearFecha(fecha: string | Date): string {
-    if (!fecha) return '-';
-    const date = new Date(fecha);
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  formatearFechaCorta(fecha: string | Date): string {
-    if (!fecha) return '-';
-    const date = new Date(fecha);
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
     });
   }
 

@@ -163,7 +163,7 @@
         <ng-container matColumnDef="fecha_registro">
           <th mat-header-cell *matHeaderCellDef>Fecha Registro</th>
           <td mat-cell *matCellDef="let solicitud">
-            {{ formatearFecha(solicitud.fecha_registro_solicitud) }}
+            {{ solicitud.fecha_registro_solicitud | fecha }}
           </td>
         </ng-container>
 

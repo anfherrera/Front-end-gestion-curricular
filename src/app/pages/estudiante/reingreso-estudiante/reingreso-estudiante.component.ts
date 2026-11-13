@@ -24,6 +24,16 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 
 import { Solicitud } from '../../../core/models/procesos.model';
+import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '../../../core/utils/texto.util';
+import { getPeriodoActual } from '../../../core/utils/periodo.utils';
+
+/** Palabras que identifican cada documento requerido, para reconocer archivos con otro nombre. */
+const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
+  'pmfo4for17': ['pmfo4for17', 'pm-fo-4-for-17', 'solicitud', 'reingreso', 'reingreso v2'],
+  'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
+  'documento': ['documento', 'identidad', 'cedula', 'cédula', 'tarjeta', 'identidad'],
+  'carta': ['carta', 'motivacion', 'motivación', 'motivo']
+};
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -142,56 +152,14 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
    * @returns true si el archivo fue subido, false en caso contrario
    */
   private archivoSubido(nombreDocumento: string): boolean {
-    const nombreNormalizado = this.normalizarNombre(nombreDocumento);
+    const nombreNormalizado = normalizarNombreArchivo(nombreDocumento);
     return this.archivosActuales.some(archivo => {
-      const nombreArchivo = this.normalizarNombre(archivo.nombre);
+      const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
       // Buscar coincidencias parciales (por si el nombre del archivo es ligeramente diferente)
       return nombreArchivo.includes(nombreNormalizado) || 
              nombreNormalizado.includes(nombreArchivo) ||
-             this.coincidenciaFuzzy(nombreArchivo, nombreNormalizado);
+             coincidenPorPalabrasClave(nombreArchivo, nombreNormalizado, PALABRAS_CLAVE_DOCUMENTOS);
     });
-  }
-
-  /**
-   * Normalizar nombre de archivo para comparación
-   * @param nombre Nombre a normalizar
-   * @returns Nombre normalizado (sin acentos, minúsculas, sin espacios ni caracteres especiales)
-   */
-  private normalizarNombre(nombre: string): string {
-    return nombre
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-      .replace(/\.[^/.]+$/, '') // Eliminar extensión
-      .replace(/[^a-z0-9]/g, ''); // Eliminar caracteres especiales y espacios
-  }
-
-  /**
-   * Verificar coincidencia aproximada entre nombres (fuzzy matching)
-   * Útil para detectar archivos con nombres ligeramente diferentes
-   * @param nombre1 Primer nombre
-   * @param nombre2 Segundo nombre
-   * @returns true si hay coincidencia aproximada
-   */
-  private coincidenciaFuzzy(nombre1: string, nombre2: string): boolean {
-    // Palabras clave comunes para cada tipo de documento
-    const palabrasClave: { [key: string]: string[] } = {
-      'pmfo4for17': ['pmfo4for17', 'pm-fo-4-for-17', 'solicitud', 'reingreso', 'reingreso v2'],
-      'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
-      'documento': ['documento', 'identidad', 'cedula', 'cédula', 'tarjeta', 'identidad'],
-      'carta': ['carta', 'motivacion', 'motivación', 'motivo']
-    };
-    
-    // Buscar palabras clave en ambos nombres
-    for (const [clave, palabras] of Object.entries(palabrasClave)) {
-      if (nombre1.includes(clave) || nombre2.includes(clave)) {
-        return palabras.some(palabra => 
-          nombre1.includes(palabra) && nombre2.includes(palabra)
-        );
-      }
-    }
-    
-    return false;
   }
 
   /**
@@ -239,7 +207,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
         // Obtener período académico actual
         const periodoActual = this.periodosService.getPeriodoActualValue();
-        const periodoAcademico = periodoActual?.valor || this.obtenerPeriodoActualFallback();
+        const periodoAcademico = periodoActual?.valor || getPeriodoActual();
 
         const solicitud: SolicitudReingresoDTOPeticion = {
           nombre_solicitud: `Solicitud Reingreso - ${nombreFinal}`,
@@ -349,7 +317,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
           const solicitudTransformada = {
             id: sol.id_solicitud,
             nombre: sol.nombre_solicitud,
-            fecha: new Date(sol.fecha_registro_solicitud).toLocaleDateString(),
+            fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
             estado: ultimoEstado?.estado_actual || 'Pendiente',
             rutaArchivo,
             comentarios: ultimoEstado?.comentarios || ''
@@ -375,17 +343,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         );
       }
     });
-  }
-
-  /**
-   * Obtener período académico actual como fallback
-   */
-  private obtenerPeriodoActualFallback(): string {
-    const fecha = new Date();
-    const año = fecha.getFullYear();
-    const mes = fecha.getMonth() + 1; // 0-11 -> 1-12
-    const semestre = mes <= 6 ? 1 : 2;
-    return `${año}-${semestre}`;
   }
 
   /**

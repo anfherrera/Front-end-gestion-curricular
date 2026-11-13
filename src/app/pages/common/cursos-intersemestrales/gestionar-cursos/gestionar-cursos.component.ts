@@ -17,7 +17,8 @@ import { CursoDialogComponent } from './curso-dialog.component';
 import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
-import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
+import { FechaPipe } from '../../../../shared/pipes/fecha.pipe';
+import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -31,7 +32,9 @@ import { nombreDocente } from '../../../../core/utils/cursos-verano.utils';
     CardContainerComponent,
     EstadoFiltersComponent,
     PeriodoFiltroSelectorComponent,
-    ...MATERIAL_IMPORTS
+    ...MATERIAL_IMPORTS,
+    FechaPipe,
+    NombreDocentePipe
   ],
   templateUrl: './gestionar-cursos.component.html',
   styleUrls: ['./gestionar-cursos.component.css']
@@ -286,10 +289,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatearFecha(fecha: Date | string): string {
-    return new Date(fecha).toLocaleDateString('es-ES');
-  }
-
   obtenerPeriodoCodigo(curso: CursoOfertadoVerano): string {
     return curso.periodo || curso.periodoAcademico || 'N/A';
   }
@@ -314,11 +313,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     }
 
     return `Período ${numero} ${anio}`;
-  }
-
-  // Obtener nombre del docente de forma segura
-  obtenerNombreDocente(curso: CursoOfertadoVerano): string {
-    return nombreDocente(curso);
   }
 
   // Obtener color del estado

@@ -21,6 +21,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
+import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
 
 @Component({
   selector: 'app-historial-completo',
@@ -42,7 +43,8 @@ import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.p
     CardContainerComponent,
     UtfFixPipe,
     EstadoClasePipe,
-    EstadoLabelPipe
+    EstadoLabelPipe,
+    FechaPipe
   ],
   templateUrl: './historial-completo.component.html',
   styleUrls: ['./historial-completo.component.css']
@@ -146,15 +148,6 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
 
   onPeriodoChange(periodo: string): void {
     this.filtrosForm.patchValue({ periodoAcademico: periodo || '' });
-  }
-
-  formatearFecha(fecha: string): string {
-    if (!fecha) return '';
-    return new Date(fecha).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
   }
 
   /**
