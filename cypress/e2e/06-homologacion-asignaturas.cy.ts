@@ -228,7 +228,7 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
       cy.intercept('GET', '**/api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario*', { statusCode: 200, body: mockSolicitudes }).as('listarFuncionario');
       visitarComoFuncionario();
       cy.wait('@listarFuncionario');
-      cy.contains('Solicitudes de Homologación Pendientes', { timeout: 10000 }).should('be.visible');
+      cy.contains('Solicitudes Pendientes de Procesar', { timeout: 10000 }).should('be.visible');
       cy.get('app-request-status-table').should('exist');
       cy.registrarInteraccionExitosa();
     });

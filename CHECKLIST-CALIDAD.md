@@ -112,10 +112,17 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Al entrar ya no aparece abierta la documentación de la primera solicitud (antes se mostraba aunque su fila no estuviera marcada); hay que elegirla en la tabla
     - Después de añadir un comentario sigue elegida la misma solicitud, con el comentario al día (antes saltaba a la primera)
     - Funcionario: los botones se desactivan si la solicitud no está `ENVIADA`, igual que ya hacía el coordinador con `APROBADA_FUNCIONARIO`. En su bandeja no debería pasar
-- [ ] **Reingreso**: igual con [funcionario](src/app/pages/funcionario/reingreso-estudiante/) y [coordinador](src/app/pages/coordinador/reingreso-estudiante/) → `common/reingreso-revision`
+- [x] **Reingreso**: funcionario y coordinador (unas 500 líneas de TS entre los dos) se unen en [reingreso-revision](src/app/pages/common/reingreso-revision/reingreso-revision.component.ts) con `data: { rolRevision }`; solo configura `RevisionAprobacionComponent` (ningún rol marcaba documentos al decidir). Se borra la carpeta `pages/coordinador`, que quedó vacía
+  - Se borra `completarValidacion`/`puedeCompletarValidacion` del funcionario: la plantilla no tenía botón para usarlos
+  - Specs: los 2 "should create" se cambian por `reingreso-revision.component.spec.ts` (bandejas de cada rol). Total 550/550. En Cypress, E2E-HA-013 busca ahora el título "Solicitudes Pendientes de Procesar" (no se corrió: necesita el binario de Cypress)
+  - Cambios visibles esperados:
+    - Coordinador: gana las pestañas Pendientes/Historial con filtro de período (el funcionario ya las tenía). Título "Solicitudes Pendientes de Procesar" en lugar de "Solicitudes de Reingreso Pendientes de Revisión"
+    - Las dos: ya no se abre sola la documentación de la primera solicitud, y tras comentar no salta a otra (igual que en homologación)
+    - Funcionario: los errores del historial ya no muestran aviso; el servicio devuelve una lista vacía, igual que en paz y salvo
 - [ ] **Secretaría** (homologación 403 líneas, reingreso 745): usar la bandeja genérica y la misma lógica de aprobar y rechazar
 - [ ] **ECAES funcionario** ([586 líneas](src/app/pages/funcionario/pruebas-ecaes/pruebas-ecaes.component.ts)): pasarla al mismo patrón
 - [ ] La lógica de aprobar y rechazar está repetida: `aprobarSolicitudSeleccionada` (7 copias), `rechazarSolicitudSeleccionada` (7), `puedeAprobar` y `puedeRechazar` (5), `onSolicitudSeleccionada` (9), `cargarSolicitudes` (7). Llevarla a una clase base o a un servicio de página encima de [SolicitudesAprobacionService](src/app/core/services/base/solicitudes-aprobacion.service.ts)
+  - Avance (2026-11-13): homologación y reingreso de funcionario y coordinador ya usan `RevisionAprobacionComponent`. Quedan `aprobarSolicitudSeleccionada` y `rechazarSolicitudSeleccionada` en 3 archivos, `puedeAprobar`/`puedeRechazar` en 1, `onSolicitudSeleccionada` en 6 y `cargarSolicitudes` en 3 (secretaría, ECAES y paz-salvo-revision). Paz-salvo-revision podría pasar a `RevisionAprobacionComponent` si `PazSalvoService` se acerca a `SolicitudesAprobacionService` (le carga los documentos aparte al coordinador y muestra el motivo de rechazo)
 
 ### Vistas del estudiante (paz y salvo, homologación, reingreso, ECAES)
 - [ ] Las cuatro páginas repiten `obtenerDocumentosFaltantes`, `onArchivosChange`, `puedeEnviar`, `onSolicitudEnviada`, `listarSolicitudes`, `descargarOficio` y `verComentarios`. Extraer un componente `SolicitudEstudianteComponent` (o una clase base) que reciba el proceso y su servicio
@@ -168,7 +175,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [x] ESLint con `ng add @angular-eslint/schematics` (angular-eslint 19.8.1, ESLint 9): [eslint.config.js](eslint.config.js) con los presets recomendados de TypeScript y Angular (también plantillas y accesibilidad), más `no-explicit-any` (aviso), `no-unused-vars` (error; se permite un `_` delante y los `catch` sin usar) y `@angular-eslint/prefer-inject` (aviso). Script `npm run lint` (`ng lint`)
   - Errores corregidos: 0 errores al cerrar (había 489, la mayoría de estilo y arreglados con `--fix`). A mano: 84 variables, imports y parámetros sin usar; 9 `if`/`else` vacíos (restos de `console.error` borrados en `periodos-academicos.service` y `cursos-verano-dashboard`); constructores y `ngOnInit` vacíos; el `@Output() toggle` del sidebar, que nadie escuchaba; un `eslint-disable` de una regla que no existe
   - Accesibilidad (plantillas): las 6 fechas de ECAES del funcionario tienen `label for`/`id`; los ítems de notificación (header y guía) se pueden enfocar y abrir con Enter (`tabindex="0"`, `role="button"`, `keydown.enter`)
-  - **Avisos pendientes (2026-11-13): 539** = 306 `prefer-inject` (Fase 6, inyección) + 233 `no-explicit-any` (Fase 6, tipado). Cuando bajen a 0, pasar las dos reglas a `error`
+  - **Avisos pendientes (2026-11-13, después de la Fase 3 de homologación y reingreso): 509** = 286 `prefer-inject` (Fase 6, inyección) + 223 `no-explicit-any` (Fase 6, tipado). Al cerrar la Fase 7 eran 539 (306 + 233). Cuando bajen a 0, pasar las dos reglas a `error`
 - [ ] Prettier más `.prettierrc` (ya existe `.editorconfig`)
 - [x] CI en GitHub Actions: [.github/workflows/ci.yml](.github/workflows/ci.yml) corre en cada push y PR a `main` (Node 22): `npm ci` (sin bajar el binario de Cypress), `npm run lint`, `ng build` y `ng test --watch=false --browsers=ChromeHeadlessCI`
   - `karma.conf.js` tiene el launcher `ChromeHeadlessCI` (`--no-sandbox`, `--disable-gpu`, `--disable-dev-shm-usage`); en local se sigue usando `ChromeHeadless` con Edge y los dos funcionan
@@ -176,7 +183,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [ ] Cobertura mínima en `karma.conf.js` (por ejemplo 60 %)
 - [ ] Opcional: Husky con lint-staged para correr lint antes de cada commit
 - [ ] README: sección de arquitectura (core/shared/pages, el patrón de revisión por rol), variables de entorno y la lista de scripts de test
-- [ ] Revisar que las pruebas que existen sigan pasando después de cada fase (hay 41 specs y 11 pruebas de Cypress)
+- [ ] Revisar que las pruebas que existen sigan pasando después de cada fase (hay 49 specs con 550 pruebas y 11 pruebas de Cypress)
 
 ---
 

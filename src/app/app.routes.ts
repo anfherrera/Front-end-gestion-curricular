@@ -72,7 +72,7 @@ export const routes: Routes = [
               import('./pages/common/cursos-intersemestrales/cursos-intersemestrales.routes')
                 .then(m => m.CursosIntersemestralesGestionRoutes),
           },
-          { path: 'reingreso-estudiante', loadComponent: () => import('./pages/funcionario/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
+          { path: 'reingreso-estudiante', data: { rolRevision: 'funcionario' }, loadComponent: () => import('./pages/common/reingreso-revision/reingreso-revision.component').then(m => m.ReingresoRevisionComponent) },
           { path: 'homologacion-asignaturas', data: { rolRevision: 'funcionario' }, loadComponent: () => import('./pages/common/homologacion-revision/homologacion-revision.component').then(m => m.HomologacionRevisionComponent) },
           { path: 'modulo-estadistico', loadComponent: () => import('./pages/common/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
           { path: 'historial-completo', loadComponent: () => import('./pages/common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent) },
@@ -88,7 +88,7 @@ export const routes: Routes = [
         data: { role: UserRole.COORDINADOR },
         children: [
           { path: 'paz-salvo', data: { rolRevision: 'coordinador' }, loadComponent: () => import('./pages/common/paz-salvo-revision/paz-salvo-revision.component').then(m => m.PazSalvoRevisionComponent) },
-          { path: 'reingreso-estudiante', loadComponent: () => import('./pages/coordinador/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
+          { path: 'reingreso-estudiante', data: { rolRevision: 'coordinador' }, loadComponent: () => import('./pages/common/reingreso-revision/reingreso-revision.component').then(m => m.ReingresoRevisionComponent) },
           { path: 'homologacion-asignaturas', data: { rolRevision: 'coordinador' }, loadComponent: () => import('./pages/common/homologacion-revision/homologacion-revision.component').then(m => m.HomologacionRevisionComponent) },
           { path: 'modulo-estadistico', loadComponent: () => import('./pages/common/modulo-estadistico/modulo-estadistico.component').then(m => m.ModuloEstadisticoComponent) },
           { path: 'historial-completo', loadComponent: () => import('./pages/common/historial-completo/historial-completo.component').then(m => m.HistorialCompletoComponent) },
