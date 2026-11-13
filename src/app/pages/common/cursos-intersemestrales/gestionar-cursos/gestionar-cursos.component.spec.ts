@@ -6,7 +6,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
-import { ErrorHandlerService } from '../../../../shared/components/error-handler/error-handler.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -17,7 +16,6 @@ describe('GestionarCursosComponent', () => {
   let fixture: ComponentFixture<GestionarCursosComponent>;
   let cursosServiceSpy: jasmine.SpyObj<CursosIntersemestralesService>;
   let estadosServiceSpy: jasmine.SpyObj<CursoEstadosService>;
-  let errorHandlerSpy: jasmine.SpyObj<ErrorHandlerService>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
 
@@ -39,7 +37,6 @@ describe('GestionarCursosComponent', () => {
       'getIconoEstado',
       'validarTransicionEstado'
     ]);
-    errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
 
@@ -61,7 +58,6 @@ describe('GestionarCursosComponent', () => {
       providers: [
         { provide: CursosIntersemestralesService, useValue: cursosServiceSpy },
         { provide: CursoEstadosService, useValue: estadosServiceSpy },
-        { provide: ErrorHandlerService, useValue: errorHandlerSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: MatDialog, useValue: dialogSpy }
       ]

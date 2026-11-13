@@ -12,7 +12,7 @@ import { CursoOfertadoVerano, Docente, Materia } from '../../../../core/models/c
 import { descargarBlob } from '../../../../core/utils/download.util';
 import { CursoEstadosService } from '../../../../core/services/curso-estados.service';
 import { EstadoFiltersComponent } from '../../../../shared/components/estado-filters/estado-filters.component';
-import { ErrorHandlerService } from '../../../../shared/components/error-handler/error-handler.service';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { CursoDialogComponent } from './curso-dialog.component';
 import { EstudiantesCursoDialogComponent } from '../../../../shared/components/estudiantes-curso-dialog/estudiantes-curso-dialog.component';
 import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
@@ -74,7 +74,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   constructor(
     private cursosService: CursosIntersemestralesService,
     private cursoEstadosService: CursoEstadosService,
-    private errorHandler: ErrorHandlerService,
+    private snackbarService: SnackbarService,
     private fb: FormBuilder,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
@@ -136,7 +136,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
         this.cargando = false;
       },
       error: () => {
-        this.errorHandler.handleCargaError('cursos');
+        this.snackbarService.warning('No se pudieron cargar los cursos - Intenta recargar la página');
         this.cargando = false;
         // Mostrar mensaje de error sin datos de prueba
         this.cursos = [];

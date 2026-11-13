@@ -47,7 +47,7 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 ## Fase 2 — Código repetido (servicios, utilidades y componentes pequeños)
 
 ### Servicios duplicados
-- [ ] Hay dos `ErrorHandlerService`: [core/services/error-handler.service.ts](src/app/core/services/error-handler.service.ts) (85 líneas, 23 usos) y [shared/components/error-handler/error-handler.service.ts](src/app/shared/components/error-handler/error-handler.service.ts) (264 líneas, 2 usos). Dejar solo el de `core`; un servicio no debe vivir en `shared/components`
+- [x] Hay dos `ErrorHandlerService`: queda solo [core/services/error-handler.service.ts](src/app/core/services/error-handler.service.ts). El de `shared/components/error-handler/` (264 líneas) se borra: su único uso real era `handleCargaError('cursos')` en `gestionar-cursos`, que pasa a `SnackbarService.warning()`
 - [ ] Notificaciones (snackbar): 53 archivos inyectan `MatSnackBar` directamente y solo 2 usan [SnackbarService](src/app/core/services/snackbar.service.ts). Pasarlos todos a `SnackbarService` con métodos `exito()`, `error()` e `info()`
 - [ ] `ApiService` lo usan solo `auth`, `login` y `manage-processes` (y tiene 20 `any`). Que todos los servicios lo usen o eliminarlo y usar `HttpClient` en todos
 
