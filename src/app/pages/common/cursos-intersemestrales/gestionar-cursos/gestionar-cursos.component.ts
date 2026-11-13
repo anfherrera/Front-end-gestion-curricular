@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { CardContainerComponent } from '../../../../shared/components/card-container/card-container.component';
 import { MATERIAL_IMPORTS } from '../../../../shared/components/material.imports';
 import { CursosIntersemestralesService } from '../../../../core/services/cursos-intersemestrales.service';
@@ -19,6 +19,7 @@ import { PeriodoFiltroSelectorComponent } from '../../../../shared/components/pe
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { FechaPipe } from '../../../../shared/pipes/fecha.pipe';
 import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
+import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-gestionar-cursos',
@@ -253,40 +254,36 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Eliminar curso
   eliminarCurso(curso: CursoOfertadoVerano) {
-    const mensaje = `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
-                   `ADVERTENCIA: Esta acción no se puede deshacer.\n` +
-                   `Si hay estudiantes inscritos, la eliminación fallará.`;
-    
-    if (confirm(mensaje)) {
-      this.cursosService.eliminarCurso(curso.id_curso)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            // Curso eliminado
-            this.snackBar.open('Curso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-            // Recargar datos inmediatamente
-            this.cargarDatos();
-          },
-          error: (err) => {
-            
-            // Manejo específico de errores
-            let mensajeError = 'Error al eliminar el curso';
-            if (err.status === 400) {
-              mensajeError = 'No se puede eliminar el curso porque tiene estudiantes inscritos';
-            } else if (err.status === 404) {
-              mensajeError = 'El curso no fue encontrado';
-            } else if (err.status === 500) {
-              mensajeError = 'Error interno del servidor';
-            }
-            
-            this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
-            // Recargar datos incluso si hay error para sincronizar
-            this.cargarDatos();
-          }
-        });
-    }
+    confirmar(this.dialog, {
+      titulo: 'Eliminar curso',
+      mensaje: `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
+               `Esta acción no se puede deshacer. Si hay estudiantes inscritos, la eliminación fallará.`,
+      textoConfirmar: 'Eliminar',
+      peligro: true
+    }).pipe(
+      filter(Boolean),
+      switchMap(() => this.cursosService.eliminarCurso(curso.id_curso)),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: () => {
+        this.snackBar.open('Curso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+        this.cargarDatos();
+      },
+      error: (err) => {
+        let mensajeError = 'Error al eliminar el curso';
+        if (err.status === 400) {
+          mensajeError = 'No se puede eliminar el curso porque tiene estudiantes inscritos';
+        } else if (err.status === 404) {
+          mensajeError = 'El curso no fue encontrado';
+        } else if (err.status === 500) {
+          mensajeError = 'Error interno del servidor';
+        }
+        this.snackBar.open(mensajeError, 'Cerrar', snackbarConfig(['error-snackbar']));
+        // Recargar datos incluso si hay error para sincronizar
+        this.cargarDatos();
+      }
+    });
   }
 
   obtenerPeriodoCodigo(curso: CursoOfertadoVerano): string {

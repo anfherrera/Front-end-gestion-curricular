@@ -10,9 +10,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DocumentosDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
-import { ComentarioDialogComponent, ComentarioDialogData } from '../comentario-dialog/comentario-dialog.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { FechaPipe } from '../../pipes/fecha.pipe';
+import { TextoDialogComponent, TextoDialogData } from '../texto-dialog/texto-dialog.component';
 
 type Documento = DocumentosDTORespuesta | DocumentoHomologacion;
 
@@ -238,15 +238,16 @@ export class DocumentationViewerComponent implements OnInit {
     // Mostrar comentarios en un diálogo
     const comentario = documento.comentario.trim();
 
-    this.dialog.open(ComentarioDialogComponent, {
+    this.dialog.open(TextoDialogComponent, {
       width: '520px',
-      data: <ComentarioDialogData>{
+      data: <TextoDialogData>{
         titulo: 'Comentario registrado',
         descripcion: 'Este es el comentario asociado al documento seleccionado.',
-        placeholder: '',
+        etiqueta: 'Comentario',
         nombreDocumento: documento.nombre,
-        comentarioInicial: comentario,
-        soloLectura: true
+        valorInicial: comentario,
+        soloLectura: true,
+        icono: 'comment'
       }
     });
   }
@@ -276,15 +277,17 @@ export class DocumentationViewerComponent implements OnInit {
     }
 
     const abrirDialogConHistorial = (comentarioActual: string) => {
-      const dialogRef = this.dialog.open(ComentarioDialogComponent, {
+      const dialogRef = this.dialog.open(TextoDialogComponent, {
         width: '520px',
-        data: <ComentarioDialogData>{
+        data: <TextoDialogData>{
           titulo: 'Agregar comentario',
           descripcion: 'Escribe las observaciones para el documento seleccionado. Los comentarios anteriores se muestran arriba.',
-          placeholder: 'Describe tu comentario',
+          etiqueta: 'Comentario',
           nombreDocumento: documento.nombre,
-          comentarioHistorial: comentarioActual || undefined,
-          textoConfirmacion: 'Guardar comentario'
+          historial: comentarioActual || undefined,
+          textoConfirmar: 'Guardar comentario',
+          icono: 'add_comment',
+          maxLength: 500
         }
       });
 

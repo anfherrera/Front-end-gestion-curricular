@@ -1,6 +1,8 @@
-import { Injectable, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, OnDestroy, Inject, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { BehaviorSubject } from 'rxjs';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +24,9 @@ export class ActivityMonitorService implements OnDestroy {
   public warning$ = this.warningSubject.asObservable();
 
   private logoutCallback: (() => void) | null = null;
+
+  private readonly dialog = inject(MatDialog);
+  private avisoRef: MatDialogRef<ConfirmDialogComponent, boolean> | null = null;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     // Solo iniciar monitoreo en el navegador
@@ -78,33 +83,45 @@ export class ActivityMonitorService implements OnDestroy {
   }
 
   /**
-   * Muestra la advertencia de inactividad
+   * Muestra la advertencia de inactividad. Mientras está abierta, la actividad del usuario
+   * no reinicia los temporizadores: decide el diálogo, y si nadie responde en el minuto
+   * que queda, se cierra la sesión (handleInactivity cierra el diálogo).
    */
   private showWarning(): void {
-    if (!this.isWarningShown) {
-      this.isWarningShown = true;
-      this.warningSubject.next(true);
-      this.activitySubject.next(false);
+    if (this.isWarningShown) {
+      return;
+    }
+    this.isWarningShown = true;
+    this.warningSubject.next(true);
+    this.activitySubject.next(false);
 
-      // Mostrar alerta al usuario
-      const userConfirmed = confirm(
-        'Tu sesión expirará en 1 minuto por inactividad.\n\n' +
-        '¿Deseas continuar con la sesión?\n\n' +
-        'Haz clic en "Aceptar" para mantener la sesión activa.'
-      );
-
-      if (userConfirmed) {
+    this.avisoRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+      width: '440px',
+      disableClose: true,
+      data: {
+        titulo: 'Sesión por expirar',
+        mensaje: 'Tu sesión expirará en 1 minuto por inactividad.\n\n¿Deseas continuar con la sesión?',
+        textoConfirmar: 'Continuar sesión',
+        textoCancelar: 'Cerrar sesión'
+      }
+    });
+    this.avisoRef.afterClosed().subscribe(continuar => {
+      this.avisoRef = null;
+      if (continuar === true) {
         this.resetInactivityTimer();
-      } else {
+      } else if (continuar === false) {
         this.handleInactivity();
       }
-    }
+      // undefined: lo cerró handleInactivity al vencer el tiempo
+    });
   }
 
   /**
    * Maneja la inactividad del usuario
    */
   private handleInactivity(): void {
+    this.avisoRef?.close();
+    this.avisoRef = null;
     this.clearTimers();
     this.activitySubject.next(false);
     this.warningSubject.next(false);
@@ -150,8 +167,8 @@ export class ActivityMonitorService implements OnDestroy {
 
 
   private onUserActivity(): void {
-    // Si ya hay un throttle activo, ignorar el evento
-    if (this.throttleTimer) {
+    // Con el aviso abierto decide el diálogo; si ya hay un throttle activo, ignorar el evento
+    if (this.isWarningShown || this.throttleTimer) {
       return;
     }
 

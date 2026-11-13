@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 
-export interface ComentariosDialogData {
+export interface VerComentariosDialogData {
   titulo: string;
   documentos: any[];
   comentarioRechazo?: string | null;
@@ -14,7 +14,7 @@ export interface ComentariosDialogData {
 }
 
 @Component({
-  selector: 'app-comentarios-dialog',
+  selector: 'app-ver-comentarios-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -323,10 +323,10 @@ export interface ComentariosDialogData {
     }
   `]
 })
-export class ComentariosDialogComponent {
+export class VerComentariosDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<ComentariosDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ComentariosDialogData
+    public dialogRef: MatDialogRef<VerComentariosDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: VerComentariosDialogData
   ) {
   }
 

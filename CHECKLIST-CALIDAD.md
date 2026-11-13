@@ -68,9 +68,13 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - [x] `obtenerNombreDocente` (6 envoltorios de `nombreDocente`) → pipe [nombreDocente](src/app/shared/pipes/nombre-docente.pipe.ts); `normalizarNombre` (3) y `coincidenciaFuzzy` (2, con distintas palabras clave) → [texto.util.ts](src/app/core/utils/texto.util.ts); `obtenerPeriodoActualFallback` (3) era igual a `getPeriodoActual()` de periodo.utils, que es lo que se usa ahora
 
 ### Diálogos
-- [ ] Los nombres `comentario-dialog` y `comentarios-dialog` se confunden. Cambiarlos a algo como `agregar-comentario-dialog` y `ver-comentarios-dialog`
-- [ ] `prompt-dialog`, `rechazo-dialog` y `comentario-dialog` hacen lo mismo: pedir un texto. Evaluar dejar un solo `TextoDialogComponent` configurable
-- [ ] Hay 9 `confirm()` nativos del navegador (admin, gestionar-cursos, activity-monitor). Crear un `ConfirmDialogComponent` en `shared` y usarlo en todos
+- [x] `comentarios-dialog` (solo muestra comentarios) pasa a [ver-comentarios-dialog](src/app/shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component.ts) (`VerComentariosDialogComponent`)
+- [x] `prompt-dialog`, `rechazo-dialog` y `comentario-dialog` se unen en [TextoDialogComponent](src/app/shared/components/texto-dialog/texto-dialog.component.ts) (`titulo`, `descripcion`, `etiqueta`, `valorInicial`, `textoConfirmar`, `icono`, `nombreDocumento`, `historial`, `soloLectura`, `maxLength`). `datosRechazo()` arma el caso de rechazo, que 7 llamadas repetían igual. Se quitan 4 imports de `ComentarioDialogComponent` que no se usaban
+  - Corrección: en inscribir-estudiantes, cancelar el rechazo mostraba "Debe ingresar un motivo…"; ahora no hace nada
+  - Se dejan `MotivoRechazoDialogComponent` (ver-solicitud) y `RechazoPreinscripcionDialogComponent` (preinscribir): son de su página y muestran datos propios (estado con fecha; datos del estudiante y del curso)
+- [x] [ConfirmDialogComponent](src/app/shared/components/confirm-dialog/confirm-dialog.component.ts) con `confirmar(dialog, datos): Observable<boolean>` reemplaza los 9 `confirm()` (admin: docentes, programas, procesos ×2, roles, usuarios ×2; gestionar-cursos; activity-monitor). Las acciones destructivas usan `peligro: true`
+  - activity-monitor: con el aviso abierto el movimiento del ratón ya no reinicia la sesión, y si nadie responde en el minuto restante se cierra el diálogo y la sesión (con el `confirm()` bloqueante la sesión no caducaba mientras la alerta siguiera abierta). Spec nuevo con temporizadores simulados
+  - Pendiente revisar a ojo: diálogo de confirmación en admin y gestionar-cursos, y diálogo de texto en rechazos y comentarios de documentos
 
 ### Selectores de período
 - [x] Queda solo [periodo-filtro-selector](src/app/shared/components/periodo-filtro-selector/periodo-filtro-selector.component.ts). `periodo-selector` (solo lo usaba cursos-ofertados del estudiante) se borra; su diferencia pasa a la entrada `fuente="con-cursos"` (períodos con cursos registrados y, si falla, todos). `periodoInicial=""` permite arrancar en el período actual

@@ -16,8 +16,6 @@ import { DocumentGeneratorService } from '../../../core/services/document-genera
 import { SolicitudReingresoDTORespuesta, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
-import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
-import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { DocumentGeneratorComponent, DocumentRequest, DocumentTemplate } from '../../../shared/components/document-generator/document-generator.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { ApprovedRequestsSectionComponent } from '../../../shared/components/approved-requests-section/approved-requests-section.component';
@@ -26,6 +24,8 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
+import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
+import { TextoDialogData } from '../../../shared/components/texto-dialog/texto-dialog.component';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -601,13 +601,15 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   agregarComentario(documento: DocumentosDTORespuesta): void {
-    const dialogRef = this.dialog.open(ComentarioDialogComponent, {
+    const dialogRef = this.dialog.open(TextoDialogComponent, {
       width: '450px',
-      data: <ComentarioDialogData>{
+      data: <TextoDialogData>{
         titulo: 'Comentario sobre documento',
-        descripcion: `Añadir comentario para el documento: ${documento.nombre}`,
-        placeholder: 'Comentario sobre el documento',
-        nombreDocumento: documento.nombre
+        descripcion: 'Añadir comentario para el documento:',
+        etiqueta: 'Comentario sobre el documento',
+        nombreDocumento: documento.nombre,
+        textoConfirmar: 'Añadir comentario',
+        icono: 'comment'
       }
     });
 
@@ -653,13 +655,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    const dialogRef = this.dialog.open(RechazoDialogComponent, {
+    const dialogRef = this.dialog.open(TextoDialogComponent, {
       width: '450px',
-      data: <RechazoDialogData>{
-        titulo: 'Rechazar solicitud',
-        descripcion: 'Indique el motivo de rechazo de toda la solicitud:',
-        placeholder: 'Motivo de rechazo'
-      }
+      data: datosRechazo()
     });
 
     dialogRef.afterClosed().pipe(

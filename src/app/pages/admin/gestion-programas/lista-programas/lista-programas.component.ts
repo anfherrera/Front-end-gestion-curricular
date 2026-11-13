@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +18,8 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { ProgramaDTORespuesta } from '../../../../core/models/programa.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
+import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-lista-programas',
@@ -38,6 +41,7 @@ import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
   styleUrls: ['./lista-programas.component.css']
 })
 export class ListaProgramasComponent implements OnInit {
+  private readonly dialog = inject(MatDialog);
   programas: ProgramaDTORespuesta[] = [];
   displayedColumns: string[] = ['id_programa', 'codigo', 'nombre_programa', 'acciones'];
   loading = false;
@@ -94,36 +98,37 @@ export class ListaProgramasComponent implements OnInit {
   }
 
   eliminarPrograma(programa: ProgramaDTORespuesta): void {
-    if (!confirm(`¿Está seguro de eliminar el programa "${programa.nombre_programa}"?\n\nEsta acción no se puede deshacer.`)) {
-      return;
-    }
+    confirmar(this.dialog, {
+      titulo: 'Eliminar programa', textoConfirmar: 'Eliminar', peligro: true,
+      mensaje: `¿Está seguro de eliminar el programa "${programa.nombre_programa}"?\n\nEsta acción no se puede deshacer.`
+    }).pipe(filter(Boolean)).subscribe(() => {
+      this.loading = true;
 
-    this.loading = true;
-
-    this.programasService.eliminarPrograma(programa.id_programa).subscribe({
-      next: () => {
-        this.loading = false;
-        this.snackBar.open('Programa eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-        this.cargarProgramas();
-      },
-      error: (error: HttpErrorResponse) => {
-        this.loading = false;
+      this.programasService.eliminarPrograma(programa.id_programa).subscribe({
+        next: () => {
+          this.loading = false;
+          this.snackBar.open('Programa eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.cargarProgramas();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.loading = false;
         
-        // Extraer mensaje de error usando el servicio
-        const mensaje = this.errorHandler.extraerMensajeError(error);
+          // Extraer mensaje de error usando el servicio
+          const mensaje = this.errorHandler.extraerMensajeError(error);
         
-        // Determinar el tipo de error
-        if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
-          // Error de dependencias (400) - Programa tiene usuarios asociados
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
-        } else if (error.status === 404) {
-          // No encontrado
-          this.snackBar.open('Programa no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
-        } else {
-          // Otros errores
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          // Determinar el tipo de error
+          if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+            // Error de dependencias (400) - Programa tiene usuarios asociados
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+          } else if (error.status === 404) {
+            // No encontrado
+            this.snackBar.open('Programa no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+          } else {
+            // Otros errores
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          }
         }
-      }
+      });
     });
   }
 

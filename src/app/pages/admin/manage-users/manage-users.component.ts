@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -16,6 +17,8 @@ import { UsuariosService } from '../../../core/services/usuarios.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
+import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-manage-users',
@@ -38,6 +41,7 @@ import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
   styleUrl: './manage-users.component.css'
 })
 export class ManageUsersComponent implements OnInit {
+  private readonly dialog = inject(MatDialog);
   usuarios: any[] = [];
   displayedColumns: string[] = ['id_usuario', 'nombre_completo', 'correo', 'rol', 'estado', 'acciones'];
   loading = false;
@@ -96,62 +100,65 @@ export class ManageUsersComponent implements OnInit {
   cambiarEstado(usuario: any): void {
     const nuevoEstado = !usuario.estado_usuario ? 'activar' : 'desactivar';
     
-    // Confirmación antes de cambiar el estado
-    if (!confirm(`¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`)) {
-      return;
-    }
+    confirmar(this.dialog, {
+      titulo: !usuario.estado_usuario ? 'Activar usuario' : 'Desactivar usuario',
+      textoConfirmar: !usuario.estado_usuario ? 'Activar' : 'Desactivar',
+      peligro: !!usuario.estado_usuario,
+      mensaje: `¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`
+    }).pipe(filter(Boolean)).subscribe(() => {
+      this.loading = true;
 
-    this.loading = true;
-
-    this.usuariosService.cambiarEstadoUsuario(usuario.id_usuario).subscribe({
-      next: (response) => {
-        this.loading = false;
-        // Actualizar el estado en la tabla sin recargar toda la lista
-        usuario.estado_usuario = response.estado_usuario;
+      this.usuariosService.cambiarEstadoUsuario(usuario.id_usuario).subscribe({
+        next: (response) => {
+          this.loading = false;
+          // Actualizar el estado en la tabla sin recargar toda la lista
+          usuario.estado_usuario = response.estado_usuario;
         
-        // Mostrar mensaje de éxito
-        this.snackBar.open(`Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
-      },
-      error: (error: any) => {
-        this.loading = false;
+          // Mostrar mensaje de éxito
+          this.snackBar.open(`Usuario ${nuevoEstado}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
+        },
+        error: (error: any) => {
+          this.loading = false;
         
-        // Mostrar mensaje de error
-        this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
+          // Mostrar mensaje de error
+          this.snackBar.open('Error al cambiar el estado del usuario', 'Cerrar', snackbarConfig(['error-snackbar']));
+        }
+      });
     });
   }
 
   eliminarUsuario(usuario: any): void {
-    if (!confirm(`¿Está seguro de ELIMINAR al usuario "${usuario.nombre_completo}"?\n\nEsta acción no se puede deshacer.`)) {
-      return;
-    }
+    confirmar(this.dialog, {
+      titulo: 'Eliminar usuario', textoConfirmar: 'Eliminar', peligro: true,
+      mensaje: `¿Está seguro de ELIMINAR al usuario "${usuario.nombre_completo}"?\n\nEsta acción no se puede deshacer.`
+    }).pipe(filter(Boolean)).subscribe(() => {
+      this.loading = true;
 
-    this.loading = true;
-
-    this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
-      next: () => {
-        this.loading = false;
-        this.snackBar.open('Usuario eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-        this.cargarUsuarios();
-      },
-      error: (error: HttpErrorResponse) => {
-        this.loading = false;
+      this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
+        next: () => {
+          this.loading = false;
+          this.snackBar.open('Usuario eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.cargarUsuarios();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.loading = false;
         
-        // Extraer mensaje de error usando el servicio
-        const mensaje = this.errorHandler.extraerMensajeError(error);
+          // Extraer mensaje de error usando el servicio
+          const mensaje = this.errorHandler.extraerMensajeError(error);
         
-        // Determinar el tipo de error para mostrar el color correcto
-        if (this.errorHandler.esErrorDependencias(error)) {
-          // Error de dependencias (400) - Naranja/Advertencia
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
-        } else if (error.status === 404) {
-          // No encontrado
-          this.snackBar.open('Usuario no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
-        } else {
-          // Otros errores
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          // Determinar el tipo de error para mostrar el color correcto
+          if (this.errorHandler.esErrorDependencias(error)) {
+            // Error de dependencias (400) - Naranja/Advertencia
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+          } else if (error.status === 404) {
+            // No encontrado
+            this.snackBar.open('Usuario no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+          } else {
+            // Otros errores
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          }
         }
-      }
+      });
     });
   }
 

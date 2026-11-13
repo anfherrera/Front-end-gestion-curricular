@@ -16,14 +16,13 @@ import { SolicitudReingresoDTORespuesta, DocumentosDTORespuesta } from '../../..
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
-import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { estadoActual, ultimoEstado } from '../../../core/utils/estado-solicitud.util';
 import { formatearFecha } from '../../../core/utils/fecha.util';
+import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
 
 @Component({
   selector: 'app-reingreso-estudiante',
@@ -168,13 +167,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    const dialogRef = this.dialog.open(RechazoDialogComponent, {
+    const dialogRef = this.dialog.open(TextoDialogComponent, {
       width: '450px',
-      data: <RechazoDialogData>{
-        titulo: 'Rechazar solicitud',
-        descripcion: 'Indique el motivo de rechazo de toda la solicitud:',
-        placeholder: 'Motivo de rechazo'
-      }
+      data: datosRechazo()
     });
 
     dialogRef.afterClosed().pipe(

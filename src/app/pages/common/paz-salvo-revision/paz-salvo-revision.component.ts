@@ -11,13 +11,13 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { PazSalvoService } from '../../../core/services/paz-salvo.service';
 import { Solicitud, SolicitudHomologacionDTORespuesta, DocumentoHomologacion, DocumentosDTORespuesta } from '../../../core/models/procesos.model';
-import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { PazSalvoBandejaComponent } from './paz-salvo-bandeja.component';
 import { aDocumentos, aFilaHistorial, aFilaTabla } from './paz-salvo-filas';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
+import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
 
 /** Roles que revisan paz y salvo con esta pantalla. Secretaría tiene su propio flujo (oficio). */
 export type RolRevisionPazSalvo = 'funcionario' | 'coordinador';
@@ -230,13 +230,9 @@ export class PazSalvoRevisionComponent implements OnInit {
     if (!this.selectedSolicitud) return;
     const id = this.selectedSolicitud.id_solicitud;
 
-    const dialogRef = this.dialog.open(RechazoDialogComponent, {
+    const dialogRef = this.dialog.open(TextoDialogComponent, {
       width: '450px',
-      data: <RechazoDialogData>{
-        titulo: this.config.tituloRechazo,
-        descripcion: this.config.descripcionRechazo,
-        placeholder: 'Motivo de rechazo'
-      }
+      data: datosRechazo(this.config.tituloRechazo, this.config.descripcionRechazo)
     });
 
     const documentos = this.documentosConValidez(false);

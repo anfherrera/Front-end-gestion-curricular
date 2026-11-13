@@ -14,6 +14,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { FormProcesoDialogComponent } from './form-proceso-dialog/form-proceso-dialog.component';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
+import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-manage-processes',
@@ -90,18 +92,21 @@ export class ManageProcessesComponent implements OnInit {
     const nuevoEstado = !proceso.estado_proceso;
     const mensaje = nuevoEstado ? 'activar' : 'desactivar';
     
-    if (!confirm(`¿Está seguro de ${mensaje} el proceso "${proceso.nombre_proceso}"?`)) {
-      return;
-    }
-
-    this.apiService.put(`procesos/actualizarEstado/${proceso.id_proceso}`, { estado_proceso: nuevoEstado }).subscribe({
-      next: () => {
-        this.snackBar.open(`Proceso ${mensaje}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
-        this.cargarProcesos();
-      },
-      error: (err: any) => {
-        this.snackBar.open('Error al cambiar el estado del proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
+    confirmar(this.dialog, {
+      titulo: nuevoEstado ? 'Activar proceso' : 'Desactivar proceso',
+      textoConfirmar: nuevoEstado ? 'Activar' : 'Desactivar',
+      peligro: !nuevoEstado,
+      mensaje: `¿Está seguro de ${mensaje} el proceso "${proceso.nombre_proceso}"?`
+    }).pipe(filter(Boolean)).subscribe(() => {
+      this.apiService.put(`procesos/actualizarEstado/${proceso.id_proceso}`, { estado_proceso: nuevoEstado }).subscribe({
+        next: () => {
+          this.snackBar.open(`Proceso ${mensaje}do exitosamente`, 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.cargarProcesos();
+        },
+        error: (err: any) => {
+          this.snackBar.open('Error al cambiar el estado del proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
+        }
+      });
     });
   }
 
@@ -132,18 +137,19 @@ export class ManageProcessesComponent implements OnInit {
   }
 
   eliminarProceso(proceso: any): void {
-    if (!confirm(`¿Está seguro de ELIMINAR el proceso "${proceso.nombre_proceso}"?`)) {
-      return;
-    }
-
-    this.apiService.delete(`procesos/eliminarProceso/${proceso.id_proceso}`).subscribe({
-      next: () => {
-        this.snackBar.open('Proceso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-        this.cargarProcesos();
-      },
-      error: (err: any) => {
-        this.snackBar.open('Error al eliminar el proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
-      }
+    confirmar(this.dialog, {
+      titulo: 'Eliminar proceso', textoConfirmar: 'Eliminar', peligro: true,
+      mensaje: `¿Está seguro de ELIMINAR el proceso "${proceso.nombre_proceso}"?`
+    }).pipe(filter(Boolean)).subscribe(() => {
+      this.apiService.delete(`procesos/eliminarProceso/${proceso.id_proceso}`).subscribe({
+        next: () => {
+          this.snackBar.open('Proceso eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.cargarProcesos();
+        },
+        error: (err: any) => {
+          this.snackBar.open('Error al eliminar el proceso', 'Cerrar', snackbarConfig(['error-snackbar']));
+        }
+      });
     });
   }
 }

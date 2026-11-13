@@ -1,0 +1,43 @@
+<div class="cabecera">
+  <h2 mat-dialog-title class="titulo">
+    <mat-icon>{{ data.icono || 'edit_note' }}</mat-icon>
+    {{ data.titulo }}
+  </h2>
+</div>
+
+<mat-dialog-content class="contenido">
+  <p *ngIf="data.descripcion" class="descripcion">{{ data.descripcion }}</p>
+
+  <div *ngIf="data.nombreDocumento" class="documento">
+    <mat-icon>description</mat-icon>
+    <span>{{ data.nombreDocumento }}</span>
+  </div>
+
+  <mat-form-field *ngIf="data.historial && !data.soloLectura" appearance="outline" class="campo">
+    <mat-label>Comentarios anteriores</mat-label>
+    <textarea matInput [value]="data.historial" readonly rows="4" class="solo-lectura"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="campo">
+    <mat-label>{{ data.historial && !data.soloLectura ? 'Nuevo comentario' : (data.etiqueta || 'Texto') }}</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="texto"
+      [readonly]="data.soloLectura"
+      [class.solo-lectura]="data.soloLectura"
+      [attr.maxlength]="data.maxLength || null"
+      cdkFocusInitial
+      rows="4">
+    </textarea>
+    <mat-hint *ngIf="data.maxLength && !data.soloLectura" align="end" [class.casi-lleno]="texto.length > data.maxLength * 0.9">
+      {{ texto.length }}/{{ data.maxLength }}
+    </mat-hint>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">{{ data.soloLectura ? 'Cerrar' : 'Cancelar' }}</button>
+  <button *ngIf="!data.soloLectura" mat-raised-button class="btn-confirmar" [disabled]="!puedeConfirmar" (click)="confirmar()">
+    {{ data.textoConfirmar || 'Aceptar' }}
+  </button>
+</mat-dialog-actions>

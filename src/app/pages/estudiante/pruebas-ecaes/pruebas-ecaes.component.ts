@@ -22,7 +22,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { InfoPreregistroDialogComponent } from '../../../shared/components/info-preregistro-dialog/info-preregistro-dialog.component';
-import { ComentariosDialogComponent, ComentariosDialogData } from '../../../shared/components/comentarios-dialog/comentarios-dialog.component';
+import { VerComentariosDialogComponent, VerComentariosDialogData } from '../../../shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
 import { Archivo, Solicitud } from '../../../core/models/procesos.model';
 import { ESTADOS_SOLICITUD_LABELS, EstadosSolicitud } from '../../../core/enums/estados-solicitud.enum';
 import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
@@ -612,9 +612,9 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     this.logger.debug('  - Documentos:', solicitudCompleta.documentos);
     this.logger.debug('  - Comentario de rechazo:', comentarioRechazo);
 
-    const dialogRef = this.dialog.open(ComentariosDialogComponent, {
+    const dialogRef = this.dialog.open(VerComentariosDialogComponent, {
       width: '700px',
-      data: <ComentariosDialogData>{
+      data: <VerComentariosDialogData>{
         titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
         documentos: solicitudCompleta.documentos,
         comentarioRechazo: comentarioRechazo

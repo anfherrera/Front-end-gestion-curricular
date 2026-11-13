@@ -1,0 +1,73 @@
+.cabecera {
+  background: var(--color-primario);
+  margin: -24px -24px 0;
+  padding: 20px 24px;
+  border-radius: 4px 4px 0 0;
+}
+
+.titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  color: white;
+}
+
+.titulo mat-icon {
+  color: white;
+}
+
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+  min-width: min(420px, 80vw);
+}
+
+.descripcion {
+  margin: 0;
+  color: var(--color-neutro-texto);
+  line-height: 1.5;
+}
+
+.documento {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-left: 4px solid var(--color-primario);
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+.campo {
+  width: 100%;
+}
+
+textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.solo-lectura {
+  background-color: #f5f5f5;
+  cursor: default;
+}
+
+mat-hint.casi-lleno {
+  color: var(--color-error);
+}
+
+.btn-confirmar {
+  background-color: var(--color-primario) !important;
+  color: white !important;
+}
+
+.btn-confirmar:disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+}

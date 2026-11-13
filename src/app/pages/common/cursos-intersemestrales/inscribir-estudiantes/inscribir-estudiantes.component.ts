@@ -23,12 +23,12 @@ import { CardContainerComponent } from '../../../../shared/components/card-conta
 import { UtfFixPipe } from '../../../../shared/pipes/utf-fix.pipe';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
-import { PromptDialogComponent, PromptDialogData } from '../../../../shared/components/prompt-dialog/prompt-dialog.component';
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole } from '../../../../core/enums/roles.enum';
 import { descargarBlob } from '../../../../core/utils/download.util';
 import { NombreDocentePipe } from '../../../../shared/pipes/nombre-docente.pipe';
+import { TextoDialogComponent, TextoDialogData, datosRechazo } from '../../../../shared/components/texto-dialog/texto-dialog.component';
 
 @Component({
   selector: 'app-inscribir-estudiantes',
@@ -284,27 +284,16 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
 
   rechazarInscripcion(estudiante: EstudianteElegible): void {
     // Abrir diálogo para pedir motivo de rechazo
-    const dialogRef = this.dialog.open<PromptDialogComponent, PromptDialogData, string>(
-      PromptDialogComponent,
-      {
-        width: '500px',
-        maxWidth: '90vw',
-        data: {
-          title: 'Rechazar Inscripción',
-          message: 'Ingrese el motivo del rechazo:',
-          placeholder: 'Motivo del rechazo',
-          required: true
-        }
-      }
-    );
+    const dialogRef = this.dialog.open<TextoDialogComponent, TextoDialogData, string>(TextoDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: datosRechazo('Rechazar Inscripción', 'Ingrese el motivo del rechazo:')
+    });
 
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(motivo => {
-        if (!motivo || motivo.trim() === '') {
-          this.snackBar.open('Debe ingresar un motivo para rechazar la inscripción', 'Cerrar', snackbarConfig(['warning-snackbar']));
-          return;
-        }
+        if (!motivo) return; // cancelado: el diálogo no deja confirmar sin motivo
         
         // Usar el servicio para rechazar inscripción
         this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo)

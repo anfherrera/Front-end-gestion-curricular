@@ -18,6 +18,8 @@ import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { RolDTORespuesta, RolDTOPeticion } from '../../../core/models/rol.interface';
 import { FormRolDialogComponent } from './form-rol-dialog/form-rol-dialog.component';
 import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
+import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-manage-roles',
@@ -95,36 +97,37 @@ export class ManageRolesComponent implements OnInit {
   }
 
   eliminarRol(rol: RolDTORespuesta): void {
-    if (!confirm(`¿Está seguro de eliminar el rol "${rol.nombre}"?\n\nEsta acción no se puede deshacer.`)) {
-      return;
-    }
+    confirmar(this.dialog, {
+      titulo: 'Eliminar rol', textoConfirmar: 'Eliminar', peligro: true,
+      mensaje: `¿Está seguro de eliminar el rol "${rol.nombre}"?\n\nEsta acción no se puede deshacer.`
+    }).pipe(filter(Boolean)).subscribe(() => {
+      this.loading = true;
 
-    this.loading = true;
-
-    this.rolesService.eliminarRol(rol.id_rol).subscribe({
-      next: () => {
-        this.loading = false;
-        this.snackBar.open('Rol eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-        this.cargarRoles();
-      },
-      error: (error: HttpErrorResponse) => {
-        this.loading = false;
+      this.rolesService.eliminarRol(rol.id_rol).subscribe({
+        next: () => {
+          this.loading = false;
+          this.snackBar.open('Rol eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.cargarRoles();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.loading = false;
         
-        // Extraer mensaje de error usando el servicio
-        const mensaje = this.errorHandler.extraerMensajeError(error);
+          // Extraer mensaje de error usando el servicio
+          const mensaje = this.errorHandler.extraerMensajeError(error);
         
-        // Determinar el tipo de error
-        if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
-          // Error de dependencias (400) - Rol tiene usuarios asociados
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
-        } else if (error.status === 404) {
-          // No encontrado
-          this.snackBar.open('Rol no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
-        } else {
-          // Otros errores
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          // Determinar el tipo de error
+          if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+            // Error de dependencias (400) - Rol tiene usuarios asociados
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+          } else if (error.status === 404) {
+            // No encontrado
+            this.snackBar.open('Rol no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+          } else {
+            // Otros errores
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          }
         }
-      }
+      });
     });
   }
 

@@ -15,7 +15,7 @@ import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } fro
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
 import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
 import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
-import { ComentariosDialogComponent, ComentariosDialogData } from "../../../shared/components/comentarios-dialog/comentarios-dialog.component";
+import { VerComentariosDialogComponent, VerComentariosDialogData } from "../../../shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component";
 
 import { HomologacionAsignaturasService } from '../../../core/services/homologacion-asignaturas.service';
 import { FormatosInstitucionalesService } from '../../../core/services/formatos-institucionales.service';
@@ -449,9 +449,9 @@ verComentarios(solicitudId: number): void {
     comentarioRechazo: comentarioRechazo
   });
 
-  const dialogRef = this.dialog.open(ComentariosDialogComponent, {
+  const dialogRef = this.dialog.open(VerComentariosDialogComponent, {
     width: '700px',
-    data: <ComentariosDialogData>{
+    data: <VerComentariosDialogData>{
       titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
       documentos: solicitudCompleta.documentos,
       comentarioRechazo: comentarioRechazo

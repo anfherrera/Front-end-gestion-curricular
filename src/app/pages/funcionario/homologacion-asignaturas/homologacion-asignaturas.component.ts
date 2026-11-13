@@ -14,12 +14,11 @@ import { SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { RechazoDialogComponent, RechazoDialogData } from '../../../shared/components/rechazo-dialog/rechazo-dialog.component';
-import { ComentarioDialogComponent, ComentarioDialogData } from '../../../shared/components/comentario-dialog/comentario-dialog.component';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { snackbarConfig } from '../../../core/design-system/design-tokens';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
+import { TextoDialogComponent, datosRechazo } from '../../../shared/components/texto-dialog/texto-dialog.component';
 
 @Component({
   selector: 'app-homologacion-asignaturas',
@@ -183,13 +182,9 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   rechazarSolicitudSeleccionada(): void {
     if (!this.selectedSolicitud) return;
 
-    const dialogRef = this.dialog.open(RechazoDialogComponent, {
+    const dialogRef = this.dialog.open(TextoDialogComponent, {
       width: '450px',
-      data: <RechazoDialogData>{
-        titulo: 'Rechazar solicitud',
-        descripcion: 'Indique el motivo de rechazo de toda la solicitud:',
-        placeholder: 'Motivo de rechazo'
-      }
+      data: datosRechazo()
     });
 
     dialogRef.afterClosed().pipe(

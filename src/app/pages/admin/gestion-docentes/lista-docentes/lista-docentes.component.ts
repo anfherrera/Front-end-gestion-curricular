@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +18,8 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
 import { snackbarConfig } from '../../../../core/design-system/design-tokens';
 import { DocenteDTORespuesta } from '../../../../core/models/docente.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
+import { confirmar } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-lista-docentes',
@@ -38,6 +41,7 @@ import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
   styleUrls: ['./lista-docentes.component.css']
 })
 export class ListaDocentesComponent implements OnInit {
+  private readonly dialog = inject(MatDialog);
   docentes: DocenteDTORespuesta[] = [];
   displayedColumns: string[] = ['id_docente', 'codigo_docente', 'nombre_docente', 'acciones'];
   loading = false;
@@ -94,40 +98,41 @@ export class ListaDocentesComponent implements OnInit {
   }
 
   eliminarDocente(docente: DocenteDTORespuesta): void {
-    if (!confirm(`¿Está seguro de eliminar al docente "${docente.nombre_docente}"?\n\nEsta acción no se puede deshacer.`)) {
-      return;
-    }
+    confirmar(this.dialog, {
+      titulo: 'Eliminar docente', textoConfirmar: 'Eliminar', peligro: true,
+      mensaje: `¿Está seguro de eliminar al docente "${docente.nombre_docente}"?\n\nEsta acción no se puede deshacer.`
+    }).pipe(filter(Boolean)).subscribe(() => {
+      this.loading = true;
 
-    this.loading = true;
+      this.docentesService.eliminarDocente(docente.id_docente).subscribe({
+        next: () => {
+          this.loading = false;
+          // Status 200 OK - Éxito
+          this.snackBar.open('Docente eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
+          this.cargarDocentes();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.loading = false;
 
-    this.docentesService.eliminarDocente(docente.id_docente).subscribe({
-      next: () => {
-        this.loading = false;
-        // Status 200 OK - Éxito
-        this.snackBar.open('Docente eliminado exitosamente', 'Cerrar', snackbarConfig(['success-snackbar']));
-        this.cargarDocentes();
-      },
-      error: (error: HttpErrorResponse) => {
-        this.loading = false;
-
-        // Extraer mensaje de error usando el servicio
-        const mensaje = this.errorHandler.extraerMensajeError(error);
+          // Extraer mensaje de error usando el servicio
+          const mensaje = this.errorHandler.extraerMensajeError(error);
         
-        // Manejo de errores específicos
-        if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
-          // Error de dependencias (400) - Docente tiene cursos asignados
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
-        } else if (error.status === 409) {
-          // Conflicto (respaldo para compatibilidad)
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
-        } else if (error.status === 404) {
-          // Docente no encontrado
-          this.snackBar.open('Docente no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
-        } else {
-          // Otros errores (500, etc.)
-          this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          // Manejo de errores específicos
+          if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+            // Error de dependencias (400) - Docente tiene cursos asignados
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+          } else if (error.status === 409) {
+            // Conflicto (respaldo para compatibilidad)
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['warning-snackbar']));
+          } else if (error.status === 404) {
+            // Docente no encontrado
+            this.snackBar.open('Docente no encontrado', 'Cerrar', snackbarConfig(['error-snackbar']));
+          } else {
+            // Otros errores (500, etc.)
+            this.snackBar.open(`${mensaje}`, 'Cerrar', snackbarConfig(['error-snackbar']));
+          }
         }
-      }
+      });
     });
   }
 
