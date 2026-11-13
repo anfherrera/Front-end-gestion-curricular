@@ -408,7 +408,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
   @Input() idPrograma?: number;
   
   data: EstadoSolicitudesResponse | null = null;
-  estadosData: Array<{nombre: string} & EstadoInfo> = [];
+  estadosData: ({nombre: string} & EstadoInfo)[] = [];
   totalSolicitudes = 0;
   fechaConsulta = '';
   loading = true;
@@ -527,7 +527,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
    * Obtiene el icono según el estado - Material Icons (Sistema de Diseño TIC)
    */
   private getDefaultIcon(estadoKey: string): string {
-    const iconMap: { [key: string]: string } = {
+    const iconMap: Record<string, string> = {
       'APROBADA': 'check_circle',
       'ENVIADA': 'send',
       'EN_PROCESO': 'schedule',
@@ -540,7 +540,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
    * Obtiene el color según el estado - Colores institucionales (Sistema de Diseño TIC)
    */
   private getDefaultColor(estadoKey: string): string {
-    const colorMap: { [key: string]: string } = {
+    const colorMap: Record<string, string> = {
       'APROBADA': '#249337',
       'ENVIADA': '#1D72D3',
       'EN_PROCESO': '#1D72D3',
@@ -553,7 +553,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
    * Obtiene la descripción por defecto según el estado
    */
   private getDefaultDescription(estadoKey: string): string {
-    const descMap: { [key: string]: string } = {
+    const descMap: Record<string, string> = {
       'APROBADA': 'Solicitudes completamente aprobadas',
       'ENVIADA': 'Solicitudes enviadas pendientes de revisión',
       'EN_PROCESO': 'Solicitudes en proceso de revisión',
@@ -568,7 +568,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
 
   getIconName(icono: string): string {
     // Material Icons por defecto; compatibilidad con FontAwesome si se recibe del backend
-    const faToMat: { [key: string]: string } = {
+    const faToMat: Record<string, string> = {
       'fas fa-check-circle': 'check_circle',
       'fas fa-paper-plane': 'send',
       'fas fa-times-circle': 'cancel',

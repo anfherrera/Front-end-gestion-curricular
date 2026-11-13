@@ -8,8 +8,6 @@ import { Injectable } from '@angular/core';
 })
 export class ErrorHandlerService {
 
-  constructor() {}
-
   /**
    * Extrae el mensaje de error desde la respuesta del backend
    * @param error Error HTTP recibido

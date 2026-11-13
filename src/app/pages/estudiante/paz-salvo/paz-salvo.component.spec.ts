@@ -15,7 +15,6 @@ describe('PazSalvoComponent', () => {
   let pazSalvoService: jasmine.SpyObj<PazSalvoService>;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
   let dialog: jasmine.SpyObj<MatDialog>;
-  let httpClient: jasmine.SpyObj<HttpClient>;
   let compiled: HTMLElement;
 
   const mockUsuario = {
@@ -53,7 +52,6 @@ describe('PazSalvoComponent', () => {
     pazSalvoService = TestBed.inject(PazSalvoService) as jasmine.SpyObj<PazSalvoService>;
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
-    httpClient = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
 
     window.localStorage.setItem('usuario', JSON.stringify(mockUsuario));
 
@@ -126,7 +124,7 @@ describe('PazSalvoComponent', () => {
 
     completarFormulario();
     component.archivosActuales = archivos as any;
-    component.fileUploadComponent = fileUploadMock as any;
+    component.fileUploadComponent = fileUploadMock as any;
 
     component.onSolicitudEnviada();
     tick();
@@ -144,7 +142,7 @@ describe('PazSalvoComponent', () => {
       resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
     };
 
-    component.fileUploadComponent = fileUploadMock as any;
+    component.fileUploadComponent = fileUploadMock as any;
 
     component.onSolicitudEnviada();
     tick();
@@ -217,7 +215,7 @@ describe('PazSalvoComponent', () => {
   it('debe descargar el oficio con el nombre que entrega el servicio', () => {
     const blob = new Blob(['pdf'], { type: 'application/pdf' });
     (blob as any).filename = 'OFICIO_PAZ_SALVO.pdf';
-    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(of(blob));
+    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(of(blob));
     spyOn(URL, 'createObjectURL').and.returnValue('blob:prueba');
     spyOn(URL, 'revokeObjectURL');
 
@@ -228,7 +226,7 @@ describe('PazSalvoComponent', () => {
   });
 
   it('debe avisar cuando la solicitud no tiene oficio', () => {
-    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(throwError(() => ({ status: 404 })));
+    pazSalvoService.descargarOficioPorSolicitud.and.returnValue(throwError(() => ({ status: 404 })));
 
     component.descargarOficio(7, 'respaldo.pdf');
 

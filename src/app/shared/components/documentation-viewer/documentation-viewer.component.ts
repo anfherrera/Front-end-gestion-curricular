@@ -43,7 +43,7 @@ export class DocumentationViewerComponent implements OnInit {
   @Input() solicitudId?: number;
   @Input() proceso: 'homologacion' | 'reingreso' | 'paz-salvo' | 'ecaes' = 'homologacion';
   @Input() servicio?: ServicioDocumentos;
-  @Input() puedeAgregarComentarios: boolean = false; // Controla si se muestra el botón de agregar comentarios
+  @Input() puedeAgregarComentarios = false; // Controla si se muestra el botón de agregar comentarios
 
   @Output() verComentarios = new EventEmitter<DocumentosDTORespuesta>();
   @Output() comentarioAgregado = new EventEmitter<{ documento: Documento; comentario: string }>();
@@ -238,7 +238,7 @@ export class DocumentationViewerComponent implements OnInit {
 
     this.dialog.open(TextoDialogComponent, {
       width: '520px',
-      data: <TextoDialogData>{
+      data: {
         titulo: 'Comentario registrado',
         descripcion: 'Este es el comentario asociado al documento seleccionado.',
         etiqueta: 'Comentario',
@@ -246,7 +246,7 @@ export class DocumentationViewerComponent implements OnInit {
         valorInicial: comentario,
         soloLectura: true,
         icono: 'comment'
-      }
+      } as TextoDialogData
     });
   }
 
@@ -277,7 +277,7 @@ export class DocumentationViewerComponent implements OnInit {
     const abrirDialogConHistorial = (comentarioActual: string) => {
       const dialogRef = this.dialog.open(TextoDialogComponent, {
         width: '520px',
-        data: <TextoDialogData>{
+        data: {
           titulo: 'Agregar comentario',
           descripcion: 'Escribe las observaciones para el documento seleccionado. Los comentarios anteriores se muestran arriba.',
           etiqueta: 'Comentario',
@@ -286,7 +286,7 @@ export class DocumentationViewerComponent implements OnInit {
           textoConfirmar: 'Guardar comentario',
           icono: 'add_comment',
           maxLength: 500
-        }
+        } as TextoDialogData
       });
 
       dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((comentarioNuevo: string | undefined) => {

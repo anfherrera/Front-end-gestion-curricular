@@ -66,7 +66,10 @@
              *ngFor="let notificacion of notificaciones; trackBy: trackByNotificationId"
              [class.urgent]="notificacion.esUrgente"
              [class.unread]="!notificacion.leida"
-             (click)="navegarANotificacion(notificacion, $event)">
+             tabindex="0"
+             role="button"
+             (click)="navegarANotificacion(notificacion, $event)"
+             (keydown.enter)="navegarANotificacion(notificacion, $event)">
           
           <!-- Icono de la notificación -->
           <div class="notification-icon-container">

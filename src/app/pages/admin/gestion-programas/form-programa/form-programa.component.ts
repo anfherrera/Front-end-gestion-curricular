@@ -79,7 +79,7 @@ export class FormProgramaComponent implements OnInit {
         });
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al cargar los datos del programa');
         this.router.navigate(['/admin/programas']);
         this.loading = false;

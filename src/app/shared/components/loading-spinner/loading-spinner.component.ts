@@ -62,8 +62,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   `]
 })
 export class LoadingSpinnerComponent {
-  @Input() size: number = 50;
-  @Input() color: string = 'primary';
-  @Input() message: string = '';
-  @Input() overlay: boolean = false;
+  @Input() size = 50;
+  @Input() color = 'primary';
+  @Input() message = '';
+  @Input() overlay = false;
 }

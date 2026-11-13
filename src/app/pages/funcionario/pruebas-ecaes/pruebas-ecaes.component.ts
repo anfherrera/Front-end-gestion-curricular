@@ -55,11 +55,11 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   // Formulario para publicar fechas
   fechasForm: FormGroup;
-  publicandoFechas: boolean = false;
-  esModoEdicion: boolean = false;
+  publicandoFechas = false;
+  esModoEdicion = false;
   idFechaEcaesActual: number | null = null;
-  periodoAnterior: string = '';
-  cargandoFechas: boolean = false;
+  periodoAnterior = '';
+  cargandoFechas = false;
 
   // Datos para las secciones
   solicitudesPendientes: any[] = [];
@@ -67,7 +67,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   // Opciones para el desplegable de períodos académicos
   periodosAcademicos: string[] = [];
-  periodoAcademicoSeleccionado: string = '';
+  periodoAcademicoSeleccionado = '';
 
   // Ya no necesitamos la configuración de tabla, ahora usamos grid
 
@@ -173,7 +173,6 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
    * Fallback con períodos hardcodeados si el backend no está disponible
    */
   private cargarPeriodosFallback(): void {
-    const añoActual = new Date().getFullYear();
     // Generar períodos desde 2020 hasta 2030 como fallback
     this.periodosAcademicos = [];
     for (let año = 2020; año <= 2030; año++) {
@@ -213,7 +212,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
   obtenerTipoDocumentoLabel(tipoDocumento: string | null | undefined): string {
     if (!tipoDocumento) return '-';
 
-    const tipos: { [key: string]: string } = {
+    const tipos: Record<string, string> = {
       CC: 'Cédula de Ciudadanía',
       CE: 'Cédula de Extranjería',
       TI: 'Tarjeta de Identidad',

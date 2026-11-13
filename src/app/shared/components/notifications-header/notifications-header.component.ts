@@ -13,9 +13,8 @@ import { Subscription } from 'rxjs';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Notificacion, NotificacionesResponse } from '../../../core/models/notificaciones.model';
+import { Notificacion } from '../../../core/models/notificaciones.model';
 import { 
-  getIconByTipoSolicitud, 
   getColorByTipoSolicitud, 
   getCategoriaDisplay,
   getIconByTipoNotificacion,
@@ -101,7 +100,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
         this.totalNoLeidas = count;
         this.cdr.detectChanges();
       },
-      error: (error) => {
+      error: () => {
         // Silenciar errores 403
       }
     });
@@ -151,7 +150,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
         this.snackbar.exito('Notificaciones marcadas como leídas');
       },
-      error: (error) => {
+      error: () => {
         this.snackbar.error('Error al marcar notificaciones como leídas');
       }
     });
@@ -173,7 +172,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
         this.totalNoLeidas = Math.max(0, this.totalNoLeidas - 1);
         this.cdr.detectChanges();
       },
-      error: (error) => {
+      error: () => {
         // Error silenciado
       }
     });
@@ -221,7 +220,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   }
 
   getAccionDisplay(accion: string): string {
-    const acciones: { [key: string]: string } = {
+    const acciones: Record<string, string> = {
       'VER_SOLICITUD': 'Ver solicitud',
       'REALIZAR_INSCRIPCION': 'Inscribirse',
       'COMPLETAR_PAGO': 'Completar pago',
@@ -243,7 +242,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     return this.notificaciones.some(n => n.esUrgente);
   }
 
-  private iniciarPollingContador(userId: number, intervalo: number = 30000): void {
+  private iniciarPollingContador(userId: number, intervalo = 30000): void {
     this.refreshInterval = setInterval(() => {
       this.actualizarContador();
     }, intervalo);

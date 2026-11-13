@@ -18,14 +18,6 @@ const ALL_ROLES: UserRole[] = [
   UserRole.DECANO
 ];
 
-const ADMIN_AND_FUNCIONARIO: UserRole[] = [UserRole.ADMIN, UserRole.FUNCIONARIO];
-const ADMIN_FUNC_COORD_SEC: UserRole[] = [
-  UserRole.ADMIN,
-  UserRole.FUNCIONARIO,
-  UserRole.COORDINADOR,
-  UserRole.SECRETARIA
-];
-
 export const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Inicio', icon: 'home', route: '/welcome', roles: ALL_ROLES },
 

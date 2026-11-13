@@ -3,9 +3,8 @@
  */
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { By } from '@angular/platform-browser';
 
 // Componente de prueba con elementos interactivos
 @Component({
@@ -41,15 +40,13 @@ import { By } from '@angular/platform-browser';
     </div>
   `
 })
-class TestKeyboardComponent implements AfterViewInit {
+class TestKeyboardComponent {
   @ViewChild('btn1') btn1!: ElementRef;
   
   items = ['Opción 1', 'Opción 2', 'Opción 3'];
   selectedIndex = 0;
   showModal = false;
   clickCount = 0;
-
-  ngAfterViewInit() {}
 
   handleClick() {
     this.clickCount++;

@@ -29,7 +29,7 @@ export class AuthService {
     private router: Router,
     private http: HttpClient,
     private activityMonitor: ActivityMonitorService,
-    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(PLATFORM_ID) private platformId: object,
     private snackbar?: SnackbarService
   ) {
     this.restoreRoleFromStorage(); // restaura rol al recargar la página
@@ -215,7 +215,7 @@ export class AuthService {
    * Limpia todos los datos almacenados y redirige al login
    * @param showMessage Si es true, muestra un mensaje de sesión expirada
    */
-  logout(showMessage: boolean = false): void {
+  logout(showMessage = false): void {
     if (showMessage) {
       this.snackbar?.advertencia('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
     }

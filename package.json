@@ -20,7 +20,8 @@
     "test:seguridad-accesibilidad": "npm run test:seguridad && npm run test:accesibilidad && npm run test:accesibilidad:e2e",
     "test:reporte": "node scripts/generar-reporte-usabilidad.js",
     "test:navegacion": "node scripts/prueba-navegacion.mjs",
-    "serve:ssr:Front-end-gestion-curricular": "node dist/front-end-gestion-curricular/server/server.mjs"
+    "serve:ssr:Front-end-gestion-curricular": "node dist/front-end-gestion-curricular/server/server.mjs",
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -50,16 +51,19 @@
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
+    "angular-eslint": "19.8.1",
     "axe-core": "^4.11.0",
     "cypress": "^15.5.0",
     "cypress-axe": "^1.7.0",
     "cypress-plugin-tab": "^1.0.5",
+    "eslint": "^9.28.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "typescript-eslint": "8.33.1"
   }
 }

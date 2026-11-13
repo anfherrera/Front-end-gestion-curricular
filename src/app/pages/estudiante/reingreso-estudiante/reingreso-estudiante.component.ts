@@ -8,7 +8,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Subject, takeUntil } from 'rxjs';
 
-import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion, UsuarioDTOPeticion } from '../../../core/models/procesos.model';
+import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
 import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
 import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
@@ -357,11 +357,11 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.dialog.open(VerComentariosDialogComponent, {
       width: '700px',
-      data: <VerComentariosDialogData>{
+      data: {
         titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
         documentos: solicitudCompleta.documentos,
         comentarioRechazo: null
-      }
+      } as VerComentariosDialogData
     });
 
     dialogRef.afterClosed()
@@ -717,7 +717,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
   }
 
-  private descargarOficioPorCandidatos(candidatos: string[], nombreDescarga: string, idSolicitud: number, indice: number = 0): void {
+  private descargarOficioPorCandidatos(candidatos: string[], nombreDescarga: string, idSolicitud: number, indice = 0): void {
     if (indice >= candidatos.length) {
       this.logger.warn('Ninguno de los nombres candidatos funcionó, usando flujo alternativo.');
       this.descargarArchivoPorNombre(nombreDescarga, nombreDescarga, idSolicitud);

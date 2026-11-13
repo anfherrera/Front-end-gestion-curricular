@@ -25,7 +25,7 @@ import { CardContainerComponent } from '../../../shared/components/card-containe
 })
 export class PerfilComponent implements OnInit {
   usuario: any = null;
-  userRole: string = 'Usuario';
+  userRole = 'Usuario';
 
   constructor(private authService: AuthService) {}
 

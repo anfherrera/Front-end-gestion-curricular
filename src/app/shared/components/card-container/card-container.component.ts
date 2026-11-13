@@ -17,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class CardContainerComponent {
   /** Título principal de la tarjeta */
-  @Input() title: string = '';
+  @Input() title = '';
   
   /** Subtítulo opcional de la tarjeta */
   @Input() subtitle?: string;

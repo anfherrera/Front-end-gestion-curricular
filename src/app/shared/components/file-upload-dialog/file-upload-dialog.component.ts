@@ -20,10 +20,10 @@ export class FileUploadComponent implements OnChanges {
   @Input() archivos: Archivo[] = [];
   @Input() reset = false;                  // Para reiniciar desde el padre
   @Input() archivosExclusivos: string[] = []; // Archivos que son mutuamente exclusivos
-  @Input() proceso: string = 'general';    // Tipo de proceso: 'general', 'paz-salvo', etc.
+  @Input() proceso = 'general';    // Tipo de proceso: 'general', 'paz-salvo', etc.
   @Output() archivosChange = new EventEmitter<Archivo[]>();
 
-  cargando: boolean = false;
+  cargando = false;
 
   constructor(
     private archivosService: ArchivosService,
@@ -160,7 +160,7 @@ export class FileUploadComponent implements OnChanges {
           return this.archivos[index];
         }),
         tap({
-          error: (error) => {
+          error: () => {
             // Marcar el archivo como con error
             const index = this.archivos.findIndex(a => a.file === archivo.file);
             if (index !== -1) {
@@ -178,14 +178,14 @@ export class FileUploadComponent implements OnChanges {
           this.cargando = false;
           this.notificarCambio();
         },
-        error: (error) => {
+        error: () => {
           this.cargando = false;
           this.notificarCambio();
         }
       }),
       map(() => this.archivos),
       tap({
-        error: (error) => {
+        error: () => {
           // Asegurar que siempre se resetee el estado de carga
           this.cargando = false;
           this.notificarCambio();

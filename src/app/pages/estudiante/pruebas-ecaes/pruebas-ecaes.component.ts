@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 
-import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
+import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { FileUploadComponent } from '../../../shared/components/file-upload-dialog/file-upload-dialog.component';
@@ -61,7 +61,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
   // Datos de fechas
   fechasEcaes: FechaEcaes[] = [];
   fechasSeleccionadas: FechaEcaes | null = null;
-  periodoSeleccionado: string = '';
+  periodoSeleccionado = '';
 
   // Configuración de la tabla
   displayedColumns: string[] = ['concepto', 'fecha'];
@@ -77,7 +77,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
   // Formulario de solicitud
   solicitudForm: FormGroup;
   archivos: Archivo[] = [];
-  enviandoSolicitud: boolean = false;
+  enviandoSolicitud = false;
   usuario: any = null;
 
   // Seguimiento de solicitudes
@@ -540,7 +540,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(
       takeUntil(this.destroy$)
-    ).subscribe(result => {
+    ).subscribe(() => {
       this.logger.debug('Diálogo de información cerrado');
     });
   }
@@ -612,11 +612,11 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.dialog.open(VerComentariosDialogComponent, {
       width: '700px',
-      data: <VerComentariosDialogData>{
+      data: {
         titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
         documentos: solicitudCompleta.documentos,
         comentarioRechazo: comentarioRechazo
-      }
+      } as VerComentariosDialogData
     });
 
     dialogRef.afterClosed().pipe(

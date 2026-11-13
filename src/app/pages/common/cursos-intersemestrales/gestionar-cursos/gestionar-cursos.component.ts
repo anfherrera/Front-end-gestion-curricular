@@ -46,7 +46,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
   docentes: Docente[] = [];
   cargando = true;
   estadoFiltro = '';
-  periodoFiltro: string = 'todos'; // Filtro por período académico - Inicializar con 'todos' para mostrar todos los cursos por defecto
+  periodoFiltro = 'todos'; // Filtro por período académico - Inicializar con 'todos' para mostrar todos los cursos por defecto
   
   // Formulario para crear/editar curso
   cursoForm: FormGroup;

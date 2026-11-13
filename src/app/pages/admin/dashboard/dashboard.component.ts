@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit {
         this.totalDocentes = docentes.length;
         this.verificarCargaCompleta();
       },
-      error: (err) => {
+      error: () => {
         this.verificarCargaCompleta();
       }
     });
@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit {
         this.totalProgramas = programas.length;
         this.verificarCargaCompleta();
       },
-      error: (err) => {
+      error: () => {
         this.verificarCargaCompleta();
       }
     });
@@ -72,7 +72,7 @@ export class DashboardComponent implements OnInit {
         this.totalRoles = roles.length;
         this.verificarCargaCompleta();
       },
-      error: (err) => {
+      error: () => {
         this.verificarCargaCompleta();
       }
     });

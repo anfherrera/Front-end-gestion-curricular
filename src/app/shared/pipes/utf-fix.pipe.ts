@@ -16,7 +16,6 @@ export class UtfFixPipe implements PipeTransform {
         // Convierte texto mal decodificado ISO-8859-1 -> UTF-8
         // Nota: escape/decodeURIComponent corrige muchos casos comunes de mojibake
         // Si falla, retornamos el original.
-        // eslint-disable-next-line deprecation/deprecation
         return decodeURIComponent(escape(str));
       } catch {
         return str;

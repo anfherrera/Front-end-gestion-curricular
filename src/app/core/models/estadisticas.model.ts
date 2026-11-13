@@ -136,15 +136,9 @@ export interface EstadisticasGlobalesAPI {
   totalEnProceso: number;
   totalRechazadas: number;
   porcentajeAprobacion: number;
-  porEstado: {
-    [key: string]: number;
-  };
-  porTipoProceso: {
-    [key: string]: number;
-  };
-  porPrograma: {
-    [key: string]: number;
-  };
+  porEstado: Record<string, number>;
+  porTipoProceso: Record<string, number>;
+  porPrograma: Record<string, number>;
   predicciones?: PrediccionesGlobales;
 }
 
@@ -161,7 +155,7 @@ export interface TotalEstudiantesResponse {
  * Interfaz para la respuesta del endpoint de estudiantes por programa
  */
 export interface EstudiantesPorProgramaResponse {
-  estudiantesPorPrograma: { [programa: string]: number };
+  estudiantesPorPrograma: Record<string, number>;
   fechaConsulta: string;
   descripcion: string;
 }
@@ -170,7 +164,7 @@ export interface EstudiantesPorProgramaResponse {
  * Interfaz para la respuesta del endpoint de estadísticas por proceso
  */
 export interface EstadisticasPorProcesoResponse {
-  estadisticasPorProceso: { [proceso: string]: ProcesoDetallado };
+  estadisticasPorProceso: Record<string, ProcesoDetallado>;
   resumenComparativo?: {
     procesoMasEficiente: string;
     procesoMasRapido: string;
@@ -220,8 +214,8 @@ export interface EstadoInfo {
   descripcion: string;
   color: string;
   icono: string;
-  procesos?: { [proceso: string]: number };  // Distribución por proceso
-  programas?: { [programa: string]: number }; // Distribución por programa
+  procesos?: Record<string, number>;  // Distribución por proceso
+  programas?: Record<string, number>; // Distribución por programa
 }
 
 /**
@@ -230,8 +224,8 @@ export interface EstadoInfo {
  */
 export interface EstadoSolicitudesResponse {
   totalSolicitudes: number;
-  resumenPorEstado?: { [estado: string]: EstadoInfo };  // Campo actualizado del backend
-  estados?: { [estado: string]: EstadoInfo };           // Legacy: Mantener para compatibilidad
+  resumenPorEstado?: Record<string, EstadoInfo>;  // Campo actualizado del backend
+  estados?: Record<string, EstadoInfo>;           // Legacy: Mantener para compatibilidad
   tasaResolucion?: number;                               // Tasa de resolución en nivel raíz
   fechaConsulta: string;
   descripcion?: string;
@@ -254,15 +248,15 @@ export interface ProgramaEstadisticasMejoradas {
   porcentaje: number;
   eficiencia: number;             // Tasa de aprobación
   tiempoPromedio: number;         // Días de procesamiento
-  procesos: { [proceso: string]: number };  // Distribución por proceso
+  procesos: Record<string, number>;  // Distribución por proceso
   color: string;                  // Color específico
   icono: string;                  // Icono específico
 }
 
 export interface EstadisticasPorProgramaMejoradasResponse {
-  porPrograma: { [programa: string]: ProgramaEstadisticasMejoradas };
-  solicitudesPorPrograma?: { [programa: string]: number };  // Mapa directo de programa -> cantidad
-  estudiantesPorPrograma?: { [programa: string]: number };  // Mapa directo de programa -> cantidad
+  porPrograma: Record<string, ProgramaEstadisticasMejoradas>;
+  solicitudesPorPrograma?: Record<string, number>;  // Mapa directo de programa -> cantidad
+  estudiantesPorPrograma?: Record<string, number>;  // Mapa directo de programa -> cantidad
   analisis: {                     // Sección de análisis
     programaMasActivo: string;
     programaMasEficiente: string;
@@ -287,13 +281,13 @@ export interface PeriodoEstadisticasMejoradas {
   porcentaje?: number;
   eficiencia: number;             // Tasa de aprobación
   tiempoPromedio?: number;        // Días de procesamiento
-  procesos?: { [proceso: string]: number };  // Distribución por proceso
+  procesos?: Record<string, number>;  // Distribución por proceso
   color: string;
   icono: string;
 }
 
 export interface EstadisticasPorPeriodoMejoradasResponse {
-  porMes: { [mes: string]: PeriodoEstadisticasMejoradas };
+  porMes: Record<string, PeriodoEstadisticasMejoradas>;
   mesesOrdenados?: PeriodoEstadisticasMejoradas[];  // Todos los meses, en orden
   todosLosMeses?: string[];  // Array con nombres de todos los meses (Enero a Diciembre)
   tendencias: {                   // Sección de tendencias
@@ -315,8 +309,8 @@ export interface CrecimientoTemporal {
   crecimientoSolicitudes: number;
   crecimientoEstudiantes: number;
   mesesAnalizados: number;
-  solicitudesPorMes?: { [mes: string]: number };  // Solicitudes por mes
-  estudiantesPorMes?: { [mes: string]: number };  // Estudiantes por mes
+  solicitudesPorMes?: Record<string, number>;  // Solicitudes por mes
+  estudiantesPorMes?: Record<string, number>;  // Estudiantes por mes
   totalSolicitudes?: number;                       // Total de solicitudes
   totalEstudiantes?: number;                       // Total de estudiantes
 }
@@ -326,8 +320,8 @@ export interface ComparativaProcesos {
   procesoMasEficiente: string | null;
   eficienciaMasAlta: number;
   demandaMasAlta: number;
-  solicitudesPorProceso: { [proceso: string]: number };
-  aprobadasPorProceso: { [proceso: string]: number };
+  solicitudesPorProceso: Record<string, number>;
+  aprobadasPorProceso: Record<string, number>;
 }
 
 export interface ComparativaProgramas {
@@ -335,8 +329,8 @@ export interface ComparativaProgramas {
   programaConMasEstudiantes: string;
   maxSolicitudes: number;
   maxEstudiantes: number;
-  solicitudesPorPrograma: { [programa: string]: number };
-  estudiantesPorPrograma: { [programa: string]: number };
+  solicitudesPorPrograma: Record<string, number>;
+  estudiantesPorPrograma: Record<string, number>;
 }
 
 export interface ResumenEstrategico {

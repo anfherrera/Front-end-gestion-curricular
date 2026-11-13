@@ -36,7 +36,7 @@ const DEFAULTS: FormatoInstitucional[] = [
 })
 export class FormatosInstitucionalesService {
 
-  private cache: Map<FormatoId, FormatoInstitucional> = new Map();
+  private cache = new Map<FormatoId, FormatoInstitucional>();
 
   constructor() {
     this.loadFromStorage();

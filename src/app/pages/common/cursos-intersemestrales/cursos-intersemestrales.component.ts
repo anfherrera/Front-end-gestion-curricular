@@ -1,29 +1,26 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-cursos-intersemestrales-gestion',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
-    MatIconModule, 
-    MatBadgeModule, 
-    MatButtonModule, 
+    CommonModule,
+    RouterModule,
+    MatIconModule,
+    MatBadgeModule,
+    MatButtonModule,
     MatTooltipModule
   ],
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['./cursos-intersemestrales.component.css']
 })
-export class CursosIntersemestralesGestionComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-  
+export class CursosIntersemestralesGestionComponent {
   opciones = [
     { titulo: 'Resumen', ruta: 'dashboard', icon: 'dashboard' },
     { titulo: 'Gestionar Cursos', ruta: 'gestionar', icon: 'settings' },
@@ -31,15 +28,4 @@ export class CursosIntersemestralesGestionComponent implements OnInit, OnDestroy
     { titulo: 'Inscribir Estudiantes', ruta: 'inscribir', icon: 'how_to_reg' },
     { titulo: 'Visualizar Solicitudes', ruta: 'solicitudes', icon: 'list_alt' },
   ];
-
-  constructor() {}
-
-  ngOnInit(): void {
-    // Componente de cursos intersemestrales iniciado
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 }

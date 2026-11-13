@@ -10,7 +10,6 @@ import { environment } from '../../../environments/environment';
 describe('PruebasEcaesService - Pruebas Unitarias', () => {
   let service: PruebasEcaesService;
   let httpMock: HttpTestingController;
-  let loggerSpy: jasmine.SpyObj<LoggerService>;
 
   const apiUrl = `${environment.apiUrl}/solicitudes-ecaes`;
 
@@ -28,7 +27,6 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
     });
     service = TestBed.inject(PruebasEcaesService);
     httpMock = TestBed.inject(HttpTestingController);
-    loggerSpy = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
     spyOn(localStorage, 'getItem').and.returnValue('mock-token');
   });
 

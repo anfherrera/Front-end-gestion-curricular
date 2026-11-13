@@ -346,11 +346,11 @@ export class EstadoFiltersComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   estadosDisponibles: EstadoCurso[] = [];
-  estadoSeleccionado: string = '';
+  estadoSeleccionado = '';
   cursosFiltrados: CursoOfertadoVerano[] = [];
-  conteosEstados: { [key: string]: number } = {};
+  conteosEstados: Record<string, number> = {};
   estadoInfo: EstadoCurso | undefined;
-  cargandoFiltro: boolean = false;
+  cargandoFiltro = false;
 
   constructor(
     private cursoEstadosService: CursoEstadosService,

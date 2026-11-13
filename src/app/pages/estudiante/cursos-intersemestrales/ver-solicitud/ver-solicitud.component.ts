@@ -170,13 +170,13 @@ export class VerSolicitudComponent implements OnInit {
     const esRechazo = this.esEstadoRechazado(actividad.estado);
     this.dialog.open(MotivoRechazoDialogComponent, {
       width: '420px',
-      data: <MotivoRechazoDialogData>{
+      data: {
         titulo: esRechazo ? 'Motivo del rechazo' : 'Observaciones del estado',
         motivo,
         estado: actividad.estado,
         fecha: actividad.fecha,
         esRechazo
-      }
+      } as MotivoRechazoDialogData
     });
   }
 

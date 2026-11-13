@@ -332,7 +332,7 @@ export class CursosIntersemestralesService {
     );
   }
 
-  aceptarInscripcion(idInscripcion: number, observaciones: string = 'Inscripción aceptada'): Observable<RespuestaAccion> {
+  aceptarInscripcion(idInscripcion: number, observaciones = 'Inscripción aceptada'): Observable<RespuestaAccion> {
     return this.http.put<RespuestaAccion>(`${BASE}/inscripciones/${idInscripcion}/aceptar`, { observaciones });
   }
 

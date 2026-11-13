@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of, throwError, map } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { ApiEndpoints } from '../utils/api-endpoints';
 
 export interface HistorialSolicitud {
@@ -27,13 +26,13 @@ export interface HistorialSolicitud {
     rol?: string | null;
     objPrograma?: any | null;
   };
-  estadosSolicitud: Array<{
+  estadosSolicitud: {
     id_estado?: number;
     estado_actual: string;
     fecha_registro_estado: string;
     comentario?: string | null;
-  }>;
-  documentos?: Array<any>;
+  }[];
+  documentos?: any[];
 }
 
 export interface HistorialResponse {
@@ -94,7 +93,7 @@ export class HistorialSolicitudesService {
         params: params.keys().length > 0 ? params : undefined
       }
     ).pipe(
-      catchError(error => {
+      catchError(() => {
         return of({
           solicitudes: [],
           total: 0,
@@ -109,7 +108,7 @@ export class HistorialSolicitudesService {
   /**
    * Obtener tipos de solicitud disponibles
    */
-  getTiposSolicitud(): Array<{ codigo: string; display: string }> {
+  getTiposSolicitud(): { codigo: string; display: string }[] {
     return [
       { codigo: TipoSolicitud.PAZ_SALVO, display: 'Paz y Salvo Académico' },
       { codigo: TipoSolicitud.ECAES, display: 'ECAES' },

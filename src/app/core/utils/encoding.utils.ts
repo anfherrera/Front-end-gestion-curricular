@@ -17,7 +17,7 @@ function corregirEncoding(texto: string): string {
   
   try {
     // Mapeo de caracteres mal codificados comunes
-    const mapeoCaracteres: { [key: string]: string } = {
+    const mapeoCaracteres: Record<string, string> = {
       '\u00C3\u00A9': '\u00E9', // é
       '\u00C3\u00AD': '\u00ED', // í
       '\u00C3\u00B3': '\u00F3', // ó

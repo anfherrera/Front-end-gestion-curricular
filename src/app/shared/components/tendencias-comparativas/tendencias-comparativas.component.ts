@@ -75,7 +75,7 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
           this.loading = false;
           this.mostrarExito('Tendencias y comparativas cargadas correctamente');
         },
-        error: (error) => {
+        error: () => {
           this.loading = false;
           this.error = true;
           this.mostrarError('Error al cargar tendencias y comparativas');

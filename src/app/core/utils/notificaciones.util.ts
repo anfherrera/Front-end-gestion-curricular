@@ -2,14 +2,14 @@
  * Utilidades para el sistema de notificaciones
  */
 
-import { Notificacion, TipoNotificacion, TipoSolicitud } from '../models/notificaciones.model';
+import { Notificacion } from '../models/notificaciones.model';
 import { fechaRelativa } from './fecha.util';
 
 /**
  * Obtiene el icono de Material Icons por tipo de notificación
  */
 export function getIconByTipoNotificacion(tipoNotificacion: string): string {
-  const iconos: { [key: string]: string } = {
+  const iconos: Record<string, string> = {
     'NUEVA_SOLICITUD': 'add_circle',
     'CAMBIO_ESTADO': 'update',
     'APROBADA': 'check_circle',
@@ -23,7 +23,7 @@ export function getIconByTipoNotificacion(tipoNotificacion: string): string {
  * Obtiene el icono de Material Icons por tipo de solicitud
  */
 export function getIconByTipoSolicitud(tipoSolicitud: string): string {
-  const iconos: { [key: string]: string } = {
+  const iconos: Record<string, string> = {
     'CURSO_VERANO_PREINSCRIPCION': 'school',
     'CURSO_VERANO_INSCRIPCION': 'school',
     'ECAES': 'quiz',
@@ -39,7 +39,7 @@ export function getIconByTipoSolicitud(tipoSolicitud: string): string {
  */
 export function getColorByTipoSolicitud(tipoSolicitud: string): string {
   // Colores institucionales - Sistema de Diseño TIC Universidad del Cauca
-  const colores: { [key: string]: string } = {
+  const colores: Record<string, string> = {
     'CURSO_VERANO_PREINSCRIPCION': '#1D72D3',
     'CURSO_VERANO_INSCRIPCION': '#000066',
     'ECAES': '#FF6D0A',
@@ -54,7 +54,7 @@ export function getColorByTipoSolicitud(tipoSolicitud: string): string {
  * Obtiene el nombre de categoría para mostrar
  */
 export function getCategoriaDisplay(tipoSolicitud: string): string {
-  const categorias: { [key: string]: string } = {
+  const categorias: Record<string, string> = {
     'CURSO_VERANO_PREINSCRIPCION': 'Cursos Intersemestrales',
     'CURSO_VERANO_INSCRIPCION': 'Cursos Intersemestrales',
     'ECAES': 'Pruebas ECAES',

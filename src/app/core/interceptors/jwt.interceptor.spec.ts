@@ -135,7 +135,8 @@ describe('Seguridad - JWT Interceptor', () => {
       // El interceptor intenta procesar el token
       // Si falla el parsing, el token simplemente no se incluye
       httpClient.get('/api/test').subscribe(
-        () => {},
+        () => { // el resultado no importa aquí
+        },
         (error) => {
           // Puede haber error al decodificar
           expect(error).toBeTruthy();

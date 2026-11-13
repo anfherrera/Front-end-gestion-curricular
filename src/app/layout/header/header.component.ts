@@ -32,12 +32,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Output() toggleSidebar = new EventEmitter<void>();
 
   isSidebarOpen = true;
-  userName: string = '';
-  userEmail: string = '';
-  userInitials: string = 'U'; // CACHEAR para evitar recalcular en cada ciclo
-  userRole: string = 'Usuario'; // CACHEAR
+  userName = '';
+  userEmail = '';
+  userInitials = 'U'; // CACHEAR para evitar recalcular en cada ciclo
+  userRole = 'Usuario'; // CACHEAR
   periodoActual: PeriodoAcademico | null = null;
-  periodoFormateado: string = '';
+  periodoFormateado = '';
   private periodoSubscription?: Subscription;
 
   constructor(
@@ -89,7 +89,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
               this.cdr.markForCheck();
             }
           },
-          error: (error) => {
+          error: () => {
             this.periodoFormateado = '';
             this.cdr.markForCheck();
           }

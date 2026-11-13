@@ -28,7 +28,10 @@
       class="notificacion-item"
       [class.no-leida]="!notificacion.leida"
       [class.urgente]="notificacion.esUrgente"
-      (click)="marcarComoLeida(notificacion)">
+      tabindex="0"
+      role="button"
+      (click)="marcarComoLeida(notificacion)"
+      (keydown.enter)="marcarComoLeida(notificacion)">
       
       <!-- Indicador de no leída -->
       <div *ngIf="!notificacion.leida" class="indicador-no-leida"></div>

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DocumentRequest, DocumentTemplate } from '../../shared/components/document-generator/document-generator.component';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
+import { Document, Packer, Paragraph, TextRun, AlignmentType } from 'docx';
 import { descargarBlob } from '../utils/download.util';
 import { environment } from '../../../environments/environment';
 import { formatearFecha } from '../utils/fecha.util';
@@ -111,12 +111,12 @@ export class DocumentGeneratorService {
 
           // Guardar en la base de datos
           this.guardarDocumentoEnBD(request, blob).subscribe({
-            next: (response) => {
+            next: () => {
               // Documento guardado en BD
               observer.next(blob);
               observer.complete();
             },
-            error: (error) => {
+            error: () => {
               // Aún así devolver el blob para descarga
               observer.next(blob);
               observer.complete();
@@ -822,7 +822,7 @@ export class DocumentGeneratorService {
   /**
    * Obtener plantillas predefinidas (para uso local)
    */
-  getTemplatesPredefinidos(): { [key: string]: DocumentTemplate[] } {
+  getTemplatesPredefinidos(): Record<string, DocumentTemplate[]> {
     return {
       homologacion: [
         {

@@ -41,17 +41,17 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   solicitudesAprobadas: any[] = [];
   selectedSolicitud?: SolicitudHomologacionDTORespuesta;
   template!: DocumentTemplate;
-  loading: boolean = false;
-  cargandoSolicitudesAprobadas: boolean = false;
+  loading = false;
+  cargandoSolicitudesAprobadas = false;
 
   // Nuevas propiedades para el flujo de PDF
-  documentoGenerado: boolean = false;
+  documentoGenerado = false;
   archivoPDF: File | null = null;
-  subiendoPDF: boolean = false;
-  enviandoPDF: boolean = false;
+  subiendoPDF = false;
+  enviandoPDF = false;
 
   // Nueva propiedad para controlar la habilitación del generador de documentos
-  documentoHabilitado: boolean = false;
+  documentoHabilitado = false;
 
   private destroy$ = new Subject<void>();
 

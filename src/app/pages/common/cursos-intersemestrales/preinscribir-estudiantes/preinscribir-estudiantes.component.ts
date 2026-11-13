@@ -207,7 +207,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
         
         this.snackbar.exito('Observaciones guardadas exitosamente');
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al guardar las observaciones');
       }
     });
@@ -368,7 +368,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
   /**
    * Verificar si se puede ver los detalles de una preinscripción
    */
-  puedeVerDetalles(solicitud: SolicitudCursoVerano): boolean {
+  puedeVerDetalles(_solicitud: SolicitudCursoVerano): boolean {
     // Todos los funcionarios pueden ver detalles
     return this.puedeGestionarPreinscripciones();
   }

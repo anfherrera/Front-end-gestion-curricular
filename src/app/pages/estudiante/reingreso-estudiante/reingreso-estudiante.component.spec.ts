@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -16,8 +16,6 @@ describe('ReingresoEstudianteComponent', () => {
   let component: ReingresoEstudianteComponent;
   let fixture: ComponentFixture<ReingresoEstudianteComponent>;
   let reingresoService: jasmine.SpyObj<ReingresoEstudianteService>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
-  let dialog: jasmine.SpyObj<MatDialog>;
   let compiled: HTMLElement;
 
   const mockUsuario = {
@@ -61,8 +59,6 @@ describe('ReingresoEstudianteComponent', () => {
     }).compileComponents();
 
     reingresoService = TestBed.inject(ReingresoEstudianteService) as jasmine.SpyObj<ReingresoEstudianteService>;
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-    dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
 
     window.localStorage.setItem('usuario', JSON.stringify(mockUsuario));
 

@@ -10,7 +10,6 @@ import { ApiEndpoints } from '../utils/api-endpoints';
 import { AuthService } from '../services/auth.service';
 import { ActivityMonitorService } from '../services/activity-monitor.service';
 import { UserRole } from '../enums/roles.enum';
-import { of } from 'rxjs';
 
 describe('Seguridad - Manejo de sesiones', () => {
   let authService: AuthService;

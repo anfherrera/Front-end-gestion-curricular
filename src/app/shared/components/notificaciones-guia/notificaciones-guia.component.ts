@@ -16,8 +16,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
   notificaciones: Notificacion[] = [];
-  contadorNoLeidas: number = 0;
-  usuarioId: number = 0;
+  contadorNoLeidas = 0;
+  usuarioId = 0;
   private intervaloSubscription?: Subscription;
 
   constructor(
@@ -79,7 +79,7 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
         next: (count) => {
           this.contadorNoLeidas = count;
         },
-        error: (error) => {
+        error: () => {
           // Error silenciado
         }
       });
@@ -96,7 +96,7 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
           notificacion.leida = true;
           this.actualizarContador();
         },
-        error: (error) => {
+        error: () => {
           // Error silenciado
         }
       });
@@ -111,7 +111,7 @@ export class NotificacionesGuiaComponent implements OnInit, OnDestroy {
           this.notificaciones.forEach(n => n.leida = true);
           this.contadorNoLeidas = 0;
         },
-        error: (error) => {
+        error: () => {
           // Error silenciado
         }
       });

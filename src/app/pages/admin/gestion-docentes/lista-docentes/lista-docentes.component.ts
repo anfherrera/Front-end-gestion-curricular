@@ -64,7 +64,7 @@ export class ListaDocentesComponent implements OnInit {
         this.docentes = corregirEncodingObjeto(data);
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al cargar la lista de docentes');
         this.loading = false;
       }
@@ -83,7 +83,7 @@ export class ListaDocentesComponent implements OnInit {
         this.docentes = corregirEncodingObjeto(data);
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al buscar docentes');
         this.loading = false;
       }

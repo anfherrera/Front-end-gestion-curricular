@@ -238,7 +238,7 @@ describe('ModuloEstadisticoComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
       
-      let dashboardStub = compiled.querySelector('.dashboard-stub');
+      const dashboardStub = compiled.querySelector('.dashboard-stub');
       expect(dashboardStub).toBeTruthy();
       
       // Cambiar a segunda pestaña

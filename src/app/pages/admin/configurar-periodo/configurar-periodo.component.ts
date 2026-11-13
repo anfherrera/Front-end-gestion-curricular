@@ -76,7 +76,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
           });
         }
       },
-      error: (error) => {
+      error: () => {
         this.snackbar.error('Error al cargar la configuración actual');
       }
     });
@@ -98,7 +98,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
         this.periodosDisponibles = periodos;
         this.cargando = false;
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
         this.snackbar.error('Error al cargar los períodos disponibles');
       }
@@ -129,7 +129,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
         }
         this.guardando = false;
       },
-      error: (error) => {
+      error: () => {
         this.snackbar.error('Error al guardar la configuración');
         this.guardando = false;
       }

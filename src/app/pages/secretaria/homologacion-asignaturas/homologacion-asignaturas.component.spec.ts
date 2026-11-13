@@ -12,7 +12,6 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 describe('HomologacionAsignaturasComponent (Secretaria)', () => {
   let component: HomologacionAsignaturasComponent;
   let fixture: ComponentFixture<HomologacionAsignaturasComponent>;
-  let homologacionService: jasmine.SpyObj<HomologacionAsignaturasService>;
 
   beforeEach(async () => {
     const homologacionServiceSpy = jasmine.createSpyObj('HomologacionAsignaturasService', [
@@ -37,7 +36,6 @@ describe('HomologacionAsignaturasComponent (Secretaria)', () => {
       ]
     }).compileComponents();
 
-    homologacionService = TestBed.inject(HomologacionAsignaturasService) as jasmine.SpyObj<HomologacionAsignaturasService>;
     fixture = TestBed.createComponent(HomologacionAsignaturasComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

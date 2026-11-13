@@ -105,7 +105,8 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
           this.totalCursosActivos = cursos.length;
           this.calcularEstadisticasCursos(cursos);
         },
-        error: (error) => {
+        error: () => {
+          // Sin cursos: el resumen se queda con los contadores en cero
         }
       });
   }

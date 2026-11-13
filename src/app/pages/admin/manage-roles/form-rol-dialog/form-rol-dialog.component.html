@@ -12,7 +12,7 @@
         formControlName="nombre"
         placeholder="Ej: Administrador"
         [disabled]="loading"
-        autofocus
+       
       >
       <mat-icon matPrefix>admin_panel_settings</mat-icon>
       <mat-error *ngIf="nombre?.hasError('required')">

@@ -13,7 +13,6 @@ import { MatCardModule } from '@angular/material/card';
 import { UsuariosService } from '../../../../core/services/usuarios.service';
 import { RolesAdminService } from '../../../../core/services/roles-admin.service';
 import { ProgramasService } from '../../../../core/services/programas.service';
-import { UsuarioDTOPeticion } from '../../../../core/models/usuario.interface';
 import { corregirEncodingObjeto } from '../../../../core/utils/encoding.utils';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
 
@@ -95,7 +94,7 @@ export class FormUsuarioComponent implements OnInit {
       next: (data) => {
         this.roles = corregirEncodingObjeto(data);
       },
-      error: (err: any) => {
+      error: () => {
         this.snackbar.error('Error al cargar roles');
       }
     });
@@ -106,7 +105,7 @@ export class FormUsuarioComponent implements OnInit {
       next: (data) => {
         this.programas = corregirEncodingObjeto(data);
       },
-      error: (err: any) => {
+      error: () => {
         this.snackbar.error('Error al cargar programas');
       }
     });
@@ -139,7 +138,7 @@ export class FormUsuarioComponent implements OnInit {
         // Mostrar mensaje informativo
         this.snackbar.exito('Usuario cargado correctamente. Modifique los campos que desee actualizar.');
       },
-      error: (err: any) => {
+      error: () => {
         this.snackbar.error('Error al cargar usuario');
         this.router.navigate(['/admin/manage-users']);
         this.loading = false;
@@ -195,7 +194,7 @@ export class FormUsuarioComponent implements OnInit {
 
   private crearUsuario(data: any): void {
     this.usuariosService.crearUsuario(data).subscribe({
-      next: (response) => {
+      next: () => {
         // Usuario creado
         this.snackbar.exito('Usuario creado exitosamente');
         this.router.navigate(['/admin/manage-users']);
@@ -210,7 +209,7 @@ export class FormUsuarioComponent implements OnInit {
 
   private actualizarUsuario(data: any): void {
     this.usuariosService.actualizarUsuario(data).subscribe({
-      next: (response) => {
+      next: () => {
         // Usuario actualizado
         this.snackbar.exito('Usuario actualizado exitosamente');
         this.router.navigate(['/admin/manage-users']);

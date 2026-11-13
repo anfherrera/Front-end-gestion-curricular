@@ -12,7 +12,7 @@ type Solicitudes = Observable<SolicitudHomologacionDTORespuesta[]>;
 /** Respuesta de /obtenerComentarios: solo trae los comentarios que existen. */
 export interface ComentariosPazSalvo {
   comentarioRechazo?: string;
-  documentosConComentarios?: Array<{ id: number; nombre: string; comentario: string }>;
+  documentosConComentarios?: { id: number; nombre: string; comentario: string }[];
   mensaje?: string;
 }
 

@@ -42,10 +42,10 @@ export class RequiredDocsComponent {
   @Input() archivos: Archivo[] = [];
   
   /** Nombre del programa del estudiante */
-  @Input() programaEstudiante: string = '';
+  @Input() programaEstudiante = '';
   
   /** Indica si es para el proceso de Paz y Salvo */
-  @Input() esPazYSalvo: boolean = false;
+  @Input() esPazYSalvo = false;
 
   get esTelematica(): boolean {
     if (!this.programaEstudiante) return false;

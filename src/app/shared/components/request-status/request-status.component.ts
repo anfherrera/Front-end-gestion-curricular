@@ -37,10 +37,10 @@ import { normalizarEstado } from '../../../core/utils/estado-solicitud.util';
 })
 export class RequestStatusTableComponent implements OnInit {
   @Input() solicitudes: Solicitud[] = [];
-  @Input() showOficio: boolean = true;
-  @Input() showComentarios: boolean = false;
-  @Input() showSeleccionar: boolean = false;
-  @Input() headerAcciones: string = 'Oficio/Resolución';
+  @Input() showOficio = true;
+  @Input() showComentarios = false;
+  @Input() showSeleccionar = false;
+  @Input() headerAcciones = 'Oficio/Resolución';
   @Output() verComentarios = new EventEmitter<number>();
   @Output() solicitudSeleccionada = new EventEmitter<number | null>();
   @Output() descargarOficio = new EventEmitter<{id: number, nombreArchivo: string}>();

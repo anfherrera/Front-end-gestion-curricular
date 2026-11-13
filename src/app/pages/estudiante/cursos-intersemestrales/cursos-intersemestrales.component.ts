@@ -50,7 +50,7 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
         filter(event => event instanceof NavigationEnd),
         takeUntil(this.destroy$)
       )
-      .subscribe((event: NavigationEnd) => {
+      .subscribe(() => {
         // Navegación completada
       });
   }

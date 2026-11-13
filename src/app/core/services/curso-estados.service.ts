@@ -9,11 +9,7 @@ export interface EstadoCurso {
   descripcion: string;
 }
 
-export interface PermisosEstado {
-  [estado: string]: {
-    [rol: string]: string[];
-  };
-}
+export type PermisosEstado = Record<string, Record<string, string[]>>;
 
 export interface TransicionEstado {
   desde: string;
@@ -180,7 +176,7 @@ export class CursoEstadosService {
   /**
    * Genera mensaje de error para transición inválida
    */
-  getMensajeErrorTransicion(estadoActual: string, nuevoEstado: string): string {
+  getMensajeErrorTransicion(estadoActual: string, _nuevoEstado: string): string {
     const estadosPermitidos = this.getEstadosPermitidos(estadoActual);
     
     if (estadosPermitidos.length === 0) {

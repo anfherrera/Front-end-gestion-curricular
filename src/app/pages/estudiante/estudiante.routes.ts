@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../../core/guards/auth.guard';
-import { CommonRoutes } from '../common/common.routes';
 
 export const EstudianteRoutes: Routes = [
   {

@@ -15,7 +15,6 @@ describe('LoginComponent - Pruebas Unitarias', () => {
   let authService: jasmine.SpyObj<AuthService>;
   let router: jasmine.SpyObj<Router>;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
-  let compiled: HTMLElement;
 
   const mockUsuario = {
     id_usuario: 1,
@@ -61,7 +60,6 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    compiled = fixture.nativeElement as HTMLElement;
     fixture.detectChanges();
   });
 

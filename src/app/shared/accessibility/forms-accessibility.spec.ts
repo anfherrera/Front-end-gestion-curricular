@@ -4,9 +4,8 @@
 
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
-import { Component, DebugElement } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { By } from '@angular/platform-browser';
 
 // Componente de prueba con formulario típico
 @Component({

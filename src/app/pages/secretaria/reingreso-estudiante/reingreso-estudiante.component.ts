@@ -53,17 +53,17 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   solicitudesAprobadas: any[] = [];
   selectedSolicitud?: SolicitudReingresoDTORespuesta;
   template!: DocumentTemplate;
-  loading: boolean = false;
-  cargandoSolicitudesAprobadas: boolean = false;
+  loading = false;
+  cargandoSolicitudesAprobadas = false;
 
 
-  documentoGenerado: boolean = false;
+  documentoGenerado = false;
   archivoPDF: File | null = null;
-  subiendoPDF: boolean = false;
-  enviandoPDF: boolean = false;
+  subiendoPDF = false;
+  enviandoPDF = false;
 
 
-  documentoHabilitado: boolean = false;
+  documentoHabilitado = false;
 
   private destroy$ = new Subject<void>();
 
@@ -594,21 +594,21 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
         this.snackbar.exito('Oficio descargado correctamente');
       },
-      error: (err) => this.snackbar.error('Error al descargar oficio')
+      error: () => this.snackbar.error('Error al descargar oficio')
     });
   }
 
   agregarComentario(documento: DocumentosDTORespuesta): void {
     const dialogRef = this.dialog.open(TextoDialogComponent, {
       width: '450px',
-      data: <TextoDialogData>{
+      data: {
         titulo: 'Comentario sobre documento',
         descripcion: 'Añadir comentario para el documento:',
         etiqueta: 'Comentario sobre el documento',
         nombreDocumento: documento.nombre,
         textoConfirmar: 'Añadir comentario',
         icono: 'comment'
-      }
+      } as TextoDialogData
     });
 
     dialogRef.afterClosed().pipe(
@@ -622,7 +622,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
             this.snackbar.exito('Comentario actualizado correctamente');
             this.cargarSolicitudes();
           },
-          error: (err: any) => {
+          error: () => {
             this.snackbar.error('Error al añadir comentario');
           }
         });

@@ -159,7 +159,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
             this.selectedSolicitud = null;
             this.requestStatusTable?.resetSelection();
           },
-          error: (err) => {
+          error: () => {
             this.snackbar.advertencia('Solicitud aprobada, pero error al actualizar documentos');
             this.cargarSolicitudes();
             // Limpiar la selección para actualizar el card de documentación
@@ -210,7 +210,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
                 this.selectedSolicitud = null;
                 this.requestStatusTable?.resetSelection();
               },
-              error: (err) => {
+              error: () => {
                 this.snackbar.advertencia('Solicitud rechazada, pero error al actualizar documentos');
                 this.cargarSolicitudes();
                 // Limpiar la selección para actualizar el card de documentación

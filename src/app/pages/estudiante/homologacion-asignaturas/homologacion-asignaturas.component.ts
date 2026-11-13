@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
-import { Archivo, SolicitudHomologacionDTORespuesta, DocumentoHomologacion } from '../../../core/models/procesos.model';
+import { Archivo, SolicitudHomologacionDTORespuesta } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
 import { FileUploadComponent } from "../../../shared/components/file-upload-dialog/file-upload-dialog.component";
 import { RequiredDocsComponent } from "../../../shared/components/required-docs/required-docs.component";
@@ -431,11 +431,11 @@ verComentarios(solicitudId: number): void {
 
   const dialogRef = this.dialog.open(VerComentariosDialogComponent, {
     width: '700px',
-    data: <VerComentariosDialogData>{
+    data: {
       titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
       documentos: solicitudCompleta.documentos,
       comentarioRechazo: comentarioRechazo
-    }
+    } as VerComentariosDialogData
   });
 
   dialogRef.afterClosed()

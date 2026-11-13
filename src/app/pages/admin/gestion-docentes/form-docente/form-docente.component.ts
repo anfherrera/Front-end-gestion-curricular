@@ -79,7 +79,7 @@ export class FormDocenteComponent implements OnInit {
         });
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al cargar los datos del docente');
         this.router.navigate(['/admin/docentes']);
         this.loading = false;

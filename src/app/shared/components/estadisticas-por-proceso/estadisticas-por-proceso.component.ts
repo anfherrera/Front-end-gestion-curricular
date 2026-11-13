@@ -391,7 +391,7 @@ interface ProcesoData {
   `]
 })
 export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() autoLoad: boolean = true;
+  @Input() autoLoad = true;
   @Input() periodoAcademico?: string;
   @Input() idPrograma?: number;
   
@@ -473,7 +473,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   }
 
   private formatearNombreProceso(nombre: string): string {
-    const nombres: { [key: string]: string } = {
+    const nombres: Record<string, string> = {
       'reingreso': 'Reingreso de Estudiante',
       'homologacion': 'Homologación de Asignaturas',
       'cursos-intersemestrales': 'Cursos Intersemestrales',
@@ -485,7 +485,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   }
 
   getProcesoClass(nombre: string): string {
-    const clases: { [key: string]: string } = {
+    const clases: Record<string, string> = {
       'reingreso': 'reingreso',
       'homologacion': 'homologacion',
       'cursos-intersemestrales': 'cursos',
@@ -497,7 +497,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   }
 
   getProcesoIcon(nombre: string): string {
-    const iconos: { [key: string]: string } = {
+    const iconos: Record<string, string> = {
       'reingreso': 'person_add',
       'homologacion': 'swap_horiz',
       'cursos-intersemestrales': 'school',

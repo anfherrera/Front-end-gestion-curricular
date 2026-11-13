@@ -64,7 +64,7 @@ export class ListaProgramasComponent implements OnInit {
         this.programas = corregirEncodingObjeto(data);
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al cargar la lista de programas');
         this.loading = false;
       }
@@ -83,7 +83,7 @@ export class ListaProgramasComponent implements OnInit {
         this.programas = corregirEncodingObjeto(data);
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al buscar programas');
         this.loading = false;
       }

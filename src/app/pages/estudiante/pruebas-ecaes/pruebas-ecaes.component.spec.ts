@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -19,7 +19,6 @@ describe('PruebasEcaesComponent', () => {
   let fixture: ComponentFixture<PruebasEcaesComponent>;
   let pruebasEcaesService: jasmine.SpyObj<PruebasEcaesService>;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
-  let dialog: jasmine.SpyObj<MatDialog>;
   let errorHandler: jasmine.SpyObj<ErrorHandlerService>;
   let compiled: HTMLElement;
 
@@ -83,7 +82,6 @@ describe('PruebasEcaesComponent', () => {
 
     pruebasEcaesService = TestBed.inject(PruebasEcaesService) as jasmine.SpyObj<PruebasEcaesService>;
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-    dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
     errorHandler = TestBed.inject(ErrorHandlerService) as jasmine.SpyObj<ErrorHandlerService>;
 
     pruebasEcaesService.listarFechasEcaes.and.returnValue(of(mockFechasEcaes as any));

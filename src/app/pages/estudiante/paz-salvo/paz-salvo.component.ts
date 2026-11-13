@@ -369,12 +369,12 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
         this.dialog.open(VerComentariosDialogComponent, {
           width: '700px',
-          data: <VerComentariosDialogData>{
+          data: {
             titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
             documentos,
             comentarioRechazo: comentarios.comentarioRechazo || null,
             mensaje: comentarios.mensaje || undefined
-          }
+          } as VerComentariosDialogData
         });
       },
       error: () => this.snackbar.error('Error al cargar los comentarios')

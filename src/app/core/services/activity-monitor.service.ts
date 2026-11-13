@@ -28,7 +28,7 @@ export class ActivityMonitorService implements OnDestroy {
   private readonly dialog = inject(MatDialog);
   private avisoRef: MatDialogRef<ConfirmDialogComponent, boolean> | null = null;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {
     // Solo iniciar monitoreo en el navegador
     if (isPlatformBrowser(this.platformId)) {
       this.startMonitoring();

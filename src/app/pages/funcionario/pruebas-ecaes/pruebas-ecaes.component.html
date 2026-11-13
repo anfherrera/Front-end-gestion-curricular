@@ -117,9 +117,9 @@
 
         <!-- Inscripción de estudiantes por parte de la Facultad -->
         <div class="fecha-item">
-          <label class="fecha-label">Inscripción de estudiantes por parte de la Facultad</label>
+          <label class="fecha-label" for="ecaes-inscripcion_est_by_facultad">Inscripción de estudiantes por parte de la Facultad</label>
           <mat-form-field appearance="outline" class="fecha-field">
-            <input matInput [matDatepicker]="inscripcionPicker" formControlName="inscripcion_est_by_facultad">
+            <input matInput id="ecaes-inscripcion_est_by_facultad" [matDatepicker]="inscripcionPicker" formControlName="inscripcion_est_by_facultad">
             <mat-datepicker-toggle matSuffix [for]="inscripcionPicker"></mat-datepicker-toggle>
             <mat-datepicker #inscripcionPicker></mat-datepicker>
             <mat-error *ngIf="esCampoInvalido('inscripcion_est_by_facultad')">
@@ -130,9 +130,9 @@
 
         <!-- Registro y recaudo ordinario -->
         <div class="fecha-item">
-          <label class="fecha-label">Registro y recaudo ordinario</label>
+          <label class="fecha-label" for="ecaes-registro_recaudo_ordinario">Registro y recaudo ordinario</label>
           <mat-form-field appearance="outline" class="fecha-field">
-            <input matInput [matDatepicker]="recaudoOrdinarioPicker" formControlName="registro_recaudo_ordinario">
+            <input matInput id="ecaes-registro_recaudo_ordinario" [matDatepicker]="recaudoOrdinarioPicker" formControlName="registro_recaudo_ordinario">
             <mat-datepicker-toggle matSuffix [for]="recaudoOrdinarioPicker"></mat-datepicker-toggle>
             <mat-datepicker #recaudoOrdinarioPicker></mat-datepicker>
             <mat-error *ngIf="esCampoInvalido('registro_recaudo_ordinario')">
@@ -143,9 +143,9 @@
 
         <!-- Registro y recaudo extraordinario -->
         <div class="fecha-item">
-          <label class="fecha-label">Registro y recaudo extraordinario</label>
+          <label class="fecha-label" for="ecaes-registro_recaudo_extraordinario">Registro y recaudo extraordinario</label>
           <mat-form-field appearance="outline" class="fecha-field">
-            <input matInput [matDatepicker]="recaudoExtraordinarioPicker" formControlName="registro_recaudo_extraordinario">
+            <input matInput id="ecaes-registro_recaudo_extraordinario" [matDatepicker]="recaudoExtraordinarioPicker" formControlName="registro_recaudo_extraordinario">
             <mat-datepicker-toggle matSuffix [for]="recaudoExtraordinarioPicker"></mat-datepicker-toggle>
             <mat-datepicker #recaudoExtraordinarioPicker></mat-datepicker>
             <mat-error *ngIf="esCampoInvalido('registro_recaudo_extraordinario')">
@@ -156,9 +156,9 @@
 
         <!-- Citación -->
         <div class="fecha-item">
-          <label class="fecha-label">Citación</label>
+          <label class="fecha-label" for="ecaes-citacion">Citación</label>
           <mat-form-field appearance="outline" class="fecha-field">
-            <input matInput [matDatepicker]="citacionPicker" formControlName="citacion">
+            <input matInput id="ecaes-citacion" [matDatepicker]="citacionPicker" formControlName="citacion">
             <mat-datepicker-toggle matSuffix [for]="citacionPicker"></mat-datepicker-toggle>
             <mat-datepicker #citacionPicker></mat-datepicker>
             <mat-error *ngIf="esCampoInvalido('citacion')">
@@ -169,9 +169,9 @@
 
         <!-- Aplicación -->
         <div class="fecha-item">
-          <label class="fecha-label">Aplicación</label>
+          <label class="fecha-label" for="ecaes-aplicacion">Aplicación</label>
           <mat-form-field appearance="outline" class="fecha-field">
-            <input matInput [matDatepicker]="aplicacionPicker" formControlName="aplicacion">
+            <input matInput id="ecaes-aplicacion" [matDatepicker]="aplicacionPicker" formControlName="aplicacion">
             <mat-datepicker-toggle matSuffix [for]="aplicacionPicker"></mat-datepicker-toggle>
             <mat-datepicker #aplicacionPicker></mat-datepicker>
             <mat-error *ngIf="esCampoInvalido('aplicacion')">
@@ -182,9 +182,9 @@
 
         <!-- Resultados individuales -->
         <div class="fecha-item">
-          <label class="fecha-label">Resultados individuales</label>
+          <label class="fecha-label" for="ecaes-resultados_individuales">Resultados individuales</label>
           <mat-form-field appearance="outline" class="fecha-field">
-            <input matInput [matDatepicker]="resultadosPicker" formControlName="resultados_individuales">
+            <input matInput id="ecaes-resultados_individuales" [matDatepicker]="resultadosPicker" formControlName="resultados_individuales">
             <mat-datepicker-toggle matSuffix [for]="resultadosPicker"></mat-datepicker-toggle>
             <mat-datepicker #resultadosPicker></mat-datepicker>
             <mat-error *ngIf="esCampoInvalido('resultados_individuales')">

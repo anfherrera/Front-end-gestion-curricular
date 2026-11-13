@@ -13,7 +13,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
   let routerEventsSubject: Subject<any>;
 
   // Métricas de usabilidad
-  let metricasUsabilidad = {
+  const metricasUsabilidad = {
     tiemposRespuesta: [] as number[],
     elementosVisibles: 0,
     navegacionesExitosas: 0,

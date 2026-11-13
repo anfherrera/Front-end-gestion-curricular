@@ -102,7 +102,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   // Validador personalizado para correos de Unicauca
-  private unicaucaEmailValidator(control: AbstractControl): {[key: string]: any} | null {
+  private unicaucaEmailValidator(control: AbstractControl): Record<string, any> | null {
     const email = control.value;
     if (!email) return null;
     
@@ -118,7 +118,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     if (this.loginForm.valid) {
-      const { correo, password, remember } = this.loginForm.value;
+      const { correo, password } = this.loginForm.value;
       this.cargando = true;
       this.errorMensaje = '';
 

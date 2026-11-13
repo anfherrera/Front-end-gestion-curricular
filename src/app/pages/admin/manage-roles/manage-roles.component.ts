@@ -13,7 +13,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { RolesAdminService } from '../../../core/services/roles-admin.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { RolDTORespuesta, RolDTOPeticion } from '../../../core/models/rol.interface';
+import { RolDTORespuesta } from '../../../core/models/rol.interface';
 import { FormRolDialogComponent } from './form-rol-dialog/form-rol-dialog.component';
 import { corregirEncodingObjeto } from '../../../core/utils/encoding.utils';
 import { confirmar } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -63,7 +63,7 @@ export class ManageRolesComponent implements OnInit {
         this.roles = corregirEncodingObjeto(data);
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('Error al cargar la lista de roles');
         this.loading = false;
       }
@@ -82,7 +82,7 @@ export class ManageRolesComponent implements OnInit {
         this.roles = data ? [data] : [];
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackbar.error('No se encontró el rol');
         this.loading = false;
       }

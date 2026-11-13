@@ -21,15 +21,15 @@ import { RequestStatusTableComponent } from '../request-status/request-status.co
   styleUrls: ['./approved-requests-section.component.css']
 })
 export class ApprovedRequestsSectionComponent {
-  @Input() title: string = 'Solicitudes aprobadas';
-  @Input() icon: string = 'task_alt';
+  @Input() title = 'Solicitudes aprobadas';
+  @Input() icon = 'task_alt';
   @Input() solicitudes: any[] = [];
-  @Input() loading: boolean = false;
-  @Input() emptyMessage: string = 'No hay solicitudes aprobadas todavía.';
-  @Input() allowToggle: boolean = true;
+  @Input() loading = false;
+  @Input() emptyMessage = 'No hay solicitudes aprobadas todavía.';
+  @Input() allowToggle = true;
 
-  private _initiallyExpanded: boolean = true;
-  showContent: boolean = true;
+  private _initiallyExpanded = true;
+  showContent = true;
 
   @Input()
   set initiallyExpanded(value: boolean) {

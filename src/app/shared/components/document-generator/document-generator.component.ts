@@ -54,8 +54,8 @@ export class DocumentGeneratorComponent implements OnInit {
   @Input() solicitud!: any; // Datos de la solicitud
   @Input() template!: DocumentTemplate; // Plantilla del documento
   @Input() proceso!: string; // Tipo de proceso (homologacion, paz-salvo, etc.)
-  @Input() loading: boolean = false;
-  @Input() mostrarObservaciones: boolean = true;
+  @Input() loading = false;
+  @Input() mostrarObservaciones = true;
 
   @Output() generarDocumento = new EventEmitter<DocumentRequest>();
   @Output() cancelar = new EventEmitter<void>();
@@ -211,7 +211,7 @@ export class DocumentGeneratorComponent implements OnInit {
   }
 
   getFieldLabel(fieldName: string): string {
-    const labels: { [key: string]: string } = {
+    const labels: Record<string, string> = {
       numeroDocumento: 'Número de documento',
       fechaDocumento: 'Fecha del documento',
       observaciones: 'Observaciones'
@@ -225,7 +225,7 @@ export class DocumentGeneratorComponent implements OnInit {
   }
 
   getTemplateIcon(): string {
-    const icons: { [key: string]: string } = {
+    const icons: Record<string, string> = {
       'OFICIO_HOMOLOGACION': 'description',
       'PAZ_SALVO': 'verified_user',
       'RESOLUCION_REINGRESO': 'assignment_turned_in'
@@ -234,7 +234,7 @@ export class DocumentGeneratorComponent implements OnInit {
   }
 
   getFieldPlaceholder(fieldName: string): string {
-    const placeholders: { [key: string]: string } = {
+    const placeholders: Record<string, string> = {
       'observaciones': 'Observaciones adicionales...',
       'semestre': 'Ej: 2024-1',
       'motivoReingreso': 'Motivo del reingreso...'
@@ -243,7 +243,7 @@ export class DocumentGeneratorComponent implements OnInit {
   }
 
   getFieldIcon(fieldName: string): string {
-    const icons: { [key: string]: string } = {
+    const icons: Record<string, string> = {
       'observaciones': 'note',
       'semestre': 'calendar_today',
       'motivoReingreso': 'help_outline'

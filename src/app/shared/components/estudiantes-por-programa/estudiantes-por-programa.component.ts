@@ -295,12 +295,12 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '../../../core/mode
   `]
 })
 export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() autoLoad: boolean = true;
+  @Input() autoLoad = true;
   @Input() periodoAcademico?: string;
   @Input() idPrograma?: number;
   
   programasData: ProgramaData[] = [];
-  totalEstudiantes: number = 0;
+  totalEstudiantes = 0;
   fechaConsulta: string | null = null;
   loading = false;
   error: string | null = null;
@@ -348,7 +348,7 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
           this.totalEstudiantes = this.calcularTotalEstudiantes(response.estudiantesPorPrograma);
           this.loading = false;
         },
-        error: (error) => {
+        error: () => {
           this.loading = false;
           this.error = 'Error al cargar datos de estudiantes por programa';
         }
@@ -357,7 +357,7 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
     this.subscription.add(sub);
   }
 
-  private procesarDatos(estudiantesPorPrograma: { [programa: string]: number }): ProgramaData[] {
+  private procesarDatos(estudiantesPorPrograma: Record<string, number>): ProgramaData[] {
     const total = this.calcularTotalEstudiantes(estudiantesPorPrograma);
     
     return Object.entries(estudiantesPorPrograma)
@@ -369,7 +369,7 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
       .sort((a, b) => b.cantidad - a.cantidad);
   }
 
-  private calcularTotalEstudiantes(estudiantesPorPrograma: { [programa: string]: number }): number {
+  private calcularTotalEstudiantes(estudiantesPorPrograma: Record<string, number>): number {
     return Object.values(estudiantesPorPrograma).reduce((total, cantidad) => total + cantidad, 0);
   }
 

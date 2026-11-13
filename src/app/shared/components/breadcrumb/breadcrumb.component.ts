@@ -101,8 +101,7 @@ export class BreadcrumbComponent {
     if (segments.length <= 3) return;
 
     let path = '';
-    for (let i = 0; i < segments.length; i++) {
-      const seg = segments[i];
+    for (const seg of segments) {
       path += '/' + seg;
       const label = this.labels[seg] || this.formatLabel(seg);
       this.items.push({ label, url: path });

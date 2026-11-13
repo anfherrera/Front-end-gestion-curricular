@@ -1,5 +1,5 @@
 // src/app/layout/sidebar/sidebar.component.ts
-import { Component, EventEmitter, Output, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,6 @@ import { PazSalvoDialogComponent } from '../../pages/estudiante/paz-salvo/paz-sa
 })
 export class SidebarComponent implements OnChanges {
   @Input() isOpen = true;
-  @Output() toggle = new EventEmitter<void>();
   isSidebarOpen = true;
   menuItems: ConfigSidebarItem[] = [];
   private roleLower: UserRole;
@@ -94,7 +93,6 @@ export class SidebarComponent implements OnChanges {
     this.isSidebarOpen = !this.isSidebarOpen;
     const toggleItem = this.menuItems.find(i => i.action === 'toggle');
     if (toggleItem) toggleItem.icon = this.isSidebarOpen ? 'chevron_left' : 'chevron_right';
-    this.toggle.emit();
   }
 
   logout() {

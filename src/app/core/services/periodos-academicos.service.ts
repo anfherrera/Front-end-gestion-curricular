@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { map, catchError, tap, distinctUntilChanged } from 'rxjs/operators';
+import { map, catchError, distinctUntilChanged } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { formatearPeriodo } from '../utils/periodo.utils';
 
@@ -111,10 +111,7 @@ export class PeriodosAcademicosService {
         this.periodoActualSubject.next(null);
         return null;
       }),
-      catchError(error => {
-        // Solo mostrar error si no es un error de conexión (backend no disponible)
-        if (error.status !== 0 && error.status !== undefined) {
-        }
+      catchError(() => {
         // Silenciosamente retornar null si el backend no está disponible
         this.periodoActualSubject.next(null);
         return of(null);
@@ -138,10 +135,7 @@ export class PeriodosAcademicosService {
     
     return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url).pipe(
       map(response => response.success ? response.data : []),
-      catchError(error => {
-        // Solo mostrar error si no es un error de conexión
-        if (error.status !== 0 && error.status !== undefined) {
-        }
+      catchError(() => {
         return of([]);
       })
     );
@@ -155,10 +149,7 @@ export class PeriodosAcademicosService {
     
     return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url).pipe(
       map(response => response.success ? response.data : []),
-      catchError(error => {
-        // Solo mostrar error si no es un error de conexión
-        if (error.status !== 0 && error.status !== undefined) {
-        }
+      catchError(() => {
         return of([]);
       })
     );
@@ -203,10 +194,7 @@ export class PeriodosAcademicosService {
         // Si ya son objetos, retornarlos tal cual
         return response.data as PeriodoAcademico[];
       }),
-      catchError(error => {
-        // Solo mostrar error si no es un error de conexión
-        if (error.status !== 0 && error.status !== undefined) {
-        }
+      catchError(() => {
         return of([]);
       })
     );
@@ -220,10 +208,7 @@ export class PeriodosAcademicosService {
     
     return this.http.get<{ success: boolean; data: PeriodoAcademico }>(url).pipe(
       map(response => response.success ? response.data : null),
-      catchError(error => {
-        // Solo mostrar error si no es un error de conexión
-        if (error.status !== 0 && error.status !== undefined) {
-        }
+      catchError(() => {
         return of(null);
       })
     );
@@ -237,10 +222,7 @@ export class PeriodosAcademicosService {
     
     return this.http.get<PeriodoActivoResponse>(url).pipe(
       map(response => response.success ? response.data : null),
-      catchError(error => {
-        // Solo mostrar error si no es un error de conexión
-        if (error.status !== 0 && error.status !== undefined) {
-        }
+      catchError(() => {
         return of(null);
       })
     );
@@ -267,10 +249,7 @@ export class PeriodosAcademicosService {
         }
         return null;
       }),
-      catchError(error => {
-        // Solo mostrar error si no es un error de conexión
-        if (error.status !== 0 && error.status !== undefined) {
-        }
+      catchError(() => {
         return of(null);
       })
     );

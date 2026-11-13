@@ -34,14 +34,14 @@ export interface SolicitudEcaesRequest {
   numero_documento: string;
   fecha_expedicion: string;
   fecha_nacimiento: string;
-  documentos: Array<{
+  documentos: {
     nombre: string;
     ruta_documento: string;
     fecha_documento: string;
     esValido: boolean;
     comentario: string;
     tipoDocumentoSolicitudPazYSalvo: string;
-  }>;
+  }[];
 }
 
 export interface SolicitudEcaesResponse {
@@ -50,13 +50,13 @@ export interface SolicitudEcaesResponse {
   fecha_registro_solicitud: string;
   periodo_academico: string; // Obligatorio, formato YYYY-P
   fecha_ceremonia?: string | null; // Opcional
-  estadosSolicitud: Array<{
+  estadosSolicitud: {
     id_estado: number | null;
     estado_actual: string;
     fecha_registro_estado: string;
     comentario?: string | null;
     objSolicitud: any;
-  }>;
+  }[];
   objUsuario: {
     id_usuario: number;
     nombre_completo: string;

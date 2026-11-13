@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 
-import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial, TipoSolicitud } from '../../../core/services/historial-solicitudes.service';
+import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial } from '../../../core/services/historial-solicitudes.service';
 import { PeriodoFiltroSelectorComponent } from '../../../shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '../../../shared/pipes/utf-fix.pipe';
@@ -63,7 +63,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
     'fecha_registro'
   ];
 
-  tiposSolicitud: Array<{ codigo: string; display: string }> = [];
+  tiposSolicitud: { codigo: string; display: string }[] = [];
   estadosDisponibles: string[] = [];
 
   private destroy$ = new Subject<void>();

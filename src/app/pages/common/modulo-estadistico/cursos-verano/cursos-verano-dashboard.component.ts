@@ -45,7 +45,7 @@ const COLOR_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
   BAJA: '#10B981'
 };
 
-type FiltrosCursosVerano = { periodoAcademico?: string; idPrograma?: number };
+interface FiltrosCursosVerano { periodoAcademico?: string; idPrograma?: number }
 
 // Registrar todos los componentes de Chart.js
 Chart.register(...registerables);
@@ -274,7 +274,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.cargarGraficasAsync();
       }, 100);
-    } else {
     }
   }
 
@@ -305,7 +304,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       if (this.analisisProgramaData && this.analisisProgramaData.length > 0) {
         this.crearGraficaAnalisisPrograma();
       }
-    } else {
     }
   }
 

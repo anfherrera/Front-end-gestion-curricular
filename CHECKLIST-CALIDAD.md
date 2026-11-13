@@ -153,7 +153,10 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 
 ## Fase 7 — Herramientas y documentación
 
-- [ ] Instalar ESLint (`ng add @angular-eslint/schematics`) con las reglas `no-explicit-any`, `no-unused-vars` y `prefer-inject`, y agregar el script `npm run lint`
+- [x] ESLint con `ng add @angular-eslint/schematics` (angular-eslint 19.8.1, ESLint 9): [eslint.config.js](eslint.config.js) con los presets recomendados de TypeScript y Angular (también plantillas y accesibilidad), más `no-explicit-any` (aviso), `no-unused-vars` (error; se permite un `_` delante y los `catch` sin usar) y `@angular-eslint/prefer-inject` (aviso). Script `npm run lint` (`ng lint`)
+  - Errores corregidos: 0 errores al cerrar (había 489, la mayoría de estilo y arreglados con `--fix`). A mano: 84 variables, imports y parámetros sin usar; 9 `if`/`else` vacíos (restos de `console.error` borrados en `periodos-academicos.service` y `cursos-verano-dashboard`); constructores y `ngOnInit` vacíos; el `@Output() toggle` del sidebar, que nadie escuchaba; un `eslint-disable` de una regla que no existe
+  - Accesibilidad (plantillas): las 6 fechas de ECAES del funcionario tienen `label for`/`id`; los ítems de notificación (header y guía) se pueden enfocar y abrir con Enter (`tabindex="0"`, `role="button"`, `keydown.enter`)
+  - **Avisos pendientes (2026-11-13): 539** = 306 `prefer-inject` (Fase 6, inyección) + 233 `no-explicit-any` (Fase 6, tipado). Cuando bajen a 0, pasar las dos reglas a `error`
 - [ ] Prettier más `.prettierrc` (ya existe `.editorconfig`)
 - [ ] CI en GitHub Actions: `lint`, `build` y `test --watch=false` en cada push o PR
 - [ ] Cobertura mínima en `karma.conf.js` (por ejemplo 60 %)

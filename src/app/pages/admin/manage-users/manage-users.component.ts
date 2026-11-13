@@ -64,7 +64,7 @@ export class ManageUsersComponent implements OnInit {
         this.usuarios = corregirEncodingObjeto(data);
         this.loading = false;
       },
-      error: (err: any) => {
+      error: () => {
         this.snackbar.error('Error al cargar usuarios');
         this.loading = false;
       }
@@ -115,7 +115,7 @@ export class ManageUsersComponent implements OnInit {
           // Mostrar mensaje de éxito
           this.snackbar.exito(`Usuario ${nuevoEstado}do exitosamente`);
         },
-        error: (error: any) => {
+        error: () => {
           this.loading = false;
         
           // Mostrar mensaje de error

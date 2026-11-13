@@ -80,7 +80,7 @@ export class FormatosInstitucionalesComponent implements OnInit {
     return this.editingId === id;
   }
 
-  truncarUrl(url: string, max: number = 50): string {
+  truncarUrl(url: string, max = 50): string {
     if (!url) return '';
     return url.length <= max ? url : url.slice(0, max) + '...';
   }

@@ -13,7 +13,7 @@ export class RoleGuard implements CanActivate, CanActivateChild {
     return this.canActivate(childRoute, state);
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): boolean {
     const expectedRole = this.findExpectedRole(route); // rol esperado desde la ruta (o un ancestro)
     const userRole = this.authService.getRole();
 
