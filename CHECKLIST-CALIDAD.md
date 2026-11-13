@@ -102,7 +102,16 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - La usan paz-salvo-revision (funcionario y coordinador) y secretaría/paz-salvo, sin cambios visibles. Specs nuevos de la bandeja y de `aFilaSolicitud` (537/537)
 
 ### Revisión (funcionario / coordinador / secretaría)
-- [ ] **Homologación**: [funcionario](src/app/pages/funcionario/homologacion-asignaturas/) y [coordinador](src/app/pages/coordinador/homologacion-asignaturas/) tienen el HTML casi igual (unas 14 líneas distintas) y unas 240 líneas de TS cada uno. Unirlos en `common/homologacion-revision` con `rolRevision`
+- [x] **Homologación**: funcionario y coordinador (unas 450 líneas de TS entre los dos) se unen en [homologacion-revision](src/app/pages/common/homologacion-revision/homologacion-revision.component.ts), con `data: { rolRevision }` en `app.routes.ts`. Las URLs no cambian
+  - La lógica va en [RevisionAprobacionComponent](src/app/pages/common/revision-aprobacion/revision-aprobacion.component.ts) (`app-revision-aprobacion`), que sirve a cualquier proceso con `SolicitudesAprobacionService`: bandeja genérica, visor de documentos, aprobar y rechazar (`TextoDialogComponent` con `datosRechazo()`) y avisos con `SnackbarService`. Cada página solo le pasa un `ConfigRevisionAprobacion` (rol, servicio, proceso, nombre y si marca los documentos al decidir). Los tipos `RolRevision` y `SolicitudAprobable` van en [solicitud-revision.model.ts](src/app/core/models/solicitud-revision.model.ts)
+  - Se mantiene lo de cada rol: el funcionario aprueba (`APROBADA_FUNCIONARIO`) y marca los documentos como válidos o no válidos; el coordinador aprueba definitivamente (`APROBADA_COORDINADOR`) sin tocarlos
+  - Al elegir una solicitud ya no se vuelve a pedir la lista al backend (antes se hacía un GET por cada clic)
+  - Specs: los 2 de funcionario y coordinador se cambian por `revision-aprobacion.component.spec.ts` (15 pruebas: bandejas por rol, quién puede decidir, aprobar, rechazar, cancelar, errores, período y comentarios) y `homologacion-revision.component.spec.ts` (3: rol de la ruta)
+  - Cambios visibles esperados:
+    - Las dos pantallas tienen ahora las pestañas **Pendientes de Procesar** e **Historial - Ya Procesadas** con filtro de período, como paz y salvo y reingreso del funcionario. El título de la tabla pasa a "Solicitudes Pendientes de Procesar" (antes "Solicitudes de Homologación Pendientes" o "Solicitudes de Homologación - Coordinador")
+    - Al entrar ya no aparece abierta la documentación de la primera solicitud (antes se mostraba aunque su fila no estuviera marcada); hay que elegirla en la tabla
+    - Después de añadir un comentario sigue elegida la misma solicitud, con el comentario al día (antes saltaba a la primera)
+    - Funcionario: los botones se desactivan si la solicitud no está `ENVIADA`, igual que ya hacía el coordinador con `APROBADA_FUNCIONARIO`. En su bandeja no debería pasar
 - [ ] **Reingreso**: igual con [funcionario](src/app/pages/funcionario/reingreso-estudiante/) y [coordinador](src/app/pages/coordinador/reingreso-estudiante/) → `common/reingreso-revision`
 - [ ] **Secretaría** (homologación 403 líneas, reingreso 745): usar la bandeja genérica y la misma lógica de aprobar y rechazar
 - [ ] **ECAES funcionario** ([586 líneas](src/app/pages/funcionario/pruebas-ecaes/pruebas-ecaes.component.ts)): pasarla al mismo patrón

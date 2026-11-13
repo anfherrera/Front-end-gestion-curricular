@@ -1,4 +1,4 @@
-.funcionario-container {
+.revision-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -15,7 +15,6 @@
   margin-top: 16px;
 }
 
-/* Mejorar botones de acción principales */
 .botones-acciones button {
   background-color: var(--color-primario) !important;
   color: white !important;
@@ -38,7 +37,6 @@
   box-shadow: var(--sombra-1);
 }
 
-/* Botón de rechazar con color diferente */
 .botones-acciones button[color="warn"] {
   background-color: #d32f2f !important;
 }
@@ -47,11 +45,7 @@
   background-color: #c62828 !important;
 }
 
-/* Botón de enviar a revisión con color diferente */
-.botones-acciones button[color="accent"] {
-  background-color: #7b1fa2 !important;
-}
-
-.botones-acciones button[color="accent"]:hover {
-  background-color: #6a1b9a !important;
+.botones-acciones button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
