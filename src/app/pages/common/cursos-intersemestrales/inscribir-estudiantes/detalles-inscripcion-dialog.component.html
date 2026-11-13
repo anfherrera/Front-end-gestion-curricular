@@ -47,7 +47,7 @@
                 <br><br>
                 <!-- Botones de acción para el comprobante -->
                 <div class="comprobante-actions">
-                  @if (data.estudiante.archivoPago?.url) {
+                  @if (data.estudiante.archivoPago.url) {
                     <button mat-raised-button
                       color="primary"
                       (click)="descargarComprobante()"

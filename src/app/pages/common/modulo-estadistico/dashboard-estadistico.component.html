@@ -41,7 +41,7 @@
         <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
           <div class="filters-grid">
             <div class="filter-item">
-              @if (filtrosForm?.get('proceso')) {
+              @if (filtrosForm.get('proceso')) {
                 <mat-form-field appearance="outline">
                   <mat-label>Proceso</mat-label>
                   <mat-select formControlName="proceso">
@@ -56,7 +56,7 @@
               }
             </div>
             <div class="filter-item">
-              @if (filtrosForm?.get('idPrograma')) {
+              @if (filtrosForm.get('idPrograma')) {
                 <mat-form-field appearance="outline">
                   <mat-label>Programa</mat-label>
                   <mat-select formControlName="idPrograma">
@@ -72,7 +72,7 @@
             </div>
             <!-- Filtro por Período Académico -->
             <div class="filter-item">
-              @if (filtrosForm?.get('periodoAcademico')) {
+              @if (filtrosForm.get('periodoAcademico')) {
                 <app-periodo-filtro-selector
                   label="Período Académico"
                   [mostrarTodos]="true"

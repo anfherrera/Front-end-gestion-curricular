@@ -296,7 +296,7 @@
                         </canvas>
                       }
                       <!-- Mostrar datos si no hay gráfica -->
-                      @if (!loading && data && data.tendenciasTemporales && data.tendenciasTemporales.length > 0 && !tendenciasTemporalesData?.length) {
+                      @if (!loading && data && data.tendenciasTemporales && data.tendenciasTemporales.length > 0 && !tendenciasTemporalesData.length) {
                         <div class="tendencias-data">
                           @for (tendencia of data.tendenciasTemporales; track tendencia) {
                             <div class="tendencia-card">

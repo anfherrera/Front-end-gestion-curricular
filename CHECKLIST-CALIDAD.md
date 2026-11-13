@@ -194,7 +194,9 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [x] **Inyección de dependencias** (2026-11-13): todo usa `inject()`. Migración `ng generate @angular/core:inject` en 83 archivos (componentes, servicios, guards y un spec); `@angular-eslint/prefer-inject` pasa a `error`. Los avisos `prefer-inject` bajan de 282 a 0
   - Spec ajustado: SEC-035-A creaba `new AuthService(router, http, …)`; ahora lo crea con `TestBed.runInInjectionContext(() => new AuthService())`
   - Sin cambios visibles esperados
-- [ ] **Control flow**: hay 505 `*ngIf`, `*ngFor` y `*ngSwitch`. Migrar a `@if`, `@for` y `@switch` con `ng generate @angular/core:control-flow`
+- [x] **Control flow** (2026-11-13, commit `35f9563`): los 505 `*ngIf`, `*ngFor` y `*ngSwitch` pasan a `@if`, `@for` y `@switch`; ya no queda ninguno. Se quita `CommonModule` de los componentes que ya no lo necesitaban (quedan 17 que usan sus pipes o `ngClass`)
+  - El estrechamiento de tipos de `@if` dejó 7 avisos `NG8107` (`?.` innecesario) en paz-salvo, dashboard-estadistico, cursos-verano-dashboard y detalles-inscripcion-dialog; se corrigen y `ng build` vuelve a salir sin avisos. 564/564
+  - Sin cambios visibles esperados
 - [x] **`standalone: true`** se quita de los 89 archivos donde quedaba (84 componentes y 5 pipes), por script. Sin cambios visibles esperados
 - [ ] **Entradas y salidas**: pasar `@Input` y `@Output` a `input()` y `output()`, y el estado local a `signal()` (hoy hay 0 signals)
 - [ ] **OnPush**: solo 5 de 88 componentes lo usan. Activarlo empezando por los de `shared`
@@ -206,7 +208,8 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [x] ESLint con `ng add @angular-eslint/schematics` (angular-eslint 19.8.1, ESLint 9): [eslint.config.js](eslint.config.js) con los presets recomendados de TypeScript y Angular (también plantillas y accesibilidad), más `no-explicit-any` (aviso), `no-unused-vars` (error; se permite un `_` delante y los `catch` sin usar) y `@angular-eslint/prefer-inject` (aviso). Script `npm run lint` (`ng lint`)
   - Errores corregidos: 0 errores al cerrar (había 489, la mayoría de estilo y arreglados con `--fix`). A mano: 84 variables, imports y parámetros sin usar; 9 `if`/`else` vacíos (restos de `console.error` borrados en `periodos-academicos.service` y `cursos-verano-dashboard`); constructores y `ngOnInit` vacíos; el `@Output() toggle` del sidebar, que nadie escuchaba; un `eslint-disable` de una regla que no existe
   - Accesibilidad (plantillas): las 6 fechas de ECAES del funcionario tienen `label for`/`id`; los ítems de notificación (header y guía) se pueden enfocar y abrir con Enter (`tabindex="0"`, `role="button"`, `keydown.enter`)
-  - **Avisos pendientes (2026-11-13, después de reducir `document-generator.service`): 493** = 282 `prefer-inject` (Fase 6, inyección) + 211 `no-explicit-any` (Fase 6, tipado). Después de quitar `HttpClient` de los componentes eran 501 (283 + 218); después de la Fase 3 de homologación y reingreso eran 509 (286 + 223) y al cerrar la Fase 7, 539 (306 + 233). Cuando bajen a 0, pasar las dos reglas a `error`
+  - **Avisos pendientes (2026-11-13, después de control flow): 209**, todos `no-explicit-any` (los `prefer-inject` ya son 0 y la regla está en `error`)
+  - Antes, después de reducir `document-generator.service`: 493 = 282 `prefer-inject` (Fase 6, inyección) + 211 `no-explicit-any` (Fase 6, tipado). Después de quitar `HttpClient` de los componentes eran 501 (283 + 218); después de la Fase 3 de homologación y reingreso eran 509 (286 + 223) y al cerrar la Fase 7, 539 (306 + 233). Cuando bajen a 0, pasar las dos reglas a `error`
 - [ ] Prettier más `.prettierrc` (ya existe `.editorconfig`)
 - [x] CI en GitHub Actions: [.github/workflows/ci.yml](.github/workflows/ci.yml) corre en cada push y PR a `main` (Node 22): `npm ci` (sin bajar el binario de Cypress), `npm run lint`, `ng build` y `ng test --watch=false --browsers=ChromeHeadlessCI`
   - `karma.conf.js` tiene el launcher `ChromeHeadlessCI` (`--no-sandbox`, `--disable-gpu`, `--disable-dev-shm-usage`); en local se sigue usando `ChromeHeadless` con Edge y los dos funcionan

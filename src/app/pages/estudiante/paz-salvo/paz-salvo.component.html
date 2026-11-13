@@ -73,7 +73,7 @@
           }
 
           <!-- Mensaje informativo para Telemática -->
-          @if (!requiereTrabajoGrado && usuario && (usuario?.objPrograma?.nombre_programa || usuario?.objPrograma?.nombre || '').toLowerCase().includes('telematica')) {
+          @if (!requiereTrabajoGrado && usuario && (usuario.objPrograma?.nombre_programa || usuario.objPrograma?.nombre || '').toLowerCase().includes('telematica')) {
             <div
               class="info-telematica">
               <mat-icon>info</mat-icon>
