@@ -14,6 +14,7 @@ import { HistorialSolicitudesService } from '../../../core/services/historial-so
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { ArchivosService } from '../../../core/services/archivos.service';
 import { mensajeDeError } from '../../../core/utils/http-error.utils';
+import { descargarBlob } from '../../../core/utils/download.util';
 import { EstadoClasePipe, EstadoLabelPipe } from '../../../shared/pipes/estado.pipes';
 import { FechaPipe } from '../../../shared/pipes/fecha.pipe';
 import { SnackbarService } from '../../../core/services/snackbar.service';
@@ -124,18 +125,9 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   descargarDocumento(documento: Documento): void {
-    // HttpClient (blob) en lugar de window.open: así pasa por el interceptor y envía el JWT
+    // Blob por el servicio en lugar de window.open: así pasa por el interceptor y envía el JWT
     this.archivosService.descargarPDF(documento.nombre_documento).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = documento.nombre_documento;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      },
+      next: (blob) => descargarBlob(blob, documento.nombre_documento),
       error: (error) => {
         this.snackbar.error(mensajeDeError(error, 'Error al descargar el documento'));
       }

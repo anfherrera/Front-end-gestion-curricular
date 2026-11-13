@@ -135,7 +135,13 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 
 ## Fase 4 — Arquitectura y organización
 
-- [ ] **Sin `HttpClient` en componentes**: hoy lo usan [detalle-solicitud](src/app/pages/common/detalle-solicitud/detalle-solicitud.component.ts), estudiante/homologación, estudiante/ecaes, estudiante/reingreso y funcionario/ecaes. Mover esas llamadas a sus servicios
+- [x] **Sin `HttpClient` en componentes** (2026-11-13). Ya ningún componente lo inyecta
+  - Estudiante, homologación y reingreso: la descarga del oficio usa `descargarOficioConNombre()` de [SolicitudesAprobacionService](src/app/core/services/base/solicitudes-aprobacion.service.ts) (respuesta entera, para leer `Content-Disposition` con `nombreDeContentDisposition`) y `descargarBlob`. Ya no arman la cabecera `Authorization` a mano: la pone `JwtInterceptor`. Se borra el `descargarBlob` privado de reingreso
+  - Estudiante, ECAES: `PruebasEcaesService.listarTiposDocumento()` con el tipo `TipoDocumento` ([tipo-documento.model.ts](src/app/core/models/tipo-documento.model.ts)); se siguen mostrando solo CC y CE y, si no llega ninguno, los fijos
+  - Funcionario, ECAES: `PeriodosAcademicosService.getValoresPeriodos()` (todos los períodos o, si no hay, los recientes). `getTodosLosPeriodos()` acepta ahora períodos como texto, igual que `getPeriodosRecientes()` (función `aPeriodos`)
+  - detalle-solicitud ya usaba `ArchivosService`; ahora también `descargarBlob`
+  - Specs: `periodos-academicos.service.spec.ts` (4 pruebas, nuevo), 2 de `listarTiposDocumento` en el servicio de ECAES y 2 de tipos de documento en la página del estudiante. Total 558/558 (50 specs)
+  - Sin cambios visibles esperados
 - [ ] **`shared` solo para lo genérico**: `estadisticas-por-estado`, `estadisticas-por-proceso`, `estudiantes-por-programa`, `tendencias-comparativas`, `inscripcion-modal`, `preinscripcion-dialog`, `info-preregistro-dialog`, `estudiantes-curso-dialog` y `curso-list` solo se usan dentro de una funcionalidad. Moverlos a su carpeta (`modulo-estadistico/`, `cursos-intersemestrales/`)
 - [ ] **Plantillas inline largas a archivo `.html`**: `estadisticas-por-estado` (594 líneas), `estadisticas-por-proceso` (519), `estado-filters` (447), `estudiantes-por-programa` (383), `comentarios-dialog` (369), `preinscribir-estudiantes` (969) e `inscribir-estudiantes` (842)
 - [ ] **Partir archivos gigantes**:
@@ -175,7 +181,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [x] ESLint con `ng add @angular-eslint/schematics` (angular-eslint 19.8.1, ESLint 9): [eslint.config.js](eslint.config.js) con los presets recomendados de TypeScript y Angular (también plantillas y accesibilidad), más `no-explicit-any` (aviso), `no-unused-vars` (error; se permite un `_` delante y los `catch` sin usar) y `@angular-eslint/prefer-inject` (aviso). Script `npm run lint` (`ng lint`)
   - Errores corregidos: 0 errores al cerrar (había 489, la mayoría de estilo y arreglados con `--fix`). A mano: 84 variables, imports y parámetros sin usar; 9 `if`/`else` vacíos (restos de `console.error` borrados en `periodos-academicos.service` y `cursos-verano-dashboard`); constructores y `ngOnInit` vacíos; el `@Output() toggle` del sidebar, que nadie escuchaba; un `eslint-disable` de una regla que no existe
   - Accesibilidad (plantillas): las 6 fechas de ECAES del funcionario tienen `label for`/`id`; los ítems de notificación (header y guía) se pueden enfocar y abrir con Enter (`tabindex="0"`, `role="button"`, `keydown.enter`)
-  - **Avisos pendientes (2026-11-13, después de la Fase 3 de homologación y reingreso): 509** = 286 `prefer-inject` (Fase 6, inyección) + 223 `no-explicit-any` (Fase 6, tipado). Al cerrar la Fase 7 eran 539 (306 + 233). Cuando bajen a 0, pasar las dos reglas a `error`
+  - **Avisos pendientes (2026-11-13, después de quitar `HttpClient` de los componentes): 501** = 283 `prefer-inject` (Fase 6, inyección) + 218 `no-explicit-any` (Fase 6, tipado). Después de la Fase 3 de homologación y reingreso eran 509 (286 + 223) y al cerrar la Fase 7, 539 (306 + 233). Cuando bajen a 0, pasar las dos reglas a `error`
 - [ ] Prettier más `.prettierrc` (ya existe `.editorconfig`)
 - [x] CI en GitHub Actions: [.github/workflows/ci.yml](.github/workflows/ci.yml) corre en cada push y PR a `main` (Node 22): `npm ci` (sin bajar el binario de Cypress), `npm run lint`, `ng build` y `ng test --watch=false --browsers=ChromeHeadlessCI`
   - `karma.conf.js` tiene el launcher `ChromeHeadlessCI` (`--no-sandbox`, `--disable-gpu`, `--disable-dev-shm-usage`); en local se sigue usando `ChromeHeadless` con Edge y los dos funcionan

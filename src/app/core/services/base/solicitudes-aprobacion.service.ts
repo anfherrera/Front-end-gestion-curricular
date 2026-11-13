@@ -1,3 +1,4 @@
+import { HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { OficioRespuesta, SolicitudesBaseService, ValidezDocumento } from './solicitudes-base.service';
@@ -96,6 +97,11 @@ export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseSer
 
   descargarOficio(idSolicitud: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob' });
+  }
+
+  /** Como descargarOficio, pero con la respuesta entera para leer el nombre en Content-Disposition. */
+  descargarOficioConNombre(idSolicitud: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob', observe: 'response' });
   }
 
   /** Sube un PDF al endpoint genérico de archivos, asociado a la solicitud si se indica. */

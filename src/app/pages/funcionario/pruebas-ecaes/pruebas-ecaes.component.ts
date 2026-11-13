@@ -18,8 +18,7 @@ import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '../../.
 import { CardContainerComponent } from '../../../shared/components/card-container/card-container.component';
 import { RequestStatusTableComponent } from '../../../shared/components/request-status/request-status.component';
 import { DocumentationViewerComponent } from '../../../shared/components/documentation-viewer/documentation-viewer.component';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { PeriodosAcademicosService } from '../../../core/services/periodos-academicos.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { estadoActual } from '../../../core/utils/estado-solicitud.util';
@@ -75,7 +74,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     public pruebasEcaesService: PruebasEcaesService,
     private snackbar: SnackbarService,
     private fb: FormBuilder,
-    private http: HttpClient,
+    private periodosService: PeriodosAcademicosService,
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService
   ) {
@@ -124,46 +123,13 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
    * Carga los períodos académicos disponibles desde el backend
    */
   private cargarPeriodosAcademicos(): void {
-    // Cargar todos los períodos académicos disponibles
-    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/todos`).pipe(
+    // Todos los períodos o, si no hay, los recientes; si fallan los dos, la lista fija
+    this.periodosService.getValoresPeriodos().pipe(
       takeUntil(this.destroy$)
-    ).subscribe({
-      next: (response) => {
-        if (response.success && response.data && response.data.length > 0) {
-          this.periodosAcademicos = response.data;
-          this.logger.log('Períodos académicos cargados:', this.periodosAcademicos);
-        } else {
-          // Si no hay datos, cargar períodos recientes
-          this.cargarPeriodosRecientes();
-        }
-      },
-      error: (error) => {
-        this.logger.error('Error al cargar períodos académicos:', error);
-        // Fallback: cargar períodos recientes
-        this.cargarPeriodosRecientes();
-      }
-    });
-  }
-
-  /**
-   * Carga los períodos académicos recientes como fallback
-   */
-  private cargarPeriodosRecientes(): void {
-    this.http.get<any>(`${environment.apiUrl}/periodos-academicos/recientes`).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.periodosAcademicos = response.data;
-          this.logger.log('Períodos recientes cargados:', this.periodosAcademicos);
-        } else {
-          // Fallback final: períodos hardcodeados
-          this.cargarPeriodosFallback();
-        }
-      },
-      error: (error) => {
-        this.logger.error('Error al cargar períodos recientes:', error);
-        // Fallback final: períodos hardcodeados
+    ).subscribe(periodos => {
+      if (periodos.length > 0) {
+        this.periodosAcademicos = periodos;
+      } else {
         this.cargarPeriodosFallback();
       }
     });

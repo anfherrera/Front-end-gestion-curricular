@@ -10,10 +10,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { environment } from '../../../../environments/environment';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '../../../core/services/pruebas-ecaes.service';
 import { ArchivosService } from '../../../core/services/archivos.service';
@@ -95,7 +93,6 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     private snackbar: SnackbarService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private http: HttpClient,
     private notificacionesService: NotificacionesService,
     private authService: AuthService,
     private logger: LoggerService,
@@ -146,28 +143,17 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
    * Carga los tipos de documento disponibles desde el backend
    */
   cargarTiposDocumento(): void {
-    this.http.get<any>(`${environment.apiUrl}/tipos-documento/todos`).pipe(
+    this.pruebasEcaesService.listarTiposDocumento().pipe(
       takeUntil(this.destroy$)
     ).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          // Filtrar solo los valores aceptados por el backend (CC y CE)
-          const valoresValidos = ['CC', 'CE'];
-          this.tiposDocumento = response.data
-            .filter((tipo: any) => valoresValidos.includes(tipo.codigo))
-            .map((tipo: any) => ({
-              value: tipo.codigo,
-              label: tipo.descripcion
-            }));
-          
-          // Si después del filtro no hay valores, usar fallback
-          if (this.tiposDocumento.length === 0) {
-            this.logger.warn('El backend no devolvió valores válidos (CC o CE), usando fallback');
-            this.cargarTiposDocumentoFallback();
-          } else {
-            this.logger.log('Tipos de documento cargados desde backend (filtrados):', this.tiposDocumento);
-          }
-        } else {
+      next: (tipos) => {
+        // Solo los valores que acepta el backend (CC y CE)
+        const valoresValidos = ['CC', 'CE'];
+        this.tiposDocumento = tipos
+          .filter(tipo => valoresValidos.includes(tipo.codigo))
+          .map(tipo => ({ value: tipo.codigo, label: tipo.descripcion }));
+
+        if (this.tiposDocumento.length === 0) {
           this.cargarTiposDocumentoFallback();
         }
       },

@@ -48,6 +48,25 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
     });
   });
 
+  describe('Tipos de documento', () => {
+    it('EC-035: devuelve los tipos de /tipos-documento/todos', (done) => {
+      service.listarTiposDocumento().subscribe(tipos => {
+        expect(tipos).toEqual([{ codigo: 'CC', descripcion: 'Cédula' }]);
+        done();
+      });
+      httpMock.expectOne(`${environment.apiUrl}/tipos-documento/todos`)
+        .flush({ success: true, data: [{ codigo: 'CC', descripcion: 'Cédula' }] });
+    });
+
+    it('EC-036: lista vacía si la respuesta no es success', (done) => {
+      service.listarTiposDocumento().subscribe(tipos => {
+        expect(tipos).toEqual([]);
+        done();
+      });
+      httpMock.expectOne(`${environment.apiUrl}/tipos-documento/todos`).flush({ success: false });
+    });
+  });
+
   describe('2. Fechas ECAES', () => {
     it('EC-003: Debe listar fechas ECAES', (done) => {
       const mockFechas: FechaEcaes[] = [

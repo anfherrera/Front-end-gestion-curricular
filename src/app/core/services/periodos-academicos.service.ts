@@ -1,9 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { map, catchError, distinctUntilChanged } from 'rxjs/operators';
+import { map, catchError, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { formatearPeriodo } from '../utils/periodo.utils';
+
+/** El backend devuelve a veces los períodos como texto ("2025-2") y a veces como objetos. */
+function aPeriodos(datos: PeriodoAcademico[] | string[]): PeriodoAcademico[] {
+  return datos.map(p => typeof p === 'string' ? {
+    valor: p,
+    año: parseInt(p.split('-')[0]) || new Date().getFullYear(),
+    numeroPeriodo: parseInt(p.split('-')[1]) || 1,
+    nombrePeriodo: formatearPeriodo(p),
+    fechaInicio: '',
+    fechaFin: '',
+    activo: true,
+    tipoPeriodo: 'ORDINARIO',
+    esPeriodoEspecial: false,
+    descripcion: ''
+  } : p);
+}
 
 export interface PeriodoAcademico {
   valor: string;
@@ -133,11 +149,19 @@ export class PeriodosAcademicosService {
   getTodosLosPeriodos(): Observable<PeriodoAcademico[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.TODOS;
     
-    return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url).pipe(
-      map(response => response.success ? response.data : []),
+    return this.http.get<{ success: boolean; data: PeriodoAcademico[] | string[] }>(url).pipe(
+      map(response => response.success && response.data ? aPeriodos(response.data) : []),
       catchError(() => {
         return of([]);
       })
+    );
+  }
+
+  /** Valores ("2025-1") de todos los períodos o, si no hay, de los recientes. Lista vacía si fallan los dos. */
+  getValoresPeriodos(): Observable<string[]> {
+    return this.getTodosLosPeriodos().pipe(
+      switchMap(periodos => periodos.length ? of(periodos) : this.getPeriodosRecientes()),
+      map(periodos => periodos.map(p => p.valor))
     );
   }
 
@@ -170,30 +194,7 @@ export class PeriodosAcademicosService {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES;
     
     return this.http.get<{ success: boolean; data: PeriodoAcademico[] | string[] }>(url).pipe(
-      map(response => {
-        if (!response.success || !response.data) {
-          return [];
-        }
-        
-        // Si el backend retorna strings, convertirlos a objetos PeriodoAcademico
-        if (response.data.length > 0 && typeof response.data[0] === 'string') {
-          return (response.data as string[]).map((valor: string) => ({
-            valor: valor,
-            año: parseInt(valor.split('-')[0]) || new Date().getFullYear(),
-            numeroPeriodo: parseInt(valor.split('-')[1]) || 1,
-            nombrePeriodo: formatearPeriodo(valor),
-            fechaInicio: '',
-            fechaFin: '',
-            activo: true,
-            tipoPeriodo: 'ORDINARIO',
-            esPeriodoEspecial: false,
-            descripcion: ''
-          }));
-        }
-        
-        // Si ya son objetos, retornarlos tal cual
-        return response.data as PeriodoAcademico[];
-      }),
+      map(response => response.success && response.data ? aPeriodos(response.data) : []),
       catchError(() => {
         return of([]);
       })

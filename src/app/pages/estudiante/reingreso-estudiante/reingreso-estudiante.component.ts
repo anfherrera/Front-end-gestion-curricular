@@ -4,9 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
 import { Subject, takeUntil } from 'rxjs';
+import { descargarBlob, nombreDeContentDisposition } from '../../../core/utils/download.util';
 
 import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion } from '../../../core/models/procesos.model';
 import { RequestStatusTableComponent } from "../../../shared/components/request-status/request-status.component";
@@ -80,7 +79,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     private formatosService: FormatosInstitucionalesService,
     private snackbar: SnackbarService,
     private dialog: MatDialog,
-    private http: HttpClient,
     private logger: LoggerService,
     private errorHandler: ErrorHandlerService,
     private periodosService: PeriodosAcademicosService
@@ -445,74 +443,13 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
     this.logger.debug('Descargando archivo por nombre', { nombreArchivo, nombreDescarga, idSolicitud });
 
-    // Usar el endpoint de solicitudes de reingreso
-    const url = `${environment.apiUrl}/solicitudes-reingreso/descargarOficio/${idSolicitud || 1}`;
-
-    // Crear headers con autorización
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-
-    this.http.get(url, {
-      headers: headers,
-      responseType: 'blob',
-      observe: 'response'
-    })
+    this.reingresoService.descargarOficioConNombre(idSolicitud || 1)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
       next: (response) => {
-        this.logger.debug('Archivo descargado exitosamente');
-
-        // Obtener el nombre del archivo desde los headers de la respuesta
-        const contentDisposition = response.headers.get('Content-Disposition');
-        let nombreArchivoDescarga = nombreDescarga || nombreArchivo;
-
-        this.logger.debug('Content-Disposition header', contentDisposition);
-
-        if (contentDisposition) {
-          // Intentar diferentes patrones para extraer el nombre del archivo
-          let matches = contentDisposition.match(/filename="(.+)"/);
-          if (!matches) {
-            matches = contentDisposition.match(/filename=([^;]+)/);
-          }
-          if (!matches) {
-            matches = contentDisposition.match(/filename\*=UTF-8''(.+)/);
-          }
-
-          if (matches && matches[1]) {
-            nombreArchivoDescarga = decodeURIComponent(matches[1]);
-            this.logger.debug('Nombre del archivo desde headers', nombreArchivoDescarga);
-          } else {
-            this.logger.warn('No se pudo extraer el nombre del archivo del header Content-Disposition');
-          }
-        } else {
-          this.logger.warn('No se encontró el header Content-Disposition');
-          // Usar el nombre del archivo que viene del método obtenerOficios
-          nombreArchivoDescarga = nombreArchivo;
-          this.logger.debug('Usando nombre del archivo del método obtenerOficios', nombreArchivoDescarga);
-        }
-
-        // Crear URL temporal y descargar
-        const blob = response.body!;
-
-        // Logging para diagnosticar el problema
-        this.logger.debug('Información del archivo descargado', {
-          contentType: response.headers.get('Content-Type'),
-          blobSize: blob.size,
-          blobType: blob.type,
-          nombreDescarga: nombreArchivoDescarga
-        });
-
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = nombreArchivoDescarga;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-
+        // Sin Content-Disposition se usa el nombre que vino de obtenerOficios
+        const nombre = nombreDeContentDisposition(response.headers) || nombreArchivo;
+        if (response.body) descargarBlob(response.body, nombre);
         this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
@@ -636,7 +573,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
       next: (blob: Blob) => {
-        this.descargarBlob(blob, nombreDescarga);
+        descargarBlob(blob, nombreDescarga);
         this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
@@ -707,7 +644,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       .subscribe({
       next: (blob: Blob) => {
         const nombreFinal = nombreArchivo || `oficio_reingreso_${idOficio}.pdf`;
-        this.descargarBlob(blob, nombreFinal);
+        descargarBlob(blob, nombreFinal);
         this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
@@ -732,7 +669,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
       .subscribe({
       next: (blob: Blob) => {
         const nombreFinal = nombreDescarga || this.extraerNombreDesdeRuta(nombreActual) || `oficio_${idSolicitud}.pdf`;
-        this.descargarBlob(blob, nombreFinal);
+        descargarBlob(blob, nombreFinal);
         this.snackbar.exito('Oficio descargado exitosamente');
       },
       error: (err) => {
@@ -748,17 +685,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     }
     const partes = ruta.split(/[\\/]/);
     return partes[partes.length - 1] || ruta;
-  }
-
-  private descargarBlob(blob: Blob, nombreArchivo: string): void {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = nombreArchivo;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
   }
 
   /**

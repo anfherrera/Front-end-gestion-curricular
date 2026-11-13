@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { TipoDocumento, TiposDocumentoRespuesta } from '../models/tipo-documento.model';
 import { SolicitudesBaseService } from './base/solicitudes-base.service';
 
 export interface FechaEcaes {
@@ -106,6 +107,13 @@ export class PruebasEcaesService extends SolicitudesBaseService {
 
   actualizarFechasEcaes(fechas: FechaEcaes): Observable<FechaEcaes> {
     return this.http.put<FechaEcaes>(`${this.apiUrl}/actualizarFechasEcaes`, fechas);
+  }
+
+  /** Tipos de documento de identidad registrados (lista vacía si el backend no responde bien). */
+  listarTiposDocumento(): Observable<TipoDocumento[]> {
+    return this.http.get<TiposDocumentoRespuesta>(`${this.api}/tipos-documento/todos`).pipe(
+      map(respuesta => respuesta.success && respuesta.data ? respuesta.data : [])
+    );
   }
 
   // ---------- Solicitudes ----------

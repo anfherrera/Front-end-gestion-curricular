@@ -50,7 +50,8 @@ describe('PruebasEcaesComponent', () => {
       'listarFechasEcaes',
       'listarSolicitudesPorRol',
       'crearSolicitudEcaes',
-      'actualizarEstadoSolicitud'
+      'actualizarEstadoSolicitud',
+      'listarTiposDocumento'
     ]);
     const archivosServiceSpy = jasmine.createSpyObj('ArchivosService', ['subirPDF']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -86,6 +87,10 @@ describe('PruebasEcaesComponent', () => {
 
     pruebasEcaesService.listarFechasEcaes.and.returnValue(of(mockFechasEcaes as any));
     pruebasEcaesService.listarSolicitudesPorRol.and.returnValue(of([]));
+    pruebasEcaesService.listarTiposDocumento.and.returnValue(of([
+      { codigo: 'CC', descripcion: 'Cédula de Ciudadanía' },
+      { codigo: 'TI', descripcion: 'Tarjeta de Identidad' }
+    ]));
     errorHandler.extraerMensajeError.and.returnValue('');
     periodosServiceSpy.getPeriodoActualValue.and.returnValue({ valor: '2025-1' });
     authServiceSpy.getUsuario.and.returnValue(mockUsuario);
@@ -105,6 +110,16 @@ describe('PruebasEcaesComponent', () => {
 
   it('debe crear el componente', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('EC-033: tipos de documento del backend, solo CC y CE', () => {
+    expect(component.tiposDocumento).toEqual([{ value: 'CC', label: 'Cédula de Ciudadanía' }]);
+  });
+
+  it('EC-034: tipos de documento fijos si el backend no devuelve CC ni CE', () => {
+    pruebasEcaesService.listarTiposDocumento.and.returnValue(of([]));
+    component.cargarTiposDocumento();
+    expect(component.tiposDocumento.map(t => t.value)).toEqual(['CC', 'CE']);
   });
 
   it('EC-016: Debe renderizar secciones principales (Fechas, Documentación, Seguimiento)', () => {
