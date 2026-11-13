@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
-import { Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
@@ -35,14 +36,14 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
   templateUrl: './gestionar-cursos.component.html',
   styleUrls: ['./gestionar-cursos.component.css']
 })
-export class GestionarCursosComponent implements OnInit, OnDestroy {
+export class GestionarCursosComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
   private cursoEstadosService = inject(CursoEstadosService);
   private fb = inject(FormBuilder);
   private dialog = inject(MatDialog);
   private snackbar = inject(SnackbarService);
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   
   cursos: CursoOfertadoVerano[] = [];
   cursosFiltrados: CursoOfertadoVerano[] = [];
@@ -110,11 +111,6 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     this.cargarMateriasYDocentes();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   cargarDatos() {
     this.cargando = true;
     this.cursos = [];
@@ -127,7 +123,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     
     
     // Cargar cursos del backend con filtro de período
-    this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (cursos) => {
         this.cursos = cursos;
         this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
@@ -146,7 +142,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
 
   cargarMateriasYDocentes() {
     // Cargar materias reales del backend
-    this.cursosService.getTodasLasMaterias().pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.getTodasLasMaterias().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (materias) => {
         this.materias = materias;
       },
@@ -157,7 +153,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     });
 
     // Cargar docentes reales del backend
-    this.cursosService.getTodosLosDocentes().pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.getTodosLosDocentes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (docentes) => {
         this.docentes = docentes;
       },
@@ -193,7 +189,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
       if (result === 'guardado') {
         this.cargarDatos();
       }
@@ -241,7 +237,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
       if (result === 'guardado') {
         this.cargarDatos();
       }
@@ -258,7 +254,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
     }).pipe(
       filter(Boolean),
       switchMap(() => this.cursosService.eliminarCurso(curso.id_curso)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.snackbar.exito('Curso eliminado exitosamente');
@@ -350,7 +346,7 @@ export class GestionarCursosComponent implements OnInit, OnDestroy {
       : undefined;
     
     
-    this.cursosService.exportarCursosPDF(periodoParam).pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.exportarCursosPDF(periodoParam).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         descargarBlob(result.blob, result.filename);
         this.snackbar.exito('PDF exportado correctamente');

@@ -1,11 +1,12 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Subject, takeUntil, filter } from 'rxjs';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-cursos-intersemestrales',
@@ -19,10 +20,10 @@ import { Subject, takeUntil, filter } from 'rxjs';
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css']
 })
-export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
+export class CursosIntersemestralesComponent implements OnInit {
   private router = inject(Router);
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   
   opciones = [
     { titulo: 'Realizar Solicitud', ruta: 'solicitudes', icon: 'add_circle' },
@@ -35,16 +36,11 @@ export class CursosIntersemestralesComponent implements OnInit, OnDestroy {
     this.setupNavigation();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   private setupNavigation(): void {
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
         // Navegación completada

@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
+import { catchError, of, switchMap, tap } from 'rxjs';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-intersemestrales.model';
 import { AuthService } from '@core/services/auth.service';
@@ -45,14 +46,14 @@ import { RechazoPreinscripcionDialogComponent } from './rechazo-preinscripcion-d
   templateUrl: './preinscribir-estudiantes.component.html',
   styleUrls: ['../filtro-curso-comun.css', './preinscribir-estudiantes.component.css']
 })
-export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
+export class PreinscribirEstudiantesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   
   // Datos
   cursos: CursoOfertadoVerano[] = [];
@@ -92,7 +93,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     // Suscribirse a cambios en el filtro de curso
     this.filtroForm.get('curso')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(cursoId => {
         if (cursoId) {
           this.cargarSolicitudesPorCurso(cursoId);
@@ -103,17 +104,12 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   cargarCursos(): void {
     this.cargando = true;
     
     // Usar getCursosPorEstado para obtener cursos en estado "Preinscripción"
     // Sin período para mostrar TODOS los cursos de preinscripción
-    this.cursosService.getCursosPorEstado('Preinscripción').pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.getCursosPorEstado('Preinscripción').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (cursos) => {
         this.cursos = cursos;
         this.cargando = false;
@@ -134,7 +130,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       catchError(() => of(this.cursos.find(c => c.id_curso === cursoId) || null)),
       tap(curso => this.cursoSeleccionado = curso),
       switchMap(() => this.cursosService.getPreinscripcionesPorCurso(cursoId)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (solicitudes) => {
         const curso = this.cursoSeleccionado;
@@ -176,7 +172,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
       if (result && result.observaciones !== undefined) {
         const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
         this.actualizarObservaciones(idSolicitud, result.observaciones);
@@ -192,7 +188,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     }
     
     
-    this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         
         // Actualizar localmente usando el ID correcto
@@ -221,7 +217,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     }
     
     
-    this.cursosService.aprobarPreinscripcion(idSolicitud).pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.aprobarPreinscripcion(idSolicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         
         // Actualizar estado localmente usando el ID correcto
@@ -272,7 +268,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
       disableClose: true
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
       if (result && result.motivo) {
         this.procesarRechazo(solicitud, result.motivo);
       }
@@ -288,7 +284,7 @@ export class PreinscribirEstudiantesComponent implements OnInit, OnDestroy {
     }
     
     
-    this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).pipe(takeUntil(this.destroy$)).subscribe({
+    this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         
         // Actualizar estado localmente usando el ID correcto

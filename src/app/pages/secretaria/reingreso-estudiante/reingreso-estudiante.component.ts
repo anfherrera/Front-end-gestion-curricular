@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
@@ -7,8 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
 import { DocumentGeneratorService } from '@core/services/document-generator.service';
@@ -46,7 +45,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['../secretaria-comun.css', './reingreso-estudiante.component.css']
 })
-export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
+export class ReingresoEstudianteComponent implements OnInit {
   reingresoService = inject(ReingresoEstudianteService);
   private documentGeneratorService = inject(DocumentGeneratorService);
   private snackbar = inject(SnackbarService);
@@ -72,7 +71,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   documentoHabilitado = false;
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     // Inicializar plantilla para reingreso
@@ -98,14 +97,9 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.cargarSolicitudesAprobadas();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   cargarSolicitudes(): void {
     this.reingresoService.getSecretariaRequests().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
@@ -131,7 +125,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.cargandoSolicitudesAprobadas = true;
 
     this.reingresoService.getSecretariaApprovedRequests().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (solicitudes) => {
         this.solicitudesAprobadas = solicitudes.map((solicitud) => ({
@@ -167,7 +161,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     // Buscar la solicitud original por ID
     this.reingresoService.getSecretariaRequests().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
@@ -198,7 +192,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     // Generando documento
 
     this.documentGeneratorService.generarDocumento(request).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (blob) => {
         // Documento generado exitosamente
@@ -266,7 +260,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
     this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.logger.log('Archivo PDF subido exitosamente:', response);
@@ -296,7 +290,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
     this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.logger.log('Estado de solicitud actualizado a APROBADA');
@@ -340,7 +334,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     // Usar el servicio para subir el PDF con idSolicitud (SIN modificar el nombre)
     this.reingresoService.subirArchivoPDF(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.logger.log('Archivo PDF subido exitosamente:', response);
@@ -359,7 +353,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
         // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
         this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
-          takeUntil(this.destroy$)
+          takeUntilDestroyed(this.destroyRef)
         ).subscribe({
           next: () => {
             this.logger.log('Estado de solicitud actualizado a APROBADA');
@@ -415,7 +409,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     if (documento.id_documento && this.reingresoService.descargarArchivoPorId) {
       this.logger.log('Intentando descargar por ID del documento:', documento.id_documento);
       this.reingresoService.descargarArchivoPorId(documento.id_documento).pipe(
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       ).subscribe({
         next: (blob: Blob) => {
           this.logger.log('Documento descargado exitosamente por ID:', documento.id_documento);
@@ -434,7 +428,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     if (documento.ruta_documento && this.reingresoService.descargarArchivoPorRuta) {
       this.logger.log('Intentando descargar por ruta del documento:', documento.ruta_documento);
       this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).pipe(
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       ).subscribe({
         next: (blob: Blob) => {
           this.logger.log('Documento descargado exitosamente por ruta:', documento.ruta_documento);
@@ -463,7 +457,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     }
 
     this.reingresoService.descargarArchivoPorRuta(documento.ruta_documento).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (blob: Blob) => {
         this.logger.log('Documento descargado exitosamente por ruta:', documento.ruta_documento);
@@ -488,7 +482,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     this.logger.log('Intentando descargar por nombre del archivo:', documento.nombre);
     this.reingresoService.descargarArchivo(documento.nombre).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (blob: Blob) => {
         this.logger.log('Documento descargado exitosamente por nombre:', documento.nombre);
@@ -563,7 +557,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     const contenido = `Oficio de reingreso para ${this.selectedSolicitud.objUsuario.nombre_completo}`;
 
     this.reingresoService.generarOficio(this.selectedSolicitud.id_solicitud, contenido).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.snackbar.exito('Oficio generado correctamente');
@@ -580,7 +574,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   descargarOficio(idOficio: number, nombreArchivo: string): void {
     this.logger.log('Descargando oficio:', idOficio);
     this.reingresoService.descargarOficio(idOficio).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -612,11 +606,11 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe((comentario: string) => {
       if (comentario !== undefined) {
         this.reingresoService.agregarComentario(documento.id_documento, comentario).pipe(
-          takeUntil(this.destroy$)
+          takeUntilDestroyed(this.destroyRef)
         ).subscribe({
           next: () => {
             this.snackbar.exito('Comentario actualizado correctamente');
@@ -634,7 +628,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     if (!this.selectedSolicitud) return;
 
     this.reingresoService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.snackbar.exito('Solicitud aprobada definitivamente');
@@ -659,11 +653,11 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe((motivo: string) => {
       if (motivo) {
         this.reingresoService.rejectRequest(this.selectedSolicitud!.id_solicitud, motivo).pipe(
-          takeUntil(this.destroy$)
+          takeUntilDestroyed(this.destroyRef)
         ).subscribe({
           next: () => {
             this.snackbar.exito('Solicitud rechazada');

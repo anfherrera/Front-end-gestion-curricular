@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -39,6 +40,7 @@ export class FormUsuarioComponent implements OnInit {
   private programasService = inject(ProgramasService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private snackbar = inject(SnackbarService);
 
   usuarioForm: FormGroup;
@@ -75,7 +77,7 @@ export class FormUsuarioComponent implements OnInit {
     this.cargarRoles();
     this.cargarProgramas();
 
-    this.route.params.subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
         this.usuarioId = +params['id'];

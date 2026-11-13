@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -13,8 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Chart, registerables } from 'chart.js';
 import type { ChartConfiguration } from 'chart.js';
-import { Observable, Subject, catchError, firstValueFrom, forkJoin, of } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, catchError, firstValueFrom, forkJoin, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { EstadisticasService } from '@core/services/estadisticas.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
@@ -102,7 +103,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   chartDistribucion: Chart | null = null;
   tendenciaSinDatos = false;
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   /** Tras la primera carga los gráficos se recrean en vez de crearse. */
   private chartsCreados = false;
   /** Catálogo nombre de programa -> id_programa real. */
@@ -118,15 +119,13 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
     this.procesosDisponibles = this.estadisticasService.getProcesosDisponibles();
     this.estadisticasService.getProgramasDisponibles()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(programas => this.programasDisponibles = programas);
 
     this.cargarDatos();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     this.destruirCharts();
   }
 
@@ -143,7 +142,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         this.idsProgramaPorNombre = ids;
         return this.estadisticasService.getResumenCompleto(filtrosParaBackend(filtros));
       }),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (resumenAPI) => {
         try {
@@ -206,7 +205,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       porProceso: tolerante(this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosBackend), 'estadisticas-por-proceso'),
       estudiantesPorPrograma: tolerante(this.estadisticasService.getEstudiantesPorPrograma(filtrosBackend), 'estudiantes-por-programa'),
       porPeriodo: tolerante(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosBackend), 'por-periodo')
-    }).pipe(takeUntil(this.destroy$)).subscribe(({ ids, estadoSolicitudes, porProceso, estudiantesPorPrograma }) => {
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ ids, estadoSolicitudes, porProceso, estudiantesPorPrograma }) => {
       const errorDeAcceso = errores.map(e => e.error).find(esErrorDeAcceso);
       if (errorDeAcceso) {
         this.manejarErrorDeAcceso(errorDeAcceso);
@@ -236,7 +235,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   private cargarTotalEstudiantes(): void {
     this.loadingEstudiantes = true;
-    this.estadisticasService.getTotalEstudiantes().pipe(takeUntil(this.destroy$)).subscribe({
+    this.estadisticasService.getTotalEstudiantes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.totalEstudiantes = response.totalEstudiantes;
         this.loadingEstudiantes = false;
@@ -364,7 +363,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       aplicar();
       return;
     }
-    this.periodosService.getPeriodoActual().pipe(takeUntil(this.destroy$)).subscribe({
+    this.periodosService.getPeriodoActual().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (periodo) => {
         if (periodo?.valor) {
           filtros.periodoAcademico = periodo.valor;
@@ -407,7 +406,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private exportar(peticion$: Observable<Blob>, extension: string, formato: string): void {
     this.loading = true;
     this.mostrarExito(`Descargando reporte ${formato}...`);
-    peticion$.pipe(takeUntil(this.destroy$)).subscribe({
+    peticion$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob) => {
         this.loading = false;
         if (!blob || blob.size === 0) {

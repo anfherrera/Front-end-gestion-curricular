@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial } from '@core/services/historial-solicitudes.service';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
@@ -45,7 +46,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   templateUrl: './historial-completo.component.html',
   styleUrls: ['../estados-solicitud-comun.css', './historial-completo.component.css']
 })
-export class HistorialCompletoComponent implements OnInit, OnDestroy {
+export class HistorialCompletoComponent implements OnInit {
   private fb = inject(FormBuilder);
   private historialService = inject(HistorialSolicitudesService);
   private snackbar = inject(SnackbarService);
@@ -70,7 +71,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
   tiposSolicitud: { codigo: string; display: string }[] = [];
   estadosDisponibles: string[] = [];
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.filtrosForm = this.fb.group({
@@ -91,16 +92,11 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
         this.cargarHistorial();
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   cargarHistorial(): void {
@@ -119,7 +115,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
     }
 
     this.historialService.obtenerHistorialCompleto(filtros).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.historial = response;
@@ -200,7 +196,7 @@ export class HistorialCompletoComponent implements OnInit, OnDestroy {
     }
 
     this.historialService.exportarHistorialPDF(filtros).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         try {

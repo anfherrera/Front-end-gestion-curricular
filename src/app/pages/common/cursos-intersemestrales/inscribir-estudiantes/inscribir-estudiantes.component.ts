@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -13,7 +14,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Subject, takeUntil } from 'rxjs';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import { CursoOfertadoVerano, EstudianteElegible } from '@core/models/cursos-intersemestrales.model';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
@@ -49,7 +49,7 @@ import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripci
   templateUrl: './inscribir-estudiantes.component.html',
   styleUrls: ['../filtro-curso-comun.css', './inscribir-estudiantes.component.css']
 })
-export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
+export class InscribirEstudiantesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
   private fb = inject(FormBuilder);
   private snackbar = inject(SnackbarService);
@@ -58,7 +58,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
   private errorHandler = inject(ErrorHandlerService);
   private authService = inject(AuthService);
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   
   // Datos
   cursos: CursoOfertadoVerano[] = [];
@@ -92,7 +92,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     
     // Suscribirse a cambios en el filtro de curso
     this.filtroForm.get('curso')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(cursoId => {
         if (cursoId) {
           this.cargarEstudiantesElegibles(cursoId);
@@ -103,11 +103,6 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   cargarCursos(): void {
     this.cargando = true;
     this.logger.debug('Cargando cursos para inscripción');
@@ -115,7 +110,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     // Usar getCursosPorEstado para obtener cursos en estado "Inscripción"
     // Sin período para mostrar TODOS los cursos de inscripción
     this.cursosService.getCursosPorEstado('Inscripción')
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (cursos) => {
         this.cursos = cursos;
@@ -145,7 +140,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
     
     this.cursosService.getEstudiantesElegibles(cursoId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (estudiantes) => {
         this.logger.debug('Estudiantes elegibles recibidos del backend:', estudiantes);
@@ -197,7 +192,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
       if (result === 'inscrito') {
         // Recargar estudiantes elegibles si se completó la inscripción
@@ -229,7 +224,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
       if (result === 'confirmar') {
         // Usar el método del servicio con el endpoint correcto
@@ -244,7 +239,7 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     const observaciones = `Inscripción aceptada por ${rol}`;
     
     this.cursosService.aceptarInscripcion(estudiante.id_solicitud, observaciones)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (response) => {
         this.logger.debug('Inscripción aceptada exitosamente', response);
@@ -269,13 +264,13 @@ export class InscribirEstudiantesComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(motivo => {
         if (!motivo) return; // cancelado: el diálogo no deja confirmar sin motivo
         
         // Usar el servicio para rechazar inscripción
         this.cursosService.rechazarInscripcion(estudiante.id_solicitud, motivo)
-          .pipe(takeUntil(this.destroy$))
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
           next: (response) => {
             const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);

@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '@core/services/auth.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { formatearPeriodo } from '@core/utils/periodo.utils';
@@ -13,20 +12,20 @@ import { SnackbarService } from '@core/services/snackbar.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   private authService = inject(AuthService);
   private periodosService = inject(PeriodosAcademicosService);
   private snackbar = inject(SnackbarService);
 
   title = 'Front-end-gestion-curricular';
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.authService.restoreSession();
     this.periodosService.inicializarPeriodoActual();
 
     this.periodosService.cambioPeriodo$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(cambio => {
       if (cambio && cambio.anterior && cambio.actual) {
         const periodoAnteriorTexto = cambio.anterior.nombrePeriodo || formatearPeriodo(cambio.anterior.valor);
@@ -39,10 +38,5 @@ export class AppComponent implements OnInit, OnDestroy {
         );
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

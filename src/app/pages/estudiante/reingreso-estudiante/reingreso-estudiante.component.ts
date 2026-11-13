@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
-import { Subject, takeUntil } from 'rxjs';
 import { descargarBlob, nombreDeContentDisposition } from '@core/utils/download.util';
 
 import { Archivo, SolicitudReingresoDTORespuesta, DocumentosDTORespuesta, SolicitudReingresoDTOPeticion } from '@core/models/procesos.model';
@@ -47,7 +47,7 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css']
 })
-export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
+export class ReingresoEstudianteComponent implements OnInit {
   private reingresoService = inject(ReingresoEstudianteService);
   private formatosService = inject(FormatosInstitucionalesService);
   private snackbar = inject(SnackbarService);
@@ -58,7 +58,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   documentosRequeridos = [
     {
@@ -103,11 +103,6 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.verificarFuncionalidadComentarios();
     }, 2000);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   onArchivosChange(archivos: Archivo[]) {
@@ -171,7 +166,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
 
     // Paso 1: Subir archivos al backend
     this.fileUploadComponent.subirArchivosPendientes()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (archivosSubidos) => {
         this.logger.debug('Archivos subidos correctamente', archivosSubidos);
@@ -219,7 +214,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
         this.logger.debug('Creando solicitud con archivos', solicitud);
 
         this.reingresoService.crearSolicitud(solicitud)
-          .pipe(takeUntil(this.destroy$))
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
           next: (resp) => {
             this.logger.debug('Solicitud creada en backend', resp);
@@ -269,7 +264,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
 
     this.reingresoService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (data) => {
         this.logger.debug('Respuesta del backend (raw)', data);
@@ -359,7 +354,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
       this.logger.debug('Diálogo de comentarios cerrado');
     });
@@ -394,7 +389,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
    */
   private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
     this.reingresoService.obtenerOficios(idSolicitud)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (oficios) => {
         this.logger.debug('Oficios obtenidos', oficios);
@@ -440,7 +435,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.logger.debug('Descargando archivo por nombre', { nombreArchivo, nombreDescarga, idSolicitud });
 
     this.reingresoService.descargarOficioConNombre(idSolicitud || 1)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (response) => {
         // Sin Content-Disposition se usa el nombre que vino de obtenerOficios
@@ -566,7 +561,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.logger.debug('Descargando documento de resolución', documento);
 
     this.reingresoService.descargarArchivo(documento.nombre)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (blob: Blob) => {
         descargarBlob(blob, nombreDescarga);
@@ -636,7 +631,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
   private descargarOficioPorId(idOficio: number, nombreArchivo: string, onError: () => void): void {
     this.logger.debug('Intentando descargar oficio por ID', { idOficio, nombreArchivo });
     this.reingresoService.descargarOficio(idOficio)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (blob: Blob) => {
         const nombreFinal = nombreArchivo || `oficio_reingreso_${idOficio}.pdf`;
@@ -661,7 +656,7 @@ export class ReingresoEstudianteComponent implements OnInit, OnDestroy {
     this.logger.debug('Intentando descargar oficio usando nombre', { nombreActual, indice, total: candidatos.length });
 
     this.reingresoService.descargarArchivo(nombreActual)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (blob: Blob) => {
         const nombreFinal = nombreDescarga || this.extraerNombreDesdeRuta(nombreActual) || `oficio_${idSolicitud}.pdf`;

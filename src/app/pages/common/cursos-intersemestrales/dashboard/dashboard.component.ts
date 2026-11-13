@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,7 +7,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import { CursoOfertadoVerano, DashboardEstadisticas } from '@core/models/cursos-intersemestrales.model';
 import { CursoEstadosService } from '@core/services/curso-estados.service';
@@ -30,12 +30,12 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestroy {
+export class DashboardCursosIntersemestralesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
   private cursoEstadosService = inject(CursoEstadosService);
   private authService = inject(AuthService);
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   
   usuario: UsuarioSesion | null = null;
   cursosActivos: CursoOfertadoVerano[] = [];
@@ -57,11 +57,6 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   private cargarDatos(): void {
     this.cargarEstadisticas();
     this.cargarCursosActivos();
@@ -71,7 +66,7 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
     this.cargandoEstadisticas = true;
     
     this.cursosService.getDashboardEstadisticas()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (estadisticas: DashboardEstadisticas) => {
           this.estadisticas = estadisticas;
@@ -92,7 +87,7 @@ export class DashboardCursosIntersemestralesComponent implements OnInit, OnDestr
 
   private cargarCursosActivos(): void {
     this.cursosService.getTodosLosCursosParaFuncionarios()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cursos) => {
           // NO filtrar cursos, mostrar todos (incluso con campos null)

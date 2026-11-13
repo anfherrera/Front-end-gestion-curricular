@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -17,8 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 
 import { EstadisticasService } from '@core/services/estadisticas.service';
@@ -95,7 +95,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   chartTendencias: Chart | null = null;
 
   // ===== SUBSCRIPCIONES =====
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     // Inicializar formulario de filtros
@@ -106,7 +106,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     
     // Cargar programas disponibles
     this.estadisticasService.getProgramasDisponibles()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(programas => this.programasDisponibles = programas);
     
     // Cargar primero las tendencias temporales de forma optimizada para una carga más rápida
@@ -121,8 +121,6 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     this.destruirGraficos();
   }
 
@@ -179,7 +177,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    */
   cargarTendenciasTemporalesOptimizadas(): void {
     const filtros = this.obtenerFiltrosActuales();
-    this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).pipe(takeUntil(this.destroy$)).subscribe({
+    this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         // Asignar solo los datos de tendencias temporales
         this.tendenciasTemporalesData = response.tendenciasTemporales || [];
@@ -205,7 +203,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.error = null;
     const filtros = this.obtenerFiltrosActuales();
     this.estadisticasService.getCursosVeranoEstadisticas(filtros).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.data = response;
@@ -473,7 +471,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   private exportar(peticion$: Observable<Blob>, nombreArchivo: string, formato: string): void {
-    peticion$.pipe(takeUntil(this.destroy$)).subscribe({
+    peticion$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob) => {
         if (blob && blob.size > 0) {
           descargarBlob(blob, nombreArchivo);

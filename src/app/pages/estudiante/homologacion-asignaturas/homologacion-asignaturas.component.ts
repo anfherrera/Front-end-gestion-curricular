@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -23,7 +24,6 @@ import { AuthService } from '@core/services/auth.service';
 import { LoggerService } from '@core/services/logger.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
-import { Subject, takeUntil } from 'rxjs';
 
 import { Solicitud } from '@core/models/procesos.model';
 import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '@core/utils/texto.util';
@@ -54,7 +54,7 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css']
 })
-export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
+export class HomologacionAsignaturasComponent implements OnInit {
   private homologacionService = inject(HomologacionAsignaturasService);
   private formatosService = inject(FormatosInstitucionalesService);
   private snackbar = inject(SnackbarService);
@@ -68,7 +68,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   documentosRequeridos = [
     { label: 'PM-FO-4-FOR-22 Solicitud homologación de materias', obligatorio: true, formatoDisponibleUrl: '' as string },
@@ -117,11 +117,6 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.verificarFuncionalidadComentarios();
     }, 2000);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   onArchivosChange(archivos: Archivo[]) {
@@ -185,7 +180,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
     // Paso 1: Subir archivos al backend
     this.fileUploadComponent.subirArchivosPendientes()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (archivosSubidos) => {
         this.logger.debug('Archivos subidos correctamente', archivosSubidos);
@@ -232,7 +227,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
         this.logger.debug('Creando solicitud con archivos', solicitud);
 
   this.homologacionService.crearSolicitud(solicitud)
-    .pipe(takeUntil(this.destroy$))
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
     next: (resp) => {
       this.logger.debug('Solicitud creada en backend', resp);
@@ -287,7 +282,7 @@ listarSolicitudes() {
   });
 
   this.homologacionService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario)
-    .pipe(takeUntil(this.destroy$))
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
     next: (data) => {
       this.logger.debug('Respuesta del backend', {
@@ -435,7 +430,7 @@ verComentarios(solicitudId: number): void {
   });
 
   dialogRef.afterClosed()
-    .pipe(takeUntil(this.destroy$))
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe(() => {
     this.logger.debug('Diálogo de comentarios cerrado');
   });
@@ -497,7 +492,7 @@ descargarOficio(idOficio: number, nombreArchivo: string): void {
  */
 private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
   this.homologacionService.obtenerOficios(idSolicitud)
-    .pipe(takeUntil(this.destroy$))
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
     next: (oficios) => {
       this.logger.debug('Oficios obtenidos', oficios);
@@ -530,7 +525,7 @@ private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string,
   this.logger.debug('Descargando archivo por nombre', { nombreArchivo, nombreDescarga, idSolicitud });
 
   this.homologacionService.descargarOficioConNombre(idSolicitud || 1)
-    .pipe(takeUntil(this.destroy$))
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
     next: (response) => {
       // Sin Content-Disposition se usa el nombre que vino de obtenerOficios

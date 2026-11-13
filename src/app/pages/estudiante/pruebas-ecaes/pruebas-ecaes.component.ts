@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -10,8 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
 import { ArchivosService } from '@core/services/archivos.service';
@@ -53,7 +52,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
 })
-export class PruebasEcaesComponent implements OnInit, OnDestroy {
+export class PruebasEcaesComponent implements OnInit {
   private pruebasEcaesService = inject(PruebasEcaesService);
   private archivosService = inject(ArchivosService);
   private snackbar = inject(SnackbarService);
@@ -95,7 +94,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
   // Opciones de tipo de documento (se cargan desde el backend)
   tiposDocumento: { value: string, label: string }[] = [];
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.solicitudForm = this.fb.group({
@@ -133,17 +132,12 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     this.listarSolicitudes();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   /**
    * Carga los tipos de documento disponibles desde el backend
    */
   cargarTiposDocumento(): void {
     this.pruebasEcaesService.listarTiposDocumento().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (tipos) => {
         // Solo los valores que acepta el backend (CC y CE)
@@ -198,7 +192,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
   cargarFechasEcaes(): void {
     this.pruebasEcaesService.listarFechasEcaes().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (fechas) => {
         this.fechasEcaes = fechas;
@@ -289,7 +283,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
         const file = await this.convertirArchivoAFile(archivo);
 
         const response = await this.archivosService.subirPDF(file).pipe(
-          takeUntil(this.destroy$)
+          takeUntilDestroyed(this.destroyRef)
         ).toPromise();
         this.logger.log('Archivo subido:', response);
 
@@ -381,7 +375,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     this.logger.debug('Usuario completo:', this.usuario);
 
     this.pruebasEcaesService.crearSolicitudEcaes(solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response: SolicitudEcaesResponse) => {
         this.logger.log('Solicitud creada en backend:', response);
@@ -454,7 +448,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
 
     // Usar el endpoint específico por rol y usuario
     this.pruebasEcaesService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (data) => {
         this.logger.debug('Respuesta del backend (raw):', data);
@@ -524,7 +518,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.logger.debug('Diálogo de información cerrado');
     });
@@ -605,7 +599,7 @@ export class PruebasEcaesComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.logger.debug('Diálogo de comentarios cerrado');
     });

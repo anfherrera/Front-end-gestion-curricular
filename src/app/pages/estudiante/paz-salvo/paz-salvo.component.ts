@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -9,7 +10,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { Subject, takeUntil } from 'rxjs';
 
 import { descargarBlob } from '@core/utils/download.util';
 import { Archivo, Solicitud, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
@@ -65,7 +65,7 @@ interface DatosSolicitudPazSalvo {
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css']
 })
-export class PazSalvoComponent implements OnInit, OnDestroy {
+export class PazSalvoComponent implements OnInit {
   private pazSalvoService = inject(PazSalvoService);
   private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
@@ -76,7 +76,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
   @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   solicitudes: Solicitud[] = [];
   solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
@@ -127,11 +127,6 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
     this.requiereTrabajoGrado = !this.esTelematica() && this.programaConTrabajoDeGrado();
     this.configurarValidacionesCondicionales();
     this.listarSolicitudes();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   /** Nombre del programa en minúsculas y sin tildes. */
@@ -239,7 +234,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       return;
     }
     this.pazSalvoService.listarSolicitudesPorRol('ESTUDIANTE', this.usuario.id_usuario)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
           if (!Array.isArray(data)) {
@@ -273,11 +268,11 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
 
     // 1. Se suben los documentos sin asociarlos; 2. se crea la solicitud y el backend los asocia.
     this.fileUploadComponent.subirArchivosPendientes()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (archivosSubidos) => {
           this.pazSalvoService.crearSolicitudConFormulario(usuario.id_usuario, archivosSubidos, this.datosSolicitud())
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
               next: () => this.despuesDeEnviar(),
               error: (err) => {
@@ -357,7 +352,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).pipe(takeUntil(this.destroy$)).subscribe({
+    this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comentarios) => {
         const documentos = comentarios.documentosConComentarios?.map(doc => ({
           id: doc.id,
@@ -384,7 +379,7 @@ export class PazSalvoComponent implements OnInit, OnDestroy {
    * Content-Disposition o, si no viene, del primer oficio de la solicitud.
    */
   descargarOficio(idSolicitud: number, nombreArchivo: string): void {
-    this.pazSalvoService.descargarOficioPorSolicitud(idSolicitud).pipe(takeUntil(this.destroy$)).subscribe({
+    this.pazSalvoService.descargarOficioPorSolicitud(idSolicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob) => {
         descargarBlob(blob, blob.filename || nombreArchivo || `oficio_${idSolicitud}.pdf`);
         this.snackbar.exito('Oficio descargado exitosamente');

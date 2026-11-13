@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -10,8 +11,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { AuthService } from '@core/services/auth.service';
@@ -43,7 +42,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   templateUrl: './notificaciones.component.html',
   styleUrls: ['./notificaciones.component.css']
 })
-export class NotificacionesComponent implements OnInit, OnDestroy {
+export class NotificacionesComponent implements OnInit {
   private notificacionService = inject(NotificacionesService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -69,15 +68,10 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     { valor: TipoSolicitud.CURSO_VERANO_INSCRIPCION, etiqueta: 'Cursos Verano - Inscripción' }
   ];
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.cargarNotificaciones();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   cargarNotificaciones(): void {
@@ -112,7 +106,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     }
 
     observable.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (notificaciones: Notificacion[]) => {
         // Enriquecer notificaciones con campos calculados
@@ -185,7 +179,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     }
 
     this.notificacionService.marcarComoLeida(notificacion.id_notificacion).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         notificacion.leida = true;
@@ -210,7 +204,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     }
 
     this.notificacionService.marcarTodasComoLeidas(usuarioId).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.todasLasNotificaciones.forEach(n => n.leida = true);

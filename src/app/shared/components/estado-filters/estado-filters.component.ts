@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, inject } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -8,7 +9,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CursoEstadosService, EstadoCurso } from '@core/services/curso-estados.service';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import { CursoOfertadoVerano } from '@core/models/cursos-intersemestrales.model';
-import { Subject, takeUntil } from 'rxjs';
 import { estadoCurso } from '@core/utils/cursos-verano.utils';
 
 @Component({
@@ -23,7 +23,7 @@ import { estadoCurso } from '@core/utils/cursos-verano.utils';
   templateUrl: './estado-filters.component.html',
   styleUrl: './estado-filters.component.css'
 })
-export class EstadoFiltersComponent implements OnInit, OnDestroy {
+export class EstadoFiltersComponent implements OnInit {
   private cursoEstadosService = inject(CursoEstadosService);
   private cursosService = inject(CursosIntersemestralesService);
 
@@ -31,7 +31,7 @@ export class EstadoFiltersComponent implements OnInit, OnDestroy {
   @Output() cursosFiltradosChange = new EventEmitter<CursoOfertadoVerano[]>();
   @Output() estadoSeleccionadoChange = new EventEmitter<string>();
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   
   estadosDisponibles: EstadoCurso[] = [];
   estadoSeleccionado = '';
@@ -47,11 +47,6 @@ export class EstadoFiltersComponent implements OnInit, OnDestroy {
     this.aplicarFiltro();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   onEstadoChange(estado: string): void {
     // Cambiando filtro a estado
     this.estadoSeleccionado = estado;
@@ -61,7 +56,7 @@ export class EstadoFiltersComponent implements OnInit, OnDestroy {
     if (estado) {
       // Llamar al backend para obtener cursos específicos por estado
       this.cursosService.getCursosPorEstado(estado)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (cursos) => {
             // Cursos obtenidos para estado
@@ -115,7 +110,7 @@ export class EstadoFiltersComponent implements OnInit, OnDestroy {
     // Actualizar conteos desde el backend para cada estado
     this.estadosDisponibles.forEach(estado => {
       this.cursosService.getCursosPorEstado(estado.value)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (cursos) => {
             this.conteosEstados[estado.value] = cursos.length;

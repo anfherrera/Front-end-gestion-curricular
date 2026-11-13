@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,8 +12,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
@@ -48,7 +47,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
 })
-export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
+export class PruebasEcaesFuncionarioComponent implements OnInit {
   pruebasEcaesService = inject(PruebasEcaesService);
   private snackbar = inject(SnackbarService);
   private fb = inject(FormBuilder);
@@ -56,7 +55,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
   private logger = inject(LoggerService);
   private errorHandler = inject(ErrorHandlerService);
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   // Formulario para publicar fechas
   fechasForm: FormGroup;
@@ -93,7 +92,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     
     // Suscribirse a cambios en el período académico para detectar fechas existentes
     this.fechasForm.get('periodoAcademico')?.valueChanges.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(periodo => {
       // Solo buscar si el período realmente cambió y no estamos cargando fechas
       if (periodo && periodo !== this.periodoAnterior && !this.cargandoFechas) {
@@ -113,18 +112,13 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
     this.cargarSolicitudesPendientes();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   /**
    * Carga los períodos académicos disponibles desde el backend
    */
   private cargarPeriodosAcademicos(): void {
     // Todos los períodos o, si no hay, los recientes; si fallan los dos, la lista fija
     this.periodosService.getValoresPeriodos().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(periodos => {
       if (periodos.length > 0) {
         this.periodosAcademicos = periodos;
@@ -149,7 +143,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
   cargarSolicitudesPendientes(): void {
     this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (solicitudes) => {
         // Transformar datos para RequestStatusTableComponent
@@ -194,7 +188,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
   buscarFechasExistentes(periodoAcademico: string): void {
     this.cargandoFechas = true;
     this.pruebasEcaesService.buscarFechasPorPeriodo(periodoAcademico).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (fechas) => {
         this.logger.log('Fechas encontradas para período:', periodoAcademico, fechas);
@@ -316,7 +310,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
       : this.pruebasEcaesService.publicarFechasEcaes(fechasData);
 
     operacion.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.logger.log('Fechas ' + (this.esModoEdicion ? 'actualizadas' : 'publicadas') + ' exitosamente:', response);
@@ -392,7 +386,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
     // Buscar la solicitud original por ID
     this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (solicitudes) => {
         this.selectedSolicitud = solicitudes.find(sol => sol.id_solicitud === solicitudId) || null;
@@ -423,7 +417,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
   onComentarioAgregado(event: {documento: any, comentario: string}): void {
     if (event.documento.id_documento) {
       this.pruebasEcaesService.agregarComentario(event.documento.id_documento, event.comentario).pipe(
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       ).subscribe({
         next: () => {
           this.snackbar.exito('Comentario añadido correctamente');
@@ -460,7 +454,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
     // Usar el método específico approveRequest
     this.pruebasEcaesService.approveRequest(this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.logger.log('Solicitud ECAES aprobada exitosamente:', response);
@@ -490,7 +484,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit, OnDestroy {
 
     // Usar el método específico rejectRequest
     this.pruebasEcaesService.rejectRequest(this.selectedSolicitud.id_solicitud, 'Solicitud rechazada por el funcionario').pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.logger.log('Solicitud ECAES rechazada exitosamente:', response);

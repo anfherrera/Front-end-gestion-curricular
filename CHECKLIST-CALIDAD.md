@@ -190,7 +190,13 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 ## Fase 6 — Angular moderno y tipado
 
 - [ ] **Tipado**: hay 282 `any` (los que más tienen: `api.service` con 20, `secretaria/reingreso` con 13, `form-usuario` con 11, `manage-processes` con 8). Reemplazarlos por las interfaces de `core/models`
-- [ ] **Suscripciones**: hay 430 `.subscribe(` y solo 195 `takeUntil`/`takeUntilDestroyed`. Revisar posibles fugas de memoria y usar `takeUntilDestroyed()`, el pipe `async` o `toSignal`
+- [x] **Suscripciones** (2026-11-13): hay 244 `.subscribe(` fuera de los specs. Se revisaron todas las que no terminan solas (`$` de servicios, `valueChanges`, `router.events`, `route.params`, `interval`); las HTTP y `afterClosed()` terminan solas
+  - Fugas reales corregidas: **configurar-periodo** se suscribía a `periodoActual$` (un `BehaviorSubject` de un servicio raíz) sin soltarlo, así que cada visita sumaba un suscriptor. Ahora se suscribe una vez en `ngOnInit` con `takeUntilDestroyed`, igual que `valueChanges`. **breadcrumb** escuchaba `router.events` sin cortar
+  - Las 108 `takeUntil(this.destroy$)` de 18 componentes pasan por script a `takeUntilDestroyed(this.destroyRef)`, que ya usaban otras 50. Se borran los `Subject` `destroy$` y los `ngOnDestroy` que solo hacían `next()`/`complete()` (en los dashboards estadísticos se quedan para destruir los gráficos). Ya no queda ningún `takeUntil(`
+  - `route.params` en form-docente, form-programa y form-usuario también con `takeUntilDestroyed`
+  - Se dejan como están las `Subscription` manuales que hay que cortar antes de destruir (intervalo de login, sondeo de notificaciones) o que ya se sueltan bien (header, notifications-header y los 4 componentes del módulo estadístico)
+  - Spec CI-011 de cursos-intersemestrales: ya no espía `destroy$`; comprueba que al destruir el componente nadie sigue escuchando `router.events`. 564/564 y `test:navegacion` sin backend correcto
+  - Sin cambios visibles esperados
 - [x] **Inyección de dependencias** (2026-11-13): todo usa `inject()`. Migración `ng generate @angular/core:inject` en 83 archivos (componentes, servicios, guards y un spec); `@angular-eslint/prefer-inject` pasa a `error`. Los avisos `prefer-inject` bajan de 282 a 0
   - Spec ajustado: SEC-035-A creaba `new AuthService(router, http, …)`; ahora lo crea con `TestBed.runInInjectionContext(() => new AuthService())`
   - Sin cambios visibles esperados

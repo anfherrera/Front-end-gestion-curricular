@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 
 import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 /** Miga de pan según Sistema de Diseño TIC (pág. 49) - Solo cuando hay más de 3 niveles */
 @Component({
@@ -86,7 +87,8 @@ export class BreadcrumbComponent {
 
   constructor() {
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
+      filter(event => event instanceof NavigationEnd),
+      takeUntilDestroyed()
     ).subscribe(() => this.buildBreadcrumb());
     this.buildBreadcrumb();
   }

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -32,6 +33,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
   private fb = inject(FormBuilder);
   private periodosService = inject(PeriodosAcademicosService);
   private snackbar = inject(SnackbarService);
+  private readonly destroyRef = inject(DestroyRef);
 
   configForm: FormGroup;
   periodosDisponibles: PeriodoAcademico[] = [];
@@ -48,10 +50,17 @@ export class ConfigurarPeriodoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Período actual: el servicio lo emite cada vez que cambia
+    this.periodosService.periodoActual$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(periodo => {
+        this.periodoActual = periodo;
+      });
+
     this.cargarDatos();
-    
+
     // Suscribirse a cambios en el modo
-    this.configForm.get('modo')?.valueChanges.subscribe(modo => {
+    this.configForm.get('modo')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(modo => {
       if (modo === 'automatico') {
         this.configForm.get('periodoSeleccionado')?.clearValidators();
       } else {
@@ -81,10 +90,6 @@ export class ConfigurarPeriodoComponent implements OnInit {
     });
 
     // Cargar período actual
-    this.periodosService.periodoActual$.subscribe(periodo => {
-      this.periodoActual = periodo;
-    });
-
     if (!this.periodosService.getPeriodoActualValue()) {
       this.periodosService.getPeriodoActual().subscribe();
     } else {

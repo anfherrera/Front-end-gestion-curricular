@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -33,6 +34,7 @@ export class FormProgramaComponent implements OnInit {
   private programasService = inject(ProgramasService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private snackbar = inject(SnackbarService);
 
   programaForm: FormGroup;
@@ -56,7 +58,7 @@ export class FormProgramaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
         this.programaId = +params['id'];

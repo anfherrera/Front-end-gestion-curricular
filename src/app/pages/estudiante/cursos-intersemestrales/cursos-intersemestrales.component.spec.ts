@@ -144,13 +144,14 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     });
 
     it('CI-011: Debe limpiar suscripciones al destruir el componente', () => {
-      const destroySpy = spyOn((component as any).destroy$, 'next');
-      const completeSpy = spyOn((component as any).destroy$, 'complete');
-      
-      component.ngOnDestroy();
-      
-      expect(destroySpy).toHaveBeenCalled();
-      expect(completeSpy).toHaveBeenCalled();
+      spyOnProperty(router, 'events').and.returnValue(routerEventsSubject);
+      const nuevoFixture = TestBed.createComponent(CursosIntersemestralesComponent);
+      nuevoFixture.detectChanges();
+      expect(routerEventsSubject.observed).toBeTrue();
+
+      nuevoFixture.destroy();
+
+      expect(routerEventsSubject.observed).toBeFalse();
       metricasUsabilidad.validacionesCorrectas++;
     });
 

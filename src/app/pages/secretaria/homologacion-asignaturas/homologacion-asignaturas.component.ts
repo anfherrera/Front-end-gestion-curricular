@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
 import { DocumentGeneratorService } from '@core/services/document-generator.service';
@@ -36,7 +35,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['../secretaria-comun.css', './homologacion-asignaturas.component.css']
 })
-export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
+export class HomologacionAsignaturasComponent implements OnInit {
   homologacionService = inject(HomologacionAsignaturasService);
   private documentGeneratorService = inject(DocumentGeneratorService);
   private snackbar = inject(SnackbarService);
@@ -59,7 +58,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
   // Nueva propiedad para controlar la habilitación del generador de documentos
   documentoHabilitado = false;
 
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     // Inicializar plantilla para homologación
@@ -77,17 +76,12 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     this.cargarSolicitudesAprobadas();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   /**
    * Cargar solicitudes pendientes para secretaría (solo las aprobadas por coordinador)
    */
   cargarSolicitudes(): void {
     this.homologacionService.getSecretariaRequests().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (sols) => {
         // Transformar datos para RequestStatusTableComponent
@@ -116,7 +110,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     this.cargandoSolicitudesAprobadas = true;
 
     this.homologacionService.getSecretariaApprovedRequests().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (solicitudes) => {
         this.solicitudesAprobadas = solicitudes.map((solicitud) => ({
@@ -156,7 +150,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
     // Buscar la solicitud original por ID
     this.homologacionService.getSecretariaRequests().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (sols) => {
         this.selectedSolicitud = sols.find(sol => sol.id_solicitud === solicitudId);
@@ -186,7 +180,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
     this.logger.log('Generando documento:', request);
 
     this.documentGeneratorService.generarDocumento(request).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (blob) => {
         this.logger.log('Documento generado exitosamente');
@@ -248,7 +242,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
     // Usar endpoint específico de homologación: subir-resolucion
     this.homologacionService.subirResolucion(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.logger.log('Archivo PDF subido exitosamente:', response);
@@ -278,7 +272,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
     // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
     this.homologacionService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.logger.log('Estado de solicitud actualizado a APROBADA');
@@ -318,7 +312,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
     // Usar endpoint específico de homologación: subir-resolucion
     this.homologacionService.subirResolucion(this.archivoPDF, this.selectedSolicitud.id_solicitud).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         this.logger.log('Archivo PDF subido exitosamente:', response);
@@ -336,7 +330,7 @@ export class HomologacionAsignaturasComponent implements OnInit, OnDestroy {
 
         // Actualizar estado de la solicitud a APROBADA cuando se envía el PDF
         this.homologacionService.approveDefinitively(this.selectedSolicitud.id_solicitud).pipe(
-          takeUntil(this.destroy$)
+          takeUntilDestroyed(this.destroyRef)
         ).subscribe({
           next: () => {
             this.logger.log('Estado de solicitud actualizado a APROBADA');
