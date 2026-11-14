@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 /** Miga de pan según Sistema de Diseño TIC (pág. 49) - Solo cuando hay más de 3 niveles */
 @Component({
   selector: 'app-breadcrumb',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterModule],
   template: `
     @if (items().length > 0) {

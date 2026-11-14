@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { Notificacion } from '@core/models/notificaciones.model';
@@ -9,6 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-notificaciones-guia',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   templateUrl: './notificaciones-guia.component.html',
   styleUrls: ['./notificaciones-guia.component.css']

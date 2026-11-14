@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +18,7 @@ export interface ConfirmDialogData {
 /** Pregunta de sí/no. Se cierra con `true` si se confirma y `false` si se cancela. */
 @Component({
   selector: 'app-confirm-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatDialogModule, MatButtonModule, MatIconModule],
   template: `
     <h2 mat-dialog-title class="titulo">

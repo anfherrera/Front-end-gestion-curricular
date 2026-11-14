@@ -215,7 +215,10 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [ ] **OnPush**: solo 5 de 88 componentes lo usan. Activarlo empezando por los de `shared`
+- [ ] **OnPush**: lo usan 20 de 86 componentes (eran 6). Falta llevarlo a las páginas
+  - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
+  - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
+  - Sin cambios visibles esperados
 
 ---
 

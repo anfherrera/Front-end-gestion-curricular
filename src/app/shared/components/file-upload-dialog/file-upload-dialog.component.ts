@@ -1,4 +1,4 @@
-import { Component, OnChanges, SimpleChanges, inject, input, model, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnChanges, SimpleChanges, inject, input, model, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,7 @@ const TAMANO_MAXIMO = 10 * 1024 * 1024; // 10MB
 
 @Component({
   selector: 'app-file-upload',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatButtonModule, MatIconModule],
   templateUrl: './file-upload-dialog.component.html',
   styleUrls: ['./file-upload-dialog.component.css']

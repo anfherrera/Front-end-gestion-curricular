@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, input, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { CardContainerComponent } from '../card-container/card-container.compone
 import { RequestStatusTableComponent } from '../request-status/request-status.component';
 @Component({
   selector: 'app-approved-requests-section',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
     MatIconModule,

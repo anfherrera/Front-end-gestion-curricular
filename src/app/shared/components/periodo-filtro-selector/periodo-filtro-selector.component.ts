@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject, input, output, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DestroyRef, OnInit, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,6 +26,7 @@ interface OpcionPeriodo {
  */
 @Component({
   selector: 'app-periodo-filtro-selector',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatFormFieldModule,
     MatSelectModule,

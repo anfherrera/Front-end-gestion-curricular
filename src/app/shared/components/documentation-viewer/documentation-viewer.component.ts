@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DestroyRef, computed, inject, input, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -25,6 +25,7 @@ export interface ServicioDocumentos {
 
 @Component({
   selector: 'app-documentation-viewer',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTableModule,
     MatButtonModule,

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,7 @@ import { EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
 import { normalizarEstado } from '@core/utils/estado-solicitud.util';
 @Component({
   selector: 'app-oficio-descarga',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatCardModule, MatButtonModule, MatIconModule],
   templateUrl: './oficio-descarga.component.html',
   styleUrls: ['./oficio-descarga.component.css']

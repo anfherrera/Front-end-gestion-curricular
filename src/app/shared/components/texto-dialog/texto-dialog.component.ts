@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -40,6 +40,7 @@ export function datosRechazo(
 
 @Component({
   selector: 'app-texto-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './texto-dialog.component.html',
   styleUrls: ['./texto-dialog.component.css']

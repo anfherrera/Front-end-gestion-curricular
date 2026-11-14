@@ -1,4 +1,4 @@
-import { Component, OnInit, input, inject, DestroyRef, output, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, input, inject, DestroyRef, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { estadoCurso } from '@core/utils/cursos-verano.utils';
 
 @Component({
   selector: 'app-estado-filters',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatFormFieldModule,
     MatSelectModule,

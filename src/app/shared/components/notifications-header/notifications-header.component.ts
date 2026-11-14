@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, inject, input, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ViewChild, inject, input, signal } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +23,7 @@ import {
 
 @Component({
   selector: 'app-notifications-header',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatIconModule,
     MatButtonModule,
