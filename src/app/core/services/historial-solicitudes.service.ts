@@ -24,7 +24,7 @@ export interface HistorialSolicitud {
     correo?: string;
     estado_usuario?: boolean;
     rol?: string | null;
-    objPrograma?: any | null;
+    objPrograma?: { id_programa: number; nombre_programa: string } | null;
   };
   estadosSolicitud: {
     id_estado?: number;
@@ -32,7 +32,51 @@ export interface HistorialSolicitud {
     fecha_registro_estado: string;
     comentario?: string | null;
   }[];
-  documentos?: any[];
+  documentos?: unknown[];
+}
+
+/** Detalle de una solicitud (GET del historial por id). */
+export interface EstadoDetalle {
+  id_estado: number;
+  estado_actual: string;
+  fecha_registro_estado: string;
+  comentario?: string | null;
+}
+
+export interface DocumentoDetalle {
+  id_documento: number;
+  nombre_documento: string;
+  ruta_documento: string;
+  tipo_documento: string;
+}
+
+export interface InformacionAdicional {
+  titulo_trabajo_grado?: string;
+  director_trabajo_grado?: string;
+}
+
+export interface DetalleSolicitud {
+  id_solicitud: number;
+  nombre_solicitud: string;
+  periodo_academico: string;
+  fecha_registro_solicitud: string;
+  fecha_ceremonia?: string | null;
+  tipo_solicitud: string;
+  tipo_solicitud_display: string;
+  estado_actual: string;
+  fecha_ultimo_estado: string;
+  usuario: {
+    id_usuario: number;
+    nombre_completo: string;
+    codigo: string;
+    correo?: string;
+    cedula?: string;
+  };
+  historial_estados: EstadoDetalle[];
+  total_estados: number;
+  documentos: DocumentoDetalle[];
+  total_documentos: number;
+  informacion_adicional?: InformacionAdicional;
 }
 
 export interface HistorialResponse {
@@ -137,9 +181,9 @@ export class HistorialSolicitudesService {
    * Obtener historial completo de una solicitud específica
    * @param id ID de la solicitud
    */
-  obtenerHistorialSolicitud(id: number): Observable<any> {
+  obtenerHistorialSolicitud(id: number): Observable<DetalleSolicitud> {
     const url = ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(id);
-    return this.http.get<any>(url).pipe(
+    return this.http.get<DetalleSolicitud>(url).pipe(
       catchError(error => {
         throw error;
       })

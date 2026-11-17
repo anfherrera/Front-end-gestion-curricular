@@ -18,7 +18,7 @@ export class LoggerService {
    * @param message Mensaje a registrar
    * @param args Argumentos adicionales a mostrar
    */
-  log(message: string, ...args: any[]): void {
+  log(message: string, ...args: unknown[]): void {
     if (this.enabled) {
       console.log(message, ...args);
     }
@@ -29,7 +29,7 @@ export class LoggerService {
    * @param message Mensaje de advertencia
    * @param args Argumentos adicionales a mostrar
    */
-  warn(message: string, ...args: any[]): void {
+  warn(message: string, ...args: unknown[]): void {
     if (this.enabled) {
       console.warn(message, ...args);
     }
@@ -40,7 +40,7 @@ export class LoggerService {
    * @param message Mensaje de error
    * @param args Argumentos adicionales a mostrar
    */
-  error(message: string, ...args: any[]): void {
+  error(message: string, ...args: unknown[]): void {
     // Errores siempre se muestran (incluso en producción)
     console.error(message, ...args);
   }
@@ -50,7 +50,7 @@ export class LoggerService {
    * @param message Mensaje informativo
    * @param args Argumentos adicionales a mostrar
    */
-  info(message: string, ...args: any[]): void {
+  info(message: string, ...args: unknown[]): void {
     if (this.enabled) {
       console.info(message, ...args);
     }
@@ -61,7 +61,7 @@ export class LoggerService {
    * @param message Mensaje de depuración
    * @param args Argumentos adicionales a mostrar
    */
-  debug(message: string, ...args: any[]): void {
+  debug(message: string, ...args: unknown[]): void {
     if (this.enabled) {
       console.debug(message, ...args);
     }

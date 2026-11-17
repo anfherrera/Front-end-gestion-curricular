@@ -6,6 +6,8 @@ import { PazSalvoService } from './paz-salvo.service';
 import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
 import { EstadisticasService } from './estadisticas.service';
 import { AuthService } from './auth.service';
+import { Archivo } from '../models/procesos.model';
+import { CreatePreinscripcionDTO } from '../models/cursos-intersemestrales.model';
 
 /**
  * ============================================
@@ -121,7 +123,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
     }));
 
     it('Debe crear solicitud Y actualizar estadísticas', fakeAsync(() => {
-      const mockArchivos: any[] = [
+      const mockArchivos: Archivo[] = [
         { nombre: 'doc.pdf', fecha: new Date().toISOString() }
       ];
 
@@ -197,12 +199,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
     }));
 
     it('Debe crear preinscripción Y obtener mis preinscripciones', fakeAsync(() => {
-      const payload: any = {
+      const payload: CreatePreinscripcionDTO = {
         nombreSolicitud: 'Preinscripción',
         idUsuario: 1,
         idCurso: 1,
-        tipoCurso: 'Regular',
-        condicionSolicitud: 'Normal'
+        condicion: 'Primera_Vez'
       };
 
       // PASO 1: Crear preinscripción
@@ -371,8 +372,8 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
         nombreSolicitud: 'Pre',
         idUsuario: 1,
         idCurso: 1,
-        condicionSolicitud: 'Normal'
-      } as any).subscribe();
+        condicion: 'Primera_Vez'
+      }).subscribe();
       tick();
       req = httpMock.expectOne((r) => r.url.includes('/preinscripciones'));
       req.flush({ id: 1 });

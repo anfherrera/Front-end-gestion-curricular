@@ -54,24 +54,28 @@ function corregirEncoding(texto: string): string {
 /**
  * Corrige el encoding de un objeto completo recursivamente
  */
-export function corregirEncodingObjeto(obj: any): any {
+export function corregirEncodingObjeto<T>(obj: T): T {
+  return corregirValor(obj) as T;
+}
+
+function corregirValor(obj: unknown): unknown {
   if (!obj) return obj;
-  
+
   if (typeof obj === 'string') {
     return corregirEncoding(obj);
   }
-  
+
   if (Array.isArray(obj)) {
-    return obj.map(item => corregirEncodingObjeto(item));
+    return obj.map(item => corregirValor(item));
   }
-  
+
   if (typeof obj === 'object') {
-    const objetoCorregido: any = {};
+    const objetoCorregido: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
-      objetoCorregido[key] = corregirEncodingObjeto(value);
+      objetoCorregido[key] = corregirValor(value);
     }
     return objetoCorregido;
   }
-  
+
   return obj;
 }

@@ -76,7 +76,7 @@ export class NotificacionesComponent implements OnInit {
 
   cargarNotificaciones(): void {
     const usuario = this.authService.getUsuario();
-    const usuarioId = usuario?.id_usuario || usuario?.id;
+    const usuarioId = usuario?.id_usuario;
     if (!usuarioId) {
       this.snackbar.error('No se pudo obtener la información del usuario');
       return;
@@ -198,7 +198,7 @@ export class NotificacionesComponent implements OnInit {
 
   marcarTodasComoLeidas(): void {
     const usuario = this.authService.getUsuario();
-    const usuarioId = usuario?.id_usuario || usuario?.id;
+    const usuarioId = usuario?.id_usuario;
     if (!usuarioId) {
       return;
     }

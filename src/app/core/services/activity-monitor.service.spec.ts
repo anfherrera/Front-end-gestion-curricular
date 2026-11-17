@@ -1,5 +1,5 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { ActivityMonitorService } from './activity-monitor.service';
 
@@ -16,7 +16,7 @@ describe('ActivityMonitorService', () => {
     cerrado = new Subject();
     dialogRef = { afterClosed: () => cerrado, close: jasmine.createSpy('close').and.callFake(() => cerrado.next(undefined)) };
     dialog = jasmine.createSpyObj('MatDialog', ['open']);
-    dialog.open.and.returnValue(dialogRef as any);
+    dialog.open.and.returnValue(dialogRef as unknown as MatDialogRef<unknown>);
     TestBed.configureTestingModule({ providers: [{ provide: MatDialog, useValue: dialog }] });
   });
 

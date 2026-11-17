@@ -10,7 +10,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { HistorialSolicitudesService } from '@core/services/historial-solicitudes.service';
+import { DetalleSolicitud, DocumentoDetalle, HistorialSolicitudesService } from '@core/services/historial-solicitudes.service';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { ArchivosService } from '@core/services/archivos.service';
 import { mensajeDeError } from '@core/utils/http-error.utils';
@@ -18,49 +18,6 @@ import { descargarBlob } from '@core/utils/download.util';
 import { EstadoClasePipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
 import { FechaPipe } from '@shared/pipes/fecha.pipe';
 import { SnackbarService } from '@core/services/snackbar.service';
-
-interface HistorialEstado {
-  id_estado: number;
-  estado_actual: string;
-  fecha_registro_estado: string;
-  comentario?: string | null;
-}
-
-interface Documento {
-  id_documento: number;
-  nombre_documento: string;
-  ruta_documento: string;
-  tipo_documento: string;
-}
-
-interface InformacionAdicional {
-  titulo_trabajo_grado?: string;
-  director_trabajo_grado?: string;
-}
-
-interface DetalleSolicitud {
-  id_solicitud: number;
-  nombre_solicitud: string;
-  periodo_academico: string;
-  fecha_registro_solicitud: string;
-  fecha_ceremonia?: string | null;
-  tipo_solicitud: string;
-  tipo_solicitud_display: string;
-  estado_actual: string;
-  fecha_ultimo_estado: string;
-  usuario: {
-    id_usuario: number;
-    nombre_completo: string;
-    codigo: string;
-    correo?: string;
-    cedula?: string;
-  };
-  historial_estados: HistorialEstado[];
-  total_estados: number;
-  documentos: Documento[];
-  total_documentos: number;
-  informacion_adicional?: InformacionAdicional;
-}
 
 @Component({
   selector: 'app-detalle-solicitud',
@@ -120,7 +77,7 @@ export class DetalleSolicitudComponent implements OnInit {
     });
   }
 
-  descargarDocumento(documento: Documento): void {
+  descargarDocumento(documento: DocumentoDetalle): void {
     // Blob por el servicio en lugar de window.open: así pasa por el interceptor y envía el JWT
     this.archivosService.descargarPDF(documento.nombre_documento).subscribe({
       next: (blob) => descargarBlob(blob, documento.nombre_documento),

@@ -47,7 +47,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const usuario = this.authService.getUsuario();
     if (usuario) {
       this.userName = usuario.nombre_completo;
-      this.userEmail = usuario.correo;
+      this.userEmail = usuario.correo ?? '';
       // Calcular UNA VEZ en ngOnInit
       this.userInitials = this.calculateUserInitials();
       this.userRole = this.calculateUserRole();

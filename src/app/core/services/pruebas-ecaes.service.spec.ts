@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { AuthService } from './auth.service';
-import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from './pruebas-ecaes.service';
+import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from './pruebas-ecaes.service';
 import { LoggerService } from './logger.service';
 import { environment } from '@env/environment';
 
@@ -138,7 +138,7 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
 
   describe('3. Solicitudes ECAES', () => {
     it('EC-007: Debe crear solicitud ECAES', (done) => {
-      const solicitud = {
+      const solicitud: SolicitudEcaesRequest = {
         nombre_solicitud: 'Solicitud ECAES - Test',
         fecha_registro_solicitud: new Date().toISOString(),
         periodo_academico: '2025-1',
@@ -155,14 +155,17 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         fecha_registro_solicitud: solicitud.fecha_registro_solicitud,
         periodo_academico: '2025-1',
         estadosSolicitud: [],
-        objUsuario: {} as any,
+        objUsuario: {
+          id_usuario: 1, nombre_completo: 'Test', rol: { id_rol: 1, nombre: 'ESTUDIANTE' }, codigo: '123', cedula: '123',
+          correo: 't@t.co', estado_usuario: true, objPrograma: { id_programa: 1, codigo: 'IS', nombre_programa: 'Ingeniería de Sistemas' }
+        },
         documentos: [],
         tipoDocumento: 'CC',
         numero_documento: '123',
         fecha_expedicion: '2020-01-01',
         fecha_nacimiento: '1999-01-01'
       };
-      service.crearSolicitudEcaes(solicitud as any).subscribe((res) => {
+      service.crearSolicitudEcaes(solicitud).subscribe((res) => {
         expect(res.id_solicitud).toBe(10);
         done();
       });

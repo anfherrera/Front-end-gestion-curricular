@@ -90,7 +90,7 @@ describe('Seguridad - Guards', () => {
 
     beforeEach(() => {
       roleGuard = TestBed.inject(RoleGuard);
-      route = { data: { role: '' } } as any;
+      route = { data: { role: '' } } as unknown as ActivatedRouteSnapshot;
       state = { url: '/test' } as RouterStateSnapshot;
     });
 
@@ -155,7 +155,7 @@ describe('Seguridad - Guards', () => {
 
     beforeEach(() => {
       roleGuard = TestBed.inject(RoleGuard);
-      route = { data: { role: '' } } as any;
+      route = { data: { role: '' } } as unknown as ActivatedRouteSnapshot;
       state = { url: '/test' } as RouterStateSnapshot;
     });
 
@@ -209,7 +209,7 @@ describe('Seguridad - Guards', () => {
 
     beforeEach(() => {
       roleGuard = TestBed.inject(RoleGuard);
-      route = { data: { role: '' } } as any;
+      route = { data: { role: '' } } as unknown as ActivatedRouteSnapshot;
       state = { url: '/test' } as RouterStateSnapshot;
     });
 
@@ -260,7 +260,7 @@ describe('Seguridad - Guards', () => {
 
     beforeEach(() => {
       roleGuard = TestBed.inject(RoleGuard);
-      route = { data: { role: '' } } as any;
+      route = { data: { role: '' } } as unknown as ActivatedRouteSnapshot;
       state = { url: '/test' } as RouterStateSnapshot;
     });
 
@@ -274,7 +274,7 @@ describe('Seguridad - Guards', () => {
     });
 
     it('SEC-014-B: Debe manejar rol inexistente', () => {
-      authService.getRole.and.returnValue('INVALID_ROLE' as any);
+      authService.getRole.and.returnValue('INVALID_ROLE' as UserRole);
       route.data = { role: 'admin' };
 
       const result = roleGuard.canActivate(route, state);
@@ -292,7 +292,7 @@ describe('Seguridad - Guards', () => {
     });
 
     it('SEC-014-D: Debe bloquear acceso con undefined role', () => {
-      authService.getRole.and.returnValue(undefined as any);
+      authService.getRole.and.returnValue(null);
       route.data = { role: 'admin' };
 
       const result = roleGuard.canActivate(route, state);
@@ -312,7 +312,7 @@ describe('Seguridad - Guards', () => {
 
     beforeEach(() => {
       roleGuard = TestBed.inject(RoleGuard);
-      route = { data: {} } as any;
+      route = { data: {} } as unknown as ActivatedRouteSnapshot;
       state = { url: '/test' } as RouterStateSnapshot;
     });
 

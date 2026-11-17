@@ -4,6 +4,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { AuthService } from './auth.service';
 import { ReingresoEstudianteService } from './reingreso-estudiante.service';
+import { SolicitudReingresoDTOPeticion } from '../models/procesos.model';
 import { LoggerService } from './logger.service';
 import { environment } from '@env/environment';
 
@@ -97,7 +98,7 @@ describe('ReingresoEstudianteService - Pruebas Unitarias', () => {
 
   describe('3. Crear y actualizar estado', () => {
     it('RE-010: crearSolicitud debe enviar POST', (done) => {
-      const body = { nombre_solicitud: 'Reingreso Test', objUsuario: {} } as any;
+      const body = { nombre_solicitud: 'Reingreso Test', objUsuario: {} } as unknown as SolicitudReingresoDTOPeticion;
       service.crearSolicitud(body).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-Reingreso`);
       expect(req.request.method).toBe('POST');

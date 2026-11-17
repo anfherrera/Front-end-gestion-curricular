@@ -6,7 +6,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { UserRole } from '../enums/roles.enum';
 import { HttpClient } from '@angular/common/http';
 import { ApiEndpoints } from '../utils/api-endpoints';
-import { LoginRespuesta } from '../models/usuario-sesion.model';
+import { LoginRespuesta, UsuarioSesion } from '../models/usuario-sesion.model';
 import { ActivityMonitorService } from './activity-monitor.service';
 import { SnackbarService } from './snackbar.service';
 
@@ -29,7 +29,7 @@ export class AuthService {
 
   private roleSubject = new BehaviorSubject<UserRole | null>(null);
   role$ = this.roleSubject.asObservable();
-  private logoutTimer: any;
+  private logoutTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
     this.restoreRoleFromStorage(); // restaura rol al recargar la página
@@ -93,7 +93,7 @@ export class AuthService {
    * Almacena la información del usuario en localStorage
    * @param usuario Objeto con la información del usuario
    */
-  setUsuario(usuario: any): void {
+  setUsuario(usuario: UsuarioSesion): void {
     const storage = this.safeLocalStorage();
     if (storage) {
       storage.setItem(this.USER_KEY, JSON.stringify(usuario));
@@ -105,14 +105,14 @@ export class AuthService {
    * Sincroniza el rol del usuario con el almacenado en localStorage
    * @returns Objeto con la información del usuario o null si no existe
    */
-  getUsuario(): any | null {
+  getUsuario(): UsuarioSesion | null {
     const storage = this.safeLocalStorage();
     if (!storage) return null;
 
     const userData = storage.getItem(this.USER_KEY);
     if (!userData) return null;
-    
-    const usuario = JSON.parse(userData);
+
+    const usuario = JSON.parse(userData) as UsuarioSesion | null;
     
     // CORRECCIÓN: Sincronizar el rol del localStorage con el del usuario
     if (usuario?.rol?.nombre) {

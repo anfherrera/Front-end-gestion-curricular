@@ -2,7 +2,7 @@
  * Utilidades para el sistema de notificaciones
  */
 
-import { Notificacion } from '../models/notificaciones.model';
+import { Notificacion, NotificacionDTORespuesta } from '../models/notificaciones.model';
 import { fechaRelativa } from './fecha.util';
 
 /**
@@ -68,7 +68,7 @@ export function getCategoriaDisplay(tipoSolicitud: string): string {
 /**
  * Enriquece una notificación con campos calculados
  */
-function enrichNotificacion(notificacion: any): Notificacion {
+function enrichNotificacion(notificacion: NotificacionDTORespuesta): Notificacion {
   return {
     ...notificacion,
     tiempoTranscurrido: fechaRelativa(notificacion.fechaCreacion),
@@ -81,7 +81,7 @@ function enrichNotificacion(notificacion: any): Notificacion {
 /**
  * Enriquece un array de notificaciones
  */
-export function enrichNotificaciones(notificaciones: any[]): Notificacion[] {
+export function enrichNotificaciones(notificaciones: NotificacionDTORespuesta[]): Notificacion[] {
   return notificaciones.map(enrichNotificacion);
 }
 

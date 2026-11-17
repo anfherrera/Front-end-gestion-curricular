@@ -1,7 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
-import { CursoOfertadoVerano, CreatePreinscripcionDTO, CreateInscripcionDTO, SolicitudCursoVerano } from '../models/cursos-intersemestrales.model';
+import {
+  CursoOfertadoVerano, CreatePreinscripcionDTO, CreateInscripcionDTO, SolicitudCursoVerano,
+  CondicionSolicitudVerano, EstudianteElegible, Materia
+} from '../models/cursos-intersemestrales.model';
 import { AuthService } from './auth.service';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { environment } from '@env/environment';
@@ -401,7 +404,10 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener estudiantes elegibles para inscripción', (done) => {
-      const estudiantesElegibles = [{ nombre_completo: 'Juan Pérez', codigo: '123' }] as any;
+      const estudiantesElegibles: EstudianteElegible[] = [{
+        nombre_completo: 'Juan Pérez', codigo: '123', id_solicitud: 1, id_curso: 10,
+        tipo_solicitud: 'PREINSCRIPCION', condicion_solicitud: 'Primera_Vez', tiene_inscripcion_formal: false
+      }];
 
       service.getEstudiantesElegibles(10).subscribe((result) => {
         expect(result).toEqual(estudiantesElegibles);
@@ -416,7 +422,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
 
   describe('Solicitudes de curso nuevo', () => {
     it('debe obtener materias disponibles', (done) => {
-      const materias = [{ id_materia: 1, nombre: 'Matemáticas', codigo: 'MAT-101' }] as any;
+      const materias: Materia[] = [{ id_materia: 1, nombre: 'Matemáticas', codigo: 'MAT-101', creditos: 4 }];
 
       service.getMateriasDisponibles().subscribe((result) => {
         expect(result).toEqual(materias);
@@ -429,7 +435,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     });
 
     it('debe obtener condiciones de solicitud', (done) => {
-      const condiciones = ['Primera_Vez', 'Habilitación', 'Repetición'] as any;
+      const condiciones = Object.values(CondicionSolicitudVerano);
 
       service.getCondicionesSolicitud().subscribe((result) => {
         expect(result).toEqual(condiciones);
@@ -534,7 +540,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
 
   describe('Consultas adicionales', () => {
     it('debe obtener todas las materias', (done) => {
-      const materias = [{ id_materia: 1, nombre: 'Matemáticas' }] as any;
+      const materias: Materia[] = [{ id_materia: 1, nombre: 'Matemáticas', codigo: 'MAT-101', creditos: 4 }];
 
       service.getTodasLasMaterias().subscribe((result) => {
         expect(result).toEqual(materias);

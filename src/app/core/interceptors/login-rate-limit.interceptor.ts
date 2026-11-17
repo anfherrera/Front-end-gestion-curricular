@@ -24,7 +24,7 @@ export function getLoginCooldownRemainingSeconds(): number {
   return remaining > 0 ? remaining : 0;
 }
 
-export const loginRateLimitInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
+export const loginRateLimitInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 429) {

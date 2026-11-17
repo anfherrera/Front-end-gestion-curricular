@@ -40,7 +40,7 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
 
     it('HA-002: Debe incluir Authorization en headers', (done) => {
       service.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe(() => done());
-      const req = httpMock.expectOne((r: any) => r.url.includes('/listarSolicitud-Homologacion/porRol'));
+      const req = httpMock.expectOne((r) => r.url.includes('/listarSolicitud-Homologacion/porRol'));
       expect(req.request.headers.has('Authorization')).toBe(true);
       req.flush([]);
     });
@@ -52,7 +52,7 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
         expect(solicitudes).toEqual([]);
         done();
       });
-      const req = httpMock.expectOne((r: any) => r.url.includes('/porRol'));
+      const req = httpMock.expectOne((r) => r.url.includes('/porRol'));
       expect(req.request.params.get('rol')).toBe('ESTUDIANTE');
       expect(req.request.params.get('idUsuario')).toBe('1');
       expect(req.request.params.get('periodoAcademico')).toBe('2025-1');
@@ -61,20 +61,20 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
 
     it('HA-004: getPendingRequests debe llamar endpoint Funcionario', (done) => {
       service.getPendingRequests().subscribe(() => done());
-      const req = httpMock.expectOne((r: any) => r.url.includes('/Funcionario') && !r.url.includes('Aprobadas'));
+      const req = httpMock.expectOne((r) => r.url.includes('/Funcionario') && !r.url.includes('Aprobadas'));
       expect(req.request.method).toBe('GET');
       req.flush([]);
     });
 
     it('HA-005: getCoordinadorRequests debe llamar endpoint Coordinador', (done) => {
       service.getCoordinadorRequests().subscribe(() => done());
-      const req = httpMock.expectOne((r: any) => r.url.includes('/Coordinador') && !r.url.includes('Aprobadas'));
+      const req = httpMock.expectOne((r) => r.url.includes('/Coordinador') && !r.url.includes('Aprobadas'));
       req.flush([]);
     });
 
     it('HA-006: getSecretariaRequests debe llamar endpoint Secretaria', (done) => {
       service.getSecretariaRequests().subscribe(() => done());
-      const req = httpMock.expectOne((r: any) => r.url.includes('/Secretaria') && !r.url.includes('Aprobadas'));
+      const req = httpMock.expectOne((r) => r.url.includes('/Secretaria') && !r.url.includes('Aprobadas'));
       req.flush([]);
     });
   });
@@ -133,14 +133,14 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
         expect(blob instanceof Blob).toBe(true);
         done();
       });
-      const req = httpMock.expectOne((r: any) => r.url.includes('archivos/descargar/pdf'));
+      const req = httpMock.expectOne((r) => r.url.includes('archivos/descargar/pdf'));
       expect(req.request.responseType).toBe('blob');
       req.flush(new Blob([]));
     });
 
     it('HA-014: agregarComentario debe enviar PUT con idDocumento y comentario', (done) => {
       service.agregarComentario(1, 'Comentario').subscribe(() => done());
-      const req = httpMock.expectOne((r: any) => r.url.includes('documentos/añadirComentario'));
+      const req = httpMock.expectOne((r) => r.url.includes('documentos/añadirComentario'));
       expect(req.request.method).toBe('PUT');
       expect(req.request.body.idDocumento).toBe(1);
       expect(req.request.body.comentario).toBe('Comentario');

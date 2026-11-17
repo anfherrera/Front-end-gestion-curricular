@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { EstadisticasService } from './estadisticas.service';
+import { EstadoSolicitudesResponse, TotalEstudiantesResponse } from '../models/estadisticas/generales.model';
 
 describe('EstadisticasService - Pruebas Unitarias', () => {
   let service: EstadisticasService;
@@ -53,17 +54,14 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
 
   describe('7. Total de Estudiantes', () => {
     it('EST-015: Debe obtener total de estudiantes', (done) => {
-      const mockResponse: any = {
-        total: 1500,
-        porPrograma: [
-          { programa: 'Ingeniería Electrónica', total: 500 },
-          { programa: 'Ingeniería de Sistemas', total: 600 }
-        ]
+      const mockResponse: TotalEstudiantesResponse = {
+        totalEstudiantes: 1500,
+        fechaConsulta: '2025-01-15',
+        descripcion: 'Total de estudiantes'
       };
 
-      service.getTotalEstudiantes().subscribe((datos: any) => {
-        expect(datos.total).toBe(1500);
-        expect(datos.porPrograma.length).toBe(2);
+      service.getTotalEstudiantes().subscribe((datos) => {
+        expect(datos.totalEstudiantes).toBe(1500);
         done();
       });
 
@@ -104,16 +102,15 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
 
   describe('10. Estado de Solicitudes', () => {
     it('EST-020: Debe obtener estado de solicitudes', (done) => {
-      const mockEstado: any = {
-        aprobadas: 120,
-        pendientes: 20,
-        rechazadas: 10,
-        total: 150
+      const mockEstado: EstadoSolicitudesResponse = {
+        totalSolicitudes: 150,
+        tasaResolucion: 0.87,
+        fechaConsulta: '2025-01-15'
       };
 
-      service.getEstadoSolicitudes().subscribe((datos: any) => {
-        expect(datos.total).toBe(150);
-        expect(datos.aprobadas).toBe(120);
+      service.getEstadoSolicitudes().subscribe((datos) => {
+        expect(datos.totalSolicitudes).toBe(150);
+        expect(datos.tasaResolucion).toBe(0.87);
         done();
       });
 

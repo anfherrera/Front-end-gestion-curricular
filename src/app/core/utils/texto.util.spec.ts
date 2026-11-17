@@ -17,6 +17,6 @@ describe('texto.util', () => {
   it('el pipe nombreDocente cubre curso sin docente', () => {
     const pipe = new NombreDocentePipe();
     expect(pipe.transform(null)).toBe('Sin asignar');
-    expect(pipe.transform({ objDocente: { nombre_docente: 'Ana Ruiz' } } as any)).toBe('Ana Ruiz');
+    expect(pipe.transform({ objDocente: { nombre_docente: 'Ana Ruiz' } } as Parameters<NombreDocentePipe['transform']>[0])).toBe('Ana Ruiz');
   });
 });

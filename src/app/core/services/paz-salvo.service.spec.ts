@@ -76,7 +76,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
 
   describe('2. Listar Solicitudes por Rol', () => {
     it('PZS-003: Debe listar solicitudes para ESTUDIANTE con parámetros', (done) => {
-      const mockSolicitudes: any[] = [
+      const mockSolicitudes = [
         {
           id_solicitud: 1,
           nombre_solicitud: 'Solicitud Test',
@@ -368,7 +368,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-028: Debe descargar oficio como Blob', (done) => {
       const mockBlob = new Blob(['content'], { type: 'application/pdf' });
       
-      service.descargarOficioPorSolicitud(1).subscribe((blob: any) => {
+      service.descargarOficioPorSolicitud(1).subscribe((blob) => {
         expect(blob instanceof Blob).toBe(true);
         expect(blob.filename).toBe('oficio.pdf');
         done();

@@ -14,10 +14,10 @@ export class ActivityMonitorService implements OnDestroy {
   private readonly WARNING_TIME = 1 * 60 * 1000; // 1 minuto antes del logout
   private readonly THROTTLE_DELAY = 2000; // Throttle de 2 segundos para evitar exceso de eventos
 
-  private inactivityTimer: any;
-  private warningTimer: any;
+  private inactivityTimer?: ReturnType<typeof setTimeout>;
+  private warningTimer?: ReturnType<typeof setTimeout>;
   private isWarningShown = false;
-  private throttleTimer: any = null; // Timer para throttle
+  private throttleTimer: ReturnType<typeof setTimeout> | null = null; // Timer para throttle
 
   private activitySubject = new BehaviorSubject<boolean>(true);
   public activity$ = this.activitySubject.asObservable();
@@ -189,11 +189,11 @@ export class ActivityMonitorService implements OnDestroy {
   private clearTimers(): void {
     if (this.inactivityTimer) {
       clearTimeout(this.inactivityTimer);
-      this.inactivityTimer = null;
+      this.inactivityTimer = undefined;
     }
     if (this.warningTimer) {
       clearTimeout(this.warningTimer);
-      this.warningTimer = null;
+      this.warningTimer = undefined;
     }
     // Limpiar throttle timer también
     if (this.throttleTimer) {

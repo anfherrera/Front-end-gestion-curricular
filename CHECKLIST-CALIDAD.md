@@ -210,6 +210,14 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 ## Fase 6 — Angular moderno y tipado
 
 - [ ] **Tipado**: quedan 183 `any` (2026-11-17) en 46 archivos, 100 de ellos en specs. Los que más tienen: `estudiante/paz-salvo.component.spec` (22), `modulo-estadistico.acceptance.spec` (9), `estudiante/pruebas-ecaes.component.spec` (9), `form-usuario` (8), `estudiante/reingreso` (8), `estudiante/pruebas-ecaes` (7). Reemplazarlos por las interfaces de `core/models` y, al llegar a 0, pasar `no-explicit-any` a `error`
+  - [x] `core` (2026-11-17): 64 `any` menos (183 → 119); ya no queda ninguno en `core`
+    - `AuthService.getUsuario()`/`setUsuario()` usan `UsuarioSesion`. Eso destapó campos que el login nunca devuelve: `usuario.id` (notificaciones) y `usuario.nombre` (paz y salvo) se borran; el correo del header queda en `''` si no llega
+    - `ErrorHandlerService` recibe `unknown` y lee estado y cuerpo con una función `leerError`; ya no falla si le llega `null`
+    - `obtenerHistorialSolicitud()` devuelve `DetalleSolicitud`: sus tipos pasan del componente detalle-solicitud al servicio
+    - `corregirEncodingObjeto<T>` es genérica; `LoggerService` y el interceptor usan `unknown`; los temporizadores, `ReturnType<typeof setTimeout>`; los documentos de ECAES, `DocumentoHomologacion`
+    - Se borra `UsuariosService.actualizarEstado()`, que nadie llamaba
+    - Specs: los mocks de `estadisticas.service.spec` (total de estudiantes y estado de solicitudes) y de preinscripción en `services.integration.spec` tenían campos que el backend no manda (`total`, `porPrograma`, `aprobadas`, `condicionSolicitud`); ahora usan los tipos del modelo
+    - Sin cambios visibles esperados
 - [x] **Suscripciones** (2026-11-13): hay 244 `.subscribe(` fuera de los specs. Se revisaron todas las que no terminan solas (`$` de servicios, `valueChanges`, `router.events`, `route.params`, `interval`); las HTTP y `afterClosed()` terminan solas
   - Fugas reales corregidas: **configurar-periodo** se suscribía a `periodoActual$` (un `BehaviorSubject` de un servicio raíz) sin soltarlo, así que cada visita sumaba un suscriptor. Ahora se suscribe una vez en `ngOnInit` con `takeUntilDestroyed`, igual que `valueChanges`. **breadcrumb** escuchaba `router.events` sin cortar
   - Las 108 `takeUntil(this.destroy$)` de 18 componentes pasan por script a `takeUntilDestroyed(this.destroyRef)`, que ya usaban otras 50. Se borran los `Subject` `destroy$` y los `ngOnDestroy` que solo hacían `next()`/`complete()` (en los dashboards estadísticos se quedan para destruir los gráficos). Ya no queda ningún `takeUntil(`

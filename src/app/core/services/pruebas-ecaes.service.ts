@@ -3,6 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env/environment';
 import { TipoDocumento, TiposDocumentoRespuesta } from '../models/tipo-documento.model';
+import { DocumentoHomologacion } from '../models/procesos.model';
 import { SolicitudesBaseService } from './base/solicitudes-base.service';
 
 export interface FechaEcaes {
@@ -56,7 +57,7 @@ export interface SolicitudEcaesResponse {
     estado_actual: string;
     fecha_registro_estado: string;
     comentario?: string | null;
-    objSolicitud: any;
+    objSolicitud: unknown;
   }[];
   objUsuario: {
     id_usuario: number;
@@ -75,7 +76,7 @@ export interface SolicitudEcaesResponse {
       nombre_programa: string;
     };
   };
-  documentos: any[];
+  documentos: DocumentoHomologacion[];
   tipoDocumento: string;
   numero_documento: string;
   fecha_expedicion: string;

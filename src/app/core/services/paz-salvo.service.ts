@@ -140,7 +140,7 @@ export class PazSalvoService extends SolicitudesBaseService {
 
     let nombreSolicitud = datosFormulario.nombre_solicitud;
     if (!nombreSolicitud.includes('Solicitud Paz y Salvo -')) {
-      const nombreUsuario = (usuario.nombre_completo || usuario.nombre || '').trim() || 'Usuario';
+      const nombreUsuario = (usuario.nombre_completo || '').trim() || 'Usuario';
       nombreSolicitud = `Solicitud Paz y Salvo - ${nombreUsuario}`;
     }
 

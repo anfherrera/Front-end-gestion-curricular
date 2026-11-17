@@ -55,7 +55,7 @@ export interface EstadoSolicitud {
   estado_actual: string;
   fecha_registro_estado: string;
   comentario?: string | null;
-  objSolicitud?: any;
+  objSolicitud?: unknown;
 }
 
 export interface Rol {
@@ -86,7 +86,7 @@ export interface DocumentoHomologacion {
   fecha_documento: string;
   esValido: boolean;
   comentario?: string | null;
-  tipoDocumentoSolicitudPazYSalvo?: any;
+  tipoDocumentoSolicitudPazYSalvo?: string | null;
 }
 
 export interface SolicitudHomologacionDTORespuesta {
@@ -112,7 +112,7 @@ export interface SolicitudHomologacionDTOPeticion {
   estado_actual?: EstadoSolicitudDTOPeticion;
   objUsuario: UsuarioDTOPeticion;
   documentos?: DocumentosDTOPeticion[];
-  archivos?: any[]; // Archivos subidos
+  archivos?: Archivo[]; // Archivos subidos
   programa_origen?: string | null; // Opcional, máximo 200 caracteres
   programa_destino?: string | null; // Opcional, máximo 200 caracteres
 }

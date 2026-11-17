@@ -260,8 +260,8 @@ describe('Seguridad - Manejo de sesiones', () => {
     });
 
     it('SEC-034-B: Debe actualizar rol al cambiar de sesión', () => {
-      const usuario1 = { rol: { nombre: 'ESTUDIANTE' } };
-      const usuario2 = { rol: { nombre: 'COORDINADOR' } };
+      const usuario1 = { id_usuario: 1, nombre_completo: 'Estudiante', rol: { nombre: 'ESTUDIANTE' } };
+      const usuario2 = { id_usuario: 2, nombre_completo: 'Coordinador', rol: { nombre: 'COORDINADOR' } };
 
       authService.setUsuario(usuario1);
       authService.setRole('ESTUDIANTE');
