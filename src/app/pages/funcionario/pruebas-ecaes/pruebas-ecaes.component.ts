@@ -1,506 +1,135 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable, filter, switchMap } from 'rxjs';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatSelectModule } from '@angular/material/select';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 
-import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
-import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
-import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
-import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
-import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
-import { LoggerService } from '@core/services/logger.service';
+import { PruebasEcaesService, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { DocumentoHomologacion, DocumentosDTORespuesta } from '@core/models/procesos.model';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
-import { estadoActual } from '@core/utils/estado-solicitud.util';
-import { FechaPipe } from '@shared/pipes/fecha.pipe';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
+import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
+import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
+import { TextoDialogComponent, datosRechazo } from '@shared/components/texto-dialog/texto-dialog.component';
+import { FechaPipe } from '@shared/pipes/fecha.pipe';
+import { PublicarFechasEcaesComponent } from './publicar-fechas-ecaes/publicar-fechas-ecaes.component';
 
+const TIPOS_DOCUMENTO: Record<string, string> = {
+  CC: 'Cédula de Ciudadanía',
+  CE: 'Cédula de Extranjería',
+  TI: 'Tarjeta de Identidad',
+  PA: 'Pasaporte',
+  RC: 'Registro Civil'
+};
+
+/**
+ * Funcionario, ECAES: revisa los pre-registros (los marca como pre-registrados o los
+ * rechaza) y publica las fechas del período. El backend no tiene historial de ECAES,
+ * así que la bandeja solo muestra las pendientes.
+ */
 @Component({
   selector: 'app-pruebas-ecaes-funcionario',
   imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatButtonModule,
-    MatIconModule,
     MatCardModule,
-    MatTableModule,
-    MatExpansionModule,
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
+    MatIconModule,
     CardContainerComponent,
-    RequestStatusTableComponent,
     DocumentationViewerComponent,
+    SolicitudesBandejaComponent,
+    PublicarFechasEcaesComponent,
     FechaPipe
-],
+  ],
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css'
 })
 export class PruebasEcaesFuncionarioComponent implements OnInit {
-  pruebasEcaesService = inject(PruebasEcaesService);
-  private snackbar = inject(SnackbarService);
-  private fb = inject(FormBuilder);
-  private periodosService = inject(PeriodosAcademicosService);
-  private logger = inject(LoggerService);
-  private errorHandler = inject(ErrorHandlerService);
-
+  readonly pruebasEcaesService = inject(PruebasEcaesService);
+  private readonly snackbar = inject(SnackbarService);
+  private readonly dialog = inject(MatDialog);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly bandeja = viewChild<SolicitudesBandejaComponent<SolicitudEcaesResponse>>('bandeja');
 
-  // Formulario para publicar fechas
-  fechasForm: FormGroup;
-  publicandoFechas = false;
-  esModoEdicion = false;
-  idFechaEcaesActual: number | null = null;
-  periodoAnterior = '';
-  cargandoFechas = false;
-
-  // Datos para las secciones
-  solicitudesPendientes: any[] = [];
-  selectedSolicitud: SolicitudEcaesResponse | null = null;
-
-  // Opciones para el desplegable de períodos académicos
-  periodosAcademicos: string[] = [];
-  periodoAcademicoSeleccionado = '';
-
-  // Ya no necesitamos la configuración de tabla, ahora usamos grid
-
-  constructor() {
-    this.fechasForm = this.fb.group({
-      periodoAcademico: ['', Validators.required],
-      inscripcion_est_by_facultad: ['', Validators.required],
-      registro_recaudo_ordinario: ['', Validators.required],
-      registro_recaudo_extraordinario: ['', Validators.required],
-      citacion: ['', Validators.required],
-      aplicacion: ['', Validators.required],
-      resultados_individuales: ['', Validators.required]
-    });
-  }
+  pendientes: SolicitudEcaesResponse[] = [];
+  seleccionada: SolicitudEcaesResponse | null = null;
 
   ngOnInit(): void {
-    this.cargarDatos();
-    
-    // Suscribirse a cambios en el período académico para detectar fechas existentes
-    this.fechasForm.get('periodoAcademico')?.valueChanges.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(periodo => {
-      // Solo buscar si el período realmente cambió y no estamos cargando fechas
-      if (periodo && periodo !== this.periodoAnterior && !this.cargandoFechas) {
-        this.periodoAnterior = periodo;
-        this.buscarFechasExistentes(periodo);
-      } else if (!periodo) {
-        this.periodoAnterior = '';
-        this.limpiarFormularioFechas();
-      }
-    });
+    this.cargarPendientes();
   }
 
-  cargarDatos(): void {
-    // Cargar períodos académicos disponibles
-    this.cargarPeriodosAcademicos();
-    // Cargar solicitudes pendientes
-    this.cargarSolicitudesPendientes();
+  tipoDocumentoLabel(tipo: string | null | undefined): string {
+    if (!tipo) return '-';
+    return TIPOS_DOCUMENTO[tipo.toUpperCase()] || tipo;
   }
 
-  /**
-   * Carga los períodos académicos disponibles desde el backend
-   */
-  private cargarPeriodosAcademicos(): void {
-    // Todos los períodos o, si no hay, los recientes; si fallan los dos, la lista fija
-    this.periodosService.getValoresPeriodos().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(periodos => {
-      if (periodos.length > 0) {
-        this.periodosAcademicos = periodos;
-      } else {
-        this.cargarPeriodosFallback();
-      }
-    });
-  }
-
-  /**
-   * Fallback con períodos hardcodeados si el backend no está disponible
-   */
-  private cargarPeriodosFallback(): void {
-    // Generar períodos desde 2020 hasta 2030 como fallback
-    this.periodosAcademicos = [];
-    for (let año = 2020; año <= 2030; año++) {
-      this.periodosAcademicos.push(`${año}-1`, `${año}-2`);
-    }
-    this.logger.log('Períodos fallback cargados (2020-2030):', this.periodosAcademicos);
-    this.snackbar.advertencia('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.');
-  }
-
-  cargarSolicitudesPendientes(): void {
-    this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (solicitudes) => {
-        // Transformar datos para RequestStatusTableComponent
-        this.solicitudesPendientes = solicitudes.map(sol => ({
-          id: sol.id_solicitud,
-          nombre: sol.nombre_solicitud,
-          fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
-          estado: estadoActual(sol),
-          rutaArchivo: '',
-          comentarios: ''
-        }));
-        this.logger.log('Solicitudes ECAES cargadas:', this.solicitudesPendientes);
-      },
-      error: (error) => {
-        this.logger.error('Error al cargar solicitudes ECAES:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || 'Error al cargar solicitudes ECAES');
-      }
-    });
-  }
-
-  /**
-   * Obtener el label descriptivo del tipo de documento
-   */
-  obtenerTipoDocumentoLabel(tipoDocumento: string | null | undefined): string {
-    if (!tipoDocumento) return '-';
-
-    const tipos: Record<string, string> = {
-      CC: 'Cédula de Ciudadanía',
-      CE: 'Cédula de Extranjería',
-      TI: 'Tarjeta de Identidad',
-      PA: 'Pasaporte',
-      RC: 'Registro Civil'
-    };
-
-    return tipos[tipoDocumento.toUpperCase()] || tipoDocumento;
-  }
-
-  /**
-   * Buscar fechas existentes cuando se selecciona un período
-   */
-  buscarFechasExistentes(periodoAcademico: string): void {
-    this.cargandoFechas = true;
-    this.pruebasEcaesService.buscarFechasPorPeriodo(periodoAcademico).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (fechas) => {
-        this.logger.log('Fechas encontradas para período:', periodoAcademico, fechas);
-        // Cargar fechas en el formulario
-        this.cargarFechasEnFormulario(fechas);
-        this.esModoEdicion = true;
-        this.idFechaEcaesActual = fechas.idFechaEcaes;
-        this.cargandoFechas = false;
-        this.snackbar.exito('Fechas existentes cargadas. Puede editarlas.');
-      },
-      error: (error) => {
-        this.cargandoFechas = false;
-        if (error.status === 404) {
-          this.logger.log('No hay fechas existentes para el período:', periodoAcademico);
-          // No hay fechas, modo creación
-          this.esModoEdicion = false;
-          this.idFechaEcaesActual = null;
-          // Limpiar solo las fechas, mantener el período
-          this.limpiarSoloFechas();
-        } else {
-          this.logger.error('Error al buscar fechas:', error);
-          const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackbar.error(mensaje || 'Error al buscar fechas existentes');
+  cargarPendientes(): void {
+    this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (sols) => {
+        this.pendientes = sols;
+        // La selección pasa a la copia nueva (con los comentarios al día)
+        if (this.seleccionada) {
+          const id = this.seleccionada.id_solicitud;
+          this.seleccionada = sols.find(sol => sol.id_solicitud === id) ?? null;
+          if (!this.seleccionada) this.bandeja()?.resetSelection();
         }
-      }
+      },
+      error: (err) => this.mostrarError(err, 'Error al cargar solicitudes ECAES')
     });
   }
 
-  /**
-   * Cargar fechas en el formulario
-   */
-  cargarFechasEnFormulario(fechas: FechaEcaes): void {
-    // Convertir strings de fecha (YYYY-MM-DD) a objetos Date
-    // Usar una forma que funcione mejor con Angular Material DatePicker
-    const convertirFecha = (fechaStr: string | null): Date | null => {
-      if (!fechaStr) return null;
-      // Parsear la fecha manualmente para evitar problemas de timezone
-      const partes = fechaStr.split('-');
-      if (partes.length === 3) {
-        const año = parseInt(partes[0], 10);
-        const mes = parseInt(partes[1], 10) - 1; // Los meses en JS son 0-indexed
-        const dia = parseInt(partes[2], 10);
-        return new Date(año, mes, dia);
-      }
-      return new Date(fechaStr);
-    };
-
-    // Usar setTimeout para asegurar que el patchValue no interfiera con otros eventos
-    setTimeout(() => {
-      this.fechasForm.patchValue({
-        inscripcion_est_by_facultad: convertirFecha(fechas.inscripcion_est_by_facultad),
-        registro_recaudo_ordinario: convertirFecha(fechas.registro_recaudo_ordinario),
-        registro_recaudo_extraordinario: convertirFecha(fechas.registro_recaudo_extraordinario),
-        citacion: convertirFecha(fechas.citacion),
-        aplicacion: convertirFecha(fechas.aplicacion),
-        resultados_individuales: convertirFecha(fechas.resultados_individuales)
-      }, { emitEvent: false }); // No emitir eventos para evitar loops
-    }, 100);
+  onSolicitudSeleccionada(solicitud: SolicitudEcaesResponse | null): void {
+    this.seleccionada = solicitud;
   }
 
-  /**
-   * Limpiar solo los campos de fechas, manteniendo el período
-   */
-  limpiarSoloFechas(): void {
-    const periodoAcademico = this.fechasForm.get('periodoAcademico')?.value;
-    this.fechasForm.patchValue({
-      inscripcion_est_by_facultad: null,
-      registro_recaudo_ordinario: null,
-      registro_recaudo_extraordinario: null,
-      citacion: null,
-      aplicacion: null,
-      resultados_individuales: null
-    }, { emitEvent: false }); // No emitir eventos
-    if (periodoAcademico) {
-      this.fechasForm.get('periodoAcademico')?.setValue(periodoAcademico, { emitEvent: false });
-    }
-  }
-
-  /**
-   * Formatear fecha a YYYY-MM-DD para evitar problemas de timezone
-   */
-  private formatearFechaParaBackend(fecha: Date): string {
-    if (!fecha) return '';
-    const year = fecha.getFullYear();
-    const month = String(fecha.getMonth() + 1).padStart(2, '0');
-    const day = String(fecha.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  publicarFechas(): void {
-    if (this.fechasForm.invalid) {
-      this.snackbar.advertencia('Por favor complete todos los campos requeridos');
+  onComentarioAgregado(event: { documento: DocumentoHomologacion | DocumentosDTORespuesta; comentario: string }): void {
+    if (!event.documento.id_documento) {
+      this.snackbar.error('Error: No se pudo identificar el documento');
       return;
     }
-
-    this.publicandoFechas = true;
-    const formValue = this.fechasForm.value;
-
-    // Preparar datos: convertir fechas a formato YYYY-MM-DD (sin timezone)
-    const fechasData: any = {
-      periodoAcademico: formValue.periodoAcademico,
-      inscripcion_est_by_facultad: this.formatearFechaParaBackend(formValue.inscripcion_est_by_facultad),
-      registro_recaudo_ordinario: this.formatearFechaParaBackend(formValue.registro_recaudo_ordinario),
-      registro_recaudo_extraordinario: this.formatearFechaParaBackend(formValue.registro_recaudo_extraordinario),
-      citacion: this.formatearFechaParaBackend(formValue.citacion),
-      aplicacion: this.formatearFechaParaBackend(formValue.aplicacion),
-      resultados_individuales: this.formatearFechaParaBackend(formValue.resultados_individuales)
-    };
-
-    // Si estamos en modo edición, incluir el ID
-    if (this.esModoEdicion && this.idFechaEcaesActual) {
-      fechasData.idFechaEcaes = this.idFechaEcaesActual;
-    }
-
-    this.logger.log((this.esModoEdicion ? 'Actualizando' : 'Publicando') + ' fechas ECAES:', fechasData);
-
-    const operacion = this.esModoEdicion 
-      ? this.pruebasEcaesService.actualizarFechasEcaes(fechasData)
-      : this.pruebasEcaesService.publicarFechasEcaes(fechasData);
-
-    operacion.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (response) => {
-        this.logger.log('Fechas ' + (this.esModoEdicion ? 'actualizadas' : 'publicadas') + ' exitosamente:', response);
-        this.snackbar.exito(`Fechas ${this.esModoEdicion ? 'actualizadas' : 'publicadas'} exitosamente`);
-        
-        // Mantener el modo de edición si se actualizó
-        if (this.esModoEdicion && response.idFechaEcaes) {
-          this.idFechaEcaesActual = response.idFechaEcaes;
-        } else {
-          // Si se creó, cambiar a modo edición con el nuevo ID
-          if (response.idFechaEcaes) {
-            this.esModoEdicion = true;
-            this.idFechaEcaesActual = response.idFechaEcaes;
-          }
-        }
-        
-        this.publicandoFechas = false;
-        
-        // Limpiar solo los campos de fechas, manteniendo el período académico
-        this.limpiarSoloFechas();
-      },
-      error: (error) => {
-        this.logger.error('Error al ' + (this.esModoEdicion ? 'actualizar' : 'publicar') + ' fechas:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || `Error al ${this.esModoEdicion ? 'actualizar' : 'publicar'} las fechas`);
-        this.publicandoFechas = false;
-      }
-    });
-  }
-
-  limpiarFormularioFechas(): void {
-    this.fechasForm.reset({ emitEvent: false });
-    this.publicandoFechas = false;
-    this.esModoEdicion = false;
-    this.idFechaEcaesActual = null;
-    this.periodoAnterior = '';
-  }
-
-  esCampoInvalido(campo: string): boolean {
-    const control = this.fechasForm.get(campo);
-    return !!(control && control.invalid && (control.dirty || control.touched));
-  }
-
-  obtenerMensajeError(campo: string): string {
-    const control = this.fechasForm.get(campo);
-    if (control?.errors) {
-      if (control.errors['required']) return 'Este campo es requerido';
-    }
-    return '';
-  }
-
-  // ================================
-  // Métodos para manejo de solicitudes
-  // ================================
-
-  /**
-   * Muestra los comentarios de una solicitud
-   * Los comentarios se muestran automáticamente en el DocumentationViewerComponent
-   * @param solicitudId ID de la solicitud
-   */
-  verComentarios(solicitudId: number): void {
-    this.logger.log('Ver comentarios para solicitud:', solicitudId);
-    // Los comentarios se muestran automáticamente en el DocumentationViewerComponent
-    // cuando se selecciona una solicitud
-  }
-
-  onSolicitudSeleccionada(solicitudId: number | null): void {
-    // Si se deseleccionó (null), limpiar la selección
-    if (solicitudId === null) {
-      this.selectedSolicitud = null;
-      return;
-    }
-
-    // Buscar la solicitud original por ID
-    this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (solicitudes) => {
-        this.selectedSolicitud = solicitudes.find(sol => sol.id_solicitud === solicitudId) || null;
-        this.logger.log('Solicitud ECAES seleccionada:', this.selectedSolicitud);
-      },
-      error: (error) => {
-        this.logger.error('Error al cargar solicitud seleccionada:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || 'Error al cargar solicitud seleccionada');
-      }
-    });
-  }
-
-  /**
-   * Descarga el oficio de una solicitud ECAES
-   * @param id ID de la solicitud
-   * @param nombreArchivo Nombre del archivo a descargar
-   */
-  descargarOficio(id: number, nombreArchivo: string): void {
-    this.logger.log('Descargar oficio:', id, nombreArchivo);
-    // La descarga se maneja automáticamente por el RequestStatusTableComponent
-    // cuando se emite el evento descargarOficio
-  }
-
-  /**
-   * Manejar cuando se agrega un comentario desde el DocumentationViewerComponent
-   */
-  onComentarioAgregado(event: {documento: any, comentario: string}): void {
-    if (event.documento.id_documento) {
-      this.pruebasEcaesService.agregarComentario(event.documento.id_documento, event.comentario).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe({
+    this.pruebasEcaesService.agregarComentario(event.documento.id_documento, event.comentario)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.snackbar.exito('Comentario añadido correctamente');
-          // Recargar la solicitud para actualizar los comentarios
-          this.cargarSolicitudesPendientes();
-          // Recargar la solicitud seleccionada para obtener los comentarios actualizados
-          if (this.selectedSolicitud) {
-            this.onSolicitudSeleccionada(this.selectedSolicitud.id_solicitud);
-          }
+          this.cargarPendientes();
         },
-        error: (error) => {
-          this.logger.error('Error al añadir comentario:', error);
-          const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackbar.error(mensaje || 'Error al añadir comentario');
-        }
+        error: (err) => this.mostrarError(err, 'Error al añadir comentario')
       });
-    } else {
-      this.logger.error('No se pudo obtener el ID del documento para agregar comentario');
-      this.snackbar.error('Error: No se pudo identificar el documento');
-    }
   }
 
-  // ================================
-  // Métodos para aprobar y rechazar solicitudes
-  // ================================
+  /** Aprobar en ECAES es marcar la solicitud como pre-registrada. */
+  aprobar(): void {
+    if (!this.seleccionada) return;
+    this.decidir(this.pruebasEcaesService.approveRequest(this.seleccionada.id_solicitud),
+      'Solicitud marcada como Pre-registrada exitosamente', 'Error al aprobar solicitud');
+  }
 
-  aprobarSolicitudSeleccionada(): void {
-    if (!this.selectedSolicitud) {
-      this.snackbar.advertencia('No hay solicitud seleccionada');
-      return;
-    }
+  rechazar(): void {
+    if (!this.seleccionada) return;
+    const id = this.seleccionada.id_solicitud;
+    const rechazo$ = this.dialog.open(TextoDialogComponent, { width: '450px', data: datosRechazo() }).afterClosed().pipe(
+      filter((motivo: string | undefined): motivo is string => !!motivo),
+      switchMap(motivo => this.pruebasEcaesService.rejectRequest(id, motivo))
+    );
+    this.decidir(rechazo$, 'Solicitud rechazada exitosamente', 'Error al rechazar solicitud');
+  }
 
-    this.logger.log('Aprobando solicitud ECAES:', this.selectedSolicitud.id_solicitud);
-
-    // Usar el método específico approveRequest
-    this.pruebasEcaesService.approveRequest(this.selectedSolicitud.id_solicitud).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (response) => {
-        this.logger.log('Solicitud ECAES aprobada exitosamente:', response);
-        this.snackbar.exito('Solicitud marcada como Pre-registrada exitosamente');
-
-        // Recargar solicitudes después de la aprobación
-        this.cargarSolicitudesPendientes();
-
-        // Limpiar selección
-        this.selectedSolicitud = null;
+  private decidir(decision$: Observable<unknown>, exito: string, error: string): void {
+    decision$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.snackbar.exito(exito);
+        this.seleccionada = null;
+        this.bandeja()?.resetSelection();
+        this.cargarPendientes();
       },
-      error: (error) => {
-        this.logger.error('Error al aprobar solicitud ECAES:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || 'Error al aprobar solicitud');
-      }
+      error: (err) => this.mostrarError(err, error)
     });
   }
 
-  rechazarSolicitudSeleccionada(): void {
-    if (!this.selectedSolicitud) {
-      this.snackbar.advertencia('No hay solicitud seleccionada');
-      return;
-    }
-
-    this.logger.log('Rechazando solicitud ECAES:', this.selectedSolicitud.id_solicitud);
-
-    // Usar el método específico rejectRequest
-    this.pruebasEcaesService.rejectRequest(this.selectedSolicitud.id_solicitud, 'Solicitud rechazada por el funcionario').pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (response) => {
-        this.logger.log('Solicitud ECAES rechazada exitosamente:', response);
-        this.snackbar.exito('Solicitud rechazada exitosamente');
-
-        // Recargar solicitudes después del rechazo
-        this.cargarSolicitudesPendientes();
-
-        // Limpiar selección
-        this.selectedSolicitud = null;
-      },
-      error: (error) => {
-        this.logger.error('Error al rechazar solicitud ECAES:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || 'Error al rechazar solicitud');
-      }
-    });
+  private mostrarError(err: unknown, porDefecto: string): void {
+    this.snackbar.error(this.errorHandler.extraerMensajeError(err) || porDefecto);
   }
 }

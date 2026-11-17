@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, computed, input, output, viewChild } from '@angular/core';
 
+import { NgTemplateOutlet } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 
 import { SolicitudRevisable } from '@core/models/solicitud-revision.model';
@@ -16,13 +17,15 @@ import { PeriodoFiltroSelectorComponent } from '../periodo-filtro-selector/perio
 @Component({
   selector: 'app-solicitudes-bandeja',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, CardContainerComponent, RequestStatusTableComponent, PeriodoFiltroSelectorComponent],
+  imports: [NgTemplateOutlet, MatTabsModule,CardContainerComponent, RequestStatusTableComponent, PeriodoFiltroSelectorComponent],
   templateUrl: './solicitudes-bandeja.component.html',
   styleUrls: ['./solicitudes-bandeja.component.css']
 })
 export class SolicitudesBandejaComponent<S extends SolicitudRevisable = SolicitudRevisable> {
   readonly pendientes = input<S[] | null | undefined>([]);
   readonly procesadas = input<S[] | null | undefined>([]);
+  /** Sin historial (procesos cuyo backend no lo ofrece) solo se muestra la tabla de pendientes, sin pestañas. */
+  readonly conHistorial = input(true);
 
   /** Solicitud pendiente elegida, o null al quitar la selección. */
   readonly solicitudSeleccionada = output<S | null>();

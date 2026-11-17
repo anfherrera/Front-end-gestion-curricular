@@ -1,53 +1,61 @@
-<mat-tab-group>
+<ng-template #pendientesTpl>
+  <app-card-container title="Solicitudes Pendientes de Procesar">
+    <app-request-status-table
+      #tablaPendientes
+      [solicitudes]="filasPendientes()"
+      [showOficio]="false"
+      [showComentarios]="false"
+      [showSeleccionar]="true"
+      (solicitudSeleccionada)="onFilaSeleccionada($event)">
+    </app-request-status-table>
 
-  <mat-tab label="Pendientes de Procesar">
-    <div class="tab-content">
-      <app-card-container title="Solicitudes Pendientes de Procesar">
-        <app-request-status-table
-          #tablaPendientes
-          [solicitudes]="filasPendientes()"
-          [showOficio]="false"
-          [showComentarios]="false"
-          [showSeleccionar]="true"
-          (solicitudSeleccionada)="onFilaSeleccionada($event)">
-        </app-request-status-table>
+    @if (filasPendientes().length === 0) {
+      <p class="no-solicitudes">
+        No hay solicitudes pendientes de procesar
+      </p>
+    }
+  </app-card-container>
+</ng-template>
 
-        @if (filasPendientes().length === 0) {
-          <p class="no-solicitudes">
-            No hay solicitudes pendientes de procesar
-          </p>
-        }
-      </app-card-container>
-    </div>
-  </mat-tab>
+@if (conHistorial()) {
+  <mat-tab-group>
 
-  <mat-tab label="Historial - Ya Procesadas">
-    <div class="tab-content">
-      <app-card-container title="Solicitudes Procesadas">
-        <div class="filtro-periodo">
-          <app-periodo-filtro-selector
-            label="Filtrar por período académico"
-            [mostrarTodos]="true"
-            [incluirActual]="true"
-            [mostrarInfo]="false"
-            (periodoChange)="onPeriodoChange($event)">
-          </app-periodo-filtro-selector>
-        </div>
+    <mat-tab label="Pendientes de Procesar">
+      <div class="tab-content">
+        <ng-container [ngTemplateOutlet]="pendientesTpl" />
+      </div>
+    </mat-tab>
 
-        <app-request-status-table
-          [solicitudes]="filasProcesadas()"
-          [showOficio]="false"
-          [showComentarios]="false"
-          [showSeleccionar]="false">
-        </app-request-status-table>
+    <mat-tab label="Historial - Ya Procesadas">
+      <div class="tab-content">
+        <app-card-container title="Solicitudes Procesadas">
+          <div class="filtro-periodo">
+            <app-periodo-filtro-selector
+              label="Filtrar por período académico"
+              [mostrarTodos]="true"
+              [incluirActual]="true"
+              [mostrarInfo]="false"
+              (periodoChange)="onPeriodoChange($event)">
+            </app-periodo-filtro-selector>
+          </div>
 
-        @if (filasProcesadas().length === 0) {
-          <p class="no-solicitudes">
-            No hay solicitudes procesadas todavía
-          </p>
-        }
-      </app-card-container>
-    </div>
-  </mat-tab>
+          <app-request-status-table
+            [solicitudes]="filasProcesadas()"
+            [showOficio]="false"
+            [showComentarios]="false"
+            [showSeleccionar]="false">
+          </app-request-status-table>
 
-</mat-tab-group>
+          @if (filasProcesadas().length === 0) {
+            <p class="no-solicitudes">
+              No hay solicitudes procesadas todavía
+            </p>
+          }
+        </app-card-container>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+} @else {
+  <ng-container [ngTemplateOutlet]="pendientesTpl" />
+}

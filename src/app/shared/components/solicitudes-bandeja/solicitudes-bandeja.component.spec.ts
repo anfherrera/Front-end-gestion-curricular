@@ -54,6 +54,18 @@ describe('SolicitudesBandejaComponent', () => {
     expect(emitidas).toEqual([elegida, null, null]);
   });
 
+  it('con historial muestra las dos pestañas; sin historial, solo la tabla de pendientes', () => {
+    const elemento = fixture.nativeElement as HTMLElement;
+    expect(elemento.querySelector('mat-tab-group')).not.toBeNull();
+
+    fixture.componentRef.setInput('conHistorial', false);
+    fixture.detectChanges();
+
+    expect(elemento.querySelector('mat-tab-group')).toBeNull();
+    expect(elemento.textContent).toContain('Solicitudes Pendientes de Procesar');
+    expect(elemento.textContent).not.toContain('Solicitudes Procesadas');
+  });
+
   it('el período "todos" se emite como null', () => {
     const periodos: (string | null)[] = [];
     component.periodoChange.subscribe(p => periodos.push(p));

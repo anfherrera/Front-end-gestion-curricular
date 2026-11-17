@@ -1,0 +1,55 @@
+<app-card-container title="Publicar fechas" icon="event">
+
+  <form [formGroup]="form" class="fechas-form">
+
+    <div class="periodo-academico-section">
+      <mat-form-field appearance="outline" class="periodo-field">
+        <mat-label>Período Académico</mat-label>
+        <mat-select formControlName="periodoAcademico" placeholder="Seleccione un período">
+          @for (periodo of periodos; track periodo) {
+            <mat-option [value]="periodo">{{ periodo }}</mat-option>
+          }
+        </mat-select>
+        @if (esCampoInvalido('periodoAcademico')) {
+          <mat-error>Este campo es requerido</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="fechas-grid-container">
+      @for (item of campos; track item.campo) {
+        <div class="fecha-item">
+          <label class="fecha-label" [for]="'ecaes-' + item.campo">{{ item.etiqueta }}</label>
+          <mat-form-field appearance="outline" class="fecha-field">
+            <input matInput [id]="'ecaes-' + item.campo" [matDatepicker]="picker" [formControlName]="item.campo">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            @if (esCampoInvalido(item.campo)) {
+              <mat-error>Este campo es requerido</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      }
+    </div>
+
+    <div class="boton-publicacion">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="publicar()"
+        [disabled]="publicando || form.invalid"
+        class="btn-publicar">
+        @if (publicando) {
+          <mat-icon class="spinning">refresh</mat-icon>
+        } @else {
+          <mat-icon>{{ esEdicion ? 'save' : 'publish' }}</mat-icon>
+        }
+        {{ publicando
+          ? (esEdicion ? 'Actualizando...' : 'Publicando...')
+          : (esEdicion ? 'Actualizar Fechas' : 'Publicar Fechas') }}
+      </button>
+    </div>
+
+  </form>
+
+</app-card-container>
