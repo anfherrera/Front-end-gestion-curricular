@@ -55,8 +55,8 @@ describe('confirmar()', () => {
   it('convierte el cierre del diálogo en true/false', async () => {
     const dialog = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
     dialog.open.and.returnValues(
-      { afterClosed: () => of(true) } as any,
-      { afterClosed: () => of(undefined) } as any
+      { afterClosed: () => of(true) } as unknown as MatDialogRef<unknown>,
+      { afterClosed: () => of(undefined) } as unknown as MatDialogRef<unknown>
     );
     expect(await firstValueFrom(confirmar(dialog, { titulo: 't', mensaje: 'm' }))).toBeTrue();
     expect(await firstValueFrom(confirmar(dialog, { titulo: 't', mensaje: 'm' }))).toBeFalse();

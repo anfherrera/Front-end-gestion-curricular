@@ -9,7 +9,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate } from '@core/models/documento.model';
+import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate, SolicitudParaDocumento } from '@core/models/documento.model';
 
 @Component({
   selector: 'app-document-generator',
@@ -31,7 +31,7 @@ import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate } from '@cor
 export class DocumentGeneratorComponent implements OnInit {
   private fb = inject(FormBuilder);
 
-  readonly solicitud = input.required<any>(); // Datos de la solicitud
+  readonly solicitud = input.required<SolicitudParaDocumento>(); // Datos de la solicitud
   readonly template = input.required<DocumentTemplate>(); // Plantilla del documento
   readonly proceso = input.required<string>(); // Tipo de proceso (homologacion, paz-salvo, etc.)
   readonly loading = input(false);
@@ -50,7 +50,7 @@ export class DocumentGeneratorComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    const formControls: any = {
+    const formControls: Record<string, unknown[]> = {
       numeroDocumento: ['', [Validators.required, Validators.minLength(1)]],
       // No inicializar con fecha por defecto - el usuario debe seleccionar la fecha
       // Si no se selecciona, el backend usará la fecha actual
@@ -76,32 +76,21 @@ export class DocumentGeneratorComponent implements OnInit {
   private prepareSolicitudData(): void {
     // Solicitud recibida
 
-    // Obtener el estado actual de la solicitud
-    let estadoActual = this.solicitud().estado;
-    
-    // Si no hay estado directo, intentar obtenerlo de estadosSolicitud (para Paz y Salvo)
     const solicitud = this.solicitud();
-    if (!estadoActual && solicitud.estadosSolicitud && solicitud.estadosSolicitud.length > 0) {
-      const ultimoEstado = solicitud.estadosSolicitud[solicitud.estadosSolicitud.length - 1];
-      estadoActual = ultimoEstado.estado_actual;
-      // Estado obtenido de estadosSolicitud
-    }
+    // El estado actual es el último del historial
+    const estados = solicitud.estadosSolicitud ?? [];
+    const estadoActual = estados.length > 0 ? estados[estados.length - 1].estado_actual : undefined;
 
-    // Extraer datos relevantes de la solicitud según el proceso
     this.datosSolicitud = {
-      idSolicitud: solicitud.id || solicitud.id_solicitud,
-      nombreEstudiante: solicitud.usuario?.nombre_completo || solicitud.objUsuario?.nombre_completo,
-      codigoEstudiante: solicitud.usuario?.codigo || solicitud.objUsuario?.codigo,
-      programa: solicitud.usuario?.objPrograma?.nombre_programa || solicitud.objUsuario?.objPrograma?.nombre_programa,
-      fechaSolicitud: solicitud.fecha || solicitud.fecha_registro_solicitud,
+      idSolicitud: solicitud.id_solicitud,
+      nombreEstudiante: solicitud.objUsuario?.nombre_completo,
+      codigoEstudiante: solicitud.objUsuario?.codigo,
+      programa: solicitud.objUsuario?.objPrograma?.nombre_programa,
+      fechaSolicitud: solicitud.fecha_registro_solicitud,
       estado: estadoActual || 'Pendiente',
-      // Extraer campos de trabajo de grado si están disponibles (para Paz y Salvo)
-      tituloTrabajoGrado: solicitud.informacion_adicional?.titulo_trabajo_grado || 
-                         solicitud.titulo_trabajo_grado || 
-                         undefined,
-      directorTrabajoGrado: solicitud.informacion_adicional?.director_trabajo_grado || 
-                           solicitud.director_trabajo_grado || 
-                           undefined
+      // Paz y salvo: datos del trabajo de grado, si llegan
+      tituloTrabajoGrado: solicitud.titulo_trabajo_grado || undefined,
+      directorTrabajoGrado: solicitud.director_trabajo_grado || undefined
     };
 
     // Datos de solicitud preparados
@@ -136,20 +125,20 @@ export class DocumentGeneratorComponent implements OnInit {
     }
   }
 
-  private getAdditionalFields(formData: any): any {
-    const additionalFields: any = {};
+  private getAdditionalFields(formData: Record<string, unknown>): Record<string, unknown> {
+    const additionalFields: Record<string, unknown> = {};
 
     // Agregar campos específicos según el proceso
     const proceso = this.proceso();
     if (proceso === 'homologacion') {
-      additionalFields.tipoHomologacion = 'ASIGNATURAS';
-      additionalFields.asignaturasHomologadas = this.solicitud().asignaturas || [];
+      additionalFields['tipoHomologacion'] = 'ASIGNATURAS';
+      additionalFields['asignaturasHomologadas'] = [];
     } else if (proceso === 'paz-salvo') {
-      additionalFields.tipoPazSalvo = 'ACADEMICO';
-      additionalFields.semestre = this.solicitud().semestre || '';
+      additionalFields['tipoPazSalvo'] = 'ACADEMICO';
+      additionalFields['semestre'] = '';
     } else if (proceso === 'reingreso') {
-      additionalFields.motivoReingreso = this.solicitud().motivo || '';
-      additionalFields.semestreAnterior = this.solicitud().semestreAnterior || '';
+      additionalFields['motivoReingreso'] = '';
+      additionalFields['semestreAnterior'] = '';
     }
 
     // Agregar campos opcionales del formulario

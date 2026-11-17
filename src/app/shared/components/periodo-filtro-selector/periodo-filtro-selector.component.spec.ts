@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { PeriodoFiltroSelectorComponent } from './periodo-filtro-selector.component';
-import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
+import { PeriodoAcademico, PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 
 describe('PeriodoFiltroSelectorComponent', () => {
@@ -17,7 +17,7 @@ describe('PeriodoFiltroSelectorComponent', () => {
       { periodoActual$: new BehaviorSubject(null) });
     periodos.getPeriodoActualValue.and.returnValue(null);
     periodos.getPeriodoActual.and.returnValue(of(null));
-    periodos.getPeriodosRecientes.and.returnValue(of([{ valor: '2025-2', nombrePeriodo: 'Segundo 2025' } as any]));
+    periodos.getPeriodosRecientes.and.returnValue(of([{ valor: '2025-2', nombrePeriodo: 'Segundo 2025' } as PeriodoAcademico]));
     cursos = jasmine.createSpyObj('CursosIntersemestralesService', ['getPeriodosRegistrados', 'getPeriodosAcademicos']);
 
     await TestBed.configureTestingModule({

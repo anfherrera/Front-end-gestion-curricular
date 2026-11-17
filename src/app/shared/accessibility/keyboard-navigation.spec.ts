@@ -123,23 +123,23 @@ describe('PRUEBAS DE ACCESIBILIDAD - Navegación por Teclado', () => {
     });
 
     it('ACC-010-B: Elementos focusables deben ser accesibles por teclado', () => {
-      const focusableElements = compiled.querySelectorAll(
+      const focusableElements = compiled.querySelectorAll<HTMLElement>(
         'button, input, select, textarea, a[href]'
       );
       
       expect(focusableElements.length).toBeGreaterThan(0);
       
-      focusableElements.forEach((element: any) => {
+      focusableElements.forEach((element) => {
         expect(element.tabIndex).toBeGreaterThanOrEqual(-1);
       });
     });
 
     it('ACC-010-C: Orden de tabulación debe ser lógico', () => {
       const focusableElements = Array.from(
-        compiled.querySelectorAll('button, input, a[href]')
+        compiled.querySelectorAll<HTMLElement>('button, input, a[href]')
       );
       
-      const ids = focusableElements.map((el: any) => el.id).filter(id => id);
+      const ids = focusableElements.map((el) => el.id).filter(id => id);
       expect(ids).toEqual(['btn1', 'btn2', 'input1', 'link1']);
     });
   });

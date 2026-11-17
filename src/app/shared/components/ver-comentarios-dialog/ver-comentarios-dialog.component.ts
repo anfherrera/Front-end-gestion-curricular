@@ -6,9 +6,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 
+/** Lo que el diálogo muestra de cada documento. */
+export interface DocumentoConComentario {
+  nombre: string;
+  comentario?: string | null;
+}
+
 export interface VerComentariosDialogData {
   titulo: string;
-  documentos: any[];
+  documentos: DocumentoConComentario[];
   comentarioRechazo?: string | null;
   mensaje?: string; // Mensaje cuando no hay comentarios
 }
@@ -41,7 +47,7 @@ export class VerComentariosDialogComponent {
   /**
    * Obtener solo los documentos que tienen comentarios
    */
-  get documentosConComentarios(): any[] {
+  get documentosConComentarios(): DocumentoConComentario[] {
     if (!this.data.documentos || this.data.documentos.length === 0) {
       return [];
     }

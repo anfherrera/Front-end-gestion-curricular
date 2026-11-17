@@ -218,6 +218,12 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Se borra `UsuariosService.actualizarEstado()`, que nadie llamaba
     - Specs: los mocks de `estadisticas.service.spec` (total de estudiantes y estado de solicitudes) y de preinscripción en `services.integration.spec` tenían campos que el backend no manda (`total`, `porPrograma`, `aprobadas`, `condicionSolicitud`); ahora usan los tipos del modelo
     - Sin cambios visibles esperados
+  - [x] `shared` y `jasmine-global.d.ts` (2026-11-17): 19 `any` menos (119 → 100); ya no queda ninguno en `shared`
+    - `DocumentGeneratorComponent` recibe `SolicitudParaDocumento` ([documento.model.ts](src/app/core/models/documento.model.ts)). Leía campos que ninguna respuesta del backend trae (`id`, `usuario`, `fecha`, `estado`, `informacion_adicional`, `asignaturas`, `semestre`, `motivo`, `semestreAnterior`) y siempre caían en el valor por defecto; se borran y esos valores quedan fijos, así que el oficio se pide igual que antes
+    - `utfFix` es genérico (`transform<T>`); `ver-comentarios-dialog` tipa sus documentos con `DocumentoConComentario`
+    - Specs: diálogos simulados con `MatDialogRef<unknown>` y elementos del DOM con `querySelectorAll<HTMLElement>`
+    - Sin cambios visibles esperados
+  - [ ] `pages` y `login`: quedan 100 `any` en 17 archivos, 71 de ellos en specs (estudiante/paz-salvo.spec 22, modulo-estadistico.acceptance 9, estudiante/pruebas-ecaes.spec 9, form-usuario 8, estudiante/reingreso 8…)
 - [x] **Suscripciones** (2026-11-13): hay 244 `.subscribe(` fuera de los specs. Se revisaron todas las que no terminan solas (`$` de servicios, `valueChanges`, `router.events`, `route.params`, `interval`); las HTTP y `afterClosed()` terminan solas
   - Fugas reales corregidas: **configurar-periodo** se suscribía a `periodoActual$` (un `BehaviorSubject` de un servicio raíz) sin soltarlo, así que cada visita sumaba un suscriptor. Ahora se suscribe una vez en `ngOnInit` con `takeUntilDestroyed`, igual que `valueChanges`. **breadcrumb** escuchaba `router.events` sin cortar
   - Las 108 `takeUntil(this.destroy$)` de 18 componentes pasan por script a `takeUntilDestroyed(this.destroyRef)`, que ya usaban otras 50. Se borran los `Subject` `destroy$` y los `ngOnDestroy` que solo hacían `next()`/`complete()` (en los dashboards estadísticos se quedan para destruir los gráficos). Ya no queda ningún `takeUntil(`

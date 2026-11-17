@@ -108,7 +108,7 @@ describe('PRUEBAS DE ACCESIBILIDAD - Formularios', () => {
     it('ACC-001-A: Todos los inputs deben tener label asociado', () => {
       const inputs = compiled.querySelectorAll('input, select, textarea');
       
-      inputs.forEach((input: any) => {
+      inputs.forEach((input) => {
         const id = input.getAttribute('id');
         const label = compiled.querySelector(`label[for="${id}"]`);
         
@@ -211,7 +211,7 @@ describe('PRUEBAS DE ACCESIBILIDAD - Formularios', () => {
     
     it('ACC-004-A: Inputs deben estar en orden DOM lógico', () => {
       const inputs = Array.from(compiled.querySelectorAll('input, select, button[type="submit"]'));
-      const ids = inputs.map((input: any) => input.getAttribute('id') || input.getAttribute('type'));
+      const ids = inputs.map((input) => input.getAttribute('id') || input.getAttribute('type'));
       
       expect(ids).toEqual(['email', 'password', 'role', 'submit']);
     });
@@ -219,7 +219,7 @@ describe('PRUEBAS DE ACCESIBILIDAD - Formularios', () => {
     it('ACC-004-B: Ningún elemento debe tener tabindex negativo', () => {
       const allElements = compiled.querySelectorAll('*');
       
-      allElements.forEach((element: any) => {
+      allElements.forEach((element) => {
         const tabindex = element.getAttribute('tabindex');
         if (tabindex !== null) {
           expect(parseInt(tabindex)).toBeGreaterThanOrEqual(0);

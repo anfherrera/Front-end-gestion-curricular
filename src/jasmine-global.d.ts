@@ -6,7 +6,7 @@
 declare global {
   function expect<T>(actual: T): jasmine.Matchers<T>;
   function expect<T>(actual: ArrayLike<T>): jasmine.ArrayLikeMatchers<T>;
-  function expect(actual: any): jasmine.Matchers<any>;
+  function expect(actual: unknown): jasmine.Matchers<unknown>;
 }
 
 export {};

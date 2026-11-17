@@ -1,3 +1,5 @@
+import { SolicitudRevisable } from './solicitud-revision.model';
+
 /** Plantilla de oficio que secretaría genera para un proceso. */
 export interface DocumentTemplate {
   id: string;
@@ -24,7 +26,7 @@ export interface DatosSolicitudDocumento {
   codigoEstudiante?: string;
   cedula?: string;
   programa?: string;
-  fechaSolicitud?: string;
+  fechaSolicitud?: string | Date;
   estado: string;
   tituloTrabajoGrado?: string;
   directorTrabajoGrado?: string;
@@ -35,4 +37,16 @@ export interface DocumentRequest {
   tipoDocumento: string;
   datosDocumento: DocumentData;
   datosSolicitud: DatosSolicitudDocumento;
+}
+
+/** Lo que lee el generador de oficios de una solicitud del backend (paz y salvo, homologación, reingreso). */
+export interface SolicitudParaDocumento extends SolicitudRevisable {
+  objUsuario?: {
+    nombre_completo?: string;
+    codigo?: string;
+    objPrograma?: { nombre_programa?: string } | null;
+  } | null;
+  /** Paz y salvo: datos del trabajo de grado, si el backend los devuelve. */
+  titulo_trabajo_grado?: string | null;
+  director_trabajo_grado?: string | null;
 }
