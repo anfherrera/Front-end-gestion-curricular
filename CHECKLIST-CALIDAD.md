@@ -209,7 +209,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 
 ## Fase 6 — Angular moderno y tipado
 
-- [ ] **Tipado**: hay 282 `any` (los que más tienen: `api.service` con 20, `secretaria/reingreso` con 13, `form-usuario` con 11, `manage-processes` con 8). Reemplazarlos por las interfaces de `core/models`
+- [ ] **Tipado**: quedan 183 `any` (2026-11-17) en 46 archivos, 100 de ellos en specs. Los que más tienen: `estudiante/paz-salvo.component.spec` (22), `modulo-estadistico.acceptance.spec` (9), `estudiante/pruebas-ecaes.component.spec` (9), `form-usuario` (8), `estudiante/reingreso` (8), `estudiante/pruebas-ecaes` (7). Reemplazarlos por las interfaces de `core/models` y, al llegar a 0, pasar `no-explicit-any` a `error`
 - [x] **Suscripciones** (2026-11-13): hay 244 `.subscribe(` fuera de los specs. Se revisaron todas las que no terminan solas (`$` de servicios, `valueChanges`, `router.events`, `route.params`, `interval`); las HTTP y `afterClosed()` terminan solas
   - Fugas reales corregidas: **configurar-periodo** se suscribía a `periodoActual$` (un `BehaviorSubject` de un servicio raíz) sin soltarlo, así que cada visita sumaba un suscriptor. Ahora se suscribe una vez en `ngOnInit` con `takeUntilDestroyed`, igual que `valueChanges`. **breadcrumb** escuchaba `router.events` sin cortar
   - Las 108 `takeUntil(this.destroy$)` de 18 componentes pasan por script a `takeUntilDestroyed(this.destroyRef)`, que ya usaban otras 50. Se borran los `Subject` `destroy$` y los `ngOnDestroy` que solo hacían `next()`/`complete()` (en los dashboards estadísticos se quedan para destruir los gráficos). Ya no queda ningún `takeUntil(`
@@ -256,7 +256,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [ ] Cobertura mínima en `karma.conf.js` (por ejemplo 60 %)
 - [ ] Opcional: Husky con lint-staged para correr lint antes de cada commit
 - [ ] README: sección de arquitectura (core/shared/pages, el patrón de revisión por rol), variables de entorno y la lista de scripts de test
-- [ ] Revisar que las pruebas que existen sigan pasando después de cada fase (hay 49 specs con 550 pruebas y 11 pruebas de Cypress)
+- [ ] Revisar que las pruebas que existen sigan pasando después de cada fase (hay 55 specs con 587 pruebas, al 2026-11-17, y 11 pruebas de Cypress)
 
 ---
 
