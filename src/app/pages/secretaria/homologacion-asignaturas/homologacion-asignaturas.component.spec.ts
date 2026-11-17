@@ -1,52 +1,48 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import { HomologacionAsignaturasComponent } from './homologacion-asignaturas.component';
 import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
-import { DocumentGeneratorService } from '@core/services/document-generator.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { LoggerService } from '@core/services/logger.service';
-import { ErrorHandlerService } from '@core/services/error-handler.service';
 
 describe('HomologacionAsignaturasComponent (Secretaria)', () => {
+  let servicio: jasmine.SpyObj<HomologacionAsignaturasService>;
   let component: HomologacionAsignaturasComponent;
-  let fixture: ComponentFixture<HomologacionAsignaturasComponent>;
 
   beforeEach(async () => {
-    const homologacionServiceSpy = jasmine.createSpyObj('HomologacionAsignaturasService', [
-      'getSecretariaRequests', 'getSecretariaApprovedRequests', 'approveDefinitively'
+    servicio = jasmine.createSpyObj<HomologacionAsignaturasService>('HomologacionAsignaturasService', [
+      'getSecretariaRequests', 'getSecretariaApprovedRequests', 'subirResolucion', 'approveDefinitively'
     ]);
-    const documentGeneratorSpy = jasmine.createSpyObj('DocumentGeneratorService', ['generateDocument']);
-    const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
-    const loggerSpy = jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']);
-    const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['extraerMensajeError']);
-
-    homologacionServiceSpy.getSecretariaRequests.and.returnValue(of([]));
-    homologacionServiceSpy.getSecretariaApprovedRequests.and.returnValue(of([]));
+    servicio.getSecretariaRequests.and.returnValue(of([]));
+    servicio.getSecretariaApprovedRequests.and.returnValue(of([]));
+    servicio.subirResolucion.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
       imports: [HomologacionAsignaturasComponent, NoopAnimationsModule],
       providers: [
-        { provide: HomologacionAsignaturasService, useValue: homologacionServiceSpy },
-        { provide: DocumentGeneratorService, useValue: documentGeneratorSpy },
-        { provide: MatSnackBar, useValue: snackBarSpy },
-        { provide: LoggerService, useValue: loggerSpy },
-        { provide: ErrorHandlerService, useValue: errorHandlerSpy }
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: HomologacionAsignaturasService, useValue: servicio }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HomologacionAsignaturasComponent);
+    const fixture = TestBed.createComponent(HomologacionAsignaturasComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('HA-S-001: debe crear el componente', () => {
-    expect(component).toBeTruthy();
+  it('HA-S-001: carga las pendientes y el historial de secretaría', () => {
+    expect(servicio.getSecretariaRequests).toHaveBeenCalled();
+    expect(servicio.getSecretariaApprovedRequests).toHaveBeenCalled();
   });
 
-  it('HA-S-002: debe tener template de oficio homologacion', () => {
-    expect(component.template).toBeDefined();
-    expect(component.template.id).toBe('OFICIO_HOMOLOGACION');
+  it('HA-S-002: usa el oficio de homologación, muestra los documentos y sube la resolución', () => {
+    const pdf = new File([''], 'r.pdf', { type: 'application/pdf' });
+    expect(component.config.plantilla.id).toBe('OFICIO_HOMOLOGACION');
+    expect(component.config.servicioDocumentos).toBe(servicio);
+    component.config.subirPdf(7, pdf);
+    expect(servicio.subirResolucion).toHaveBeenCalledWith(pdf, 7);
   });
 });
