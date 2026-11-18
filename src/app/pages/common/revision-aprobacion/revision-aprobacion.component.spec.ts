@@ -5,21 +5,22 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 
-import { RevisionAprobacionComponent } from './revision-aprobacion.component';
+import { ConfigRevisionAprobacion, RevisionAprobacionComponent } from './revision-aprobacion.component';
 import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import { RolRevision } from '@core/models/solicitud-revision.model';
+import { TextoDialogData } from '@shared/components/texto-dialog/texto-dialog.component';
 
 type Sol = SolicitudHomologacionDTORespuesta;
 
-function solicitud(id: number, estado: string, comentario = ''): Sol {
+function solicitud(id: number, estado: string, comentario = '', comentarioEstado?: string): Sol {
   return {
     id_solicitud: id,
     nombre_solicitud: `Solicitud ${id}`,
     fecha_registro_solicitud: '2026-03-01',
     periodo_academico: '2026-1',
-    estadosSolicitud: [{ id_estado: 1, estado_actual: estado, fecha_registro_estado: '2026-03-01' }],
+    estadosSolicitud: [{ id_estado: 1, estado_actual: estado, fecha_registro_estado: '2026-03-01', comentario: comentarioEstado }],
     documentos: [{ id_documento: id * 10, nombre: 'doc.pdf', ruta_documento: '', fecha_documento: '', esValido: false, comentario }]
   } as Sol;
 }
@@ -31,7 +32,7 @@ describe('RevisionAprobacionComponent', () => {
   let snackbar: jasmine.SpyObj<SnackbarService>;
   let dialog: jasmine.SpyObj<MatDialog>;
 
-  async function crear(rol: RolRevision, pendientes: Sol[] = []): Promise<void> {
+  async function crear(rol: RolRevision, pendientes: Sol[] = [], extra: Partial<ConfigRevisionAprobacion<Sol>> = {}): Promise<void> {
     servicio = jasmine.createSpyObj<HomologacionAsignaturasService>('HomologacionAsignaturasService', [
       'getPendingRequests', 'getCoordinadorRequests', 'getSolicitudesProcesadasFuncionario',
       'getSolicitudesProcesadasCoordinador', 'approveRequest', 'approveAsCoordinador', 'rejectRequest',
@@ -61,7 +62,7 @@ describe('RevisionAprobacionComponent', () => {
 
     fixture = TestBed.createComponent(RevisionAprobacionComponent<Sol>);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('config', { rol, servicio, proceso: 'homologacion', nombreProceso: 'Homologación' });
+    fixture.componentRef.setInput('config', { rol, servicio, proceso: 'homologacion', nombreProceso: 'Homologación', ...extra });
     fixture.detectChanges();
   }
 
@@ -181,6 +182,76 @@ describe('RevisionAprobacionComponent', () => {
 
       expect(servicio.rejectRequest).toHaveBeenCalledWith(5, 'No cumple');
       expect(snackbar.exito).toHaveBeenCalledWith('Solicitud rechazada');
+    });
+  });
+
+  describe('motivo del rechazo', () => {
+    beforeEach(() => crear('funcionario'));
+
+    it('muestra el comentario del último rechazo de la solicitud elegida', () => {
+      component.onSolicitudSeleccionada(solicitud(3, 'Rechazada', '', 'Falta el certificado'));
+      fixture.detectChanges();
+
+      expect(component.motivoRechazo()).toBe('Falta el certificado');
+      expect(fixture.nativeElement.querySelector('.comentario-rechazo')?.textContent).toContain('Falta el certificado');
+      expect(component.puedeDecidir()).toBeFalse();
+    });
+
+    it('no aparece si la solicitud no está rechazada', () => {
+      component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA', '', 'Comentario del envío'));
+      fixture.detectChanges();
+
+      expect(component.motivoRechazo()).toBeNull();
+      expect(fixture.nativeElement.querySelector('.comentario-rechazo')).toBeNull();
+    });
+  });
+
+  describe('con documentos aparte y textos propios', () => {
+    const docs = [{ id_documento: 77, nombre: 'paz.pdf', ruta_documento: '', fecha_documento: '', esValido: false }];
+    let documentosAparte: jasmine.Spy;
+
+    beforeEach(() => {
+      documentosAparte = jasmine.createSpy('documentosAparte').and.returnValue(of(docs));
+      return crear('coordinador', [solicitud(5, 'APROBADA_FUNCIONARIO')], {
+        documentosAparte,
+        mensajeRechazada: 'Paz y Salvo rechazado',
+        dialogoRechazo: { titulo: 'Rechazar Paz y Salvo', descripcion: 'Indique el motivo:' }
+      });
+    });
+
+    it('al elegir una solicitud pide sus documentos y los muestra', () => {
+      component.onSolicitudSeleccionada(solicitud(5, 'APROBADA_FUNCIONARIO'));
+
+      expect(documentosAparte).toHaveBeenCalledWith(5);
+      expect(component.documentos()).toEqual(docs);
+    });
+
+    it('si fallan los documentos deja la lista vacía y avisa', () => {
+      documentosAparte.and.returnValue(throwError(() => ({ status: 500, error: null })));
+      component.onSolicitudSeleccionada(solicitud(5, 'APROBADA_FUNCIONARIO'));
+
+      expect(component.documentos()).toEqual([]);
+      expect(snackbar.error).toHaveBeenCalled();
+    });
+
+    it('tras añadir un comentario vuelve a pedir los documentos', () => {
+      servicio.agregarComentario.and.returnValue(of({}));
+      component.onSolicitudSeleccionada(solicitud(5, 'APROBADA_FUNCIONARIO'));
+      component.onComentarioAgregado({ documento: docs[0], comentario: 'Revisar' });
+
+      expect(documentosAparte).toHaveBeenCalledTimes(2);
+      expect(component.documentos()).toEqual(docs);
+    });
+
+    it('usa sus textos en el diálogo y en el aviso de rechazo', () => {
+      respuestaDialogo('No cumple');
+      component.onSolicitudSeleccionada(solicitud(5, 'APROBADA_FUNCIONARIO'));
+      component.rechazar();
+
+      const data = dialog.open.calls.mostRecent().args[1]?.data as TextoDialogData;
+      expect(data.titulo).toBe('Rechazar Paz y Salvo');
+      expect(data.descripcion).toBe('Indique el motivo:');
+      expect(snackbar.exito).toHaveBeenCalledWith('Paz y Salvo rechazado');
     });
   });
 });

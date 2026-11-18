@@ -13,6 +13,15 @@
     <app-card-container
       title="Documentación Adjunta"
       icon="description">
+      @if (motivoRechazo(); as motivo) {
+        <div class="comentario-rechazo">
+          <mat-icon>error_outline</mat-icon>
+          <div class="comentario-rechazo-content">
+            <strong>Motivo del rechazo:</strong>
+            <p>{{ motivo }}</p>
+          </div>
+        </div>
+      }
       <app-documentation-viewer
         [documentos]="documentos()"
         [solicitudId]="sel.id_solicitud"

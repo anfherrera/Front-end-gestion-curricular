@@ -7,6 +7,45 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* Motivo del rechazo (solo si la solicitud elegida está rechazada) */
+.comentario-rechazo {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: var(--rojo-50);
+  border-left: 4px solid var(--rojo-800);
+  border-radius: 4px;
+  align-items: flex-start;
+}
+
+.comentario-rechazo mat-icon {
+  color: var(--rojo-800);
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.comentario-rechazo-content {
+  flex: 1;
+}
+
+.comentario-rechazo-content strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--rojo-800);
+  font-size: 0.95rem;
+}
+
+.comentario-rechazo-content p {
+  margin: 0;
+  color: var(--gris-900);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
 /* Botones de acción */
 .botones-acciones {
   display: flex;

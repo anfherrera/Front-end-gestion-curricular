@@ -172,8 +172,8 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       req.flush(mockSolicitudes);
     });
 
-    it('PZS-010: getCoordinatorRequests debe obtener solicitudes de coordinador', (done) => {
-      service.getCoordinatorRequests().subscribe((solicitudes) => {
+    it('PZS-010: getCoordinadorRequests debe obtener solicitudes de coordinador', (done) => {
+      service.getCoordinadorRequests().subscribe((solicitudes) => {
         expect(solicitudes).toEqual([]);
         done();
       });

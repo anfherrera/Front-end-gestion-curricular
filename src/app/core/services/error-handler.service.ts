@@ -5,6 +5,8 @@ interface CuerpoError {
   mensaje?: string;
   message?: string;
   codigo?: string;
+  /** Lo usan los rechazos de cambio de estado: { estadoActual, codigo, error }. */
+  error?: unknown;
 }
 
 /** Lo que se lee de un error HTTP: el estado y el cuerpo, si es un objeto. */
@@ -25,6 +27,11 @@ function leerError(error: unknown): ErrorLeido {
   const { status, error: crudo } = error as { status?: unknown; error?: unknown };
   const cuerpo = crudo && typeof crudo === 'object' && !Array.isArray(crudo) ? (crudo as CuerpoError) : null;
   return { status: typeof status === 'number' ? status : undefined, cuerpo, crudo };
+}
+
+/** El campo `error` del cuerpo, si es un texto. */
+function textoDeError(cuerpo: CuerpoError | null): string | null {
+  return typeof cuerpo?.error === 'string' && cuerpo.error ? cuerpo.error : null;
 }
 
 /**
@@ -55,6 +62,8 @@ export class ErrorHandlerService {
         const match = cuerpo.mensaje.match(/Violación a regla de negocio: (.+)/);
         return match ? match[1] : cuerpo.mensaje;
       }
+      const textoError = textoDeError(cuerpo);
+      if (textoError) return textoError;
       // Mensajes de validación por campo (clave: nombre del campo, valor: mensaje)
       const mensajesCampo = Object.values(crudo as object)
         .filter((v): v is string => typeof v === 'string');
@@ -80,7 +89,7 @@ export class ErrorHandlerService {
     }
 
     // Otros errores
-    return cuerpo?.mensaje || cuerpo?.message ||
+    return cuerpo?.mensaje || cuerpo?.message || textoDeError(cuerpo) ||
            'Ocurrió un error inesperado';
   }
 

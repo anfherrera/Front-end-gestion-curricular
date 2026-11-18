@@ -85,7 +85,7 @@ export class PazSalvoService extends SolicitudesBaseService {
     return this.bandeja('Funcionario', periodoAcademico);
   }
 
-  getCoordinatorRequests(periodoAcademico?: string): Solicitudes {
+  getCoordinadorRequests(periodoAcademico?: string): Solicitudes {
     return this.bandeja('Coordinador', periodoAcademico);
   }
 
