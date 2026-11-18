@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,31 +13,15 @@ import { descargarBlob, nombreDeContentDisposition } from '@core/utils/download.
 import { Archivo, SolicitudHomologacionDTOPeticion, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
-import { RequestStatusTableComponent } from "@shared/components/request-status/request-status.component";
-import { FileUploadComponent } from "@shared/components/file-upload-dialog/file-upload-dialog.component";
-import { RequiredDocsComponent } from "@shared/components/required-docs/required-docs.component";
-import { VerComentariosDialogComponent, VerComentariosDialogData } from "@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component";
+import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
+import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
+import { Documento, RequiredDocsComponent } from '@shared/components/required-docs/required-docs.component';
 
 import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
 import { FormatosInstitucionalesService } from '@core/services/formatos-institucionales.service';
-import { MatDialog } from '@angular/material/dialog';
-import { NotificacionesService } from '@core/services/notificaciones.service';
-import { AuthService } from '@core/services/auth.service';
-import { LoggerService } from '@core/services/logger.service';
-import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
-
-import { Solicitud } from '@core/models/procesos.model';
-import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '@core/utils/texto.util';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
-import { SnackbarService } from '@core/services/snackbar.service';
-
-/** Palabras que identifican cada documento requerido, para reconocer archivos con otro nombre. */
-const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
-  'pmfo4for22': ['pmfo4for22', 'pm-fo-4-for-22', 'solicitud', 'homologacion', 'homologación'],
-  'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
-  'programa': ['programa', 'academico', 'materia', 'asignatura', 'syllabus']
-};
+import { SolicitudEstudianteBase } from '../solicitud-estudiante.base';
 
 @Component({
   selector: 'app-solicitud-homologacion',
@@ -52,515 +36,97 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     FileUploadComponent,
     RequiredDocsComponent,
     RequestStatusTableComponent
-],
+  ],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomologacionAsignaturasComponent implements OnInit {
+export class HomologacionAsignaturasComponent extends SolicitudEstudianteBase<SolicitudHomologacionDTORespuesta> {
   private homologacionService = inject(HomologacionAsignaturasService);
   private formatosService = inject(FormatosInstitucionalesService);
-  private snackbar = inject(SnackbarService);
-  private dialog = inject(MatDialog);
-  private notificacionesService = inject(NotificacionesService);
-  private authService = inject(AuthService);
-  private logger = inject(LoggerService);
-  private errorHandler = inject(ErrorHandlerService);
   private periodosService = inject(PeriodosAcademicosService);
   private fb = inject(FormBuilder);
 
-  @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
-
-  private readonly destroyRef = inject(DestroyRef);
-
-  documentosRequeridos = [
-    { label: 'PM-FO-4-FOR-22 Solicitud homologación de materias', obligatorio: true, formatoDisponibleUrl: '' as string },
+  documentosRequeridos: Documento[] = [
+    { label: 'PM-FO-4-FOR-22 Solicitud homologación de materias', obligatorio: true, formatoDisponibleUrl: '' },
     { label: 'Certificado de notas', obligatorio: true },
     { label: 'Programa académico de la materia', obligatorio: true }
   ];
 
-  archivosExclusivos: string[] = [];
+  protected override palabrasClaveDocumentos = {
+    'pmfo4for22': ['pmfo4for22', 'pm-fo-4-for-22', 'solicitud', 'homologacion', 'homologación'],
+    'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
+    'programa': ['programa', 'academico', 'materia', 'asignatura', 'syllabus']
+  };
 
-  readonly archivosActuales = signal<Archivo[]>([]);
-  readonly resetFileUpload = signal(false);
-  readonly solicitudes = signal<Solicitud[]>([]);
-  solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
+  protected readonly mensajeExito = '¡Solicitud de homologación enviada correctamente!';
 
-  usuario: UsuarioSesion | null = null;
-  solicitudForm: FormGroup;
+  readonly solicitudForm = this.fb.group({
+    programa_origen: ['', [Validators.maxLength(200)]],
+    programa_destino: ['', [Validators.maxLength(200)]]
+  });
 
-  constructor() {
-    // Inicializar formulario con los campos de información de la solicitud
-    this.solicitudForm = this.fb.group({
-      programa_origen: ['', [Validators.maxLength(200)]],
-      programa_destino: ['', [Validators.maxLength(200)]]
-    });
-  }
-
-  ngOnInit(): void {
+  protected override alIniciar(): void {
     const homologacion = this.formatosService.getHomologacion();
     if (homologacion) {
       this.documentosRequeridos[0].label = homologacion.nombre;
       this.documentosRequeridos[0].formatoDisponibleUrl = homologacion.url;
     }
-
-    this.usuario = this.authService.getUsuario();
-    if (this.usuario) {
-      this.logger.debug('Usuario cargado desde localStorage', this.usuario);
-    } else {
-      this.logger.warn('No se encontró usuario en localStorage');
-    }
-
-    // Listar solicitudes existentes al cargar el componente
-    this.listarSolicitudes();
-
-    // Verificar funcionalidad de comentarios (para debugging)
-    setTimeout(() => {
-      this.verificarFuncionalidadComentarios();
-    }, 2000);
   }
 
-  onArchivosChange(archivos: Archivo[]) {
-    this.archivosActuales.set(archivos);
+  protected listar(usuario: UsuarioSesion) {
+    return this.homologacionService.listarSolicitudesPorRol('ESTUDIANTE', usuario.id_usuario);
   }
 
-  puedeEnviar(): boolean {
-    return this.archivosActuales().length > 0 && !!this.usuario;
+  protected crearSolicitud(usuario: UsuarioSesion, archivos: Archivo[]) {
+    const nombre = usuario.nombre_completo?.trim() || 'Usuario';
+    const solicitud: SolicitudHomologacionDTOPeticion = {
+      nombre_solicitud: `Solicitud Homologación - ${nombre}`,
+      fecha_registro_solicitud: new Date().toISOString(),
+      periodo_academico: this.periodosService.getPeriodoActualValue()?.valor || getPeriodoActual(),
+      fecha_ceremonia: null,
+      objUsuario: usuarioParaSolicitud(usuario),
+      archivos,
+      // Opcionales: vacío se envía como null
+      programa_origen: this.solicitudForm.value.programa_origen?.trim() || null,
+      programa_destino: this.solicitudForm.value.programa_destino?.trim() || null
+    };
+    return this.homologacionService.crearSolicitud(solicitud);
   }
 
   /**
-   * Obtener lista de documentos faltantes (solo informativo, no bloquea envío)
-   * @returns Array con nombres de documentos que no se han subido
+   * Descarga el oficio de la solicitud. Si no hay oficios avisa; el nombre sale del encabezado
+   * Content-Disposition o, si no viene, del primer oficio.
    */
-  obtenerDocumentosFaltantes(): string[] {
-    const faltantes: string[] = [];
-
-    // Obtener documentos obligatorios
-    const documentosObligatorios = this.documentosRequeridos.filter(doc => doc.obligatorio);
-
-    // Verificar cada documento obligatorio
-    documentosObligatorios.forEach(doc => {
-      if (!this.archivoSubido(doc.label)) {
-        faltantes.push(doc.label);
-      }
-    });
-
-    return faltantes;
-  }
-
-  /**
-   * Verificar si un archivo ha sido subido basándose en el nombre del documento
-   * @param nombreDocumento Nombre del documento requerido
-   * @returns true si el archivo fue subido, false en caso contrario
-   */
-  private archivoSubido(nombreDocumento: string): boolean {
-    const nombreNormalizado = normalizarNombreArchivo(nombreDocumento);
-    return this.archivosActuales().some(archivo => {
-      const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
-      // Buscar coincidencias parciales (por si el nombre del archivo es ligeramente diferente)
-      return nombreArchivo.includes(nombreNormalizado) ||
-             nombreNormalizado.includes(nombreArchivo) ||
-             coincidenPorPalabrasClave(nombreArchivo, nombreNormalizado, PALABRAS_CLAVE_DOCUMENTOS);
-    });
-  }
-
-  onSolicitudEnviada() {
-    if (!this.usuario) {
-      this.logger.error('No se puede enviar solicitud: usuario no encontrado.');
-      this.snackbar.error('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.');
-      return;
-    }
-
-    if (!this.fileUploadComponent) {
-      this.logger.error('No se puede acceder al componente de archivos.');
-      this.snackbar.error('Error: No se puede acceder al componente de archivos.');
-      return;
-    }
-
-    this.logger.debug('Iniciando proceso de envío de solicitud');
-
-    // Paso 1: Subir archivos al backend
-    this.fileUploadComponent.subirArchivosPendientes()
+  descargarOficio(idSolicitud: number, nombreArchivo: string): void {
+    this.homologacionService.obtenerOficios(idSolicitud)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (archivosSubidos) => {
-        this.logger.debug('Archivos subidos correctamente', archivosSubidos);
-
-        // Paso 2: Crear la solicitud con los archivos ya subidos
-        // Obtener nombre completo del usuario
-        const usuario = this.usuario!;
-        const nombreFinal = usuario.nombre_completo?.trim() || 'Usuario';
-
-        // Obtener período académico actual
-        const periodoActual = this.periodosService.getPeriodoActualValue();
-        const periodoAcademico = periodoActual?.valor || getPeriodoActual();
-
-        // Obtener valores del formulario (pueden ser null o string vacío)
-        const programaOrigen = this.solicitudForm.get('programa_origen')?.value?.trim() || null;
-        const programaDestino = this.solicitudForm.get('programa_destino')?.value?.trim() || null;
-
-        const solicitud: SolicitudHomologacionDTOPeticion = {
-          nombre_solicitud: `Solicitud Homologación - ${nombreFinal}`,
-          fecha_registro_solicitud: new Date().toISOString(),
-          periodo_academico: periodoAcademico, // Obligatorio
-          fecha_ceremonia: null, // Opcional, se puede agregar un campo en el formulario si es necesario
-          objUsuario: usuarioParaSolicitud(usuario),
-          archivos: archivosSubidos,
-          programa_origen: programaOrigen,
-          programa_destino: programaDestino
-        };
-
-        this.logger.debug('Creando solicitud con archivos', solicitud);
-
-  this.homologacionService.crearSolicitud(solicitud)
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-    next: (resp) => {
-      this.logger.debug('Solicitud creada en backend', resp);
-      this.listarSolicitudes();
-
-      this.notificacionesService.actualizarNotificaciones();
-
-      // Resetear el file upload
-      this.resetFileUpload.set(true);
-      setTimeout(() => this.resetFileUpload.set(false), 0);
-
-            this.snackbar.exito('¡Solicitud de homologación enviada correctamente!');
-    },
-    error: (err) => {
-      this.logger.error('Error al crear solicitud', err);
-      const mensajeError = this.errorHandler.extraerMensajeError(err);
-      if (err.status === 400) {
-        this.snackbar.advertencia(mensajeError || 'Error de validación: revisa los datos de la solicitud');
-      } else if (err.status === 401) {
-        this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
-      } else {
-        this.snackbar.error(mensajeError || 'Error al crear la solicitud. Por favor, inténtalo de nuevo.');
-      }
-    }
-  });
-      },
-      error: (err) => {
-        this.logger.error('Error al subir archivos', err);
-        const mensajeError = this.errorHandler.extraerMensajeError(err);
-        this.snackbar.error(mensajeError || 'Error al subir archivos. Por favor, inténtalo de nuevo.');
-
-        // Resetear el estado de carga del componente de subida
-        if (this.fileUploadComponent) {
-          this.fileUploadComponent.resetearEstadoCarga();
-        }
-    }
-  });
-}
-
-
-
-
-listarSolicitudes() {
-  if (!this.usuario) {
-    this.logger.error("Usuario no encontrado en localStorage.");
-    return;
-  }
-
-  this.logger.debug('Usuario encontrado', {
-    rol: this.usuario.rol?.nombre,
-    idUsuario: this.usuario.id_usuario
-  });
-
-  this.homologacionService.listarSolicitudesPorRol((this.usuario.rol?.nombre ?? '').toUpperCase(), this.usuario.id_usuario)
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-    next: (data) => {
-      this.logger.debug('Respuesta del backend', {
-        tipo: typeof data,
-        esArray: Array.isArray(data),
-        longitud: data?.length
+        next: oficios => {
+          if (!oficios || oficios.length === 0) {
+            this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
+            return;
+          }
+          const oficio = oficios[0];
+          this.descargarOficioConNombre(idSolicitud, oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`);
+        },
+        // Sin la lista de oficios se intenta igual la descarga
+        error: () => this.descargarOficioConNombre(idSolicitud, nombreArchivo || `oficio_homologacion_${idSolicitud}.pdf`)
       });
+  }
 
-      if (!data || !Array.isArray(data)) {
-        this.logger.warn('La respuesta no es un array válido', data);
-        this.solicitudes.set([]);
-        this.solicitudesCompletas = [];
-        return;
-      }
-
-      // Guardar las solicitudes completas para usar comentarios
-      this.solicitudesCompletas = data;
-
-      this.logger.debug('Estructura de datos del backend', {
-        totalSolicitudes: data.length,
-        primeraSolicitud: data.length > 0 ? data[0] : null
+  private descargarOficioConNombre(idSolicitud: number, nombreRespaldo: string): void {
+    this.homologacionService.descargarOficioConNombre(idSolicitud)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: response => {
+          const nombre = nombreDeContentDisposition(response.headers) || nombreRespaldo;
+          if (response.body) descargarBlob(response.body, nombre);
+          this.snackbar.exito('Oficio descargado exitosamente');
+        },
+        error: err => this.snackbar.error(
+          this.errorHandler.extraerMensajeError(err) || 'Error al descargar archivo. Por favor, inténtalo de nuevo.'
+        )
       });
-
-      this.solicitudes.set(data.map((sol) => {
-        this.logger.debug('Procesando solicitud', sol);
-
-        const estados = sol.estadosSolicitud ?? [];
-        const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
-
-        const solicitudTransformada: Solicitud = {
-          id: sol.id_solicitud,
-          nombre: sol.nombre_solicitud,
-          fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
-          estado: ultimoEstado?.estado_actual || 'Pendiente',
-          comentarios: ultimoEstado?.comentario || ''
-        };
-
-        this.logger.debug('Solicitud transformada', solicitudTransformada);
-        return solicitudTransformada;
-      }));
-
-      this.logger.debug('Solicitudes cargadas', {
-        transformadas: this.solicitudes().length,
-        completas: this.solicitudesCompletas.length
-      });
-    },
-    error: (err) => {
-      this.logger.error('Error al listar solicitudes', {
-        status: err.status,
-        message: err.message,
-        error: err
-      });
-      const mensajeError = this.errorHandler.extraerMensajeError(err);
-      this.snackbar.error(mensajeError || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.');
-    }
-  });
-}
-
-  /**
-   * Verificar si una solicitud está rechazada
-   */
-  esSolicitudRechazada(estado: string): boolean {
-    return estado === 'RECHAZADA' || estado === 'Rechazada';
   }
-
-/**
- * Obtener la solicitud completa por ID
- */
-obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta | undefined {
-  return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
-}
-
-/**
- * Obtener el comentario de rechazo del último estado
- */
-obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
-  this.logger.debug('Obteniendo comentario de rechazo para solicitud', {
-    idSolicitud: solicitud.id_solicitud,
-    estados: solicitud.estadosSolicitud
-  });
-
-  if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
-    this.logger.warn('No hay estados en la solicitud', solicitud.id_solicitud);
-    return null;
-  }
-
-  // Buscar el último estado que sea RECHAZADA
-  const estadosRechazados = solicitud.estadosSolicitud.filter(estado =>
-    estado.estado_actual === 'RECHAZADA' || estado.estado_actual === 'Rechazada'
-  );
-
-  this.logger.debug('Estados rechazados encontrados', estadosRechazados);
-
-  if (estadosRechazados.length === 0) {
-    this.logger.debug('No se encontraron estados de rechazo');
-    return null;
-  }
-
-  // Obtener el último estado de rechazo
-  const ultimoEstadoRechazo = estadosRechazados[estadosRechazados.length - 1];
-
-  this.logger.debug('Último estado de rechazo encontrado', {
-    estado: ultimoEstadoRechazo,
-    comentario: ultimoEstadoRechazo.comentario
-  });
-
-  return ultimoEstadoRechazo.comentario || null;
-}
-
-/**
- * Ver comentarios de una solicitud rechazada
- */
-verComentarios(solicitudId: number): void {
-  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-
-  if (!solicitudCompleta) {
-    this.snackbar.error('No se encontró la información de la solicitud');
-    return;
-  }
-
-  if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
-    this.snackbar.advertencia('No hay documentos asociados a esta solicitud');
-    return;
-  }
-
-  // Obtener el comentario de rechazo del último estado
-  const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
-
-  this.logger.debug('Datos que se envían al diálogo', {
-    titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
-    documentos: solicitudCompleta.documentos,
-    comentarioRechazo: comentarioRechazo
-  });
-
-  const dialogRef = this.dialog.open(VerComentariosDialogComponent, {
-    width: '700px',
-    data: {
-      titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
-      documentos: solicitudCompleta.documentos,
-      comentarioRechazo: comentarioRechazo
-    } as VerComentariosDialogData
-  });
-
-  dialogRef.afterClosed()
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe(() => {
-    this.logger.debug('Diálogo de comentarios cerrado');
-  });
-}
-
-/**
- * Verificar si una solicitud tiene comentarios
- */
-tieneComentarios(solicitudId: number): boolean {
-  const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-
-  if (!solicitudCompleta || !solicitudCompleta.documentos) {
-    return false;
-  }
-
-  return solicitudCompleta.documentos.some(doc =>
-    doc.comentario && doc.comentario.trim().length > 0
-  );
-}
-
-/**
- * Método de prueba para verificar el funcionamiento
- */
-verificarFuncionalidadComentarios(): void {
-  this.logger.debug('Verificando funcionalidad de comentarios', {
-    solicitudesCompletas: this.solicitudesCompletas.length,
-    solicitudesTransformadas: this.solicitudes().length
-  });
-
-  // Buscar solicitudes rechazadas
-  const solicitudesRechazadas = this.solicitudes().filter(sol =>
-    this.esSolicitudRechazada(sol.estado)
-  );
-
-  this.logger.debug('Solicitudes rechazadas encontradas', solicitudesRechazadas);
-
-  solicitudesRechazadas.forEach(sol => {
-    const tieneComentarios = this.tieneComentarios(sol.id);
-    this.logger.debug(`Solicitud ${sol.id}`, {
-      nombre: sol.nombre,
-      tieneComentarios: tieneComentarios
-    });
-  });
-}
-
-
-/**
- * Descargar oficio
- */
-descargarOficio(idOficio: number, nombreArchivo: string): void {
-  this.logger.debug('Descargando oficio', { idOficio, nombreArchivo });
-
-  // Primero intentar obtener los oficios disponibles para esta solicitud
-  this.obtenerOficiosYDescargar(idOficio, nombreArchivo);
-}
-
-/**
- * Obtener oficios y descargar
- */
-private obtenerOficiosYDescargar(idSolicitud: number, nombreArchivo: string): void {
-  this.homologacionService.obtenerOficios(idSolicitud)
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-    next: (oficios) => {
-      this.logger.debug('Oficios obtenidos', oficios);
-
-      if (!oficios || oficios.length === 0) {
-        this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
-        return;
-      }
-
-      // Tomar el primer oficio disponible
-      const oficio = oficios[0];
-      const nombreArchivoOficio = oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`;
-
-      // Intentar descargar usando el endpoint de archivos
-      this.descargarArchivoPorNombre(nombreArchivoOficio, nombreArchivo, idSolicitud);
-    },
-    error: (err) => {
-      this.logger.error('Error al obtener oficios', err);
-
-      // Si no se pueden obtener oficios, intentar con nombres comunes
-      this.intentarDescargaConNombresComunes(idSolicitud, nombreArchivo);
-    }
-  });
-}
-
-/**
- * Descargar archivo por nombre usando el endpoint de archivos
- */
-private descargarArchivoPorNombre(nombreArchivo: string, nombreDescarga: string, idSolicitud?: number): void {
-  this.logger.debug('Descargando archivo por nombre', { nombreArchivo, nombreDescarga, idSolicitud });
-
-  this.homologacionService.descargarOficioConNombre(idSolicitud || 1)
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-    next: (response) => {
-      // Sin Content-Disposition se usa el nombre que vino de obtenerOficios
-      const nombre = nombreDeContentDisposition(response.headers) || nombreArchivo;
-      if (response.body) descargarBlob(response.body, nombre);
-      this.snackbar.exito('Oficio descargado exitosamente');
-    },
-    error: (err) => {
-      this.logger.error('Error al descargar archivo', err);
-      const mensajeError = this.errorHandler.extraerMensajeError(err);
-      this.snackbar.error(mensajeError || 'Error al descargar archivo. Por favor, inténtalo de nuevo.');
-    }
-  });
-}
-
-/**
- * Intentar descarga con nombres comunes
- */
-private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: string): void {
-  this.logger.debug('Intentando descarga con nombres comunes', { idSolicitud, nombreArchivo });
-
-  // Obtener información del usuario para generar nombres
-  const usuario = this.usuario;
-  const codigoUsuario = usuario?.codigo || 'SIN_CODIGO';
-  const año = new Date().getFullYear();
-
-  // Nombres comunes a probar
-  const nombresComunes = [
-    `OFICIO_HOMOLOGACION_${codigoUsuario}_${año} (1).pdf`,
-    `OFICIO_HOMOLOGACION_${codigoUsuario}_${año}.pdf`,
-    `oficio_homologacion_${codigoUsuario}_${año}.pdf`,
-    `homologacion_${codigoUsuario}_${año}.pdf`,
-    `oficio_${idSolicitud}.pdf`,
-    `homologacion_${idSolicitud}.pdf`
-  ];
-
-  this.probarNombresSecuencial(nombresComunes, 0, nombreArchivo, idSolicitud);
-}
-
-/**
- * Probar nombres de archivo secuencialmente
- */
-private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga: string, idSolicitud: number): void {
-  if (index >= nombres.length) {
-    this.snackbar.advertencia('No se encontró el archivo con los nombres probados');
-    return;
-  }
-
-  const nombre = nombres[index];
-  this.logger.debug(`Probando nombre ${index + 1}/${nombres.length}`, { nombre, index, total: nombres.length });
-
-  this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
-}
-
 }

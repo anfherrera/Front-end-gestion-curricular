@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatSelectModule } from '@angular/material/select';
@@ -9,7 +9,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
@@ -20,18 +20,15 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
 import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
 import { InfoPreregistroDialogComponent } from './info-preregistro-dialog/info-preregistro-dialog.component';
-import { VerComentariosDialogComponent, VerComentariosDialogData } from '@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
 import { Archivo, Solicitud } from '@core/models/procesos.model';
 import { ESTADOS_SOLICITUD_LABELS, EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
 import { normalizarEstado } from '@core/utils/estado-solicitud.util';
 import { formatearFecha } from '@core/utils/fecha.util';
 import { NotificacionesService } from '@core/services/notificaciones.service';
-import { AuthService } from '@core/services/auth.service';
 import { LoggerService } from '@core/services/logger.service';
-import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
-import { SnackbarService } from '@core/services/snackbar.service';
+import { SeguimientoSolicitudesBase } from '../seguimiento-solicitudes.base';
 
 /** Valores del formulario de preregistro. */
 interface FormularioEcaes {
@@ -65,16 +62,12 @@ type DocumentoEcaes = SolicitudEcaesRequest['documentos'][number];
   styleUrl: './pruebas-ecaes.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PruebasEcaesComponent implements OnInit {
+export class PruebasEcaesComponent extends SeguimientoSolicitudesBase<SolicitudEcaesResponse> {
   private pruebasEcaesService = inject(PruebasEcaesService);
   private archivosService = inject(ArchivosService);
-  private snackbar = inject(SnackbarService);
   private fb = inject(FormBuilder);
-  private dialog = inject(MatDialog);
   private notificacionesService = inject(NotificacionesService);
-  private authService = inject(AuthService);
   private logger = inject(LoggerService);
-  private errorHandler = inject(ErrorHandlerService);
   private periodosService = inject(PeriodosAcademicosService);
 
 
@@ -98,18 +91,12 @@ export class PruebasEcaesComponent implements OnInit {
   solicitudForm: FormGroup;
   readonly archivos = signal<Archivo[]>([]);
   readonly enviandoSolicitud = signal(false);
-  usuario: UsuarioSesion | null = null;
-
-  // Seguimiento de solicitudes
-  readonly solicitudes = signal<Solicitud[]>([]);
-  solicitudesCompletas: SolicitudEcaesResponse[] = [];
 
   // Opciones de tipo de documento (se cargan desde el backend)
   readonly tiposDocumento = signal<{ value: string, label: string }[]>([]);
 
-  private readonly destroyRef = inject(DestroyRef);
-
   constructor() {
+    super();
     this.solicitudForm = this.fb.group({
       tipoDocumento: ['CC', [Validators.required, this.tipoDocumentoValido()]],
       numero_documento: ['', [Validators.required, Validators.minLength(6)]],
@@ -118,8 +105,7 @@ export class PruebasEcaesComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.usuario = this.authService.getUsuario();
+  protected override alIniciar(): void {
     if (this.usuario) {
       this.logger.log('Usuario cargado desde localStorage:', this.usuario);
       
@@ -140,7 +126,10 @@ export class PruebasEcaesComponent implements OnInit {
 
     this.cargarTiposDocumento();
     this.cargarFechasEcaes();
-    this.listarSolicitudes();
+  }
+
+  protected listar(usuario: UsuarioSesion) {
+    return this.pruebasEcaesService.listarSolicitudesPorRol('ESTUDIANTE', usuario.id_usuario);
   }
 
   /**
@@ -432,91 +421,30 @@ export class PruebasEcaesComponent implements OnInit {
   // Métodos para seguimiento de solicitudes
   // ================================
 
-  listarSolicitudes(): void {
-    if (!this.usuario) {
-      this.logger.error("Usuario no encontrado en localStorage.");
-      return;
-    }
-
-    this.logger.debug('Usuario encontrado:', this.usuario);
-    this.logger.debug('Rol:', this.usuario.rol?.nombre);
-    this.logger.debug('ID Usuario:', this.usuario.id_usuario);
-
-    // Usar el endpoint específico por rol y usuario
-    this.pruebasEcaesService.listarSolicitudesPorRol((this.usuario.rol?.nombre ?? '').toUpperCase(), this.usuario.id_usuario).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (data) => {
-        this.logger.debug('Respuesta del backend (raw):', data);
-        this.logger.debug('Tipo de respuesta:', typeof data);
-        this.logger.debug('Es array:', Array.isArray(data));
-        this.logger.debug('Longitud:', data?.length);
-        this.procesarSolicitudes(data);
-      },
-      error: (err) => {
-        this.logger.error('Error al cargar solicitudes:', err);
-        const mensaje = this.errorHandler.extraerMensajeError(err);
-        this.snackbar.error(mensaje || 'Error al cargar las solicitudes');
-      }
-    });
+  /** Fila de la tabla: se añade el nombre del estudiante y el estado se lleva a un código conocido. */
+  protected override aFila(sol: SolicitudEcaesResponse): Solicitud {
+    const fila = super.aFila(sol);
+    const nombreEstudiante = sol.objUsuario?.nombre_completo || 'Estudiante';
+    return {
+      ...fila,
+      nombre: `${sol.nombre_solicitud} - ${nombreEstudiante}`,
+      estado: this.mapearEstado(fila.estado),
+      oficioUrl: ''
+    };
   }
 
-  procesarSolicitudes(data: SolicitudEcaesResponse[]): void {
-    if (!data || !Array.isArray(data)) {
-      this.logger.warn('La respuesta no es un array válido');
-      this.solicitudes.set([]);
-      this.solicitudesCompletas = [];
-      return;
-    }
-
-    // Guardar las solicitudes completas
-    this.solicitudesCompletas = data;
-
-    this.solicitudes.set(data.map((sol: SolicitudEcaesResponse) => {
-      this.logger.debug('Procesando solicitud:', sol);
-
-      const estados = sol.estadosSolicitud || [];
-      const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
-
-      // Concatenar el nombre del estudiante al nombre de la solicitud
-      const nombreCompleto = sol.objUsuario?.nombre_completo || 'Estudiante';
-      const nombreConEstudiante = `${sol.nombre_solicitud} - ${nombreCompleto}`;
-
-      const solicitudTransformada: Solicitud = {
-        id: sol.id_solicitud,
-        nombre: nombreConEstudiante,
-        fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
-        estado: this.mapearEstado(ultimoEstado?.estado_actual || 'Pendiente'),
-        oficioUrl: '',
-        comentarios: ultimoEstado?.comentario || ''
-      };
-
-      this.logger.debug('Solicitud transformada:', solicitudTransformada);
-      return solicitudTransformada;
-    }));
-
-    this.logger.debug('Solicitudes cargadas (transformadas):', this.solicitudes());
-  }
-
-
+  /** ECAES no tiene oficio para descargar; la tabla emite el evento igual. */
   descargarOficio(id: number, nombreArchivo: string): void {
     this.logger.log('Descargar oficio:', id, nombreArchivo);
-    // Implementar lógica para descargar oficio
   }
 
   mostrarInfoPreregistro(): void {
-    const dialogRef = this.dialog.open(InfoPreregistroDialogComponent, {
+    this.dialog.open(InfoPreregistroDialogComponent, {
       width: '600px',
       maxWidth: '90vw',
       disableClose: false,
       autoFocus: true,
       data: {}
-    });
-
-    dialogRef.afterClosed().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.logger.debug('Diálogo de información cerrado');
     });
   }
 
@@ -528,100 +456,5 @@ export class PruebasEcaesComponent implements OnInit {
   private mapearEstado(estadoString: string): string {
     const codigo = normalizarEstado(estadoString);
     return codigo in ESTADOS_SOLICITUD_LABELS ? codigo : EstadosSolicitud.ENVIADA;
-  }
-
-  // ================================
-  // Métodos para manejo de comentarios
-  // ================================
-
-  /**
-   * Obtener solicitud completa por ID
-   */
-  obtenerSolicitudCompleta(idSolicitud: number): SolicitudEcaesResponse | undefined {
-    return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
-  }
-
-  /**
-   * Obtener comentario de rechazo de una solicitud
-   */
-  obtenerComentarioRechazo(solicitud: SolicitudEcaesResponse): string | null {
-    if (!solicitud.estadosSolicitud || solicitud.estadosSolicitud.length === 0) {
-      return null;
-    }
-
-    // Buscar el último estado de rechazo
-    const ultimoEstadoRechazo = solicitud.estadosSolicitud
-      .filter(estado => estado.estado_actual?.toLowerCase().includes('rechazada'))
-      .pop();
-
-    if (!ultimoEstadoRechazo) {
-      return null;
-    }
-
-    return ultimoEstadoRechazo.comentario || null;
-  }
-
-  /**
-   * Ver comentarios de una solicitud rechazada
-   */
-  verComentarios(solicitudId: number): void {
-    const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-
-    if (!solicitudCompleta) {
-      this.snackbar.error('No se encontró la información de la solicitud');
-      return;
-    }
-
-    if (!solicitudCompleta.documentos || solicitudCompleta.documentos.length === 0) {
-      this.snackbar.advertencia('No hay documentos asociados a esta solicitud');
-      return;
-    }
-
-    // Obtener el comentario de rechazo del último estado
-    const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
-
-    this.logger.debug('Datos que se envían al diálogo:');
-    this.logger.debug('  - Título:', `Comentarios - ${solicitudCompleta.nombre_solicitud}`);
-    this.logger.debug('  - Documentos:', solicitudCompleta.documentos);
-    this.logger.debug('  - Comentario de rechazo:', comentarioRechazo);
-
-    const dialogRef = this.dialog.open(VerComentariosDialogComponent, {
-      width: '700px',
-      data: {
-        titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
-        documentos: solicitudCompleta.documentos,
-        comentarioRechazo: comentarioRechazo
-      } as VerComentariosDialogData
-    });
-
-    dialogRef.afterClosed().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.logger.debug('Diálogo de comentarios cerrado');
-    });
-  }
-
-  /**
-   * Verificar si una solicitud tiene comentarios
-   */
-  tieneComentarios(solicitudId: number): boolean {
-    const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
-
-    if (!solicitudCompleta) {
-      return false;
-    }
-
-    // Verificar si tiene comentario de rechazo
-    const comentarioRechazo = this.obtenerComentarioRechazo(solicitudCompleta);
-    if (comentarioRechazo && comentarioRechazo.trim()) {
-      return true;
-    }
-
-    // Verificar si algún documento tiene comentarios
-    if (solicitudCompleta.documentos && solicitudCompleta.documentos.length > 0) {
-      return solicitudCompleta.documentos.some(doc => doc.comentario && doc.comentario.trim());
-    }
-
-    return false;
   }
 }

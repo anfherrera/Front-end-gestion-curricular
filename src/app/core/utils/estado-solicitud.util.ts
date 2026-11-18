@@ -38,7 +38,13 @@ export function estadoActual(sol: ConHistorialDeEstados): string {
   return ultimoEstado(sol)?.estado_actual ?? ESTADO_SIN_HISTORIAL;
 }
 
-/** Texto para mostrar: "APROBADA_FUNCIONARIO" → "Aprobada por Funcionario". */
+/** Comentario del último rechazo del historial (RECHAZADA, Rechazada…), o null si no hay. */
+export function comentarioDeRechazo(sol: ConHistorialDeEstados<{ estado_actual: string; comentario?: string | null }>): string | null {
+  const rechazos = (sol.estadosSolicitud ?? []).filter(e => categoriaEstado(e.estado_actual) === 'rechazada');
+  return rechazos.at(-1)?.comentario || null;
+}
+
+/** Texto para mostrar: "APROBADA_FUNCIONARIO"→ "Aprobada por Funcionario". */
 export function estadoLabel(estado: string | null | undefined): string {
   if (!estado) return '';
   return ESTADOS_SOLICITUD_LABELS[normalizarEstado(estado) as EstadosSolicitud] ?? estado;

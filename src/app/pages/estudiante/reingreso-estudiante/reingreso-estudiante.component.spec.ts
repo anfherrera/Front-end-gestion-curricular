@@ -11,7 +11,9 @@ import { FormatosInstitucionalesService } from '@core/services/formatos-instituc
 import { LoggerService } from '@core/services/logger.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
-import { Archivo } from '@core/models/procesos.model';
+import { Archivo, EstadoSolicitudDTORespuesta, SolicitudReingresoDTORespuesta } from '@core/models/procesos.model';
+import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
+import { VerComentariosDialogData } from '@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
 
 const archivo = (nombre: string): Archivo => ({ nombre, fecha: '2025-01-15' });
 
@@ -129,4 +131,59 @@ describe('ReingresoEstudianteComponent', () => {
     expect(component.documentosRequeridos.length).toBeGreaterThan(0);
     expect(component.documentosRequeridos[0].label).toContain('Reingreso');
   });
+
+  /** Solicitud de reingreso con solo los campos que usa cada prueba. */
+  const solicitud = (datos: Partial<SolicitudReingresoDTORespuesta>) => datos as SolicitudReingresoDTORespuesta;
+  const estado = (estado_actual: string, comentario?: string): EstadoSolicitudDTORespuesta =>
+    ({ id_estado: 1, estado_actual, fecha_registro_estado: '2025-01-01T00:00:00.000Z', comentario });
+
+  it('RE-E-009: muestra el aviso de rechazo cuando el backend manda RECHAZADA', () => {
+    component.procesarSolicitudes([
+      solicitud({ id_solicitud: 1, nombre_solicitud: 'Primera', estadosSolicitud: [estado('ENVIADA')] }),
+      solicitud({ id_solicitud: 2, nombre_solicitud: 'Segunda', estadosSolicitud: [estado('ENVIADA'), estado('RECHAZADA', 'Falta la carta')] })
+    ]);
+    expect(component.ultimaRechazada()?.comentarios).toBe('Falta la carta');
+
+    component.procesarSolicitudes([
+      solicitud({ id_solicitud: 3, nombre_solicitud: 'Tercera', estadosSolicitud: [estado('APROBADA')] })
+    ]);
+    expect(component.ultimaRechazada()).toBeNull();
+  });
+
+  it('RE-E-010: verComentarios pasa al diálogo el comentario del último rechazo', () => {
+    const dialog = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
+    // La página importa MatDialogModule y recibe su propio MatDialog: se sustituye por el espía
+    component['dialog'] = dialog;
+    component.solicitudesCompletas = [solicitud({
+      id_solicitud: 4,
+      nombre_solicitud: 'Reingreso',
+      documentos: [{ id_documento: 1, nombre: 'carta.pdf', ruta_documento: 'carta.pdf', fecha_documento: '2025-01-01', esValido: false, comentario: 'Sin firma' }],
+      estadosSolicitud: [estado('ENVIADA'), estado('RECHAZADA', 'Corrige la carta')]
+    })];
+
+    component.verComentarios(4);
+
+    const data = dialog.open.calls.mostRecent().args[1]?.data as VerComentariosDialogData;
+    expect(data.titulo).toBe('Comentarios - Reingreso');
+    expect(data.documentos.length).toBe(1);
+    expect(data.comentarioRechazo).toBe('Corrige la carta');
+  });
+
+  it('RE-E-011: despues de enviar limpia los archivos y da el pulso de reset', fakeAsync(() => {
+    const archivos = [archivo('carta.pdf')];
+    reingresoService.crearSolicitud.and.returnValue(of({} as SolicitudReingresoDTORespuesta));
+    component.archivosActuales.set(archivos);
+    component.fileUploadComponent = {
+      subirArchivosPendientes: () => of(archivos),
+      resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
+    } as unknown as FileUploadComponent;
+
+    component.onSolicitudEnviada();
+    expect(component.resetFileUpload()).toBeTrue();
+    tick();
+
+    expect(reingresoService.crearSolicitud).toHaveBeenCalled();
+    expect(component.archivosActuales()).toEqual([]);
+    expect(component.resetFileUpload()).toBeFalse();
+  }));
 });

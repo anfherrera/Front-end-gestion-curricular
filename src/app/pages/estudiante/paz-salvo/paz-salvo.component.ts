@@ -1,42 +1,31 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { descargarBlob } from '@core/utils/download.util';
-import { Archivo, Solicitud, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { Archivo, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
 import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
-import { RequiredDocsComponent } from '@shared/components/required-docs/required-docs.component';
-import { VerComentariosDialogComponent, VerComentariosDialogData } from '@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
+import { Documento, RequiredDocsComponent } from '@shared/components/required-docs/required-docs.component';
 import { PazSalvoService } from '@core/services/paz-salvo.service';
-import { estadoActual, ultimoEstado } from '@core/utils/estado-solicitud.util';
-import { NotificacionesService } from '@core/services/notificaciones.service';
-import { AuthService } from '@core/services/auth.service';
 import { normalizarNombreArchivo } from '@core/utils/texto.util';
-import { SnackbarService } from '@core/services/snackbar.service';
+import { SolicitudEstudianteBase } from '../solicitud-estudiante.base';
 
 /** Programas cuyo paz y salvo exige trabajo de grado y el formato PPH o TIH. */
 const PROGRAMAS_CON_TRABAJO_DE_GRADO = ['sistemas', 'electronica', 'automatica', 'automatizacion'];
 
 /** Documentos obligatorios de los demás programas que no aplican a Telemática (nombres normalizados). */
 const DOCUMENTOS_NO_TELEMATICA = ['pmfo4for27', 'hojadevida', 'autorizacion', 'comprobante', 'trabajodegrado'];
-
-/** Lo que usa esta pantalla del usuario guardado en sesión (localStorage 'usuario'). */
-interface UsuarioSesion {
-  id_usuario: number;
-  nombre_completo?: string;
-  nombre?: string;
-  objPrograma?: { nombre_programa?: string; nombre?: string };
-}
 
 /** Datos con que se crea la solicitud. */
 interface DatosSolicitudPazSalvo {
@@ -61,33 +50,26 @@ interface DatosSolicitudPazSalvo {
     RequestStatusTableComponent,
     FileUploadComponent,
     RequiredDocsComponent
-],
+  ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PazSalvoComponent implements OnInit {
+export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologacionDTORespuesta> {
   private pazSalvoService = inject(PazSalvoService);
-  private snackbar = inject(SnackbarService);
-  private dialog = inject(MatDialog);
-  private notificacionesService = inject(NotificacionesService);
-  private authService = inject(AuthService);
   private fb = inject(FormBuilder);
 
-  @ViewChild(FileUploadComponent) fileUploadComponent!: FileUploadComponent;
-
-  private readonly destroyRef = inject(DestroyRef);
-
-  readonly solicitudes = signal<Solicitud[]>([]);
-  solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
-  readonly archivosActuales = signal<Archivo[]>([]);
-  readonly resetFileUpload = signal(false);
-  usuario: UsuarioSesion | null = null;
-  solicitudForm: FormGroup;
+  readonly solicitudForm = this.fb.group({
+    fecha_terminacion_plan: [null as Date | null, Validators.required],
+    titulo_trabajo_grado: [''],
+    director_trabajo_grado: ['']
+  });
   requiereTrabajoGrado = false;
   maxDate: Date = new Date();
 
-  documentosRequeridos = [
+  protected readonly mensajeExito = '¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.';
+
+  documentosRequeridos: Documento[] = [
     { label: 'Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf', obligatorio: true },
     { label: 'Autorización para publicar y permitir la consulta y uso de obras en el Repositorio Institucional.pdf', obligatorio: true },
     { label: 'Comprobante de pago de derechos de sustentación.pdf', obligatorio: true },
@@ -110,32 +92,22 @@ export class PazSalvoComponent implements OnInit {
     'Fotocopia de cédula (Solo para Tecnología en Telemática).pdf'
   ];
 
-  constructor() {
-    this.solicitudForm = this.fb.group({
-      fecha_terminacion_plan: [null, Validators.required],
-      titulo_trabajo_grado: [''],
-      director_trabajo_grado: ['']
-    });
-  }
-
-  ngOnInit(): void {
-    const usuarioLS = localStorage.getItem('usuario');
-    if (usuarioLS) {
-      this.usuario = JSON.parse(usuarioLS);
-    }
-
+  protected override alIniciar(): void {
     this.requiereTrabajoGrado = !this.esTelematica() && this.programaConTrabajoDeGrado();
     this.configurarValidacionesCondicionales();
-    this.listarSolicitudes();
+  }
+
+  protected listar(usuario: UsuarioSesion) {
+    return this.pazSalvoService.listarSolicitudesPorRol('ESTUDIANTE', usuario.id_usuario);
   }
 
   /** Nombre del programa en minúsculas y sin tildes. */
   private programaNormalizado(): string {
-    const nombre = this.usuario?.objPrograma?.nombre_programa || this.usuario?.objPrograma?.nombre || '';
+    const nombre = this.usuario?.objPrograma?.nombre_programa || '';
     return nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   }
 
-  private esTelematica(): boolean {
+  esTelematica(): boolean {
     return this.programaNormalizado().includes('telematica');
   }
 
@@ -146,22 +118,18 @@ export class PazSalvoComponent implements OnInit {
 
   /** Título y director son obligatorios solo si el programa exige trabajo de grado. */
   private configurarValidacionesCondicionales(): void {
-    const tituloControl = this.solicitudForm.get('titulo_trabajo_grado');
-    const directorControl = this.solicitudForm.get('director_trabajo_grado');
+    const tituloControl = this.solicitudForm.controls.titulo_trabajo_grado;
+    const directorControl = this.solicitudForm.controls.director_trabajo_grado;
     const requerido = this.requiereTrabajoGrado ? [Validators.required] : [];
 
-    tituloControl?.setValidators([...requerido, Validators.maxLength(500)]);
-    directorControl?.setValidators([...requerido, Validators.maxLength(200)]);
-    tituloControl?.updateValueAndValidity();
-    directorControl?.updateValueAndValidity();
+    tituloControl.setValidators([...requerido, Validators.maxLength(500)]);
+    directorControl.setValidators([...requerido, Validators.maxLength(200)]);
+    tituloControl.updateValueAndValidity();
+    directorControl.updateValueAndValidity();
   }
 
-  onArchivosChange(archivos: Archivo[]) {
-    this.archivosActuales.set(archivos);
-  }
-
-  puedeEnviar(): boolean {
-    if (!this.usuario || this.archivosActuales().length === 0 || !this.solicitudForm.valid) {
+  override puedeEnviar(): boolean {
+    if (!super.puedeEnviar() || !this.solicitudForm.valid) {
       return false;
     }
 
@@ -176,18 +144,17 @@ export class PazSalvoComponent implements OnInit {
       }
     }
 
+    // A diferencia de homologación y reingreso, aquí los documentos faltantes sí bloquean el envío
     return this.obtenerDocumentosFaltantes().length === 0;
   }
 
   /** Documentos que faltan o que no aplican al programa del estudiante. */
-  obtenerDocumentosFaltantes(): string[] {
+  override obtenerDocumentosFaltantes(): string[] {
     if (this.esTelematica()) {
       return this.validarDocumentosTelematica();
     }
 
-    const faltantes = this.documentosRequeridos
-      .filter(doc => doc.obligatorio && !this.archivoSubido(doc.label))
-      .map(doc => doc.label);
+    const faltantes = super.obtenerDocumentosFaltantes();
 
     const tienePphOTih = this.archivosActuales()
       .map(a => normalizarNombreArchivo(a.nombre))
@@ -221,86 +188,19 @@ export class PazSalvoComponent implements OnInit {
     return [...faltantes, ...errores];
   }
 
-  private archivoSubido(nombreDocumento: string): boolean {
-    const nombreNormalizado = normalizarNombreArchivo(nombreDocumento);
-    return this.archivosActuales().some(archivo => {
-      const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
-      return nombreArchivo.includes(nombreNormalizado) || nombreNormalizado.includes(nombreArchivo);
-    });
-  }
-
-  listarSolicitudes() {
-    if (!this.usuario) {
-      return;
-    }
-    this.pazSalvoService.listarSolicitudesPorRol('ESTUDIANTE', this.usuario.id_usuario)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          if (!Array.isArray(data)) {
-            this.solicitudes.set([]);
-            this.solicitudesCompletas = [];
-            return;
-          }
-          this.solicitudesCompletas = data;
-          this.solicitudes.set(data.map(sol => this.aSolicitud(sol)));
-        },
-        error: () => this.snackbar.error('No se pudieron cargar tus solicitudes')
-      });
-  }
-
-  /** Convierte la respuesta del backend en la fila de la tabla de seguimiento. */
-  private aSolicitud(sol: SolicitudHomologacionDTORespuesta): Solicitud {
-    return {
-      id: sol.id_solicitud,
-      nombre: sol.nombre_solicitud,
-      fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
-      estado: estadoActual(sol),
-      comentarios: ultimoEstado(sol)?.comentario || ''
-    };
-  }
-
-  onSolicitudEnviada() {
-    const usuario = this.usuario;
-    if (!usuario || !this.fileUploadComponent) {
-      return;
-    }
-
-    // 1. Se suben los documentos sin asociarlos; 2. se crea la solicitud y el backend los asocia.
-    this.fileUploadComponent.subirArchivosPendientes()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (archivosSubidos) => {
-          this.pazSalvoService.crearSolicitudConFormulario(usuario.id_usuario, archivosSubidos, this.datosSolicitud())
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: () => this.despuesDeEnviar(),
-              error: (err) => {
-                if (err.status === 400) {
-                  this.snackbar.advertencia('Error de validación: revisa los datos de la solicitud');
-                } else if (err.status === 401) {
-                  this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
-                } else {
-                  this.snackbar.error('No se pudo enviar la solicitud. Inténtalo de nuevo.');
-                }
-              }
-            });
-        },
-        error: () => {
-          this.snackbar.error('Error al subir documentos. Por favor, inténtalo de nuevo.');
-          this.fileUploadComponent?.resetearEstadoCarga();
-        }
-      });
+  /** Se suben los documentos sin asociarlos y el backend los asocia al crear la solicitud. */
+  protected crearSolicitud(usuario: UsuarioSesion, archivos: Archivo[]) {
+    return this.pazSalvoService.crearSolicitudConFormulario(usuario.id_usuario, archivos, this.datosSolicitud(usuario));
   }
 
   /** Datos del formulario en el formato que espera el backend. */
-  private datosSolicitud(): DatosSolicitudPazSalvo {
+  private datosSolicitud(usuario: UsuarioSesion): DatosSolicitudPazSalvo {
     const formValue = this.solicitudForm.value;
     const fecha = formValue.fecha_terminacion_plan instanceof Date
       ? formValue.fecha_terminacion_plan
-      : new Date(formValue.fecha_terminacion_plan);
+      : new Date(formValue.fecha_terminacion_plan ?? '');
 
-    const nombreCompleto = (this.usuario?.nombre_completo || this.usuario?.nombre || '').trim() || 'Usuario';
+    const nombreCompleto = usuario.nombre_completo?.trim() || 'Usuario';
 
     const datos: DatosSolicitudPazSalvo = {
       nombre_solicitud: `Solicitud Paz y Salvo - ${nombreCompleto}`,
@@ -316,32 +216,17 @@ export class PazSalvoComponent implements OnInit {
     return datos;
   }
 
-  private despuesDeEnviar(): void {
-    this.listarSolicitudes();
-
-    this.notificacionesService.actualizarNotificaciones();
-
+  protected override despuesDeEnviar(): void {
     this.solicitudForm.reset({
       fecha_terminacion_plan: null,
       titulo_trabajo_grado: '',
       director_trabajo_grado: ''
     });
-    this.archivosActuales.set([]);
-
-    // Pulso en [reset] para que el componente de subida limpie su lista
-    setTimeout(() => {
-      this.resetFileUpload.set(true);
-      setTimeout(() => this.resetFileUpload.set(false), 0);
-    }, 0);
-
-    this.snackbar.exito('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.');
+    super.despuesDeEnviar();
   }
 
-  private obtenerSolicitudCompleta(idSolicitud: number): SolicitudHomologacionDTORespuesta | undefined {
-    return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
-  }
-
-  verComentarios(solicitudId: number): void {
+  /** Los comentarios de paz y salvo los arma el backend (documentos, rechazo y mensaje). */
+  override verComentarios(solicitudId: number): void {
     const solicitudCompleta = this.obtenerSolicitudCompleta(solicitudId);
     if (!solicitudCompleta) {
       this.snackbar.error('No se encontró la información de la solicitud');
@@ -349,23 +234,12 @@ export class PazSalvoComponent implements OnInit {
     }
 
     this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (comentarios) => {
-        const documentos = comentarios.documentosConComentarios?.map(doc => ({
-          id: doc.id,
-          nombre: doc.nombre,
-          comentario: doc.comentario
-        })) || [];
-
-        this.dialog.open(VerComentariosDialogComponent, {
-          width: '700px',
-          data: {
-            titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
-            documentos,
-            comentarioRechazo: comentarios.comentarioRechazo || null,
-            mensaje: comentarios.mensaje || undefined
-          } as VerComentariosDialogData
-        });
-      },
+      next: (comentarios) => this.abrirComentarios({
+        titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
+        documentos: comentarios.documentosConComentarios?.map(doc => ({ nombre: doc.nombre, comentario: doc.comentario })) || [],
+        comentarioRechazo: comentarios.comentarioRechazo || null,
+        mensaje: comentarios.mensaje || undefined
+      }),
       error: () => this.snackbar.error('Error al cargar los comentarios')
     });
   }

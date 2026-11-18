@@ -3,7 +3,6 @@
   <!-- Documentación requerida -->
   <app-required-docs
     [requiredFiles]="documentosRequeridos"
-    [exclusiveFiles]="archivosExclusivos"
     [archivos]="archivosActuales()"
     [programaEstudiante]="usuario?.objPrograma?.nombre_programa || ''">
   </app-required-docs>
@@ -87,12 +86,12 @@
             </button>
           </div>
 
-          @if (solicitudes().at(-1)?.estado === 'Rechazada') {
+          @if (ultimaRechazada(); as rechazada) {
             <div class="rechazo-box">
               <mat-icon color="warn">error</mat-icon>
               <span>
                 <strong>Solicitud rechazada:</strong>
-                {{ solicitudes().at(-1)?.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
+                {{ rechazada.comentarios || 'Debes revisar los documentos y volver a enviarlos.' }}
               </span>
             </div>
           }

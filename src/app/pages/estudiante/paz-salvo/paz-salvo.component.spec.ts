@@ -44,7 +44,7 @@ describe('PazSalvoComponent', () => {
     codigo: '12345',
     correo: 'test@unicauca.edu.co',
     rol: { nombre: 'ESTUDIANTE' },
-    objPrograma: { id: 1, nombre: 'Ingeniería' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería' }
   };
 
   beforeEach(async () => {
@@ -122,7 +122,7 @@ describe('PazSalvoComponent', () => {
     expect(component.puedeEnviar()).toBeFalse();
 
     // Telemática solo exige la cédula
-    component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
+    component.usuario = { ...mockUsuario, objPrograma: { id_programa: 1, nombre_programa: 'Tecnología en Telemática' } };
     component.archivosActuales.set([archivo('cedula.pdf')]);
     expect(component.puedeEnviar()).toBeTrue();
 
@@ -261,7 +261,7 @@ describe('PazSalvoComponent', () => {
     });
 
     it('PS-012: Sistemas exige el formato PPH o TIH', () => {
-      component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Ingeniería de Sistemas' } };
+      component.usuario = { ...mockUsuario, objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería de Sistemas' } };
       component.archivosActuales.set([archivo('Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf')]);
 
       expect(component.obtenerDocumentosFaltantes()).toContain('Formato PPH o TIH (requerido para tu programa)');
@@ -271,7 +271,7 @@ describe('PazSalvoComponent', () => {
     });
 
     it('PS-013: Telemática rechaza los formatos de trabajo de grado', () => {
-      component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
+      component.usuario = { ...mockUsuario, objPrograma: { id_programa: 1, nombre_programa: 'Tecnología en Telemática' } };
       component.archivosActuales.set([archivo('cedula.pdf'), archivo('Formato TI-G.pdf')]);
 
       expect(component.obtenerDocumentosFaltantes()).toEqual(['Los formatos TI-G/TI-H no aplican para tu programa (Telemática)']);

@@ -1,7 +1,7 @@
 import { EstadosSolicitud } from '../enums/estados-solicitud.enum';
 import { COLORS } from '../design-system/design-tokens';
 import {
-  estadoActual, estadoClase, estadoColor, estadoIcono, estadoLabel, normalizarEstado, ultimoEstado
+  comentarioDeRechazo, estadoActual, estadoClase, estadoColor, estadoIcono, estadoLabel, normalizarEstado, ultimoEstado
 } from './estado-solicitud.util';
 
 describe('estado-solicitud.util', () => {
@@ -43,5 +43,20 @@ describe('estado-solicitud.util', () => {
     expect(estadoClase('ENVIADA')).toBe('estado-enviada');
     expect(estadoClase('En revisión por Funcionario')).toBe('estado-proceso');
     expect(estadoClase('Pendiente')).toBe('estado-default');
+  });
+
+  it('toma el comentario del último rechazo, escriba como se escriba el estado', () => {
+    const sol = {
+      estadosSolicitud: [
+        { estado_actual: 'RECHAZADA', comentario: 'Primero' },
+        { estado_actual: 'ENVIADA', comentario: 'Reenviada' },
+        { estado_actual: 'Rechazada', comentario: 'Falta la firma' },
+        { estado_actual: 'ENVIADA' }
+      ]
+    };
+    expect(comentarioDeRechazo(sol)).toBe('Falta la firma');
+    expect(comentarioDeRechazo({ estadosSolicitud: [{ estado_actual: 'RECHAZADA', comentario: '' }] })).toBeNull();
+    expect(comentarioDeRechazo({ estadosSolicitud: [{ estado_actual: 'APROBADA', comentario: 'Bien' }] })).toBeNull();
+    expect(comentarioDeRechazo({})).toBeNull();
   });
 });
