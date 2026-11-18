@@ -65,7 +65,7 @@ describe('OficioSecretariaComponent', () => {
   it('carga las pendientes y el historial al iniciar', () => {
     expect(config.pendientes).toHaveBeenCalled();
     expect(config.procesadas).toHaveBeenCalledWith(undefined);
-    expect(component.pendientes.length).toBe(2);
+    expect(component.pendientes().length).toBe(2);
   });
 
   it('al cambiar el período recarga solo el historial', () => {
@@ -76,14 +76,14 @@ describe('OficioSecretariaComponent', () => {
 
   it('al cambiar de solicitud se reinicia el flujo del PDF', () => {
     component.onSolicitudSeleccionada(solicitud(1));
-    component.documentoHabilitado = true;
-    component.archivoPDF = pdf;
+    component.documentoHabilitado.set(true);
+    component.archivoPDF.set(pdf);
 
     component.onSolicitudSeleccionada(solicitud(2));
 
-    expect(component.seleccionada?.id_solicitud).toBe(2);
-    expect(component.documentoHabilitado).toBeFalse();
-    expect(component.archivoPDF).toBeNull();
+    expect(component.seleccionada()?.id_solicitud).toBe(2);
+    expect(component.documentoHabilitado()).toBeFalse();
+    expect(component.archivoPDF()).toBeNull();
   });
 
   it('genera el Word con el nombre del estudiante sin cambiar el estado', () => {
@@ -98,28 +98,28 @@ describe('OficioSecretariaComponent', () => {
     component.onGenerarDocumento({ tipoDocumento: 'OFICIO_PAZ_SALVO' } as DocumentRequest);
 
     expect(nombreDescargado).toBe(`OFICIO_PAZ_SALVO_Ana Pérez_${new Date().getFullYear()}.docx`);
-    expect(component.documentoGenerado).toBeTrue();
-    expect(component.generando).toBeFalse();
+    expect(component.documentoGenerado()).toBeTrue();
+    expect(component.generando()).toBeFalse();
     expect(config.aprobar).not.toHaveBeenCalled();
   });
 
   it('rechaza archivos que no son PDF', () => {
     const texto = new File(['x'], 'nota.txt', { type: 'text/plain' });
     component.onArchivoSeleccionado({ target: { files: [texto] } } as unknown as Event);
-    expect(component.archivoPDF).toBeNull();
+    expect(component.archivoPDF()).toBeNull();
     expect(snackbar.advertencia).toHaveBeenCalled();
   });
 
   it('sube el PDF, aprueba y recarga las dos listas', () => {
     component.onSolicitudSeleccionada(solicitud(1));
-    component.archivoPDF = pdf;
+    component.archivoPDF.set(pdf);
 
     component.enviarDocumento();
 
     expect(config.subirPdf).toHaveBeenCalledWith(1, pdf);
     expect(config.aprobar).toHaveBeenCalledWith(1);
     expect(snackbar.exito).toHaveBeenCalled();
-    expect(component.seleccionada).toBeNull();
+    expect(component.seleccionada()).toBeNull();
     expect(config.pendientes).toHaveBeenCalledTimes(2);
     expect(config.procesadas).toHaveBeenCalledTimes(2);
   });
@@ -127,25 +127,25 @@ describe('OficioSecretariaComponent', () => {
   it('si falla la subida no aprueba', () => {
     config.subirPdf.and.returnValue(throwError(() => new Error('x')));
     component.onSolicitudSeleccionada(solicitud(1));
-    component.archivoPDF = pdf;
+    component.archivoPDF.set(pdf);
 
     component.enviarDocumento();
 
     expect(config.aprobar).not.toHaveBeenCalled();
     expect(snackbar.error).toHaveBeenCalled();
-    expect(component.subiendoPDF).toBeFalse();
-    expect(component.seleccionada?.id_solicitud).toBe(1);
+    expect(component.subiendoPDF()).toBeFalse();
+    expect(component.seleccionada()?.id_solicitud).toBe(1);
   });
 
   it('si falla la aprobación avisa que el PDF ya se subió', () => {
     config.aprobar.and.returnValue(throwError(() => ({})));
     component.onSolicitudSeleccionada(solicitud(1));
-    component.archivoPDF = pdf;
+    component.archivoPDF.set(pdf);
 
     component.enviarDocumento();
 
     expect(snackbar.error).toHaveBeenCalledWith('PDF subido pero error al enviar al estudiante');
-    expect(component.enviandoPDF).toBeFalse();
+    expect(component.enviandoPDF()).toBeFalse();
   });
 
   it('sin PDF no envía nada', () => {

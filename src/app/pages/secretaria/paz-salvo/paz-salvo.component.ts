@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
@@ -8,7 +8,8 @@ import { ConfigOficioSecretaria, OficioSecretariaComponent } from '../oficio-sec
 @Component({
   selector: 'app-secretaria-paz-salvo',
   imports: [OficioSecretariaComponent],
-  template: '<app-oficio-secretaria [config]="config" />'
+  template: '<app-oficio-secretaria [config]="config" />',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SecretariaPazSalvoComponent {
   private readonly servicio = inject(PazSalvoService);

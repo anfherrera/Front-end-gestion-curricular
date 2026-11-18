@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
@@ -8,7 +8,8 @@ import { ConfigOficioSecretaria, OficioSecretariaComponent } from '../oficio-sec
 @Component({
   selector: 'app-homologacion-asignaturas',
   imports: [OficioSecretariaComponent],
-  template: '<app-oficio-secretaria [config]="config" />'
+  template: '<app-oficio-secretaria [config]="config" />',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomologacionAsignaturasComponent {
   private readonly servicio = inject(HomologacionAsignaturasService);
