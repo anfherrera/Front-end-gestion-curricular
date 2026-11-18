@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
@@ -16,7 +16,8 @@ import {
 @Component({
   selector: 'app-homologacion-revision',
   imports: [RevisionAprobacionComponent],
-  template: '<app-revision-aprobacion [config]="config" />'
+  template: '<app-revision-aprobacion [config]="config" />',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomologacionRevisionComponent {
   private readonly rol = rolRevisionDeRuta(inject(ActivatedRoute));

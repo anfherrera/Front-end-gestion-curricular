@@ -77,19 +77,19 @@ describe('RevisionAprobacionComponent', () => {
       expect(servicio.getPendingRequests).toHaveBeenCalled();
       expect(servicio.getSolicitudesProcesadasFuncionario).toHaveBeenCalledWith(undefined);
       expect(servicio.getCoordinadorRequests).not.toHaveBeenCalled();
-      expect(component.pendientes.length).toBe(1);
+      expect(component.pendientes().length).toBe(1);
     });
 
     it('no selecciona nada al cargar', () => {
-      expect(component.seleccionada).toBeNull();
-      expect(component.puedeDecidir).toBeFalse();
+      expect(component.seleccionada()).toBeNull();
+      expect(component.puedeDecidir()).toBeFalse();
     });
 
     it('puede decidir las solicitudes enviadas', () => {
       component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
-      expect(component.puedeDecidir).toBeTrue();
+      expect(component.puedeDecidir()).toBeTrue();
       component.onSolicitudSeleccionada(solicitud(2, 'APROBADA_FUNCIONARIO'));
-      expect(component.puedeDecidir).toBeFalse();
+      expect(component.puedeDecidir()).toBeFalse();
     });
 
     it('al aprobar marca los documentos como válidos y recarga las listas', () => {
@@ -99,7 +99,7 @@ describe('RevisionAprobacionComponent', () => {
       expect(servicio.approveRequest).toHaveBeenCalledWith(1);
       expect(servicio.actualizarEstadoDocumentos).toHaveBeenCalledWith(1, [{ id_documento: 10, esValido: true }]);
       expect(snackbar.mostrar).toHaveBeenCalledWith('Solicitud aprobada y documentos actualizados', 'exito');
-      expect(component.seleccionada).toBeNull();
+      expect(component.seleccionada()).toBeNull();
       expect(servicio.getPendingRequests).toHaveBeenCalledTimes(2);
       expect(servicio.getSolicitudesProcesadasFuncionario).toHaveBeenCalledTimes(2);
     });
@@ -126,7 +126,7 @@ describe('RevisionAprobacionComponent', () => {
       component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
       component.rechazar();
       expect(servicio.rejectRequest).not.toHaveBeenCalled();
-      expect(component.seleccionada).not.toBeNull();
+      expect(component.seleccionada()).not.toBeNull();
     });
 
     it('el filtro de período recarga el historial', () => {
@@ -143,7 +143,7 @@ describe('RevisionAprobacionComponent', () => {
       component.onComentarioAgregado({ documento: recargada.documentos[0], comentario: 'Revisar firma' });
 
       expect(servicio.agregarComentario).toHaveBeenCalledWith(10, 'Revisar firma');
-      expect(component.seleccionada).toBe(recargada);
+      expect(component.seleccionada()).toBe(recargada);
     });
 
     it('muestra el error del servidor al aprobar', () => {
@@ -165,14 +165,14 @@ describe('RevisionAprobacionComponent', () => {
     });
 
     it('HA-C-003: sin solicitud seleccionada no permite aprobar ni rechazar', () => {
-      expect(component.puedeDecidir).toBeFalse();
+      expect(component.puedeDecidir()).toBeFalse();
     });
 
     it('solo decide las aprobadas por el funcionario', () => {
       component.onSolicitudSeleccionada(solicitud(5, 'APROBADA_FUNCIONARIO'));
-      expect(component.puedeDecidir).toBeTrue();
+      expect(component.puedeDecidir()).toBeTrue();
       component.onSolicitudSeleccionada(solicitud(6, 'ENVIADA'));
-      expect(component.puedeDecidir).toBeFalse();
+      expect(component.puedeDecidir()).toBeFalse();
     });
 
     it('aprueba definitivamente sin tocar los documentos', () => {
@@ -182,7 +182,7 @@ describe('RevisionAprobacionComponent', () => {
       expect(servicio.approveAsCoordinador).toHaveBeenCalledWith(5);
       expect(servicio.actualizarEstadoDocumentos).not.toHaveBeenCalled();
       expect(snackbar.mostrar).toHaveBeenCalledWith('Solicitud aprobada definitivamente', 'exito');
-      expect(component.textoAprobar).toBe('Aprobar Definitivamente');
+      expect(component.textoAprobar()).toBe('Aprobar Definitivamente');
     });
 
     it('al rechazar avisa sin tocar los documentos', () => {

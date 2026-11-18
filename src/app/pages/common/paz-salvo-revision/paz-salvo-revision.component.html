@@ -2,29 +2,29 @@
 
   <app-solicitudes-bandeja
     #bandeja
-    [pendientes]="solicitudes"
-    [procesadas]="solicitudesProcesadas"
+    [pendientes]="solicitudes()"
+    [procesadas]="solicitudesProcesadas()"
     (solicitudSeleccionada)="onSolicitudSeleccionada($event)"
     (periodoChange)="onPeriodoChange($event)">
   </app-solicitudes-bandeja>
 
   <!-- Documentación de la solicitud seleccionada -->
-  @if (selectedSolicitud) {
+  @if (selectedSolicitud(); as sel) {
     <app-card-container
       title="Documentación Adjunta">
       <!-- Mostrar comentario de rechazo si la solicitud está rechazada -->
-      @if (estaRechazada() && obtenerComentarioRechazo(selectedSolicitud)) {
+      @if (estaRechazada() && obtenerComentarioRechazo(sel)) {
         <div class="comentario-rechazo">
           <mat-icon>error_outline</mat-icon>
           <div class="comentario-rechazo-content">
             <strong>Motivo del rechazo:</strong>
-            <p>{{ obtenerComentarioRechazo(selectedSolicitud) }}</p>
+            <p>{{ obtenerComentarioRechazo(sel) }}</p>
           </div>
         </div>
       }
       <app-documentation-viewer
-        [documentos]="documentosDelEstudiante"
-        [solicitudId]="selectedSolicitud.id_solicitud"
+        [documentos]="documentosDelEstudiante()"
+        [solicitudId]="sel.id_solicitud"
         [proceso]="'paz-salvo'"
         [servicio]="pazSalvoService"
         [puedeAgregarComentarios]="true"
@@ -34,7 +34,7 @@
   }
 
   <!-- Botones de acción para la solicitud -->
-  @if (selectedSolicitud) {
+  @if (selectedSolicitud()) {
     <div class="botones-acciones">
       <button mat-raised-button color="primary" (click)="aprobarSolicitudSeleccionada()">
         {{ config.textoAprobar }}

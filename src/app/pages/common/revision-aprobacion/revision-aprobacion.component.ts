@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, ViewChild, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, ViewChild, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ActivatedRoute } from '@angular/router';
@@ -49,7 +49,8 @@ interface Aviso {
   selector: 'app-revision-aprobacion',
   imports: [MatButtonModule, CardContainerComponent, DocumentationViewerComponent, SolicitudesBandejaComponent],
   templateUrl: './revision-aprobacion.component.html',
-  styleUrls: ['./revision-aprobacion.component.css']
+  styleUrls: ['./revision-aprobacion.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RevisionAprobacionComponent<S extends SolicitudAprobable> implements OnInit {
   readonly config = input.required<ConfigRevisionAprobacion<S>>();
@@ -60,9 +61,9 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly destroyRef = inject(DestroyRef);
 
-  pendientes: S[] = [];
-  procesadas: S[] = [];
-  seleccionada: S | null = null;
+  readonly pendientes = signal<S[]>([]);
+  readonly procesadas = signal<S[]>([]);
+  readonly seleccionada = signal<S | null>(null);
   private periodo: string | null = null;
 
   ngOnInit(): void {
@@ -70,35 +71,32 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
     this.cargarProcesadas();
   }
 
-  get esCoordinador(): boolean {
-    return this.config().rol === 'coordinador';
-  }
+  readonly esCoordinador = computed(() => this.config().rol === 'coordinador');
 
-  get textoAprobar(): string {
-    return this.esCoordinador ? 'Aprobar Definitivamente' : `Aprobar ${this.config().nombreProceso}`;
-  }
+  readonly textoAprobar = computed(() =>
+    this.esCoordinador() ? 'Aprobar Definitivamente' : `Aprobar ${this.config().nombreProceso}`);
 
-  get documentos(): (DocumentoHomologacion | DocumentosDTORespuesta)[] {
-    return this.seleccionada?.documentos ?? [];
-  }
+  readonly documentos = computed<(DocumentoHomologacion | DocumentosDTORespuesta)[]>(() =>
+    this.seleccionada()?.documentos ?? []);
 
   /** El funcionario decide las solicitudes enviadas; el coordinador, las aprobadas por el funcionario. */
-  get puedeDecidir(): boolean {
-    if (!this.seleccionada) return false;
-    const estado = normalizarEstado(estadoActual(this.seleccionada));
-    return this.esCoordinador
+  readonly puedeDecidir = computed(() => {
+    const seleccionada = this.seleccionada();
+    if (!seleccionada) return false;
+    const estado = normalizarEstado(estadoActual(seleccionada));
+    return this.esCoordinador()
       ? estado === EstadosSolicitud.APROBADA_FUNCIONARIO
       : estado === EstadosSolicitud.ENVIADA || estado === normalizarEstado(ESTADO_SIN_HISTORIAL);
-  }
+  });
 
   // ===== Listados =====
 
   cargarPendientes(): void {
     const servicio = this.config().servicio;
-    const pendientes$ = this.esCoordinador ? servicio.getCoordinadorRequests() : servicio.getPendingRequests();
+    const pendientes$ = this.esCoordinador() ? servicio.getCoordinadorRequests() : servicio.getPendingRequests();
     pendientes$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (sols) => {
-        this.pendientes = sols;
+        this.pendientes.set(sols);
         this.refrescarSeleccion(sols);
       },
       error: (err) => this.mostrarError(err, 'Error al cargar solicitudes')
@@ -108,11 +106,11 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   cargarProcesadas(): void {
     const servicio = this.config().servicio;
     const periodo = this.periodo ?? undefined;
-    const procesadas$ = this.esCoordinador
+    const procesadas$ = this.esCoordinador()
       ? servicio.getSolicitudesProcesadasCoordinador(periodo)
       : servicio.getSolicitudesProcesadasFuncionario(periodo);
     procesadas$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => this.procesadas = sols,
+      next: (sols) => this.procesadas.set(sols),
       error: (err) => this.mostrarError(err, 'Error al cargar historial de solicitudes procesadas')
     });
   }
@@ -123,15 +121,16 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   }
 
   onSolicitudSeleccionada(solicitud: S | null): void {
-    this.seleccionada = solicitud;
+    this.seleccionada.set(solicitud);
   }
 
   /** Tras recargar las pendientes, la selección pasa a la copia nueva (con los comentarios al día). */
   private refrescarSeleccion(sols: S[]): void {
-    if (!this.seleccionada) return;
-    const id = this.seleccionada.id_solicitud;
-    this.seleccionada = sols.find(sol => sol.id_solicitud === id) ?? null;
-    if (!this.seleccionada) this.bandeja?.resetSelection();
+    const id = this.seleccionada()?.id_solicitud;
+    if (id === undefined) return;
+    const recargada = sols.find(sol => sol.id_solicitud === id) ?? null;
+    this.seleccionada.set(recargada);
+    if (!recargada) this.bandeja?.resetSelection();
   }
 
   onComentarioAgregado(event: { documento: DocumentoHomologacion | DocumentosDTORespuesta; comentario: string }): void {
@@ -149,12 +148,12 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   // ===== Decisión =====
 
   aprobar(): void {
-    if (!this.seleccionada) return;
-    const id = this.seleccionada.id_solicitud;
+    const id = this.seleccionada()?.id_solicitud;
+    if (id === undefined) return;
     const documentos = this.validez(true);
     const servicio = this.config().servicio;
-    const aprobar$ = this.esCoordinador ? servicio.approveAsCoordinador(id) : servicio.approveRequest(id);
-    const mensaje = this.esCoordinador ? 'Solicitud aprobada definitivamente' : 'Solicitud aprobada';
+    const aprobar$ = this.esCoordinador() ? servicio.approveAsCoordinador(id) : servicio.approveRequest(id);
+    const mensaje = this.esCoordinador() ? 'Solicitud aprobada definitivamente' : 'Solicitud aprobada';
 
     aprobar$.pipe(
       switchMap(() => this.marcarDocumentos(id, documentos, mensaje, 'aprobada')),
@@ -166,8 +165,8 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   }
 
   rechazar(): void {
-    if (!this.seleccionada) return;
-    const id = this.seleccionada.id_solicitud;
+    const id = this.seleccionada()?.id_solicitud;
+    if (id === undefined) return;
     const documentos = this.validez(false);
 
     this.dialog.open(TextoDialogComponent, { width: '450px', data: datosRechazo() }).afterClosed().pipe(
@@ -191,12 +190,12 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   }
 
   private validez(esValido: boolean): ValidezDocumento[] {
-    return this.documentos.map(doc => ({ id_documento: doc.id_documento, esValido }));
+    return this.documentos().map(doc => ({ id_documento: doc.id_documento, esValido }));
   }
 
   private finalizarDecision({ mensaje, tipo }: Aviso): void {
     this.snackbar.mostrar(mensaje, tipo);
-    this.seleccionada = null;
+    this.seleccionada.set(null);
     this.bandeja?.resetSelection();
     this.cargarPendientes();
     this.cargarProcesadas();

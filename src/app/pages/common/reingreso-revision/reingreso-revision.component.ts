@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
@@ -16,7 +16,8 @@ import {
 @Component({
   selector: 'app-reingreso-revision',
   imports: [RevisionAprobacionComponent],
-  template: '<app-revision-aprobacion [config]="config" />'
+  template: '<app-revision-aprobacion [config]="config" />',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReingresoRevisionComponent {
   readonly config: ConfigRevisionAprobacion<SolicitudReingresoDTORespuesta> = {

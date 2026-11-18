@@ -2,20 +2,20 @@
 
   <app-solicitudes-bandeja
     #bandeja
-    [pendientes]="pendientes"
-    [procesadas]="procesadas"
+    [pendientes]="pendientes()"
+    [procesadas]="procesadas()"
     (solicitudSeleccionada)="onSolicitudSeleccionada($event)"
     (periodoChange)="onPeriodoChange($event)">
   </app-solicitudes-bandeja>
 
   <!-- Documentación de la solicitud seleccionada -->
-  @if (seleccionada) {
+  @if (seleccionada(); as sel) {
     <app-card-container
       title="Documentación Adjunta"
       icon="description">
       <app-documentation-viewer
-        [documentos]="documentos"
-        [solicitudId]="seleccionada.id_solicitud"
+        [documentos]="documentos()"
+        [solicitudId]="sel.id_solicitud"
         [proceso]="config().proceso"
         [servicio]="config().servicio"
         [puedeAgregarComentarios]="true"
@@ -25,12 +25,12 @@
   }
 
   <!-- Botones de acción para la solicitud -->
-  @if (seleccionada) {
+  @if (seleccionada()) {
     <div class="botones-acciones">
-      <button mat-raised-button color="primary" [disabled]="!puedeDecidir" (click)="aprobar()">
-        {{ textoAprobar }}
+      <button mat-raised-button color="primary" [disabled]="!puedeDecidir()" (click)="aprobar()">
+        {{ textoAprobar() }}
       </button>
-      <button mat-raised-button color="warn" [disabled]="!puedeDecidir" (click)="rechazar()">
+      <button mat-raised-button color="warn" [disabled]="!puedeDecidir()" (click)="rechazar()">
         Rechazar {{ config().nombreProceso }}
       </button>
     </div>

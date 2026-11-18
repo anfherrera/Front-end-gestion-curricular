@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -49,23 +49,23 @@ interface ConfigRevision {
     SolicitudesBandejaComponent
 ],
   templateUrl: './paz-salvo-revision.component.html',
-  styleUrls: ['./paz-salvo-revision.component.css']
+  styleUrls: ['./paz-salvo-revision.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PazSalvoRevisionComponent implements OnInit {
   pazSalvoService = inject(PazSalvoService);
   private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
   private route = inject(ActivatedRoute);
-  private cdr = inject(ChangeDetectorRef);
 
   @ViewChild('bandeja') bandeja?: SolicitudesBandejaComponent<SolicitudHomologacionDTORespuesta>;
 
   rol: RolRevisionPazSalvo = 'funcionario';
   config!: ConfigRevision;
 
-  solicitudes: SolicitudHomologacionDTORespuesta[] = [];              // Pendientes
-  solicitudesProcesadas: SolicitudHomologacionDTORespuesta[] = [];    // Historial
-  selectedSolicitud: SolicitudHomologacionDTORespuesta | null = null;
+  readonly solicitudes = signal<SolicitudHomologacionDTORespuesta[]>([]);              // Pendientes
+  readonly solicitudesProcesadas = signal<SolicitudHomologacionDTORespuesta[]>([]);    // Historial
+  readonly selectedSolicitud = signal<SolicitudHomologacionDTORespuesta | null>(null);
   periodoAcademicoFiltro: string | null = null;
   private destroyRef = inject(DestroyRef);
 
@@ -108,7 +108,7 @@ export class PazSalvoRevisionComponent implements OnInit {
 
   cargarSolicitudesPendientes(): void {
     this.config.pendientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => this.solicitudes = sols,
+      next: (sols) => this.solicitudes.set(sols),
       error: () => {
         this.snackbar.error('Error al cargar solicitudes');
       }
@@ -117,7 +117,7 @@ export class PazSalvoRevisionComponent implements OnInit {
 
   cargarSolicitudesProcesadas(): void {
     this.config.procesadas(this.periodoAcademicoFiltro || undefined).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => this.solicitudesProcesadas = sols,
+      next: (sols) => this.solicitudesProcesadas.set(sols),
       error: () => {
         this.snackbar.error('Error al cargar historial de solicitudes');
       }
@@ -132,33 +132,29 @@ export class PazSalvoRevisionComponent implements OnInit {
   // ===== Selección y documentos =====
 
   onSolicitudSeleccionada(solicitud: SolicitudHomologacionDTORespuesta | null): void {
-    this.selectedSolicitud = solicitud;
-    if (this.selectedSolicitud && this.config.cargarDocumentosAparte) {
-      this.cargarDocumentos(this.selectedSolicitud.id_solicitud);
+    this.selectedSolicitud.set(solicitud);
+    if (solicitud && this.config.cargarDocumentosAparte) {
+      this.cargarDocumentos(solicitud.id_solicitud);
     }
   }
 
   /** Documentos de la solicitud por el endpoint de coordinador. */
   private cargarDocumentos(idSolicitud: number): void {
     this.pazSalvoService.obtenerDocumentosCoordinador(idSolicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (documentos) => {
-        if (this.selectedSolicitud?.id_solicitud !== idSolicitud) return;
-        this.selectedSolicitud.documentos = aDocumentos(documentos);
-        this.cdr.detectChanges();
-      },
+      next: (documentos) => this.ponerDocumentos(idSolicitud, aDocumentos(documentos)),
       error: () => {
-        if (this.selectedSolicitud?.id_solicitud === idSolicitud) {
-          this.selectedSolicitud.documentos = [];
-          this.cdr.detectChanges();
-        }
+        this.ponerDocumentos(idSolicitud, []);
         this.snackbar.error('Error al cargar documentos');
       }
     });
   }
 
-  get documentosDelEstudiante(): DocumentoHomologacion[] {
-    return this.selectedSolicitud?.documentos ?? [];
+  /** Si sigue elegida la misma solicitud, la cambia por una copia con esos documentos. */
+  private ponerDocumentos(idSolicitud: number, documentos: DocumentoHomologacion[]): void {
+    this.selectedSolicitud.update(sol => sol?.id_solicitud === idSolicitud ? { ...sol, documentos } : sol);
   }
+
+  readonly documentosDelEstudiante = computed<DocumentoHomologacion[]>(() => this.selectedSolicitud()?.documentos ?? []);
 
   obtenerComentarioRechazo(solicitud: SolicitudHomologacionDTORespuesta): string | null {
     const rechazos = (solicitud.estadosSolicitud || []).filter(e =>
@@ -168,8 +164,9 @@ export class PazSalvoRevisionComponent implements OnInit {
   }
 
   estaRechazada(): boolean {
-    if (!this.selectedSolicitud) return false;
-    const estado = estadoActual(this.selectedSolicitud);
+    const seleccionada = this.selectedSolicitud();
+    if (!seleccionada) return false;
+    const estado = estadoActual(seleccionada);
     return estado === 'RECHAZADA' || estado === 'Rechazada';
   }
 
@@ -189,8 +186,8 @@ export class PazSalvoRevisionComponent implements OnInit {
   // ===== Decisión =====
 
   aprobarSolicitudSeleccionada(): void {
-    if (!this.selectedSolicitud) return;
-    const id = this.selectedSolicitud.id_solicitud;
+    const id = this.selectedSolicitud()?.id_solicitud;
+    if (id === undefined) return;
 
     const documentos = this.documentosConValidez(true);
     this.config.aprobar(id).pipe(
@@ -209,8 +206,8 @@ export class PazSalvoRevisionComponent implements OnInit {
   }
 
   rechazarSolicitudSeleccionada(): void {
-    if (!this.selectedSolicitud) return;
-    const id = this.selectedSolicitud.id_solicitud;
+    const id = this.selectedSolicitud()?.id_solicitud;
+    if (id === undefined) return;
 
     const dialogRef = this.dialog.open(TextoDialogComponent, {
       width: '450px',
@@ -235,7 +232,7 @@ export class PazSalvoRevisionComponent implements OnInit {
   }
 
   private documentosConValidez(esValido: boolean): { id_documento: number; esValido: boolean }[] {
-    return this.documentosDelEstudiante.map(doc => ({ id_documento: doc.id_documento, esValido }));
+    return this.documentosDelEstudiante().map(doc => ({ id_documento: doc.id_documento, esValido }));
   }
 
   /** Mensaje, recarga de listas y limpieza de la selección tras aprobar o rechazar. */
@@ -243,7 +240,7 @@ export class PazSalvoRevisionComponent implements OnInit {
     this.snackbar.mostrar(mensaje, tipo);
     this.cargarSolicitudesPendientes();
     this.cargarSolicitudesProcesadas();
-    this.selectedSolicitud = null;
+    this.selectedSolicitud.set(null);
     this.bandeja?.resetSelection();
   }
 
