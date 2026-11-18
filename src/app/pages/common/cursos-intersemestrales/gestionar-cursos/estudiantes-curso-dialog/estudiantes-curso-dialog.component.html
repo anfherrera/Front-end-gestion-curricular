@@ -10,17 +10,17 @@
   </div>
 
   <mat-dialog-content>
-    @if (cargando) {
+    @if (cargando()) {
       <div class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Cargando estudiantes...</p>
       </div>
     }
 
-    @if (error) {
+    @if (error(); as mensajeError) {
       <div class="error-container">
         <mat-icon class="error-icon">error</mat-icon>
-        <p>{{ error }}</p>
+        <p>{{ mensajeError }}</p>
         <button mat-raised-button color="primary" (click)="cargarEstudiantes()">
           <mat-icon>refresh</mat-icon>
           Reintentar
@@ -28,7 +28,7 @@
       </div>
     }
 
-    @if (!cargando && !error && datos) {
+    @if (!cargando() && !error() && datos(); as datos) {
       <div class="contenido">
         <!-- Resumen del Curso -->
         <div class="resumen-curso">
@@ -139,12 +139,12 @@
     <button mat-button (click)="cerrar()">Cerrar</button>
     <button mat-stroked-button
       (click)="exportarEstudiantesPDF()"
-      [disabled]="cargando || !datos || datos.estudiantes.length === 0"
+      [disabled]="cargando() || !datos()?.estudiantes?.length"
       class="btn-exportar">
       <mat-icon>picture_as_pdf</mat-icon>
       Exportar a PDF
     </button>
-    <button mat-raised-button color="primary" (click)="cargarEstudiantes()" [disabled]="cargando">
+    <button mat-raised-button color="primary" (click)="cargarEstudiantes()" [disabled]="cargando()">
       <mat-icon>refresh</mat-icon>
       Actualizar
     </button>

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -33,7 +33,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     UtfFixPipe
   ],
   templateUrl: './detalles-inscripcion-dialog.component.html',
-  styleUrl: './detalles-inscripcion-dialog.component.css'
+  styleUrl: './detalles-inscripcion-dialog.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DetallesInscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<DetallesInscripcionDialogComponent>>(MatDialogRef);

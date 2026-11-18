@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -49,7 +49,8 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
     NombreDocentePipe
 ],
   templateUrl: './curso-dialog.component.html',
-  styleUrls: ['./curso-dialog.component.css']
+  styleUrls: ['./curso-dialog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CursoDialogComponent implements OnInit {
   dialogRef = inject<MatDialogRef<CursoDialogComponent>>(MatDialogRef);
@@ -57,13 +58,13 @@ export class CursoDialogComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
   private snackbar = inject(SnackbarService);
 
-  periodos: string[] = [];
-  errorFechas: string | null = null;
-  duracionSemanas = 0;
-  mostrarDuracion = false;
+  readonly periodos = signal<string[]>([]);
+  readonly errorFechas = signal<string | null>(null);
+  readonly duracionSemanas = signal(0);
+  readonly mostrarDuracion = signal(false);
 
-  salones: Salon[] = [];
-  cargandoSalones = false;
+  readonly salones = signal<Salon[]>([]);
+  readonly cargandoSalones = signal(false);
 
   private destroyRef = inject(DestroyRef);
 
@@ -81,13 +82,13 @@ export class CursoDialogComponent implements OnInit {
   }
 
   cargarSalones(): void {
-    this.cargandoSalones = true;
+    this.cargandoSalones.set(true);
     this.cursosService.getSalones()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (salones) => {
-          this.salones = salones;
-          this.cargandoSalones = false;
+          this.salones.set(salones);
+          this.cargandoSalones.set(false);
 
           // En edición, preseleccionar el salón actual del curso
           const curso = this.data.cursoEditando;
@@ -98,7 +99,7 @@ export class CursoDialogComponent implements OnInit {
         },
         error: () => {
           this.snackbar.error('Error al cargar la lista de salones');
-          this.cargandoSalones = false;
+          this.cargandoSalones.set(false);
         }
       });
   }
@@ -108,9 +109,10 @@ export class CursoDialogComponent implements OnInit {
     this.cursosService.getPeriodosRecientes()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(periodos => {
-        this.periodos = ordenarPeriodos(periodos, 'asc');
-        if (this.periodos.length > 0 && !this.data.editando) {
-          this.data.form.patchValue({ periodoAcademico: this.periodos[0] });
+        const ordenados = ordenarPeriodos(periodos, 'asc');
+        this.periodos.set(ordenados);
+        if (ordenados.length > 0 && !this.data.editando) {
+          this.data.form.patchValue({ periodoAcademico: ordenados[0] });
         }
       });
   }
@@ -124,15 +126,16 @@ export class CursoDialogComponent implements OnInit {
     const fechaFin = this.data.form.get('fecha_fin')?.value;
 
     if (!fechaInicio || !fechaFin) {
-      this.errorFechas = null;
-      this.mostrarDuracion = false;
+      this.errorFechas.set(null);
+      this.mostrarDuracion.set(false);
       return;
     }
 
-    this.errorFechas = validarFechasCurso(fechaInicio, fechaFin);
-    this.mostrarDuracion = !this.errorFechas;
-    if (this.mostrarDuracion) {
-      this.duracionSemanas = calcularDuracionSemanas(fechaInicio, fechaFin);
+    const error = validarFechasCurso(fechaInicio, fechaFin);
+    this.errorFechas.set(error);
+    this.mostrarDuracion.set(!error);
+    if (!error) {
+      this.duracionSemanas.set(calcularDuracionSemanas(fechaInicio, fechaFin));
     }
   }
 

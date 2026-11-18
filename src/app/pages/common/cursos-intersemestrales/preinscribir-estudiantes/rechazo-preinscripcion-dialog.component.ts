@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,8 @@ import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-i
     MatIconModule
 ],
   templateUrl: './rechazo-preinscripcion-dialog.component.html',
-  styleUrl: './rechazo-preinscripcion-dialog.component.css'
+  styleUrl: './rechazo-preinscripcion-dialog.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RechazoPreinscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<RechazoPreinscripcionDialogComponent>>(MatDialogRef);

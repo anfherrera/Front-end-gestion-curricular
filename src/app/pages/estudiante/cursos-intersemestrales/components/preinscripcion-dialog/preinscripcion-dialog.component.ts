@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -28,7 +28,8 @@ const ERRORES_POR_CODIGO: Record<string, string> = {
   selector: 'app-preinscripcion-dialog',
   imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS, NombreDocentePipe],
   templateUrl: './preinscripcion-dialog.component.html',
-  styleUrls: ['./preinscripcion-dialog.component.css']
+  styleUrls: ['./preinscripcion-dialog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreinscripcionDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -39,9 +40,9 @@ export class PreinscripcionDialogComponent implements OnInit {
   private snackbar = inject(SnackbarService);
 
   preinscripcionForm!: FormGroup;
-  loading = false;
+  readonly loading = signal(false);
   usuario: UsuarioSesion | null = null;
-  condiciones: CondicionSolicitudVerano[] = [];
+  readonly condiciones = signal<CondicionSolicitudVerano[]>([]);
 
   private destroyRef = inject(DestroyRef);
 
@@ -63,8 +64,8 @@ export class PreinscripcionDialogComponent implements OnInit {
     this.cursosService.getCondicionesSolicitud()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (condiciones) => this.condiciones = condiciones,
-        error: () => this.condiciones = CONDICIONES_POR_DEFECTO
+        next: (condiciones) => this.condiciones.set(condiciones),
+        error: () => this.condiciones.set(CONDICIONES_POR_DEFECTO)
       });
   }
 
@@ -74,7 +75,7 @@ export class PreinscripcionDialogComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     const formData = this.preinscripcionForm.value;
     const nombre = (this.usuario.nombre_completo || formData.nombreCompleto || '').trim() || 'Usuario';
     const payload: CreatePreinscripcionDTO = {
@@ -88,12 +89,12 @@ export class PreinscripcionDialogComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.loading = false;
+          this.loading.set(false);
           this.snackbar.exito('¡Preinscripción enviada exitosamente!');
           this.dialogRef.close(true);
         },
         error: (error: HttpErrorResponse) => {
-          this.loading = false;
+          this.loading.set(false);
           const mensaje = ERRORES_POR_CODIGO[error.error?.codigo]
             ?? (error.status === 400 ? 'Datos inválidos. Verifica la información e inténtalo de nuevo.'
               : error.status === 500 ? 'Error del servidor. Inténtalo más tarde.'

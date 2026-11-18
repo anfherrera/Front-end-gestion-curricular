@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -29,7 +29,8 @@ export interface FormRolDialogData {
     MatProgressSpinnerModule
 ],
   templateUrl: './form-rol-dialog.component.html',
-  styleUrls: ['./form-rol-dialog.component.css']
+  styleUrls: ['./form-rol-dialog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormRolDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -39,7 +40,7 @@ export class FormRolDialogComponent implements OnInit {
   data = inject<FormRolDialogData>(MAT_DIALOG_DATA);
 
   rolForm: FormGroup;
-  loading = false;
+  readonly loading = signal(false);
 
   constructor() {
     this.rolForm = this.fb.group({
@@ -66,7 +67,7 @@ export class FormRolDialogComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     
     const rolData: RolDTOPeticion = {
       nombre: this.rolForm.value.nombre
@@ -89,7 +90,7 @@ export class FormRolDialogComponent implements OnInit {
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el rol';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -103,7 +104,7 @@ export class FormRolDialogComponent implements OnInit {
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el rol';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }

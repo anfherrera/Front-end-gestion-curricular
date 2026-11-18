@@ -11,7 +11,7 @@
         matInput
         formControlName="nombre_proceso"
         placeholder="Ej: Proceso Paz y Salvo"
-        [disabled]="loading"
+        [disabled]="loading()"
 
         >
         <mat-icon matPrefix>settings</mat-icon>
@@ -38,7 +38,7 @@
           matInput
           formControlName="descripcion"
           placeholder="Descripción detallada del proceso"
-          [disabled]="loading"
+          [disabled]="loading()"
           rows="4"
         ></textarea>
         <mat-icon matPrefix>description</mat-icon>
@@ -49,7 +49,7 @@
         }
       </mat-form-field>
 
-      <mat-checkbox formControlName="estado_proceso" [disabled]="loading">
+      <mat-checkbox formControlName="estado_proceso" [disabled]="loading()">
         Proceso activo
       </mat-checkbox>
     </form>
@@ -59,7 +59,7 @@
     <button
       mat-stroked-button
       (click)="cancelar()"
-      [disabled]="loading"
+      [disabled]="loading()"
       >
       <mat-icon>cancel</mat-icon>
       Cancelar
@@ -68,12 +68,12 @@
       mat-raised-button
       color="primary"
       (click)="guardar()"
-      [disabled]="loading || procesoForm.invalid"
+      [disabled]="loading() || procesoForm.invalid"
       >
-      @if (loading) {
+      @if (loading()) {
         <mat-spinner diameter="20"></mat-spinner>
       }
-      @if (!loading) {
+      @if (!loading()) {
         <mat-icon>save</mat-icon>
       }
       {{ data.isEditMode ? 'Actualizar' : 'Guardar' }}

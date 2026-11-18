@@ -77,7 +77,7 @@
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Período Académico</mat-label>
           <mat-select formControlName="periodoAcademico">
-            @for (periodo of periodos; track periodo) {
+            @for (periodo of periodos(); track periodo) {
               <mat-option [value]="periodo">
                 {{ formatearPeriodo(periodo) }}
               </mat-option>
@@ -122,17 +122,17 @@
               La fecha de fin es requerida
             </mat-error>
           }
-          @if (errorFechas) {
+          @if (errorFechas(); as mensaje) {
             <mat-error>
-              {{ errorFechas }}
+              {{ mensaje }}
             </mat-error>
           }
         </mat-form-field>
         <!-- Información de duración -->
-        @if (mostrarDuracion) {
+        @if (mostrarDuracion()) {
           <div class="duracion-info">
             <mat-icon>schedule</mat-icon>
-            <span>Duración: <strong>{{ duracionSemanas }} {{ duracionSemanas === 1 ? 'semana' : 'semanas' }}</strong></span>
+            <span>Duración: <strong>{{ duracionSemanas() }} {{ duracionSemanas() === 1 ? 'semana' : 'semanas' }}</strong></span>
           </div>
         }
         <!-- NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
@@ -168,7 +168,7 @@
         <mat-label>Salón Asignado</mat-label>
         <mat-select formControlName="id_salon">
           <mat-option value="">Seleccione un salón</mat-option>
-          @for (salon of salones; track salon) {
+          @for (salon of salones(); track salon) {
             <mat-option [value]="salon.id_salon">
               {{ salon.descripcion }}
             </mat-option>
@@ -179,7 +179,7 @@
             El salón es requerido
           </mat-error>
         }
-        @if (!cargandoSalones) {
+        @if (!cargandoSalones()) {
           <mat-hint>
             @if (!data.soloEdicion) {
               <span>Seleccione un salón de la lista disponible</span>
@@ -191,7 +191,7 @@
             }
           </mat-hint>
         }
-        @if (cargandoSalones) {
+        @if (cargandoSalones()) {
           <mat-hint>Cargando salones...</mat-hint>
         }
       </mat-form-field>

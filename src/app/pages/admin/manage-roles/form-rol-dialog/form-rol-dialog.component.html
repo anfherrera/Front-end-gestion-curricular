@@ -11,7 +11,7 @@
         matInput
         formControlName="nombre"
         placeholder="Ej: Administrador"
-        [disabled]="loading"
+        [disabled]="loading()"
 
         >
         <mat-icon matPrefix>admin_panel_settings</mat-icon>
@@ -38,7 +38,7 @@
     <button
       mat-stroked-button
       (click)="cancelar()"
-      [disabled]="loading"
+      [disabled]="loading()"
       >
       <mat-icon>cancel</mat-icon>
       Cancelar
@@ -47,12 +47,12 @@
       mat-raised-button
       color="primary"
       (click)="guardar()"
-      [disabled]="loading || rolForm.invalid"
+      [disabled]="loading() || rolForm.invalid"
       >
-      @if (loading) {
+      @if (loading()) {
         <mat-spinner diameter="20"></mat-spinner>
       }
-      @if (!loading) {
+      @if (!loading()) {
         <mat-icon>save</mat-icon>
       }
       {{ data.isEditMode ? 'Actualizar' : 'Guardar' }}

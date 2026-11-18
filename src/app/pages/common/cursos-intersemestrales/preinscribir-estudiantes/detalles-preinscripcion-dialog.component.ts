@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,7 +22,8 @@ import { SolicitudCursoVerano, EstadoSolicitudDetalle } from '@core/models/curso
     MatChipsModule
   ],
   templateUrl: './detalles-preinscripcion-dialog.component.html',
-  styleUrl: './detalles-preinscripcion-dialog.component.css'
+  styleUrl: './detalles-preinscripcion-dialog.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DetallesPreinscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<DetallesPreinscripcionDialogComponent>>(MatDialogRef);

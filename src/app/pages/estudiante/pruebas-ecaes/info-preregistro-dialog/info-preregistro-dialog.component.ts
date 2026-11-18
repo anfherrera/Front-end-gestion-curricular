@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +12,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule
 ],
   templateUrl: './info-preregistro-dialog.component.html',
-  styleUrl: './info-preregistro-dialog.component.css'
+  styleUrl: './info-preregistro-dialog.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InfoPreregistroDialogComponent {
   dialogRef = inject<MatDialogRef<InfoPreregistroDialogComponent>>(MatDialogRef);

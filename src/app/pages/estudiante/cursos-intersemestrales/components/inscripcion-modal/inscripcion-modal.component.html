@@ -90,7 +90,7 @@
 </div>
 
 <div class="modal-footer">
-  <button mat-button (click)="onCancelar()" [disabled]="cargando">
+  <button mat-button (click)="onCancelar()" [disabled]="cargando()">
     <mat-icon>cancel</mat-icon>
     Cancelar
   </button>
@@ -99,15 +99,15 @@
     mat-raised-button
     color="primary"
     (click)="onSubmit()"
-    [disabled]="!isFormValid || cargando"
+    [disabled]="!isFormValid || cargando()"
     class="submit-button">
-    @if (!cargando) {
+    @if (!cargando()) {
       <mat-icon>send</mat-icon>
     }
-    @if (cargando) {
+    @if (cargando()) {
       <mat-spinner diameter="20"></mat-spinner>
     }
-    {{ cargando ? 'Procesando...' : 'Confirmar Inscripción' }}
+    {{ cargando() ? 'Procesando...' : 'Confirmar Inscripción' }}
   </button>
 </div>
 </div>

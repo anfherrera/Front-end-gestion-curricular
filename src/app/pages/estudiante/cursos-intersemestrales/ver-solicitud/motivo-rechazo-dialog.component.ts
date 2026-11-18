@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -92,7 +92,8 @@ export interface MotivoRechazoDialogData {
       word-break: break-word;
       white-space: pre-wrap;
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MotivoRechazoDialogComponent {
   data = inject<MotivoRechazoDialogData>(MAT_DIALOG_DATA);

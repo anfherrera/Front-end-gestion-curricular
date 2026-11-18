@@ -51,7 +51,7 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Condición</mat-label>
         <mat-select formControlName="condicion" placeholder="Selecciona la condición de tu preinscripción">
-          @for (condicion of condiciones; track condicion) {
+          @for (condicion of condiciones(); track condicion) {
             <mat-option [value]="condicion">
               {{ getCondicionDisplayName(condicion) }}
             </mat-option>
@@ -69,19 +69,19 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="onCancel()" [disabled]="loading">
+    <button mat-button (click)="onCancel()" [disabled]="loading()">
       Cancelar
     </button>
     <button mat-raised-button color="primary"
       (click)="onSubmitPreinscripcion()"
-      [disabled]="preinscripcionForm.invalid || loading">
-      @if (!loading) {
+      [disabled]="preinscripcionForm.invalid || loading()">
+      @if (!loading()) {
         <mat-icon>send</mat-icon>
       }
-      @if (loading) {
+      @if (loading()) {
         <mat-icon>hourglass_empty</mat-icon>
       }
-      {{ loading ? 'Enviando...' : 'Enviar Preinscripción' }}
+      {{ loading() ? 'Enviando...' : 'Enviar Preinscripción' }}
     </button>
   </mat-dialog-actions>
 </div>

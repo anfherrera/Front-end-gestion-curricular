@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,8 @@ import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
     UtfFixPipe
 ],
   templateUrl: './confirmacion-inscripcion-dialog.component.html',
-  styleUrl: './confirmacion-inscripcion-dialog.component.css'
+  styleUrl: './confirmacion-inscripcion-dialog.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmacionInscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<ConfirmacionInscripcionDialogComponent>>(MatDialogRef);

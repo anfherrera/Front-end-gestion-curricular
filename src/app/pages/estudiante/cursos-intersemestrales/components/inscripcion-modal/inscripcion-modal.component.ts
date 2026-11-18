@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -35,7 +35,8 @@ const ERRORES_INSCRIPCION: Record<number, string> = {
   selector: 'app-inscripcion-modal',
   imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './inscripcion-modal.component.html',
-  styleUrls: ['./inscripcion-modal.component.css']
+  styleUrls: ['./inscripcion-modal.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InscripcionModalComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -48,7 +49,7 @@ export class InscripcionModalComponent implements OnInit {
 
   inscripcionForm!: FormGroup;
   archivoSeleccionado: File | null = null;
-  cargando = false;
+  readonly cargando = signal(false);
   usuario: UsuarioSesion | null = null;
   errorArchivo: string | null = null;
 
@@ -102,7 +103,7 @@ export class InscripcionModalComponent implements OnInit {
     }
     if (!this.usuario) return;
 
-    this.cargando = true;
+    this.cargando.set(true);
     this.verificarPreinscripcionAprobada(this.usuario);
   }
 
@@ -117,13 +118,13 @@ export class InscripcionModalComponent implements OnInit {
             this.crearInscripcion(usuario);
             return;
           }
-          this.cargando = false;
+          this.cargando.set(false);
           this.snackbar.advertencia(delCurso.length > 0
               ? 'Tu preinscripción aún no ha sido aprobada. Podrás inscribirte cuando un funcionario la apruebe.'
               : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".');
         },
         error: (error) => {
-          this.cargando = false;
+          this.cargando.set(false);
           this.snackbar.error(mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.'));
         }
       });
@@ -142,7 +143,7 @@ export class InscripcionModalComponent implements OnInit {
       .subscribe({
         next: (inscripcion) => this.subirComprobante(inscripcion.id_solicitud),
         error: (error: HttpErrorResponse) => {
-          this.cargando = false;
+          this.cargando.set(false);
           const mensaje = error.status === 400
             ? `Error del servidor: ${error.error?.message || error.error?.error || 'Datos inválidos'}`
             : ERRORES_INSCRIPCION[error.status] ?? 'Error al crear la inscripción. Por favor, inténtalo de nuevo.';
@@ -168,7 +169,7 @@ export class InscripcionModalComponent implements OnInit {
 
   private terminar(mensaje: string, tipo: TipoSnackbar): void {
     this.notificacionesService.actualizarNotificaciones();
-    this.cargando = false;
+    this.cargando.set(false);
     this.snackbar.mostrar(mensaje, tipo);
     this.dialogRef.close(true);
   }

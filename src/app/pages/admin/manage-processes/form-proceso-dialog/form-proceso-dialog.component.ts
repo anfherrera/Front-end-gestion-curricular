@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -31,7 +31,8 @@ export interface FormProcesoDialogData {
     MatCheckboxModule
 ],
   templateUrl: './form-proceso-dialog.component.html',
-  styleUrl: './form-proceso-dialog.component.css'
+  styleUrl: './form-proceso-dialog.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormProcesoDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -41,7 +42,7 @@ export class FormProcesoDialogComponent implements OnInit {
   data = inject<FormProcesoDialogData>(MAT_DIALOG_DATA);
 
   procesoForm: FormGroup;
-  loading = false;
+  readonly loading = signal(false);
 
   constructor() {
     this.procesoForm = this.fb.group({
@@ -74,7 +75,7 @@ export class FormProcesoDialogComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     
     const procesoData: ProcesoDTOPeticion = {
       ...this.procesoForm.value
@@ -97,7 +98,7 @@ export class FormProcesoDialogComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.mensaje || 'Error al crear el proceso';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -111,7 +112,7 @@ export class FormProcesoDialogComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el proceso';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }

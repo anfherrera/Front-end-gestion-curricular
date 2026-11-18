@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -23,7 +23,8 @@ import { MatButtonModule } from '@angular/material/button';
       <button mat-raised-button color="primary" (click)="onContinue()">Continuar</button>
     </mat-dialog-actions>
   `,
-  imports: [MatDialogModule, MatButtonModule]
+  imports: [MatDialogModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PazSalvoDialogComponent {
   private dialogRef = inject<MatDialogRef<PazSalvoDialogComponent>>(MatDialogRef);

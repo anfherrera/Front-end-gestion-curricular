@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -37,7 +37,8 @@ const ERRORES_EXPORTAR: Record<number, string> = {
     MatProgressSpinnerModule
 ],
   templateUrl: './estudiantes-curso-dialog.component.html',
-  styleUrls: ['./estudiantes-curso-dialog.component.css']
+  styleUrls: ['./estudiantes-curso-dialog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EstudiantesCursoDialogComponent implements OnInit {
   dialogRef = inject<MatDialogRef<EstudiantesCursoDialogComponent>>(MatDialogRef);
@@ -48,9 +49,9 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
   private snackbar = inject(SnackbarService);
 
-  datos: RespuestaEstudiantesCurso | null = null;
-  cargando = true;
-  error: string | null = null;
+  readonly datos = signal<RespuestaEstudiantesCurso | null>(null);
+  readonly cargando = signal(true);
+  readonly error = signal<string | null>(null);
 
   displayedColumns: string[] = [
     'numero',
@@ -70,20 +71,21 @@ export class EstudiantesCursoDialogComponent implements OnInit {
   }
 
   cargarEstudiantes(): void {
-    this.cargando = true;
-    this.error = null;
+    this.cargando.set(true);
+    this.error.set(null);
 
     this.cursosService.getEstudiantesDelCurso(this.data.idCurso)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (respuesta) => {
-          this.datos = respuesta;
-          this.cargando = false;
+          this.datos.set(respuesta);
+          this.cargando.set(false);
         },
         error: (err: HttpErrorResponse) => {
-          this.cargando = false;
-          this.error = ERRORES_CARGA[err.status] ?? 'Error al cargar los estudiantes';
-          this.snackbar.error(this.error);
+          const mensaje = ERRORES_CARGA[err.status] ?? 'Error al cargar los estudiantes';
+          this.cargando.set(false);
+          this.error.set(mensaje);
+          this.snackbar.error(mensaje);
         }
       });
   }
