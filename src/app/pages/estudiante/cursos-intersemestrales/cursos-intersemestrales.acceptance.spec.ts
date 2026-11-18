@@ -3,6 +3,13 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import { AuthService } from '@core/services/auth.service';
 import { ApiEndpoints } from '@core/utils/api-endpoints';
+import {
+  CreateCursoDTO,
+  CreateInscripcionDTO,
+  CreatePreinscripcionDTO,
+  CursoOfertadoVerano,
+  PreinscripcionUsuario
+} from '@core/models/cursos-intersemestrales.model';
 
 /**
  * ======================================================
@@ -60,7 +67,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   describe('HU-01: Ver Cursos Disponibles', () => {
     it('ACEP-CI-001: DADO que hay cursos disponibles, CUANDO consulto lista, ENTONCES veo todos los cursos activos', fakeAsync(() => {
       // GIVEN: Existen cursos disponibles
-      const mockCursos: any[] = [
+      const mockCursos: Partial<CursoOfertadoVerano>[] = [
         {
           id_curso: 1,
           nombre_curso: 'Cálculo Diferencial',
@@ -101,11 +108,11 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   describe('HU-02: Preinscribirse a Curso', () => {
     it('ACEP-CI-002: DADO que curso tiene cupos, CUANDO me preinscribo, ENTONCES preinscripción queda pendiente', fakeAsync(() => {
       // GIVEN: Curso con cupos disponibles
-      const payload: any = {
+      const payload: CreatePreinscripcionDTO = {
         nombreSolicitud: 'Preinscripción Cálculo',
         idUsuario: mockEstudiante.id_usuario,
         idCurso: 1,
-        condicionSolicitud: 'Normal'
+        condicion: 'Primera_Vez'
       };
 
       // WHEN: Me preinscribo
@@ -118,6 +125,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES);
       expect(req.request.method).toBe('POST');
       expect(req.request.body.idCurso).toBe(1);
+      expect(req.request.body.condicion).toBe('Primera_Vez');
       req.flush({ id_solicitud: 1, mensaje: 'Preinscripción creada' });
       tick();
     }));
@@ -132,9 +140,9 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   describe('HU-03: Ver Mis Preinscripciones', () => {
     it('ACEP-CI-003: DADO que tengo preinscripciones, CUANDO consulto, ENTONCES veo su estado', fakeAsync(() => {
       // GIVEN: Tengo preinscripciones
-      const mockPreinscripciones: any[] = [
-        { id: 1, nombreCurso: 'Cálculo', estado: 'PENDIENTE' },
-        { id: 2, nombreCurso: 'Programación', estado: 'APROBADA' }
+      const mockPreinscripciones: Partial<PreinscripcionUsuario>[] = [
+        { id: 1, cursoNombre: 'Cálculo', estado: 'PENDIENTE' },
+        { id: 2, cursoNombre: 'Programación', estado: 'APROBADA' }
       ];
 
       // WHEN: Consulto mis preinscripciones
@@ -161,11 +169,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   describe('HU-04: Inscripción Formal', () => {
     it('ACEP-CI-004: DADO que preinscripción aprobada, CUANDO me inscribo, ENTONCES quedo registrado', fakeAsync(() => {
       // GIVEN: Preinscripción aprobada
-      const payload: any = {
+      const payload: CreateInscripcionDTO = {
         nombreSolicitud: 'Inscripción Cálculo',
         idUsuario: mockEstudiante.id_usuario,
-        idCurso: 1,
-        condicionSolicitud: 'Normal'
+        idCurso: 1
       };
 
       // WHEN: Me inscribo formalmente
@@ -191,14 +198,14 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   describe('HU-07: Crear Curso (Administrador)', () => {
     it('ACEP-CI-007: DADO que soy administrador, CUANDO creo curso, ENTONCES queda disponible', fakeAsync(() => {
       // GIVEN: Datos del nuevo curso
-      const nuevoCurso: any = {
-        nombre_curso: 'Algoritmos Avanzados',
-        codigo_curso: 'ALG-401',
-        cupo_maximo: 30,
-        cupo_estimado: 30,
-        estado: 'Borrador',
+      const nuevoCurso: CreateCursoDTO = {
         id_materia: 3,
-        id_docente: 10
+        id_docente: 10,
+        cupo_estimado: 30,
+        fecha_inicio: '2025-06-15',
+        fecha_fin: '2025-07-31',
+        periodoAcademico: '2025-1',
+        estado: 'Borrador'
       };
 
       // WHEN: Creo el curso
@@ -210,7 +217,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       tick();
 
       const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION);
-      // El backend no espera nombre_curso, solo id_materia, id_docente, etc.
+      // El backend recibe id_materia e id_docente; el nombre lo toma de la materia
       expect(req.request.body.id_materia).toBe(3);
       expect(req.request.body.id_docente).toBe(10);
       req.flush({ 

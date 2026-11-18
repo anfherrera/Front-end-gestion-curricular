@@ -11,6 +11,9 @@ import { FormatosInstitucionalesService } from '@core/services/formatos-instituc
 import { LoggerService } from '@core/services/logger.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
+import { Archivo } from '@core/models/procesos.model';
+
+const archivo = (nombre: string): Archivo => ({ nombre, fecha: '2025-01-15' });
 
 describe('ReingresoEstudianteComponent', () => {
   let component: ReingresoEstudianteComponent;
@@ -90,19 +93,19 @@ describe('ReingresoEstudianteComponent', () => {
   });
 
   it('RE-E-003: puedeEnviar debe ser true con archivos y usuario', () => {
-    component.archivosActuales = [{ nombre: 'doc.pdf' }] as any[];
+    component.archivosActuales = [archivo('doc.pdf')];
     component.usuario = mockUsuario;
     expect(component.puedeEnviar()).toBeTrue();
   });
 
   it('RE-E-004: puedeEnviar debe ser false sin usuario', () => {
-    component.archivosActuales = [{ nombre: 'doc.pdf' }] as any[];
+    component.archivosActuales = [archivo('doc.pdf')];
     component.usuario = null;
     expect(component.puedeEnviar()).toBeFalse();
   });
 
   it('RE-E-005: onArchivosChange debe actualizar archivosActuales', () => {
-    const archivos = [{ nombre: 'a.pdf' }, { nombre: 'b.pdf' }] as any[];
+    const archivos = [archivo('a.pdf'), archivo('b.pdf')];
     component.onArchivosChange(archivos);
     expect(component.archivosActuales).toEqual(archivos);
   });

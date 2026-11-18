@@ -30,8 +30,8 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
-      // Hay unos 240 `any` heredados; se reemplazan por fases (Fase 6). Aviso, no error.
-      "@typescript-eslint/no-explicit-any": "warn",
+      // Sin `any` en el código ni en los specs (Fase 6). Para un mock incompleto a propósito, `as unknown as T`.
+      "@typescript-eslint/no-explicit-any": "error",
       // Variables, imports y parámetros sin usar son error. Un `_` delante marca uno que se deja a propósito.
       "@typescript-eslint/no-unused-vars": [
         "error",

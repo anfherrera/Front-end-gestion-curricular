@@ -2,6 +2,13 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { AuthService } from '@core/services/auth.service';
+import { Archivo, EstadoSolicitud, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { estadoActual } from '@core/utils/estado-solicitud.util';
+
+/** Solicitud tal como la devuelve el backend, con solo los campos que usa cada prueba. */
+type SolicitudParcial = Omit<Partial<SolicitudHomologacionDTORespuesta>, 'estadosSolicitud'> & {
+  estadosSolicitud: Pick<EstadoSolicitud, 'estado_actual'>[];
+};
 
 /**
  * ================================================
@@ -61,7 +68,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
     it('ACEP-PS-001: DADO que soy estudiante Y tengo documentos, CUANDO envío solicitud, ENTONCES se crea exitosamente', fakeAsync(() => {
       // GIVEN: Soy estudiante con documentos
       const idUsuario = mockEstudiante.id_usuario;
-      const archivos: any[] = [
+      const archivos: Archivo[] = [
         { nombre: 'carta.pdf', fecha: new Date().toISOString() }
       ];
 
@@ -92,25 +99,26 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
   describe('HU-02: Ver Estado de Solicitudes', () => {
     it('ACEP-PS-002: DADO que tengo solicitudes, CUANDO consulto, ENTONCES veo todas con su estado', fakeAsync(() => {
       // GIVEN: Tengo solicitudes en el sistema
-      const mockSolicitudes: any[] = [
+      // El backend no envía un campo 'estado': el estado actual es el último de estadosSolicitud
+      const mockSolicitudes: SolicitudParcial[] = [
         {
           id_solicitud: 1,
           nombre_solicitud: 'Solicitud 1',
-          estado: 'PENDIENTE'
+          estadosSolicitud: [{ estado_actual: 'ENVIADA' }]
         },
         {
           id_solicitud: 2,
           nombre_solicitud: 'Solicitud 2',
-          estado: 'APROBADA'
+          estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA' }]
         }
       ];
 
       // WHEN: Consulto mis solicitudes
-      service.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe((solicitudes: any[]) => {
+      service.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe((solicitudes) => {
         // THEN: Veo todas mis solicitudes
         expect(solicitudes.length).toBe(2);
-        expect(solicitudes[0].estado).toBe('PENDIENTE');
-        expect(solicitudes[1].estado).toBe('APROBADA');
+        expect(estadoActual(solicitudes[0])).toBe('ENVIADA');
+        expect(estadoActual(solicitudes[1])).toBe('APROBADA');
       });
       tick();
 
@@ -129,16 +137,16 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
   describe('HU-03: Revisar Solicitudes (Funcionario)', () => {
     it('ACEP-PS-003: DADO que soy funcionario, CUANDO veo solicitudes pendientes, ENTONCES puedo identificarlas', fakeAsync(() => {
       // GIVEN: Hay solicitudes pendientes
-      const mockSolicitudes: any[] = [
-        { id_solicitud: 1, estado: 'PENDIENTE' },
-        { id_solicitud: 2, estado: 'APROBADA' },
-        { id_solicitud: 3, estado: 'PENDIENTE' }
+      const mockSolicitudes: SolicitudParcial[] = [
+        { id_solicitud: 1, estadosSolicitud: [{ estado_actual: 'ENVIADA' }] },
+        { id_solicitud: 2, estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA_FUNCIONARIO' }] },
+        { id_solicitud: 3, estadosSolicitud: [{ estado_actual: 'ENVIADA' }] }
       ];
 
       // WHEN: Listo solicitudes
       service.listarSolicitudesPorRol('FUNCIONARIO', 1).subscribe((solicitudes) => {
         // THEN: Puedo filtrar las pendientes
-        const pendientes = solicitudes.filter((s: any) => s.estado === 'PENDIENTE');
+        const pendientes = solicitudes.filter((s) => estadoActual(s) === 'ENVIADA');
         expect(pendientes.length).toBe(2);
       });
       tick();
@@ -237,7 +245,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
   describe('HU-07: Seguimiento de Solicitud', () => {
     it('ACEP-PS-007: DADO que soy estudiante con solicitud en proceso, CUANDO consulto seguimiento, ENTONCES veo mis solicitudes con sus estados', fakeAsync(() => {
       // GIVEN: Estudiante con una solicitud aprobada por el coordinador
-      const mockSolicitudes: any[] = [{
+      const mockSolicitudes: SolicitudParcial[] = [{
         id_solicitud: 1,
         nombre_solicitud: 'Solicitud Paz y Salvo',
         estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA_COORDINADOR' }]
@@ -262,7 +270,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
     }));
 
     it('ACEP-PS-008: DADO que mi solicitud tiene oficio, CUANDO lo descargo, ENTONCES recibo el PDF con su nombre', fakeAsync(() => {
-      service.descargarOficioPorSolicitud(1).subscribe((blob: any) => {
+      service.descargarOficioPorSolicitud(1).subscribe((blob) => {
         expect(blob.filename).toBe('OFICIO_PAZ_SALVO_1.pdf');
       });
       tick();

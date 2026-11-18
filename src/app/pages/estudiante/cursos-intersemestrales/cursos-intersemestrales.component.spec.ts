@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, Event as RouterEvent } from '@angular/router';
 import { CursosIntersemestralesComponent } from './cursos-intersemestrales.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -10,7 +10,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
   let fixture: ComponentFixture<CursosIntersemestralesComponent>;
   let router: Router;
   let compiled: HTMLElement;
-  let routerEventsSubject: Subject<any>;
+  let routerEventsSubject: Subject<RouterEvent>;
 
   // Métricas de usabilidad
   const metricasUsabilidad = {
@@ -122,7 +122,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     }));
 
     it('CI-009: Debe detectar si hay una ruta activa', () => {
-      const urlSpy = spyOnProperty(router as any, 'url', 'get');
+      const urlSpy = spyOnProperty(router, 'url', 'get');
       // Ruta base
       urlSpy.and.returnValue('/estudiante/cursos-intersemestrales');
       expect(component.hasActiveRoute()).toBe(false);
@@ -137,9 +137,10 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
 
   describe('3. GESTIÓN DE EVENTOS DE NAVEGACIÓN', () => {
     it('CI-010: Debe suscribirse a eventos de navegación', () => {
-      spyOn(component as any, 'setupNavigation').and.callThrough();
+      // setupNavigation es privado: se expone solo su firma para espiarlo
+      const espia = spyOn(component as unknown as { setupNavigation: () => void }, 'setupNavigation').and.callThrough();
       component.ngOnInit();
-      expect((component as any).setupNavigation).toHaveBeenCalled();
+      expect(espia).toHaveBeenCalled();
       metricasUsabilidad.interaccionesExitosas++;
     });
 

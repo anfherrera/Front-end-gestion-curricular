@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { ManageProcessesComponent } from './manage-processes.component';
 import { ProcesosService } from '@core/services/procesos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 describe('ManageProcessesComponent', () => {
   let component: ManageProcessesComponent;
@@ -19,8 +19,9 @@ describe('ManageProcessesComponent', () => {
 
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
-    const dialogRefMock = { afterClosed: () => of(false) } as any;
-    const matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    // Mock incompleto a propósito: el componente solo usa afterClosed()
+    const dialogRefMock = { afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>;
+    const matDialogSpy = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
     matDialogSpy.open.and.returnValue(dialogRefMock);
 
     await TestBed.configureTestingModule({

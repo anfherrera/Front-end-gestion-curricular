@@ -6,13 +6,22 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
 import { PruebasEcaesComponent } from './pruebas-ecaes.component';
-import { PruebasEcaesService } from '@core/services/pruebas-ecaes.service';
+import { FechaEcaes, PruebasEcaesService, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { Archivo } from '@core/models/procesos.model';
 import { ArchivosService } from '@core/services/archivos.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { AuthService } from '@core/services/auth.service';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { LoggerService } from '@core/services/logger.service';
+
+const archivo = (nombre: string): Archivo => ({ nombre, fecha: '2025-01-15' });
+
+/** Solicitud ECAES con solo los campos que usa cada prueba. */
+type SolicitudEcaesParcial = Omit<Partial<SolicitudEcaesResponse>, 'objUsuario'> & {
+  objUsuario?: Partial<SolicitudEcaesResponse['objUsuario']>;
+};
+const solicitudEcaes = (datos: SolicitudEcaesParcial) => datos as SolicitudEcaesResponse;
 
 describe('PruebasEcaesComponent', () => {
   let component: PruebasEcaesComponent;
@@ -32,7 +41,7 @@ describe('PruebasEcaesComponent', () => {
     objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería' }
   };
 
-  const mockFechasEcaes = [
+  const mockFechasEcaes: FechaEcaes[] = [
     {
       idFechaEcaes: 1,
       periodoAcademico: '2025-1',
@@ -85,7 +94,7 @@ describe('PruebasEcaesComponent', () => {
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     errorHandler = TestBed.inject(ErrorHandlerService) as jasmine.SpyObj<ErrorHandlerService>;
 
-    pruebasEcaesService.listarFechasEcaes.and.returnValue(of(mockFechasEcaes as any));
+    pruebasEcaesService.listarFechasEcaes.and.returnValue(of(mockFechasEcaes));
     pruebasEcaesService.listarSolicitudesPorRol.and.returnValue(of([]));
     pruebasEcaesService.listarTiposDocumento.and.returnValue(of([
       { codigo: 'CC', descripcion: 'Cédula de Ciudadanía' },
@@ -139,18 +148,18 @@ describe('PruebasEcaesComponent', () => {
   }));
 
   it('EC-018: Debe actualizar archivos en onArchivosChange', () => {
-    const archivos = [{ nombre: 'cedula.pdf', file: new File([], 'cedula.pdf') }] as any[];
+    const archivos: Archivo[] = [{ ...archivo('cedula.pdf'), file: new File([], 'cedula.pdf') }];
     component.onArchivosChange(archivos);
     expect(component.archivos).toEqual(archivos);
   });
 
   it('EC-019: Debe formatear la fecha del calendario sin correrla de día', () => {
-    component.fechasSeleccionadas = { inscripcion_est_by_facultad: '2025-01-15T00:00:00Z' } as any;
+    component.fechasSeleccionadas = { ...mockFechasEcaes[0], inscripcion_est_by_facultad: '2025-01-15T00:00:00Z' };
     expect(component.getConceptoFecha('inscripcion_est_by_facultad')).toBe('15/01/2025');
   });
 
   it('EC-020: getConceptoFecha debe devolver fecha formateada cuando hay fechas seleccionadas', () => {
-    component.fechasSeleccionadas = mockFechasEcaes[0] as any;
+    component.fechasSeleccionadas = mockFechasEcaes[0];
     const concepto = component.getConceptoFecha('inscripcion_est_by_facultad');
     expect(concepto).toBeTruthy();
   });
@@ -174,7 +183,7 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('EC-024: limpiarFormulario debe resetear formulario y archivos', () => {
-    component.archivos = [{ nombre: 'x.pdf' }] as any[];
+    component.archivos = [archivo('x.pdf')];
     component.solicitudForm.patchValue({ numero_documento: '123456' });
     component.limpiarFormulario();
     expect(component.archivos.length).toBe(0);
@@ -199,15 +208,21 @@ describe('PruebasEcaesComponent', () => {
 
   it('EC-027: procesarSolicitudes debe transformar respuesta y poblar solicitudes', () => {
     const data = [
-      {
+      solicitudEcaes({
         id_solicitud: 1,
         nombre_solicitud: 'Solicitud ECAES',
         fecha_registro_solicitud: '2025-01-01T00:00:00.000Z',
-        estadosSolicitud: [{ estado_actual: 'ENVIADA', comentario: null }],
+        estadosSolicitud: [{
+          id_estado: 1,
+          estado_actual: 'ENVIADA',
+          fecha_registro_estado: '2025-01-01T00:00:00.000Z',
+          comentario: null,
+          objSolicitud: null
+        }],
         objUsuario: { nombre_completo: 'Test' },
         documentos: []
-      }
-    ] as any[];
+      })
+    ];
     component.procesarSolicitudes(data);
     expect(component.solicitudes.length).toBe(1);
     expect(component.solicitudes[0].id).toBe(1);
@@ -215,14 +230,14 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('EC-028: procesarSolicitudes debe manejar datos no array', () => {
-    component.procesarSolicitudes(null as any);
+    // Entrada inválida a propósito: el backend respondió algo que no es un arreglo
+    component.procesarSolicitudes(null as unknown as SolicitudEcaesResponse[]);
     expect(component.solicitudes.length).toBe(0);
     expect(component.solicitudesCompletas.length).toBe(0);
   });
 
   it('EC-029: obtenerSolicitudCompleta debe devolver solicitud por id', () => {
-    const sol = { id_solicitud: 5, nombre_solicitud: 'S5' };
-    component.solicitudesCompletas = [sol] as any[];
+    component.solicitudesCompletas = [solicitudEcaes({ id_solicitud: 5, nombre_solicitud: 'S5' })];
     expect(component.obtenerSolicitudCompleta(5)?.id_solicitud).toBe(5);
     expect(component.obtenerSolicitudCompleta(99)).toBeUndefined();
   });
@@ -254,7 +269,7 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('EC-032: onPeriodoChange debe actualizar fechasSeleccionadas', () => {
-    component.fechasEcaes = mockFechasEcaes as any;
+    component.fechasEcaes = mockFechasEcaes;
     component.periodoSeleccionado = '2025-1';
     component.onPeriodoChange();
     expect(component.fechasSeleccionadas?.periodoAcademico).toBe('2025-1');

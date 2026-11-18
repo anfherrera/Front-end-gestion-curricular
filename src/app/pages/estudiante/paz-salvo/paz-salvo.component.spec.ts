@@ -2,12 +2,33 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 
 import { PazSalvoComponent } from './paz-salvo.component';
 import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { NotificacionesService } from '@core/services/notificaciones.service';
+import { BlobConNombre } from '@core/services/paz-salvo.service';
+import {
+  Archivo,
+  DocumentoHomologacion,
+  EstadoSolicitud,
+  Solicitud,
+  SolicitudHomologacionDTORespuesta
+} from '@core/models/procesos.model';
+import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
+import { VerComentariosDialogData } from '@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
+
+const archivo = (nombre: string): Archivo => ({ nombre, fecha: '2025-01-15' });
+const estado = (estado_actual: string, comentario?: string): EstadoSolicitud =>
+  ({ id_estado: 1, estado_actual, fecha_registro_estado: '2025-01-01T00:00:00.000Z', comentario });
+const documento = (nombre: string, comentario?: string): DocumentoHomologacion =>
+  ({ id_documento: 1, nombre, ruta_documento: nombre, fecha_documento: '2025-01-01', esValido: true, comentario });
+/** Solicitud con solo los campos que usa cada prueba. */
+const solicitud = (datos: Partial<SolicitudHomologacionDTORespuesta>) => datos as SolicitudHomologacionDTORespuesta;
+/** Mock incompleto a propósito: el componente solo usa estos dos métodos del FileUploadComponent. */
+const comoFileUpload = (mock: Pick<FileUploadComponent, 'subirArchivosPendientes' | 'resetearEstadoCarga'>) =>
+  mock as unknown as FileUploadComponent;
 
 describe('PazSalvoComponent', () => {
   let component: PazSalvoComponent;
@@ -56,7 +77,7 @@ describe('PazSalvoComponent', () => {
     window.localStorage.setItem('usuario', JSON.stringify(mockUsuario));
 
     pazSalvoService.listarSolicitudesPorRol.and.returnValue(of([]));
-    pazSalvoService.crearSolicitudConFormulario.and.returnValue(of({} as any));
+    pazSalvoService.crearSolicitudConFormulario.and.returnValue(of({} as Solicitud));
 
     fixture = TestBed.createComponent(PazSalvoComponent);
     component = fixture.componentInstance;
@@ -97,12 +118,12 @@ describe('PazSalvoComponent', () => {
     expect(component.puedeEnviar()).toBeFalse();
 
     // Programa sin todos los documentos obligatorios: no puede enviar
-    component.archivosActuales = [{ nombre: 'test.pdf' } as any];
+    component.archivosActuales = [archivo('test.pdf')];
     expect(component.puedeEnviar()).toBeFalse();
 
     // Telemática solo exige la cédula
     component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
-    component.archivosActuales = [{ nombre: 'cedula.pdf' } as any];
+    component.archivosActuales = [archivo('cedula.pdf')];
     expect(component.puedeEnviar()).toBeTrue();
 
     component.usuario = null;
@@ -110,27 +131,27 @@ describe('PazSalvoComponent', () => {
   });
 
   it('debe actualizar archivos al llamar onArchivosChange', () => {
-    const archivos = [{ nombre: 'a.pdf' }, { nombre: 'b.pdf' }] as any[];
+    const archivos = [archivo('a.pdf'), archivo('b.pdf')];
     component.onArchivosChange(archivos);
     expect(component.archivosActuales).toEqual(archivos);
   });
 
   it('debe enviar solicitud exitosamente y resetear el estado', fakeAsync(() => {
-    const archivos = [{ nombre: 'test.pdf', fecha: new Date().toISOString() }];
+    const archivos: Archivo[] = [{ nombre: 'test.pdf', fecha: new Date().toISOString() }];
     const fileUploadMock = {
       subirArchivosPendientes: () => of(archivos),
       resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
     };
 
     completarFormulario();
-    component.archivosActuales = archivos as any;
-    component.fileUploadComponent = fileUploadMock as any;
+    component.archivosActuales = archivos;
+    component.fileUploadComponent = comoFileUpload(fileUploadMock);
 
     component.onSolicitudEnviada();
     tick();
     tick();
 
-    expect(pazSalvoService.crearSolicitudConFormulario).toHaveBeenCalledWith(mockUsuario.id_usuario, archivos as any, jasmine.any(Object));
+    expect(pazSalvoService.crearSolicitudConFormulario).toHaveBeenCalledWith(mockUsuario.id_usuario, archivos, jasmine.any(Object));
     expect(snackBar.open).toHaveBeenCalledWith(jasmine.stringMatching('Solicitud de paz y salvo'), 'Cerrar', jasmine.objectContaining({ panelClass: ['snackbar-success'] }));
     expect(fileUploadMock.resetearEstadoCarga).not.toHaveBeenCalled();
     expect(component.resetFileUpload).toBeFalse();
@@ -142,7 +163,7 @@ describe('PazSalvoComponent', () => {
       resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
     };
 
-    component.fileUploadComponent = fileUploadMock as any;
+    component.fileUploadComponent = comoFileUpload(fileUploadMock);
 
     component.onSolicitudEnviada();
     tick();
@@ -153,20 +174,16 @@ describe('PazSalvoComponent', () => {
 
   it('debe transformar solicitudes recibidas', fakeAsync(() => {
     const respuesta = [
-      {
+      solicitud({
         id_solicitud: 10,
         nombre_solicitud: 'Solicitud 10',
         fecha_registro_solicitud: '2025-01-01T00:00:00.000Z',
-        estadosSolicitud: [
-          { estado_actual: 'PENDIENTE', comentarios: 'Esperando revisión' }
-        ],
-        documentos: [
-          { nombre: 'oficio_paz_salvo_10.pdf' }
-        ]
-      }
+        estadosSolicitud: [estado('PENDIENTE', 'Esperando revisión')],
+        documentos: [documento('oficio_paz_salvo_10.pdf')]
+      })
     ];
 
-    pazSalvoService.listarSolicitudesPorRol.and.returnValue(of(respuesta as any));
+    pazSalvoService.listarSolicitudesPorRol.and.returnValue(of(respuesta));
     pazSalvoService.listarSolicitudesPorRol.calls.reset();
 
     component.listarSolicitudes();
@@ -179,14 +196,12 @@ describe('PazSalvoComponent', () => {
   }));
 
   it('debe abrir el diálogo de comentarios con información correcta', () => {
-    const solicitudCompleta = {
+    const solicitudCompleta = solicitud({
       id_solicitud: 5,
       nombre_solicitud: 'Solicitud Rechazada',
-      documentos: [{ nombre: 'doc.pdf', comentario: 'Falta firma' }],
-      estadosSolicitud: [
-        { estado_actual: 'RECHAZADA', comentario: 'Corrige el documento' }
-      ]
-    } as any;
+      documentos: [documento('doc.pdf', 'Falta firma')],
+      estadosSolicitud: [estado('RECHAZADA', 'Corrige el documento')]
+    });
 
     component.solicitudesCompletas = [solicitudCompleta];
 
@@ -194,27 +209,28 @@ describe('PazSalvoComponent', () => {
     pazSalvoService.obtenerComentarios.and.returnValue(of({
       documentosConComentarios: [{ id: 1, nombre: 'doc.pdf', comentario: 'Falta firma' }],
       comentarioRechazo: 'Corrige el documento'
-    } as any));
+    }));
 
+    // Mock incompleto a propósito: solo se usa afterClosed()
     dialog.open.and.returnValue({
       afterClosed: () => of(true)
-    } as any);
+    } as unknown as MatDialogRef<unknown>);
 
-    component['dialog'] = dialog as any;
+    // El componente importa MatDialogModule y recibe su propio MatDialog: se sustituye por el espía
+    component['dialog'] = dialog;
 
     component.verComentarios(5);
 
     expect(dialog.open).toHaveBeenCalled();
     const [, config] = dialog.open.calls.mostRecent().args;
-    const data = (config as any)?.data;
+    const data = config?.data as VerComentariosDialogData | undefined;
     expect(data).toBeTruthy();
-    expect(data.titulo).toContain('Comentarios');
-    expect(data.comentarioRechazo).toBe('Corrige el documento');
+    expect(data?.titulo).toContain('Comentarios');
+    expect(data?.comentarioRechazo).toBe('Corrige el documento');
   });
 
   it('debe descargar el oficio con el nombre que entrega el servicio', () => {
-    const blob = new Blob(['pdf'], { type: 'application/pdf' });
-    (blob as any).filename = 'OFICIO_PAZ_SALVO.pdf';
+    const blob: BlobConNombre = Object.assign(new Blob(['pdf'], { type: 'application/pdf' }), { filename: 'OFICIO_PAZ_SALVO.pdf' });
     pazSalvoService.descargarOficioPorSolicitud.and.returnValue(of(blob));
     spyOn(URL, 'createObjectURL').and.returnValue('blob:prueba');
     spyOn(URL, 'revokeObjectURL');
@@ -236,9 +252,9 @@ describe('PazSalvoComponent', () => {
   describe('Usabilidad y funcionalidad adicional', () => {
     it('PS-011: Debe obtener solicitud completa por ID', () => {
       component.solicitudesCompletas = [
-        { id_solicitud: 1, nombre_solicitud: 'Solicitud 1' },
-        { id_solicitud: 2, nombre_solicitud: 'Solicitud 2' }
-      ] as any;
+        solicitud({ id_solicitud: 1, nombre_solicitud: 'Solicitud 1' }),
+        solicitud({ id_solicitud: 2, nombre_solicitud: 'Solicitud 2' })
+      ];
 
       expect(component['obtenerSolicitudCompleta'](1)?.id_solicitud).toBe(1);
       expect(component['obtenerSolicitudCompleta'](3)).toBeUndefined();
@@ -246,17 +262,17 @@ describe('PazSalvoComponent', () => {
 
     it('PS-012: Sistemas exige el formato PPH o TIH', () => {
       component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Ingeniería de Sistemas' } };
-      component.archivosActuales = [{ nombre: 'Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf' } as any];
+      component.archivosActuales = [archivo('Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf')];
 
       expect(component.obtenerDocumentosFaltantes()).toContain('Formato PPH o TIH (requerido para tu programa)');
 
-      component.archivosActuales = [...component.archivosActuales, { nombre: 'Formato TIH.pdf' } as any];
+      component.archivosActuales = [...component.archivosActuales, archivo('Formato TIH.pdf')];
       expect(component.obtenerDocumentosFaltantes()).not.toContain('Formato PPH o TIH (requerido para tu programa)');
     });
 
     it('PS-013: Telemática rechaza los formatos de trabajo de grado', () => {
       component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
-      component.archivosActuales = [{ nombre: 'cedula.pdf' } as any, { nombre: 'Formato TI-G.pdf' } as any];
+      component.archivosActuales = [archivo('cedula.pdf'), archivo('Formato TI-G.pdf')];
 
       expect(component.obtenerDocumentosFaltantes()).toEqual(['Los formatos TI-G/TI-H no aplican para tu programa (Telemática)']);
       expect(component.puedeEnviar()).toBeFalse();
@@ -276,7 +292,7 @@ describe('PazSalvoComponent', () => {
     });
 
     it('PS-018: onArchivosChange debe actualizar archivos correctamente', () => {
-      const nuevosArchivos = [{ nombre: 'test1.pdf' }, { nombre: 'test2.pdf' }] as any;
+      const nuevosArchivos = [archivo('test1.pdf'), archivo('test2.pdf')];
       
       component.onArchivosChange(nuevosArchivos);
       
@@ -285,7 +301,7 @@ describe('PazSalvoComponent', () => {
     });
 
     it('PS-019: puedeEnviar debe retornar false cuando no hay usuario', () => {
-      component.archivosActuales = [{ nombre: 'test.pdf' }] as any;
+      component.archivosActuales = [archivo('test.pdf')];
       component.usuario = null;
       
       expect(component.puedeEnviar()).toBeFalse();

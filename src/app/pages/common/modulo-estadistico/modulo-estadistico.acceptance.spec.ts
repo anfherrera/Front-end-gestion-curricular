@@ -3,6 +3,11 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { EstadisticasService } from '@core/services/estadisticas.service';
 import { AuthService } from '@core/services/auth.service';
 import { ApiEndpoints } from '@core/utils/api-endpoints';
+import { ProcesoDetallado, ResumenCompletoAPI } from '@core/models/estadisticas/generales.model';
+
+/** Respuestas parciales: cada prueba solo envía los campos que comprueba. */
+interface ResumenParcial { estadisticasGlobales: Partial<ResumenCompletoAPI['estadisticasGlobales']> }
+interface PorProcesoParcial { estadisticasPorProceso: Record<string, Partial<ProcesoDetallado>> }
 
 /**
  * ===================================================
@@ -60,12 +65,12 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
   describe('HU-01: Ver Estadísticas Globales', () => {
     it('ACEP-EST-001: DADO que soy coordinador, CUANDO accedo a estadísticas, ENTONCES veo resumen global', fakeAsync(() => {
       // GIVEN: El sistema tiene solicitudes registradas
-      const mockResumen: any = {
+      const mockResumen: ResumenParcial = {
         estadisticasGlobales: { totalSolicitudes: 250, totalAprobadas: 180, totalRechazadas: 20, totalEnProceso: 50 }
       };
 
       // WHEN: Consulto el resumen completo sin filtros
-      service.getResumenCompleto().subscribe((resumen: any) => {
+      service.getResumenCompleto().subscribe((resumen) => {
         // THEN: Veo las métricas globales
         expect(resumen.estadisticasGlobales.totalSolicitudes).toBe(250);
         expect(resumen.estadisticasGlobales.totalAprobadas).toBe(180);
@@ -88,10 +93,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
   describe('HU-02: Estadísticas por Proceso', () => {
     it('ACEP-EST-002: DADO que quiero analizar paz y salvo, CUANDO filtro por ese proceso, ENTONCES el backend recibe el proceso', fakeAsync(() => {
       // GIVEN: Quiero analizar paz y salvo
-      const mockProceso: any = { estadisticasPorProceso: { 'Paz y Salvo': { totalSolicitudes: 75, aprobadas: 60 } } };
+      const mockProceso: PorProcesoParcial = { estadisticasPorProceso: { 'Paz y Salvo': { totalSolicitudes: 75, aprobadas: 60 } } };
 
       // WHEN: Consulto las estadísticas filtradas por proceso
-      service.getEstadisticasDetalladasPorProceso({ proceso: 'Paz y Salvo' }).subscribe((stats: any) => {
+      service.getEstadisticasDetalladasPorProceso({ proceso: 'Paz y Salvo' }).subscribe((stats) => {
         // THEN: Veo las métricas del proceso
         expect(stats.estadisticasPorProceso['Paz y Salvo'].totalSolicitudes).toBe(75);
       });
@@ -127,7 +132,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       const programaId = mockCoordinador.objPrograma.id_programa;
 
       // WHEN: Consulto el resumen de MI programa
-      service.getResumenCompleto({ idPrograma: programaId }).subscribe((resumen: any) => {
+      service.getResumenCompleto({ idPrograma: programaId }).subscribe((resumen) => {
         // THEN: Recibo los datos de mi programa
         expect(resumen.estadisticasGlobales.totalSolicitudes).toBe(50);
       });
@@ -151,12 +156,12 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
     it('ACEP-EST-005: DADO que quiero ver un período específico, CUANDO aplico filtro, ENTONCES veo solo ese período', fakeAsync(() => {
       // GIVEN: Quiero ver solo período 2025-1
       const periodo = '2025-1';
-      const mockEstadisticas: any = {
+      const mockEstadisticas: ResumenParcial = {
         estadisticasGlobales: { totalSolicitudes: 100, totalAprobadas: 80, totalEnProceso: 15, totalRechazadas: 5 }
       };
 
       // WHEN: Aplico filtro de período al resumen del panel
-      service.getResumenCompleto({ periodoAcademico: periodo }).subscribe((resumen: any) => {
+      service.getResumenCompleto({ periodoAcademico: periodo }).subscribe((resumen) => {
         // THEN: Veo datos del período filtrado
         expect(resumen.estadisticasGlobales.totalSolicitudes).toBe(100);
       });
@@ -241,7 +246,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
    */
   describe('HU-07: Estadísticas por Tipo de Proceso', () => {
     it('ACEP-EST-008: DADO que quiero comparar procesos, CUANDO consulto sin filtro, ENTONCES veo todos los procesos', fakeAsync(() => {
-      const mockComparativa: any = {
+      const mockComparativa: PorProcesoParcial = {
         estadisticasPorProceso: {
           'Paz y Salvo': { totalSolicitudes: 50 },
           'Cursos de Verano': { totalSolicitudes: 150 },
@@ -249,7 +254,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
         }
       };
 
-      service.getEstadisticasDetalladasPorProceso().subscribe((stats: any) => {
+      service.getEstadisticasDetalladasPorProceso().subscribe((stats) => {
         expect(Object.keys(stats.estadisticasPorProceso).length).toBe(3);
       });
       tick();
