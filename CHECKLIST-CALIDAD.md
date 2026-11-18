@@ -42,6 +42,13 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - [x] Aviso de build: `file-saver` no era ESM. [document-generator.service.ts](src/app/core/services/document-generator.service.ts) usa ahora `descargarBlob` de [download.util.ts](src/app/core/utils/download.util.ts) y se desinstalan `file-saver` y `@types/file-saver`. `ng build` ya no da avisos
 - [ ] Revisar a ojo el modal de inscripción a cursos y las páginas del estudiante (paz y salvo, homologación, reingreso) con datos reales
 
+### Encontrado después (2026-11-18)
+- [x] Se borra la gestión de procesos de admin: `manage-processes` y `form-proceso-dialog` (con el spec del componente), `ProcesosService` (con su spec) y `proceso.interface.ts`. No la usaba ninguna ruta ni menú: el commit que la creó (`9a84873`) quitó a la vez su ruta de `admin.routes.ts`. Además, el backend no tiene ningún endpoint `/procesos` (buscado en `Back-end-gestion-curricular/gestion_curricular/src/main/java`), así que ninguna petición habría funcionado
+- [x] Se borra `notificaciones-guia` (`shared/components`) y su ruta `/notificaciones-guia` de `common.routes.ts`: ningún menú ni componente enlazaba a ella. La página de notificaciones (`/notificaciones`) y la campana del header no la usaban
+- Componentes: 88 → 85. Pruebas: 589 → 585 (las 4 eran de lo borrado: 3 del servicio y 1 del componente), specs 56 → 54
+- Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 585/585, `test:navegacion` sin backend correcto
+- Sin cambios visibles esperados (ninguna de las dos se podía abrir desde la interfaz)
+
 ---
 
 ## Fase 2 — Código repetido (servicios, utilidades y componentes pequeños) ✅ (terminada el 2026-11-13)
@@ -272,9 +279,9 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Specs: bandeja, selector de período y revisión-aprobación usan `fixture.componentRef.setInput`
 - [x] **Estado local a `signal()`** en `shared` (2026-11-13): 19 `signal()` y 7 `computed()` en 11 archivos. `periodo-filtro-selector`, `estado-filters`, `notifications-header`, `notificaciones-guia`, `request-status` y `approved-requests-section` guardan su estado en signals; `breadcrumb` arma las migas con `toSignal(router.events)` + `computed()`. `request-status` y `notifications-header` ya no usan `ChangeDetectorRef` (`markForCheck`/`detectChanges`). Las notificaciones leídas se marcan con `update()` en lugar de mutar el objeto. Quedan sin signals `texto-dialog` (usa `ngModel`) y `document-generator` (formulario reactivo)
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
-  - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
+  - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra. Borrada el 2026-11-18 (Fase 1, "Encontrado después")
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [x] **OnPush**: lo usan 88 de 88 componentes (eran 6; 20 al cerrar `shared`)
+- [x] **OnPush**: lo usan 85 de 85 componentes (eran 6; 20 al cerrar `shared`; 88 de 88 al cerrarlo, 85 después de borrar `manage-processes`, `form-proceso-dialog` y `notificaciones-guia`)
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
@@ -282,7 +289,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Directo, porque solo pintan `MAT_DIALOG_DATA` o formularios que cambian con eventos de su propia plantilla: confirmacion-inscripcion, detalles-inscripcion (su `subscribe` solo descarga el comprobante), detalles-preinscripcion, rechazo-preinscripcion, motivo-rechazo, paz-salvo-dialog e info-preregistro
     - Con signals, porque el estado cambiaba dentro de `subscribe`: form-proceso y form-rol (`loading`), estudiantes-curso (`datos`, `cargando`, `error`), preinscripcion-dialog (`loading`, `condiciones`), inscripcion-modal (`cargando`) y curso-dialog (`periodos`, `salones`, `cargandoSalones`, `errorFechas`, `duracionSemanas`, `mostrarDuracion`; las fechas llegan por `valueChanges` del datepicker)
     - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589 sin tocar specs (ningún spec usa estos diálogos), `test:navegacion` sin backend correcto. `test:navegacion` no abre diálogos
-    - Probar a mano con backend: gestionar cursos → crear curso (elegir fechas: aparece la duración o el error de fechas; se llenan períodos y salones) y ver estudiantes del curso; admin → crear/editar proceso y rol (spinner del botón); estudiante → preinscripción (lista de condiciones) e inscripción (botón "Procesando...")
+    - Probar a mano con backend: gestionar cursos → crear curso (elegir fechas: aparece la duración o el error de fechas; se llenan períodos y salones) y ver estudiantes del curso; admin → crear/editar rol (spinner del botón; form-proceso ya no existe); estudiante → preinscripción (lista de condiciones) e inscripción (botón "Procesando...")
     - Sin cambios visibles esperados
   - [x] Estudiante, cursos intersemestrales (2026-11-17): OnPush en los 6 (33 → 39 de 88), con 13 `signal()` nuevas
     - cursos-ofertados y cursos-preinscripcion (`cursos`, `cargando`), solicitudes (`loading`, `solicitudEnviada`, `materiasDisponibles`, `condiciones`) y ver-solicitud (`preinscripciones`, `inscripciones`, `cargando`)
@@ -323,7 +330,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto (las listas, el dashboard y configurar período tienen "Cargando...", así que la comprobación de repintado las cubre en la rama de error)
     - Probar a mano con backend, como admin: el dashboard muestra los 3 totales; en usuarios, docentes, programas y roles se llena la tabla, buscar la filtra y la X la recarga; activar/desactivar un usuario cambia su estado en la tabla; eliminar recarga la lista; al editar un usuario, docente o programa se rellena el formulario (en usuario, con el ID en el título y los selectores de rol y programa llenos) y el botón muestra el spinner al guardar; en configurar período aparecen el período actual y la configuración, el selector de períodos en modo manual y "Guardando..." al guardar; en formatos, Modificar abre el formulario y Guardar cambia el valor
     - Pendiente, visto al probar la negación: las rutas `estudiante/*` de [app.routes.ts](src/app/app.routes.ts) no tienen `RoleGuard`, así que cualquier rol con sesión (admin incluido) las abre. Resuelto el 2026-11-18 (Fase 4, `RoleGuard` en las rutas de estudiante)
-    - Pendiente: `manage-processes` no lo usa ninguna ruta ni componente. Decidir si se enruta o se borra (con su diálogo)
+    - Pendiente: `manage-processes` no lo usa ninguna ruta ni componente. Decidir si se enruta o se borra (con su diálogo). Borrado el 2026-11-18 (Fase 1, "Encontrado después"): el backend no tiene endpoint `/procesos`
     - Sin cambios visibles esperados
   - [x] Cursos intersemestrales de funcionario y coordinador (2026-11-18): OnPush en los 6 de `common/cursos-intersemestrales` (60 → 66 de 88), con 19 `signal()` nuevas. Sus 6 diálogos ya lo tenían
     - El menú, directo: sus opciones son fijas y `routerLinkActive` se repinta solo
