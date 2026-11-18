@@ -41,7 +41,7 @@ const casos = [
       '/funcionario/homologacion-asignaturas', '/funcionario/modulo-estadistico', '/funcionario/historial-completo'],
     cursos: true,
     pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Funcionario',
-    negadas: ['/coordinador/paz-salvo', '/secretaria/paz-salvo', '/admin/dashboard'],
+    negadas: ['/coordinador/paz-salvo', '/secretaria/paz-salvo', '/admin/dashboard', '/estudiante/paz-salvo'],
   },
   {
     correo: 'josefina@unicauca.edu.co', rol: 'coordinador',
@@ -49,12 +49,12 @@ const casos = [
       '/coordinador/modulo-estadistico', '/coordinador/historial-completo'],
     cursos: true,
     pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Coordinador',
-    negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo'],
+    negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/homologacion-asignaturas'],
   },
   {
     correo: 'maria@unicauca.edu.co', rol: 'secretaria',
     rutas: ['/secretaria/paz-salvo', '/secretaria/reingreso-estudiante', '/secretaria/homologacion-asignaturas'],
-    negadas: ['/funcionario/paz-salvo', '/coordinador/modulo-estadistico'],
+    negadas: ['/funcionario/paz-salvo', '/coordinador/modulo-estadistico', '/estudiante/reingreso-estudiante'],
   },
   {
     correo: 'dcisneros@unicauca.edu.co', rol: 'estudiante',
@@ -67,7 +67,7 @@ const casos = [
     // Sin backend el detalle no carga, pero debe salir del "Cargando..." por la rama de error
     correo: 'decano@unicauca.edu.co', rol: 'decano',
     rutas: ['/decano/historial-completo', '/decano/historial-completo/detalle/1'],
-    negadas: ['/funcionario/paz-salvo', '/admin/dashboard'],
+    negadas: ['/funcionario/paz-salvo', '/admin/dashboard', '/estudiante/pruebas-ecaes'],
   },
   {
     correo: 'admin@unicauca.edu.co', rol: 'admin',
@@ -75,7 +75,8 @@ const casos = [
     rutas: ['/admin/dashboard', '/admin/manage-users', '/admin/manage-users/crear', '/admin/manage-roles',
       '/admin/docentes', '/admin/docentes/crear', '/admin/programas', '/admin/programas/crear',
       '/admin/configurar-periodo', '/admin/formatos-institucionales'],
-    negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo'],
+    negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/paz-salvo',
+      '/estudiante/cursos-intersemestrales/cursos-ofertados'],
   },
 ];
 

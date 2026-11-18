@@ -4,12 +4,6 @@ import { RoleGuard } from '@core/guards/role.guard';
 import { UserRole } from '@core/enums/roles.enum';
 import { CommonRoutes } from './pages/common/common.routes';
 
-// Subcomponentes de cursos intersemestrales
-import { SolicitudesComponent } from './pages/estudiante/cursos-intersemestrales/solicitudes/solicitudes.component';
-import { CursosOfertadosComponent } from './pages/estudiante/cursos-intersemestrales/cursos-ofertados/cursos-ofertados.component';
-import { CursosPreinscripcionComponent } from './pages/estudiante/cursos-intersemestrales/cursos-preinscripcion/cursos-preinscripcion.component';
-import { VerSolicitudComponent } from './pages/estudiante/cursos-intersemestrales/ver-solicitud/ver-solicitud.component';
-
 export const routes: Routes = [
   // Redirección por defecto al login
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -41,20 +35,13 @@ export const routes: Routes = [
       // ==========================
       // Estudiante
       // ==========================
-      { path: 'estudiante/paz-salvo', loadComponent: () => import('./pages/estudiante/paz-salvo/paz-salvo.component').then(m => m.PazSalvoComponent) },
-      { path: 'estudiante/pruebas-ecaes', loadComponent: () => import('./pages/estudiante/pruebas-ecaes/pruebas-ecaes.component').then(m => m.PruebasEcaesComponent) },
       {
-        path: 'estudiante/cursos-intersemestrales',
-        loadComponent: () => import('./pages/estudiante/cursos-intersemestrales/cursos-intersemestrales.component').then(m => m.CursosIntersemestralesComponent),
-        children: [
-          { path: 'solicitudes', component: SolicitudesComponent },
-          { path: 'cursos-ofertados', component: CursosOfertadosComponent },
-          { path: 'cursos-preinscripcion', component: CursosPreinscripcionComponent },
-          { path: 'ver-solicitud', component: VerSolicitudComponent },
-        ]
+        path: 'estudiante',
+        canActivateChild: [authGuard, RoleGuard],
+        data: { role: UserRole.ESTUDIANTE },
+        loadChildren: () =>
+          import('./pages/estudiante/estudiante.routes').then(m => m.EstudianteRoutes),
       },
-      { path: 'estudiante/homologacion-asignaturas', loadComponent: () => import('./pages/estudiante/homologacion-asignaturas/homologacion-asignaturas.component').then(m => m.HomologacionAsignaturasComponent) },
-      { path: 'estudiante/reingreso-estudiante', loadComponent: () => import('./pages/estudiante/reingreso-estudiante/reingreso-estudiante.component').then(m => m.ReingresoEstudianteComponent) },
 
       // ==========================
       // Funcionario
