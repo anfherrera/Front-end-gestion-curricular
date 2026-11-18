@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -34,7 +34,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatDialogModule
 ],
   templateUrl: './manage-roles.component.html',
-  styleUrls: ['./manage-roles.component.css']
+  styleUrls: ['./manage-roles.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ManageRolesComponent implements OnInit {
   private rolesService = inject(RolesAdminService);
@@ -42,9 +43,9 @@ export class ManageRolesComponent implements OnInit {
   private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
 
-  roles: RolDTORespuesta[] = [];
+  readonly roles = signal<RolDTORespuesta[]>([]);
   displayedColumns: string[] = ['id_rol', 'nombre', 'acciones'];
-  loading = false;
+  readonly loading = signal(false);
   searchTerm = '';
 
   ngOnInit(): void {
@@ -52,16 +53,16 @@ export class ManageRolesComponent implements OnInit {
   }
 
   cargarRoles(): void {
-    this.loading = true;
+    this.loading.set(true);
     
     this.rolesService.listarRoles().subscribe({
       next: (data) => {
-        this.roles = corregirEncodingObjeto(data);
-        this.loading = false;
+        this.roles.set(corregirEncodingObjeto(data));
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al cargar la lista de roles');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -72,15 +73,15 @@ export class ManageRolesComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     this.rolesService.buscarPorNombre(this.searchTerm).subscribe({
       next: (data) => {
-        this.roles = data ? [data] : [];
-        this.loading = false;
+        this.roles.set(data ? [data] : []);
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('No se encontró el rol');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -95,16 +96,16 @@ export class ManageRolesComponent implements OnInit {
       titulo: 'Eliminar rol', textoConfirmar: 'Eliminar', peligro: true,
       mensaje: `¿Está seguro de eliminar el rol "${rol.nombre}"?\n\nEsta acción no se puede deshacer.`
     }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading = true;
+      this.loading.set(true);
 
       this.rolesService.eliminarRol(rol.id_rol).subscribe({
         next: () => {
-          this.loading = false;
+          this.loading.set(false);
           this.snackbar.exito('Rol eliminado exitosamente');
           this.cargarRoles();
         },
         error: (error: HttpErrorResponse) => {
-          this.loading = false;
+          this.loading.set(false);
         
           // Extraer mensaje de error usando el servicio
           const mensaje = this.errorHandler.extraerMensajeError(error);

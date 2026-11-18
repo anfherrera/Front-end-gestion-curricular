@@ -1,8 +1,8 @@
 <div class="container-admin">
   <div class="header-section">
     <h2>
-      <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
-      {{ isEditMode ? 'Editar' : 'Nuevo' }} Programa
+      <mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>
+      {{ isEditMode() ? 'Editar' : 'Nuevo' }} Programa
     </h2>
     <button mat-stroked-button (click)="cancelar()">
       <mat-icon>arrow_back</mat-icon>
@@ -21,7 +21,7 @@
               matInput
               formControlName="codigo"
               placeholder="Ej: ISIST"
-              [disabled]="loading"
+              [disabled]="loading()"
               >
               <mat-icon matPrefix>tag</mat-icon>
               @if (codigo?.hasError('required')) {
@@ -48,7 +48,7 @@
                 matInput
                 formControlName="nombre_programa"
                 placeholder="Ej: Ingeniería de Sistemas"
-                [disabled]="loading"
+                [disabled]="loading()"
                 >
                 <mat-icon matPrefix>assignment</mat-icon>
                 @if (nombrePrograma?.hasError('required')) {
@@ -75,7 +75,7 @@
                 mat-stroked-button
                 type="button"
                 (click)="cancelar()"
-                [disabled]="loading"
+                [disabled]="loading()"
                 >
                 <mat-icon>cancel</mat-icon>
                 Cancelar
@@ -84,15 +84,15 @@
                 mat-raised-button
                 color="primary"
                 type="submit"
-                [disabled]="loading || programaForm.invalid"
+                [disabled]="loading() || programaForm.invalid"
                 >
-                @if (loading) {
+                @if (loading()) {
                   <mat-spinner diameter="20"></mat-spinner>
                 }
-                @if (!loading) {
+                @if (!loading()) {
                   <mat-icon>save</mat-icon>
                 }
-                {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+                {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
               </button>
             </div>
           </form>

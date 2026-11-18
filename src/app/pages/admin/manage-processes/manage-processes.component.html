@@ -10,7 +10,7 @@
         <mat-icon>add</mat-icon>
         Nuevo Proceso
       </button>
-      <button mat-raised-button (click)="cargarProcesos()" [disabled]="loading">
+      <button mat-raised-button (click)="cargarProcesos()" [disabled]="loading()">
         <mat-icon>refresh</mat-icon>
         Recargar
       </button>
@@ -33,14 +33,14 @@
           </button>
         }
       </mat-form-field>
-      <button mat-raised-button color="accent" (click)="buscar()" [disabled]="loading || !searchTerm">
+      <button mat-raised-button color="accent" (click)="buscar()" [disabled]="loading() || !searchTerm">
         Buscar
       </button>
     </div>
 
-    @if (!loading) {
+    @if (!loading()) {
       <div class="table-container">
-        <table mat-table [dataSource]="procesos" class="mat-elevation-z2">
+        <table mat-table [dataSource]="procesos()" class="mat-elevation-z2">
           <!-- ID Column -->
           <ng-container matColumnDef="id_proceso">
             <th mat-header-cell *matHeaderCellDef>ID</th>
@@ -118,7 +118,7 @@
       </div>
     }
 
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-container">
         <mat-spinner></mat-spinner>
         <p>Cargando procesos...</p>

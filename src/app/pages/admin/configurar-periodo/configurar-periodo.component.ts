@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -27,7 +27,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatProgressSpinnerModule
   ],
   templateUrl: './configurar-periodo.component.html',
-  styleUrls: ['./configurar-periodo.component.css']
+  styleUrls: ['./configurar-periodo.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfigurarPeriodoComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -36,11 +37,11 @@ export class ConfigurarPeriodoComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   configForm: FormGroup;
-  periodosDisponibles: PeriodoAcademico[] = [];
-  configActual: PeriodoActivoConfig | null = null;
-  periodoActual: PeriodoAcademico | null = null;
-  cargando = false;
-  guardando = false;
+  readonly periodosDisponibles = signal<PeriodoAcademico[]>([]);
+  readonly configActual = signal<PeriodoActivoConfig | null>(null);
+  readonly periodoActual = signal<PeriodoAcademico | null>(null);
+  readonly cargando = signal(false);
+  readonly guardando = signal(false);
 
   constructor() {
     this.configForm = this.fb.group({
@@ -54,7 +55,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
     this.periodosService.periodoActual$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(periodo => {
-        this.periodoActual = periodo;
+        this.periodoActual.set(periodo);
       });
 
     this.cargarDatos();
@@ -71,12 +72,12 @@ export class ConfigurarPeriodoComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    this.cargando = true;
+    this.cargando.set(true);
 
     // Cargar configuración actual
     this.periodosService.getPeriodoActivoConfig().subscribe({
       next: (config) => {
-        this.configActual = config;
+        this.configActual.set(config);
         if (config) {
           this.configForm.patchValue({
             modo: config.modo,
@@ -93,17 +94,17 @@ export class ConfigurarPeriodoComponent implements OnInit {
     if (!this.periodosService.getPeriodoActualValue()) {
       this.periodosService.getPeriodoActual().subscribe();
     } else {
-      this.periodoActual = this.periodosService.getPeriodoActualValue();
+      this.periodoActual.set(this.periodosService.getPeriodoActualValue());
     }
 
     // Cargar períodos disponibles
     this.periodosService.getPeriodosRecientes().subscribe({
       next: (periodos) => {
-        this.periodosDisponibles = periodos;
-        this.cargando = false;
+        this.periodosDisponibles.set(periodos);
+        this.cargando.set(false);
       },
       error: () => {
-        this.cargando = false;
+        this.cargando.set(false);
         this.snackbar.error('Error al cargar los períodos disponibles');
       }
     });
@@ -115,7 +116,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
       return;
     }
 
-    this.guardando = true;
+    this.guardando.set(true);
     const modo = this.configForm.get('modo')?.value;
     const periodoSeleccionado = modo === 'manual' 
       ? this.configForm.get('periodoSeleccionado')?.value 
@@ -124,18 +125,18 @@ export class ConfigurarPeriodoComponent implements OnInit {
     this.periodosService.setPeriodoActivo(periodoSeleccionado).subscribe({
       next: (config) => {
         if (config) {
-          this.configActual = config;
+          this.configActual.set(config);
           this.snackbar.exito(modo === 'automatico' 
               ? 'Modo automático activado correctamente' 
               : `Período ${formatearPeriodo(periodoSeleccionado)} establecido correctamente`);
           // Recargar período actual
           this.periodosService.getPeriodoActual().subscribe();
         }
-        this.guardando = false;
+        this.guardando.set(false);
       },
       error: () => {
         this.snackbar.error('Error al guardar la configuración');
-        this.guardando = false;
+        this.guardando.set(false);
       }
     });
   }

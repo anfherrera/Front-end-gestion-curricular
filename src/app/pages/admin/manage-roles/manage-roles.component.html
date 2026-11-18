@@ -10,7 +10,7 @@
         <mat-icon>add</mat-icon>
         Nuevo Rol
       </button>
-      <button mat-raised-button (click)="cargarRoles()" [disabled]="loading">
+      <button mat-raised-button (click)="cargarRoles()" [disabled]="loading()">
         <mat-icon>refresh</mat-icon>
         Recargar
       </button>
@@ -33,14 +33,14 @@
           </button>
         }
       </mat-form-field>
-      <button mat-raised-button color="accent" (click)="buscarPorNombre()" [disabled]="loading || !searchTerm">
+      <button mat-raised-button color="accent" (click)="buscarPorNombre()" [disabled]="loading() || !searchTerm">
         Buscar
       </button>
     </div>
 
-    @if (!loading) {
+    @if (!loading()) {
       <div class="table-container">
-        <table mat-table [dataSource]="roles" class="mat-elevation-z2">
+        <table mat-table [dataSource]="roles()" class="mat-elevation-z2">
           <!-- ID Column -->
           <ng-container matColumnDef="id_rol">
             <th mat-header-cell *matHeaderCellDef>ID</th>
@@ -94,7 +94,7 @@
       </div>
     }
 
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-container">
         <mat-spinner></mat-spinner>
         <p>Cargando roles...</p>

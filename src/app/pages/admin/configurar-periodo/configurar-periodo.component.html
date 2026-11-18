@@ -7,17 +7,17 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      @if (cargando) {
+      @if (cargando()) {
         <div class="loading-container">
           <mat-spinner diameter="50"></mat-spinner>
           <p>Cargando configuración...</p>
         </div>
       }
 
-      @if (!cargando) {
+      @if (!cargando()) {
         <div>
           <!-- Información del Período Actual -->
-          @if (periodoActual) {
+          @if (periodoActual(); as actual) {
             <div class="info-section">
               <h3>
                 <mat-icon>info</mat-icon>
@@ -26,40 +26,40 @@
               <div class="periodo-actual-info">
                 <div class="periodo-item">
                   <span class="label">Período:</span>
-                  <span class="value">{{ periodoActual.nombrePeriodo || formatearPeriodo(periodoActual.valor) }}</span>
+                  <span class="value">{{ actual.nombrePeriodo || formatearPeriodo(actual.valor) }}</span>
                 </div>
                 <div class="periodo-item">
                   <span class="label">Valor:</span>
-                  <span class="value">{{ periodoActual.valor }}</span>
+                  <span class="value">{{ actual.valor }}</span>
                 </div>
                 <div class="periodo-item">
                   <span class="label">Fecha Inicio:</span>
-                  <span class="value">{{ periodoActual.fechaInicio | date:'dd/MM/yyyy' }}</span>
+                  <span class="value">{{ actual.fechaInicio | date:'dd/MM/yyyy' }}</span>
                 </div>
                 <div class="periodo-item">
                   <span class="label">Fecha Fin:</span>
-                  <span class="value">{{ periodoActual.fechaFin | date:'dd/MM/yyyy' }}</span>
+                  <span class="value">{{ actual.fechaFin | date:'dd/MM/yyyy' }}</span>
                 </div>
               </div>
             </div>
           }
           <!-- Configuración Actual -->
-          @if (configActual) {
+          @if (configActual(); as config) {
             <div class="info-section">
               <h3>
                 <mat-icon>settings</mat-icon>
                 Configuración Actual
               </h3>
               <div class="config-actual">
-                <div class="modo-badge" [class.automatico]="configActual.modo === 'automatico'"
-                  [class.manual]="configActual.modo === 'manual'">
-                  <mat-icon>{{ configActual.modo === 'automatico' ? 'autorenew' : 'edit' }}</mat-icon>
-                  <span>Modo: {{ configActual.modo === 'automatico' ? 'Automático' : 'Manual' }}</span>
+                <div class="modo-badge" [class.automatico]="config.modo === 'automatico'"
+                  [class.manual]="config.modo === 'manual'">
+                  <mat-icon>{{ config.modo === 'automatico' ? 'autorenew' : 'edit' }}</mat-icon>
+                  <span>Modo: {{ config.modo === 'automatico' ? 'Automático' : 'Manual' }}</span>
                 </div>
-                <p class="descripcion">{{ configActual.descripcion }}</p>
-                @if (configActual.periodoAcademico) {
+                <p class="descripcion">{{ config.descripcion }}</p>
+                @if (config.periodoAcademico) {
                   <p class="periodo-configurado">
-                    Período configurado: <strong>{{ formatearPeriodo(configActual.periodoAcademico) }}</strong>
+                    Período configurado: <strong>{{ formatearPeriodo(config.periodoAcademico) }}</strong>
                   </p>
                 }
               </div>
@@ -98,7 +98,7 @@
                 <mat-form-field appearance="outline" class="periodo-select">
                   <mat-label>Seleccionar Período</mat-label>
                   <mat-select formControlName="periodoSeleccionado">
-                    @for (periodo of periodosDisponibles; track periodo) {
+                    @for (periodo of periodosDisponibles(); track periodo) {
                       <mat-option [value]="periodo.valor">
                         {{ getPeriodoDisplay(periodo) }}
                       </mat-option>
@@ -113,14 +113,14 @@
               </div>
             }
             <div class="form-actions">
-              <button mat-raised-button color="primary" type="submit" [disabled]="guardando || configForm.invalid">
-                @if (!guardando) {
+              <button mat-raised-button color="primary" type="submit" [disabled]="guardando() || configForm.invalid">
+                @if (!guardando()) {
                   <mat-icon>save</mat-icon>
                 }
-                @if (guardando) {
+                @if (guardando()) {
                   <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
                 }
-                {{ guardando ? 'Guardando...' : 'Guardar Configuración' }}
+                {{ guardando() ? 'Guardando...' : 'Guardar Configuración' }}
               </button>
             </div>
           </form>

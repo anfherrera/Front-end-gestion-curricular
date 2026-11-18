@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { Router, RouterModule } from '@angular/router';
@@ -34,7 +34,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule
 ],
   templateUrl: './lista-docentes.component.html',
-  styleUrls: ['./lista-docentes.component.css']
+  styleUrls: ['./lista-docentes.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListaDocentesComponent implements OnInit {
   private docentesService = inject(DocentesService);
@@ -43,9 +44,9 @@ export class ListaDocentesComponent implements OnInit {
   private router = inject(Router);
 
   private readonly dialog = inject(MatDialog);
-  docentes: DocenteDTORespuesta[] = [];
+  readonly docentes = signal<DocenteDTORespuesta[]>([]);
   displayedColumns: string[] = ['id_docente', 'codigo_docente', 'nombre_docente', 'acciones'];
-  loading = false;
+  readonly loading = signal(false);
   searchTerm = '';
 
   ngOnInit(): void {
@@ -53,16 +54,16 @@ export class ListaDocentesComponent implements OnInit {
   }
 
   cargarDocentes(): void {
-    this.loading = true;
+    this.loading.set(true);
     
     this.docentesService.listarDocentes().subscribe({
       next: (data) => {
-        this.docentes = corregirEncodingObjeto(data);
-        this.loading = false;
+        this.docentes.set(corregirEncodingObjeto(data));
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al cargar la lista de docentes');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -73,15 +74,15 @@ export class ListaDocentesComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     this.docentesService.buscarPorNombre(this.searchTerm).subscribe({
       next: (data) => {
-        this.docentes = corregirEncodingObjeto(data);
-        this.loading = false;
+        this.docentes.set(corregirEncodingObjeto(data));
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al buscar docentes');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -96,17 +97,17 @@ export class ListaDocentesComponent implements OnInit {
       titulo: 'Eliminar docente', textoConfirmar: 'Eliminar', peligro: true,
       mensaje: `¿Está seguro de eliminar al docente "${docente.nombre_docente}"?\n\nEsta acción no se puede deshacer.`
     }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading = true;
+      this.loading.set(true);
 
       this.docentesService.eliminarDocente(docente.id_docente).subscribe({
         next: () => {
-          this.loading = false;
+          this.loading.set(false);
           // Status 200 OK - Éxito
           this.snackbar.exito('Docente eliminado exitosamente');
           this.cargarDocentes();
         },
         error: (error: HttpErrorResponse) => {
-          this.loading = false;
+          this.loading.set(false);
 
           // Extraer mensaje de error usando el servicio
           const mensaje = this.errorHandler.extraerMensajeError(error);

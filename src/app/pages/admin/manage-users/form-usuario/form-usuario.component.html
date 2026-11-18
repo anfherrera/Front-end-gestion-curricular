@@ -1,23 +1,23 @@
 <div class="container-admin">
   <div class="header-section">
     <h2>
-      <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
-      {{ isEditMode ? 'Editar' : 'Nuevo' }} Usuario
-      @if (isEditMode && usuarioId) {
-        <span class="usuario-id-badge">(ID: {{ usuarioId }})</span>
+      <mat-icon>{{ isEditMode() ? 'edit' : 'person_add' }}</mat-icon>
+      {{ isEditMode() ? 'Editar' : 'Nuevo' }} Usuario
+      @if (isEditMode() && usuarioId()) {
+        <span class="usuario-id-badge">(ID: {{ usuarioId() }})</span>
       }
     </h2>
   </div>
 
   <!-- Spinner mientras carga los datos del usuario -->
-  @if (loading && isEditMode) {
+  @if (loading() && isEditMode()) {
     <div class="loading-overlay">
       <mat-spinner diameter="50"></mat-spinner>
       <p>Cargando datos del usuario...</p>
     </div>
   }
 
-  @if (!loading || !isEditMode) {
+  @if (!loading() || !isEditMode()) {
     <div class="form-container">
       <mat-card>
         <mat-card-content>
@@ -96,13 +96,13 @@
                   <div class="form-row">
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-label>
-                        Contraseña {{ isEditMode ? '(dejar vacío para no cambiar)' : '' }}
+                        Contraseña {{ isEditMode() ? '(dejar vacío para no cambiar)' : '' }}
                       </mat-label>
                       <input
                         matInput
                         type="password"
                         formControlName="password"
-                        [placeholder]="isEditMode ? 'Nueva contraseña (opcional)' : 'Mínimo 6 caracteres'"
+                        [placeholder]="isEditMode() ? 'Nueva contraseña (opcional)' : 'Mínimo 6 caracteres'"
                         >
                         <mat-icon matPrefix>lock</mat-icon>
                         @if (usuarioForm.get('password')?.hasError('required')) {
@@ -115,7 +115,7 @@
                             Mínimo 6 caracteres
                           </mat-error>
                         }
-                        @if (isEditMode) {
+                        @if (isEditMode()) {
                           <mat-hint>
                             Dejar vacío para mantener la contraseña actual
                           </mat-hint>
@@ -127,7 +127,7 @@
                         <mat-label>Rol</mat-label>
                         <mat-select formControlName="id_rol">
                           <mat-option value="">Seleccione un rol</mat-option>
-                          @for (rol of roles; track rol) {
+                          @for (rol of roles(); track rol) {
                             <mat-option [value]="rol.id_rol">
                               {{ rol.nombre }}
                             </mat-option>
@@ -146,7 +146,7 @@
                         <mat-label>Programa Académico</mat-label>
                         <mat-select formControlName="id_programa">
                           <mat-option value="">Seleccione un programa</mat-option>
-                          @for (programa of programas; track programa) {
+                          @for (programa of programas(); track programa) {
                             <mat-option [value]="programa.id_programa">
                               {{ programa.nombre_programa }}
                             </mat-option>
@@ -180,7 +180,7 @@
                         mat-button
                         type="button"
                         (click)="cancelar()"
-                        [disabled]="loading"
+                        [disabled]="loading()"
                         >
                         <mat-icon>cancel</mat-icon>
                         Cancelar
@@ -189,15 +189,15 @@
                         mat-raised-button
                         color="primary"
                         type="submit"
-                        [disabled]="loading || usuarioForm.invalid"
+                        [disabled]="loading() || usuarioForm.invalid"
                         >
-                        @if (loading) {
+                        @if (loading()) {
                           <mat-spinner diameter="20"></mat-spinner>
                         }
-                        @if (!loading) {
-                          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+                        @if (!loading()) {
+                          <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
                         }
-                        {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+                        {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
                       </button>
                     </div>
                   </form>

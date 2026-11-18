@@ -10,7 +10,7 @@
         <mat-icon>add</mat-icon>
         Nuevo Usuario
       </button>
-      <button mat-raised-button (click)="cargarUsuarios()" [disabled]="loading">
+      <button mat-raised-button (click)="cargarUsuarios()" [disabled]="loading()">
         <mat-icon>refresh</mat-icon>
         Recargar
       </button>
@@ -34,16 +34,16 @@
             </button>
           }
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="buscar()" [disabled]="loading || !searchTerm">
+        <button mat-raised-button color="primary" (click)="buscar()" [disabled]="loading() || !searchTerm">
           <mat-icon>search</mat-icon>
           Buscar
         </button>
       </div>
     </div>
 
-    @if (!loading) {
+    @if (!loading()) {
       <div class="table-container">
-        <table mat-table [dataSource]="usuarios" class="mat-elevation-z2">
+        <table mat-table [dataSource]="usuarios()" class="mat-elevation-z2">
           <!-- ID Column -->
           <ng-container matColumnDef="id_usuario">
             <th mat-header-cell *matHeaderCellDef>ID</th>
@@ -96,7 +96,7 @@
                 [ngClass]="usuario.estado_usuario ? 'btn-estado-activo' : 'btn-estado-inactivo'"
                 (click)="cambiarEstado(usuario)"
                 [matTooltip]="usuario.estado_usuario ? 'Click para desactivar' : 'Click para activar'"
-                [disabled]="loading"
+                [disabled]="loading()"
                 >
                 <mat-icon>{{ usuario.estado_usuario ? 'block' : 'check_circle' }}</mat-icon>
               </button>
@@ -105,7 +105,7 @@
                 color="warn"
                 (click)="eliminarUsuario(usuario)"
                 matTooltip="Eliminar usuario"
-                [disabled]="loading"
+                [disabled]="loading()"
                 >
                 <mat-icon>delete</mat-icon>
               </button>
@@ -126,7 +126,7 @@
       </div>
     }
 
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-container">
         <mat-spinner></mat-spinner>
         <p>Cargando usuarios...</p>

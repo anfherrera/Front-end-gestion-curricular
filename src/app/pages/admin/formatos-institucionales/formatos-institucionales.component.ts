@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -26,7 +26,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule
 ],
   templateUrl: './formatos-institucionales.component.html',
-  styleUrls: ['./formatos-institucionales.component.css']
+  styleUrls: ['./formatos-institucionales.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormatosInstitucionalesComponent implements OnInit {
   private formatosService = inject(FormatosInstitucionalesService);

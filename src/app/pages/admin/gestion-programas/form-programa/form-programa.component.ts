@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -27,7 +27,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatCardModule
 ],
   templateUrl: './form-programa.component.html',
-  styleUrls: ['./form-programa.component.css']
+  styleUrls: ['./form-programa.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormProgramaComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -38,9 +39,9 @@ export class FormProgramaComponent implements OnInit {
   private snackbar = inject(SnackbarService);
 
   programaForm: FormGroup;
-  isEditMode = false;
+  readonly isEditMode = signal(false);
   programaId?: number;
-  loading = false;
+  readonly loading = signal(false);
 
   constructor() {
     this.programaForm = this.fb.group({
@@ -60,7 +61,7 @@ export class FormProgramaComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['id']) {
-        this.isEditMode = true;
+        this.isEditMode.set(true);
         this.programaId = +params['id'];
         this.cargarPrograma();
       }
@@ -70,19 +71,19 @@ export class FormProgramaComponent implements OnInit {
   cargarPrograma(): void {
     if (!this.programaId) return;
 
-    this.loading = true;
+    this.loading.set(true);
     this.programasService.buscarProgramaPorId(this.programaId).subscribe({
       next: (data) => {
         this.programaForm.patchValue({
           codigo: data.codigo,
           nombre_programa: data.nombre_programa
         });
-        this.loading = false;
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al cargar los datos del programa');
         this.router.navigate(['/admin/programas']);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -94,13 +95,13 @@ export class FormProgramaComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     
     const programaData: ProgramaDTOPeticion = {
       ...this.programaForm.value
     };
 
-    if (this.isEditMode && this.programaId) {
+    if (this.isEditMode() && this.programaId) {
       programaData.id_programa = this.programaId;
       this.actualizarPrograma(programaData);
     } else {
@@ -117,7 +118,7 @@ export class FormProgramaComponent implements OnInit {
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el programa';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -131,7 +132,7 @@ export class FormProgramaComponent implements OnInit {
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el programa';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }

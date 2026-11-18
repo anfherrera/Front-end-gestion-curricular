@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -32,16 +32,17 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatDialogModule
 ],
   templateUrl: './manage-processes.component.html',
-  styleUrl: './manage-processes.component.css'
+  styleUrl: './manage-processes.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ManageProcessesComponent implements OnInit {
   private procesosService = inject(ProcesosService);
   private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
 
-  procesos: ProcesoDTORespuesta[] = [];
+  readonly procesos = signal<ProcesoDTORespuesta[]>([]);
   displayedColumns: string[] = ['id_proceso', 'nombre_proceso', 'descripcion', 'estado', 'acciones'];
-  loading = false;
+  readonly loading = signal(false);
   searchTerm = '';
 
   ngOnInit(): void {
@@ -49,16 +50,16 @@ export class ManageProcessesComponent implements OnInit {
   }
 
   cargarProcesos(): void {
-    this.loading = true;
+    this.loading.set(true);
     
     this.procesosService.listarProcesos().subscribe({
       next: (data) => {
-        this.procesos = data;
-        this.loading = false;
+        this.procesos.set(data);
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al cargar procesos');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -69,13 +70,13 @@ export class ManageProcessesComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
-    const procesosFiltrados = this.procesos.filter(p => 
+    this.loading.set(true);
+    const procesosFiltrados = this.procesos().filter(p => 
       p.nombre_proceso.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
     
-    this.procesos = procesosFiltrados;
-    this.loading = false;
+    this.procesos.set(procesosFiltrados);
+    this.loading.set(false);
   }
 
   limpiarBusqueda(): void {

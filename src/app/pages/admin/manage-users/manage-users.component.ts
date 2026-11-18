@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +36,8 @@ import { UsuarioDTORespuesta } from '@core/models/usuario.interface';
     MatChipsModule
   ],
   templateUrl: './manage-users.component.html',
-  styleUrl: './manage-users.component.css'
+  styleUrl: './manage-users.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ManageUsersComponent implements OnInit {
   private usuariosService = inject(UsuariosService);
@@ -44,9 +45,9 @@ export class ManageUsersComponent implements OnInit {
   private snackbar = inject(SnackbarService);
 
   private readonly dialog = inject(MatDialog);
-  usuarios: UsuarioDTORespuesta[] = [];
+  readonly usuarios = signal<UsuarioDTORespuesta[]>([]);
   displayedColumns: string[] = ['id_usuario', 'nombre_completo', 'correo', 'rol', 'estado', 'acciones'];
-  loading = false;
+  readonly loading = signal(false);
   searchTerm = '';
 
   ngOnInit(): void {
@@ -54,17 +55,17 @@ export class ManageUsersComponent implements OnInit {
   }
 
   cargarUsuarios(): void {
-    this.loading = true;
+    this.loading.set(true);
     
     this.usuariosService.listarUsuarios().subscribe({
       next: (data) => {
         // Corregir encoding de caracteres especiales (tildes, ñ, etc.)
-        this.usuarios = corregirEncodingObjeto(data);
-        this.loading = false;
+        this.usuarios.set(corregirEncodingObjeto(data));
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al cargar usuarios');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -75,14 +76,14 @@ export class ManageUsersComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
-    const usuariosFiltrados = this.usuarios.filter(u => 
+    this.loading.set(true);
+    const usuariosFiltrados = this.usuarios().filter(u => 
       u.nombre_completo.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
       u.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
     
-    this.usuarios = usuariosFiltrados;
-    this.loading = false;
+    this.usuarios.set(usuariosFiltrados);
+    this.loading.set(false);
   }
 
   limpiarBusqueda(): void {
@@ -102,19 +103,20 @@ export class ManageUsersComponent implements OnInit {
       peligro: !!usuario.estado_usuario,
       mensaje: `¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`
     }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading = true;
+      this.loading.set(true);
 
       this.usuariosService.cambiarEstadoUsuario(usuario.id_usuario).subscribe({
         next: (response) => {
-          this.loading = false;
+          this.loading.set(false);
           // Actualizar el estado en la tabla sin recargar toda la lista
-          usuario.estado_usuario = response.estado_usuario;
+          this.usuarios.update(lista => lista.map(u =>
+            u.id_usuario === usuario.id_usuario ? { ...u, estado_usuario: response.estado_usuario } : u));
         
           // Mostrar mensaje de éxito
           this.snackbar.exito(`Usuario ${nuevoEstado}do exitosamente`);
         },
         error: () => {
-          this.loading = false;
+          this.loading.set(false);
         
           // Mostrar mensaje de error
           this.snackbar.error('Error al cambiar el estado del usuario');
@@ -128,16 +130,16 @@ export class ManageUsersComponent implements OnInit {
       titulo: 'Eliminar usuario', textoConfirmar: 'Eliminar', peligro: true,
       mensaje: `¿Está seguro de ELIMINAR al usuario "${usuario.nombre_completo}"?\n\nEsta acción no se puede deshacer.`
     }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading = true;
+      this.loading.set(true);
 
       this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
         next: () => {
-          this.loading = false;
+          this.loading.set(false);
           this.snackbar.exito('Usuario eliminado exitosamente');
           this.cargarUsuarios();
         },
         error: (error: HttpErrorResponse) => {
-          this.loading = false;
+          this.loading.set(false);
         
           // Extraer mensaje de error usando el servicio
           const mensaje = this.errorHandler.extraerMensajeError(error);

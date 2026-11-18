@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -20,30 +20,31 @@ import { RolesAdminService } from '@core/services/roles-admin.service';
     MatProgressSpinnerModule
 ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
   private docentesService = inject(DocentesService);
   private programasService = inject(ProgramasService);
   private rolesService = inject(RolesAdminService);
 
-  loading = true;
+  readonly loading = signal(true);
   
-  totalDocentes = 0;
-  totalProgramas = 0;
-  totalRoles = 0;
+  readonly totalDocentes = signal(0);
+  readonly totalProgramas = signal(0);
+  readonly totalRoles = signal(0);
 
   ngOnInit(): void {
     this.cargarEstadisticas();
   }
 
   cargarEstadisticas(): void {
-    this.loading = true;
+    this.loading.set(true);
 
     // Cargar docentes
     this.docentesService.listarDocentes().subscribe({
       next: (docentes) => {
-        this.totalDocentes = docentes.length;
+        this.totalDocentes.set(docentes.length);
         this.verificarCargaCompleta();
       },
       error: () => {
@@ -54,7 +55,7 @@ export class DashboardComponent implements OnInit {
     // Cargar programas
     this.programasService.listarProgramas().subscribe({
       next: (programas) => {
-        this.totalProgramas = programas.length;
+        this.totalProgramas.set(programas.length);
         this.verificarCargaCompleta();
       },
       error: () => {
@@ -65,7 +66,7 @@ export class DashboardComponent implements OnInit {
     // Cargar roles
     this.rolesService.listarRoles().subscribe({
       next: (roles) => {
-        this.totalRoles = roles.length;
+        this.totalRoles.set(roles.length);
         this.verificarCargaCompleta();
       },
       error: () => {
@@ -78,7 +79,7 @@ export class DashboardComponent implements OnInit {
   private verificarCargaCompleta(): void {
     this.cargasCompletadas++;
     if (this.cargasCompletadas >= 3) {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 }

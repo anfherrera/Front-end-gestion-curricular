@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -27,7 +27,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatCardModule
 ],
   templateUrl: './form-docente.component.html',
-  styleUrls: ['./form-docente.component.css']
+  styleUrls: ['./form-docente.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormDocenteComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -38,9 +39,9 @@ export class FormDocenteComponent implements OnInit {
   private snackbar = inject(SnackbarService);
 
   docenteForm: FormGroup;
-  isEditMode = false;
+  readonly isEditMode = signal(false);
   docenteId?: number;
-  loading = false;
+  readonly loading = signal(false);
 
   constructor() {
     this.docenteForm = this.fb.group({
@@ -60,7 +61,7 @@ export class FormDocenteComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['id']) {
-        this.isEditMode = true;
+        this.isEditMode.set(true);
         this.docenteId = +params['id'];
         this.cargarDocente();
       }
@@ -70,19 +71,19 @@ export class FormDocenteComponent implements OnInit {
   cargarDocente(): void {
     if (!this.docenteId) return;
 
-    this.loading = true;
+    this.loading.set(true);
     this.docentesService.buscarDocentePorId(this.docenteId).subscribe({
       next: (data) => {
         this.docenteForm.patchValue({
           codigo_docente: data.codigo_docente,
           nombre_docente: data.nombre_docente
         });
-        this.loading = false;
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al cargar los datos del docente');
         this.router.navigate(['/admin/docentes']);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -94,13 +95,13 @@ export class FormDocenteComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     
     const docenteData: DocenteDTOPeticion = {
       ...this.docenteForm.value
     };
 
-    if (this.isEditMode && this.docenteId) {
+    if (this.isEditMode() && this.docenteId) {
       docenteData.id_docente = this.docenteId;
       this.actualizarDocente(docenteData);
     } else {
@@ -117,7 +118,7 @@ export class FormDocenteComponent implements OnInit {
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al crear el docente';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -131,7 +132,7 @@ export class FormDocenteComponent implements OnInit {
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al actualizar el docente';
         this.snackbar.error(mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { Router, RouterModule } from '@angular/router';
@@ -34,7 +34,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule
 ],
   templateUrl: './lista-programas.component.html',
-  styleUrls: ['./lista-programas.component.css']
+  styleUrls: ['./lista-programas.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListaProgramasComponent implements OnInit {
   private programasService = inject(ProgramasService);
@@ -43,9 +44,9 @@ export class ListaProgramasComponent implements OnInit {
   private router = inject(Router);
 
   private readonly dialog = inject(MatDialog);
-  programas: ProgramaDTORespuesta[] = [];
+  readonly programas = signal<ProgramaDTORespuesta[]>([]);
   displayedColumns: string[] = ['id_programa', 'codigo', 'nombre_programa', 'acciones'];
-  loading = false;
+  readonly loading = signal(false);
   searchTerm = '';
 
   ngOnInit(): void {
@@ -53,16 +54,16 @@ export class ListaProgramasComponent implements OnInit {
   }
 
   cargarProgramas(): void {
-    this.loading = true;
+    this.loading.set(true);
     
     this.programasService.listarProgramas().subscribe({
       next: (data) => {
-        this.programas = corregirEncodingObjeto(data);
-        this.loading = false;
+        this.programas.set(corregirEncodingObjeto(data));
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al cargar la lista de programas');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -73,15 +74,15 @@ export class ListaProgramasComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     this.programasService.buscarPorNombre(this.searchTerm).subscribe({
       next: (data) => {
-        this.programas = corregirEncodingObjeto(data);
-        this.loading = false;
+        this.programas.set(corregirEncodingObjeto(data));
+        this.loading.set(false);
       },
       error: () => {
         this.snackbar.error('Error al buscar programas');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -96,16 +97,16 @@ export class ListaProgramasComponent implements OnInit {
       titulo: 'Eliminar programa', textoConfirmar: 'Eliminar', peligro: true,
       mensaje: `¿Está seguro de eliminar el programa "${programa.nombre_programa}"?\n\nEsta acción no se puede deshacer.`
     }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading = true;
+      this.loading.set(true);
 
       this.programasService.eliminarPrograma(programa.id_programa).subscribe({
         next: () => {
-          this.loading = false;
+          this.loading.set(false);
           this.snackbar.exito('Programa eliminado exitosamente');
           this.cargarProgramas();
         },
         error: (error: HttpErrorResponse) => {
-          this.loading = false;
+          this.loading.set(false);
         
           // Extraer mensaje de error usando el servicio
           const mensaje = this.errorHandler.extraerMensajeError(error);

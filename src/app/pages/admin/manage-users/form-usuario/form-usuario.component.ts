@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -35,7 +35,8 @@ import { ProgramaDTORespuesta } from '@core/models/programa.interface';
     MatCardModule
 ],
   templateUrl: './form-usuario.component.html',
-  styleUrls: ['./form-usuario.component.css']
+  styleUrls: ['./form-usuario.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormUsuarioComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -48,11 +49,11 @@ export class FormUsuarioComponent implements OnInit {
   private snackbar = inject(SnackbarService);
 
   usuarioForm: FormGroup;
-  isEditMode = false;
-  usuarioId?: number;
-  loading = false;
-  roles: RolDTORespuesta[] = [];
-  programas: ProgramaDTORespuesta[] = [];
+  readonly isEditMode = signal(false);
+  readonly usuarioId = signal<number | undefined>(undefined);
+  readonly loading = signal(false);
+  readonly roles = signal<RolDTORespuesta[]>([]);
+  readonly programas = signal<ProgramaDTORespuesta[]>([]);
 
   constructor() {
     this.usuarioForm = this.fb.group({
@@ -83,8 +84,8 @@ export class FormUsuarioComponent implements OnInit {
 
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['id']) {
-        this.isEditMode = true;
-        this.usuarioId = +params['id'];
+        this.isEditMode.set(true);
+        this.usuarioId.set(+params['id']);
         // En edición, password es opcional
         this.usuarioForm.get('password')?.clearValidators();
         this.usuarioForm.get('password')?.updateValueAndValidity();
@@ -96,7 +97,7 @@ export class FormUsuarioComponent implements OnInit {
   cargarRoles(): void {
     this.rolesService.listarRoles().subscribe({
       next: (data) => {
-        this.roles = corregirEncodingObjeto(data);
+        this.roles.set(corregirEncodingObjeto(data));
       },
       error: () => {
         this.snackbar.error('Error al cargar roles');
@@ -107,7 +108,7 @@ export class FormUsuarioComponent implements OnInit {
   cargarProgramas(): void {
     this.programasService.listarProgramas().subscribe({
       next: (data) => {
-        this.programas = corregirEncodingObjeto(data);
+        this.programas.set(corregirEncodingObjeto(data));
       },
       error: () => {
         this.snackbar.error('Error al cargar programas');
@@ -116,10 +117,11 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   cargarUsuario(): void {
-    if (!this.usuarioId) return;
+    const usuarioId = this.usuarioId();
+    if (!usuarioId) return;
     
-    this.loading = true;
-    this.usuariosService.buscarUsuarioPorId(this.usuarioId).subscribe({
+    this.loading.set(true);
+    this.usuariosService.buscarUsuarioPorId(usuarioId).subscribe({
       next: (data) => {
         // Corregir encoding de tildes y caracteres especiales
         const usuarioCorregido = corregirEncodingObjeto(data);
@@ -138,7 +140,7 @@ export class FormUsuarioComponent implements OnInit {
         // NO llenar el campo password para que quede vacío (indicando que no se cambiará)
         this.usuarioForm.get('password')?.setValue('');
         
-        this.loading = false;
+        this.loading.set(false);
         
         // Mostrar mensaje informativo
         this.snackbar.exito('Usuario cargado correctamente. Modifique los campos que desee actualizar.');
@@ -146,7 +148,7 @@ export class FormUsuarioComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al cargar usuario');
         this.router.navigate(['/admin/manage-users']);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -158,7 +160,7 @@ export class FormUsuarioComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     const formValue = this.usuarioForm.value;
     
     const usuarioData: UsuarioDTOPeticion = {
@@ -177,19 +179,20 @@ export class FormUsuarioComponent implements OnInit {
     }
 
     // ID solo al actualizar
-    if (this.isEditMode && this.usuarioId) {
-      usuarioData.id_usuario = this.usuarioId;
+    const usuarioId = this.usuarioId();
+    if (this.isEditMode() && usuarioId) {
+      usuarioData.id_usuario = usuarioId;
     }
 
     // JSON enviado
 
-    if (this.isEditMode && this.usuarioId) {
+    if (this.isEditMode() && usuarioId) {
       this.actualizarUsuario(usuarioData);
     } else {
       // Al crear, validar que la contraseña esté presente
       if (!formValue.password || formValue.password.trim() === '') {
         this.snackbar.advertencia('La contraseña es obligatoria al crear un usuario');
-        this.loading = false;
+        this.loading.set(false);
         return;
       }
       this.crearUsuario(usuarioData);
@@ -206,7 +209,7 @@ export class FormUsuarioComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackbar.error('Error: ' + mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -221,7 +224,7 @@ export class FormUsuarioComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackbar.error('Error: ' + mensaje);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }

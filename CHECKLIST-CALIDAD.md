@@ -267,7 +267,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [ ] **OnPush**: lo usan 49 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
+- [ ] **OnPush**: lo usan 60 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
@@ -305,6 +305,18 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Spec de oficio-secretaria: escribe con `.set()` y lee con `()`; no se quita ninguna prueba
     - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto. Sin "Cargando...", así que la comprobación de repintado no las cubre
     - Probar a mano con backend, como secretaría, en las tres pantallas: aparecen la bandeja de pendientes y el historial (y cambia al elegir otro período); al elegir una solicitud salen sus documentos (homologación y reingreso) y el generador; al generar el Word el botón muestra la carga y aparece la sección "Subir PDF"; "Ya tengo el documento" también la abre; al elegir el PDF sale su nombre; al enviar pasa por "Subiendo PDF..." y "Enviando al Estudiante..." con la barra de progreso, y la solicitud pasa al historial
+    - Sin cambios visibles esperados
+  - [x] Admin (2026-11-18): OnPush en las 11 páginas que faltaban (49 → 60 de 88), con 28 `signal()` nuevas. Con esto todo `pages/admin` tiene OnPush (los 2 diálogos ya lo tenían)
+    - formatos-institucionales, directo: su lista se lee del servicio sin petición y solo cambia con clics de su plantilla
+    - Listas: `docentes`, `programas`, `roles`, `procesos` y `usuarios`, más `loading` en cada una. `searchTerm` se queda como propiedad: lo cambian el `ngModel` y el botón de limpiar. En manage-users, activar/desactivar mutaba `usuario.estado_usuario` en la fila; ahora hace `usuarios.update(...)` con un objeto nuevo
+    - Formularios de docente y programa: `isEditMode` y `loading`. form-usuario: además `usuarioId` (la plantilla pinta el ID), `roles` y `programas`
+    - dashboard: `loading` y los 3 totales. configurar-periodo: `periodosDisponibles`, `configActual`, `periodoActual` (llega por `periodoActual$`), `cargando` y `guardando`; la plantilla usa `@if (periodoActual(); as actual)` y `@if (configActual(); as config)`. `configForm.invalid` y el modo cambian con `patchValue` en el mismo `subscribe` que pone `configActual`, así que no hace falta `statusChanges`
+    - `test:navegacion` recorre ahora 10 rutas de admin (antes solo el dashboard): listas, formularios de crear, configurar período y formatos. Las de editar no, porque sin backend vuelven a la lista. Admin debe negarse en `/funcionario/paz-salvo` y `/secretaria/paz-salvo`
+    - Specs: solo comprueban que se crean; no se tocan
+    - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto (las listas, el dashboard y configurar período tienen "Cargando...", así que la comprobación de repintado las cubre en la rama de error)
+    - Probar a mano con backend, como admin: el dashboard muestra los 3 totales; en usuarios, docentes, programas y roles se llena la tabla, buscar la filtra y la X la recarga; activar/desactivar un usuario cambia su estado en la tabla; eliminar recarga la lista; al editar un usuario, docente o programa se rellena el formulario (en usuario, con el ID en el título y los selectores de rol y programa llenos) y el botón muestra el spinner al guardar; en configurar período aparecen el período actual y la configuración, el selector de períodos en modo manual y "Guardando..." al guardar; en formatos, Modificar abre el formulario y Guardar cambia el valor
+    - Pendiente, visto al probar la negación: las rutas `estudiante/*` de [app.routes.ts](src/app/app.routes.ts) no tienen `RoleGuard`, así que cualquier rol con sesión (admin incluido) las abre
+    - Pendiente: `manage-processes` no lo usa ninguna ruta ni componente. Decidir si se enruta o se borra (con su diálogo)
     - Sin cambios visibles esperados
 
 ---
