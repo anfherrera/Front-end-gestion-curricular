@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, computed, inject, input, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,10 +27,13 @@ import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate, SolicitudPa
     MatDividerModule
   ],
   templateUrl: './document-generator.component.html',
-  styleUrls: ['./document-generator.component.css']
+  styleUrls: ['./document-generator.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentGeneratorComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   readonly solicitud = input.required<SolicitudParaDocumento>(); // Datos de la solicitud
   readonly template = input.required<DocumentTemplate>(); // Plantilla del documento
@@ -42,11 +46,34 @@ export class DocumentGeneratorComponent implements OnInit {
   readonly tengoDocumento = output<void>();
 
   documentForm!: FormGroup;
-  datosSolicitud: DatosSolicitudDocumento = { idSolicitud: 0, estado: 'Pendiente' };
+
+  /** Datos de la solicitud que se muestran y se envían con el documento. */
+  readonly datosSolicitud = computed<DatosSolicitudDocumento>(() => {
+    const solicitud = this.solicitud();
+    // El estado actual es el último del historial
+    const estados = solicitud.estadosSolicitud ?? [];
+    const estadoActual = estados.length > 0 ? estados[estados.length - 1].estado_actual : undefined;
+
+    return {
+      idSolicitud: solicitud.id_solicitud,
+      nombreEstudiante: solicitud.objUsuario?.nombre_completo,
+      codigoEstudiante: solicitud.objUsuario?.codigo,
+      programa: solicitud.objUsuario?.objPrograma?.nombre_programa,
+      fechaSolicitud: solicitud.fecha_registro_solicitud,
+      estado: estadoActual || 'Pendiente',
+      // Paz y salvo: datos del trabajo de grado, si llegan
+      tituloTrabajoGrado: solicitud.titulo_trabajo_grado || undefined,
+      directorTrabajoGrado: solicitud.director_trabajo_grado || undefined
+    };
+  });
 
   ngOnInit(): void {
     this.initializeForm();
-    this.prepareSolicitudData();
+    // La plantilla lee documentForm.invalid: el popup del datepicker va en un overlay,
+    // así que se revisa la vista con cada cambio de estado del formulario.
+    this.documentForm.statusChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.cdr.markForCheck());
   }
 
   private initializeForm(): void {
@@ -73,29 +100,6 @@ export class DocumentGeneratorComponent implements OnInit {
     // Formulario inicializado
   }
 
-  private prepareSolicitudData(): void {
-    // Solicitud recibida
-
-    const solicitud = this.solicitud();
-    // El estado actual es el último del historial
-    const estados = solicitud.estadosSolicitud ?? [];
-    const estadoActual = estados.length > 0 ? estados[estados.length - 1].estado_actual : undefined;
-
-    this.datosSolicitud = {
-      idSolicitud: solicitud.id_solicitud,
-      nombreEstudiante: solicitud.objUsuario?.nombre_completo,
-      codigoEstudiante: solicitud.objUsuario?.codigo,
-      programa: solicitud.objUsuario?.objPrograma?.nombre_programa,
-      fechaSolicitud: solicitud.fecha_registro_solicitud,
-      estado: estadoActual || 'Pendiente',
-      // Paz y salvo: datos del trabajo de grado, si llegan
-      tituloTrabajoGrado: solicitud.titulo_trabajo_grado || undefined,
-      directorTrabajoGrado: solicitud.director_trabajo_grado || undefined
-    };
-
-    // Datos de solicitud preparados
-  }
-
   onSubmit(): void {
     // Formulario válido
 
@@ -104,8 +108,9 @@ export class DocumentGeneratorComponent implements OnInit {
 
       // FormData extraído
 
+      const datosSolicitud = this.datosSolicitud();
       const documentRequest: DocumentRequest = {
-        idSolicitud: this.datosSolicitud.idSolicitud,
+        idSolicitud: datosSolicitud.idSolicitud,
         tipoDocumento: this.template().id,
         datosDocumento: {
           numeroDocumento: formData.numeroDocumento,
@@ -114,7 +119,7 @@ export class DocumentGeneratorComponent implements OnInit {
           // Agregar campos adicionales específicos del proceso
           ...this.getAdditionalFields(formData)
         },
-        datosSolicitud: this.datosSolicitud
+        datosSolicitud
       };
 
       // DocumentRequest creado

@@ -1,4 +1,5 @@
 <div class="document-generator-container">
+  @let datos = datosSolicitud();
 
   <!-- Información de la solicitud -->
   <mat-card class="solicitud-info-card">
@@ -11,24 +12,24 @@
       <div class="solicitud-details">
         <div class="detail-row">
           <span class="label">Estudiante:</span>
-          <span class="value">{{ datosSolicitud.nombreEstudiante }}</span>
+          <span class="value">{{ datos.nombreEstudiante }}</span>
         </div>
         <div class="detail-row">
           <span class="label">Código:</span>
-          <span class="value">{{ datosSolicitud.codigoEstudiante }}</span>
+          <span class="value">{{ datos.codigoEstudiante }}</span>
         </div>
         <div class="detail-row">
           <span class="label">Programa:</span>
-          <span class="value">{{ datosSolicitud.programa }}</span>
+          <span class="value">{{ datos.programa }}</span>
         </div>
         <div class="detail-row">
           <span class="label">Fecha de solicitud:</span>
-          <span class="value">{{ datosSolicitud.fechaSolicitud | date:'shortDate' }}</span>
+          <span class="value">{{ datos.fechaSolicitud | date:'shortDate' }}</span>
         </div>
         <div class="detail-row">
           <span class="label">Estado:</span>
-          <span class="value estado-badge" [ngClass]="'estado-' + datosSolicitud.estado.toLowerCase()">
-            {{ datosSolicitud.estado }}
+          <span class="value estado-badge" [ngClass]="'estado-' + datos.estado.toLowerCase()">
+            {{ datos.estado }}
           </span>
         </div>
       </div>

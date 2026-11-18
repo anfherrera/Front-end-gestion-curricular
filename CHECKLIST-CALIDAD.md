@@ -267,7 +267,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [ ] **OnPush**: lo usan 87 de 88 componentes (eran 6; 20 al cerrar `shared`). Ya lo tienen todas las páginas, el layout y la raíz; solo falta `document-generator`
+- [x] **OnPush**: lo usan 88 de 88 componentes (eran 6; 20 al cerrar `shared`)
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
@@ -366,7 +366,14 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto
     - Probar a mano con backend: iniciar sesión con credenciales buenas (entra a /welcome) y malas ("Credenciales incorrectas" y el botón vuelve); tras varios intentos fallidos el botón pasa a "Espera Ns" y cuenta hacia atrás; el ojo muestra y oculta la contraseña; en el layout, el botón del header abre y cierra el menú lateral
     - Sin cambios visibles esperados
-  - [ ] Pendiente: `document-generator` (formulario reactivo con datepicker). Revisar qué pinta y si algo cambia fuera de sus eventos antes de ponerle OnPush
+  - [x] `document-generator` (2026-11-18): OnPush (87 → 88 de 88), con 1 `computed()` nueva y ninguna `signal()`
+    - Lo que pinta: sus entradas (ya eran signals: `solicitud`, `template`, `loading`, `mostrarObservaciones`), los datos de la solicitud y el estado del formulario (`documentForm.invalid` en el botón, `hasError`/`getFieldError` con `touched`). No tiene `subscribe` a servicios, temporizadores ni promesas, y el padre no muta sus entradas: `oficio-secretaria` lo recrea con el `@for ... track id_solicitud` al cambiar de solicitud y `loading` llega de la signal `generando`
+    - `datosSolicitud`, que se armaba una vez en `ngOnInit`, pasa a `computed()` desde `solicitud()`; la plantilla lo lee una vez con `@let datos = datosSolicitud()`. `onSubmit` envía el mismo objeto
+    - El formulario cambia con eventos de su plantilla (teclear, salir del campo, enviar), pero el calendario del datepicker se abre en un overlay, así que `statusChanges` del formulario hace `markForCheck()` (mismo patrón que publicar-fechas-ecaes). El formulario sigue sin signals
+    - Specs: no tiene; el de oficio-secretaria no cambia
+    - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto. `test:navegacion` no llega al generador (sin backend no hay solicitudes que elegir)
+    - Probar a mano con backend, como secretaría, en paz y salvo, homologación y reingreso: al elegir una solicitud el generador muestra estudiante, código, programa, fecha y estado; "Generar" está deshabilitado hasta escribir el número y elegir la fecha en el calendario (al elegirla se habilita sin tocar nada más); vaciar el número y salir del campo muestra el error; al generar el botón pasa a "Generando..." y se descarga el Word con los datos de la solicitud; al elegir otra solicitud el generador sale limpio con los datos nuevos; "Cancelar" y "Tengo un documento" siguen funcionando
+    - Sin cambios visibles esperados
 
 ---
 
