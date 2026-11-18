@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatSelectModule } from '@angular/material/select';
@@ -62,7 +62,8 @@ type DocumentoEcaes = SolicitudEcaesRequest['documentos'][number];
     RequestStatusTableComponent
 ],
   templateUrl: './pruebas-ecaes.component.html',
-  styleUrl: './pruebas-ecaes.component.css'
+  styleUrl: './pruebas-ecaes.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PruebasEcaesComponent implements OnInit {
   private pruebasEcaesService = inject(PruebasEcaesService);
@@ -78,9 +79,9 @@ export class PruebasEcaesComponent implements OnInit {
 
 
   // Datos de fechas
-  fechasEcaes: FechaEcaes[] = [];
-  fechasSeleccionadas: FechaEcaes | null = null;
-  periodoSeleccionado = '';
+  readonly fechasEcaes = signal<FechaEcaes[]>([]);
+  readonly fechasSeleccionadas = signal<FechaEcaes | null>(null);
+  readonly periodoSeleccionado = signal('');
 
   // Configuración de la tabla
   displayedColumns: string[] = ['concepto', 'fecha'];
@@ -95,16 +96,16 @@ export class PruebasEcaesComponent implements OnInit {
 
   // Formulario de solicitud
   solicitudForm: FormGroup;
-  archivos: Archivo[] = [];
-  enviandoSolicitud = false;
+  readonly archivos = signal<Archivo[]>([]);
+  readonly enviandoSolicitud = signal(false);
   usuario: UsuarioSesion | null = null;
 
   // Seguimiento de solicitudes
-  solicitudes: Solicitud[] = [];
+  readonly solicitudes = signal<Solicitud[]>([]);
   solicitudesCompletas: SolicitudEcaesResponse[] = [];
 
   // Opciones de tipo de documento (se cargan desde el backend)
-  tiposDocumento: { value: string, label: string }[] = [];
+  readonly tiposDocumento = signal<{ value: string, label: string }[]>([]);
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -152,11 +153,11 @@ export class PruebasEcaesComponent implements OnInit {
       next: (tipos) => {
         // Solo los valores que acepta el backend (CC y CE)
         const valoresValidos = ['CC', 'CE'];
-        this.tiposDocumento = tipos
+        this.tiposDocumento.set(tipos
           .filter(tipo => valoresValidos.includes(tipo.codigo))
-          .map(tipo => ({ value: tipo.codigo, label: tipo.descripcion }));
+          .map(tipo => ({ value: tipo.codigo, label: tipo.descripcion })));
 
-        if (this.tiposDocumento.length === 0) {
+        if (this.tiposDocumento().length === 0) {
           this.cargarTiposDocumentoFallback();
         }
       },
@@ -172,10 +173,10 @@ export class PruebasEcaesComponent implements OnInit {
    * Solo incluye los valores aceptados por el backend: CC y CE
    */
   private cargarTiposDocumentoFallback(): void {
-    this.tiposDocumento = [
+    this.tiposDocumento.set([
       { value: 'CC', label: 'Cédula de Ciudadanía' },
       { value: 'CE', label: 'Cédula de Extranjería' }
-    ];
+    ]);
     this.logger.warn('Usando tipos de documento fallback (solo CC y CE)');
   }
 
@@ -205,11 +206,11 @@ export class PruebasEcaesComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (fechas) => {
-        this.fechasEcaes = fechas;
+        this.fechasEcaes.set(fechas);
         if (fechas.length > 0) {
           // Seleccionar el primer período por defecto
-          this.periodoSeleccionado = fechas[0].periodoAcademico;
-          this.fechasSeleccionadas = fechas[0];
+          this.periodoSeleccionado.set(fechas[0].periodoAcademico);
+          this.fechasSeleccionadas.set(fechas[0]);
         }
       },
       error: (error) => {
@@ -221,15 +222,16 @@ export class PruebasEcaesComponent implements OnInit {
   }
 
   onPeriodoChange(): void {
-    this.fechasSeleccionadas = this.fechasEcaes.find(fecha =>
-      fecha.periodoAcademico === this.periodoSeleccionado
-    ) || null;
+    this.fechasSeleccionadas.set(this.fechasEcaes().find(fecha =>
+      fecha.periodoAcademico === this.periodoSeleccionado()
+    ) || null);
   }
 
   /** Fecha del calendario ECAES (dd/mm/aaaa). Solo cuenta el día: se descarta la hora, si viene. */
   getConceptoFecha(campo: string): string {
-    if (!this.fechasSeleccionadas) return '';
-    const valor = this.fechasSeleccionadas[campo as keyof FechaEcaes] as string | undefined;
+    const fechas = this.fechasSeleccionadas();
+    if (!fechas) return '';
+    const valor = fechas[campo as keyof FechaEcaes] as string | undefined;
     return formatearFecha(valor?.split('T')[0]);
   }
 
@@ -238,7 +240,7 @@ export class PruebasEcaesComponent implements OnInit {
   // ================================
 
   onArchivosChange(archivos: Archivo[]): void {
-    this.archivos = archivos;
+    this.archivos.set(archivos);
   }
 
   // ================================
@@ -251,7 +253,7 @@ export class PruebasEcaesComponent implements OnInit {
       return;
     }
 
-    if (this.archivos.length === 0) {
+    if (this.archivos().length === 0) {
       this.snackbar.advertencia('Debe adjuntar al menos un archivo');
       return;
     }
@@ -262,11 +264,11 @@ export class PruebasEcaesComponent implements OnInit {
       return;
     }
 
-    this.enviandoSolicitud = true;
+    this.enviandoSolicitud.set(true);
     const formValue = this.solicitudForm.value;
 
     this.logger.log('Iniciando proceso de envío de solicitud...');
-    this.logger.log('Archivos a subir:', this.archivos);
+    this.logger.log('Archivos a subir:', this.archivos());
 
     // Paso 1: Subir archivos al backend
     this.subirArchivos().then(archivosSubidos => {
@@ -278,14 +280,14 @@ export class PruebasEcaesComponent implements OnInit {
       this.logger.error('Error al subir archivos:', error);
       const mensaje = this.errorHandler.extraerMensajeError(error);
       this.snackbar.error(mensaje || 'Error al subir los archivos. Intente nuevamente.');
-      this.enviandoSolicitud = false;
+      this.enviandoSolicitud.set(false);
     });
   }
 
   private async subirArchivos(): Promise<DocumentoEcaes[]> {
     const archivosSubidos: DocumentoEcaes[] = [];
 
-    for (const archivo of this.archivos) {
+    for (const archivo of this.archivos()) {
       try {
         this.logger.log(`Subiendo archivo: ${archivo.nombre}`);
 
@@ -389,10 +391,10 @@ export class PruebasEcaesComponent implements OnInit {
           ? `${mensaje} Debe corregir los datos y volver a adjuntar los documentos.`
           : 'Error al enviar la solicitud. Debe volver a adjuntar los documentos.';
         this.snackbar.error(textoCompleto);
-        this.enviandoSolicitud = false;
+        this.enviandoSolicitud.set(false);
         // Limpiar archivos para evitar reutilizar rutas o referencias inválidas en el próximo intento.
         // El backend puede invalidar archivos subidos cuando la creación falla (ej. validación).
-        this.archivos = [];
+        this.archivos.set([]);
       }
     });
   }
@@ -404,8 +406,8 @@ export class PruebasEcaesComponent implements OnInit {
       fecha_expedicion: '',
       fecha_nacimiento: ''
     });
-    this.archivos = [];
-    this.enviandoSolicitud = false;
+    this.archivos.set([]);
+    this.enviandoSolicitud.set(false);
   }
 
   // ================================
@@ -462,7 +464,7 @@ export class PruebasEcaesComponent implements OnInit {
   procesarSolicitudes(data: SolicitudEcaesResponse[]): void {
     if (!data || !Array.isArray(data)) {
       this.logger.warn('La respuesta no es un array válido');
-      this.solicitudes = [];
+      this.solicitudes.set([]);
       this.solicitudesCompletas = [];
       return;
     }
@@ -470,7 +472,7 @@ export class PruebasEcaesComponent implements OnInit {
     // Guardar las solicitudes completas
     this.solicitudesCompletas = data;
 
-    this.solicitudes = data.map((sol: SolicitudEcaesResponse) => {
+    this.solicitudes.set(data.map((sol: SolicitudEcaesResponse) => {
       this.logger.debug('Procesando solicitud:', sol);
 
       const estados = sol.estadosSolicitud || [];
@@ -491,9 +493,9 @@ export class PruebasEcaesComponent implements OnInit {
 
       this.logger.debug('Solicitud transformada:', solicitudTransformada);
       return solicitudTransformada;
-    });
+    }));
 
-    this.logger.debug('Solicitudes cargadas (transformadas):', this.solicitudes);
+    this.logger.debug('Solicitudes cargadas (transformadas):', this.solicitudes());
   }
 
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -54,7 +54,8 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     RequestStatusTableComponent
 ],
   templateUrl: './homologacion-asignaturas.component.html',
-  styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css']
+  styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomologacionAsignaturasComponent implements OnInit {
   private homologacionService = inject(HomologacionAsignaturasService);
@@ -80,9 +81,9 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
   archivosExclusivos: string[] = [];
 
-  archivosActuales: Archivo[] = [];
-  resetFileUpload = false;
-  solicitudes: Solicitud[] = [];
+  readonly archivosActuales = signal<Archivo[]>([]);
+  readonly resetFileUpload = signal(false);
+  readonly solicitudes = signal<Solicitud[]>([]);
   solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
 
   usuario: UsuarioSesion | null = null;
@@ -120,11 +121,11 @@ export class HomologacionAsignaturasComponent implements OnInit {
   }
 
   onArchivosChange(archivos: Archivo[]) {
-    this.archivosActuales = archivos;
+    this.archivosActuales.set(archivos);
   }
 
   puedeEnviar(): boolean {
-    return this.archivosActuales.length > 0 && !!this.usuario;
+    return this.archivosActuales().length > 0 && !!this.usuario;
   }
 
   /**
@@ -154,7 +155,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
    */
   private archivoSubido(nombreDocumento: string): boolean {
     const nombreNormalizado = normalizarNombreArchivo(nombreDocumento);
-    return this.archivosActuales.some(archivo => {
+    return this.archivosActuales().some(archivo => {
       const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
       // Buscar coincidencias parciales (por si el nombre del archivo es ligeramente diferente)
       return nombreArchivo.includes(nombreNormalizado) ||
@@ -221,8 +222,8 @@ export class HomologacionAsignaturasComponent implements OnInit {
       this.notificacionesService.actualizarNotificaciones();
 
       // Resetear el file upload
-      this.resetFileUpload = true;
-      setTimeout(() => this.resetFileUpload = false, 0);
+      this.resetFileUpload.set(true);
+      setTimeout(() => this.resetFileUpload.set(false), 0);
 
             this.snackbar.exito('¡Solicitud de homologación enviada correctamente!');
     },
@@ -278,7 +279,7 @@ listarSolicitudes() {
 
       if (!data || !Array.isArray(data)) {
         this.logger.warn('La respuesta no es un array válido', data);
-        this.solicitudes = [];
+        this.solicitudes.set([]);
         this.solicitudesCompletas = [];
         return;
       }
@@ -291,7 +292,7 @@ listarSolicitudes() {
         primeraSolicitud: data.length > 0 ? data[0] : null
       });
 
-      this.solicitudes = data.map((sol) => {
+      this.solicitudes.set(data.map((sol) => {
         this.logger.debug('Procesando solicitud', sol);
 
         const estados = sol.estadosSolicitud ?? [];
@@ -307,10 +308,10 @@ listarSolicitudes() {
 
         this.logger.debug('Solicitud transformada', solicitudTransformada);
         return solicitudTransformada;
-      });
+      }));
 
       this.logger.debug('Solicitudes cargadas', {
-        transformadas: this.solicitudes.length,
+        transformadas: this.solicitudes().length,
         completas: this.solicitudesCompletas.length
       });
     },
@@ -439,11 +440,11 @@ tieneComentarios(solicitudId: number): boolean {
 verificarFuncionalidadComentarios(): void {
   this.logger.debug('Verificando funcionalidad de comentarios', {
     solicitudesCompletas: this.solicitudesCompletas.length,
-    solicitudesTransformadas: this.solicitudes.length
+    solicitudesTransformadas: this.solicitudes().length
   });
 
   // Buscar solicitudes rechazadas
-  const solicitudesRechazadas = this.solicitudes.filter(sol =>
+  const solicitudesRechazadas = this.solicitudes().filter(sol =>
     this.esSolicitudRechazada(sol.estado)
   );
 

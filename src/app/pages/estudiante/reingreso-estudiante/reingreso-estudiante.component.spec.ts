@@ -87,19 +87,19 @@ describe('ReingresoEstudianteComponent', () => {
   });
 
   it('RE-E-002: puedeEnviar debe ser false sin archivos', () => {
-    component.archivosActuales = [];
+    component.archivosActuales.set([]);
     component.usuario = mockUsuario;
     expect(component.puedeEnviar()).toBeFalse();
   });
 
   it('RE-E-003: puedeEnviar debe ser true con archivos y usuario', () => {
-    component.archivosActuales = [archivo('doc.pdf')];
+    component.archivosActuales.set([archivo('doc.pdf')]);
     component.usuario = mockUsuario;
     expect(component.puedeEnviar()).toBeTrue();
   });
 
   it('RE-E-004: puedeEnviar debe ser false sin usuario', () => {
-    component.archivosActuales = [archivo('doc.pdf')];
+    component.archivosActuales.set([archivo('doc.pdf')]);
     component.usuario = null;
     expect(component.puedeEnviar()).toBeFalse();
   });
@@ -107,7 +107,7 @@ describe('ReingresoEstudianteComponent', () => {
   it('RE-E-005: onArchivosChange debe actualizar archivosActuales', () => {
     const archivos = [archivo('a.pdf'), archivo('b.pdf')];
     component.onArchivosChange(archivos);
-    expect(component.archivosActuales).toEqual(archivos);
+    expect(component.archivosActuales()).toEqual(archivos);
   });
 
   it('RE-E-006: listarSolicitudes debe llamar listarSolicitudesPorRol con ESTUDIANTE', fakeAsync(() => {

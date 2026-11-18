@@ -8,7 +8,7 @@
       <mat-form-field appearance="outline" class="periodo-select">
         <mat-label>Seleccionar Período Académico</mat-label>
         <mat-select [(ngModel)]="periodoSeleccionado" (selectionChange)="onPeriodoChange()">
-          @for (fecha of fechasEcaes; track fecha) {
+          @for (fecha of fechasEcaes(); track fecha) {
             <mat-option [value]="fecha.periodoAcademico">
               {{ fecha.periodoAcademico }}
             </mat-option>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Tabla de fechas -->
-    @if (fechasSeleccionadas) {
+    @if (fechasSeleccionadas()) {
       <div class="tabla-fechas">
         <table mat-table [dataSource]="conceptosFechas" class="fechas-table">
           <!-- Columna Concepto -->
@@ -42,7 +42,7 @@
     }
 
     <!-- Mensaje cuando no hay fechas -->
-    @if (!fechasSeleccionadas && fechasEcaes.length === 0) {
+    @if (!fechasSeleccionadas() && fechasEcaes().length === 0) {
       <div class="mensaje-vacio">
         <p>No hay fechas disponibles para mostrar.</p>
       </div>
@@ -61,7 +61,7 @@
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Tipo de Documento</mat-label>
           <mat-select formControlName="tipoDocumento">
-            @for (tipo of tiposDocumento; track tipo) {
+            @for (tipo of tiposDocumento(); track tipo) {
               <mat-option [value]="tipo.value">
                 {{ tipo.label }}
               </mat-option>
@@ -128,7 +128,7 @@
       </div>
 
       <app-file-upload
-        [archivos]="archivos"
+        [archivos]="archivos()"
         (archivosChange)="onArchivosChange($event)">
       </app-file-upload>
     </div>
@@ -139,15 +139,15 @@
         mat-raised-button
         color="primary"
         (click)="enviarSolicitud()"
-        [disabled]="enviandoSolicitud || solicitudForm.invalid || archivos.length === 0"
+        [disabled]="enviandoSolicitud() || solicitudForm.invalid || archivos().length === 0"
         class="btn-enviar">
-        @if (!enviandoSolicitud) {
+        @if (!enviandoSolicitud()) {
           <mat-icon>send</mat-icon>
         }
-        @if (enviandoSolicitud) {
+        @if (enviandoSolicitud()) {
           <mat-icon class="spinning">refresh</mat-icon>
         }
-        {{ enviandoSolicitud ? 'Enviando...' : 'Enviar Solicitud' }}
+        {{ enviandoSolicitud() ? 'Enviando...' : 'Enviar Solicitud' }}
       </button>
     </div>
 
@@ -157,7 +157,7 @@
   <app-card-container title="Seguimiento de Solicitud" icon="track_changes">
 
     <!-- Mensaje cuando no hay solicitudes -->
-    @if (solicitudes.length === 0) {
+    @if (solicitudes().length === 0) {
       <div class="sin-solicitudes">
         <mat-icon>info</mat-icon>
         <p>No se ha enviado ninguna solicitud aún.</p>
@@ -165,9 +165,9 @@
     }
 
     <!-- Tabla de seguimiento -->
-    @if (solicitudes.length > 0) {
+    @if (solicitudes().length > 0) {
       <app-request-status-table
-        [solicitudes]="solicitudes"
+        [solicitudes]="solicitudes()"
         [showOficio]="true"
         [showComentarios]="true"
         [headerAcciones]="'Información'"

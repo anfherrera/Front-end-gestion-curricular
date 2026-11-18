@@ -122,13 +122,13 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('EC-033: tipos de documento del backend, solo CC y CE', () => {
-    expect(component.tiposDocumento).toEqual([{ value: 'CC', label: 'Cédula de Ciudadanía' }]);
+    expect(component.tiposDocumento()).toEqual([{ value: 'CC', label: 'Cédula de Ciudadanía' }]);
   });
 
   it('EC-034: tipos de documento fijos si el backend no devuelve CC ni CE', () => {
     pruebasEcaesService.listarTiposDocumento.and.returnValue(of([]));
     component.cargarTiposDocumento();
-    expect(component.tiposDocumento.map(t => t.value)).toEqual(['CC', 'CE']);
+    expect(component.tiposDocumento().map(t => t.value)).toEqual(['CC', 'CE']);
   });
 
   it('EC-016: Debe renderizar secciones principales (Fechas, Documentación, Seguimiento)', () => {
@@ -142,30 +142,30 @@ describe('PruebasEcaesComponent', () => {
 
   it('EC-017: Debe cargar fechas ECAES y seleccionar primer período', fakeAsync(() => {
     expect(pruebasEcaesService.listarFechasEcaes).toHaveBeenCalled();
-    expect(component.fechasEcaes.length).toBe(1);
-    expect(component.periodoSeleccionado).toBe('2025-1');
-    expect(component.fechasSeleccionadas).toBeTruthy();
+    expect(component.fechasEcaes().length).toBe(1);
+    expect(component.periodoSeleccionado()).toBe('2025-1');
+    expect(component.fechasSeleccionadas()).toBeTruthy();
   }));
 
   it('EC-018: Debe actualizar archivos en onArchivosChange', () => {
     const archivos: Archivo[] = [{ ...archivo('cedula.pdf'), file: new File([], 'cedula.pdf') }];
     component.onArchivosChange(archivos);
-    expect(component.archivos).toEqual(archivos);
+    expect(component.archivos()).toEqual(archivos);
   });
 
   it('EC-019: Debe formatear la fecha del calendario sin correrla de día', () => {
-    component.fechasSeleccionadas = { ...mockFechasEcaes[0], inscripcion_est_by_facultad: '2025-01-15T00:00:00Z' };
+    component.fechasSeleccionadas.set({ ...mockFechasEcaes[0], inscripcion_est_by_facultad: '2025-01-15T00:00:00Z' });
     expect(component.getConceptoFecha('inscripcion_est_by_facultad')).toBe('15/01/2025');
   });
 
   it('EC-020: getConceptoFecha debe devolver fecha formateada cuando hay fechas seleccionadas', () => {
-    component.fechasSeleccionadas = mockFechasEcaes[0];
+    component.fechasSeleccionadas.set(mockFechasEcaes[0]);
     const concepto = component.getConceptoFecha('inscripcion_est_by_facultad');
     expect(concepto).toBeTruthy();
   });
 
   it('EC-021: getConceptoFecha debe devolver vacío cuando no hay fechas seleccionadas', () => {
-    component.fechasSeleccionadas = null;
+    component.fechasSeleccionadas.set(null);
     expect(component.getConceptoFecha('inscripcion_est_by_facultad')).toBe('');
   });
 
@@ -183,12 +183,12 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('EC-024: limpiarFormulario debe resetear formulario y archivos', () => {
-    component.archivos = [archivo('x.pdf')];
+    component.archivos.set([archivo('x.pdf')]);
     component.solicitudForm.patchValue({ numero_documento: '123456' });
     component.limpiarFormulario();
-    expect(component.archivos.length).toBe(0);
+    expect(component.archivos().length).toBe(0);
     expect(component.solicitudForm.get('numero_documento')?.value).toBe('');
-    expect(component.enviandoSolicitud).toBeFalse();
+    expect(component.enviandoSolicitud()).toBeFalse();
   });
 
   it('EC-025: listarSolicitudes no debe llamar al servicio si no hay usuario', () => {
@@ -224,15 +224,15 @@ describe('PruebasEcaesComponent', () => {
       })
     ];
     component.procesarSolicitudes(data);
-    expect(component.solicitudes.length).toBe(1);
-    expect(component.solicitudes[0].id).toBe(1);
+    expect(component.solicitudes().length).toBe(1);
+    expect(component.solicitudes()[0].id).toBe(1);
     expect(component.solicitudesCompletas.length).toBe(1);
   });
 
   it('EC-028: procesarSolicitudes debe manejar datos no array', () => {
     // Entrada inválida a propósito: el backend respondió algo que no es un arreglo
     component.procesarSolicitudes(null as unknown as SolicitudEcaesResponse[]);
-    expect(component.solicitudes.length).toBe(0);
+    expect(component.solicitudes().length).toBe(0);
     expect(component.solicitudesCompletas.length).toBe(0);
   });
 
@@ -259,7 +259,7 @@ describe('PruebasEcaesComponent', () => {
       fecha_expedicion: new Date('2000-01-01'),
       fecha_nacimiento: new Date('1999-01-01')
     });
-    component.archivos = [];
+    component.archivos.set([]);
     component.enviarSolicitud();
     expect(snackBar.open).toHaveBeenCalledWith(
       jasmine.stringMatching(/al menos un archivo/),
@@ -269,9 +269,9 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('EC-032: onPeriodoChange debe actualizar fechasSeleccionadas', () => {
-    component.fechasEcaes = mockFechasEcaes;
-    component.periodoSeleccionado = '2025-1';
+    component.fechasEcaes.set(mockFechasEcaes);
+    component.periodoSeleccionado.set('2025-1');
     component.onPeriodoChange();
-    expect(component.fechasSeleccionadas?.periodoAcademico).toBe('2025-1');
+    expect(component.fechasSeleccionadas()?.periodoAcademico).toBe('2025-1');
   });
 });

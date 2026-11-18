@@ -114,16 +114,16 @@ describe('PazSalvoComponent', () => {
 
   it('debe determinar si puede enviar según archivos y usuario', () => {
     completarFormulario();
-    component.archivosActuales = [];
+    component.archivosActuales.set([]);
     expect(component.puedeEnviar()).toBeFalse();
 
     // Programa sin todos los documentos obligatorios: no puede enviar
-    component.archivosActuales = [archivo('test.pdf')];
+    component.archivosActuales.set([archivo('test.pdf')]);
     expect(component.puedeEnviar()).toBeFalse();
 
     // Telemática solo exige la cédula
     component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
-    component.archivosActuales = [archivo('cedula.pdf')];
+    component.archivosActuales.set([archivo('cedula.pdf')]);
     expect(component.puedeEnviar()).toBeTrue();
 
     component.usuario = null;
@@ -133,7 +133,7 @@ describe('PazSalvoComponent', () => {
   it('debe actualizar archivos al llamar onArchivosChange', () => {
     const archivos = [archivo('a.pdf'), archivo('b.pdf')];
     component.onArchivosChange(archivos);
-    expect(component.archivosActuales).toEqual(archivos);
+    expect(component.archivosActuales()).toEqual(archivos);
   });
 
   it('debe enviar solicitud exitosamente y resetear el estado', fakeAsync(() => {
@@ -144,7 +144,7 @@ describe('PazSalvoComponent', () => {
     };
 
     completarFormulario();
-    component.archivosActuales = archivos;
+    component.archivosActuales.set(archivos);
     component.fileUploadComponent = comoFileUpload(fileUploadMock);
 
     component.onSolicitudEnviada();
@@ -154,7 +154,7 @@ describe('PazSalvoComponent', () => {
     expect(pazSalvoService.crearSolicitudConFormulario).toHaveBeenCalledWith(mockUsuario.id_usuario, archivos, jasmine.any(Object));
     expect(snackBar.open).toHaveBeenCalledWith(jasmine.stringMatching('Solicitud de paz y salvo'), 'Cerrar', jasmine.objectContaining({ panelClass: ['snackbar-success'] }));
     expect(fileUploadMock.resetearEstadoCarga).not.toHaveBeenCalled();
-    expect(component.resetFileUpload).toBeFalse();
+    expect(component.resetFileUpload()).toBeFalse();
   }));
 
   it('debe manejar error al subir documentos mostrando mensaje', fakeAsync(() => {
@@ -190,8 +190,8 @@ describe('PazSalvoComponent', () => {
     tick();
 
     expect(pazSalvoService.listarSolicitudesPorRol).toHaveBeenCalledWith('ESTUDIANTE', mockUsuario.id_usuario);
-    expect(component.solicitudes.length).toBe(1);
-    expect(component.solicitudes[0].estado as string).toBe('PENDIENTE');
+    expect(component.solicitudes().length).toBe(1);
+    expect(component.solicitudes()[0].estado as string).toBe('PENDIENTE');
     expect(component.solicitudesCompletas[0].documentos.length).toBe(1);
   }));
 
@@ -262,17 +262,17 @@ describe('PazSalvoComponent', () => {
 
     it('PS-012: Sistemas exige el formato PPH o TIH', () => {
       component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Ingeniería de Sistemas' } };
-      component.archivosActuales = [archivo('Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf')];
+      component.archivosActuales.set([archivo('Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf')]);
 
       expect(component.obtenerDocumentosFaltantes()).toContain('Formato PPH o TIH (requerido para tu programa)');
 
-      component.archivosActuales = [...component.archivosActuales, archivo('Formato TIH.pdf')];
+      component.archivosActuales.update(archivos => [...archivos, archivo('Formato TIH.pdf')]);
       expect(component.obtenerDocumentosFaltantes()).not.toContain('Formato PPH o TIH (requerido para tu programa)');
     });
 
     it('PS-013: Telemática rechaza los formatos de trabajo de grado', () => {
       component.usuario = { ...mockUsuario, objPrograma: { nombre_programa: 'Tecnología en Telemática' } };
-      component.archivosActuales = [archivo('cedula.pdf'), archivo('Formato TI-G.pdf')];
+      component.archivosActuales.set([archivo('cedula.pdf'), archivo('Formato TI-G.pdf')]);
 
       expect(component.obtenerDocumentosFaltantes()).toEqual(['Los formatos TI-G/TI-H no aplican para tu programa (Telemática)']);
       expect(component.puedeEnviar()).toBeFalse();
@@ -296,19 +296,19 @@ describe('PazSalvoComponent', () => {
       
       component.onArchivosChange(nuevosArchivos);
       
-      expect(component.archivosActuales).toEqual(nuevosArchivos);
-      expect(component.archivosActuales.length).toBe(2);
+      expect(component.archivosActuales()).toEqual(nuevosArchivos);
+      expect(component.archivosActuales().length).toBe(2);
     });
 
     it('PS-019: puedeEnviar debe retornar false cuando no hay usuario', () => {
-      component.archivosActuales = [archivo('test.pdf')];
+      component.archivosActuales.set([archivo('test.pdf')]);
       component.usuario = null;
       
       expect(component.puedeEnviar()).toBeFalse();
     });
 
     it('PS-020: puedeEnviar debe retornar false cuando no hay archivos', () => {
-      component.archivosActuales = [];
+      component.archivosActuales.set([]);
       component.usuario = mockUsuario;
       
       expect(component.puedeEnviar()).toBeFalse();

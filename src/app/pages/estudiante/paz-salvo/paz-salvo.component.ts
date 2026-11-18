@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -63,13 +63,13 @@ interface DatosSolicitudPazSalvo {
     RequiredDocsComponent
 ],
   templateUrl: './paz-salvo.component.html',
-  styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css']
+  styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PazSalvoComponent implements OnInit {
   private pazSalvoService = inject(PazSalvoService);
   private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
-  private cdr = inject(ChangeDetectorRef);
   private notificacionesService = inject(NotificacionesService);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
@@ -78,10 +78,10 @@ export class PazSalvoComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
 
-  solicitudes: Solicitud[] = [];
+  readonly solicitudes = signal<Solicitud[]>([]);
   solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
-  archivosActuales: Archivo[] = [];
-  resetFileUpload = false;
+  readonly archivosActuales = signal<Archivo[]>([]);
+  readonly resetFileUpload = signal(false);
   usuario: UsuarioSesion | null = null;
   solicitudForm: FormGroup;
   requiereTrabajoGrado = false;
@@ -157,11 +157,11 @@ export class PazSalvoComponent implements OnInit {
   }
 
   onArchivosChange(archivos: Archivo[]) {
-    this.archivosActuales = archivos;
+    this.archivosActuales.set(archivos);
   }
 
   puedeEnviar(): boolean {
-    if (!this.usuario || this.archivosActuales.length === 0 || !this.solicitudForm.valid) {
+    if (!this.usuario || this.archivosActuales().length === 0 || !this.solicitudForm.valid) {
       return false;
     }
 
@@ -189,7 +189,7 @@ export class PazSalvoComponent implements OnInit {
       .filter(doc => doc.obligatorio && !this.archivoSubido(doc.label))
       .map(doc => doc.label);
 
-    const tienePphOTih = this.archivosActuales
+    const tienePphOTih = this.archivosActuales()
       .map(a => normalizarNombreArchivo(a.nombre))
       .some(n => n.includes('pph') || n.includes('tih'));
     if (this.programaConTrabajoDeGrado() && !tienePphOTih) {
@@ -202,7 +202,7 @@ export class PazSalvoComponent implements OnInit {
   /** Telemática solo exige la cédula; los formatos de trabajo de grado no aplican. */
   private validarDocumentosTelematica(): string[] {
     const errores: string[] = [];
-    const nombres = this.archivosActuales.map(a => normalizarNombreArchivo(a.nombre));
+    const nombres = this.archivosActuales().map(a => normalizarNombreArchivo(a.nombre));
 
     if (nombres.some(n => n.includes('tig') || n.includes('tih'))) {
       errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
@@ -223,7 +223,7 @@ export class PazSalvoComponent implements OnInit {
 
   private archivoSubido(nombreDocumento: string): boolean {
     const nombreNormalizado = normalizarNombreArchivo(nombreDocumento);
-    return this.archivosActuales.some(archivo => {
+    return this.archivosActuales().some(archivo => {
       const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
       return nombreArchivo.includes(nombreNormalizado) || nombreNormalizado.includes(nombreArchivo);
     });
@@ -238,12 +238,12 @@ export class PazSalvoComponent implements OnInit {
       .subscribe({
         next: (data) => {
           if (!Array.isArray(data)) {
-            this.solicitudes = [];
+            this.solicitudes.set([]);
             this.solicitudesCompletas = [];
             return;
           }
           this.solicitudesCompletas = data;
-          this.solicitudes = data.map(sol => this.aSolicitud(sol));
+          this.solicitudes.set(data.map(sol => this.aSolicitud(sol)));
         },
         error: () => this.snackbar.error('No se pudieron cargar tus solicitudes')
       });
@@ -326,16 +326,12 @@ export class PazSalvoComponent implements OnInit {
       titulo_trabajo_grado: '',
       director_trabajo_grado: ''
     });
-    this.archivosActuales = [];
+    this.archivosActuales.set([]);
 
     // Pulso en [reset] para que el componente de subida limpie su lista
     setTimeout(() => {
-      this.resetFileUpload = true;
-      this.cdr.detectChanges();
-      setTimeout(() => {
-        this.resetFileUpload = false;
-        this.cdr.detectChanges();
-      }, 0);
+      this.resetFileUpload.set(true);
+      setTimeout(() => this.resetFileUpload.set(false), 0);
     }, 0);
 
     this.snackbar.exito('¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.');

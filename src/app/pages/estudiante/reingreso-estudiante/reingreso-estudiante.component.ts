@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';
@@ -49,7 +49,8 @@ const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
     RequestStatusTableComponent
 ],
   templateUrl: './reingreso-estudiante.component.html',
-  styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css']
+  styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReingresoEstudianteComponent implements OnInit {
   private reingresoService = inject(ReingresoEstudianteService);
@@ -78,9 +79,9 @@ export class ReingresoEstudianteComponent implements OnInit {
 
   private readonly nombresDocumentosRequeridos = this.documentosRequeridos.map(doc => doc.label.toLowerCase().trim());
 
-  archivosActuales: Archivo[] = [];
-  resetFileUpload = false;
-  solicitudes: Solicitud[] = [];
+  readonly archivosActuales = signal<Archivo[]>([]);
+  readonly resetFileUpload = signal(false);
+  readonly solicitudes = signal<Solicitud[]>([]);
   solicitudesCompletas: SolicitudReingresoDTORespuesta[] = [];
 
   usuario: UsuarioSesion | null = null;
@@ -109,11 +110,11 @@ export class ReingresoEstudianteComponent implements OnInit {
   }
 
   onArchivosChange(archivos: Archivo[]) {
-    this.archivosActuales = archivos;
+    this.archivosActuales.set(archivos);
   }
 
   puedeEnviar(): boolean {
-    return this.archivosActuales.length > 0 && !!this.usuario;
+    return this.archivosActuales().length > 0 && !!this.usuario;
   }
 
   /**
@@ -143,7 +144,7 @@ export class ReingresoEstudianteComponent implements OnInit {
    */
   private archivoSubido(nombreDocumento: string): boolean {
     const nombreNormalizado = normalizarNombreArchivo(nombreDocumento);
-    return this.archivosActuales.some(archivo => {
+    return this.archivosActuales().some(archivo => {
       const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
       // Buscar coincidencias parciales (por si el nombre del archivo es ligeramente diferente)
       return nombreArchivo.includes(nombreNormalizado) || 
@@ -207,8 +208,8 @@ export class ReingresoEstudianteComponent implements OnInit {
             this.listarSolicitudes();
 
             // Resetear el file upload
-            this.resetFileUpload = true;
-            setTimeout(() => this.resetFileUpload = false, 0);
+            this.resetFileUpload.set(true);
+            setTimeout(() => this.resetFileUpload.set(false), 0);
 
             this.snackbar.exito('¡Solicitud de reingreso enviada correctamente!');
           },
@@ -257,7 +258,7 @@ export class ReingresoEstudianteComponent implements OnInit {
 
         if (!data || !Array.isArray(data)) {
           this.logger.warn('La respuesta no es un array válido', data);
-          this.solicitudes = [];
+          this.solicitudes.set([]);
           this.solicitudesCompletas = [];
           return;
         }
@@ -265,7 +266,7 @@ export class ReingresoEstudianteComponent implements OnInit {
         // Guardar las solicitudes completas para usar comentarios
         this.solicitudesCompletas = data;
 
-        this.solicitudes = data.map((sol) => {
+        this.solicitudes.set(data.map((sol) => {
           const estados = sol.estadosSolicitud ?? [];
           const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
@@ -279,9 +280,9 @@ export class ReingresoEstudianteComponent implements OnInit {
 
           this.logger.debug('Solicitud transformada', solicitudTransformada);
           return solicitudTransformada;
-        });
+        }));
 
-        this.logger.debug('Solicitudes cargadas (transformadas)', this.solicitudes.length);
+        this.logger.debug('Solicitudes cargadas (transformadas)', this.solicitudes().length);
       },
       error: (err) => {
         this.logger.error('Error al listar solicitudes', {

@@ -3,7 +3,7 @@
   <!-- Documentación requerida -->
   <app-required-docs
     [requiredFiles]="documentosRequeridos"
-    [archivos]="archivosActuales"
+    [archivos]="archivosActuales()"
     [programaEstudiante]="usuario?.objPrograma?.nombre_programa || ''">
   </app-required-docs>
 
@@ -12,14 +12,14 @@
     <mat-card-title class="card-title">Subir Archivos</mat-card-title>
     <mat-card-content>
       <app-file-upload
-        [archivos]="archivosActuales"
+        [archivos]="archivosActuales()"
         (archivosChange)="onArchivosChange($event)"
-        [reset]="resetFileUpload">
+        [reset]="resetFileUpload()">
       </app-file-upload>
 
       <div class="enviar-solicitud mt-4">
         <!-- Mensaje informativo de documentos faltantes (NO bloquea el envío) -->
-        @if (obtenerDocumentosFaltantes().length > 0 && archivosActuales.length > 0) {
+        @if (obtenerDocumentosFaltantes().length > 0 && archivosActuales().length > 0) {
           <div
             class="validacion-mensaje-informativo">
             <mat-icon color="primary">info</mat-icon>
@@ -53,15 +53,15 @@
   <mat-card class="card-section">
     <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
     <mat-card-content>
-      @if (solicitudes.length === 0) {
+      @if (solicitudes().length === 0) {
         <p class="sin-solicitudes">
           No se ha enviado ninguna solicitud aún.
         </p>
       }
 
-      @if (solicitudes.length > 0) {
+      @if (solicitudes().length > 0) {
         <app-request-status-table
-          [solicitudes]="solicitudes"
+          [solicitudes]="solicitudes()"
           [showOficio]="true"
           [showComentarios]="true"
           (verComentarios)="verComentarios($event)"
