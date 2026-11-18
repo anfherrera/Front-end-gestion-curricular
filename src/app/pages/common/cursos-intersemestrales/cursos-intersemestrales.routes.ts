@@ -8,7 +8,7 @@ import { VisualizarSolicitudesComponent } from './visualizar-solicitudes/visuali
 
 /**
  * Gestión de cursos intersemestrales para el personal (funcionario y coordinador).
- * Ambos roles cargan estas mismas rutas desde app.routes.ts.
+ * Ambos roles cargan estas mismas rutas desde gestion.routes.ts.
  */
 export const CursosIntersemestralesGestionRoutes: Routes = [
   {

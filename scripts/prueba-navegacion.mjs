@@ -41,7 +41,8 @@ const casos = [
       '/funcionario/homologacion-asignaturas', '/funcionario/modulo-estadistico', '/funcionario/historial-completo'],
     cursos: true,
     pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Funcionario',
-    negadas: ['/coordinador/paz-salvo', '/secretaria/paz-salvo', '/admin/dashboard', '/estudiante/paz-salvo'],
+    negadas: ['/coordinador/paz-salvo', '/secretaria/paz-salvo', '/admin/dashboard', '/estudiante/paz-salvo',
+      '/decano/historial-completo', '/coordinador/modulo-estadistico'],
   },
   {
     correo: 'josefina@unicauca.edu.co', rol: 'coordinador',
@@ -49,7 +50,8 @@ const casos = [
       '/coordinador/modulo-estadistico', '/coordinador/historial-completo'],
     cursos: true,
     pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Coordinador',
-    negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/homologacion-asignaturas'],
+    negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/homologacion-asignaturas',
+      '/funcionario/historial-completo', '/decano/modulo-estadistico'],
   },
   {
     correo: 'maria@unicauca.edu.co', rol: 'secretaria',
@@ -66,8 +68,9 @@ const casos = [
   {
     // Sin backend el detalle no carga, pero debe salir del "Cargando..." por la rama de error
     correo: 'decano@unicauca.edu.co', rol: 'decano',
-    rutas: ['/decano/historial-completo', '/decano/historial-completo/detalle/1'],
-    negadas: ['/funcionario/paz-salvo', '/admin/dashboard', '/estudiante/pruebas-ecaes'],
+    rutas: ['/decano/historial-completo', '/decano/historial-completo/detalle/1', '/decano/modulo-estadistico'],
+    negadas: ['/funcionario/paz-salvo', '/admin/dashboard', '/estudiante/pruebas-ecaes',
+      '/funcionario/historial-completo', '/coordinador/cursos-intersemestrales/dashboard'],
   },
   {
     correo: 'admin@unicauca.edu.co', rol: 'admin',

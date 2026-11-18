@@ -11,7 +11,7 @@ import {
 
 /**
  * Revisión de homologación de asignaturas para funcionario y coordinador.
- * El rol llega como dato de la ruta (data.rolRevision) desde app.routes.ts.
+ * El rol llega como dato de la ruta (data.rolRevision) desde gestion.routes.ts.
  */
 @Component({
   selector: 'app-homologacion-revision',
