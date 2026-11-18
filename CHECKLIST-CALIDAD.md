@@ -267,7 +267,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [ ] **OnPush**: lo usan 82 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
+- [ ] **OnPush**: lo usan 87 de 88 componentes (eran 6; 20 al cerrar `shared`). Ya lo tienen todas las páginas, el layout y la raíz; solo falta `document-generator`
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
@@ -357,6 +357,16 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto (historial, detalle y notificaciones tienen "Cargando..." o spinner, así que la comprobación de repintado los cubre en la rama de error)
     - Probar a mano con backend: en el historial completo (funcionario, coordinador y decano) se llenan los totales y la tabla, cambiar un filtro la recarga y "Exportar PDF" pasa a "Generando PDF..." y vuelve; en el detalle de una solicitud (decano) salen sus datos, el estudiante, el historial de estados y los documentos; en notificaciones se ven los contadores de las pestañas, la lista ordenada por fecha y el filtro por tipo; al marcar una como leída pierde el resaltado y baja el contador de no leídas, y "Marcar todas" deja el contador en cero
     - Sin cambios visibles esperados
+  - [x] Login, welcome, layout, footer y raíz (2026-11-18): OnPush en los 5 (82 → 87 de 88), con 4 `signal()` nuevas
+    - welcome, footer, layout y app, directo: no tienen estado que cambie fuera de sus eventos (`isSidebarOpen` del layout cambia con la salida del header)
+    - login: `errorMensaje`, `cargando`, `rateRemaining` y `loginDisabled` (los dos últimos los actualiza el `interval` del límite de intentos). `hide` se queda como propiedad: solo cambia con el clic del ojo
+    - Con la raíz y el layout en OnPush, un componente con la estrategia por defecto solo se revisa si algún ancestro está marcado. El único que queda es `document-generator`, que ya estaba dentro de `oficio-secretaria` (OnPush) desde la tanda de secretaría
+    - Spec del login: escribe con `.set()` y lee con `()`; no se quita ninguna prueba
+    - `test:navegacion` sin backend prueba ahora también el formulario de login: lo rellena, lo envía y comprueba que, al fallar la petición, se quita el spinner del botón y sale "No se puede conectar al servidor"
+    - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto
+    - Probar a mano con backend: iniciar sesión con credenciales buenas (entra a /welcome) y malas ("Credenciales incorrectas" y el botón vuelve); tras varios intentos fallidos el botón pasa a "Espera Ns" y cuenta hacia atrás; el ojo muestra y oculta la contraseña; en el layout, el botón del header abre y cierra el menú lateral
+    - Sin cambios visibles esperados
+  - [ ] Pendiente: `document-generator` (formulario reactivo con datepicker). Revisar qué pinta y si algo cambia fuera de sus eventos antes de ponerle OnPush
 
 ---
 

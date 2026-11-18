@@ -48,23 +48,23 @@
 
               <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
 
-              <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando || loginDisabled">
-                @if (cargando) {
+              <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid || cargando() || loginDisabled()">
+                @if (cargando()) {
                   <mat-spinner diameter="20" class="login-spinner"></mat-spinner>
                 }
-                @if (!cargando && !loginDisabled) {
+                @if (!cargando() && !loginDisabled()) {
                   <span>Ingresar</span>
                 }
-                @if (!cargando && loginDisabled) {
-                  <span>Espera {{ rateRemaining }}s</span>
+                @if (!cargando() && loginDisabled()) {
+                  <span>Espera {{ rateRemaining() }}s</span>
                 }
-                @if (cargando) {
+                @if (cargando()) {
                   <span>Ingresando...</span>
                 }
               </button>
 
-              @if (errorMensaje) {
-                <p class="error-message">{{ errorMensaje }}</p>
+              @if (errorMensaje()) {
+                <p class="error-message">{{ errorMensaje() }}</p>
               }
 
               <a class="login-register" routerLink="/register">Registrarse</a>

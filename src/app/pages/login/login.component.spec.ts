@@ -84,11 +84,11 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     });
 
     it('LOG-005: No debe haber mensaje de error inicialmente', () => {
-      expect(component.errorMensaje).toBe('');
+      expect(component.errorMensaje()).toBe('');
     });
 
     it('LOG-006: No debe estar en estado de carga inicialmente', () => {
-      expect(component.cargando).toBe(false);
+      expect(component.cargando()).toBe(false);
     });
   });
 
@@ -296,15 +296,15 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       // Usar delay para simular mejor el comportamiento asíncrono
       authService.login.and.returnValue(of(mockLoginResponse).pipe(delay(50)));
       
-      expect(component.cargando).toBe(false);
+      expect(component.cargando()).toBe(false);
       
       component.onLogin();
       // Verificar que cargando se establece en true inmediatamente
-      expect(component.cargando).toBe(true);
+      expect(component.cargando()).toBe(true);
       
       tick(50); // Permitir que el observable se complete
       fixture.detectChanges();
-      expect(component.cargando).toBe(false);
+      expect(component.cargando()).toBe(false);
     }));
   });
 
@@ -324,7 +324,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       tick(100); // Dar tiempo para que se maneje el error
       fixture.detectChanges();
       
-      expect(component.errorMensaje).toContain('Credenciales incorrectas');
+      expect(component.errorMensaje()).toContain('Credenciales incorrectas');
       expect(snackBar.open).toHaveBeenCalled();
     }));
 
@@ -335,7 +335,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.onLogin();
       tick();
       
-      expect(component.errorMensaje).toContain('cuenta está deshabilitada');
+      expect(component.errorMensaje()).toContain('cuenta está deshabilitada');
     }));
 
     it('LOG-032: Debe manejar error 0 (sin conexión)', fakeAsync(() => {
@@ -345,7 +345,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.onLogin();
       tick();
       
-      expect(component.errorMensaje).toContain('No se puede conectar al servidor');
+      expect(component.errorMensaje()).toContain('No se puede conectar al servidor');
     }));
 
     it('LOG-033: Debe manejar error 500 (error del servidor)', fakeAsync(() => {
@@ -355,7 +355,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.onLogin();
       tick();
       
-      expect(component.errorMensaje).toContain('Error interno del servidor');
+      expect(component.errorMensaje()).toContain('Error interno del servidor');
     }));
 
     it('LOG-034: Debe desactivar estado de cargando después de error', fakeAsync(() => {
@@ -365,7 +365,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.onLogin();
       tick();
       
-      expect(component.cargando).toBe(false);
+      expect(component.cargando()).toBe(false);
     }));
   });
 
@@ -413,11 +413,11 @@ describe('LoginComponent - Pruebas Unitarias', () => {
 
   describe('8. Funcionalidad de Limpiar Error', () => {
     it('LOG-038: Debe limpiar el mensaje de error', () => {
-      component.errorMensaje = 'Error de prueba';
+      component.errorMensaje.set('Error de prueba');
       
       component.clearError();
       
-      expect(component.errorMensaje).toBe('');
+      expect(component.errorMensaje()).toBe('');
     });
   });
 
@@ -452,7 +452,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.onLogin();
       tick();
       
-      expect(component.errorMensaje).toContain('respuesta del servidor inválida');
+      expect(component.errorMensaje()).toContain('respuesta del servidor inválida');
     }));
 
     it('LOG-042: Debe manejar respuesta sin usuario', fakeAsync(() => {
@@ -467,7 +467,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.onLogin();
       tick();
       
-      expect(component.errorMensaje).toContain('respuesta del servidor inválida');
+      expect(component.errorMensaje()).toContain('respuesta del servidor inválida');
     }));
   });
 });

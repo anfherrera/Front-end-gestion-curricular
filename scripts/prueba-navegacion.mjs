@@ -214,6 +214,33 @@ try {
     falla(`${r} no repinta después de cargar`);
   }
 
+  // Sin backend el login falla enseguida: debe quitar la carga y mostrar el error de conexión
+  async function comprobarLoginSinBackend() {
+    await c.enviar('Page.navigate', { url: `${APP}/login` });
+    await esperarUrl(u => u === '/login');
+    await c.evaluar('localStorage.clear(); sessionStorage.clear(); true');
+    await c.enviar('Page.navigate', { url: `${APP}/login` });
+    for (let i = 0; i < 60 && !(await c.evaluar(`!!document.querySelector('button.login-button')`)); i++) await espera(250);
+    await espera(1000);
+    await c.evaluar(`(() => {
+      const set = (sel, v) => { const el = document.querySelector(sel); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); };
+      set('input[formcontrolname=correo]', 'prueba@unicauca.edu.co');
+      set('input[formcontrolname=password]', 'password123');
+      return true; })()`);
+    await espera(300);
+    await c.evaluar(`document.querySelector('button.login-button').click(); true`);
+    let error = '';
+    for (let i = 0; i < 24 && !error; i++) {
+      await espera(250);
+      error = await c.evaluar(`document.querySelector('.error-message')?.textContent?.trim() || ''`);
+    }
+    const spinner = await c.evaluar(`!!document.querySelector('button.login-button mat-spinner, button.login-button mat-progress-spinner')`);
+    console.log(`login sin backend: ${error ? `"${error}"` : 'sin mensaje de error'}${spinner ? ' (sigue el spinner)' : ''}`);
+    if (!error || spinner) falla('el login no repinta después de fallar la petición');
+  }
+
+  if (SIN_BACKEND) await comprobarLoginSinBackend();
+
   async function comprobarPestana(r, etiqueta) {
     c.errores.length = 0;
     const pulsada = await c.evaluar(`(() => {

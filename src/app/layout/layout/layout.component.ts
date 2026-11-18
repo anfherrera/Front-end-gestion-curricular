@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
@@ -15,7 +15,8 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
     FooterComponent,
     SidebarComponent,
     BreadcrumbComponent
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
   // Quitar ViewEncapsulation.None para que no meta CSS global
 })
 export class LayoutComponent {

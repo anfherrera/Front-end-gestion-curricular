@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,7 +9,8 @@ import { Router } from '@angular/router';
   selector: 'app-welcome',
   imports: [MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './welcome.component.html',
-  styleUrls: ['./welcome.component.css']
+  styleUrls: ['./welcome.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WelcomeComponent {
   private router = inject(Router);

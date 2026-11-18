@@ -1,5 +1,5 @@
 
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -28,7 +28,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatProgressSpinnerModule
 ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
@@ -39,11 +40,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm: FormGroup;
   hide = true;
-  errorMensaje = '';
-  cargando = false;
+  readonly errorMensaje = signal('');
+  readonly cargando = signal(false);
   // Rate limit
-  rateRemaining = 0;
-  loginDisabled = false;
+  readonly rateRemaining = signal(0);
+  readonly loginDisabled = signal(false);
   private rateSub?: Subscription;
 
   constructor() {
@@ -88,15 +89,15 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
         const nuevoRate = getLoginCooldownRemainingSeconds();
         // Solo actualizar si el valor cambió para evitar detección de cambios innecesaria
-        if (nuevoRate !== this.rateRemaining) {
-          this.rateRemaining = nuevoRate;
-          this.loginDisabled = this.rateRemaining > 0;
+        if (nuevoRate !== this.rateRemaining()) {
+          this.rateRemaining.set(nuevoRate);
+          this.loginDisabled.set(this.rateRemaining() > 0);
         }
       }
     } catch (error) {
       // Silenciar errores durante desarrollo/HMR
-      this.rateRemaining = 0;
-      this.loginDisabled = false;
+      this.rateRemaining.set(0);
+      this.loginDisabled.set(false);
     }
   }
 
@@ -111,15 +112,15 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 
   onLogin(): void {
-    if (this.loginDisabled) {
+    if (this.loginDisabled()) {
       // Si está en cooldown, no permitir login
       return;
     }
 
     if (this.loginForm.valid) {
       const { correo, password } = this.loginForm.value;
-      this.cargando = true;
-      this.errorMensaje = '';
+      this.cargando.set(true);
+      this.errorMensaje.set('');
 
       this.authService.login(correo, password).subscribe({
         next: (response) => {
@@ -141,11 +142,11 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['/welcome']);
           } else {
             this.logger.error('Respuesta inválida del servidor:', response);
-            this.errorMensaje = 'Error: respuesta del servidor inválida.';
+            this.errorMensaje.set('Error: respuesta del servidor inválida.');
             this.snackbar.error('Error en la respuesta del servidor');
           }
 
-          this.cargando = false;
+          this.cargando.set(false);
         },
         error: (err: HttpErrorResponse | ErrorLimiteLogin) => {
           this.logger.error('Error en la autenticación', err);
@@ -172,10 +173,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             errorMessage = 'Error interno del servidor. Intenta más tarde.';
           }
 
-          this.errorMensaje = errorMessage;
+          this.errorMensaje.set(errorMessage);
           this.snackbar.error(errorMessage);
           
-          this.cargando = false;
+          this.cargando.set(false);
         }
       });
     } else {
@@ -190,7 +191,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   // Método para limpiar errores
   clearError(): void {
-    this.errorMensaje = '';
+    this.errorMensaje.set('');
   }
 
   // Método para obtener mensaje de error del correo
