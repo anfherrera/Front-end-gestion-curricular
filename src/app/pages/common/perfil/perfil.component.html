@@ -33,14 +33,6 @@
           </div>
 
           <div class="info-item">
-            <mat-icon class="info-icon">phone</mat-icon>
-            <div class="info-content">
-              <span class="info-label">Teléfono</span>
-              <span class="info-value">{{ getTelefono() }}</span>
-            </div>
-          </div>
-
-          <div class="info-item">
             <mat-icon class="info-icon">school</mat-icon>
             <div class="info-content">
               <span class="info-label">Programa</span>
@@ -52,7 +44,7 @@
     </mat-card>
 
     <!-- Información Adicional según Rol -->
-    @if (usuario?.rol) {
+    @if (usuario?.rol; as rol) {
       <mat-card class="additional-info-card">
         <mat-card-header>
           <mat-card-title>
@@ -67,7 +59,7 @@
               <mat-icon class="info-icon">admin_panel_settings</mat-icon>
               <div class="info-content">
                 <span class="info-label">Rol en el Sistema</span>
-                <span class="info-value">{{ usuario.rol.nombre || usuario.rol.nombre_rol || userRole }}</span>
+                <span class="info-value">{{ rol.nombre || userRole }}</span>
               </div>
             </div>
             @if (usuario?.estado_usuario !== undefined) {
@@ -76,8 +68,8 @@
                 <div class="info-content">
                   <span class="info-label">Estado</span>
                   <span class="info-value">
-                    <mat-chip [class]="usuario.estado_usuario ? 'status-active' : 'status-inactive'">
-                      {{ usuario.estado_usuario ? 'Activo' : 'Inactivo' }}
+                    <mat-chip [class]="usuario?.estado_usuario ? 'status-active' : 'status-inactive'">
+                      {{ usuario?.estado_usuario ? 'Activo' : 'Inactivo' }}
                     </mat-chip>
                   </span>
                 </div>

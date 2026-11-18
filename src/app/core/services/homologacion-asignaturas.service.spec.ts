@@ -4,6 +4,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { AuthService } from './auth.service';
 import { HomologacionAsignaturasService } from './homologacion-asignaturas.service';
+import { SolicitudHomologacionDTOPeticion } from '../models/procesos.model';
 import { LoggerService } from './logger.service';
 import { environment } from '@env/environment';
 
@@ -81,7 +82,7 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
 
   describe('3. Crear y actualizar estado', () => {
     it('HA-007: Debe crear solicitud de homologacion', (done) => {
-      const body = { nombre_solicitud: 'Homologacion Test', objUsuario: {} };
+      const body = { nombre_solicitud: 'Homologacion Test', objUsuario: {} } as unknown as SolicitudHomologacionDTOPeticion;
       service.crearSolicitud(body).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-Homologacion`);
       expect(req.request.method).toBe('POST');

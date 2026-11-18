@@ -3,7 +3,9 @@ export interface UsuarioSesion {
   id_usuario: number;
   nombre_completo: string;
   codigo?: string;
+  cedula?: string;
   correo?: string;
+  estado_usuario?: boolean;
   rol?: { id_rol?: number; nombre: string };
   objPrograma?: { id_programa: number; nombre_programa: string };
 }

@@ -3,6 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env/environment';
 import { TipoDocumento, TiposDocumentoRespuesta } from '../models/tipo-documento.model';
+import { UsuarioDTOPeticion } from '../models/usuario.interface';
 import { DocumentoHomologacion } from '../models/procesos.model';
 import { SolicitudesBaseService } from './base/solicitudes-base.service';
 
@@ -22,16 +23,7 @@ export interface SolicitudEcaesRequest {
   fecha_registro_solicitud: string;
   periodo_academico: string; // Obligatorio, formato YYYY-P
   fecha_ceremonia?: string | null; // Opcional
-  objUsuario: {
-    id_usuario: number;
-    nombre_completo: string;
-    codigo: string;
-    cedula: string; // Obligatorio
-    correo: string;
-    estado_usuario: boolean;
-    id_rol?: number;
-    id_programa?: number;
-  };
+  objUsuario: UsuarioDTOPeticion;
   tipoDocumento: string;
   numero_documento: string;
   fecha_expedicion: string;

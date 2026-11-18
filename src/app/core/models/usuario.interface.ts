@@ -1,33 +1,27 @@
+import { RolDTORespuesta } from './rol.interface';
+import { ProgramaDTORespuesta } from './programa.interface';
+
+/** Cuerpo de `crearUsuario` y `actualizarUsuario` (igual que `UsuarioDTOPeticion` del backend). */
 export interface UsuarioDTOPeticion {
-  id_usuario?: number;        // Opcional al crear, requerido al actualizar
-  codigo: string;             // Código único (ej: EST001, DOC001)
-  cedula: string;             // Obligatorio, 5-20 caracteres, solo números
-  nombre_completo: string;    
-  correo: string;             // Email institucional
-  password?: string;          // Opcional en actualización
-  estado_usuario: number;     // 1 = Activo, 0 = Inactivo
-  objRol: {
-    id_rol: number;           // ID del rol
-  };
-  objPrograma: {
-    id_programa: number;      // ID del programa
-  };
+  id_usuario?: number;        // Solo al actualizar
+  codigo: string;
+  cedula: string;             // 5-20 dígitos
+  nombre_completo: string;
+  correo: string;             // Correo @unicauca.edu.co
+  password?: string;          // Opcional al actualizar
+  estado_usuario: boolean;
+  id_rol: number;
+  id_programa: number;
 }
 
+/** Respuesta de los endpoints de `/usuarios` (igual que `UsuarioDTORespuesta` del backend). */
 export interface UsuarioDTORespuesta {
   id_usuario: number;
   codigo: string;
-  cedula: string; // Obligatorio
+  cedula: string;
   nombre_completo: string;
   correo: string;
-  estado_usuario: number;
-  objRol: {
-    id_rol: number;
-    nombre: string;
-  };
-  objPrograma: {
-    id_programa: number;
-    nombre_programa: string;
-  };
+  estado_usuario: boolean;
+  rol: RolDTORespuesta | null;
+  objPrograma: ProgramaDTORespuesta | null;
 }
-

@@ -1,6 +1,7 @@
 
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +13,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { LoggerService } from '@core/services/logger.service';
 import { interval, Subscription } from 'rxjs';
-import { getLoginCooldownRemainingSeconds } from '@core/interceptors/login-rate-limit.interceptor';
+import { getLoginCooldownRemainingSeconds, esErrorLimiteLogin, ErrorLimiteLogin } from '@core/interceptors/login-rate-limit.interceptor';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
@@ -100,7 +101,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   // Validador personalizado para correos de Unicauca
-  private unicaucaEmailValidator(control: AbstractControl): Record<string, any> | null {
+  private unicaucaEmailValidator(control: AbstractControl): ValidationErrors | null {
     const email = control.value;
     if (!email) return null;
     
@@ -146,15 +147,15 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           this.cargando = false;
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse | ErrorLimiteLogin) => {
           this.logger.error('Error en la autenticación', err);
-          
+
           // Manejo específico de errores según la guía del backend
           let errorMessage = 'Error al iniciar sesión';
-          
+
           // 429 Too Many Requests (rate limit de login)
-          if ((err as any)?.rateLimited && (err as any)?.retryAfterSeconds) {
-            errorMessage = (err as any).message || 'Demasiados intentos. Intenta más tarde.';
+          if (esErrorLimiteLogin(err) && err.retryAfterSeconds) {
+            errorMessage = err.message || 'Demasiados intentos. Intenta más tarde.';
             this.tickRate(); // actualizar contador
           } else
           if (err.status === 401) {

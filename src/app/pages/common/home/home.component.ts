@@ -9,6 +9,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '@core/services/auth.service';
 import { PazSalvoDialogComponent } from '../../estudiante/paz-salvo/paz-salvo-dialog.component';
 
+/** Tarjeta de proceso del inicio; las `adminOnly` llevan a `/admin/<route>`. */
+interface OpcionProceso {
+  name: string;
+  route: string;
+  icon: string;
+  color: string;
+  adminOnly?: boolean;
+}
+
 @Component({
   selector: 'app-home',
   imports: [
@@ -30,9 +39,9 @@ export class HomeComponent implements OnInit {
   role: string | null = null;
   roleLower: string | null = null;
   userName = '';
-  availableProcesses: { name: string; route: string; icon: string; color: string }[] = [];
+  availableProcesses: OpcionProceso[] = [];
 
-  private readonly processMap = [
+  private readonly processMap: OpcionProceso[] = [
     // Panel de Administración (solo para admin)
     { name: 'Panel de Administración', route: 'dashboard', icon: 'dashboard', color: 'bg-blue', adminOnly: true },
     { name: 'Gestión de Docentes', route: 'docentes', icon: 'school', color: 'bg-green', adminOnly: true },
@@ -77,11 +86,11 @@ export class HomeComponent implements OnInit {
     this.availableProcesses = this.processMap.filter(p => {
       // Si el usuario es ADMIN, solo mostrar opciones adminOnly
       if (this.roleLower === 'admin') {
-        return (p as any).adminOnly === true;
+        return p.adminOnly === true;
       }
 
       // Para otros roles, NO mostrar opciones adminOnly
-      if ((p as any).adminOnly) {
+      if (p.adminOnly) {
         return false;
       }
 
@@ -119,7 +128,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  handleProcessClick(process: any): void {
+  handleProcessClick(process: OpcionProceso): void {
   const currentRole = this.roleLower ?? 'estudiante';
 
   // Caso especial: opciones del panel de administración

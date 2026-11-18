@@ -209,7 +209,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 
 ## Fase 6 — Angular moderno y tipado
 
-- [ ] **Tipado**: quedan 183 `any` (2026-11-17) en 46 archivos, 100 de ellos en specs. Los que más tienen: `estudiante/paz-salvo.component.spec` (22), `modulo-estadistico.acceptance.spec` (9), `estudiante/pruebas-ecaes.component.spec` (9), `form-usuario` (8), `estudiante/reingreso` (8), `estudiante/pruebas-ecaes` (7). Reemplazarlos por las interfaces de `core/models` y, al llegar a 0, pasar `no-explicit-any` a `error`
+- [ ] **Tipado**: quedan 60 `any` (2026-11-17), todos en specs (eran 183 en 46 archivos). Los que más tienen: `estudiante/paz-salvo.component.spec` (22), `modulo-estadistico.acceptance.spec` (9), `estudiante/pruebas-ecaes.component.spec` (9) y `paz-salvo.acceptance.spec` (7). Reemplazarlos por las interfaces de `core/models` y, al llegar a 0, pasar `no-explicit-any` a `error`
   - [x] `core` (2026-11-17): 64 `any` menos (183 → 119); ya no queda ninguno en `core`
     - `AuthService.getUsuario()`/`setUsuario()` usan `UsuarioSesion`. Eso destapó campos que el login nunca devuelve: `usuario.id` (notificaciones) y `usuario.nombre` (paz y salvo) se borran; el correo del header queda en `''` si no llega
     - `ErrorHandlerService` recibe `unknown` y lee estado y cuerpo con una función `leerError`; ya no falla si le llega `null`
@@ -223,7 +223,20 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - `utfFix` es genérico (`transform<T>`); `ver-comentarios-dialog` tipa sus documentos con `DocumentoConComentario`
     - Specs: diálogos simulados con `MatDialogRef<unknown>` y elementos del DOM con `querySelectorAll<HTMLElement>`
     - Sin cambios visibles esperados
-  - [ ] `pages` y `login`: quedan 100 `any` en 17 archivos, 71 de ellos en specs (estudiante/paz-salvo.spec 22, modulo-estadistico.acceptance 9, estudiante/pruebas-ecaes.spec 9, form-usuario 8, estudiante/reingreso 8…)
+  - [x] `pages` y `login`, código (2026-11-17): ya no queda ningún `any` fuera de los specs. Lint: 100 → 60 avisos
+    - `usuario.interface.ts` pasa a ser igual que los DTO del backend: la petición es plana (`id_rol`, `id_programa`, `estado_usuario` booleano) y la respuesta trae `rol`, no `objRol`. `procesos.model` ya no tiene su propio `UsuarioDTOPeticion` y usa ese. `form-usuario` y `manage-users` usan `UsuarioDTOPeticion`/`UsuarioDTORespuesta`, `RolDTORespuesta` y `ProgramaDTORespuesta`
+    - Homologación, reingreso y ECAES del estudiante leen el usuario con `AuthService.getUsuario()` (`UsuarioSesion`, que gana `cedula` y `estado_usuario`) en lugar de leer `localStorage`, y arman `objUsuario` con la nueva [usuarioParaSolicitud](src/app/core/utils/usuario-solicitud.util.ts) (spec con 2 pruebas). Antes buscaban `objRol`, `id_rol` o `email_usuario`, que no existen, y en homologación y reingreso mandaban siempre `id_rol: 1` (Administrador); ahora mandan el rol real. El backend toma al solicitante del token, así que no cambia nada para el usuario
+    - Las filas del seguimiento leen `estadosSolicitud` y `comentario` (antes `estado_actual` y `comentarios`, que no llegan)
+    - `subirPDF` devuelve `PdfSubido` (igual que `PdfSubidoDTORespuesta`); ECAES lee `ruta` sin probar 6 nombres
+    - Reingreso: los ayudantes del oficio usan `OficioRespuesta`. El backend no manda fecha de los oficios, así que se quita su ordenación por fecha (no hacía nada) y los campos que nunca llegaban (`path`, `tipo…`, `id_documento`…). `SolicitudReingresoDTORespuesta`, `EstadoSolicitudDTORespuesta` y `DocumentosDTORespuesta` tienen las fechas como `string`, como llegan en el JSON
+    - Login: el error 429 del interceptor es `ErrorLimiteLogin`, con la guarda `esErrorLimiteLogin`. Inicio: `OpcionProceso` con `adminOnly`. Historial: `HistorialSolicitud`
+    - Se borra `mostrarOficiosEnUI` de homologación, que nadie llamaba
+    - Verificado: `ng build` sin avisos, 589/589 (56 specs), `test:navegacion` sin backend correcto
+    - Cambios visibles esperados:
+      - Admin, editar usuario: el campo **Estado** sale lleno (Activo/Inactivo). Antes salía vacío porque el backend manda un booleano y el select usa 1/0
+      - Mi perfil: las iniciales salen del nombre completo (antes siempre "U") y se quita la fila **Teléfono**, que el backend no tiene y siempre decía "No disponible"
+  - [ ] Specs de `pages`: quedan 60 `any` en 8 specs (estudiante/paz-salvo.spec 22, modulo-estadistico.acceptance 9, estudiante/pruebas-ecaes.spec 9, paz-salvo.acceptance 7, reingreso.spec 5, cursos-intersemestrales.acceptance 5, cursos-intersemestrales.spec 4, manage-processes.spec 1)
+  - Pendiente visto al tipar: en homologación del estudiante, el aviso "Solicitud rechazada" compara el estado con `'Rechazada'`, pero llega el código `RECHAZADA`, así que nunca aparece. Arreglarlo al extraer `SolicitudEstudianteComponent` (Fase 3)
 - [x] **Suscripciones** (2026-11-13): hay 244 `.subscribe(` fuera de los specs. Se revisaron todas las que no terminan solas (`$` de servicios, `valueChanges`, `router.events`, `route.params`, `interval`); las HTTP y `afterClosed()` terminan solas
   - Fugas reales corregidas: **configurar-periodo** se suscribía a `periodoActual$` (un `BehaviorSubject` de un servicio raíz) sin soltarlo, así que cada visita sumaba un suscriptor. Ahora se suscribe una vez en `ngOnInit` con `takeUntilDestroyed`, igual que `valueChanges`. **breadcrumb** escuchaba `router.events` sin cortar
   - Las 108 `takeUntil(this.destroy$)` de 18 componentes pasan por script a `takeUntilDestroyed(this.destroyRef)`, que ya usaban otras 50. Se borran los `Subject` `destroy$` y los `ngOnDestroy` que solo hacían `next()`/`complete()` (en los dashboards estadísticos se quedan para destruir los gráficos). Ya no queda ningún `takeUntil(`
@@ -261,7 +274,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [x] ESLint con `ng add @angular-eslint/schematics` (angular-eslint 19.8.1, ESLint 9): [eslint.config.js](eslint.config.js) con los presets recomendados de TypeScript y Angular (también plantillas y accesibilidad), más `no-explicit-any` (aviso), `no-unused-vars` (error; se permite un `_` delante y los `catch` sin usar) y `@angular-eslint/prefer-inject` (aviso). Script `npm run lint` (`ng lint`)
   - Errores corregidos: 0 errores al cerrar (había 489, la mayoría de estilo y arreglados con `--fix`). A mano: 84 variables, imports y parámetros sin usar; 9 `if`/`else` vacíos (restos de `console.error` borrados en `periodos-academicos.service` y `cursos-verano-dashboard`); constructores y `ngOnInit` vacíos; el `@Output() toggle` del sidebar, que nadie escuchaba; un `eslint-disable` de una regla que no existe
   - Accesibilidad (plantillas): las 6 fechas de ECAES del funcionario tienen `label for`/`id`; los ítems de notificación (header y guía) se pueden enfocar y abrir con Enter (`tabindex="0"`, `role="button"`, `keydown.enter`)
-  - **Avisos pendientes (2026-11-17, después de secretaría y ECAES): 183**, todos `no-explicit-any`. Después de secretaría eran 186. Los `prefer-inject` ya son 0 y la regla está en `error`. Después de input()/output() eran 204 y después de control flow, 209
+  - **Avisos pendientes (2026-11-17, después de tipar el código): 60**, todos `no-explicit-any` en specs. Después de secretaría y ECAES eran 183. Después de secretaría eran 186. Los `prefer-inject` ya son 0 y la regla está en `error`. Después de input()/output() eran 204 y después de control flow, 209
   - Antes, después de reducir `document-generator.service`: 493 = 282 `prefer-inject` (Fase 6, inyección) + 211 `no-explicit-any` (Fase 6, tipado). Después de quitar `HttpClient` de los componentes eran 501 (283 + 218); después de la Fase 3 de homologación y reingreso eran 509 (286 + 223) y al cerrar la Fase 7, 539 (306 + 233). Cuando bajen a 0, pasar las dos reglas a `error`
 - [ ] Prettier más `.prettierrc` (ya existe `.editorconfig`)
 - [x] CI en GitHub Actions: [.github/workflows/ci.yml](.github/workflows/ci.yml) corre en cada push y PR a `main` (Node 22): `npm ci` (sin bajar el binario de Cypress), `npm run lint`, `ng build` y `ng test --watch=false --browsers=ChromeHeadlessCI`
@@ -270,7 +283,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [ ] Cobertura mínima en `karma.conf.js` (por ejemplo 60 %)
 - [ ] Opcional: Husky con lint-staged para correr lint antes de cada commit
 - [ ] README: sección de arquitectura (core/shared/pages, el patrón de revisión por rol), variables de entorno y la lista de scripts de test
-- [ ] Revisar que las pruebas que existen sigan pasando después de cada fase (hay 55 specs con 587 pruebas, al 2026-11-17, y 11 pruebas de Cypress)
+- [ ] Revisar que las pruebas que existen sigan pasando después de cada fase (hay 56 specs con 589 pruebas, al 2026-11-17, y 11 pruebas de Cypress)
 
 ---
 

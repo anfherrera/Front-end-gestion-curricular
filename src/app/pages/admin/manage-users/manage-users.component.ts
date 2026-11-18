@@ -18,6 +18,7 @@ import { corregirEncodingObjeto } from '@core/utils/encoding.utils';
 import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { UsuarioDTORespuesta } from '@core/models/usuario.interface';
 
 @Component({
   selector: 'app-manage-users',
@@ -43,7 +44,7 @@ export class ManageUsersComponent implements OnInit {
   private snackbar = inject(SnackbarService);
 
   private readonly dialog = inject(MatDialog);
-  usuarios: any[] = [];
+  usuarios: UsuarioDTORespuesta[] = [];
   displayedColumns: string[] = ['id_usuario', 'nombre_completo', 'correo', 'rol', 'estado', 'acciones'];
   loading = false;
   searchTerm = '';
@@ -56,7 +57,7 @@ export class ManageUsersComponent implements OnInit {
     this.loading = true;
     
     this.usuariosService.listarUsuarios().subscribe({
-      next: (data: any) => {
+      next: (data) => {
         // Corregir encoding de caracteres especiales (tildes, ñ, etc.)
         this.usuarios = corregirEncodingObjeto(data);
         this.loading = false;
@@ -92,7 +93,7 @@ export class ManageUsersComponent implements OnInit {
   /**
    * Cambia el estado de un usuario (activo <-> inactivo)
    */
-  cambiarEstado(usuario: any): void {
+  cambiarEstado(usuario: UsuarioDTORespuesta): void {
     const nuevoEstado = !usuario.estado_usuario ? 'activar' : 'desactivar';
     
     confirmar(this.dialog, {
@@ -122,7 +123,7 @@ export class ManageUsersComponent implements OnInit {
     });
   }
 
-  eliminarUsuario(usuario: any): void {
+  eliminarUsuario(usuario: UsuarioDTORespuesta): void {
     confirmar(this.dialog, {
       titulo: 'Eliminar usuario', textoConfirmar: 'Eliminar', peligro: true,
       mensaje: `¿Está seguro de ELIMINAR al usuario "${usuario.nombre_completo}"?\n\nEsta acción no se puede deshacer.`

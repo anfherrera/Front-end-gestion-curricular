@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { AuthService } from '@core/services/auth.service';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 
 @Component({
@@ -24,7 +25,7 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 export class PerfilComponent implements OnInit {
   private authService = inject(AuthService);
 
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
   userRole = 'Usuario';
 
   ngOnInit(): void {
@@ -47,43 +48,28 @@ export class PerfilComponent implements OnInit {
   }
 
   getUserInitials(): string {
-    if (!this.usuario?.nombre) return 'U';
-    const names = this.usuario.nombre.split(' ');
-    if (names.length >= 2) {
-      return (names[0][0] + names[1][0]).toUpperCase();
+    const nombres = this.usuario?.nombre_completo?.trim().split(/\s+/) ?? [];
+    if (!nombres[0]) return 'U';
+    if (nombres.length >= 2) {
+      return (nombres[0][0] + nombres[1][0]).toUpperCase();
     }
-    return this.usuario.nombre.substring(0, 2).toUpperCase();
+    return nombres[0].substring(0, 2).toUpperCase();
   }
 
   getNombreCompleto(): string {
-    if (!this.usuario) return 'Usuario';
-    if (this.usuario.nombre_completo) return this.usuario.nombre_completo;
-    if (this.usuario.nombre && this.usuario.apellido) {
-      return `${this.usuario.nombre} ${this.usuario.apellido}`;
-    }
-    return this.usuario.nombre || 'Usuario';
+    return this.usuario?.nombre_completo || 'Usuario';
   }
 
   getEmail(): string {
-    return this.usuario?.email || this.usuario?.correo || 'No disponible';
+    return this.usuario?.correo || 'No disponible';
   }
 
   getCodigo(): string {
-    return this.usuario?.codigo || this.usuario?.codigo_usuario || this.usuario?.codigo_estudiante || 'No disponible';
-  }
-
-  getTelefono(): string {
-    return this.usuario?.telefono || 'No disponible';
+    return this.usuario?.codigo || 'No disponible';
   }
 
   getPrograma(): string {
-    if (this.usuario?.objPrograma?.nombre_programa) {
-      return this.usuario.objPrograma.nombre_programa;
-    }
-    if (this.usuario?.programa) {
-      return this.usuario.programa;
-    }
-    return 'No disponible';
+    return this.usuario?.objPrograma?.nombre_programa || 'No disponible';
   }
 }
 

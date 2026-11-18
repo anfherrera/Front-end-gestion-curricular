@@ -142,7 +142,7 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         nombre_solicitud: 'Solicitud ECAES - Test',
         fecha_registro_solicitud: new Date().toISOString(),
         periodo_academico: '2025-1',
-        objUsuario: { id_usuario: 1, nombre_completo: 'Test', codigo: '123', cedula: '123', correo: 't@t.co', estado_usuario: true },
+        objUsuario: { id_usuario: 1, nombre_completo: 'Test', codigo: '123', cedula: '123', correo: 't@t.co', estado_usuario: true, id_rol: 2, id_programa: 1 },
         tipoDocumento: 'CC',
         numero_documento: '123',
         fecha_expedicion: '2020-01-01',

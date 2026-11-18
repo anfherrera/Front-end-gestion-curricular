@@ -12,7 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-import { PruebasEcaesService, FechaEcaes, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
 import { ArchivosService } from '@core/services/archivos.service';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
@@ -30,6 +32,16 @@ import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
 import { SnackbarService } from '@core/services/snackbar.service';
+
+/** Valores del formulario de preregistro. */
+interface FormularioEcaes {
+  tipoDocumento: string;
+  numero_documento: string;
+  fecha_expedicion: Date;
+  fecha_nacimiento: Date;
+}
+
+type DocumentoEcaes = SolicitudEcaesRequest['documentos'][number];
 
 @Component({
   selector: 'app-pruebas-ecaes',
@@ -85,7 +97,7 @@ export class PruebasEcaesComponent implements OnInit {
   solicitudForm: FormGroup;
   archivos: Archivo[] = [];
   enviandoSolicitud = false;
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
 
   // Seguimiento de solicitudes
   solicitudes: Solicitud[] = [];
@@ -106,10 +118,8 @@ export class PruebasEcaesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Recuperamos usuario del localStorage
-    const usuarioLS = localStorage.getItem('usuario');
-    if (usuarioLS) {
-      this.usuario = JSON.parse(usuarioLS);
+    this.usuario = this.authService.getUsuario();
+    if (this.usuario) {
       this.logger.log('Usuario cargado desde localStorage:', this.usuario);
       
       // Establecer valor por defecto del número de documento
@@ -272,8 +282,8 @@ export class PruebasEcaesComponent implements OnInit {
     });
   }
 
-  private async subirArchivos(): Promise<any[]> {
-    const archivosSubidos: any[] = [];
+  private async subirArchivos(): Promise<DocumentoEcaes[]> {
+    const archivosSubidos: DocumentoEcaes[] = [];
 
     for (const archivo of this.archivos) {
       try {
@@ -291,11 +301,8 @@ export class PruebasEcaesComponent implements OnInit {
           throw new Error(`No se recibió respuesta del servidor para el archivo ${archivo.nombre}`);
         }
 
-        // Normalizar posible nombre de propiedad que contiene la ruta en la respuesta del backend
-  const r: any = response as any;
-  const ruta = r.ruta_documento ?? r.rutaDocumento ?? r.ruta ?? r.path ?? r.url ?? r.data?.ruta_documento ?? r.data?.path ?? null;
-
-  this.logger.debug('Ruta detectada en respuesta:', ruta, ' (response keys):', Object.keys(r || {}));
+        const ruta = response.ruta || null;
+        this.logger.debug('Ruta detectada en respuesta:', ruta);
 
         if (!ruta) {
           // Si la ruta no está presente, lanzamos un error claro para evitar enviar un body inválido
@@ -334,12 +341,9 @@ export class PruebasEcaesComponent implements OnInit {
     throw new Error(`No se pudo obtener el archivo ${archivo.nombre}. Asegúrese de que el archivo fue seleccionado correctamente.`);
   }
 
-  private crearSolicitudConArchivos(formValue: any, archivosSubidos: any[]): void {
-    // Obtener nombre completo del usuario
-    const nombreCompleto = this.usuario?.nombre_completo || 
-                          this.usuario?.nombre || 
-                          'Usuario';
-    const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+  private crearSolicitudConArchivos(formValue: FormularioEcaes, archivosSubidos: DocumentoEcaes[]): void {
+    const usuario = this.usuario!;
+    const nombreFinal = usuario.nombre_completo?.trim() || 'Usuario';
     
     // Formato: "Solicitud ECAES - [nombre del estudiante]"
     const nombreSolicitud = `Solicitud ECAES - ${nombreFinal}`;
@@ -348,22 +352,12 @@ export class PruebasEcaesComponent implements OnInit {
     const periodoActual = this.periodosService.getPeriodoActualValue();
     const periodoAcademico = periodoActual?.valor || getPeriodoActual();
     
-    const solicitud = {
+    const solicitud: SolicitudEcaesRequest = {
       nombre_solicitud: nombreSolicitud,
       fecha_registro_solicitud: new Date().toISOString(),
       periodo_academico: periodoAcademico, // Obligatorio
       fecha_ceremonia: null, // Opcional, se puede agregar un campo en el formulario si es necesario
-      objUsuario: {
-        id_usuario: this.usuario.id_usuario,
-        nombre_completo: this.usuario.nombre_completo,
-        codigo: this.usuario.codigo,
-        cedula: this.usuario.cedula || this.usuario.codigo, // Usar cedula si existe, sino codigo
-        correo: this.usuario.correo || this.usuario.email_usuario,
-        estado_usuario: this.usuario.estado_usuario,
-        // Enviar solo los identificadores que el backend ahora espera
-        id_rol: this.usuario.id_rol ?? this.usuario.objRol?.id_rol ?? this.usuario.rol?.id_rol ?? 1,
-        id_programa: this.usuario.id_programa ?? this.usuario.objPrograma?.id_programa ?? 1
-      },
+      objUsuario: usuarioParaSolicitud(usuario),
       tipoDocumento: formValue.tipoDocumento,
       numero_documento: formValue.numero_documento,
       fecha_expedicion: formValue.fecha_expedicion.toISOString(),
@@ -443,11 +437,11 @@ export class PruebasEcaesComponent implements OnInit {
     }
 
     this.logger.debug('Usuario encontrado:', this.usuario);
-    this.logger.debug('Rol:', this.usuario.rol.nombre);
+    this.logger.debug('Rol:', this.usuario.rol?.nombre);
     this.logger.debug('ID Usuario:', this.usuario.id_usuario);
 
     // Usar el endpoint específico por rol y usuario
-    this.pruebasEcaesService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario).pipe(
+    this.pruebasEcaesService.listarSolicitudesPorRol((this.usuario.rol?.nombre ?? '').toUpperCase(), this.usuario.id_usuario).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (data) => {

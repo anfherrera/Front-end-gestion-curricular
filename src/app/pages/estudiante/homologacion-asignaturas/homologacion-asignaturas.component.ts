@@ -10,7 +10,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { descargarBlob, nombreDeContentDisposition } from '@core/utils/download.util';
 
-import { Archivo, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { Archivo, SolicitudHomologacionDTOPeticion, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
 import { RequestStatusTableComponent } from "@shared/components/request-status/request-status.component";
 import { FileUploadComponent } from "@shared/components/file-upload-dialog/file-upload-dialog.component";
 import { RequiredDocsComponent } from "@shared/components/required-docs/required-docs.component";
@@ -83,7 +85,7 @@ export class HomologacionAsignaturasComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   solicitudesCompletas: SolicitudHomologacionDTORespuesta[] = [];
 
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
   solicitudForm: FormGroup;
 
   constructor() {
@@ -101,10 +103,8 @@ export class HomologacionAsignaturasComponent implements OnInit {
       this.documentosRequeridos[0].formatoDisponibleUrl = homologacion.url;
     }
 
-    // Recuperamos usuario del localStorage
-    const usuarioLS = localStorage.getItem('usuario');
-    if (usuarioLS) {
-      this.usuario = JSON.parse(usuarioLS);
+    this.usuario = this.authService.getUsuario();
+    if (this.usuario) {
       this.logger.debug('Usuario cargado desde localStorage', this.usuario);
     } else {
       this.logger.warn('No se encontró usuario en localStorage');
@@ -187,10 +187,8 @@ export class HomologacionAsignaturasComponent implements OnInit {
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
         // Obtener nombre completo del usuario
-        const nombreCompleto = this.usuario?.nombre_completo ||
-                               this.usuario?.nombre ||
-                               'Usuario';
-        const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+        const usuario = this.usuario!;
+        const nombreFinal = usuario.nombre_completo?.trim() || 'Usuario';
 
         // Obtener período académico actual
         const periodoActual = this.periodosService.getPeriodoActualValue();
@@ -200,25 +198,12 @@ export class HomologacionAsignaturasComponent implements OnInit {
         const programaOrigen = this.solicitudForm.get('programa_origen')?.value?.trim() || null;
         const programaDestino = this.solicitudForm.get('programa_destino')?.value?.trim() || null;
 
-        const solicitud = {
+        const solicitud: SolicitudHomologacionDTOPeticion = {
           nombre_solicitud: `Solicitud Homologación - ${nombreFinal}`,
           fecha_registro_solicitud: new Date().toISOString(),
           periodo_academico: periodoAcademico, // Obligatorio
           fecha_ceremonia: null, // Opcional, se puede agregar un campo en el formulario si es necesario
-          objUsuario: {
-            id_usuario: this.usuario.id_usuario,
-            nombre_completo: this.usuario.nombre_completo,
-            codigo: this.usuario.codigo,
-            cedula: this.usuario.cedula || this.usuario.codigo, // Usar cedula si existe, sino codigo
-            correo: this.usuario.correo || this.usuario.email_usuario,
-            // FIX: Agregar id_rol e id_programa como campos requeridos por el backend
-            id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1, // 1 = ESTUDIANTE por defecto
-            id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-            objPrograma: this.usuario.objPrograma || {
-              id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-              nombre_programa: this.usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
-            }
-          },
+          objUsuario: usuarioParaSolicitud(usuario),
           archivos: archivosSubidos,
           programa_origen: programaOrigen,
           programa_destino: programaDestino
@@ -281,7 +266,7 @@ listarSolicitudes() {
     idUsuario: this.usuario.id_usuario
   });
 
-  this.homologacionService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario)
+  this.homologacionService.listarSolicitudesPorRol((this.usuario.rol?.nombre ?? '').toUpperCase(), this.usuario.id_usuario)
     .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
     next: (data) => {
@@ -306,21 +291,18 @@ listarSolicitudes() {
         primeraSolicitud: data.length > 0 ? data[0] : null
       });
 
-      this.solicitudes = data.map((sol: any) => {
+      this.solicitudes = data.map((sol) => {
         this.logger.debug('Procesando solicitud', sol);
 
-        const estados = sol.estado_actual || sol.estadosSolicitud || [];
+        const estados = sol.estadosSolicitud ?? [];
         const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
-        const rutaArchivo = sol.documentos?.length > 0 ? sol.documentos[0].ruta : '';
-
-        const solicitudTransformada = {
+        const solicitudTransformada: Solicitud = {
           id: sol.id_solicitud,
           nombre: sol.nombre_solicitud,
           fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
           estado: ultimoEstado?.estado_actual || 'Pendiente',
-          rutaArchivo,
-          comentarios: ultimoEstado?.comentarios || ''
+          comentarios: ultimoEstado?.comentario || ''
         };
 
         this.logger.debug('Solicitud transformada', solicitudTransformada);
@@ -549,7 +531,7 @@ private intentarDescargaConNombresComunes(idSolicitud: number, nombreArchivo: st
 
   // Obtener información del usuario para generar nombres
   const usuario = this.usuario;
-  const codigoUsuario = usuario?.codigo || usuario?.codigo_estudiante || 'SIN_CODIGO';
+  const codigoUsuario = usuario?.codigo || 'SIN_CODIGO';
   const año = new Date().getFullYear();
 
   // Nombres comunes a probar
@@ -578,21 +560,6 @@ private probarNombresSecuencial(nombres: string[], index: number, nombreDescarga
   this.logger.debug(`Probando nombre ${index + 1}/${nombres.length}`, { nombre, index, total: nombres.length });
 
   this.descargarArchivoPorNombre(nombre, nombreDescarga, idSolicitud);
-}
-
-
-/**
- * Mostrar oficios en la UI
- */
-private mostrarOficiosEnUI(oficios: any[]): void {
-  this.logger.debug('Mostrando oficios en UI', oficios);
-
-  if (!oficios || oficios.length === 0) {
-    this.snackbar.info('No hay oficios disponibles');
-    return;
-  }
-
-  this.snackbar.exito(`Se encontraron ${oficios.length} oficio(s) disponible(s)`);
 }
 
 }

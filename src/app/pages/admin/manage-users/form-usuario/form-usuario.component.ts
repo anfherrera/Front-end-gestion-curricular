@@ -10,12 +10,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { UsuariosService } from '@core/services/usuarios.service';
 import { RolesAdminService } from '@core/services/roles-admin.service';
 import { ProgramasService } from '@core/services/programas.service';
 import { corregirEncodingObjeto } from '@core/utils/encoding.utils';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { UsuarioDTOPeticion } from '@core/models/usuario.interface';
+import { RolDTORespuesta } from '@core/models/rol.interface';
+import { ProgramaDTORespuesta } from '@core/models/programa.interface';
 
 @Component({
   selector: 'app-form-usuario',
@@ -47,8 +51,8 @@ export class FormUsuarioComponent implements OnInit {
   isEditMode = false;
   usuarioId?: number;
   loading = false;
-  roles: any[] = [];
-  programas: any[] = [];
+  roles: RolDTORespuesta[] = [];
+  programas: ProgramaDTORespuesta[] = [];
 
   constructor() {
     this.usuarioForm = this.fb.group({
@@ -116,18 +120,19 @@ export class FormUsuarioComponent implements OnInit {
     
     this.loading = true;
     this.usuariosService.buscarUsuarioPorId(this.usuarioId).subscribe({
-      next: (data: any) => {
+      next: (data) => {
         // Corregir encoding de tildes y caracteres especiales
         const usuarioCorregido = corregirEncodingObjeto(data);
-        
+
         // Llenar el formulario con TODOS los datos del usuario
         this.usuarioForm.patchValue({
           codigo: usuarioCorregido.codigo || '',
           nombre_completo: usuarioCorregido.nombre_completo || '',
           correo: usuarioCorregido.correo || '',
-          estado_usuario: usuarioCorregido.estado_usuario !== undefined ? usuarioCorregido.estado_usuario : 1,
-          id_rol: usuarioCorregido.objRol?.id_rol || usuarioCorregido.rol?.id_rol || '',
-          id_programa: usuarioCorregido.objPrograma?.id_programa || usuarioCorregido.programa?.id_programa || ''
+          // El backend manda un booleano y el select usa 1 y 0
+          estado_usuario: usuarioCorregido.estado_usuario === false ? 0 : 1,
+          id_rol: usuarioCorregido.rol?.id_rol || '',
+          id_programa: usuarioCorregido.objPrograma?.id_programa || ''
         });
         
         // NO llenar el campo password para que quede vacío (indicando que no se cambiará)
@@ -156,8 +161,7 @@ export class FormUsuarioComponent implements OnInit {
     this.loading = true;
     const formValue = this.usuarioForm.value;
     
-    // FORMATO SIMPLE - SOLO IDs (backend actualizado)
-    const usuarioData: any = {
+    const usuarioData: UsuarioDTOPeticion = {
       codigo: formValue.codigo,
       cedula: formValue.codigo,  // Usar el mismo valor de codigo para cedula
       nombre_completo: formValue.nombre_completo,
@@ -192,14 +196,14 @@ export class FormUsuarioComponent implements OnInit {
     }
   }
 
-  private crearUsuario(data: any): void {
+  private crearUsuario(data: UsuarioDTOPeticion): void {
     this.usuariosService.crearUsuario(data).subscribe({
       next: () => {
         // Usuario creado
         this.snackbar.exito('Usuario creado exitosamente');
         this.router.navigate(['/admin/manage-users']);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackbar.error('Error: ' + mensaje);
         this.loading = false;
@@ -207,14 +211,14 @@ export class FormUsuarioComponent implements OnInit {
     });
   }
 
-  private actualizarUsuario(data: any): void {
+  private actualizarUsuario(data: UsuarioDTOPeticion): void {
     this.usuariosService.actualizarUsuario(data).subscribe({
       next: () => {
         // Usuario actualizado
         this.snackbar.exito('Usuario actualizado exitosamente');
         this.router.navigate(['/admin/manage-users']);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackbar.error('Error: ' + mensaje);
         this.loading = false;

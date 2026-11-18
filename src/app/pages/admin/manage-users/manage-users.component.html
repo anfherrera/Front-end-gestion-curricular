@@ -65,8 +65,8 @@
           <ng-container matColumnDef="rol">
             <th mat-header-cell *matHeaderCellDef>Rol</th>
             <td mat-cell *matCellDef="let usuario">
-              <span class="badge-rol" [ngClass]="getRolClass(usuario.rol?.nombre || usuario.objRol?.nombre)">
-                {{ usuario.rol?.nombre || usuario.objRol?.nombre || 'Sin rol' }}
+              <span class="badge-rol" [ngClass]="getRolClass(usuario.rol?.nombre ?? '')">
+                {{ usuario.rol?.nombre || 'Sin rol' }}
               </span>
             </td>
           </ng-container>

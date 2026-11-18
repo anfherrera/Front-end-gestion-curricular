@@ -13,7 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 
-import { HistorialSolicitudesService, HistorialResponse, FiltrosHistorial } from '@core/services/historial-solicitudes.service';
+import { HistorialSolicitudesService, HistorialResponse, HistorialSolicitud, FiltrosHistorial } from '@core/services/historial-solicitudes.service';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
@@ -158,7 +158,7 @@ export class HistorialCompletoComponent implements OnInit {
   /**
    * Obtiene el estado actual desde el array de estados
    */
-  obtenerEstadoActual(solicitud: any): string {
+  obtenerEstadoActual(solicitud: HistorialSolicitud): string {
     if (solicitud.estado_actual) {
       return solicitud.estado_actual;
     }
@@ -257,7 +257,7 @@ export class HistorialCompletoComponent implements OnInit {
    * @param solicitud Solicitud del historial
    * @returns ID único de la solicitud
    */
-  trackBySolicitudId(index: number, solicitud: any): number {
+  trackBySolicitudId(index: number, solicitud: HistorialSolicitud): number {
     return solicitud.id_solicitud || index;
   }
 }

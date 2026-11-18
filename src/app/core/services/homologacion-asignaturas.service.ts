@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
+import { SolicitudHomologacionDTOPeticion, SolicitudHomologacionDTORespuesta } from '../models/procesos.model';
 import { SolicitudesAprobacionService } from './base/solicitudes-aprobacion.service';
 
 /** Solicitudes de homologación de asignaturas. */
@@ -18,7 +18,7 @@ export class HomologacionAsignaturasService extends SolicitudesAprobacionService
     });
   }
 
-  crearSolicitud(solicitud: unknown): Observable<unknown> {
+  crearSolicitud(solicitud: SolicitudHomologacionDTOPeticion): Observable<unknown> {
     return this.http.post(`${this.apiUrl}/crearSolicitud-Homologacion`, solicitud);
   }
 

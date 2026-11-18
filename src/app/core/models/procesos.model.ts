@@ -1,4 +1,5 @@
 import { UserRole } from '../enums/roles.enum';
+import { UsuarioDTOPeticion } from './usuario.interface';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado' | 'error';
 
@@ -135,7 +136,7 @@ export interface SolicitudReingresoDTOPeticion {
 export interface SolicitudReingresoDTORespuesta {
   id_solicitud: number;
   nombre_solicitud: string;
-  fecha_registro_solicitud: Date;
+  fecha_registro_solicitud: string;
   periodo_academico: string; // Obligatorio, formato YYYY-P
   fecha_ceremonia?: string | null; // Opcional
   estadosSolicitud: EstadoSolicitudDTORespuesta[];
@@ -160,21 +161,8 @@ export interface EstadoSolicitudDTOPeticion {
 export interface EstadoSolicitudDTORespuesta {
   id_estado: number;
   estado_actual: string;
-  fecha_registro_estado: Date;
+  fecha_registro_estado: string;
   comentario?: string;
-}
-
-export interface UsuarioDTOPeticion {
-  id_usuario: number;
-  nombre_completo: string;
-  rol: Rol;
-  codigo: string;
-  cedula: string; // Obligatorio, 5-20 caracteres, solo números
-  correo: string;
-  estado_usuario: boolean;
-  id_rol?: number; // Campo requerido por el backend
-  id_programa?: number; // Campo requerido por el backend
-  objPrograma: Programa;
 }
 
 export interface UsuarioDTORespuesta {
@@ -201,7 +189,7 @@ export interface DocumentosDTORespuesta {
   id_documento: number;
   nombre: string;
   ruta_documento: string;
-  fecha_documento: Date;
+  fecha_documento: string;
   esValido: boolean;
   comentario?: string;
 }

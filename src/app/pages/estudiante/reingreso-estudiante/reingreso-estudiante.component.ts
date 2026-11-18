@@ -24,6 +24,10 @@ import { Solicitud } from '@core/models/procesos.model';
 import { normalizarNombreArchivo, coincidenPorPalabrasClave } from '@core/utils/texto.util';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { AuthService } from '@core/services/auth.service';
+import { UsuarioSesion } from '@core/models/usuario-sesion.model';
+import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
+import { OficioRespuesta } from '@core/services/base/solicitudes-base.service';
 
 /** Palabras que identifican cada documento requerido, para reconocer archivos con otro nombre. */
 const PALABRAS_CLAVE_DOCUMENTOS: Record<string, string[]> = {
@@ -51,6 +55,7 @@ export class ReingresoEstudianteComponent implements OnInit {
   private reingresoService = inject(ReingresoEstudianteService);
   private formatosService = inject(FormatosInstitucionalesService);
   private snackbar = inject(SnackbarService);
+  private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private logger = inject(LoggerService);
   private errorHandler = inject(ErrorHandlerService);
@@ -78,7 +83,7 @@ export class ReingresoEstudianteComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   solicitudesCompletas: SolicitudReingresoDTORespuesta[] = [];
 
-  usuario: any = null;
+  usuario: UsuarioSesion | null = null;
 
   ngOnInit(): void {
     const reingreso = this.formatosService.getReingreso();
@@ -87,10 +92,8 @@ export class ReingresoEstudianteComponent implements OnInit {
       this.documentosRequeridos[0].formatoDisponibleUrl = reingreso.url;
     }
 
-    // Recuperamos usuario del localStorage
-    const usuarioLS = localStorage.getItem('usuario');
-    if (usuarioLS) {
-      this.usuario = JSON.parse(usuarioLS);
+    this.usuario = this.authService.getUsuario();
+    if (this.usuario) {
       this.logger.debug('Usuario cargado desde localStorage', this.usuario);
     } else {
       this.logger.warn('No se encontró usuario en localStorage');
@@ -173,10 +176,8 @@ export class ReingresoEstudianteComponent implements OnInit {
 
         // Paso 2: Crear la solicitud con los archivos ya subidos
         // Obtener nombre completo del usuario
-        const nombreCompleto = this.usuario?.nombre_completo ||
-                               this.usuario?.nombre ||
-                               'Usuario';
-        const nombreFinal = nombreCompleto.trim() !== '' ? nombreCompleto.trim() : 'Usuario';
+        const usuario = this.usuario!;
+        const nombreFinal = usuario.nombre_completo?.trim() || 'Usuario';
 
         // Obtener período académico actual
         const periodoActual = this.periodosService.getPeriodoActualValue();
@@ -187,22 +188,7 @@ export class ReingresoEstudianteComponent implements OnInit {
           fecha_registro_solicitud: new Date(),
           periodo_academico: periodoAcademico, // Obligatorio
           fecha_ceremonia: null, // Opcional, se puede agregar un campo en el formulario si es necesario
-          objUsuario: {
-            id_usuario: this.usuario.id_usuario,
-            nombre_completo: this.usuario.nombre_completo,
-            codigo: this.usuario.codigo,
-            cedula: this.usuario.cedula || this.usuario.codigo, // Usar cedula si existe, sino codigo
-            correo: this.usuario.correo || this.usuario.email_usuario,
-            rol: this.usuario.rol,
-            estado_usuario: this.usuario.estado_usuario,
-            // FIX: Agregar id_rol e id_programa como campos requeridos por el backend
-            id_rol: this.usuario.id_rol || this.usuario.objRol?.id_rol || 1,
-            id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-            objPrograma: this.usuario.objPrograma || {
-              id_programa: this.usuario.id_programa || this.usuario.objPrograma?.id_programa || 1,
-              nombre_programa: this.usuario.objPrograma?.nombre_programa || "Ingeniería de Sistemas"
-            }
-          },
+          objUsuario: usuarioParaSolicitud(usuario),
           documentos: archivosSubidos.map(archivo => ({
             nombre: archivo.nombre,
             fecha_documento: new Date(),
@@ -263,7 +249,7 @@ export class ReingresoEstudianteComponent implements OnInit {
       idUsuario: this.usuario.id_usuario
     });
 
-    this.reingresoService.listarSolicitudesPorRol(this.usuario.rol.nombre.toUpperCase(), this.usuario.id_usuario)
+    this.reingresoService.listarSolicitudesPorRol((this.usuario.rol?.nombre ?? '').toUpperCase(), this.usuario.id_usuario)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (data) => {
@@ -279,21 +265,16 @@ export class ReingresoEstudianteComponent implements OnInit {
         // Guardar las solicitudes completas para usar comentarios
         this.solicitudesCompletas = data;
 
-        this.solicitudes = data.map((sol: any) => {
-          // Procesando solicitud
-
-          const estados = sol.estado_actual || sol.estadosSolicitud || [];
+        this.solicitudes = data.map((sol) => {
+          const estados = sol.estadosSolicitud ?? [];
           const ultimoEstado = estados.length > 0 ? estados[estados.length - 1] : null;
 
-          const rutaArchivo = sol.documentos?.length > 0 ? sol.documentos[0].ruta : '';
-
-          const solicitudTransformada = {
+          const solicitudTransformada: Solicitud = {
             id: sol.id_solicitud,
             nombre: sol.nombre_solicitud,
             fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
             estado: ultimoEstado?.estado_actual || 'Pendiente',
-            rutaArchivo,
-            comentarios: ultimoEstado?.comentarios || ''
+            comentarios: ultimoEstado?.comentario || ''
           };
 
           this.logger.debug('Solicitud transformada', solicitudTransformada);
@@ -451,22 +432,15 @@ export class ReingresoEstudianteComponent implements OnInit {
     });
   }
 
-  private seleccionarOficioReciente(oficios: any[], idSolicitud: number): any {
+  /** El backend no manda fecha de los oficios: se prefiere el primero que parezca generado. */
+  private seleccionarOficioReciente(oficios: OficioRespuesta[], idSolicitud: number): OficioRespuesta | null {
     if (!oficios || oficios.length === 0) {
       return null;
     }
-
-    const ordenados = [...oficios].sort((a, b) => {
-      const fechaA = this.parsearFechaDocumento(a?.fecha_documento);
-      const fechaB = this.parsearFechaDocumento(b?.fecha_documento);
-      return fechaB - fechaA;
-    });
-
-    const prioritario = ordenados.find(oficio => this.esOficioGenerado(oficio, idSolicitud));
-    return prioritario || ordenados[0];
+    return oficios.find(oficio => this.esOficioGenerado(oficio, idSolicitud)) || oficios[0];
   }
 
-  private parsearFechaDocumento(fecha: any): number {
+  private parsearFechaDocumento(fecha: Date | string | undefined): number {
     if (!fecha) {
       return 0;
     }
@@ -479,30 +453,22 @@ export class ReingresoEstudianteComponent implements OnInit {
     return isNaN(parsed) ? 0 : parsed;
   }
 
-  private construirCandidatosDescarga(oficio: any, idSolicitud: number): string[] {
+  private construirCandidatosDescarga(oficio: OficioRespuesta | null, idSolicitud: number): string[] {
     const candidatos = new Set<string>();
 
-    if (!oficio || typeof oficio !== 'object') {
+    if (!oficio) {
       return [];
     }
 
-    if (typeof oficio?.id === 'number') {
+    if (typeof oficio.id === 'number') {
       candidatos.add(`oficio_${oficio.id}.pdf`);
     }
 
-    if (typeof idSolicitud === 'number') {
-      candidatos.add(`oficio_${idSolicitud}.pdf`);
-      candidatos.add(`resolucion_${idSolicitud}.pdf`);
-      candidatos.add(`resolucion_reingreso_${idSolicitud}.pdf`);
-    }
+    candidatos.add(`oficio_${idSolicitud}.pdf`);
+    candidatos.add(`resolucion_${idSolicitud}.pdf`);
+    candidatos.add(`resolucion_reingreso_${idSolicitud}.pdf`);
 
-    [
-      oficio.ruta_documento,
-      oficio.ruta,
-      oficio.path,
-      oficio.nombreArchivo,
-      oficio.nombre
-    ].forEach(valor => {
+    [oficio.ruta, oficio.nombreArchivo, oficio.nombre].forEach(valor => {
       if (typeof valor === 'string' && valor.trim().length > 0) {
         candidatos.add(valor.trim());
       }
@@ -574,58 +540,15 @@ export class ReingresoEstudianteComponent implements OnInit {
     });
   }
 
-  private esOficioGenerado(oficio: any, idSolicitud: number): boolean {
-    if (!oficio || typeof oficio !== 'object') {
-      return false;
-    }
-
+  private esOficioGenerado(oficio: OficioRespuesta, idSolicitud: number): boolean {
     const patrones = /(resoluci[oó]n|oficio)/i;
-    const camposTexto = [
-      oficio.nombre,
-      oficio.nombreArchivo,
-      oficio.ruta_documento,
-      oficio.ruta,
-      oficio.path,
-      oficio.tipo,
-      oficio.tipoDocumento,
-      oficio.tipoDocumentoSolicitud,
-      oficio.tipoDocumentoSolicitudReingreso,
-      oficio.id,
-      oficio.id_documento,
-      oficio.idDocumento
-    ];
-
-    return camposTexto.some(valor => {
-      if (typeof valor === 'string') {
-        if (patrones.test(valor)) {
-          return true;
-        }
-        return valor.includes(`${idSolicitud}`);
-      }
-      if (typeof valor === 'number') {
-        return valor === idSolicitud;
-      }
-      return false;
-    });
+    const camposTexto = [oficio.nombre, oficio.nombreArchivo, oficio.ruta];
+    return oficio.id === idSolicitud ||
+      camposTexto.some(valor => typeof valor === 'string' && (patrones.test(valor) || valor.includes(`${idSolicitud}`)));
   }
 
-  private obtenerIdOficio(oficio: any): number | null {
-    if (!oficio || typeof oficio !== 'object') {
-      return null;
-    }
-
-    const posiblesClaves = ['id', 'id_documento', 'idDocumento', 'idOficio'];
-    for (const clave of posiblesClaves) {
-      const valor = oficio[clave];
-      if (typeof valor === 'number' && !isNaN(valor)) {
-        return valor;
-      }
-      if (typeof valor === 'string' && valor.trim() !== '' && !isNaN(Number(valor))) {
-        return Number(valor);
-      }
-    }
-
-    return null;
+  private obtenerIdOficio(oficio: OficioRespuesta | null): number | null {
+    return typeof oficio?.id === 'number' && !isNaN(oficio.id) ? oficio.id : null;
   }
 
   private descargarOficioPorId(idOficio: number, nombreArchivo: string, onError: () => void): void {
@@ -686,7 +609,7 @@ export class ReingresoEstudianteComponent implements OnInit {
 
     // Obtener información del usuario para generar nombres
     const usuario = this.usuario;
-    const codigoUsuario = usuario?.codigo || usuario?.codigo_estudiante || 'SIN_CODIGO';
+    const codigoUsuario = usuario?.codigo || 'SIN_CODIGO';
     const año = new Date().getFullYear();
 
     // Nombres comunes a probar

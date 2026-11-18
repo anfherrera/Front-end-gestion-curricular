@@ -24,18 +24,31 @@ export function getLoginCooldownRemainingSeconds(): number {
   return remaining > 0 ? remaining : 0;
 }
 
+/** Error que lanza el interceptor cuando el backend responde 429 al login. */
+export interface ErrorLimiteLogin {
+  status: number;
+  rateLimited: true;
+  retryAfterSeconds: number;
+  message: string;
+}
+
+export function esErrorLimiteLogin(error: unknown): error is ErrorLimiteLogin {
+  return typeof error === 'object' && error !== null && (error as ErrorLimiteLogin).rateLimited === true;
+}
+
 export const loginRateLimitInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 429) {
         const retryAfter = Number(error.headers.get('Retry-After')) || 60;
         saveCooldown(retryAfter);
-        return throwError(() => ({
+        const limite: ErrorLimiteLogin = {
           ...error,
           rateLimited: true,
           retryAfterSeconds: retryAfter,
           message: `Demasiados intentos. Intenta de nuevo en ${retryAfter} segundos.`
-        }));
+        };
+        return throwError(() => limite);
       }
       return throwError(() => error);
     })

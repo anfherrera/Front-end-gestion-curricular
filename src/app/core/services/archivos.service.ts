@@ -1,9 +1,22 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Archivo } from '../models/procesos.model';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { environment } from '@env/environment';
+
+/** Respuesta de POST /archivos/subir/pdf (`PdfSubidoDTORespuesta` del backend). */
+export interface PdfSubido {
+  id: number;
+  nombre: string;
+  ruta: string;
+  tamaño?: number;
+  tipo?: string;
+  fechaSubida?: string;
+  guardadoEnBD?: boolean;
+  inscripcionId?: string;
+  solicitudId?: string;
+  tipoSolicitud?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +32,7 @@ export class ArchivosService {
    * @param inscripcionId - ID de la inscripción (opcional pero recomendado para organización)
    * @param tipoSolicitud - Tipo de solicitud (opcional, se infiere de inscripcionId si no se proporciona)
    */
-  subirPDF(file: File, inscripcionId?: number, tipoSolicitud?: string): Observable<Archivo> {
+  subirPDF(file: File, inscripcionId?: number, tipoSolicitud?: string): Observable<PdfSubido> {
     const formData = new FormData();
     formData.append('file', file);
     
@@ -37,7 +50,7 @@ export class ArchivosService {
 
     // El JWT interceptor agrega automáticamente el token Authorization
     // No es necesario establecer headers manualmente aquí
-    return this.http.post<Archivo>(ApiEndpoints.ARCHIVOS.SUBIR_PDF, formData);
+    return this.http.post<PdfSubido>(ApiEndpoints.ARCHIVOS.SUBIR_PDF, formData);
   }
 
   /**
