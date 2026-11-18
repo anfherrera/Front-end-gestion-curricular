@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -36,7 +36,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     FechaPipe
 ],
   templateUrl: './detalle-solicitud.component.html',
-  styleUrls: ['../estados-solicitud-comun.css', './detalle-solicitud.component.css']
+  styleUrls: ['../estados-solicitud-comun.css', './detalle-solicitud.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DetalleSolicitudComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -45,34 +46,33 @@ export class DetalleSolicitudComponent implements OnInit {
   private archivosService = inject(ArchivosService);
   private snackbar = inject(SnackbarService);
 
-  solicitud: DetalleSolicitud | null = null;
-  loading = false;
-  error: string | null = null;
+  readonly solicitud = signal<DetalleSolicitud | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
     if (id) {
       this.cargarHistorial(Number(id));
     } else {
-      this.error = 'ID de solicitud no proporcionado';
+      this.error.set('ID de solicitud no proporcionado');
     }
   }
 
   cargarHistorial(id: number): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     this.historialService.obtenerHistorialSolicitud(id).subscribe({
       next: (data) => {
-        this.solicitud = data;
-        this.loading = false;
+        this.solicitud.set(data);
+        this.loading.set(false);
       },
       error: (err) => {
-        this.error = err.error?.error || 'Error al cargar el historial de la solicitud';
-        this.loading = false;
-        if (this.error) {
-          this.snackbar.error(this.error);
-        }
+        const mensaje: string = err.error?.error || 'Error al cargar el historial de la solicitud';
+        this.error.set(mensaje);
+        this.loading.set(false);
+        this.snackbar.error(mensaje);
       }
     });
   }

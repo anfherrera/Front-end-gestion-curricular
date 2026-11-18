@@ -7,14 +7,14 @@
         mat-raised-button
         color="primary"
         (click)="exportarPDF()"
-        [disabled]="exportandoPDF || loading">
-        @if (!exportandoPDF) {
+        [disabled]="exportandoPDF() || loading()">
+        @if (!exportandoPDF()) {
           <mat-icon>picture_as_pdf</mat-icon>
         }
-        @if (exportandoPDF) {
+        @if (exportandoPDF()) {
           <mat-spinner diameter="16" class="spinner-en-boton"></mat-spinner>
         }
-        <span>{{ exportandoPDF ? 'Generando PDF...' : 'Exportar PDF' }}</span>
+        <span>{{ exportandoPDF() ? 'Generando PDF...' : 'Exportar PDF' }}</span>
       </button>
     </div>
 
@@ -75,29 +75,29 @@
     </div>
 
     <!-- Información de Totales -->
-    @if (historial) {
+    @if (historial(); as resumen) {
       <div class="info-filtros">
         <div class="chips-container">
           <mat-chip>
             <mat-icon>info</mat-icon>
-            Total Filtrado: <strong>{{ historial.total }}</strong> solicitudes
+            Total Filtrado: <strong>{{ resumen.total }}</strong> solicitudes
           </mat-chip>
-          @if (historial.total_solicitudes_sistema !== undefined) {
+          @if (resumen.total_solicitudes_sistema !== undefined) {
             <mat-chip>
               <mat-icon>description</mat-icon>
-              Total Sistema: <strong>{{ historial.total_solicitudes_sistema }}</strong>
+              Total Sistema: <strong>{{ resumen.total_solicitudes_sistema }}</strong>
             </mat-chip>
           }
-          @if (historial.total_solicitudes_procesadas !== undefined) {
+          @if (resumen.total_solicitudes_procesadas !== undefined) {
             <mat-chip>
               <mat-icon>check_circle</mat-icon>
-              Procesadas: <strong>{{ historial.total_solicitudes_procesadas }}</strong>
+              Procesadas: <strong>{{ resumen.total_solicitudes_procesadas }}</strong>
             </mat-chip>
           }
-          @if (historial.total_solicitudes_no_procesadas !== undefined && historial.total_solicitudes_no_procesadas > 0) {
+          @if (resumen.total_solicitudes_no_procesadas !== undefined && resumen.total_solicitudes_no_procesadas > 0) {
             <mat-chip>
               <mat-icon>pending</mat-icon>
-              No Procesadas: <strong>{{ historial.total_solicitudes_no_procesadas }}</strong>
+              No Procesadas: <strong>{{ resumen.total_solicitudes_no_procesadas }}</strong>
             </mat-chip>
           }
         </div>
@@ -105,7 +105,7 @@
     }
 
     <!-- Loading -->
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Cargando historial...</p>
@@ -113,9 +113,9 @@
     }
 
     <!-- Tabla de Solicitudes -->
-    @if (!loading && historial) {
+    @if (!loading() && historial(); as datos) {
       <div class="tabla-container">
-        <table mat-table [dataSource]="historial.solicitudes" [trackBy]="trackBySolicitudId" class="historial-table">
+        <table mat-table [dataSource]="datos.solicitudes" [trackBy]="trackBySolicitudId" class="historial-table">
           <!-- Columna ID -->
           <ng-container matColumnDef="id_solicitud">
             <th mat-header-cell *matHeaderCellDef>ID</th>
@@ -185,7 +185,7 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
         <!-- Mensaje cuando no hay solicitudes -->
-        @if (historial.solicitudes.length === 0) {
+        @if (datos.solicitudes.length === 0) {
           <div class="no-solicitudes">
             <mat-icon>inbox</mat-icon>
             <p>No se encontraron solicitudes con los filtros aplicados</p>

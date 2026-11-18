@@ -10,14 +10,14 @@
         <button mat-raised-button
           color="primary"
           (click)="cargarNotificaciones()"
-          [disabled]="isLoading">
+          [disabled]="isLoading()">
           <mat-icon>refresh</mat-icon>
           Actualizar
         </button>
         <button mat-raised-button
           color="accent"
           (click)="marcarTodasComoLeidas()"
-          [disabled]="isLoading || notificacionesNoLeidas.length === 0">
+          [disabled]="isLoading() || notificacionesNoLeidas().length === 0">
           <mat-icon>done_all</mat-icon>
           Marcar todas como leídas
         </button>
@@ -44,9 +44,9 @@
       <ng-template mat-tab-label>
         <mat-icon>list</mat-icon>
         Todas
-        @if (todasLasNotificaciones.length > 0) {
+        @if (todasLasNotificaciones().length > 0) {
           <span class="tab-badge">
-            {{ todasLasNotificaciones.length }}
+            {{ todasLasNotificaciones().length }}
           </span>
         }
       </ng-template>
@@ -56,9 +56,9 @@
       <ng-template mat-tab-label>
         <mat-icon>mark_email_unread</mat-icon>
         No Leídas
-        @if (notificacionesNoLeidas.length > 0) {
+        @if (notificacionesNoLeidas().length > 0) {
           <span class="tab-badge">
-            {{ notificacionesNoLeidas.length }}
+            {{ notificacionesNoLeidas().length }}
           </span>
         }
       </ng-template>
@@ -68,7 +68,7 @@
   <!-- Contenido -->
   <div class="content-section">
     <!-- Loading -->
-    @if (isLoading) {
+    @if (isLoading()) {
       <div class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Cargando notificaciones...</p>
@@ -76,10 +76,10 @@
     }
 
     <!-- Lista de notificaciones -->
-    @if (!isLoading) {
+    @if (!isLoading()) {
       <div class="notificaciones-list">
         <!-- Estado vacío -->
-        @if (notificacionesFiltradas.length === 0) {
+        @if (notificacionesFiltradas().length === 0) {
           <div class="empty-state">
             <mat-icon class="empty-icon">notifications_none</mat-icon>
             <h2>No hay notificaciones</h2>
@@ -96,7 +96,7 @@
           </div>
         }
         <!-- Items de notificaciones -->
-        @for (notificacion of notificacionesFiltradas; track notificacion.id_notificacion) {
+        @for (notificacion of notificacionesFiltradas(); track notificacion.id_notificacion) {
           <mat-card
             class="notificacion-card"
             [class.unread]="!notificacion.leida"

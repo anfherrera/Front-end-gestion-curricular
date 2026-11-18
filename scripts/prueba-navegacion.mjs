@@ -60,8 +60,14 @@ const casos = [
     correo: 'dcisneros@unicauca.edu.co', rol: 'estudiante',
     rutas: ['/estudiante/paz-salvo', '/estudiante/cursos-intersemestrales',
       '/estudiante/cursos-intersemestrales/cursos-ofertados', '/estudiante/reingreso-estudiante',
-      '/estudiante/homologacion-asignaturas', '/estudiante/pruebas-ecaes'],
+      '/estudiante/homologacion-asignaturas', '/estudiante/pruebas-ecaes', '/home', '/perfil', '/notificaciones'],
     negadas: ['/funcionario/modulo-estadistico', '/secretaria/paz-salvo'],
+  },
+  {
+    // Sin backend el detalle no carga, pero debe salir del "Cargando..." por la rama de error
+    correo: 'decano@unicauca.edu.co', rol: 'decano',
+    rutas: ['/decano/historial-completo', '/decano/historial-completo/detalle/1'],
+    negadas: ['/funcionario/paz-salvo', '/admin/dashboard'],
   },
   {
     correo: 'admin@unicauca.edu.co', rol: 'admin',

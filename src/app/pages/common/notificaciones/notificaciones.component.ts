@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Router } from '@angular/router';
@@ -40,7 +40,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatTooltipModule
 ],
   templateUrl: './notificaciones.component.html',
-  styleUrls: ['./notificaciones.component.css']
+  styleUrls: ['./notificaciones.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotificacionesComponent implements OnInit {
   private notificacionService = inject(NotificacionesService);
@@ -50,11 +51,11 @@ export class NotificacionesComponent implements OnInit {
   private logger = inject(LoggerService);
   private errorHandler = inject(ErrorHandlerService);
 
-  todasLasNotificaciones: Notificacion[] = [];
-  notificacionesFiltradas: Notificacion[] = [];
-  notificacionesNoLeidas: Notificacion[] = [];
+  readonly todasLasNotificaciones = signal<Notificacion[]>([]);
+  readonly notificacionesFiltradas = signal<Notificacion[]>([]);
+  readonly notificacionesNoLeidas = signal<Notificacion[]>([]);
   
-  isLoading = false;
+  readonly isLoading = signal(false);
   tabSeleccionada = 0;
   filtroTipoSolicitud: string | null = null;
   
@@ -82,7 +83,7 @@ export class NotificacionesComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     // Cargar notificaciones según la categoría seleccionada
     this.cargarNotificacionesPorCategoria(usuarioId);
@@ -114,16 +115,16 @@ export class NotificacionesComponent implements OnInit {
 
         // Actualizar según la categoría
         if (this.tabSeleccionada === 0) {
-          this.todasLasNotificaciones = notificacionesEnriquecidas;
+          this.todasLasNotificaciones.set(notificacionesEnriquecidas);
         } else if (this.tabSeleccionada === 1) {
-          this.notificacionesNoLeidas = notificacionesEnriquecidas;
+          this.notificacionesNoLeidas.set(notificacionesEnriquecidas);
         }
 
         this.aplicarFiltros();
-        this.isLoading = false;
+        this.isLoading.set(false);
       },
       error: (error: HttpErrorResponse) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.logger.error('Error al cargar notificaciones:', error);
         
         // Si es 403, no mostrar error (puede ser normal)
@@ -140,9 +141,9 @@ export class NotificacionesComponent implements OnInit {
 
     // Obtener notificaciones según la pestaña seleccionada
     if (this.tabSeleccionada === 0) {
-      notificaciones = this.todasLasNotificaciones;
+      notificaciones = this.todasLasNotificaciones();
     } else if (this.tabSeleccionada === 1) {
-      notificaciones = this.notificacionesNoLeidas;
+      notificaciones = this.notificacionesNoLeidas();
     }
 
     // Aplicar filtro por tipo de solicitud
@@ -150,12 +151,12 @@ export class NotificacionesComponent implements OnInit {
       notificaciones = notificaciones.filter(n => n.tipoSolicitud === this.filtroTipoSolicitud);
     }
 
-    // Ordenar por fecha (más recientes primero)
-    this.notificacionesFiltradas = notificaciones.sort((a, b) => {
+    // Ordenar por fecha (más recientes primero), sobre una copia para que la signal cambie
+    this.notificacionesFiltradas.set([...notificaciones].sort((a, b) => {
       const fechaA = new Date(a.fechaCreacion).getTime();
       const fechaB = new Date(b.fechaCreacion).getTime();
       return fechaB - fechaA;
-    });
+    }));
   }
 
   cambiarTab(index: number): void {
@@ -182,9 +183,10 @@ export class NotificacionesComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
-        notificacion.leida = true;
+        const id = notificacion.id_notificacion;
+        this.todasLasNotificaciones.update(lista => lista.map(n => n.id_notificacion === id ? { ...n, leida: true } : n));
         // Remover de la lista de no leídas si está ahí
-        this.notificacionesNoLeidas = this.notificacionesNoLeidas.filter(n => n.id_notificacion !== notificacion.id_notificacion);
+        this.notificacionesNoLeidas.update(lista => lista.filter(n => n.id_notificacion !== id));
         this.aplicarFiltros();
         this.snackbar.exito('Notificación marcada como leída');
       },
@@ -207,8 +209,8 @@ export class NotificacionesComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
-        this.todasLasNotificaciones.forEach(n => n.leida = true);
-        this.notificacionesNoLeidas = [];
+        this.todasLasNotificaciones.update(lista => lista.map(n => ({ ...n, leida: true })));
+        this.notificacionesNoLeidas.set([]);
         this.aplicarFiltros();
         this.snackbar.exito('Todas las notificaciones marcadas como leídas');
       },

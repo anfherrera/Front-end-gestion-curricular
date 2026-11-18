@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -44,7 +44,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     FechaPipe
 ],
   templateUrl: './historial-completo.component.html',
-  styleUrls: ['../estados-solicitud-comun.css', './historial-completo.component.css']
+  styleUrls: ['../estados-solicitud-comun.css', './historial-completo.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HistorialCompletoComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -54,9 +55,9 @@ export class HistorialCompletoComponent implements OnInit {
   private errorHandler = inject(ErrorHandlerService);
 
   filtrosForm: FormGroup;
-  historial: HistorialResponse | null = null;
-  loading = false;
-  exportandoPDF = false;
+  readonly historial = signal<HistorialResponse | null>(null);
+  readonly loading = signal(false);
+  readonly exportandoPDF = signal(false);
   displayedColumns: string[] = [
     'id_solicitud',
     'nombre_solicitud',
@@ -100,7 +101,7 @@ export class HistorialCompletoComponent implements OnInit {
   }
 
   cargarHistorial(): void {
-    this.loading = true;
+    this.loading.set(true);
     const filtros: FiltrosHistorial = {};
 
     const formValue = this.filtrosForm.value;
@@ -118,14 +119,14 @@ export class HistorialCompletoComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
-        this.historial = response;
-        this.loading = false;
+        this.historial.set(response);
+        this.loading.set(false);
       },
       error: (error) => {
         this.logger.error('Error al cargar el historial de solicitudes:', error);
         const mensaje = this.errorHandler.extraerMensajeError(error);
         this.snackbar.error(mensaje || 'Error al cargar el historial de solicitudes');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -176,7 +177,7 @@ export class HistorialCompletoComponent implements OnInit {
    * Si no hay filtros, el PDF incluirá todas las solicitudes del sistema.
    */
   exportarPDF(): void {
-    this.exportandoPDF = true;
+    this.exportandoPDF.set(true);
 
     // Construir filtros desde el formulario (los mismos que se usan para cargar el historial)
     // Esto garantiza que el PDF contenga las mismas solicitudes que se muestran en la tabla
@@ -223,11 +224,11 @@ export class HistorialCompletoComponent implements OnInit {
           this.logger.error('Error al procesar el archivo PDF:', error);
           this.snackbar.error('Error al procesar el archivo PDF');
         } finally {
-          this.exportandoPDF = false;
+          this.exportandoPDF.set(false);
         }
       },
       error: (err) => {
-        this.exportandoPDF = false;
+        this.exportandoPDF.set(false);
         this.logger.error('Error al exportar PDF:', err);
         
         let mensaje = 'Error al exportar PDF';

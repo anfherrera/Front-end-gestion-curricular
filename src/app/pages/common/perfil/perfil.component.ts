@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +20,8 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
     CardContainerComponent
 ],
   templateUrl: './perfil.component.html',
-  styleUrls: ['./perfil.component.css']
+  styleUrls: ['./perfil.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PerfilComponent implements OnInit {
   private authService = inject(AuthService);

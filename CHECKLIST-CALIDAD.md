@@ -267,7 +267,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [ ] **OnPush**: lo usan 77 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
+- [ ] **OnPush**: lo usan 82 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
@@ -346,6 +346,16 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Spec de revision-aprobacion: lee con `()`; no se quita ninguna prueba. Los de homologación y reingreso no cambian
     - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto. Sin "Cargando...", así que la comprobación de repintado no las cubre
     - Probar a mano con backend, como funcionario y como coordinador, en paz y salvo, homologación y reingreso: aparecen la bandeja de pendientes y el historial (y cambia al elegir otro período); al elegir una solicitud salen sus documentos (en paz y salvo del coordinador llegan un momento después) y los botones; al comentar un documento el comentario aparece sin volver a elegirla; en homologación y reingreso los botones se habilitan solo en el estado que le toca al rol; al aprobar o rechazar la solicitud desaparece de pendientes y pasa al historial; en paz y salvo, una rechazada muestra el motivo
+    - Sin cambios visibles esperados
+  - [x] Resto de common (2026-11-18): OnPush en home, perfil, detalle-solicitud, historial-completo y notificaciones (77 → 82 de 88), con 10 `signal()` nuevas. Con esto todo `pages/common` tiene OnPush
+    - home y perfil, directo: lo que pintan sale de la sesión y se calcula en `ngOnInit`, antes de la primera pintada
+    - detalle-solicitud: `solicitud`, `loading` y `error`; la plantilla usa `@if (!loading() && !error() && solicitud(); as detalle)`
+    - historial-completo: `historial`, `loading` y `exportandoPDF`; sus dos bloques usan `@if (historial(); as resumen)` y `@if (!loading() && historial(); as datos)`
+    - notificaciones: `todasLasNotificaciones`, `notificacionesNoLeidas`, `notificacionesFiltradas` e `isLoading`. `aplicarFiltros()` ordenaba con `sort()` el mismo array, y una signal con el mismo array no avisa del cambio: ahora ordena una copia. Marcar una o todas como leídas mutaba `leida` en los objetos; ahora pone copias con `update()`. `tabSeleccionada` y `filtroTipoSolicitud` se quedan como propiedades: cambian con eventos de la plantilla
+    - `test:navegacion` abre ahora `/home`, `/perfil` y `/notificaciones` (como estudiante) y tiene un caso de decano con `/decano/historial-completo` y `/decano/historial-completo/detalle/1` (este último sin backend sale por la rama de error)
+    - Specs: el de perfil no cambia; los demás no tienen
+    - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto (historial, detalle y notificaciones tienen "Cargando..." o spinner, así que la comprobación de repintado los cubre en la rama de error)
+    - Probar a mano con backend: en el historial completo (funcionario, coordinador y decano) se llenan los totales y la tabla, cambiar un filtro la recarga y "Exportar PDF" pasa a "Generando PDF..." y vuelve; en el detalle de una solicitud (decano) salen sus datos, el estudiante, el historial de estados y los documentos; en notificaciones se ven los contadores de las pestañas, la lista ordenada por fecha y el filtro por tipo; al marcar una como leída pierde el resaltado y baja el contador de no leídas, y "Marcar todas" deja el contador en cero
     - Sin cambios visibles esperados
 
 ---
