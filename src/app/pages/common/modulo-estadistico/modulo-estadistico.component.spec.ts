@@ -1,3 +1,4 @@
+import { ChangeDetectorRef, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -8,6 +9,9 @@ import { of } from 'rxjs';
 
 import { ModuloEstadisticoComponent } from './modulo-estadistico.component';
 import { EstadisticasService } from '@core/services/estadisticas.service';
+
+/** El módulo usa OnPush: cambiar la pestaña por código no marca la vista (un clic sí). */
+const marcarCambio = (tabGroupDebug: DebugElement) => tabGroupDebug.injector.get(ChangeDetectorRef).markForCheck();
 
 describe('ModuloEstadisticoComponent', () => {
   let component: ModuloEstadisticoComponent;
@@ -84,6 +88,7 @@ describe('ModuloEstadisticoComponent', () => {
 
     const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
     tabGroup.selectedIndex = 1;
+    marcarCambio(tabGroupDebug);
     fixture.detectChanges();
 
     await fixture.whenStable();
@@ -101,12 +106,16 @@ describe('ModuloEstadisticoComponent', () => {
       expect(tabGroup.selectedIndex).toBe(0);
       
       tabGroup.selectedIndex = 1;
+      
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
       expect(tabGroup.selectedIndex).toBe(1);
       
       tabGroup.selectedIndex = 0;
+      
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
@@ -155,16 +164,19 @@ describe('ModuloEstadisticoComponent', () => {
       
       // Cambiar a pestaña 1
       tabGroup.selectedIndex = 1;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
       // Cambiar a pestaña 0
       tabGroup.selectedIndex = 0;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
       // Cambiar de nuevo a pestaña 1
       tabGroup.selectedIndex = 1;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
@@ -204,6 +216,7 @@ describe('ModuloEstadisticoComponent', () => {
       
       // Cambiar a la segunda pestaña
       tabGroup.selectedIndex = 1;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
@@ -212,6 +225,7 @@ describe('ModuloEstadisticoComponent', () => {
       
       // Volver a la primera pestaña
       tabGroup.selectedIndex = 0;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
@@ -235,6 +249,7 @@ describe('ModuloEstadisticoComponent', () => {
       
       // Primera pestaña debe estar activa por defecto
       tabGroup.selectedIndex = 0;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
@@ -243,6 +258,7 @@ describe('ModuloEstadisticoComponent', () => {
       
       // Cambiar a segunda pestaña
       tabGroup.selectedIndex = 1;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
@@ -266,6 +282,7 @@ describe('ModuloEstadisticoComponent', () => {
       
       // Verificar contenido de la primera pestaña (Dashboard)
       tabGroup.selectedIndex = 0;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
@@ -275,6 +292,7 @@ describe('ModuloEstadisticoComponent', () => {
       
       // Cambiar a la segunda pestaña y verificar su contenido
       tabGroup.selectedIndex = 1;
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       

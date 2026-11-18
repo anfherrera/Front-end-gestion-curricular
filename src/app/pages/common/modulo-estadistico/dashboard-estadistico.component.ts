@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -74,7 +74,8 @@ type NombreGrafico = 'chartProcesos' | 'chartTendencia' | 'chartDistribucion';
     PeriodoFiltroSelectorComponent
   ],
   templateUrl: './dashboard-estadistico.component.html',
-  styleUrls: ['./dashboard-comun.css', './dashboard-estadistico.component.css']
+  styleUrls: ['./dashboard-comun.css', './dashboard-estadistico.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private estadisticasService = inject(EstadisticasService);
@@ -82,26 +83,26 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private snackbar = inject(SnackbarService);
   private fb = inject(FormBuilder);
 
-  loading = false;
-  error = false;
-  errorMensaje: string | null = null;
+  readonly loading = signal(false);
+  readonly error = signal(false);
+  readonly errorMensaje = signal<string | null>(null);
 
-  resumenCompleto: ResumenCompleto | null = null;
+  readonly resumenCompleto = signal<ResumenCompleto | null>(null);
   totalEstudiantes = 0;
-  loadingEstudiantes = false;
+  readonly loadingEstudiantes = signal(false);
 
   /** Filtros aplicados; también los reciben los componentes hijos. */
-  filtros: FiltroEstadisticas = {};
+  readonly filtros = signal<FiltroEstadisticas>({});
   filtrosForm: FormGroup | null = null;
   procesosDisponibles: string[] = [];
-  programasDisponibles: { id: number; nombre: string }[] = [];
+  readonly programasDisponibles = signal<{ id: number; nombre: string }[]>([]);
 
-  kpis: KPIData[] = [];
+  readonly kpis = signal<KPIData[]>([]);
 
   chartProcesos: Chart | null = null;
   chartTendencia: Chart | null = null;
   chartDistribucion: Chart | null = null;
-  tendenciaSinDatos = false;
+  readonly tendenciaSinDatos = signal(false);
 
   private readonly destroyRef = inject(DestroyRef);
   /** Tras la primera carga los gráficos se recrean en vez de crearse. */
@@ -120,7 +121,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     this.procesosDisponibles = this.estadisticasService.getProcesosDisponibles();
     this.estadisticasService.getProgramasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(programas => this.programasDisponibles = programas);
+      .subscribe(programas => this.programasDisponibles.set(programas));
 
     this.cargarDatos();
   }
@@ -132,9 +133,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   // ===== Carga de datos =====
 
   cargarDatos(filtros: FiltroEstadisticas = {}): void {
-    this.loading = true;
-    this.error = false;
-    this.errorMensaje = null;
+    this.loading.set(true);
+    this.error.set(false);
+    this.errorMensaje.set(null);
 
     // Primero el catálogo de programas (en caché tras la primera vez) para resolver ids reales
     this.estadisticasService.getIdsProgramaPorNombre().pipe(
@@ -169,8 +170,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /** KPIs y gráficos con el resumen nuevo; el mensaje de éxito solo en la primera carga. */
   private mostrarResumen(resumen: ResumenCompleto, mensajePrimeraCarga: string | null): void {
-    this.resumenCompleto = resumen;
-    this.kpis = generarKPIs(resumen, this.totalEstudiantes);
+    this.resumenCompleto.set(resumen);
+    this.kpis.set(generarKPIs(resumen, this.totalEstudiantes));
 
     const primeraCarga = !this.chartsCreados;
     if (!primeraCarga) {
@@ -179,8 +180,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     this.crearCharts();
     this.chartsCreados = true;
 
-    this.loading = false;
-    this.error = false;
+    this.loading.set(false);
+    this.error.set(false);
     if (primeraCarga && mensajePrimeraCarga) {
       this.mostrarExito(mensajePrimeraCarga);
     }
@@ -212,8 +213,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         return;
       }
       if (errores.length === 4) {
-        this.loading = false;
-        this.error = true;
+        this.loading.set(false);
+        this.error.set(true);
         this.mostrarError('No se pudieron cargar las estadísticas. Por favor, inténtalo de nuevo.');
         return;
       }
@@ -226,26 +227,24 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
           this.mostrarError(`Datos cargados parcialmente. Algunos endpoints fallaron: ${errores.map(e => e.endpoint).join(', ')}`);
         }
       } catch {
-        this.loading = false;
-        this.error = true;
+        this.loading.set(false);
+        this.error.set(true);
         this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
       }
     });
   }
 
   private cargarTotalEstudiantes(): void {
-    this.loadingEstudiantes = true;
+    this.loadingEstudiantes.set(true);
     this.estadisticasService.getTotalEstudiantes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.totalEstudiantes = response.totalEstudiantes;
-        this.loadingEstudiantes = false;
-        const kpi = this.kpis.find(k => k.titulo === TITULO_KPI_ESTUDIANTES);
-        if (kpi) {
-          kpi.valor = this.totalEstudiantes;
-        }
+        this.loadingEstudiantes.set(false);
+        const total = this.totalEstudiantes;
+        this.kpis.update(kpis => kpis.map(k => k.titulo === TITULO_KPI_ESTUDIANTES ? { ...k, valor: total } : k));
       },
       error: (error: HttpErrorResponse) => {
-        this.loadingEstudiantes = false;
+        this.loadingEstudiantes.set(false);
         this.totalEstudiantes = 0;
         // Si es 401/403, el mensaje ya lo muestra cargarDatos()
         if (!esErrorDeAcceso(error)) {
@@ -257,16 +256,17 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /** 401/403: no mostrar el dashboard en ceros, sino un mensaje claro. */
   private manejarErrorDeAcceso(error: HttpErrorResponse): void {
-    this.loading = false;
-    this.error = true;
-    this.errorMensaje = mensajeErrorDeAcceso(error);
-    this.mostrarError(this.errorMensaje);
+    this.loading.set(false);
+    this.error.set(true);
+    const mensaje = mensajeErrorDeAcceso(error);
+    this.errorMensaje.set(mensaje);
+    this.mostrarError(mensaje);
   }
 
   // ===== Gráficos =====
 
   private crearCharts(): void {
-    if (!this.resumenCompleto) return;
+    if (!this.resumenCompleto()) return;
     requestAnimationFrame(async () => {
       await this.crearChartProcesos();
       await this.crearChartTendencia();
@@ -276,12 +276,12 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /** Por proceso con el endpoint detallado; si falla, con el resumen. */
   private async crearChartProcesos(): Promise<void> {
-    const datos = await this.consultar(this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosParaBackend(this.filtros)));
+    const datos = await this.consultar(this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosParaBackend(this.filtros())));
     if (datos?.estadisticasPorProceso) {
       this.dibujar('chartProcesos', graficoProcesos(datos.estadisticasPorProceso));
       return;
     }
-    const procesos = this.resumenCompleto?.estadisticasPorProceso ?? [];
+    const procesos = this.resumenCompleto()?.estadisticasPorProceso ?? [];
     if (procesos.length) {
       this.dibujar('chartProcesos', graficoProcesosDesdeResumen(
         procesos.map(p => formatearNombreProceso(p.nombreProceso)),
@@ -292,8 +292,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /** Sin datos mensuales no se dibuja nada inventado: la vista muestra un aviso. */
   private async crearChartTendencia(): Promise<void> {
-    const datos = await this.consultar(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosParaBackend(this.filtros)));
-    this.tendenciaSinDatos = !datos?.porMes;
+    const datos = await this.consultar(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosParaBackend(this.filtros())));
+    this.tendenciaSinDatos.set(!datos?.porMes);
     if (datos?.porMes) {
       this.dibujar('chartTendencia', graficoTendencia(datos));
     }
@@ -301,14 +301,14 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /** Por programa con /por-programa; si falla, con el resumen. */
   private async crearChartDistribucion(): Promise<void> {
-    const datos = await this.consultar(this.estadisticasService.getEstadisticasPorProgramaMejoradas(filtrosParaBackend(this.filtros)));
+    const datos = await this.consultar(this.estadisticasService.getEstadisticasPorProgramaMejoradas(filtrosParaBackend(this.filtros())));
     if (datos?.solicitudesPorPrograma) {
       const porPrograma = datos.solicitudesPorPrograma;
       const programas = Object.keys(porPrograma);
       this.dibujar('chartDistribucion', graficoProgramas(programas, programas.map(p => porPrograma[p] || 0)));
       return;
     }
-    const programas = this.resumenCompleto?.estadisticasPorPrograma ?? [];
+    const programas = this.resumenCompleto()?.estadisticasPorPrograma ?? [];
     if (programas.length) {
       this.dibujar('chartDistribucion', graficoProgramas(programas.map(p => p.nombrePrograma), programas.map(p => p.totalSolicitudes)));
     }
@@ -354,7 +354,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     const { filtros, periodoActual } = filtrosDelFormulario(this.filtrosForm.value);
 
     const aplicar = () => {
-      this.filtros = filtros;
+      this.filtros.set(filtros);
       this.cargarDatos(filtros);
       this.mostrarExito('Filtros aplicados correctamente');
     };
@@ -377,7 +377,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   limpiarFiltros(): void {
     this.filtrosForm?.reset({ proceso: '', idPrograma: '', periodoAcademico: '' });
-    this.filtros = {};
+    this.filtros.set({});
     this.cargarDatos();
     this.mostrarExito('Filtros limpiados correctamente');
   }
@@ -404,11 +404,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   private exportar(peticion$: Observable<Blob>, extension: string, formato: string): void {
-    this.loading = true;
+    this.loading.set(true);
     this.mostrarExito(`Descargando reporte ${formato}...`);
     peticion$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob) => {
-        this.loading = false;
+        this.loading.set(false);
         if (!blob || blob.size === 0) {
           this.mostrarError(`El archivo ${formato} está vacío o corrupto`);
           return;
@@ -417,7 +417,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         this.mostrarExito(`Reporte ${formato} del Dashboard General descargado exitosamente`);
       },
       error: (error: HttpErrorResponse) => {
-        this.loading = false;
+        this.loading.set(false);
         this.mostrarError(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : `Error al exportar el reporte ${formato}`);
       }
     });

@@ -6,23 +6,23 @@
         Panel de cursos de verano
       </div>
       <p class="dashboard-subtitle">Análisis y proyección de la demanda</p>
-      @if (!loading) {
+      @if (!loading()) {
         <div class="last-update">
           <mat-icon>schedule</mat-icon>
-          Última actualización: {{ ultimaActualizacion | date:'short' }}
+          Última actualización: {{ ultimaActualizacion() | date:'short' }}
         </div>
       }
     </div>
     <div class="header-actions">
-      <button mat-raised-button color="primary" (click)="refrescarDatos()" [disabled]="loading">
-        <mat-icon [class.fa-spin]="loading">refresh</mat-icon>
-        {{ loading ? 'Actualizando...' : 'Actualizar' }}
+      <button mat-raised-button color="primary" (click)="refrescarDatos()" [disabled]="loading()">
+        <mat-icon [class.fa-spin]="loading()">refresh</mat-icon>
+        {{ loading() ? 'Actualizando...' : 'Actualizar' }}
       </button>
-      <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading || !data">
+      <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading() || !data()">
         <mat-icon>picture_as_pdf</mat-icon>
         Exportar PDF
       </button>
-      <button mat-stroked-button (click)="exportarExcel()" [disabled]="loading || !data">
+      <button mat-stroked-button (click)="exportarExcel()" [disabled]="loading() || !data()">
         <mat-icon>table_chart</mat-icon>
         Exportar Excel
       </button>
@@ -31,7 +31,7 @@
 </div>
 
 <!-- ===== LOADING SPINNER ===== -->
-@if (loading) {
+@if (loading()) {
   <div class="loading-indicator">
     <mat-spinner diameter="40"></mat-spinner>
     <span>Actualizando datos...</span>
@@ -39,11 +39,11 @@
 }
 
 <!-- ===== ERROR MESSAGE ===== -->
-@if (error && !loading) {
+@if (error() && !loading()) {
   <div class="error-container">
     <mat-icon class="error-icon">error</mat-icon>
     <h3>Error al cargar los datos</h3>
-    <p>{{ error }}</p>
+    <p>{{ error() }}</p>
     <button mat-raised-button color="primary" (click)="cargarDatos()">
       <mat-icon>refresh</mat-icon>
       Reintentar
@@ -79,7 +79,7 @@
               <mat-label>Programa</mat-label>
               <mat-select formControlName="idPrograma">
                 <mat-option value="">Todos los programas</mat-option>
-                @for (programa of programasDisponibles; track programa.id || $index) {
+                @for (programa of programasDisponibles(); track programa.id || $index) {
                   <mat-option [value]="programa.id">
                     {{ programa.nombre }}
                   </mat-option>
@@ -89,11 +89,11 @@
           </div>
         </div>
         <div class="filter-actions">
-          <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
             <mat-icon>search</mat-icon>
             Aplicar Filtros
           </button>
-          <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading">
+          <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading()">
             <mat-icon>clear</mat-icon>
             Limpiar
           </button>
@@ -104,7 +104,7 @@
 </mat-card>
 
 <!-- ===== CONTENIDO PRINCIPAL ===== -->
-@if (data && !loading) {
+@if (!loading() && data(); as datos) {
   <div class="dashboard-container">
     <div class="dashboard-content">
       <!-- ===== KPIs PRINCIPALES ===== -->
@@ -122,7 +122,7 @@
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <div class="kpi-value">{{ data.resumen.totalSolicitudes }}</div>
+              <div class="kpi-value">{{ datos.resumen.totalSolicitudes }}</div>
               <div class="kpi-description">Solicitudes de cursos de verano</div>
             </mat-card-content>
           </mat-card>
@@ -134,7 +134,7 @@
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <div class="kpi-value">{{ data.resumen.materiasUnicas }}</div>
+              <div class="kpi-value">{{ datos.resumen.materiasUnicas }}</div>
               <div class="kpi-description">Materias ofertadas</div>
             </mat-card-content>
           </mat-card>
@@ -146,7 +146,7 @@
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <div class="kpi-value">{{ data.resumen.programasParticipantes }}</div>
+              <div class="kpi-value">{{ datos.resumen.programasParticipantes }}</div>
               <div class="kpi-description">Programas con solicitudes</div>
             </mat-card-content>
           </mat-card>
@@ -158,7 +158,7 @@
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <div class="kpi-value">{{ data.resumen.tasaAprobacion }}%</div>
+              <div class="kpi-value">{{ datos.resumen.tasaAprobacion }}%</div>
               <div class="kpi-description">Porcentaje de aprobación</div>
             </mat-card-content>
           </mat-card>
@@ -200,13 +200,13 @@
                   <mat-card-content>
                     <div class="chart-content">
                       <!-- Mostrar loading mientras se carga la gráfica -->
-                      @if (loading) {
+                      @if (loading()) {
                         <div class="chart-loading">
                           <mat-spinner diameter="20"></mat-spinner> Cargando gráfica...
                         </div>
                       }
                       <!-- Canvas para la gráfica -->
-                      @if (!loading && topMateriasData && topMateriasData.length > 0) {
+                      @if (!loading() && topMateriasData() && topMateriasData().length > 0) {
                         <canvas
                           id="materiasChart"
                           width="400"
@@ -215,9 +215,9 @@
                       }
                     </div>
                     <!-- CONECTAR A LOS DATOS DEL BACKEND -->
-                    @if (data && data.topMaterias && data.topMaterias.length > 0) {
+                    @if (datos && datos.topMaterias && datos.topMaterias.length > 0) {
                       <div class="chart-data">
-                        @for (materia of data.topMaterias; track materia) {
+                        @for (materia of datos.topMaterias; track materia) {
                           <div class="materia-item">
                             <div class="materia-nombre">{{ materia.nombre }}</div>
                             <div class="materia-solicitudes">{{ materia.solicitudes }} solicitudes</div>
@@ -240,13 +240,13 @@
                   <mat-card-content>
                     <div class="chart-content">
                       <!-- Mostrar loading mientras se carga la gráfica -->
-                      @if (loading) {
+                      @if (loading()) {
                         <div class="chart-loading">
                           <mat-spinner diameter="20"></mat-spinner> Cargando gráfica...
                         </div>
                       }
                       <!-- Canvas para la gráfica -->
-                      @if (!loading && analisisProgramaData && analisisProgramaData.length > 0) {
+                      @if (!loading() && analisisProgramaData() && analisisProgramaData().length > 0) {
                         <canvas
                           id="programasChart"
                           width="400"
@@ -255,9 +255,9 @@
                       }
                     </div>
                     <!-- CONECTAR A LOS DATOS DEL BACKEND -->
-                    @if (data && data.analisisPorPrograma && data.analisisPorPrograma.length > 0) {
+                    @if (datos && datos.analisisPorPrograma && datos.analisisPorPrograma.length > 0) {
                       <div class="chart-data">
-                        @for (programa of data.analisisPorPrograma; track programa) {
+                        @for (programa of datos.analisisPorPrograma; track programa) {
                           <div class="programa-item">
                             <div class="programa-nombre">{{ programa.nombre }}</div>
                             <div class="programa-solicitudes">{{ programa.solicitudes }} solicitudes</div>
@@ -282,13 +282,13 @@
                   <mat-card-content>
                     <div class="chart-content">
                       <!-- Mostrar loading mientras se carga la gráfica -->
-                      @if (loading) {
+                      @if (loading()) {
                         <div class="chart-loading">
                           <mat-spinner diameter="20"></mat-spinner> Cargando gráfica...
                         </div>
                       }
                       <!-- Canvas para la gráfica -->
-                      @if (!loading && tendenciasTemporalesData && tendenciasTemporalesData.length > 0) {
+                      @if (!loading() && tendenciasTemporalesData() && tendenciasTemporalesData().length > 0) {
                         <canvas
                           id="tendenciasChart"
                           width="400"
@@ -296,9 +296,9 @@
                         </canvas>
                       }
                       <!-- Mostrar datos si no hay gráfica -->
-                      @if (!loading && data && data.tendenciasTemporales && data.tendenciasTemporales.length > 0 && !tendenciasTemporalesData.length) {
+                      @if (!loading() && datos && datos.tendenciasTemporales && datos.tendenciasTemporales.length > 0 && !tendenciasTemporalesData().length) {
                         <div class="tendencias-data">
-                          @for (tendencia of data.tendenciasTemporales; track tendencia) {
+                          @for (tendencia of datos.tendenciasTemporales; track tendencia) {
                             <div class="tendencia-card">
                               <div class="tendencia-mes">{{ tendencia.mes }}</div>
                               <div class="tendencia-solicitudes">{{ tendencia.solicitudes }} solicitudes</div>
@@ -308,7 +308,7 @@
                         </div>
                       }
                       <!-- Mensaje si no hay datos -->
-                      @if (!loading && (!data || !data.tendenciasTemporales || data.tendenciasTemporales.length === 0)) {
+                      @if (!loading() && (!datos || !datos.tendenciasTemporales || datos.tendenciasTemporales.length === 0)) {
                         <div class="no-data">
                           No hay datos de tendencias temporales disponibles
                         </div>
@@ -331,10 +331,10 @@
                       <mat-icon>check_circle</mat-icon>
                       <span class="estado-nombre">Aprobada</span>
                     </div>
-                    <div class="estado-valor">{{ data.estadosSolicitudes.APROBADA || 0 }}</div>
-                    @if (data.resumen.totalSolicitudes) {
+                    <div class="estado-valor">{{ datos.estadosSolicitudes.APROBADA || 0 }}</div>
+                    @if (datos.resumen.totalSolicitudes) {
                       <div class="estado-porcentaje">
-                        {{ calcularPorcentajeEstado(data.estadosSolicitudes.APROBADA || 0, data.resumen.totalSolicitudes || 0) }}%
+                        {{ calcularPorcentajeEstado(datos.estadosSolicitudes.APROBADA || 0, datos.resumen.totalSolicitudes || 0) }}%
                       </div>
                     }
                   </mat-card-content>
@@ -345,10 +345,10 @@
                       <mat-icon>send</mat-icon>
                       <span class="estado-nombre">Enviada</span>
                     </div>
-                    <div class="estado-valor">{{ data.estadosSolicitudes.ENVIADA || 0 }}</div>
-                    @if (data.resumen.totalSolicitudes) {
+                    <div class="estado-valor">{{ datos.estadosSolicitudes.ENVIADA || 0 }}</div>
+                    @if (datos.resumen.totalSolicitudes) {
                       <div class="estado-porcentaje">
-                        {{ calcularPorcentajeEstado(data.estadosSolicitudes.ENVIADA || 0, data.resumen.totalSolicitudes || 0) }}%
+                        {{ calcularPorcentajeEstado(datos.estadosSolicitudes.ENVIADA || 0, datos.resumen.totalSolicitudes || 0) }}%
                       </div>
                     }
                   </mat-card-content>
@@ -360,10 +360,10 @@
                       <span class="estado-nombre">En Proceso</span>
                     </div>
                     <!-- ACTUALIZADO: Usar EN_PROCESO directamente, con fallback a suma de APROBADA_FUNCIONARIO + APROBADA_COORDINADOR para compatibilidad -->
-                    <div class="estado-valor">{{ data.estadosSolicitudes.EN_PROCESO || ((data.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) + (data.estadosSolicitudes.APROBADA_COORDINADOR || 0)) }}</div>
-                    @if (data.resumen.totalSolicitudes) {
+                    <div class="estado-valor">{{ datos.estadosSolicitudes.EN_PROCESO || ((datos.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) + (datos.estadosSolicitudes.APROBADA_COORDINADOR || 0)) }}</div>
+                    @if (datos.resumen.totalSolicitudes) {
                       <div class="estado-porcentaje">
-                        {{ calcularPorcentajeEstado(data.estadosSolicitudes.EN_PROCESO || ((data.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) + (data.estadosSolicitudes.APROBADA_COORDINADOR || 0)), data.resumen.totalSolicitudes || 0) }}%
+                        {{ calcularPorcentajeEstado(datos.estadosSolicitudes.EN_PROCESO || ((datos.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) + (datos.estadosSolicitudes.APROBADA_COORDINADOR || 0)), datos.resumen.totalSolicitudes || 0) }}%
                       </div>
                     }
                   </mat-card-content>
@@ -374,10 +374,10 @@
                       <mat-icon>cancel</mat-icon>
                       <span class="estado-nombre">Rechazada</span>
                     </div>
-                    <div class="estado-valor">{{ data.estadosSolicitudes.RECHAZADA || 0 }}</div>
-                    @if (data.resumen.totalSolicitudes) {
+                    <div class="estado-valor">{{ datos.estadosSolicitudes.RECHAZADA || 0 }}</div>
+                    @if (datos.resumen.totalSolicitudes) {
                       <div class="estado-porcentaje">
-                        {{ calcularPorcentajeEstado(data.estadosSolicitudes.RECHAZADA || 0, data.resumen.totalSolicitudes || 0) }}%
+                        {{ calcularPorcentajeEstado(datos.estadosSolicitudes.RECHAZADA || 0, datos.resumen.totalSolicitudes || 0) }}%
                       </div>
                     }
                   </mat-card-content>
@@ -403,18 +403,18 @@
                 <div class="resumen-grid">
                   <div class="resumen-item">
                     <div class="resumen-label">Demanda Estimada Próximo Período</div>
-                    <div class="resumen-valor">{{ data.predicciones.demandaEstimadaProximoPeriodo }}</div>
+                    <div class="resumen-valor">{{ datos.predicciones.demandaEstimadaProximoPeriodo }}</div>
                   </div>
                   <div class="resumen-item">
                     <div class="resumen-label">Confiabilidad</div>
                     <div class="resumen-valor confiabilidad"
-                      [class]="'confiabilidad-' + data.predicciones.confiabilidad.toLowerCase()">
-                      {{ data.predicciones.confiabilidad }}
+                      [class]="'confiabilidad-' + datos.predicciones.confiabilidad.toLowerCase()">
+                      {{ datos.predicciones.confiabilidad }}
                     </div>
                   </div>
                   <div class="resumen-item">
                     <div class="resumen-label">Fecha de Predicción</div>
-                    <div class="resumen-valor">{{ data.predicciones.fechaPrediccion | date:'short' }}</div>
+                    <div class="resumen-valor">{{ datos.predicciones.fechaPrediccion | date:'short' }}</div>
                   </div>
                   <!-- ELIMINADO: Metodología (campo técnico innecesario) -->
                 </div>
@@ -433,9 +433,9 @@
                 </mat-card-header>
                 <mat-card-content>
                   <!-- ELIMINAR el área blanca vacía y mostrar directamente las tarjetas -->
-                  @if (data && data.predicciones && data.predicciones.materiasConTendenciaCreciente && data.predicciones.materiasConTendenciaCreciente.length > 0) {
+                  @if (datos && datos.predicciones && datos.predicciones.materiasConTendenciaCreciente && datos.predicciones.materiasConTendenciaCreciente.length > 0) {
                     <div class="predicciones-materias">
-                      @for (materia of data.predicciones.materiasConTendenciaCreciente; track materia) {
+                      @for (materia of datos.predicciones.materiasConTendenciaCreciente; track materia) {
                         <div class="prediccion-materia-card">
                           <div class="materia-nombre">{{ materia.nombre }}</div>
                           <div class="demanda-actual">Actual: {{ materia.demandaActual }}</div>
@@ -446,7 +446,7 @@
                       }
                     </div>
                   }
-                  @if (!data || !data.predicciones || !data.predicciones.materiasConTendenciaCreciente || data.predicciones.materiasConTendenciaCreciente.length === 0) {
+                  @if (!datos || !datos.predicciones || !datos.predicciones.materiasConTendenciaCreciente || datos.predicciones.materiasConTendenciaCreciente.length === 0) {
                     <div class="no-data">
                       No hay datos de predicciones disponibles
                     </div>
@@ -462,9 +462,9 @@
                 </mat-card-header>
                 <mat-card-content>
                   <!-- ELIMINAR el área blanca vacía y mostrar directamente las tarjetas -->
-                  @if (data && data.predicciones && data.predicciones.todasLasPrediccionesPorPrograma && data.predicciones.todasLasPrediccionesPorPrograma.length > 0) {
+                  @if (datos && datos.predicciones && datos.predicciones.todasLasPrediccionesPorPrograma && datos.predicciones.todasLasPrediccionesPorPrograma.length > 0) {
                     <div class="predicciones-programas">
-                      @for (programa of data.predicciones.todasLasPrediccionesPorPrograma; track programa) {
+                      @for (programa of datos.predicciones.todasLasPrediccionesPorPrograma; track programa) {
                         <div class="prediccion-programa-card">
                           <div class="programa-nombre">{{ programa.nombre }}</div>
                           <div class="demanda-actual">Actual: {{ programa.demandaActual }}</div>
@@ -475,7 +475,7 @@
                       }
                     </div>
                   }
-                  @if (!data || !data.predicciones || !data.predicciones.todasLasPrediccionesPorPrograma || data.predicciones.todasLasPrediccionesPorPrograma.length === 0) {
+                  @if (!datos || !datos.predicciones || !datos.predicciones.todasLasPrediccionesPorPrograma || datos.predicciones.todasLasPrediccionesPorPrograma.length === 0) {
                     <div class="no-data">
                       No hay datos de predicciones disponibles
                     </div>
@@ -493,15 +493,15 @@
                 </mat-card-header>
                 <mat-card-content>
                   <!-- REEMPLAZAR la sección de "Predicciones Temporales" -->
-                  @if (data && data.predicciones && data.predicciones.prediccionesTemporales) {
+                  @if (datos && datos.predicciones && datos.predicciones.prediccionesTemporales) {
                     <div class="predicciones-temporales">
                       <div class="prediccion-temporal-card">
-                        <div class="mes-pico">Mes Pico: {{ data.predicciones.prediccionesTemporales.mesPico }}</div>
-                        <div class="demanda-actual">Demanda Actual: {{ data.predicciones.prediccionesTemporales.demandaActualMesPico }}</div>
-                        <div class="demanda-estimada">Demanda Estimada: {{ data.predicciones.demandaEstimadaProximoPeriodo }}</div>
+                        <div class="mes-pico">Mes Pico: {{ datos.predicciones.prediccionesTemporales.mesPico }}</div>
+                        <div class="demanda-actual">Demanda Actual: {{ datos.predicciones.prediccionesTemporales.demandaActualMesPico }}</div>
+                        <div class="demanda-estimada">Demanda Estimada: {{ datos.predicciones.demandaEstimadaProximoPeriodo }}</div>
                         <div class="meses-recomendados">
                           <span>Meses Recomendados: </span>
-                          @for (mes of data.predicciones.prediccionesTemporales.mesesRecomendados; track mes; let last = $last) {
+                          @for (mes of datos.predicciones.prediccionesTemporales.mesesRecomendados; track mes; let last = $last) {
                             <span>
                               {{ mes }}@if (!last) {
                               <span>, </span>
@@ -512,7 +512,7 @@
                     </div>
                   </div>
                 }
-                @if (!data || !data.predicciones || !data.predicciones.prediccionesTemporales) {
+                @if (!datos || !datos.predicciones || !datos.predicciones.prediccionesTemporales) {
                   <div class="no-data">
                     No hay datos de predicciones temporales disponibles
                   </div>
@@ -529,7 +529,7 @@
           </h3>
           <mat-accordion>
             <!-- ===== MATERIAS CON TENDENCIA CRECIENTE ===== -->
-            @if (data.predicciones.materiasConTendenciaCreciente.length > 0) {
+            @if (datos.predicciones.materiasConTendenciaCreciente.length > 0) {
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
@@ -537,11 +537,11 @@
                     Materias con Tendencia Creciente
                   </mat-panel-title>
                   <mat-panel-description>
-                    {{ data.predicciones.materiasConTendenciaCreciente.length }} materias
+                    {{ datos.predicciones.materiasConTendenciaCreciente.length }} materias
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="tendencias-content">
-                  @for (materia of data.predicciones.materiasConTendenciaCreciente; track materia) {
+                  @for (materia of datos.predicciones.materiasConTendenciaCreciente; track materia) {
                     <mat-card
                       class="tendencia-card creciente">
                       <mat-card-content>
@@ -575,7 +575,7 @@
               </mat-expansion-panel>
             }
             <!-- ===== MATERIAS CON TENDENCIA DECRECIENTE ===== -->
-            @if (data.predicciones.materiasConTendenciaDecreciente.length > 0) {
+            @if (datos.predicciones.materiasConTendenciaDecreciente.length > 0) {
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
@@ -583,11 +583,11 @@
                     Materias con Tendencia Decreciente
                   </mat-panel-title>
                   <mat-panel-description>
-                    {{ data.predicciones.materiasConTendenciaDecreciente.length }} materias
+                    {{ datos.predicciones.materiasConTendenciaDecreciente.length }} materias
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="tendencias-content">
-                  @for (materia of data.predicciones.materiasConTendenciaDecreciente; track materia) {
+                  @for (materia of datos.predicciones.materiasConTendenciaDecreciente; track materia) {
                     <mat-card
                       class="tendencia-card decreciente">
                       <mat-card-content>
@@ -621,7 +621,7 @@
               </mat-expansion-panel>
             }
             <!-- ===== MATERIAS ESTABLES ===== -->
-            @if (data.predicciones.materiasEstables.length > 0) {
+            @if (datos.predicciones.materiasEstables.length > 0) {
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
@@ -629,11 +629,11 @@
                     Materias Estables
                   </mat-panel-title>
                   <mat-panel-description>
-                    {{ data.predicciones.materiasEstables.length }} materias
+                    {{ datos.predicciones.materiasEstables.length }} materias
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="tendencias-content">
-                  @for (materia of data.predicciones.materiasEstables; track materia) {
+                  @for (materia of datos.predicciones.materiasEstables; track materia) {
                     <mat-card
                       class="tendencia-card estable">
                       <mat-card-content>
@@ -675,9 +675,9 @@
   @if (activeTab === 'recomendaciones') {
     <div class="tab-content">
       <app-recomendaciones-cursos-verano
-        [recomendaciones]="recomendaciones"
-        [alertasCriticas]="alertasCriticas"
-        [estadisticas]="estadisticasRecomendaciones" />
+        [recomendaciones]="recomendaciones()"
+        [alertasCriticas]="alertasCriticas()"
+        [estadisticas]="estadisticasRecomendaciones()" />
     </div>
   }
 </div>

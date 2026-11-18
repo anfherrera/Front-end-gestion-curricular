@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, OnChanges, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +20,8 @@ import { EstudiantesPorProgramaResponse, ProgramaData } from '@core/models/estad
     MatTooltipModule
   ],
   templateUrl: './estudiantes-por-programa.component.html',
-  styleUrl: './estudiantes-por-programa.component.css'
+  styleUrl: './estudiantes-por-programa.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
@@ -29,11 +30,11 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
   
-  programasData: ProgramaData[] = [];
-  totalEstudiantes = 0;
-  fechaConsulta: string | null = null;
-  loading = false;
-  error: string | null = null;
+  readonly programasData = signal<ProgramaData[]>([]);
+  readonly totalEstudiantes = signal(0);
+  readonly fechaConsulta = signal<string | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
   private subscription: Subscription = new Subscription();
 
@@ -54,8 +55,8 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
   }
 
   cargarDatos(): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
@@ -73,14 +74,14 @@ export class EstudiantesPorProgramaComponent implements OnInit, OnDestroy, OnCha
     const sub = this.estadisticasService.getEstudiantesPorPrograma(filtros)
       .subscribe({
         next: (response: EstudiantesPorProgramaResponse) => {
-          this.fechaConsulta = response.fechaConsulta;
-          this.programasData = this.procesarDatos(response.estudiantesPorPrograma);
-          this.totalEstudiantes = this.calcularTotalEstudiantes(response.estudiantesPorPrograma);
-          this.loading = false;
+          this.fechaConsulta.set(response.fechaConsulta);
+          this.programasData.set(this.procesarDatos(response.estudiantesPorPrograma));
+          this.totalEstudiantes.set(this.calcularTotalEstudiantes(response.estudiantesPorPrograma));
+          this.loading.set(false);
         },
         error: () => {
-          this.loading = false;
-          this.error = 'Error al cargar datos de estudiantes por programa';
+          this.loading.set(false);
+          this.error.set('Error al cargar datos de estudiantes por programa');
         }
       });
 

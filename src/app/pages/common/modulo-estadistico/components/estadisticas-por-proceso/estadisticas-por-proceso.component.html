@@ -10,17 +10,17 @@
   </mat-card-header>
 
   <mat-card-content>
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
         <p>Cargando estadísticas...</p>
       </div>
     }
 
-    @if (error) {
+    @if (error()) {
       <div class="error-container">
         <mat-icon class="error-icon">error</mat-icon>
-        <p>{{ error }}</p>
+        <p>{{ error() }}</p>
         <button mat-raised-button color="primary" (click)="cargarDatos()">
           <mat-icon>refresh</mat-icon>
           Reintentar
@@ -28,10 +28,10 @@
       </div>
     }
 
-    @if (!loading && !error && procesosData.length > 0) {
+    @if (!loading() && !error() && procesosData().length > 0) {
       <div class="procesos-container">
         <div class="procesos-grid">
-          @for (proceso of procesosData; track proceso) {
+          @for (proceso of procesosData(); track proceso) {
             <div
               class="proceso-card"
               [class]="'proceso-' + getProcesoClass(proceso.nombre)">
@@ -102,7 +102,7 @@
       </div>
     }
 
-    @if (!loading && !error && procesosData.length === 0) {
+    @if (!loading() && !error() && procesosData().length === 0) {
       <div class="no-data">
         <mat-icon>info</mat-icon>
         <p>No hay estadísticas de procesos disponibles</p>
@@ -110,7 +110,7 @@
     }
   </mat-card-content>
 
-  @if (!loading) {
+  @if (!loading()) {
     <mat-card-actions>
       <button mat-icon-button (click)="toggleDatosRaw()"
         matTooltip="Mostrar/ocultar datos detallados">
@@ -121,9 +121,9 @@
         <mat-icon>refresh</mat-icon>
       </button>
       <span class="spacer"></span>
-      @if (fechaConsulta) {
+      @if (fechaConsulta()) {
         <small class="fecha-actualizacion">
-          Actualizado: {{ fechaConsulta | date:'short' }}
+          Actualizado: {{ fechaConsulta() | date:'short' }}
         </small>
       }
     </mat-card-actions>

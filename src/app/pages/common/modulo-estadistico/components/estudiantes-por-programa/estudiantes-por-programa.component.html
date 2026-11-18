@@ -10,17 +10,17 @@
   </mat-card-header>
 
   <mat-card-content>
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
         <p>Cargando datos...</p>
       </div>
     }
 
-    @if (error) {
+    @if (error()) {
       <div class="error-container">
         <mat-icon class="error-icon">error</mat-icon>
-        <p>{{ error }}</p>
+        <p>{{ error() }}</p>
         <button mat-raised-button color="primary" (click)="cargarDatos()">
           <mat-icon>refresh</mat-icon>
           Reintentar
@@ -28,10 +28,10 @@
       </div>
     }
 
-    @if (!loading && !error && programasData.length > 0) {
+    @if (!loading() && !error() && programasData().length > 0) {
       <div class="programas-container">
         <div class="programas-list">
-          @for (programa of programasData; track programa; let i = $index) {
+          @for (programa of programasData(); track programa; let i = $index) {
             <div
               class="programa-item"
               [class.odd]="i % 2 === 1">
@@ -53,17 +53,17 @@
         <div class="resumen">
           <div class="total-estudiantes">
             <mat-icon>people</mat-icon>
-            <span>Total: {{ totalEstudiantes }} estudiantes</span>
+            <span>Total: {{ totalEstudiantes() }} estudiantes</span>
           </div>
           <div class="total-programas">
             <mat-icon>school</mat-icon>
-            <span>{{ programasData.length }} programas</span>
+            <span>{{ programasData().length }} programas</span>
           </div>
         </div>
       </div>
     }
 
-    @if (!loading && !error && programasData.length === 0) {
+    @if (!loading() && !error() && programasData().length === 0) {
       <div class="no-data">
         <mat-icon>info</mat-icon>
         <p>No hay datos de estudiantes por programa disponibles</p>
@@ -71,16 +71,16 @@
     }
   </mat-card-content>
 
-  @if (!loading) {
+  @if (!loading()) {
     <mat-card-actions>
       <button mat-icon-button (click)="cargarDatos()"
         matTooltip="Actualizar datos">
         <mat-icon>refresh</mat-icon>
       </button>
       <span class="spacer"></span>
-      @if (fechaConsulta) {
+      @if (fechaConsulta()) {
         <small class="fecha-actualizacion">
-          Actualizado: {{ fechaConsulta | date:'short' }}
+          Actualizado: {{ fechaConsulta() | date:'short' }}
         </small>
       }
     </mat-card-actions>

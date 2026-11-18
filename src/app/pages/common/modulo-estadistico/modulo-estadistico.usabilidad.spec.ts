@@ -1,3 +1,4 @@
+import { ChangeDetectorRef, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -8,6 +9,9 @@ import { of } from 'rxjs';
 
 import { ModuloEstadisticoComponent } from './modulo-estadistico.component';
 import { EstadisticasService } from '@core/services/estadisticas.service';
+
+/** El módulo usa OnPush: cambiar la pestaña por código no marca la vista (un clic sí). */
+const marcarCambio = (tabGroupDebug: DebugElement) => tabGroupDebug.injector.get(ChangeDetectorRef).markForCheck();
 
 describe('ModuloEstadisticoComponent (Funcionario)', () => {
   let component: ModuloEstadisticoComponent;
@@ -69,6 +73,7 @@ describe('ModuloEstadisticoComponent (Funcionario)', () => {
 
     const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
     tabGroup.selectedIndex = 1;
+    marcarCambio(tabGroupDebug);
     fixture.detectChanges();
 
     await fixture.whenStable();
@@ -99,10 +104,14 @@ describe('ModuloEstadisticoComponent (Funcionario)', () => {
       const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
       
       tabGroup.selectedIndex = 0;
+      
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       
       tabGroup.selectedIndex = 1;
+      
+      marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
       

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, OnChanges, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,7 +34,8 @@ interface ProcesoData {
     MatChipsModule
   ],
   templateUrl: './estadisticas-por-proceso.component.html',
-  styleUrl: './estadisticas-por-proceso.component.css'
+  styleUrl: './estadisticas-por-proceso.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
@@ -43,10 +44,10 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
   
-  procesosData: ProcesoData[] = [];
-  fechaConsulta: string | null = null;
-  loading = false;
-  error: string | null = null;
+  readonly procesosData = signal<ProcesoData[]>([]);
+  readonly fechaConsulta = signal<string | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
   mostrarDatosRaw = false;
 
   private subscription: Subscription = new Subscription();
@@ -68,8 +69,8 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   }
 
   cargarDatos(): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
@@ -87,13 +88,13 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
     const sub = this.estadisticasService.getEstadisticasDetalladasPorProceso(filtros)
       .subscribe({
         next: (response: EstadisticasPorProcesoResponse) => {
-          this.fechaConsulta = response.fechaConsulta;
-          this.procesosData = this.procesarDatos(response.estadisticasPorProceso);
-          this.loading = false;
+          this.fechaConsulta.set(response.fechaConsulta);
+          this.procesosData.set(this.procesarDatos(response.estadisticasPorProceso));
+          this.loading.set(false);
         },
         error: () => {
-          this.loading = false;
-          this.error = 'Error al cargar estadísticas por proceso';
+          this.loading.set(false);
+          this.error.set('Error al cargar estadísticas por proceso');
         }
       });
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, OnChanges, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +20,8 @@ import { Subscription } from 'rxjs';
     MatTooltipModule
   ],
   templateUrl: './estadisticas-por-estado.component.html',
-  styleUrl: './estadisticas-por-estado.component.css'
+  styleUrl: './estadisticas-por-estado.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
@@ -28,12 +29,12 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
   
-  data: EstadoSolicitudesResponse | null = null;
-  estadosData: ({nombre: string} & EstadoInfo)[] = [];
-  totalSolicitudes = 0;
-  fechaConsulta = '';
-  loading = true;
-  error = false;
+  readonly data = signal<EstadoSolicitudesResponse | null>(null);
+  readonly estadosData = signal<({nombre: string} & EstadoInfo)[]>([]);
+  readonly totalSolicitudes = signal(0);
+  readonly fechaConsulta = signal('');
+  readonly loading = signal(true);
+  readonly error = signal(false);
   private subscription: Subscription = new Subscription();
 
   ngOnInit(): void {
@@ -45,8 +46,8 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
   }
 
   cargarDatos(): void {
-    this.loading = true;
-    this.error = false;
+    this.loading.set(true);
+    this.error.set(false);
 
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
@@ -68,15 +69,15 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
           
           // Procesar datos desde el endpoint de estado de solicitudes
           const estados = response.resumenPorEstado || response.estados || {};
-          this.totalSolicitudes = response.totalSolicitudes || 0;
-          this.fechaConsulta = response.fechaConsulta || new Date().toISOString();
+          this.totalSolicitudes.set(response.totalSolicitudes || 0);
+          this.fechaConsulta.set(response.fechaConsulta || new Date().toISOString());
           
           // Siempre mostrar los 4 estados principales, incluso con cantidad 0
           // El backend ahora siempre devuelve: APROBADA, ENVIADA, EN_PROCESO, RECHAZADA
           const estadosPrincipales = ['APROBADA', 'ENVIADA', 'EN_PROCESO', 'RECHAZADA'];
           
           // Usar el nuevo estado EN_PROCESO (combinado) en lugar de APROBADA_FUNCIONARIO y APROBADA_COORDINADOR
-          this.estadosData = estadosPrincipales.map(estadoKey => {
+          this.estadosData.set(estadosPrincipales.map(estadoKey => {
             const estado = estados[estadoKey];
             
             // Si el estado existe en la respuesta, usar sus datos
@@ -100,15 +101,15 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
               color: this.getDefaultColor(estadoKey),
               descripcion: this.getDefaultDescription(estadoKey)
             };
-          });
+          }));
           
           // Crear datos de análisis usando los estados principales
           // Usar tasaResolucion del nivel raíz si está disponible, sino calcular
-          const tasaResolucion = response.tasaResolucion ?? (response.analisis?.tasaResolucion ?? (this.totalSolicitudes > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes) * 100 : 0));
+          const tasaResolucion = response.tasaResolucion ?? (response.analisis?.tasaResolucion ?? (this.totalSolicitudes() > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes()) * 100 : 0));
           const analisis = response.analisis;
-          this.data = {
-            totalSolicitudes: this.totalSolicitudes,
-            fechaConsulta: this.fechaConsulta,
+          this.data.set({
+            totalSolicitudes: this.totalSolicitudes(),
+            fechaConsulta: this.fechaConsulta(),
             estados: estados,
             analisis: {
               solicitudesPendientes: analisis?.solicitudesPendientes ?? ((estados['ENVIADA']?.cantidad || 0) + (estados['EN_PROCESO']?.cantidad || 0)),
@@ -116,13 +117,13 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
               tasaResolucion: tasaResolucion,
               estadoMasComun: analisis?.estadoMasComun || this.obtenerEstadoMasComun(estados)
             }
-          };
+          });
           
-          this.loading = false;
+          this.loading.set(false);
         },
         error: () => {
-          this.error = true;
-          this.loading = false;
+          this.error.set(true);
+          this.loading.set(false);
         }
       });
 

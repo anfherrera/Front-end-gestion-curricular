@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, OnChanges, inject, input, signal } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +19,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatButtonModule
 ],
   templateUrl: './tendencias-comparativas.component.html',
-  styleUrls: ['./tendencias-comparativas.component.css']
+  styleUrls: ['./tendencias-comparativas.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
@@ -28,9 +29,9 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
   
-  data: TendenciasComparativasResponse | null = null;
-  loading = false;
-  error = false;
+  readonly data = signal<TendenciasComparativasResponse | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal(false);
   
   private subscriptions: Subscription[] = [];
 
@@ -50,8 +51,8 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
    * Carga las tendencias y comparativas desde el API con filtros opcionales
    */
   cargarTendenciasComparativas(): void {
-    this.loading = true;
-    this.error = false;
+    this.loading.set(true);
+    this.error.set(false);
     
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
@@ -69,13 +70,13 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
     const subscription = this.estadisticasService.getTendenciasComparativas(filtros)
       .subscribe({
         next: (response) => {
-          this.data = response;
-          this.loading = false;
+          this.data.set(response);
+          this.loading.set(false);
           this.mostrarExito('Tendencias y comparativas cargadas correctamente');
         },
         error: () => {
-          this.loading = false;
-          this.error = true;
+          this.loading.set(false);
+          this.error.set(true);
           this.mostrarError('Error al cargar tendencias y comparativas');
         }
       });

@@ -208,6 +208,19 @@ try {
     falla(`${r} no repinta después de cargar`);
   }
 
+  async function comprobarPestana(r, etiqueta) {
+    c.errores.length = 0;
+    const pulsada = await c.evaluar(`(() => {
+      const t = [...document.querySelectorAll('[role=tab]')].find(x => x.textContent.trim() === ${JSON.stringify(etiqueta)});
+      t?.click(); return !!t; })()`);
+    console.log(`       pestaña "${etiqueta}": ${pulsada ? 'abierta' : 'NO encontrada'}`);
+    if (!pulsada) { falla(`no se encuentra la pestaña "${etiqueta}" en ${r}`); return; }
+    await espera(1500);
+    const errs = erroresGraves();
+    if (errs.length) falla(`errores en la pestaña "${etiqueta}": ${errs.slice(0, 2).join(' || ')}`);
+    await comprobarRepintado(`${r} (${etiqueta})`);
+  }
+
   for (const caso of casos) {
     console.log(`\n=== ${caso.rol} (${caso.correo})${SIN_BACKEND ? ' [sesión simulada]' : ''}`);
     const trasLogin = await iniciarSesion(caso);
@@ -215,7 +228,11 @@ try {
     if (trasLogin === '/login') { falla('no inicia sesión'); continue; }
     await espera(1000);
 
-    for (const r of caso.rutas) await comprobarRuta(r);
+    for (const r of caso.rutas) {
+      await comprobarRuta(r);
+      // La pestaña de cursos de verano solo se pinta al abrirla
+      if (r.endsWith('/modulo-estadistico')) await comprobarPestana(r, 'Cursos de Verano');
+    }
 
     if (caso.cursos) {
       const base = `/${caso.rol}/cursos-intersemestrales`;

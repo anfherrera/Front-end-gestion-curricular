@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -59,7 +59,8 @@ Chart.register(...registerables);
     RecomendacionesCursosVeranoComponent
   ],
   templateUrl: './cursos-verano-dashboard.component.html',
-  styleUrls: ['../dashboard-comun.css', './cursos-verano-dashboard.component.css']
+  styleUrls: ['../dashboard-comun.css', './cursos-verano-dashboard.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   private estadisticasService = inject(EstadisticasService);
@@ -67,27 +68,27 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
 
   // ===== PROPIEDADES DE DATOS =====
-  data: CursosVeranoResponse | null = null;
-  loading = true;
-  error: string | null = null;
-  ultimaActualizacion: Date = new Date();
+  readonly data = signal<CursosVeranoResponse | null>(null);
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
+  readonly ultimaActualizacion = signal<Date>(new Date());
 
   // ===== FILTROS =====
   filtrosForm: FormGroup | null = null;
-  programasDisponibles: { id: number; nombre: string }[] = [];
+  readonly programasDisponibles = signal<{ id: number; nombre: string }[]>([]);
   filtrosAplicados: FiltrosCursosVerano = {};
 
   // Datos del backend para las gráficas
-  tendenciasTemporalesData: TendenciaTemporal[] = [];
-  topMateriasData: TopMateria[] = [];
-  analisisProgramaData: AnalisisPrograma[] = [];
+  readonly tendenciasTemporalesData = signal<TendenciaTemporal[]>([]);
+  readonly topMateriasData = signal<TopMateria[]>([]);
+  readonly analisisProgramaData = signal<AnalisisPrograma[]>([]);
 
   activeTab = 'analisis-actual';
 
   // Predicciones y recomendaciones
-  recomendaciones: Recomendacion[] = [];
-  alertasCriticas: AlertaCritica[] = [];
-  estadisticasRecomendaciones: Partial<EstadisticasRecomendaciones> = {};
+  readonly recomendaciones = signal<Recomendacion[]>([]);
+  readonly alertasCriticas = signal<AlertaCritica[]>([]);
+  readonly estadisticasRecomendaciones = signal<Partial<EstadisticasRecomendaciones>>({});
 
   // ===== GRÁFICOS =====
   chartMaterias: Chart | null = null;
@@ -107,7 +108,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     // Cargar programas disponibles
     this.estadisticasService.getProgramasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(programas => this.programasDisponibles = programas);
+      .subscribe(programas => this.programasDisponibles.set(programas));
     
     // Cargar primero las tendencias temporales de forma optimizada para una carga más rápida
     this.cargarTendenciasTemporalesOptimizadas();
@@ -180,10 +181,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         // Asignar solo los datos de tendencias temporales
-        this.tendenciasTemporalesData = response.tendenciasTemporales || [];
+        this.tendenciasTemporalesData.set(response.tendenciasTemporales || []);
         
         // Actualizar la gráfica inmediatamente
-        if (this.tendenciasTemporalesData.length > 0) {
+        if (this.tendenciasTemporalesData().length > 0) {
           this.crearGraficaTendencias();
         }
       },
@@ -199,25 +200,25 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   cargarDatos(): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
     const filtros = this.obtenerFiltrosActuales();
     this.estadisticasService.getCursosVeranoEstadisticas(filtros).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
-        this.data = response;
-        this.tendenciasTemporalesData = response.tendenciasTemporales || [];
-        this.topMateriasData = response.topMaterias || [];
-        this.analisisProgramaData = response.analisisPorPrograma || [];
+        this.data.set(response);
+        this.tendenciasTemporalesData.set(response.tendenciasTemporales || []);
+        this.topMateriasData.set(response.topMaterias || []);
+        this.analisisProgramaData.set(response.analisisPorPrograma || []);
 
-        this.recomendaciones = response.recomendaciones || [];
+        this.recomendaciones.set(response.recomendaciones || []);
         if (response.predicciones) {
-          this.alertasCriticas = response.predicciones.alertasCriticas || [];
-          this.estadisticasRecomendaciones = response.predicciones.estadisticasRecomendaciones || {};
+          this.alertasCriticas.set(response.predicciones.alertasCriticas || []);
+          this.estadisticasRecomendaciones.set(response.predicciones.estadisticasRecomendaciones || {});
         }
-        this.ultimaActualizacion = new Date(); // Actualizar timestamp
-        this.loading = false;
+        this.ultimaActualizacion.set(new Date()); // Actualizar timestamp
+        this.loading.set(false);
         
         // Cargar gráficas después de un pequeño delay
         setTimeout(() => {
@@ -225,10 +226,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }, 200);
       },
       error: (error) => {
-        this.error = esErrorDeAcceso(error)
+        this.error.set(esErrorDeAcceso(error)
           ? mensajeErrorDeAcceso(error)
-          : 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.';
-        this.loading = false;
+          : 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.');
+        this.loading.set(false);
       }
     });
   }
@@ -265,17 +266,17 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     // Solo crear gráficos si NO estamos en recomendaciones
     if (this.activeTab !== 'recomendaciones') {
       // Inicializar gráfica de tendencias temporales
-      if (this.tendenciasTemporalesData && this.tendenciasTemporalesData.length > 0) {
+      if (this.tendenciasTemporalesData() && this.tendenciasTemporalesData().length > 0) {
         this.crearGraficaTendencias();
       }
       
       // Inicializar gráfica de top materias
-      if (this.topMateriasData && this.topMateriasData.length > 0) {
+      if (this.topMateriasData() && this.topMateriasData().length > 0) {
         this.crearGraficaTopMaterias();
       }
       
       // Inicializar gráfica de análisis por programa
-      if (this.analisisProgramaData && this.analisisProgramaData.length > 0) {
+      if (this.analisisProgramaData() && this.analisisProgramaData().length > 0) {
         this.crearGraficaAnalisisPrograma();
       }
     }
@@ -299,10 +300,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.chartTendencias = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: this.tendenciasTemporalesData.map(t => t.mes),
+        labels: this.tendenciasTemporalesData().map(t => t.mes),
         datasets: [{
           label: 'Solicitudes',
-          data: this.tendenciasTemporalesData.map(t => t.solicitudes),
+          data: this.tendenciasTemporalesData().map(t => t.solicitudes),
           borderColor: '#36A2EB',
           backgroundColor: 'rgba(54, 162, 235, 0.1)',
           fill: true,
@@ -339,9 +340,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.chartMaterias = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: this.topMateriasData.map(m => m.nombre),
+        labels: this.topMateriasData().map(m => m.nombre),
         datasets: [{
-          data: this.topMateriasData.map(m => m.solicitudes),
+          data: this.topMateriasData().map(m => m.solicitudes),
           backgroundColor: [
             '#FF6384',
             '#36A2EB',
@@ -376,10 +377,10 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.chartProgramas = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: this.analisisProgramaData.map(p => p.nombre),
+        labels: this.analisisProgramaData().map(p => p.nombre),
         datasets: [{
           label: 'Solicitudes por Programa',
-          data: this.analisisProgramaData.map(p => p.solicitudes),
+          data: this.analisisProgramaData().map(p => p.solicitudes),
           backgroundColor: '#FF6384'
         }]
       },

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { MatTabsModule } from '@angular/material/tabs';
 import { DashboardEstadisticoComponent } from './dashboard-estadistico.component';
@@ -12,7 +12,8 @@ import { CursosVeranoDashboardComponent } from './cursos-verano/cursos-verano-da
     CursosVeranoDashboardComponent
 ],
   templateUrl: './modulo-estadistico.component.html',
-  styleUrl: './modulo-estadistico.component.css'
+  styleUrl: './modulo-estadistico.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModuloEstadisticoComponent {
 

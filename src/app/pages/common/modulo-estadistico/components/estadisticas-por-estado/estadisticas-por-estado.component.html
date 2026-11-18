@@ -7,36 +7,36 @@
   </mat-card-header>
 
   <mat-card-content>
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-overlay">
         <mat-spinner diameter="30"></mat-spinner>
         <p>Cargando estados...</p>
       </div>
     }
 
-    @if (!loading && error) {
+    @if (!loading() && error()) {
       <div class="error-message">
         <mat-icon color="warn">error_outline</mat-icon>
         <p>Error al cargar estadísticas por estado.</p>
       </div>
     }
 
-    @if (!loading && !error && estadosData.length === 0) {
+    @if (!loading() && !error() && estadosData().length === 0) {
       <div class="no-data-message">
         <mat-icon>info_outline</mat-icon>
         <p>No hay datos de estados disponibles.</p>
       </div>
     }
 
-    @if (!loading && !error && estadosData.length > 0) {
+    @if (!loading() && !error() && estadosData().length > 0) {
       <div class="estados-container">
         <div class="total-solicitudes">
           <span class="total-label">Total:</span>
-          <span class="total-value">{{ totalSolicitudes }}</span>
+          <span class="total-value">{{ totalSolicitudes() }}</span>
           <span class="total-text">solicitudes</span>
         </div>
         <div class="estados-grid">
-          @for (estado of estadosData; track estado) {
+          @for (estado of estadosData(); track estado) {
             <div
               class="estado-card"
               [style.border-left-color]="estado.color">
@@ -64,7 +64,7 @@
     }
 
     <!-- NUEVA SECCIÓN: Análisis Mejorado -->
-    @if (!loading && !error && data?.analisis) {
+    @if (!loading() && !error() && data()?.analisis; as analisis) {
       <div class="analisis-section">
         <h4 class="analisis-title">
           <mat-icon>analytics</mat-icon>
@@ -73,19 +73,19 @@
         <div class="analisis-grid">
           <div class="analisis-item">
             <div class="analisis-label">Solicitudes Pendientes</div>
-            <div class="analisis-valor">{{ data?.analisis?.solicitudesPendientes || 0 }}</div>
+            <div class="analisis-valor">{{ analisis.solicitudesPendientes || 0 }}</div>
           </div>
           <div class="analisis-item">
             <div class="analisis-label">Solicitudes Completadas</div>
-            <div class="analisis-valor">{{ data?.analisis?.solicitudesCompletadas || 0 }}</div>
+            <div class="analisis-valor">{{ analisis.solicitudesCompletadas || 0 }}</div>
           </div>
           <div class="analisis-item">
             <div class="analisis-label">Tasa de Resolución</div>
-            <div class="analisis-valor">{{ formatPorcentaje(data?.analisis?.tasaResolucion || 0) }}</div>
+            <div class="analisis-valor">{{ formatPorcentaje(analisis.tasaResolucion || 0) }}</div>
           </div>
           <div class="analisis-item">
             <div class="analisis-label">Estado Más Común</div>
-            <div class="analisis-valor">{{ data?.analisis?.estadoMasComun || 'N/A' }}</div>
+            <div class="analisis-valor">{{ analisis.estadoMasComun || 'N/A' }}</div>
           </div>
         </div>
       </div>
@@ -93,14 +93,14 @@
 
   </mat-card-content>
 
-  @if (!loading && !error && estadosData.length > 0) {
+  @if (!loading() && !error() && estadosData().length > 0) {
     <mat-card-actions>
-      <button mat-icon-button (click)="actualizarDatos()" [disabled]="loading"
+      <button mat-icon-button (click)="actualizarDatos()" [disabled]="loading()"
         matTooltip="Actualizar datos">
         <mat-icon>refresh</mat-icon>
       </button>
       <small class="fecha-actualizacion">
-        Actualizado: {{ fechaConsulta | date:'short' }}
+        Actualizado: {{ fechaConsulta() | date:'short' }}
       </small>
     </mat-card-actions>
   }
