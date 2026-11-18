@@ -1,22 +1,22 @@
 <app-card-container title="Seguimiento de Actividades">
-  @if (cargando) {
+  @if (cargando()) {
     <div class="cargando">Cargando seguimiento...</div>
   }
 
   <!-- Resumen de actividades -->
-  @if (!cargando) {
+  @if (!cargando()) {
     <div class="resumen">
       <div class="resumen-item">
         <mat-icon class="resumen-icon">assignment</mat-icon>
         <div class="resumen-content">
-          <h3>{{ preinscripciones.length }}</h3>
+          <h3>{{ preinscripciones().length }}</h3>
           <p>Preinscripciones</p>
         </div>
       </div>
       <div class="resumen-item">
         <mat-icon class="resumen-icon">school</mat-icon>
         <div class="resumen-content">
-          <h3>{{ inscripciones.length }}</h3>
+          <h3>{{ inscripciones().length }}</h3>
           <p>Inscripciones</p>
         </div>
       </div>
@@ -31,10 +31,10 @@
   }
 
   <!-- Sección de Preinscripciones -->
-  @if (!cargando && preinscripciones.length > 0) {
+  @if (!cargando() && preinscripciones().length > 0) {
     <div class="section">
       <h3>Preinscripciones</h3>
-      <table mat-table [dataSource]="preinscripciones" class="mat-elevation-z8">
+      <table mat-table [dataSource]="preinscripciones()" class="mat-elevation-z8">
         <!-- Curso -->
         <ng-container matColumnDef="curso">
           <th mat-header-cell *matHeaderCellDef>Curso</th>
@@ -155,10 +155,10 @@
   }
 
   <!-- Sección de Inscripciones -->
-  @if (!cargando && inscripciones.length > 0) {
+  @if (!cargando() && inscripciones().length > 0) {
     <div class="section">
       <h3>Inscripciones</h3>
-      <table mat-table [dataSource]="inscripciones" class="mat-elevation-z8">
+      <table mat-table [dataSource]="inscripciones()" class="mat-elevation-z8">
         <!-- Curso -->
         <ng-container matColumnDef="curso">
           <th mat-header-cell *matHeaderCellDef>Curso</th>
@@ -248,7 +248,7 @@
   }
 
   <!-- Mensaje cuando no hay actividades -->
-  @if (!cargando && preinscripciones.length === 0 && inscripciones.length === 0) {
+  @if (!cargando() && preinscripciones().length === 0 && inscripciones().length === 0) {
     <div class="sin-datos">
       <mat-icon>info</mat-icon>
       <p>No tienes actividades registradas.</p>

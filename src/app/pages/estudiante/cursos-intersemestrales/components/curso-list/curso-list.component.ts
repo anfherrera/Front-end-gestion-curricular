@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, OnChanges, SimpleChanges, output, input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, input, OnChanges, output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -27,7 +27,8 @@ export interface Curso {
   selector: 'app-curso-list',
   imports: [...MATERIAL_IMPORTS, FechaPipe],
   templateUrl: './curso-list.component.html',
-  styleUrls: ['./curso-list.component.css']
+  styleUrls: ['./curso-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CursoListComponent implements AfterViewInit, OnChanges {
   readonly cursos = input<Curso[]>([]);

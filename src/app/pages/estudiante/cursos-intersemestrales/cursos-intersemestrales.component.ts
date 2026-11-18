@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 
@@ -18,10 +18,12 @@ import { filter } from 'rxjs';
     MatTooltipModule
 ],
   templateUrl: './cursos-intersemestrales.component.html',
-  styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css']
+  styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CursosIntersemestralesComponent implements OnInit {
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   private readonly destroyRef = inject(DestroyRef);
   
@@ -42,9 +44,8 @@ export class CursosIntersemestralesComponent implements OnInit {
         filter(event => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(() => {
-        // Navegación completada
-      });
+      // hasActiveRoute() lee router.url: con OnPush hay que repintar al terminar cada navegación
+      .subscribe(() => this.cdr.markForCheck());
   }
 
   hasActiveRoute(): boolean {

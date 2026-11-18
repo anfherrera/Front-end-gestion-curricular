@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
@@ -41,7 +41,8 @@ const INSCRIPCION_RECHAZADA = ['PAGO_RECHAZADO', 'PAGO RECHAZADO', 'RECHAZADO'];
   selector: 'app-ver-solicitud',
   imports: [CommonModule, CardContainerComponent, ...MATERIAL_IMPORTS],
   templateUrl: './ver-solicitud.component.html',
-  styleUrls: ['./ver-solicitud.component.css']
+  styleUrls: ['./ver-solicitud.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VerSolicitudComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -49,9 +50,9 @@ export class VerSolicitudComponent implements OnInit {
   private dialog = inject(MatDialog);
   private snackbar = inject(SnackbarService);
 
-  preinscripciones: PreinscripcionSeguimiento[] = [];
-  inscripciones: InscripcionSeguimiento[] = [];
-  cargando = true;
+  readonly preinscripciones = signal<PreinscripcionSeguimiento[]>([]);
+  readonly inscripciones = signal<InscripcionSeguimiento[]>([]);
+  readonly cargando = signal(true);
   usuario: UsuarioSesion | null = null;
 
   private destroyRef = inject(DestroyRef);
@@ -64,28 +65,28 @@ export class VerSolicitudComponent implements OnInit {
   loadSeguimiento(): void {
     const idUsuario = this.usuario?.id_usuario;
     if (!idUsuario) {
-      this.cargando = false;
+      this.cargando.set(false);
       return;
     }
 
-    this.cargando = true;
+    this.cargando.set(true);
     forkJoin({
       seguimiento: this.cursosService.getSeguimientoActividades(idUsuario),
       detalle: this.cursosService.getPreinscripcionesUsuario(idUsuario).pipe(catchError(() => of([])))
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: ({ seguimiento, detalle }) => {
-        this.preinscripciones = conComentarios(seguimiento.preinscripciones || [], detalle);
-        this.inscripciones = seguimiento.inscripciones || [];
-        this.cargando = false;
+        this.preinscripciones.set(conComentarios(seguimiento.preinscripciones || [], detalle));
+        this.inscripciones.set(seguimiento.inscripciones || []);
+        this.cargando.set(false);
       },
       error: () => {
-        this.cargando = false;
+        this.cargando.set(false);
       }
     });
   }
 
   getTotalActividades(): number {
-    return this.preinscripciones.length + this.inscripciones.length;
+    return this.preinscripciones().length + this.inscripciones().length;
   }
 
   getTextoAccion(acciones: string[] | undefined): string {
@@ -130,7 +131,7 @@ export class VerSolicitudComponent implements OnInit {
   }
 
   private inscripcionDelCurso(cursoId: number): InscripcionSeguimiento | undefined {
-    return this.inscripciones.find(insc => insc.cursoId === cursoId);
+    return this.inscripciones().find(insc => insc.cursoId === cursoId);
   }
 
   manejarAccion(actividad: Actividad): void {

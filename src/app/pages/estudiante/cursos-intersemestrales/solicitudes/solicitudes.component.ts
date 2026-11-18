@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -25,7 +25,8 @@ const ERRORES_ENVIO: Record<number, string> = {
   selector: 'app-solicitudes',
   imports: [CardContainerComponent, ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './solicitudes.component.html',
-  styleUrls: ['./solicitudes.component.css']
+  styleUrls: ['./solicitudes.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SolicitudesComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -35,11 +36,11 @@ export class SolicitudesComponent implements OnInit {
   private notificacionesService = inject(NotificacionesService);
 
   solicitudForm!: FormGroup;
-  loading = false;
-  solicitudEnviada = false;
+  readonly loading = signal(false);
+  readonly solicitudEnviada = signal(false);
 
-  materiasDisponibles: Materia[] = [];
-  condiciones: CondicionSolicitudVerano[] = [];
+  readonly materiasDisponibles = signal<Materia[]>([]);
+  readonly condiciones = signal<CondicionSolicitudVerano[]>([]);
   usuario: UsuarioSesion | null = null;
 
   private destroyRef = inject(DestroyRef);
@@ -56,15 +57,15 @@ export class SolicitudesComponent implements OnInit {
     this.cursosService.getMateriasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (materias) => this.materiasDisponibles = materias,
+        next: (materias) => this.materiasDisponibles.set(materias),
         error: () => this.snackbar.error('Error al cargar las materias disponibles')
       });
 
     this.cursosService.getCondicionesSolicitud()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (condiciones) => this.condiciones = condiciones,
-        error: () => this.condiciones = CONDICIONES_POR_DEFECTO
+        next: (condiciones) => this.condiciones.set(condiciones),
+        error: () => this.condiciones.set(CONDICIONES_POR_DEFECTO)
       });
   }
 
@@ -85,7 +86,7 @@ export class SolicitudesComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     const formData = this.solicitudForm.value;
     const payload: CreateSolicitudCursoNuevoDTO = {
       nombreCompleto: formData.nombreCompleto,
@@ -99,15 +100,15 @@ export class SolicitudesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.loading = false;
-          this.solicitudEnviada = true;
+          this.loading.set(false);
+          this.solicitudEnviada.set(true);
           this.solicitudForm.reset();
           this.loadUserData();
           this.notificacionesService.actualizarNotificaciones();
           this.snackbar.exito('¡Solicitud enviada exitosamente!');
         },
         error: (error: HttpErrorResponse) => {
-          this.loading = false;
+          this.loading.set(false);
           const mensaje = ERRORES_ENVIO[error.status] ?? 'Error al enviar la solicitud. Inténtalo de nuevo.';
           this.snackbar.error(mensaje);
         }
@@ -116,7 +117,7 @@ export class SolicitudesComponent implements OnInit {
 
   onClearForm(): void {
     this.solicitudForm.reset();
-    this.solicitudEnviada = false;
+    this.solicitudEnviada.set(false);
     this.loadUserData();
     this.snackbar.info('Formulario limpiado');
   }

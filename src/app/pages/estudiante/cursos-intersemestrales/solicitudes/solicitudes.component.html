@@ -1,10 +1,10 @@
 <app-card-container title="Solicitud de Cursos Intersemestrales de Verano">
-  @if (loading) {
+  @if (loading()) {
     <div>Cargando...</div>
   }
 
   <!-- Formulario para solicitar curso nuevo -->
-  @if (!loading) {
+  @if (!loading()) {
     <form [formGroup]="solicitudForm" (ngSubmit)="onSubmitSolicitud()" class="solicitud-form">
       <!-- Nombre Completo -->
       <mat-form-field appearance="outline" class="full-width">
@@ -32,7 +32,7 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Materia</mat-label>
         <mat-select formControlName="curso" placeholder="Selecciona la materia que deseas solicitar">
-          @for (materia of materiasDisponibles; track materia) {
+          @for (materia of materiasDisponibles(); track materia) {
             <mat-option [value]="materia.nombre">
               {{ materia.nombre }} ({{ materia.codigo }}) - {{ materia.creditos }} créditos
             </mat-option>
@@ -49,7 +49,7 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Condición</mat-label>
         <mat-select formControlName="condicion" placeholder="Selecciona la condición de tu solicitud">
-          @for (condicion of condiciones; track condicion) {
+          @for (condicion of condiciones(); track condicion) {
             <mat-option [value]="condicion">
               {{ getCondicionDisplayName(condicion) }}
             </mat-option>
@@ -69,7 +69,7 @@
           Limpiar
         </button>
         <button type="submit" mat-raised-button color="primary"
-          [disabled]="solicitudForm.invalid || loading" class="action-button">
+          [disabled]="solicitudForm.invalid || loading()" class="action-button">
           <mat-icon>send</mat-icon>
           Enviar Solicitud
         </button>
@@ -78,7 +78,7 @@
   }
 
   <!-- Mensaje de éxito -->
-  @if (solicitudEnviada) {
+  @if (solicitudEnviada()) {
     <div class="success-message">
       <mat-icon class="success-icon">check_circle</mat-icon>
       <p>¡Solicitud enviada exitosamente!</p>

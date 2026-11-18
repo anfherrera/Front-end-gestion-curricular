@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
@@ -14,13 +14,14 @@ import { estadoCurso, nombreDocente, periodoCurso } from '@core/utils/cursos-ver
   selector: 'app-cursos-ofertados',
   imports: [CardContainerComponent, CursoListComponent, PeriodoFiltroSelectorComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-ofertados.component.html',
-  styleUrls: ['./cursos-ofertados.component.css']
+  styleUrls: ['./cursos-ofertados.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CursosOfertadosComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
 
-  cursos: Curso[] = [];
-  cargando = true;
+  readonly cursos = signal<Curso[]>([]);
+  readonly cargando = signal(true);
   periodoSeleccionado = '';
   mostrarTodosLosCursos = false;
 
@@ -31,7 +32,7 @@ export class CursosOfertadosComponent implements OnInit {
   }
 
   loadCursos(): void {
-    this.cargando = true;
+    this.cargando.set(true);
     const todos = this.periodoSeleccionado === 'todos' || this.mostrarTodosLosCursos;
     const periodo = !todos && this.periodoSeleccionado.trim() ? this.periodoSeleccionado : undefined;
 
@@ -44,8 +45,8 @@ export class CursosOfertadosComponent implements OnInit {
           this.loadCursos();
           return;
         }
-        this.cursos = cursos.map(aFila);
-        this.cargando = false;
+        this.cursos.set(cursos.map(aFila));
+        this.cargando.set(false);
       });
   }
 

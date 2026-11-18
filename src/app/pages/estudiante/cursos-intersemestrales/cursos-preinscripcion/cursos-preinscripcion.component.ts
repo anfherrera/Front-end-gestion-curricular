@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +18,8 @@ import { SnackbarService } from '@core/services/snackbar.service';
   selector: 'app-cursos-preinscripcion',
   imports: [CardContainerComponent, CursoListComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-preinscripcion.component.html',
-  styleUrls: ['./cursos-preinscripcion.component.css']
+  styleUrls: ['./cursos-preinscripcion.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CursosPreinscripcionComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -26,10 +27,10 @@ export class CursosPreinscripcionComponent implements OnInit {
   private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
 
-  cursos: Curso[] = [];
+  readonly cursos = signal<Curso[]>([]);
   /** Respuesta del backend, para abrir el diálogo con el curso completo. */
   cursosOriginales: CursoOfertadoVerano[] = [];
-  cargando = true;
+  readonly cargando = signal(true);
   usuario: UsuarioSesion | null = null;
 
   private destroyRef = inject(DestroyRef);
@@ -40,13 +41,13 @@ export class CursosPreinscripcionComponent implements OnInit {
   }
 
   loadCursos(): void {
-    this.cargando = true;
+    this.cargando.set(true);
     this.cursosService.getCursosPorEstado('Preinscripción')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cursos) => {
           this.cursosOriginales = cursos;
-          this.cursos = cursos.map(curso => ({
+          this.cursos.set(cursos.map(curso => ({
             codigo: curso.codigo_curso || curso.id_curso?.toString() || 'N/A',
             nombre: curso.nombre_curso || 'Sin nombre',
             docente: nombreDocente(curso),
@@ -54,11 +55,11 @@ export class CursosPreinscripcionComponent implements OnInit {
             creditos: curso.objMateria?.creditos || 0,
             espacio: curso.espacio_asignado || 'Por asignar',
             estado: estadoCurso(curso) as Curso['estado']
-          }));
-          this.cargando = false;
+          })));
+          this.cargando.set(false);
         },
         error: () => {
-          this.cargando = false;
+          this.cargando.set(false);
         }
       });
   }

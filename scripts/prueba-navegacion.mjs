@@ -181,6 +181,28 @@ try {
     console.log(`${abre ? 'ABRE  ' : 'NEGADA'} ${r} -> ${final}${errs.length ? `  | errores: ${errs.slice(0, 2).join(' || ')}` : ''}`);
     if (!abre) falla(`${r} no abre`);
     if (errs.length) falla(`errores en ${r}`);
+    if (abre) await comprobarRepintado(r);
+  }
+
+  // Con OnPush, una pantalla que no repinta se queda en "Cargando..." aunque la petición ya terminó
+  // (sin backend fallan enseguida y la rama de error debe apagar el indicador).
+  async function comprobarRepintado(r) {
+    let cargando = [];
+    for (let i = 0; i < 12; i++) {
+      cargando = await c.evaluar(`(() => {
+        const visible = el => el.offsetParent !== null && getComputedStyle(el).visibility !== 'hidden';
+        const textos = [...document.querySelectorAll('main *, mat-sidenav-content *')]
+          .filter(el => el.children.length === 0 && /^\\s*Cargando/i.test(el.textContent || '') && visible(el))
+          .map(el => el.textContent.trim().slice(0, 60));
+        const spinners = [...document.querySelectorAll('mat-spinner, mat-progress-spinner')]
+          .filter(el => visible(el) && !el.closest('button')).length;
+        return spinners ? [...textos, spinners + ' spinner(s)'] : textos;
+      })()`) || [];
+      if (cargando.length === 0) return;
+      await espera(500);
+    }
+    console.log(`       sigue cargando: ${[...new Set(cargando)].slice(0, 3).join(' | ')}`);
+    falla(`${r} no repinta después de cargar`);
   }
 
   for (const caso of casos) {

@@ -267,7 +267,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [ ] **OnPush**: lo usan 33 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
+- [ ] **OnPush**: lo usan 39 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
@@ -276,6 +276,13 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Con signals, porque el estado cambiaba dentro de `subscribe`: form-proceso y form-rol (`loading`), estudiantes-curso (`datos`, `cargando`, `error`), preinscripcion-dialog (`loading`, `condiciones`), inscripcion-modal (`cargando`) y curso-dialog (`periodos`, `salones`, `cargandoSalones`, `errorFechas`, `duracionSemanas`, `mostrarDuracion`; las fechas llegan por `valueChanges` del datepicker)
     - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589 sin tocar specs (ningún spec usa estos diálogos), `test:navegacion` sin backend correcto. `test:navegacion` no abre diálogos
     - Probar a mano con backend: gestionar cursos → crear curso (elegir fechas: aparece la duración o el error de fechas; se llenan períodos y salones) y ver estudiantes del curso; admin → crear/editar proceso y rol (spinner del botón); estudiante → preinscripción (lista de condiciones) e inscripción (botón "Procesando...")
+    - Sin cambios visibles esperados
+  - [x] Estudiante, cursos intersemestrales (2026-11-17): OnPush en los 6 (33 → 39 de 88), con 13 `signal()` nuevas
+    - cursos-ofertados y cursos-preinscripcion (`cursos`, `cargando`), solicitudes (`loading`, `solicitudEnviada`, `materiasDisponibles`, `condiciones`) y ver-solicitud (`preinscripciones`, `inscripciones`, `cargando`)
+    - El menú (`cursos-intersemestrales`) muestra la ayuda según `router.url`; su suscripción a `NavigationEnd`, que estaba vacía, ahora hace `markForCheck()`. Así sus specs (que espían `router.url` y esa suscripción) no cambian
+    - `curso-list` queda igual: su tabla se llena en `ngOnChanges` con la entrada `cursos`
+    - **`test:navegacion` detecta ahora pantallas que no repintan**: después de abrir cada ruta espera hasta 6 s a que no quede ningún "Cargando..." ni spinner visible fuera de un botón. Sin backend las peticiones fallan enseguida, así que esto prueba también las ramas de error. Probado en negativo: con cursos-ofertados en OnPush sin signals marca "no repinta después de cargar"
+    - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589 sin tocar specs, `test:navegacion` sin backend correcto (con la comprobación nueva)
     - Sin cambios visibles esperados
 
 ---
