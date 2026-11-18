@@ -6,7 +6,7 @@
       <mat-form-field appearance="outline" class="periodo-field">
         <mat-label>Período Académico</mat-label>
         <mat-select formControlName="periodoAcademico" placeholder="Seleccione un período">
-          @for (periodo of periodos; track periodo) {
+          @for (periodo of periodos(); track periodo) {
             <mat-option [value]="periodo">{{ periodo }}</mat-option>
           }
         </mat-select>
@@ -37,16 +37,16 @@
         mat-raised-button
         color="primary"
         (click)="publicar()"
-        [disabled]="publicando || form.invalid"
+        [disabled]="publicando() || form.invalid"
         class="btn-publicar">
-        @if (publicando) {
+        @if (publicando()) {
           <mat-icon class="spinning">refresh</mat-icon>
         } @else {
-          <mat-icon>{{ esEdicion ? 'save' : 'publish' }}</mat-icon>
+          <mat-icon>{{ esEdicion() ? 'save' : 'publish' }}</mat-icon>
         }
-        {{ publicando
-          ? (esEdicion ? 'Actualizando...' : 'Publicando...')
-          : (esEdicion ? 'Actualizar Fechas' : 'Publicar Fechas') }}
+        {{ publicando()
+          ? (esEdicion() ? 'Actualizando...' : 'Publicando...')
+          : (esEdicion() ? 'Actualizar Fechas' : 'Publicar Fechas') }}
       </button>
     </div>
 

@@ -66,7 +66,7 @@ describe('PruebasEcaesFuncionarioComponent', () => {
   }
 
   it('carga las pendientes en una bandeja sin historial', () => {
-    expect(component.pendientes.length).toBe(2);
+    expect(component.pendientes().length).toBe(2);
     expect((fixture.nativeElement as HTMLElement).querySelector('mat-tab-group')).toBeNull();
   });
 
@@ -81,7 +81,7 @@ describe('PruebasEcaesFuncionarioComponent', () => {
     component.aprobar();
 
     expect(servicio.approveRequest).toHaveBeenCalledWith(2);
-    expect(component.seleccionada).toBeNull();
+    expect(component.seleccionada()).toBeNull();
     expect(servicio.listarSolicitudesFuncionario).toHaveBeenCalledTimes(2);
   });
 
@@ -100,7 +100,7 @@ describe('PruebasEcaesFuncionarioComponent', () => {
     component.rechazar();
 
     expect(servicio.rejectRequest).not.toHaveBeenCalled();
-    expect(component.seleccionada?.id_solicitud).toBe(1);
+    expect(component.seleccionada()?.id_solicitud).toBe(1);
   });
 
   it('tras comentar sigue elegida la misma solicitud, con el comentario al día', () => {
@@ -110,7 +110,7 @@ describe('PruebasEcaesFuncionarioComponent', () => {
     component.onComentarioAgregado({ documento: solicitud(2).documentos[0], comentario: 'Falta firma' });
 
     expect(servicio.agregarComentario).toHaveBeenCalledWith(20, 'Falta firma');
-    expect(component.seleccionada?.id_solicitud).toBe(2);
-    expect(component.seleccionada?.documentos[0].comentario).toBe('Falta firma');
+    expect(component.seleccionada()?.id_solicitud).toBe(2);
+    expect(component.seleccionada()?.documentos[0].comentario).toBe('Falta firma');
   });
 });

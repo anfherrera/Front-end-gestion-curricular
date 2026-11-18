@@ -2,12 +2,12 @@
 
   <app-solicitudes-bandeja
     #bandeja
-    [pendientes]="pendientes"
+    [pendientes]="pendientes()"
     [conHistorial]="false"
     (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
   </app-solicitudes-bandeja>
 
-  @if (seleccionada) {
+  @if (seleccionada(); as sel) {
     <app-card-container title="Documentación Adjunta" icon="description">
       <mat-card class="info-card">
         <mat-card-header>
@@ -20,26 +20,26 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Tipo de Documento:</span>
-              <span class="info-value">{{ tipoDocumentoLabel(seleccionada.tipoDocumento) }}</span>
+              <span class="info-value">{{ tipoDocumentoLabel(sel.tipoDocumento) }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Número de Documento:</span>
-              <span class="info-value">{{ seleccionada.numero_documento || '-' }}</span>
+              <span class="info-value">{{ sel.numero_documento || '-' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Fecha de Expedición:</span>
-              <span class="info-value">{{ seleccionada.fecha_expedicion | fecha:'corta':'-' }}</span>
+              <span class="info-value">{{ sel.fecha_expedicion | fecha:'corta':'-' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Fecha de Nacimiento:</span>
-              <span class="info-value">{{ seleccionada.fecha_nacimiento | fecha:'corta':'-' }}</span>
+              <span class="info-value">{{ sel.fecha_nacimiento | fecha:'corta':'-' }}</span>
             </div>
           </div>
         </mat-card-content>
       </mat-card>
       <app-documentation-viewer
-        [documentos]="seleccionada.documentos || []"
-        [solicitudId]="seleccionada.id_solicitud"
+        [documentos]="sel.documentos || []"
+        [solicitudId]="sel.id_solicitud"
         [proceso]="'ecaes'"
         [servicio]="pruebasEcaesService"
         [puedeAgregarComentarios]="true"
@@ -55,7 +55,7 @@
         Rechazar Solicitud
       </button>
     </div>
-  } @else if (pendientes.length > 0) {
+  } @else if (pendientes().length > 0) {
     <app-card-container title="Documentación Adjunta" icon="description">
       <div class="sin-solicitudes">
         <mat-icon>info</mat-icon>

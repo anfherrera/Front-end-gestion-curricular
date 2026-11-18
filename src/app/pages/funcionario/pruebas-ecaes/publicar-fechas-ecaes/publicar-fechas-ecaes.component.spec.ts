@@ -63,12 +63,12 @@ describe('PublicarFechasEcaesComponent', () => {
   }
 
   it('carga los períodos y, si no llega ninguno, usa 2020-1 a 2030-2', () => {
-    expect(component.periodos).toEqual(['2026-1', '2026-2']);
+    expect(component.periodos()).toEqual(['2026-1', '2026-2']);
 
     periodos.getValoresPeriodos.and.returnValue(of([]));
     const otro = TestBed.createComponent(PublicarFechasEcaesComponent);
     otro.detectChanges();
-    expect(otro.componentInstance.periodos.length).toBe(22);
+    expect(otro.componentInstance.periodos().length).toBe(22);
     expect(snackbar.advertencia).toHaveBeenCalled();
   });
 
@@ -76,14 +76,14 @@ describe('PublicarFechasEcaesComponent', () => {
     servicio.buscarFechasPorPeriodo.and.returnValue(of(FECHAS));
     component.form.controls.periodoAcademico.setValue('2026-1');
 
-    expect(component.esEdicion).toBeTrue();
+    expect(component.esEdicion()).toBeTrue();
     const citacion = component.form.controls.citacion.value!;
     expect([citacion.getFullYear(), citacion.getMonth(), citacion.getDate()]).toEqual([2026, 3, 1]);
   });
 
   it('un 404 deja el formulario en modo publicar sin mostrar error', () => {
     component.form.controls.periodoAcademico.setValue('2026-2');
-    expect(component.esEdicion).toBeFalse();
+    expect(component.esEdicion()).toBeFalse();
     expect(snackbar.error).not.toHaveBeenCalled();
   });
 
@@ -98,7 +98,7 @@ describe('PublicarFechasEcaesComponent', () => {
       inscripcion_est_by_facultad: '2026-03-01',
       resultados_individuales: '2026-05-30'
     }));
-    expect(component.idFechaEcaes).toBe(9);
+    expect(component.idFechaEcaes()).toBe(9);
     expect(component.form.controls.periodoAcademico.value).toBe('2026-2');
     expect(component.form.controls.citacion.value).toBeNull();
   });

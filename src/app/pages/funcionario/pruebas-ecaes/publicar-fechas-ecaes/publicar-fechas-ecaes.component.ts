@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, ChangeDetectorRef, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -62,7 +62,8 @@ function aTexto(fecha: Date | null): string {
     CardContainerComponent
   ],
   templateUrl: './publicar-fechas-ecaes.component.html',
-  styleUrl: './publicar-fechas-ecaes.component.css'
+  styleUrl: './publicar-fechas-ecaes.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PublicarFechasEcaesComponent implements OnInit {
   private readonly ecaesService = inject(PruebasEcaesService);
@@ -70,6 +71,7 @@ export class PublicarFechasEcaesComponent implements OnInit {
   private readonly snackbar = inject(SnackbarService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly campos = CAMPOS_FECHA;
 
@@ -83,19 +85,18 @@ export class PublicarFechasEcaesComponent implements OnInit {
     resultados_individuales: [null as Date | null, Validators.required]
   });
 
-  periodos: string[] = [];
-  publicando = false;
+  readonly periodos = signal<string[]>([]);
+  readonly publicando = signal(false);
   /** Id de las fechas del período elegido, si ya existen (modo edición). */
-  idFechaEcaes: number | null = null;
-
-  get esEdicion(): boolean {
-    return this.idFechaEcaes !== null;
-  }
+  readonly idFechaEcaes = signal<number | null>(null);
+  readonly esEdicion = computed(() => this.idFechaEcaes() !== null);
 
   ngOnInit(): void {
     this.cargarPeriodos();
+    // El botón se deshabilita con form.invalid, que no es una signal
+    this.form.statusChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.cdr.markForCheck());
     this.form.controls.periodoAcademico.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodo => {
-      this.idFechaEcaes = null;
+      this.idFechaEcaes.set(null);
       this.limpiarFechas();
       if (periodo) this.buscarFechas(periodo);
     });
@@ -105,11 +106,12 @@ export class PublicarFechasEcaesComponent implements OnInit {
   private cargarPeriodos(): void {
     this.periodosService.getValoresPeriodos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodos => {
       if (periodos.length > 0) {
-        this.periodos = periodos;
+        this.periodos.set(periodos);
         return;
       }
-      this.periodos = [];
-      for (let anio = 2020; anio <= 2030; anio++) this.periodos.push(`${anio}-1`, `${anio}-2`);
+      const predeterminados: string[] = [];
+      for (let anio = 2020; anio <= 2030; anio++) predeterminados.push(`${anio}-1`, `${anio}-2`);
+      this.periodos.set(predeterminados);
       this.snackbar.advertencia('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.');
     });
   }
@@ -118,7 +120,7 @@ export class PublicarFechasEcaesComponent implements OnInit {
     this.ecaesService.buscarFechasPorPeriodo(periodo).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (fechas) => {
         if (this.form.controls.periodoAcademico.value !== periodo) return;
-        this.idFechaEcaes = fechas.idFechaEcaes;
+        this.idFechaEcaes.set(fechas.idFechaEcaes);
         this.form.patchValue(Object.fromEntries(this.campos.map(({ campo }) => [campo, aFecha(fechas[campo])])));
         this.snackbar.exito('Fechas existentes cargadas. Puede editarlas.');
       },
@@ -139,23 +141,23 @@ export class PublicarFechasEcaesComponent implements OnInit {
       periodoAcademico: valor.periodoAcademico ?? '',
       ...Object.fromEntries(this.campos.map(({ campo }) => [campo, aTexto(valor[campo])]))
     } as Omit<FechaEcaes, 'idFechaEcaes'>;
-    const editar = this.esEdicion;
+    const editar = this.esEdicion();
     const accion = editar ? 'actualizadas' : 'publicadas';
 
-    this.publicando = true;
+    this.publicando.set(true);
     const peticion$ = editar
-      ? this.ecaesService.actualizarFechasEcaes({ ...fechas, idFechaEcaes: this.idFechaEcaes! })
+      ? this.ecaesService.actualizarFechasEcaes({ ...fechas, idFechaEcaes: this.idFechaEcaes()! })
       : this.ecaesService.publicarFechasEcaes(fechas);
 
     peticion$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (respuesta) => {
-        this.publicando = false;
-        if (respuesta.idFechaEcaes) this.idFechaEcaes = respuesta.idFechaEcaes;
+        this.publicando.set(false);
+        if (respuesta.idFechaEcaes) this.idFechaEcaes.set(respuesta.idFechaEcaes);
         this.snackbar.exito(`Fechas ${accion} exitosamente`);
         this.limpiarFechas();
       },
       error: (err) => {
-        this.publicando = false;
+        this.publicando.set(false);
         this.mostrarError(err, `Error al ${editar ? 'actualizar' : 'publicar'} las fechas`);
       }
     });

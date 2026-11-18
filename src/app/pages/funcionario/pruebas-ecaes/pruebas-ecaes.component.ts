@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, viewChild, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, filter, switchMap } from 'rxjs';
 
@@ -44,7 +44,8 @@ const TIPOS_DOCUMENTO: Record<string, string> = {
     FechaPipe
   ],
   templateUrl: './pruebas-ecaes.component.html',
-  styleUrl: './pruebas-ecaes.component.css'
+  styleUrl: './pruebas-ecaes.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PruebasEcaesFuncionarioComponent implements OnInit {
   readonly pruebasEcaesService = inject(PruebasEcaesService);
@@ -54,8 +55,8 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly bandeja = viewChild<SolicitudesBandejaComponent<SolicitudEcaesResponse>>('bandeja');
 
-  pendientes: SolicitudEcaesResponse[] = [];
-  seleccionada: SolicitudEcaesResponse | null = null;
+  readonly pendientes = signal<SolicitudEcaesResponse[]>([]);
+  readonly seleccionada = signal<SolicitudEcaesResponse | null>(null);
 
   ngOnInit(): void {
     this.cargarPendientes();
@@ -69,12 +70,13 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
   cargarPendientes(): void {
     this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (sols) => {
-        this.pendientes = sols;
+        this.pendientes.set(sols);
         // La selección pasa a la copia nueva (con los comentarios al día)
-        if (this.seleccionada) {
-          const id = this.seleccionada.id_solicitud;
-          this.seleccionada = sols.find(sol => sol.id_solicitud === id) ?? null;
-          if (!this.seleccionada) this.bandeja()?.resetSelection();
+        const actual = this.seleccionada();
+        if (actual) {
+          const nueva = sols.find(sol => sol.id_solicitud === actual.id_solicitud) ?? null;
+          this.seleccionada.set(nueva);
+          if (!nueva) this.bandeja()?.resetSelection();
         }
       },
       error: (err) => this.mostrarError(err, 'Error al cargar solicitudes ECAES')
@@ -82,7 +84,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
   }
 
   onSolicitudSeleccionada(solicitud: SolicitudEcaesResponse | null): void {
-    this.seleccionada = solicitud;
+    this.seleccionada.set(solicitud);
   }
 
   onComentarioAgregado(event: { documento: DocumentoHomologacion | DocumentosDTORespuesta; comentario: string }): void {
@@ -102,14 +104,15 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
 
   /** Aprobar en ECAES es marcar la solicitud como pre-registrada. */
   aprobar(): void {
-    if (!this.seleccionada) return;
-    this.decidir(this.pruebasEcaesService.approveRequest(this.seleccionada.id_solicitud),
+    const seleccionada = this.seleccionada();
+    if (!seleccionada) return;
+    this.decidir(this.pruebasEcaesService.approveRequest(seleccionada.id_solicitud),
       'Solicitud marcada como Pre-registrada exitosamente', 'Error al aprobar solicitud');
   }
 
   rechazar(): void {
-    if (!this.seleccionada) return;
-    const id = this.seleccionada.id_solicitud;
+    const id = this.seleccionada()?.id_solicitud;
+    if (id === undefined) return;
     const rechazo$ = this.dialog.open(TextoDialogComponent, { width: '450px', data: datosRechazo() }).afterClosed().pipe(
       filter((motivo: string | undefined): motivo is string => !!motivo),
       switchMap(motivo => this.pruebasEcaesService.rejectRequest(id, motivo))
@@ -121,7 +124,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
     decision$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.snackbar.exito(exito);
-        this.seleccionada = null;
+        this.seleccionada.set(null);
         this.bandeja()?.resetSelection();
         this.cargarPendientes();
       },
