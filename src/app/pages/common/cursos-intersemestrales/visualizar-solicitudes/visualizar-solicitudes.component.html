@@ -5,7 +5,7 @@
     <mat-form-field appearance="outline" class="filtro-field">
       <mat-label>Filtrar por materia</mat-label>
       <mat-select formControlName="materia">
-        @for (materia of materias; track materia) {
+        @for (materia of materias(); track materia) {
           <mat-option [value]="materia.id">
             {{ materia.nombre | utfFix }}
           </mat-option>
@@ -26,7 +26,7 @@
     <button mat-raised-button
       color="primary"
       (click)="cargarSolicitudes()"
-      [disabled]="cargando">
+      [disabled]="cargando()">
       <mat-icon>refresh</mat-icon>
       Actualizar
     </button>
@@ -34,15 +34,15 @@
     <button mat-raised-button
       color="accent"
       (click)="exportarSolicitudesExcel()"
-      [disabled]="cargando || exportando"
+      [disabled]="cargando() || exportando()"
       class="btn-exportar-excel">
-      <mat-icon>{{ exportando ? 'hourglass_empty' : 'download' }}</mat-icon>
-      {{ exportando ? 'Exportando...' : 'Exportar a Excel' }}
+      <mat-icon>{{ exportando() ? 'hourglass_empty' : 'download' }}</mat-icon>
+      {{ exportando() ? 'Exportando...' : 'Exportar a Excel' }}
     </button>
   </div>
 
   <!-- Loading -->
-  @if (cargando) {
+  @if (cargando()) {
     <div class="loading-container">
       <mat-spinner diameter="50"></mat-spinner>
       <p>Cargando solicitudes...</p>
@@ -50,19 +50,19 @@
   }
 
   <!-- Lista de solicitudes -->
-  @if (!cargando) {
+  @if (!cargando()) {
     <div class="solicitudes-section">
       <h3>Todas las Solicitudes</h3>
-      @if (solicitudesFiltradas.length === 0) {
+      @if (solicitudesFiltradas().length === 0) {
         <div class="no-data">
           <mat-icon>info</mat-icon>
           <p>No hay solicitudes para mostrar</p>
           <p><small>Intenta cambiar el filtro de materia</small></p>
         </div>
       }
-      @if (solicitudesFiltradas.length > 0) {
+      @if (solicitudesFiltradas().length > 0) {
         <div class="table-container">
-          <table mat-table [dataSource]="solicitudesFiltradas" class="solicitudes-table">
+          <table mat-table [dataSource]="solicitudesFiltradas()" class="solicitudes-table">
             <!-- Nombre Completo -->
             <ng-container matColumnDef="nombre">
               <th mat-header-cell *matHeaderCellDef>Nombre Completo</th>

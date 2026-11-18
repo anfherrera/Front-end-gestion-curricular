@@ -12,7 +12,7 @@
 
     <button mat-stroked-button
       (click)="cargarDatos()"
-      [disabled]="cargando"
+      [disabled]="cargando()"
       class="btn-actualizar">
       <mat-icon>refresh</mat-icon>
       Actualizar
@@ -20,7 +20,7 @@
 
     <button mat-stroked-button
       (click)="exportarCursosPDF()"
-      [disabled]="cargando || cursos.length === 0"
+      [disabled]="cargando() || cursos().length === 0"
       class="btn-exportar">
       <mat-icon>picture_as_pdf</mat-icon>
       Exportar a PDF
@@ -28,7 +28,7 @@
   </div>
 
   <!-- Loading -->
-  @if (cargando) {
+  @if (cargando()) {
     <div class="loading-container">
       <mat-spinner diameter="50"></mat-spinner>
       <p>Cargando cursos...</p>
@@ -36,7 +36,7 @@
   }
 
   <!-- Filtro por período académico -->
-  @if (!cargando) {
+  @if (!cargando()) {
     <div class="filtro-periodo-section">
       <h3>Filtro por Período Académico</h3>
       <app-periodo-filtro-selector
@@ -51,18 +51,18 @@
   }
 
   <!-- Filtros por estado -->
-  @if (!cargando) {
+  @if (!cargando()) {
     <app-estado-filters
-      [cursos]="cursos"
+      [cursos]="cursos()"
       (cursosFiltradosChange)="onCursosFiltradosChange($event)"
       (estadoSeleccionadoChange)="onEstadoSeleccionadoChange($event)">
     </app-estado-filters>
   }
 
   <!-- Tabla de cursos -->
-  @if (!cargando) {
+  @if (!cargando()) {
     <div class="cursos-container">
-      <table mat-table [dataSource]="cursosFiltrados" class="mat-elevation-z8">
+      <table mat-table [dataSource]="cursosFiltrados()" class="mat-elevation-z8">
         <!-- Nombre del Curso -->
         <ng-container matColumnDef="nombre_curso">
           <th mat-header-cell *matHeaderCellDef>Nombre del Curso</th>
@@ -224,7 +224,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
       <!-- Mensaje cuando no hay cursos -->
-      @if (cursos.length === 0) {
+      @if (cursos().length === 0) {
         <div class="sin-datos">
           <mat-icon>school</mat-icon>
           <p>No hay cursos registrados</p>

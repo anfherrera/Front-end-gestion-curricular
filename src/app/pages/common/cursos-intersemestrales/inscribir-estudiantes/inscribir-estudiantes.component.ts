@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -47,7 +47,8 @@ import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripci
     NombreDocentePipe
 ],
   templateUrl: './inscribir-estudiantes.component.html',
-  styleUrls: ['../filtro-curso-comun.css', './inscribir-estudiantes.component.css']
+  styleUrls: ['../filtro-curso-comun.css', './inscribir-estudiantes.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InscribirEstudiantesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -61,16 +62,16 @@ export class InscribirEstudiantesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   
   // Datos
-  cursos: CursoOfertadoVerano[] = [];
+  readonly cursos = signal<CursoOfertadoVerano[]>([]);
   estudiantesElegibles: EstudianteElegible[] = [];
-  estudiantesFiltrados: EstudianteElegible[] = [];
-  cargando = false;
+  readonly estudiantesFiltrados = signal<EstudianteElegible[]>([]);
+  readonly cargando = signal(false);
   
   // Formularios
   filtroForm: FormGroup;
   
   // Estado
-  cursoSeleccionado: CursoOfertadoVerano | null = null;
+  readonly cursoSeleccionado = signal<CursoOfertadoVerano | null>(null);
   
   // Columnas de la tabla
   displayedColumns: string[] = [
@@ -97,14 +98,14 @@ export class InscribirEstudiantesComponent implements OnInit {
         if (cursoId) {
           this.cargarEstudiantesElegibles(cursoId);
         } else {
-          this.estudiantesFiltrados = [];
-          this.cursoSeleccionado = null;
+          this.estudiantesFiltrados.set([]);
+          this.cursoSeleccionado.set(null);
         }
       });
   }
 
   cargarCursos(): void {
-    this.cargando = true;
+    this.cargando.set(true);
     this.logger.debug('Cargando cursos para inscripción');
     
     // Usar getCursosPorEstado para obtener cursos en estado "Inscripción"
@@ -113,31 +114,31 @@ export class InscribirEstudiantesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (cursos) => {
-        this.cursos = cursos;
+        this.cursos.set(cursos);
         this.logger.debug('Cursos cargados:', cursos);
         
-        if (!this.cursos || this.cursos.length === 0) {
+        if (!cursos || cursos.length === 0) {
           // Mostrar mensaje informativo al usuario
           this.snackbar.advertencia('No hay cursos disponibles para inscripción en este momento.');
         }
-        this.cargando = false;
+        this.cargando.set(false);
       },
       error: (err) => {
         this.logger.error('Error al cargar cursos del backend', err);
-        this.cursos = [];
+        this.cursos.set([]);
         
         const mensajeError = this.errorHandler.extraerMensajeError(err);
         // Mostrar mensaje de error al usuario
         this.snackbar.error(mensajeError || 'Error al cargar los cursos. Verifique su conexión o contacte al administrador.');
-        this.cargando = false;
+        this.cargando.set(false);
       }
     });
   }
 
   cargarEstudiantesElegibles(cursoId: number): void {
-    this.cargando = true;
+    this.cargando.set(true);
     this.logger.debug('Cargando estudiantes elegibles para curso:', cursoId);
-    this.cursoSeleccionado = this.cursos.find(c => c.id_curso === cursoId) || null;
+    this.cursoSeleccionado.set(this.cursos().find(c => c.id_curso === cursoId) || null);
     
     this.cursosService.getEstudiantesElegibles(cursoId)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -153,28 +154,36 @@ export class InscribirEstudiantesComponent implements OnInit {
         
         this.estudiantesElegibles = normalizados;
         // Mostrar como elegibles únicamente los que no están rechazados
-        this.estudiantesFiltrados = this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado');
-        this.logger.debug('Estudiantes elegibles cargados para curso:', this.estudiantesFiltrados.length);
+        this.estudiantesFiltrados.set(this.estudiantesElegibles.filter(e => e.estado_inscripcion !== 'Pago_Rechazado'));
+        this.logger.debug('Estudiantes elegibles cargados para curso:', this.estudiantesFiltrados().length);
         
-        if (this.estudiantesFiltrados.length === 0) {
-          this.estudiantesFiltrados = [];
+        if (this.estudiantesFiltrados().length === 0) {
+          this.estudiantesFiltrados.set([]);
           
           // Mostrar mensaje informativo al usuario
           this.snackbar.info('No hay estudiantes elegibles para este curso. Todos los estudiantes deben tener preinscripción aprobada y pago validado.');
         }
         
-        this.cargando = false;
+        this.cargando.set(false);
       },
       error: (err) => {
         this.logger.error('Error al cargar estudiantes elegibles', err);
-        this.estudiantesFiltrados = [];
-        this.cargando = false;
+        this.estudiantesFiltrados.set([]);
+        this.cargando.set(false);
         
         const mensajeError = this.errorHandler.extraerMensajeError(err);
         // Mostrar mensaje de error al usuario
         this.snackbar.error(mensajeError || 'Error al cargar los estudiantes elegibles');
       }
     });
+  }
+
+  /** Vuelve a pedir los estudiantes del curso elegido, si hay uno. */
+  private recargarEstudiantes(): void {
+    const curso = this.cursoSeleccionado();
+    if (curso) {
+      this.cargarEstudiantesElegibles(curso.id_curso);
+    }
   }
 
   verDetalles(estudiante: EstudianteElegible): void {
@@ -196,9 +205,7 @@ export class InscribirEstudiantesComponent implements OnInit {
       .subscribe(result => {
       if (result === 'inscrito') {
         // Recargar estudiantes elegibles si se completó la inscripción
-        if (this.cursoSeleccionado) {
-          this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-        }
+        this.recargarEstudiantes();
       }
     });
   }
@@ -219,7 +226,7 @@ export class InscribirEstudiantesComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmacionInscripcionDialogComponent, {
       width: '500px',
       maxWidth: '90vw',
-      data: { estudiante: estudiante, curso: this.cursoSeleccionado },
+      data: { estudiante: estudiante, curso: this.cursoSeleccionado() },
       disableClose: true
     });
 
@@ -245,9 +252,7 @@ export class InscribirEstudiantesComponent implements OnInit {
         this.logger.debug('Inscripción aceptada exitosamente', response);
         this.snackbar.exito('Inscripción aceptada exitosamente');
         // Recargar la lista de estudiantes
-        if (this.cursoSeleccionado) {
-          this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-        }
+        this.recargarEstudiantes();
       },
       error: (error) => {
         this.manejarErrorInscripcion(error);
@@ -277,9 +282,7 @@ export class InscribirEstudiantesComponent implements OnInit {
             this.logger.debug('Inscripción rechazada exitosamente', response);
             this.snackbar.exito(`Inscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`);
             
-            if (this.cursoSeleccionado) {
-              this.cargarEstudiantesElegibles(this.cursoSeleccionado.id_curso);
-            }
+            this.recargarEstudiantes();
           },
           error: (error) => {
             this.manejarErrorInscripcion(error);

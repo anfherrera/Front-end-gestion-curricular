@@ -12,7 +12,7 @@
         <div class="stat-content">
           <mat-icon class="stat-icon">school</mat-icon>
           <div class="stat-info">
-            <h3>{{ totalCursosActivos }}</h3>
+            <h3>{{ totalCursosActivos() }}</h3>
             <p>Cursos Activos</p>
           </div>
         </div>
@@ -24,7 +24,7 @@
         <div class="stat-content">
           <mat-icon class="stat-icon">person_add</mat-icon>
           <div class="stat-info">
-            <h3>{{ preinscripcionesPendientes }}</h3>
+            <h3>{{ preinscripcionesPendientes() }}</h3>
             <p>Preinscripciones</p>
           </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="stat-content">
           <mat-icon class="stat-icon">how_to_reg</mat-icon>
           <div class="stat-info">
-            <h3>{{ inscripcionesPendientes }}</h3>
+            <h3>{{ inscripcionesPendientes() }}</h3>
             <p>Inscripciones</p>
           </div>
         </div>
@@ -57,9 +57,9 @@
         <mat-card-subtitle>Gestión de cursos disponibles</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        @if (cursosActivos.length > 0) {
+        @if (cursosActivos().length > 0) {
           <div class="cursos-list">
-            @for (curso of cursosActivos; track curso.id_curso) {
+            @for (curso of cursosActivos(); track curso.id_curso) {
               <div class="curso-item">
                 <div class="curso-info">
                   <h4>{{ curso.nombre_curso || 'Sin nombre' }}</h4>

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -34,7 +34,8 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
     NombreDocentePipe
 ],
   templateUrl: './gestionar-cursos.component.html',
-  styleUrls: ['./gestionar-cursos.component.css']
+  styleUrls: ['./gestionar-cursos.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GestionarCursosComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -45,11 +46,11 @@ export class GestionarCursosComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   
-  cursos: CursoOfertadoVerano[] = [];
-  cursosFiltrados: CursoOfertadoVerano[] = [];
+  readonly cursos = signal<CursoOfertadoVerano[]>([]);
+  readonly cursosFiltrados = signal<CursoOfertadoVerano[]>([]);
   materias: Materia[] = [];
   docentes: Docente[] = [];
-  cargando = true;
+  readonly cargando = signal(true);
   estadoFiltro = '';
   periodoFiltro = 'todos'; // Filtro por período académico - Inicializar con 'todos' para mostrar todos los cursos por defecto
   
@@ -112,9 +113,9 @@ export class GestionarCursosComponent implements OnInit {
   }
 
   cargarDatos() {
-    this.cargando = true;
-    this.cursos = [];
-    this.cursosFiltrados = [];
+    this.cargando.set(true);
+    this.cursos.set([]);
+    this.cursosFiltrados.set([]);
     
     // Determinar el período a usar: si es 'todos' o vacío, pasar null/undefined
     const periodoParam = this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '' 
@@ -125,16 +126,16 @@ export class GestionarCursosComponent implements OnInit {
     // Cargar cursos del backend con filtro de período
     this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (cursos) => {
-        this.cursos = cursos;
-        this.cursosFiltrados = [...cursos]; // Inicializar con todos los cursos
-        this.cargando = false;
+        this.cursos.set(cursos);
+        this.cursosFiltrados.set([...cursos]); // Inicializar con todos los cursos
+        this.cargando.set(false);
       },
       error: () => {
         this.snackbar.advertencia('No se pudieron cargar los cursos - Intenta recargar la página');
-        this.cargando = false;
+        this.cargando.set(false);
         // Mostrar mensaje de error sin datos de prueba
-        this.cursos = [];
-        this.cursosFiltrados = [];
+        this.cursos.set([]);
+        this.cursosFiltrados.set([]);
         this.cargarMateriasYDocentes();
       }
     });
@@ -321,7 +322,7 @@ export class GestionarCursosComponent implements OnInit {
 
   // Métodos para manejar filtros
   onCursosFiltradosChange(cursos: CursoOfertadoVerano[]): void {
-    this.cursosFiltrados = cursos;
+    this.cursosFiltrados.set(cursos);
   }
 
   onEstadoSeleccionadoChange(estado: string): void {
@@ -333,8 +334,8 @@ export class GestionarCursosComponent implements OnInit {
     // Actualizar el filtro y limpiar estado antes de recargar
     this.periodoFiltro = periodo;
     // Limpiar cursos inmediatamente para evitar mostrar datos antiguos
-    this.cursos = [];
-    this.cursosFiltrados = [];
+    this.cursos.set([]);
+    this.cursosFiltrados.set([]);
     // Recargar cursos con el nuevo filtro
     this.cargarDatos();
   }

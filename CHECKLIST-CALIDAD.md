@@ -267,7 +267,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [ ] **OnPush**: lo usan 60 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
+- [ ] **OnPush**: lo usan 66 de 88 componentes (eran 6; 20 al cerrar `shared`). Falta llevarlo a las páginas
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
@@ -317,6 +317,16 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Probar a mano con backend, como admin: el dashboard muestra los 3 totales; en usuarios, docentes, programas y roles se llena la tabla, buscar la filtra y la X la recarga; activar/desactivar un usuario cambia su estado en la tabla; eliminar recarga la lista; al editar un usuario, docente o programa se rellena el formulario (en usuario, con el ID en el título y los selectores de rol y programa llenos) y el botón muestra el spinner al guardar; en configurar período aparecen el período actual y la configuración, el selector de períodos en modo manual y "Guardando..." al guardar; en formatos, Modificar abre el formulario y Guardar cambia el valor
     - Pendiente, visto al probar la negación: las rutas `estudiante/*` de [app.routes.ts](src/app/app.routes.ts) no tienen `RoleGuard`, así que cualquier rol con sesión (admin incluido) las abre
     - Pendiente: `manage-processes` no lo usa ninguna ruta ni componente. Decidir si se enruta o se borra (con su diálogo)
+    - Sin cambios visibles esperados
+  - [x] Cursos intersemestrales de funcionario y coordinador (2026-11-18): OnPush en los 6 de `common/cursos-intersemestrales` (60 → 66 de 88), con 19 `signal()` nuevas. Sus 6 diálogos ya lo tenían
+    - El menú, directo: sus opciones son fijas y `routerLinkActive` se repinta solo
+    - dashboard: `cursosActivos` y los 3 contadores. `estadisticas` y `cargandoEstadisticas` se quedan como propiedades: la plantilla no las pinta
+    - gestionar: `cursos`, `cursosFiltrados` (también llega por la salida de `app-estado-filters`) y `cargando`. `materias` y `docentes` no se pintan, solo se pasan al diálogo
+    - preinscribir e inscribir: `cursos`, `cursoSeleccionado`, `cargando` y la lista de la tabla (`solicitudesFiltradas` / `estudiantesFiltrados`); la plantilla usa `@if (!cargando() && cursoSeleccionado(); as sel)`. En preinscribir, aprobar, rechazar y guardar observaciones mutaban la fila en su sitio; ahora `actualizarSolicitud` la cambia por una copia con `update()`. En inscribir, las 3 recargas tras cerrar un diálogo pasan por `recargarEstudiantes()`
+    - visualizar-solicitudes: `solicitudesFiltradas`, `materias`, `cargando` y `exportando`. `periodoFiltro` se queda como propiedad: lo cambia la salida del selector de período
+    - Specs: solo comprueban que se crean; no se tocan
+    - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 589/589, `test:navegacion` sin backend correcto (gestionar, preinscribir, inscribir y solicitudes tienen "Cargando...", así que la comprobación de repintado los cubre en la rama de error; el dashboard no tiene indicador)
+    - Probar a mano con backend, como funcionario y como coordinador: el resumen muestra los contadores y la lista de cursos; en gestionar se llena la tabla, filtrar por estado o período la cambia y crear/editar/eliminar un curso la recarga; en preinscribir, al elegir un curso salen sus preinscripciones y la información del curso, y aprobar o guardar observaciones cambia la fila sin recargar; en inscribir salen los estudiantes elegibles y al confirmar o rechazar se recarga la lista; en solicitudes se llena el selector de materias, filtrar recarga la tabla y "Exportar a Excel" pasa a "Exportando..." y vuelve
     - Sin cambios visibles esperados
 
 ---

@@ -7,7 +7,7 @@
       <mat-form-field appearance="outline" class="curso-selector">
         <mat-label>Selecciona un curso</mat-label>
         <mat-select formControlName="curso" placeholder="Elige un curso para ver las preinscripciones">
-          @for (curso of cursos; track curso) {
+          @for (curso of cursos(); track curso) {
             <mat-option [value]="curso.id_curso">
               {{ curso.nombre_curso || 'Sin nombre' }} ({{ curso.codigo_curso || 'Sin código' }}) - {{ curso | nombreDocente }}
             </mat-option>
@@ -18,7 +18,7 @@
   </div>
 
   <!-- Loading spinner -->
-  @if (cargando) {
+  @if (cargando()) {
     <div class="loading-container">
       <mat-spinner diameter="50"></mat-spinner>
       <p>Cargando datos...</p>
@@ -26,18 +26,18 @@
   }
 
   <!-- Lista de preinscripciones -->
-  @if (cursoSeleccionado && !cargando) {
+  @if (!cargando() && cursoSeleccionado(); as sel) {
     <div class="preinscripciones-section">
-      <h3>Preinscripciones para {{ cursoSeleccionado.nombre_curso }}</h3>
-      @if (solicitudesFiltradas.length === 0) {
+      <h3>Preinscripciones para {{ sel.nombre_curso }}</h3>
+      @if (solicitudesFiltradas().length === 0) {
         <div class="no-data">
           <mat-icon>info</mat-icon>
           <p>No hay preinscripciones para este curso.</p>
         </div>
       }
-      @if (solicitudesFiltradas.length > 0) {
+      @if (solicitudesFiltradas().length > 0) {
         <div class="table-container">
-          <table mat-table [dataSource]="solicitudesFiltradas" class="preinscripciones-table">
+          <table mat-table [dataSource]="solicitudesFiltradas()" class="preinscripciones-table">
             <!-- Columna Estudiante -->
             <ng-container matColumnDef="estudiante">
               <th mat-header-cell *matHeaderCellDef>Estudiante</th>
@@ -125,30 +125,30 @@
   }
 
   <!-- Información del curso seleccionado -->
-  @if (cursoSeleccionado && !cargando) {
+  @if (!cargando() && cursoSeleccionado(); as sel) {
     <div class="curso-info">
       <h4>Información del Curso</h4>
       <div class="info-grid">
         <div class="info-item">
-          <strong>Docente:</strong> {{ cursoSeleccionado | nombreDocente }}
+          <strong>Docente:</strong> {{ sel | nombreDocente }}
         </div>
         <div class="info-item">
-          <strong>Cupo Estimado:</strong> {{ cursoSeleccionado.cupo_estimado || 0 }} estudiantes
+          <strong>Cupo Estimado:</strong> {{ sel.cupo_estimado || 0 }} estudiantes
         </div>
         <div class="info-item">
-          <strong>Espacio:</strong> {{ cursoSeleccionado.espacio_asignado || 'Por asignar' }}
+          <strong>Espacio:</strong> {{ sel.espacio_asignado || 'Por asignar' }}
         </div>
         <div class="info-item">
-          <strong>Preinscripciones:</strong> {{ solicitudesFiltradas.length }} estudiantes
+          <strong>Preinscripciones:</strong> {{ solicitudesFiltradas().length }} estudiantes
         </div>
         <div class="info-item">
-          <strong>Estado:</strong> {{ cursoSeleccionado.estado || 'Sin estado' }}
+          <strong>Estado:</strong> {{ sel.estado || 'Sin estado' }}
         </div>
         <div class="info-item">
-          <strong>Fecha Inicio:</strong> {{ cursoSeleccionado.fecha_inicio | date:'dd/MM/yyyy' }}
+          <strong>Fecha Inicio:</strong> {{ sel.fecha_inicio | date:'dd/MM/yyyy' }}
         </div>
         <div class="info-item">
-          <strong>Fecha Fin:</strong> {{ cursoSeleccionado.fecha_fin | date:'dd/MM/yyyy' }}
+          <strong>Fecha Fin:</strong> {{ sel.fecha_fin | date:'dd/MM/yyyy' }}
         </div>
       </div>
     </div>

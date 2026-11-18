@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';
@@ -28,7 +28,8 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
     NombreDocentePipe
 ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardCursosIntersemestralesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -38,15 +39,15 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   
   usuario: UsuarioSesion | null = null;
-  cursosActivos: CursoOfertadoVerano[] = [];
+  readonly cursosActivos = signal<CursoOfertadoVerano[]>([]);
   
   // Estadísticas del backend
   estadisticas: DashboardEstadisticas | null = null;
   
   // Variables para el template (se actualizan desde el backend)
-  totalCursosActivos = 0;
-  preinscripcionesPendientes = 0;
-  inscripcionesPendientes = 0;
+  readonly totalCursosActivos = signal(0);
+  readonly preinscripcionesPendientes = signal(0);
+  readonly inscripcionesPendientes = signal(0);
   
   cargandoEstadisticas = false;
 
@@ -72,9 +73,9 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
           this.estadisticas = estadisticas;
           
           // Actualizar variables para el template desde el backend
-          this.totalCursosActivos = estadisticas.cursosActivos || 0;
-          this.preinscripcionesPendientes = estadisticas.totalPreinscripciones || 0;
-          this.inscripcionesPendientes = estadisticas.totalInscripciones || 0;
+          this.totalCursosActivos.set(estadisticas.cursosActivos || 0);
+          this.preinscripcionesPendientes.set(estadisticas.totalPreinscripciones || 0);
+          this.inscripcionesPendientes.set(estadisticas.totalInscripciones || 0);
           
           this.cargandoEstadisticas = false;
         },
@@ -92,8 +93,8 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
         next: (cursos) => {
           // NO filtrar cursos, mostrar todos (incluso con campos null)
           // El backend calcula valores por defecto, pero si aún hay null, los manejamos en el template
-          this.cursosActivos = cursos;
-          this.totalCursosActivos = cursos.length;
+          this.cursosActivos.set(cursos);
+          this.totalCursosActivos.set(cursos.length);
           this.calcularEstadisticasCursos(cursos);
         },
         error: () => {
@@ -104,15 +105,15 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
 
   private calcularEstadisticasCursos(cursos: CursoOfertadoVerano[]): void {
     // Contar cursos por estado usando la nueva estructura
-    this.preinscripcionesPendientes = cursos.filter(c => {
+    this.preinscripcionesPendientes.set(cursos.filter(c => {
       const estadoActual = this.obtenerEstadoActual(c);
       return estadoActual === 'Preinscripción';
-    }).length;
+    }).length);
     
-    this.inscripcionesPendientes = cursos.filter(c => {
+    this.inscripcionesPendientes.set(cursos.filter(c => {
       const estadoActual = this.obtenerEstadoActual(c);
       return estadoActual === 'Inscripción';
-    }).length;
+    }).length);
   }
 
   formatearRangoFechas(fechaInicio: Date | string | null | undefined, fechaFin: Date | string | null | undefined): string {

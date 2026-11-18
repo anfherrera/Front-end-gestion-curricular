@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -44,7 +44,8 @@ import { RechazoPreinscripcionDialogComponent } from './rechazo-preinscripcion-d
     NombreDocentePipe
   ],
   templateUrl: './preinscribir-estudiantes.component.html',
-  styleUrls: ['../filtro-curso-comun.css', './preinscribir-estudiantes.component.css']
+  styleUrls: ['../filtro-curso-comun.css', './preinscribir-estudiantes.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreinscribirEstudiantesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -56,17 +57,17 @@ export class PreinscribirEstudiantesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   
   // Datos
-  cursos: CursoOfertadoVerano[] = [];
+  readonly cursos = signal<CursoOfertadoVerano[]>([]);
   solicitudes: SolicitudCursoVerano[] = [];
-  solicitudesFiltradas: SolicitudCursoVerano[] = [];
-  cargando = false;
+  readonly solicitudesFiltradas = signal<SolicitudCursoVerano[]>([]);
+  readonly cargando = signal(false);
   
   // Formularios
   filtroForm: FormGroup;
   observacionForm: FormGroup;
   
   // Estado
-  cursoSeleccionado: CursoOfertadoVerano | null = null;
+  readonly cursoSeleccionado = signal<CursoOfertadoVerano | null>(null);
   solicitudSeleccionada: SolicitudCursoVerano | null = null;
   
   // Columnas de la tabla
@@ -98,42 +99,42 @@ export class PreinscribirEstudiantesComponent implements OnInit {
         if (cursoId) {
           this.cargarSolicitudesPorCurso(cursoId);
         } else {
-          this.solicitudesFiltradas = [];
-          this.cursoSeleccionado = null;
+          this.solicitudesFiltradas.set([]);
+          this.cursoSeleccionado.set(null);
         }
       });
   }
 
   cargarCursos(): void {
-    this.cargando = true;
+    this.cargando.set(true);
     
     // Usar getCursosPorEstado para obtener cursos en estado "Preinscripción"
     // Sin período para mostrar TODOS los cursos de preinscripción
     this.cursosService.getCursosPorEstado('Preinscripción').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (cursos) => {
-        this.cursos = cursos;
-        this.cargando = false;
+        this.cursos.set(cursos);
+        this.cargando.set(false);
       },
       error: () => {
-        this.cursos = [];
-        this.cargando = false;
+        this.cursos.set([]);
+        this.cargando.set(false);
         this.snackbar.error('Error al cargar los cursos disponibles');
       }
     });
   }
 
   cargarSolicitudesPorCurso(cursoId: number): void {
-    this.cargando = true;
+    this.cargando.set(true);
     
     // Curso actualizado (si falla, el de la lista) y después sus preinscripciones
     this.cursosService.getCursoPorId(cursoId).pipe(
-      catchError(() => of(this.cursos.find(c => c.id_curso === cursoId) || null)),
-      tap(curso => this.cursoSeleccionado = curso),
+      catchError(() => of(this.cursos().find(c => c.id_curso === cursoId) || null)),
+      tap(curso => this.cursoSeleccionado.set(curso)),
       switchMap(() => this.cursosService.getPreinscripcionesPorCurso(cursoId)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (solicitudes) => {
-        const curso = this.cursoSeleccionado;
+        const curso = this.cursoSeleccionado();
         if (curso) {
           solicitudes.forEach(solicitud => {
             if (!solicitud.objCursoOfertadoVerano) {
@@ -142,12 +143,12 @@ export class PreinscribirEstudiantesComponent implements OnInit {
           });
         }
         this.solicitudes = solicitudes;
-        this.solicitudesFiltradas = solicitudes;
-        this.cargando = false;
+        this.solicitudesFiltradas.set(solicitudes);
+        this.cargando.set(false);
       },
       error: () => {
-        this.solicitudesFiltradas = [];
-        this.cargando = false;
+        this.solicitudesFiltradas.set([]);
+        this.cargando.set(false);
         this.snackbar.error('Error al cargar las preinscripciones del curso');
       }
     });
@@ -191,14 +192,7 @@ export class PreinscribirEstudiantesComponent implements OnInit {
     this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         
-        // Actualizar localmente usando el ID correcto
-        const index = this.solicitudesFiltradas.findIndex(s => {
-          const sId = s.id_solicitud || s.id_preinscripcion;
-          return sId === idSolicitud;
-        });
-        if (index !== -1) {
-          this.solicitudesFiltradas[index].observaciones = observaciones;
-        }
+        this.actualizarSolicitud(idSolicitud, { observaciones });
         
         this.snackbar.exito('Observaciones guardadas exitosamente');
       },
@@ -206,6 +200,12 @@ export class PreinscribirEstudiantesComponent implements OnInit {
         this.snackbar.error('Error al guardar las observaciones');
       }
     });
+  }
+
+  /** Cambia en la tabla la solicitud con ese ID por una copia con los cambios. */
+  private actualizarSolicitud(idSolicitud: number, cambios: Partial<SolicitudCursoVerano>): void {
+    this.solicitudesFiltradas.update(lista => lista.map(s =>
+      (s.id_solicitud || s.id_preinscripcion) === idSolicitud ? { ...s, ...cambios } : s));
   }
 
   aprobarSolicitud(solicitud: SolicitudCursoVerano): void {
@@ -220,14 +220,7 @@ export class PreinscribirEstudiantesComponent implements OnInit {
     this.cursosService.aprobarPreinscripcion(idSolicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         
-        // Actualizar estado localmente usando el ID correcto
-        const index = this.solicitudesFiltradas.findIndex(s => {
-          const sId = s.id_solicitud || s.id_preinscripcion;
-          return sId === idSolicitud;
-        });
-        if (index !== -1) {
-          this.solicitudesFiltradas[index].estado = 'Aprobado';
-        }
+        this.actualizarSolicitud(idSolicitud, { estado: 'Aprobado' });
         
         this.snackbar.exito(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`);
       },
@@ -263,7 +256,7 @@ export class PreinscribirEstudiantesComponent implements OnInit {
       width: '600px',
       data: { 
         solicitud: solicitud,
-        curso: this.cursoSeleccionado || solicitud.objCursoOfertadoVerano
+        curso: this.cursoSeleccionado() || solicitud.objCursoOfertadoVerano
       },
       disableClose: true
     });
@@ -287,20 +280,14 @@ export class PreinscribirEstudiantesComponent implements OnInit {
     this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         
-        // Actualizar estado localmente usando el ID correcto
-        const index = this.solicitudesFiltradas.findIndex(s => {
-          const sId = s.id_solicitud || s.id_preinscripcion;
-          return sId === idSolicitud;
-        });
-        if (index !== -1) {
-          this.solicitudesFiltradas[index].estado = 'Rechazado';
-        }
+        this.actualizarSolicitud(idSolicitud, { estado: 'Rechazado' });
         
         const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
         this.snackbar.exito(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`);
 
-        if (this.cursoSeleccionado?.id_curso) {
-          this.cargarSolicitudesPorCurso(this.cursoSeleccionado.id_curso);
+        const idCurso = this.cursoSeleccionado()?.id_curso;
+        if (idCurso) {
+          this.cargarSolicitudesPorCurso(idCurso);
         }
       },
       error: (err) => {

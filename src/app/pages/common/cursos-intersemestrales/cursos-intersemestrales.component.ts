@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,7 +16,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule
 ],
   templateUrl: './cursos-intersemestrales.component.html',
-  styleUrls: ['./menu-cursos-comun.css', './cursos-intersemestrales.component.css']
+  styleUrls: ['./menu-cursos-comun.css', './cursos-intersemestrales.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CursosIntersemestralesGestionComponent {
   opciones = [

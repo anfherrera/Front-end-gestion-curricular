@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -50,17 +50,18 @@ const ESTADOS_TEXTO: Record<string, string> = {
     EstadoClasePipe
   ],
   templateUrl: './visualizar-solicitudes.component.html',
-  styleUrls: ['./visualizar-solicitudes.component.css']
+  styleUrls: ['./visualizar-solicitudes.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VisualizarSolicitudesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
   private fb = inject(FormBuilder);
   private snackbar = inject(SnackbarService);
 
-  solicitudesFiltradas: SolicitudVisualizar[] = [];
-  materias: MateriaFiltro[] = [];
-  cargando = true;
-  exportando = false;
+  readonly solicitudesFiltradas = signal<SolicitudVisualizar[]>([]);
+  readonly materias = signal<MateriaFiltro[]>([]);
+  readonly cargando = signal(true);
+  readonly exportando = signal(false);
   periodoFiltro = 'todos';
 
   filtroForm: FormGroup;
@@ -85,25 +86,25 @@ export class VisualizarSolicitudesComponent implements OnInit {
     this.cursosService.getMateriasFiltro()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (materias) => this.materias = materias,
-        error: () => this.materias = [TODAS_LAS_MATERIAS]
+        next: (materias) => this.materias.set(materias),
+        error: () => this.materias.set([TODAS_LAS_MATERIAS])
       });
   }
 
   cargarSolicitudes(): void {
-    this.cargando = true;
+    this.cargando.set(true);
     const idMateria = this.filtroForm.value.materia || undefined;
 
     this.cursosService.getSolicitudesVisualizar(idMateria, this.periodoFiltro)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (solicitudes) => {
-          this.solicitudesFiltradas = solicitudes;
-          this.cargando = false;
+          this.solicitudesFiltradas.set(solicitudes);
+          this.cargando.set(false);
         },
         error: () => {
-          this.solicitudesFiltradas = [];
-          this.cargando = false;
+          this.solicitudesFiltradas.set([]);
+          this.cargando.set(false);
         }
       });
   }
@@ -130,17 +131,17 @@ export class VisualizarSolicitudesComponent implements OnInit {
    * (solo por curso), así que el filtro de materia no se aplica a la exportación.
    */
   exportarSolicitudesExcel(): void {
-    this.exportando = true;
+    this.exportando.set(true);
     this.cursosService.exportarSolicitudesExcel(this.periodoFiltro)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (archivo) => {
           descargarBlob(archivo.blob, archivo.filename);
           this.snackbar.exito('Excel descargado exitosamente');
-          this.exportando = false;
+          this.exportando.set(false);
         },
         error: (error: HttpErrorResponse | Error) => {
-          this.exportando = false;
+          this.exportando.set(false);
           const porDefecto = 'Error al exportar las solicitudes. Por favor, intente nuevamente.';
           const mostrar = (mensaje: string) => this.snackbar.error(mensaje);
           if (error instanceof HttpErrorResponse && error.error instanceof Blob) {
