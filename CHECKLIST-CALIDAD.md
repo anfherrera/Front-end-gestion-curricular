@@ -49,6 +49,9 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - Componentes: 88 → 85. Pruebas: 589 → 585 (las 4 eran de lo borrado: 3 del servicio y 1 del componente), specs 56 → 54
 - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 585/585, `test:navegacion` sin backend correcto
 - Sin cambios visibles esperados (ninguna de las dos se podía abrir desde la interfaz)
+- [x] Se borra `approved-requests-section` (`shared/components`, 3 archivos, sin spec): ningún archivo lo usaba desde `eb9ad08` (2026-11-17), cuando secretaría pasó a `OficioSecretariaComponent` y la sección "Solicitudes aprobadas" se cambió por la pestaña de historial de la bandeja. Visto el 2026-11-18 al contar dónde se usa cada componente compartido. Componentes: 85 → 84
+  - Verificado: `tsc` de app y specs, lint 0 errores y 0 avisos, `ng build` sin avisos, 596/596, `test:navegacion` sin backend correcto
+  - Sin cambios visibles esperados (no se pintaba en ninguna página)
 
 ---
 
@@ -312,7 +315,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Verificado: `ng build` sin avisos, 564/564, lint 0 errores y 204 avisos (`no-explicit-any`; eran 209), `test:navegacion` sin backend correcto
   - Pendiente: `/notificaciones-guia` es una ruta de `common.routes.ts` a la que no enlaza ningún menú. Decidir si se borra. Borrada el 2026-11-18 (Fase 1, "Encontrado después")
   - Cambio visible esperado: en el visor de documentos, la columna **Comentarios** se calculaba una sola vez al crear el visor; ahora aparece o desaparece al elegir otra solicitud según tenga documentos con comentario
-- [x] **OnPush**: lo usan 85 de 85 componentes (eran 6; 20 al cerrar `shared`; 88 de 88 al cerrarlo, 85 después de borrar `manage-processes`, `form-proceso-dialog` y `notificaciones-guia`)
+- [x] **OnPush**: lo usan 84 de 84 componentes (eran 6; 20 al cerrar `shared`; 88 de 88 al cerrarlo, 85 después de borrar `manage-processes`, `form-proceso-dialog` y `notificaciones-guia`, 84 después de borrar `approved-requests-section`)
   - [x] `shared/components` (2026-11-14): por script, `changeDetection: ChangeDetectionStrategy.OnPush` en los 14 que faltaban (approved-requests-section, breadcrumb, confirm-dialog, documentation-viewer, estado-filters, file-upload-dialog, loading-spinner, notificaciones-guia, notifications-header, oficio-descarga, periodo-filtro-selector, solicitudes-bandeja, texto-dialog y ver-comentarios-dialog). Se revisó antes que lo que pintan sus plantillas sean signals, entradas o `MAT_DIALOG_DATA`, y que ninguna página cambie `documento.comentario` en el objeto mismo (el visor lo leería sin repintar). `texto-dialog` sigue con `ngModel`, que repinta con el propio evento de tecleo. Se deja fuera `document-generator` (formulario reactivo con datepicker, sin signals)
   - Verificado: `ng build` sin avisos, 564/564 sin tocar specs, lint 0 errores y 204 avisos, `test:navegacion` sin backend correcto
   - Sin cambios visibles esperados
