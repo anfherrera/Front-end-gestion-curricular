@@ -9,12 +9,6 @@ export interface DocumentoConComentario {
   comentario?: string | null;
 }
 
-/** Validez de un documento al aprobar o rechazar. */
-export interface ValidezDocumento {
-  id_documento: number;
-  esValido: boolean;
-}
-
 /** Oficio como lo devuelve /obtenerOficios/{idSolicitud}. */
 export interface OficioRespuesta {
   /** El backend envía aquí el id de la solicitud, no el del documento. */

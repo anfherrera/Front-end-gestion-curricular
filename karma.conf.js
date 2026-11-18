@@ -59,6 +59,13 @@ module.exports = function (config) {
         flags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       }
     },
+    // Con la máquina cargada (por ejemplo, compilando el backend a la vez) el navegador headless
+    // tardaba más de los 2 s por defecto en reconectar y Karma daba por buena una ejecución a medias
+    // ("Executed 465 of 598" y TOTAL en verde). Más margen y dos reintentos antes de abandonar.
+    captureTimeout: 120000,
+    browserDisconnectTimeout: 30000,
+    browserDisconnectTolerance: 2,
+    browserNoActivityTimeout: 120000,
     restartOnFileChange: true
   });
 };

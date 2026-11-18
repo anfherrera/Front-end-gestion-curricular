@@ -229,6 +229,13 @@ describe('PruebasEcaesComponent', () => {
     expect(component.solicitudesCompletas.length).toBe(1);
   });
 
+  it('la fila muestra nombre_solicitud tal cual (ya trae el nombre del estudiante)', () => {
+    component.procesarSolicitudes([
+      solicitudEcaes({ id_solicitud: 2, nombre_solicitud: 'Solicitud ECAES - Daniel Cisneros', objUsuario: { nombre_completo: 'Daniel Cisneros' } })
+    ]);
+    expect(component.solicitudes()[0].nombre).toBe('Solicitud ECAES - Daniel Cisneros');
+  });
+
   it('EC-028: procesarSolicitudes debe manejar datos no array', () => {
     // Entrada inválida a propósito: el backend respondió algo que no es un arreglo
     component.procesarSolicitudes(null as unknown as SolicitudEcaesResponse[]);

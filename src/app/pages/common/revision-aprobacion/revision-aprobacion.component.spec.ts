@@ -31,11 +31,11 @@ describe('RevisionAprobacionComponent', () => {
   let snackbar: jasmine.SpyObj<SnackbarService>;
   let dialog: jasmine.SpyObj<MatDialog>;
 
-  async function crear(rol: RolRevision, marcarDocumentosAlDecidir: boolean, pendientes: Sol[] = []): Promise<void> {
+  async function crear(rol: RolRevision, pendientes: Sol[] = []): Promise<void> {
     servicio = jasmine.createSpyObj<HomologacionAsignaturasService>('HomologacionAsignaturasService', [
       'getPendingRequests', 'getCoordinadorRequests', 'getSolicitudesProcesadasFuncionario',
       'getSolicitudesProcesadasCoordinador', 'approveRequest', 'approveAsCoordinador', 'rejectRequest',
-      'actualizarEstadoDocumentos', 'agregarComentario'
+      'agregarComentario'
     ]);
     servicio.getPendingRequests.and.returnValue(of(pendientes));
     servicio.getCoordinadorRequests.and.returnValue(of(pendientes));
@@ -44,7 +44,6 @@ describe('RevisionAprobacionComponent', () => {
     servicio.approveRequest.and.returnValue(of({}));
     servicio.approveAsCoordinador.and.returnValue(of({}));
     servicio.rejectRequest.and.returnValue(of({}));
-    servicio.actualizarEstadoDocumentos.and.returnValue(of({}));
     snackbar = jasmine.createSpyObj<SnackbarService>('SnackbarService', ['mostrar', 'exito', 'error', 'advertencia']);
     dialog = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
 
@@ -62,7 +61,7 @@ describe('RevisionAprobacionComponent', () => {
 
     fixture = TestBed.createComponent(RevisionAprobacionComponent<Sol>);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('config', { rol, servicio, proceso: 'homologacion', nombreProceso: 'Homologación', marcarDocumentosAlDecidir });
+    fixture.componentRef.setInput('config', { rol, servicio, proceso: 'homologacion', nombreProceso: 'Homologación' });
     fixture.detectChanges();
   }
 
@@ -71,7 +70,7 @@ describe('RevisionAprobacionComponent', () => {
   }
 
   describe('funcionario', () => {
-    beforeEach(() => crear('funcionario', true, [solicitud(1, 'ENVIADA')]));
+    beforeEach(() => crear('funcionario', [solicitud(1, 'ENVIADA')]));
 
     it('HA-F-002: carga sus pendientes y su historial', () => {
       expect(servicio.getPendingRequests).toHaveBeenCalled();
@@ -92,33 +91,24 @@ describe('RevisionAprobacionComponent', () => {
       expect(component.puedeDecidir()).toBeFalse();
     });
 
-    it('al aprobar marca los documentos como válidos y recarga las listas', () => {
+    it('al aprobar avisa y recarga las listas', () => {
       component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
       component.aprobar();
 
       expect(servicio.approveRequest).toHaveBeenCalledWith(1);
-      expect(servicio.actualizarEstadoDocumentos).toHaveBeenCalledWith(1, [{ id_documento: 10, esValido: true }]);
-      expect(snackbar.mostrar).toHaveBeenCalledWith('Solicitud aprobada y documentos actualizados', 'exito');
+      expect(snackbar.exito).toHaveBeenCalledWith('Solicitud aprobada');
       expect(component.seleccionada()).toBeNull();
       expect(servicio.getPendingRequests).toHaveBeenCalledTimes(2);
       expect(servicio.getSolicitudesProcesadasFuncionario).toHaveBeenCalledTimes(2);
     });
 
-    it('si falla marcar los documentos, la aprobación vale y avisa', () => {
-      servicio.actualizarEstadoDocumentos.and.returnValue(throwError(() => new Error('x')));
-      component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
-      component.aprobar();
-      expect(snackbar.mostrar).toHaveBeenCalledWith('Solicitud aprobada, pero error al actualizar documentos', 'advertencia');
-    });
-
-    it('al rechazar con motivo marca los documentos como no válidos', () => {
+    it('al rechazar con motivo lo envía y avisa', () => {
       respuestaDialogo('Faltan notas');
       component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
       component.rechazar();
 
       expect(servicio.rejectRequest).toHaveBeenCalledWith(1, 'Faltan notas');
-      expect(servicio.actualizarEstadoDocumentos).toHaveBeenCalledWith(1, [{ id_documento: 10, esValido: false }]);
-      expect(snackbar.mostrar).toHaveBeenCalledWith('Solicitud rechazada y documentos actualizados', 'exito');
+      expect(snackbar.exito).toHaveBeenCalledWith('Solicitud rechazada');
     });
 
     it('si se cancela el rechazo no hace nada', () => {
@@ -151,12 +141,12 @@ describe('RevisionAprobacionComponent', () => {
       component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
       component.aprobar();
       expect(snackbar.error).toHaveBeenCalled();
-      expect(snackbar.mostrar).not.toHaveBeenCalled();
+      expect(snackbar.exito).not.toHaveBeenCalled();
     });
   });
 
   describe('coordinador', () => {
-    beforeEach(() => crear('coordinador', false, [solicitud(5, 'APROBADA_FUNCIONARIO')]));
+    beforeEach(() => crear('coordinador', [solicitud(5, 'APROBADA_FUNCIONARIO')]));
 
     it('HA-C-002: carga sus pendientes y su historial', () => {
       expect(servicio.getCoordinadorRequests).toHaveBeenCalled();
@@ -175,24 +165,22 @@ describe('RevisionAprobacionComponent', () => {
       expect(component.puedeDecidir()).toBeFalse();
     });
 
-    it('aprueba definitivamente sin tocar los documentos', () => {
+    it('aprueba definitivamente', () => {
       component.onSolicitudSeleccionada(solicitud(5, 'APROBADA_FUNCIONARIO'));
       component.aprobar();
 
       expect(servicio.approveAsCoordinador).toHaveBeenCalledWith(5);
-      expect(servicio.actualizarEstadoDocumentos).not.toHaveBeenCalled();
-      expect(snackbar.mostrar).toHaveBeenCalledWith('Solicitud aprobada definitivamente', 'exito');
+      expect(snackbar.exito).toHaveBeenCalledWith('Solicitud aprobada definitivamente');
       expect(component.textoAprobar()).toBe('Aprobar Definitivamente');
     });
 
-    it('al rechazar avisa sin tocar los documentos', () => {
+    it('al rechazar con motivo lo envía y avisa', () => {
       respuestaDialogo('No cumple');
       component.onSolicitudSeleccionada(solicitud(5, 'APROBADA_FUNCIONARIO'));
       component.rechazar();
 
       expect(servicio.rejectRequest).toHaveBeenCalledWith(5, 'No cumple');
-      expect(servicio.actualizarEstadoDocumentos).not.toHaveBeenCalled();
-      expect(snackbar.mostrar).toHaveBeenCalledWith('Solicitud rechazada', 'exito');
+      expect(snackbar.exito).toHaveBeenCalledWith('Solicitud rechazada');
     });
   });
 });

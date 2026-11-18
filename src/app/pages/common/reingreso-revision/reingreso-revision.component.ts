@@ -24,7 +24,6 @@ export class ReingresoRevisionComponent {
     rol: rolRevisionDeRuta(inject(ActivatedRoute)),
     servicio: inject(ReingresoEstudianteService),
     proceso: 'reingreso',
-    nombreProceso: 'Reingreso',
-    marcarDocumentosAlDecidir: false
+    nombreProceso: 'Reingreso'
   };
 }

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, ViewChild, comp
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ActivatedRoute } from '@angular/router';
-import { Observable, catchError, filter, map, of, switchMap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -10,9 +10,8 @@ import { DocumentoHomologacion, DocumentosDTORespuesta } from '@core/models/proc
 import { RolRevision, SolicitudAprobable } from '@core/models/solicitud-revision.model';
 import { EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
 import { SolicitudesAprobacionService } from '@core/services/base/solicitudes-aprobacion.service';
-import { ValidezDocumento } from '@core/services/base/solicitudes-base.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
-import { SnackbarService, TipoSnackbar } from '@core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 import { ESTADO_SIN_HISTORIAL, estadoActual, normalizarEstado } from '@core/utils/estado-solicitud.util';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { DocumentationViewerComponent } from '@shared/components/documentation-viewer/documentation-viewer.component';
@@ -26,18 +25,11 @@ export interface ConfigRevisionAprobacion<S extends SolicitudAprobable> {
   proceso: 'homologacion' | 'reingreso';
   /** Va en los botones: "Aprobar Homologación", "Rechazar Homologación". */
   nombreProceso: string;
-  /** Al aprobar o rechazar, marca todos los documentos como válidos o no válidos. */
-  marcarDocumentosAlDecidir: boolean;
 }
 
 /** Rol de revisión según `data.rolRevision` de la ruta (funcionario si no viene). */
 export function rolRevisionDeRuta(route: ActivatedRoute): RolRevision {
   return route.snapshot.data['rolRevision'] === 'coordinador' ? 'coordinador' : 'funcionario';
-}
-
-interface Aviso {
-  mensaje: string;
-  tipo: TipoSnackbar;
 }
 
 /**
@@ -150,16 +142,12 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   aprobar(): void {
     const id = this.seleccionada()?.id_solicitud;
     if (id === undefined) return;
-    const documentos = this.validez(true);
     const servicio = this.config().servicio;
     const aprobar$ = this.esCoordinador() ? servicio.approveAsCoordinador(id) : servicio.approveRequest(id);
     const mensaje = this.esCoordinador() ? 'Solicitud aprobada definitivamente' : 'Solicitud aprobada';
 
-    aprobar$.pipe(
-      switchMap(() => this.marcarDocumentos(id, documentos, mensaje, 'aprobada')),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (aviso) => this.finalizarDecision(aviso),
+    aprobar$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => this.finalizarDecision(mensaje),
       error: (err) => this.mostrarError(err, 'Error al aprobar solicitud')
     });
   }
@@ -167,34 +155,19 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   rechazar(): void {
     const id = this.seleccionada()?.id_solicitud;
     if (id === undefined) return;
-    const documentos = this.validez(false);
 
     this.dialog.open(TextoDialogComponent, { width: '450px', data: datosRechazo() }).afterClosed().pipe(
       filter((motivo: string | undefined): motivo is string => !!motivo),
       switchMap(motivo => this.config().servicio.rejectRequest(id, motivo)),
-      switchMap(() => this.marcarDocumentos(id, documentos, 'Solicitud rechazada', 'rechazada')),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: (aviso) => this.finalizarDecision(aviso),
+      next: () => this.finalizarDecision('Solicitud rechazada'),
       error: (err) => this.mostrarError(err, 'Error al rechazar solicitud')
     });
   }
 
-  /** Si el proceso lo pide, marca los documentos; si eso falla, la decisión sigue valiendo. */
-  private marcarDocumentos(id: number, documentos: ValidezDocumento[], mensaje: string, accion: string): Observable<Aviso> {
-    if (!this.config().marcarDocumentosAlDecidir) return of({ mensaje, tipo: 'exito' });
-    return this.config().servicio.actualizarEstadoDocumentos(id, documentos).pipe(
-      map((): Aviso => ({ mensaje: `Solicitud ${accion} y documentos actualizados`, tipo: 'exito' })),
-      catchError(() => of<Aviso>({ mensaje: `Solicitud ${accion}, pero error al actualizar documentos`, tipo: 'advertencia' }))
-    );
-  }
-
-  private validez(esValido: boolean): ValidezDocumento[] {
-    return this.documentos().map(doc => ({ id_documento: doc.id_documento, esValido }));
-  }
-
-  private finalizarDecision({ mensaje, tipo }: Aviso): void {
-    this.snackbar.mostrar(mensaje, tipo);
+  private finalizarDecision(mensaje: string): void {
+    this.snackbar.exito(mensaje);
     this.seleccionada.set(null);
     this.bandeja?.resetSelection();
     this.cargarPendientes();

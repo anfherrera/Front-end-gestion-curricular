@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { ActivatedRoute } from '@angular/router';
-import { Observable, catchError, filter, map, of, switchMap } from 'rxjs';
+import { Observable, filter, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,7 +16,7 @@ import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-band
 import { aDocumentos } from './paz-salvo-filas';
 import { estadoActual } from '@core/utils/estado-solicitud.util';
 import { TextoDialogComponent, datosRechazo } from '@shared/components/texto-dialog/texto-dialog.component';
-import { SnackbarService, TipoSnackbar } from '@core/services/snackbar.service';
+import { SnackbarService } from '@core/services/snackbar.service';
 
 /** Roles que revisan paz y salvo con esta pantalla. Secretaría tiene su propio flujo (oficio). */
 export type RolRevisionPazSalvo = 'funcionario' | 'coordinador';
@@ -27,8 +27,6 @@ interface ConfigRevision {
   aprobar: (id: number) => Observable<unknown>;
   /** El coordinador consulta los documentos aparte; al funcionario le llegan con la lista. */
   cargarDocumentosAparte: boolean;
-  /** El funcionario revisa los documentos: al decidir los marca como válidos o no válidos. */
-  marcarDocumentosAlDecidir: boolean;
   textoAprobar: string;
   mensajeAprobada: string;
   tituloRechazo: string;
@@ -84,7 +82,6 @@ export class PazSalvoRevisionComponent implements OnInit {
         procesadas: p => s.getSolicitudesProcesadasCoordinador(p),
         aprobar: id => s.approveAsCoordinador(id),
         cargarDocumentosAparte: true,
-        marcarDocumentosAlDecidir: false,
         textoAprobar: 'Aprobar Definitivamente',
         mensajeAprobada: 'Solicitud aprobada definitivamente',
         tituloRechazo: 'Rechazar Paz y Salvo',
@@ -96,7 +93,6 @@ export class PazSalvoRevisionComponent implements OnInit {
       procesadas: p => s.getSolicitudesProcesadasFuncionario(p),
       aprobar: id => s.approveRequest(id),
       cargarDocumentosAparte: false,
-      marcarDocumentosAlDecidir: true,
       textoAprobar: 'Aprobar Paz y Salvo',
       mensajeAprobada: 'Solicitud aprobada',
       tituloRechazo: 'Rechazar solicitud',
@@ -189,18 +185,8 @@ export class PazSalvoRevisionComponent implements OnInit {
     const id = this.selectedSolicitud()?.id_solicitud;
     if (id === undefined) return;
 
-    const documentos = this.documentosConValidez(true);
-    this.config.aprobar(id).pipe(
-      // Si falla la actualización de documentos, la aprobación sigue valiendo
-      switchMap(() => !this.config.marcarDocumentosAlDecidir
-        ? of(this.config.mensajeAprobada)
-        : this.pazSalvoService.actualizarEstadoDocumentos(id, documentos).pipe(
-            map(() => 'Solicitud aprobada y documentos actualizados'),
-            catchError(() => of('Solicitud aprobada (Documentos se actualizarán automáticamente)'))
-          )),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (mensaje) => this.finalizarDecision(mensaje),
+    this.config.aprobar(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => this.finalizarDecision(this.config.mensajeAprobada),
       error: (err: HttpErrorResponse) => this.mostrarErrorAprobacion(err)
     });
   }
@@ -214,30 +200,19 @@ export class PazSalvoRevisionComponent implements OnInit {
       data: datosRechazo(this.config.tituloRechazo, this.config.descripcionRechazo)
     });
 
-    const documentos = this.documentosConValidez(false);
     dialogRef.afterClosed().pipe(
       filter((motivo: string | undefined): motivo is string => !!motivo),
       switchMap(motivo => this.pazSalvoService.rejectRequest(id, motivo)),
-      switchMap(() => !this.config.marcarDocumentosAlDecidir
-        ? of({ mensaje: 'Paz y Salvo rechazado', tipo: 'exito' as TipoSnackbar })
-        : this.pazSalvoService.actualizarEstadoDocumentos(id, documentos).pipe(
-            map(() => ({ mensaje: 'Solicitud rechazada y documentos actualizados', tipo: 'exito' as TipoSnackbar })),
-            catchError(() => of({ mensaje: 'Solicitud rechazada, pero error al actualizar documentos', tipo: 'advertencia' as TipoSnackbar }))
-          )),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: ({ mensaje, tipo }) => this.finalizarDecision(mensaje, tipo),
+      next: () => this.finalizarDecision('Paz y Salvo rechazado'),
       error: () => this.snackbar.error('Error al rechazar solicitud')
     });
   }
 
-  private documentosConValidez(esValido: boolean): { id_documento: number; esValido: boolean }[] {
-    return this.documentosDelEstudiante().map(doc => ({ id_documento: doc.id_documento, esValido }));
-  }
-
   /** Mensaje, recarga de listas y limpieza de la selección tras aprobar o rechazar. */
-  private finalizarDecision(mensaje: string, tipo: TipoSnackbar = 'exito'): void {
-    this.snackbar.mostrar(mensaje, tipo);
+  private finalizarDecision(mensaje: string): void {
+    this.snackbar.exito(mensaje);
     this.cargarSolicitudesPendientes();
     this.cargarSolicitudesProcesadas();
     this.selectedSolicitud.set(null);

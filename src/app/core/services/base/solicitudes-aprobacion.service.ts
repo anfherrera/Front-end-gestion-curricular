@@ -1,7 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { OficioRespuesta, SolicitudesBaseService, ValidezDocumento } from './solicitudes-base.service';
+import { OficioRespuesta, SolicitudesBaseService } from './solicitudes-base.service';
 
 /** Rutas propias de cada proceso; lo demás es igual en homologación y reingreso. */
 export interface RutasProceso {
@@ -79,10 +79,6 @@ export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseSer
   /** Rechazo, desde cualquier rol que revisa. */
   rejectRequest(idSolicitud: number, motivo: string): Observable<unknown> {
     return this.cambiarEstado(idSolicitud, 'RECHAZADA', motivo);
-  }
-
-  actualizarEstadoDocumentos(idSolicitud: number, documentos: ValidezDocumento[]): Observable<unknown> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoDocumentos`, { idSolicitud, documentos });
   }
 
   // ---------- Oficios ----------

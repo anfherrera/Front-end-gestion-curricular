@@ -394,20 +394,6 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       
       req.flush({ success: true });
     });
-
-    it('PZS-031: Debe actualizar estado de documentos', (done) => {
-      const documentos = [
-        { id_documento: 1, esValido: true },
-        { id_documento: 2, esValido: false }
-      ];
-      
-      service.actualizarEstadoDocumentos(1, documentos).subscribe(() => done());
-      
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoDocumentos`);
-      expect(req.request.body.documentos).toEqual(documentos);
-      
-      req.flush({ success: true });
-    });
   });
 
   describe('9. Manejo de Errores', () => {

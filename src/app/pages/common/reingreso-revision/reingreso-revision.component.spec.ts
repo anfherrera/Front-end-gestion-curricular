@@ -39,7 +39,6 @@ describe('ReingresoRevisionComponent', () => {
   it('para el funcionario carga sus pendientes y su historial', async () => {
     const component = await crear('funcionario');
     expect(component.config.proceso).toBe('reingreso');
-    expect(component.config.marcarDocumentosAlDecidir).toBeFalse();
     expect(servicio.getPendingRequests).toHaveBeenCalled();
     expect(servicio.getSolicitudesProcesadasFuncionario).toHaveBeenCalled();
   });

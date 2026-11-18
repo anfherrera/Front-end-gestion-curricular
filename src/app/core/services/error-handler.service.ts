@@ -15,6 +15,9 @@ interface ErrorLeido {
   crudo: unknown;
 }
 
+/** El mismo texto que muestra el login cuando no hay respuesta del servidor. */
+export const MENSAJE_SIN_CONEXION = 'No se puede conectar al servidor. Verifica tu conexión.';
+
 function leerError(error: unknown): ErrorLeido {
   if (!error || typeof error !== 'object') {
     return { cuerpo: null, crudo: undefined };
@@ -39,6 +42,12 @@ export class ErrorHandlerService {
    */
   extraerMensajeError(error: unknown): string {
     const { status, cuerpo, crudo } = leerError(error);
+
+    // Status 0: no hubo respuesta (backend caído o sin red). Con withFetch, `error` es un
+    // TypeError cuyo `message` ("Failed to fetch") no sirve al usuario
+    if (status === 0) {
+      return MENSAJE_SIN_CONEXION;
+    }
 
     // Error 400 BAD_REQUEST: validación por campos (ej: { fecha_expedicion: "La fecha debe ser..." })
     if (status === 400 && cuerpo) {

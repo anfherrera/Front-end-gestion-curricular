@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { LoggerService } from '@core/services/logger.service';
+import { MENSAJE_SIN_CONEXION } from '@core/services/error-handler.service';
 import { interval, Subscription } from 'rxjs';
 import { getLoginCooldownRemainingSeconds, esErrorLimiteLogin, ErrorLimiteLogin } from '@core/interceptors/login-rate-limit.interceptor';
 import { SnackbarService } from '@core/services/snackbar.service';
@@ -167,7 +168,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             errorMessage = 'Tu cuenta está deshabilitada. Contacta al administrador.';
           } else if (err.status === 0) {
             // Error de conexión
-            errorMessage = 'No se puede conectar al servidor. Verifica tu conexión.';
+            errorMessage = MENSAJE_SIN_CONEXION;
           } else if (err.status >= 500) {
             // Error del servidor
             errorMessage = 'Error interno del servidor. Intenta más tarde.';

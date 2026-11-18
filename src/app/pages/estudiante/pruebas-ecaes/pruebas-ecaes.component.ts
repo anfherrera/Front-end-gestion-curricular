@@ -421,13 +421,14 @@ export class PruebasEcaesComponent extends SeguimientoSolicitudesBase<SolicitudE
   // Métodos para seguimiento de solicitudes
   // ================================
 
-  /** Fila de la tabla: se añade el nombre del estudiante y el estado se lleva a un código conocido. */
+  /**
+   * Fila de la tabla: el estado se lleva a un código conocido. El nombre se deja como llega:
+   * `nombre_solicitud` ya trae el del estudiante ("Solicitud ECAES - <nombre>").
+   */
   protected override aFila(sol: SolicitudEcaesResponse): Solicitud {
     const fila = super.aFila(sol);
-    const nombreEstudiante = sol.objUsuario?.nombre_completo || 'Estudiante';
     return {
       ...fila,
-      nombre: `${sol.nombre_solicitud} - ${nombreEstudiante}`,
       estado: this.mapearEstado(fila.estado),
       oficioUrl: ''
     };

@@ -26,8 +26,6 @@ export class HomologacionRevisionComponent {
     rol: this.rol,
     servicio: inject(HomologacionAsignaturasService),
     proceso: 'homologacion',
-    nombreProceso: 'Homologación',
-    // El funcionario revisa los documentos: al decidir los marca como válidos o no válidos
-    marcarDocumentosAlDecidir: this.rol === 'funcionario'
+    nombreProceso: 'Homologación'
   };
 }

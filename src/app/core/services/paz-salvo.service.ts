@@ -5,7 +5,7 @@ import { Solicitud, Archivo, SolicitudHomologacionDTORespuesta } from '../models
 import { AuthService } from './auth.service';
 import { environment } from '@env/environment';
 import { nombreDeContentDisposition } from '../utils/download.util';
-import { SolicitudesBaseService, ValidezDocumento, validarPdf } from './base/solicitudes-base.service';
+import { SolicitudesBaseService, validarPdf } from './base/solicitudes-base.service';
 
 type Solicitudes = Observable<SolicitudHomologacionDTORespuesta[]>;
 
@@ -184,11 +184,6 @@ export class PazSalvoService extends SolicitudesBaseService {
 
   rejectRequest(requestId: number, reason: string): Observable<unknown> {
     return this.cambiarEstado(requestId, 'RECHAZADA', reason);
-  }
-
-  /** Marca cada documento como válido o no válido. */
-  actualizarEstadoDocumentos(idSolicitud: number, documentos: ValidezDocumento[]): Observable<unknown> {
-    return this.http.put(`${this.apiUrl}/actualizarEstadoDocumentos`, { idSolicitud, documentos });
   }
 
   // ================================

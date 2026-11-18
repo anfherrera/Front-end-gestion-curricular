@@ -36,17 +36,15 @@ describe('HomologacionRevisionComponent', () => {
     return fixture.componentInstance;
   }
 
-  it('HA-F-001: para el funcionario usa su bandeja y marca los documentos al decidir', async () => {
+  it('HA-F-001: para el funcionario usa su bandeja', async () => {
     const component = await crear('funcionario');
     expect(component.config.rol).toBe('funcionario');
-    expect(component.config.marcarDocumentosAlDecidir).toBeTrue();
     expect(servicio.getPendingRequests).toHaveBeenCalled();
   });
 
-  it('HA-C-001: para el coordinador usa su bandeja y no toca los documentos', async () => {
+  it('HA-C-001: para el coordinador usa su bandeja', async () => {
     const component = await crear('coordinador');
     expect(component.config.rol).toBe('coordinador');
-    expect(component.config.marcarDocumentosAlDecidir).toBeFalse();
     expect(servicio.getCoordinadorRequests).toHaveBeenCalled();
   });
 
