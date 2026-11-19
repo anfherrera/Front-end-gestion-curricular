@@ -1,10 +1,9 @@
+/* El ancho lo fija el diálogo (700px, máx. 90vw); aquí solo el alto, para que los botones queden visibles. */
 .inscripcion-modal {
-  min-width: 400px;
-  max-width: 600px;
-  width: 90vw;
+  display: flex;
+  flex-direction: column;
   max-height: 90vh;
   animation: fadeInUp 0.4s ease-out;
-  overflow-y: auto;
 }
 
 @keyframes fadeInUp {
@@ -339,37 +338,17 @@
   margin-right: 8px;
 }
 
-/* Estilos para campos de formulario Material Design */
-::ng-deep .mat-mdc-form-field {
-  width: 100%;
-}
-
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
-  color: var(--azul-50);
-}
-
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+/* Iconos de los campos (están en esta plantilla: no hace falta ::ng-deep) */
+.mat-mdc-form-field mat-icon[matSuffix] {
   color: var(--color-primario);
 }
 
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
-  color: var(--gris-650);
+.mat-mdc-form-field.mat-focused mat-icon[matSuffix] {
+  color: var(--color-primario-light);
 }
 
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-  color: var(--color-primario);
-}
-
-::ng-deep .mat-mdc-form-field mat-icon[matSuffix] {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .mat-mdc-form-field.mat-focused mat-icon[matSuffix] {
-  color: var(--color-primario-light) !important;
-}
-
-/* Estilos para el botón cancelar */
-::ng-deep .modal-footer button[mat-button] {
+/* Botón cancelar */
+.modal-footer button[mat-button] {
   background-color: var(--estado-peligro) !important;
   color: white !important;
   border: none !important;
@@ -379,26 +358,18 @@
   box-shadow: var(--sombra-1) !important;
 }
 
-::ng-deep .modal-footer button[mat-button]:hover {
+.modal-footer button[mat-button]:hover {
   background-color: #c82333 !important;
   transform: translateY(-1px) !important;
   box-shadow: var(--sombra-1) !important;
 }
 
-::ng-deep .modal-footer button[mat-button] mat-icon {
+.modal-footer button[mat-button] mat-icon {
   color: white !important;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .inscripcion-modal {
-    min-width: 95vw;
-    max-width: 98vw;
-    width: 95vw;
-    max-height: 95vh;
-    margin: 10px;
-  }
-  
   .modal-header {
     margin-bottom: 16px;
     padding: 12px 0;
@@ -503,14 +474,6 @@
 }
 
 @media (max-width: 480px) {
-  .inscripcion-modal {
-    min-width: 98vw;
-    max-width: 99vw;
-    width: 98vw;
-    max-height: 98vh;
-    margin: 5px;
-  }
-  
   .modal-header {
     padding: 8px 0;
     margin-bottom: 12px;
@@ -649,24 +612,6 @@
   }
 }
 
-/* Estilos globales para el modal Angular Material */
-::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
-  max-height: 90vh !important;
-  overflow: hidden !important;
-}
-
-::ng-deep .mat-mdc-dialog-container .mdc-dialog__content {
-  max-height: calc(90vh - 120px) !important;
-  overflow-y: auto !important;
-  padding: 0 !important;
-}
-
-/* Asegurar que el modal se ajuste al viewport */
-::ng-deep .cdk-overlay-pane {
-  max-width: 95vw !important;
-  max-height: 95vh !important;
-}
-
 /* Scroll personalizado para webkit */
 .modal-body::-webkit-scrollbar {
   width: 6px;
@@ -686,23 +631,8 @@
   background: var(--color-primario-light);
 }
 
-/* Asegurar que los botones siempre sean visibles */
-.inscripcion-modal {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-height: 90vh;
-}
-
 /* Ajustes adicionales para pantallas muy pequeñas */
 @media (max-width: 360px) {
-  .inscripcion-modal {
-    min-width: 99vw;
-    max-width: 100vw;
-    width: 99vw;
-    margin: 2px;
-  }
-  
   .modal-header h2 {
     font-size: 14px;
   }

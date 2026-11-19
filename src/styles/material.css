@@ -1,5 +1,43 @@
 /* ===== Angular Material con el Sistema de Diseño TIC ===== */
 
+/*
+ * Tipografía de Material. El tema prebuilt (azure-blue) usa "Roboto" sin
+ * genérico de respaldo y la app no carga Roboto, así que títulos de diálogo,
+ * de tarjeta, snackbars y campos caían en la serif del navegador.
+ */
+html {
+  --mat-sys-display-large: 400 3.562rem / 4rem var(--font-display);
+  --mat-sys-display-large-font: var(--font-display);
+  --mat-sys-display-medium: 400 2.812rem / 3.25rem var(--font-display);
+  --mat-sys-display-medium-font: var(--font-display);
+  --mat-sys-display-small: 400 2.25rem / 2.75rem var(--font-display);
+  --mat-sys-display-small-font: var(--font-display);
+  --mat-sys-headline-large: 400 2rem / 2.5rem var(--font-display);
+  --mat-sys-headline-large-font: var(--font-display);
+  --mat-sys-headline-medium: 400 1.75rem / 2.25rem var(--font-display);
+  --mat-sys-headline-medium-font: var(--font-display);
+  --mat-sys-headline-small: 400 1.5rem / 2rem var(--font-display);
+  --mat-sys-headline-small-font: var(--font-display);
+  --mat-sys-title-large: 400 1.375rem / 1.75rem var(--font-display);
+  --mat-sys-title-large-font: var(--font-display);
+  --mat-sys-title-medium: 500 1rem / 1.5rem var(--font-display);
+  --mat-sys-title-medium-font: var(--font-display);
+  --mat-sys-title-small: 500 0.875rem / 1.25rem var(--font-display);
+  --mat-sys-title-small-font: var(--font-display);
+  --mat-sys-body-large: 400 1rem / 1.5rem var(--font-body);
+  --mat-sys-body-large-font: var(--font-body);
+  --mat-sys-body-medium: 400 0.875rem / 1.25rem var(--font-body);
+  --mat-sys-body-medium-font: var(--font-body);
+  --mat-sys-body-small: 400 0.75rem / 1rem var(--font-body);
+  --mat-sys-body-small-font: var(--font-body);
+  --mat-sys-label-large: 500 0.875rem / 1.25rem var(--font-body);
+  --mat-sys-label-large-font: var(--font-body);
+  --mat-sys-label-medium: 500 0.75rem / 1rem var(--font-body);
+  --mat-sys-label-medium-font: var(--font-body);
+  --mat-sys-label-small: 500 0.688rem / 1rem var(--font-body);
+  --mat-sys-label-small-font: var(--font-body);
+}
+
 /* Botón principal */
 .mat-mdc-raised-button.mat-primary {
   background-color: var(--color-primario) !important;
