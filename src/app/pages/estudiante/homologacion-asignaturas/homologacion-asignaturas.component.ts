@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -8,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { descargarBlob, nombreDeContentDisposition } from '@core/utils/download.util';
 
 import { Archivo, SolicitudHomologacionDTOPeticion, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
@@ -94,39 +92,7 @@ export class HomologacionAsignaturasComponent extends SolicitudEstudianteBase<So
     return this.homologacionService.crearSolicitud(solicitud);
   }
 
-  /**
-   * Descarga el oficio de la solicitud. Si no hay oficios avisa; el nombre sale del encabezado
-   * Content-Disposition o, si no viene, del primer oficio.
-   */
   descargarOficio(idSolicitud: number, nombreArchivo: string): void {
-    this.homologacionService.obtenerOficios(idSolicitud)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: oficios => {
-          if (!oficios || oficios.length === 0) {
-            this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
-            return;
-          }
-          const oficio = oficios[0];
-          this.descargarOficioConNombre(idSolicitud, oficio.nombre || oficio.nombreArchivo || `oficio_${idSolicitud}.pdf`);
-        },
-        // Sin la lista de oficios se intenta igual la descarga
-        error: () => this.descargarOficioConNombre(idSolicitud, nombreArchivo || `oficio_homologacion_${idSolicitud}.pdf`)
-      });
-  }
-
-  private descargarOficioConNombre(idSolicitud: number, nombreRespaldo: string): void {
-    this.homologacionService.descargarOficioConNombre(idSolicitud)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: response => {
-          const nombre = nombreDeContentDisposition(response.headers) || nombreRespaldo;
-          if (response.body) descargarBlob(response.body, nombre);
-          this.snackbar.exito('Oficio descargado exitosamente');
-        },
-        error: err => this.snackbar.error(
-          this.errorHandler.extraerMensajeError(err) || 'Error al descargar archivo. Por favor, inténtalo de nuevo.'
-        )
-      });
+    this.descargarOficioDelProceso(this.homologacionService, idSolicitud, nombreArchivo || `oficio_homologacion_${idSolicitud}.pdf`);
   }
 }

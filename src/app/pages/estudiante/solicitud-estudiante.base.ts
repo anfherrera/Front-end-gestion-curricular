@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { Archivo } from '@core/models/procesos.model';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { NotificacionesService } from '@core/services/notificaciones.service';
+import { SolicitudesAprobacionService } from '@core/services/base/solicitudes-aprobacion.service';
+import { descargarBlob, nombreDeContentDisposition } from '@core/utils/download.util';
 import { coincidenPorPalabrasClave, normalizarNombreArchivo } from '@core/utils/texto.util';
 import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
 import { Documento } from '@shared/components/required-docs/required-docs.component';
@@ -100,6 +102,42 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
     this.resetFileUpload.set(true);
     setTimeout(() => this.resetFileUpload.set(false), 0);
     this.snackbar.exito(this.mensajeExito);
+  }
+
+  /**
+   * Homologación y reingreso: baja el oficio por /descargarOficio/{id}. Antes pide la lista de
+   * oficios y, si está vacía, avisa. El nombre sale de Content-Disposition o, si no viene, del
+   * primer oficio o del respaldo. Sin la lista (error) se intenta igual la descarga.
+   */
+  protected descargarOficioDelProceso(servicio: SolicitudesAprobacionService<unknown>, idSolicitud: number, nombreRespaldo: string): void {
+    servicio.obtenerOficios(idSolicitud)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: oficios => {
+          if (!oficios || oficios.length === 0) {
+            this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
+            return;
+          }
+          const oficio = oficios[0];
+          this.descargarOficioConNombre(servicio, idSolicitud, oficio.nombre || oficio.nombreArchivo || nombreRespaldo);
+        },
+        error: () => this.descargarOficioConNombre(servicio, idSolicitud, nombreRespaldo)
+      });
+  }
+
+  private descargarOficioConNombre(servicio: SolicitudesAprobacionService<unknown>, idSolicitud: number, nombreRespaldo: string): void {
+    servicio.descargarOficioConNombre(idSolicitud)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: response => {
+          const nombre = nombreDeContentDisposition(response.headers) || nombreRespaldo;
+          if (response.body) descargarBlob(response.body, nombre);
+          this.snackbar.exito('Oficio descargado exitosamente');
+        },
+        error: err => this.snackbar.error(
+          this.errorHandler.extraerMensajeError(err) || 'Error al descargar archivo. Por favor, inténtalo de nuevo.'
+        )
+      });
   }
 
   private avisarErrorAlCrear(err: unknown): void {

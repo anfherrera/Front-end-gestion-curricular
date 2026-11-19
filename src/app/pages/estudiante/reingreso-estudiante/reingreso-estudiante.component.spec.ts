@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -34,7 +35,7 @@ describe('ReingresoEstudianteComponent', () => {
 
   beforeEach(async () => {
     const reingresoServiceSpy = jasmine.createSpyObj('ReingresoEstudianteService', [
-      'listarSolicitudesPorRol', 'crearSolicitud'
+      'listarSolicitudesPorRol', 'crearSolicitud', 'descargarArchivo', 'obtenerOficios', 'descargarOficioConNombre'
     ]);
     const formatosServiceSpy = jasmine.createSpyObj('FormatosInstitucionalesService', ['getReingreso']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -186,4 +187,65 @@ describe('ReingresoEstudianteComponent', () => {
     expect(component.archivosActuales()).toEqual([]);
     expect(component.resetFileUpload()).toBeFalse();
   }));
+
+  describe('descargarOficio', () => {
+    let nombreDescargado: string;
+    const documento = (nombre: string, fecha_documento: string) =>
+      ({ id_documento: 1, nombre, ruta_documento: nombre, fecha_documento, esValido: true });
+
+    beforeEach(() => {
+      nombreDescargado = '';
+      // descargarBlob crea un enlace y lo pulsa: se intercepta el clic para leer el nombre
+      spyOn(HTMLAnchorElement.prototype, 'click').and.callFake(function (this: HTMLAnchorElement) {
+        nombreDescargado = this.download;
+      });
+    });
+
+    it('RE-E-012: baja por su nombre la resolución más reciente, no los documentos del estudiante', () => {
+      reingresoService.descargarArchivo.and.returnValue(of(new Blob()));
+      component.solicitudesCompletas = [solicitud({
+        id_solicitud: 7,
+        documentos: [
+          documento('Certificado de notas.pdf', '2026-11-01'),
+          documento('Oficio de reingreso.pdf', '2026-11-02'),
+          documento('Resolucion reingreso 7.pdf', '2026-11-10')
+        ]
+      })];
+
+      component.descargarOficio(7, 'oficio.pdf');
+
+      expect(reingresoService.descargarArchivo).toHaveBeenCalledWith('Resolucion reingreso 7.pdf');
+      expect(reingresoService.obtenerOficios).not.toHaveBeenCalled();
+      expect(nombreDescargado).toBe('Resolucion reingreso 7.pdf');
+    });
+
+    it('RE-E-013: sin resolución entre los documentos, pide el oficio al backend con el nombre de Content-Disposition', () => {
+      reingresoService.obtenerOficios.and.returnValue(of([{ id: 8, nombre: 'oficio_8.pdf' }]));
+      reingresoService.descargarOficioConNombre.and.returnValue(of(new HttpResponse({
+        body: new Blob(),
+        headers: new HttpHeaders({ 'Content-Disposition': 'attachment; filename="Resolución 8.pdf"' })
+      })));
+      component.solicitudesCompletas = [solicitud({ id_solicitud: 8, documentos: [documento('Certificado de notas.pdf', '2026-11-01')] })];
+
+      component.descargarOficio(8, 'oficio.pdf');
+
+      expect(reingresoService.descargarArchivo).not.toHaveBeenCalled();
+      expect(reingresoService.descargarOficioConNombre).toHaveBeenCalledWith(8);
+      expect(nombreDescargado).toBe('Resolución 8.pdf');
+    });
+
+    it('RE-E-014: si la resolución no baja por su nombre, la pide al backend; sin oficios avisa', () => {
+      const snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
+      reingresoService.descargarArchivo.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
+      reingresoService.obtenerOficios.and.returnValue(of([]));
+      component.solicitudesCompletas = [solicitud({ id_solicitud: 9, documentos: [documento('Resolucion 9.pdf', '2026-11-10')] })];
+
+      component.descargarOficio(9, 'oficio.pdf');
+
+      expect(reingresoService.obtenerOficios).toHaveBeenCalledWith(9);
+      expect(reingresoService.descargarOficioConNombre).not.toHaveBeenCalled();
+      expect(snackBar.open).toHaveBeenCalledWith('No hay oficios disponibles para esta solicitud', 'Cerrar', jasmine.any(Object));
+      expect(nombreDescargado).toBe('');
+    });
+  });
 });

@@ -7,15 +7,15 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { PruebasEcaesComponent } from './pruebas-ecaes.component';
 import { FechaEcaes, PruebasEcaesService, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
-import { Archivo } from '@core/models/procesos.model';
 import { ArchivosService } from '@core/services/archivos.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { AuthService } from '@core/services/auth.service';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { LoggerService } from '@core/services/logger.service';
-
-const archivo = (nombre: string): Archivo => ({ nombre, fecha: '2025-01-15' });
+import { By } from '@angular/platform-browser';
+import { FechasEcaesComponent } from './fechas-ecaes/fechas-ecaes.component';
+import { PreregistroEcaesComponent } from './preregistro-ecaes/preregistro-ecaes.component';
 
 /** Solicitud ECAES con solo los campos que usa cada prueba. */
 type SolicitudEcaesParcial = Omit<Partial<SolicitudEcaesResponse>, 'objUsuario'> & {
@@ -27,7 +27,6 @@ describe('PruebasEcaesComponent', () => {
   let component: PruebasEcaesComponent;
   let fixture: ComponentFixture<PruebasEcaesComponent>;
   let pruebasEcaesService: jasmine.SpyObj<PruebasEcaesService>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
   let errorHandler: jasmine.SpyObj<ErrorHandlerService>;
   let compiled: HTMLElement;
 
@@ -91,7 +90,6 @@ describe('PruebasEcaesComponent', () => {
     }).compileComponents();
 
     pruebasEcaesService = TestBed.inject(PruebasEcaesService) as jasmine.SpyObj<PruebasEcaesService>;
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     errorHandler = TestBed.inject(ErrorHandlerService) as jasmine.SpyObj<ErrorHandlerService>;
 
     pruebasEcaesService.listarFechasEcaes.and.returnValue(of(mockFechasEcaes));
@@ -121,16 +119,6 @@ describe('PruebasEcaesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('EC-033: tipos de documento del backend, solo CC y CE', () => {
-    expect(component.tiposDocumento()).toEqual([{ value: 'CC', label: 'Cédula de Ciudadanía' }]);
-  });
-
-  it('EC-034: tipos de documento fijos si el backend no devuelve CC ni CE', () => {
-    pruebasEcaesService.listarTiposDocumento.and.returnValue(of([]));
-    component.cargarTiposDocumento();
-    expect(component.tiposDocumento().map(t => t.value)).toEqual(['CC', 'CE']);
-  });
-
   it('EC-016: Debe renderizar secciones principales (Fechas, Documentación, Seguimiento)', () => {
     // Tres secciones: Fechas, Documentación Adjunta y Seguimiento de Solicitud
     expect(compiled.querySelectorAll('app-card-container').length).toBe(3);
@@ -140,55 +128,19 @@ describe('PruebasEcaesComponent', () => {
     expect(compiled.querySelector('app-request-status-table')).toBeNull();
   });
 
-  it('EC-017: Debe cargar fechas ECAES y seleccionar primer período', fakeAsync(() => {
-    expect(pruebasEcaesService.listarFechasEcaes).toHaveBeenCalled();
-    expect(component.fechasEcaes().length).toBe(1);
-    expect(component.periodoSeleccionado()).toBe('2025-1');
-    expect(component.fechasSeleccionadas()).toBeTruthy();
-  }));
-
-  it('EC-018: Debe actualizar archivos en onArchivosChange', () => {
-    const archivos: Archivo[] = [{ ...archivo('cedula.pdf'), file: new File([], 'cedula.pdf') }];
-    component.onArchivosChange(archivos);
-    expect(component.archivos()).toEqual(archivos);
+  it('pasa el usuario al preregistro, que pone su cédula, y el calendario carga su período', () => {
+    const preregistro = fixture.debugElement.query(By.directive(PreregistroEcaesComponent)).componentInstance as PreregistroEcaesComponent;
+    const fechas = fixture.debugElement.query(By.directive(FechasEcaesComponent)).componentInstance as FechasEcaesComponent;
+    expect(preregistro.usuario()).toEqual(mockUsuario);
+    expect(preregistro.solicitudForm.value.numero_documento).toBe('123456');
+    expect(fechas.periodoSeleccionado()).toBe('2025-1');
   });
 
-  it('EC-019: Debe formatear la fecha del calendario sin correrla de día', () => {
-    component.fechasSeleccionadas.set({ ...mockFechasEcaes[0], inscripcion_est_by_facultad: '2025-01-15T00:00:00Z' });
-    expect(component.getConceptoFecha('inscripcion_est_by_facultad')).toBe('15/01/2025');
-  });
-
-  it('EC-020: getConceptoFecha debe devolver fecha formateada cuando hay fechas seleccionadas', () => {
-    component.fechasSeleccionadas.set(mockFechasEcaes[0]);
-    const concepto = component.getConceptoFecha('inscripcion_est_by_facultad');
-    expect(concepto).toBeTruthy();
-  });
-
-  it('EC-021: getConceptoFecha debe devolver vacío cuando no hay fechas seleccionadas', () => {
-    component.fechasSeleccionadas.set(null);
-    expect(component.getConceptoFecha('inscripcion_est_by_facultad')).toBe('');
-  });
-
-  it('EC-022: esCampoInvalido debe devolver false para campo válido sin tocar', () => {
-    component.solicitudForm.get('tipoDocumento')?.setValue('CC');
-    expect(component.esCampoInvalido('tipoDocumento')).toBeFalse();
-  });
-
-  it('EC-023: obtenerMensajeError debe devolver mensaje para required', () => {
-    component.solicitudForm.get('numero_documento')?.setValue('');
-    component.solicitudForm.get('numero_documento')?.markAsTouched();
-    component.solicitudForm.get('numero_documento')?.updateValueAndValidity();
-    const msg = component.obtenerMensajeError('numero_documento');
-    expect(msg).toContain('requerido');
-  });
-
-  it('EC-024: limpiarFormulario debe resetear formulario y archivos', () => {
-    component.archivos.set([archivo('x.pdf')]);
-    component.solicitudForm.patchValue({ numero_documento: '123456' });
-    component.limpiarFormulario();
-    expect(component.archivos().length).toBe(0);
-    expect(component.solicitudForm.get('numero_documento')?.value).toBe('');
-    expect(component.enviandoSolicitud()).toBeFalse();
+  it('recarga el seguimiento cuando el preregistro avisa que se envió', () => {
+    pruebasEcaesService.listarSolicitudesPorRol.calls.reset();
+    const preregistro = fixture.debugElement.query(By.directive(PreregistroEcaesComponent)).componentInstance as PreregistroEcaesComponent;
+    preregistro.enviada.emit();
+    expect(pruebasEcaesService.listarSolicitudesPorRol).toHaveBeenCalledWith('ESTUDIANTE', 1);
   });
 
   it('EC-025: listarSolicitudes no debe llamar al servicio si no hay usuario', () => {
@@ -249,36 +201,4 @@ describe('PruebasEcaesComponent', () => {
     expect(component.obtenerSolicitudCompleta(99)).toBeUndefined();
   });
 
-  it('EC-030: enviarSolicitud debe mostrar mensaje si formulario inválido', () => {
-    component.solicitudForm.markAllAsTouched();
-    component.enviarSolicitud();
-    expect(snackBar.open).toHaveBeenCalledWith(
-      jasmine.stringMatching(/completar todos los campos|requeridos/),
-      'Cerrar',
-      jasmine.any(Object)
-    );
-  });
-
-  it('EC-031: enviarSolicitud debe mostrar mensaje si no hay archivos', () => {
-    component.solicitudForm.patchValue({
-      tipoDocumento: 'CC',
-      numero_documento: '123456',
-      fecha_expedicion: new Date('2000-01-01'),
-      fecha_nacimiento: new Date('1999-01-01')
-    });
-    component.archivos.set([]);
-    component.enviarSolicitud();
-    expect(snackBar.open).toHaveBeenCalledWith(
-      jasmine.stringMatching(/al menos un archivo/),
-      'Cerrar',
-      jasmine.any(Object)
-    );
-  });
-
-  it('EC-032: onPeriodoChange debe actualizar fechasSeleccionadas', () => {
-    component.fechasEcaes.set(mockFechasEcaes);
-    component.periodoSeleccionado.set('2025-1');
-    component.onPeriodoChange();
-    expect(component.fechasSeleccionadas()?.periodoAcademico).toBe('2025-1');
-  });
 });
