@@ -329,9 +329,15 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Como admin, crear y editar un rol (esquinas redondeadas de 16 px); como estudiante, "Ver comentarios" en homologación (12 px)
     - En inscribir y preinscribir, al pasar el ratón por los iconos de acción se ponen azul claro y crecen
   - Cambios visibles esperados: solo los de las pantallas que heredaban estilos de otra visitada antes (fondo gris en los campos, chips azules, cabecera azul del calendario, esquinas de los diálogos). Cada pantalla abierta directamente se ve igual que antes
-  - Pendiente de diseño, no de código: los iconos de acción de inscribir y preinscribir se ven grises (#333) en reposo, aunque [componentes.css](src/styles/componentes.css) les da azul, verde y rojo (`.accion-ver/-aprobar/-rechazar`); gana `.…-table td *` del componente. Arreglarlo cambia el aspecto
+  - [x] Iconos de acción de inscribir y preinscribir con su color (2026-11-19): se veían grises (#333) en reposo porque `.…-table td *` del componente le ganaba a `.accion-ver/-aprobar/-rechazar` de [componentes.css](src/styles/componentes.css). Las 4 reglas `td *` pasan a `td *:not([class*="accion-"], [class*="accion-"] *)`
+    - Verificación: tsc app y spec, lint, build sin avisos, 626/626 pruebas. No se comprobó en el navegador (sesión corta)
+    - Probar a mano: abrir inscribir y preinscribir (como funcionario) con alguna fila y mirar los iconos en reposo y al pasar el ratón
+    - Cambios visibles esperados: ver en azul, aprobar en verde y rechazar en rojo (antes los tres grises). El resto del texto de las filas sigue gris oscuro
   - Backend (2026-11-19, no se tocó): `GET /api/cursos-intersemestrales/preinscripciones/curso/{id}` da 500 en los tres cursos (`StackOverflowError` en `CursosOfertadosMapperDominioImpl.mapearDeCursoOfertadoARespuesta`), así que preinscribir muestra "Error al cargar las preinscripciones del curso"
-- [ ] **Fechas en formato de EE. UU.** (visto el 2026-11-19): no hay `LOCALE_ID` ni `registerLocaleData`, así que `date:'short'` pinta "11/19/26, 11:13 AM" (10 plantillas: ver-solicitud, visualizar-solicitudes, módulo estadístico, document-generator). Registrar `es-CO` cambiaría todos los `date`, `number` y `currency` de la app a la vez: decidirlo antes
+- [x] **Fechas en formato de EE. UU.** (visto el 2026-11-19, hecho el mismo día): no había `LOCALE_ID` ni `registerLocaleData`, así que `date:'short'` pintaba "11/19/26, 11:13 AM" (10 plantillas: ver-solicitud, visualizar-solicitudes, módulo estadístico, document-generator). [app.config.ts](src/app/app.config.ts) registra `es-CO` y lo da como `LOCALE_ID`
+  - Verificación: tsc app y spec, lint, build sin avisos, 626/626 pruebas (las pruebas no usan appConfig, así que siguen en en-US). No se comprobó en el navegador (sesión corta)
+  - Probar a mano: fechas de ver-solicitud y visualizar-solicitudes, "Actualizado: …" y porcentajes del módulo estadístico, y un documento generado
+  - Cambios visibles esperados: fechas como "19/11/26, 11:13 a. m.", decimales con coma ("85,5%") y miles con punto ("1.234") en el módulo estadístico. No hay pipes `currency`
 
 ---
 

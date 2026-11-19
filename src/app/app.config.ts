@@ -1,4 +1,6 @@
-import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom, LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEsCO from '@angular/common/locales/es-CO';
 import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
@@ -9,8 +11,12 @@ import { JwtInterceptor } from '@core/interceptors/jwt.interceptor';
 import { errorInterceptor } from '@core/interceptors/error.interceptor';
 import { loginRateLimitInterceptor } from '@core/interceptors/login-rate-limit.interceptor';
 
+// Fechas y números en formato colombiano (date:'short' → "19/11/26, 11:13 a. m.")
+registerLocaleData(localeEsCO);
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'es-CO' },
     // Sistema de Diseño TIC: notificaciones en superior derecha, 5 segundos, estilo info por defecto
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
