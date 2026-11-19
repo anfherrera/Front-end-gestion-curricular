@@ -120,6 +120,6 @@ export abstract class SeguimientoSolicitudesBase<S extends SolicitudDelEstudiant
   }
 
   protected abrirComentarios(data: VerComentariosDialogData): void {
-    this.dialog.open(VerComentariosDialogComponent, { width: '700px', data });
+    this.dialog.open(VerComentariosDialogComponent, { width: '700px', panelClass: 'dialogo-comentarios', data });
   }
 }

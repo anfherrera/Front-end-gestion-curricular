@@ -363,12 +363,12 @@ app-card-container {
 }
 
 /* Forzar eliminación de bordes con ::ng-deep */
-::ng-deep .solicitudes-table .condicion-badge,
-::ng-deep .solicitudes-table .estado-badge,
-::ng-deep .solicitudes-table .estado-enviada,
-::ng-deep .solicitudes-table .estado-aprobada,
-::ng-deep .solicitudes-table .estado-rechazada,
-::ng-deep .solicitudes-table .estado-default {
+:host ::ng-deep .solicitudes-table .condicion-badge,
+:host ::ng-deep .solicitudes-table .estado-badge,
+:host ::ng-deep .solicitudes-table .estado-enviada,
+:host ::ng-deep .solicitudes-table .estado-aprobada,
+:host ::ng-deep .solicitudes-table .estado-rechazada,
+:host ::ng-deep .solicitudes-table .estado-default {
   border: none !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -378,12 +378,12 @@ app-card-container {
 }
 
 /* Forzar en todos los elementos span de badges */
-::ng-deep .solicitudes-table span.condicion-badge,
-::ng-deep .solicitudes-table span.estado-badge,
-::ng-deep .solicitudes-table span.estado-enviada,
-::ng-deep .solicitudes-table span.estado-aprobada,
-::ng-deep .solicitudes-table span.estado-rechazada,
-::ng-deep .solicitudes-table span.estado-default {
+:host ::ng-deep .solicitudes-table span.condicion-badge,
+:host ::ng-deep .solicitudes-table span.estado-badge,
+:host ::ng-deep .solicitudes-table span.estado-enviada,
+:host ::ng-deep .solicitudes-table span.estado-aprobada,
+:host ::ng-deep .solicitudes-table span.estado-rechazada,
+:host ::ng-deep .solicitudes-table span.estado-default {
   border: none !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -393,7 +393,7 @@ app-card-container {
 }
 
 /* Forzar eliminación de bordes en TODOS los spans de la tabla */
-::ng-deep .solicitudes-table td span {
+:host ::ng-deep .solicitudes-table td span {
   border: none !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -403,8 +403,8 @@ app-card-container {
 }
 
 /* Forzar eliminación de bordes en elementos específicos */
-::ng-deep .solicitudes-table .condicion-badge,
-::ng-deep .solicitudes-table .estado-badge {
+:host ::ng-deep .solicitudes-table .condicion-badge,
+:host ::ng-deep .solicitudes-table .estado-badge {
   border: none !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -416,9 +416,9 @@ app-card-container {
 }
 
 /* Eliminar cualquier borde que pueda venir de Material Design */
-::ng-deep .solicitudes-table .mat-mdc-chip,
-::ng-deep .solicitudes-table .mat-chip,
-::ng-deep .solicitudes-table [class*="mat-chip"] {
+:host ::ng-deep .solicitudes-table .mat-mdc-chip,
+:host ::ng-deep .solicitudes-table .mat-chip,
+:host ::ng-deep .solicitudes-table [class*="mat-chip"] {
   border: none !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -428,7 +428,7 @@ app-card-container {
 }
 
 /* REGLA NUCLEAR: Eliminar TODOS los bordes de TODOS los elementos en la tabla */
-::ng-deep .solicitudes-table * {
+:host ::ng-deep .solicitudes-table * {
   border: none !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -440,11 +440,11 @@ app-card-container {
 }
 
 /* Restaurar bordes necesarios solo para la tabla */
-::ng-deep .solicitudes-table {
+:host ::ng-deep .solicitudes-table {
   border-collapse: collapse !important;
 }
 
-::ng-deep .solicitudes-table td {
+:host ::ng-deep .solicitudes-table td {
   border-bottom: 1px solid var(--gris-150) !important;
   border-left: none !important;
   border-right: none !important;

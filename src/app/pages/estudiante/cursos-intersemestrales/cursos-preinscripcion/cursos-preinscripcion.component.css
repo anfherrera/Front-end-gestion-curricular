@@ -12,14 +12,14 @@
   padding: 16px 0;
 }
 
-::ng-deep app-curso-list .mat-elevation-z8 {
+:host ::ng-deep app-curso-list .mat-elevation-z8 {
   box-shadow: var(--sombra-2);
   border-radius: 12px;
   overflow: hidden;
 }
 
 /* Estilos para los estados de los cursos */
-::ng-deep app-curso-list span.disponible {
+:host ::ng-deep app-curso-list span.disponible {
   background-color: #d4edda;
   color: #155724;
   padding: 4px 8px;
@@ -27,7 +27,7 @@
   font-weight: 500;
 }
 
-::ng-deep app-curso-list span.inscrito {
+:host ::ng-deep app-curso-list span.inscrito {
   background-color: #cce5ff;
   color: #004085;
   padding: 4px 8px;
@@ -35,7 +35,7 @@
   font-weight: 500;
 }
 
-::ng-deep app-curso-list span.cerrado {
+:host ::ng-deep app-curso-list span.cerrado {
   background-color: #f8d7da;
   color: #721c24;
   padding: 4px 8px;
@@ -44,6 +44,6 @@
 }
 
 /* Opcional: cambiar estilo del botón de acción */
-::ng-deep app-curso-list button.mat-raised-button {
+:host ::ng-deep app-curso-list button.mat-raised-button {
   text-transform: capitalize;
 }

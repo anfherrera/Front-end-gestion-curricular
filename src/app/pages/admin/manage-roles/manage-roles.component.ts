@@ -129,6 +129,7 @@ export class ManageRolesComponent implements OnInit {
   editarRol(rol: RolDTORespuesta): void {
     const dialogRef = this.dialog.open(FormRolDialogComponent, {
       width: '500px',
+      panelClass: 'dialogo-rol',
       data: { rol, isEditMode: true }
     });
 
@@ -142,6 +143,7 @@ export class ManageRolesComponent implements OnInit {
   crearRol(): void {
     const dialogRef = this.dialog.open(FormRolDialogComponent, {
       width: '500px',
+      panelClass: 'dialogo-rol',
       data: { rol: null, isEditMode: false }
     });
 

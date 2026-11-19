@@ -101,68 +101,68 @@ mat-card {
 }
 
 /* Estilos mejorados para mat-form-field */
-::ng-deep .form-container mat-form-field {
+:host ::ng-deep .form-container mat-form-field {
   font-size: 16px;
 }
 
-::ng-deep .form-container .mat-mdc-form-field {
+:host ::ng-deep .form-container .mat-mdc-form-field {
   margin-bottom: 8px;
 }
 
-::ng-deep .form-container .mat-mdc-text-field-wrapper {
+:host ::ng-deep .form-container .mat-mdc-text-field-wrapper {
   background-color: var(--gris-25);
 }
 
-::ng-deep .form-container .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+:host ::ng-deep .form-container .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
   background-color: var(--gris-75);
 }
 
-::ng-deep .form-container .mat-mdc-form-field-focus-overlay {
+:host ::ng-deep .form-container .mat-mdc-form-field-focus-overlay {
   background-color: transparent;
 }
 
 /* Iconos con colores distintivos */
-::ng-deep .form-container mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-icon[matprefix] {
   margin-right: 8px;
   transition: transform 0.2s ease;
 }
 
 /* Todos los iconos - Azul consistente */
-::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
-::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_completo"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_completo"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
-::ng-deep .form-container mat-form-field:has(input[formcontrolname="correo"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="correo"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
-::ng-deep .form-container mat-form-field:has(input[formcontrolname="password"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="password"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
-::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="id_rol"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="id_rol"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
-::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="id_programa"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="id_programa"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
-::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="estado_usuario"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(mat-select[formcontrolname="estado_usuario"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
 /* Efecto hover en iconos */
-::ng-deep .form-container mat-form-field:hover mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:hover mat-icon[matprefix] {
   /* Sin animaciones para mejor rendimiento */
 }
 
 /* Hints más visibles */
-::ng-deep .form-container mat-hint {
+:host ::ng-deep .form-container mat-hint {
   font-size: 12px;
   color: var(--gris-600);
   font-style: italic;
@@ -220,16 +220,16 @@ mat-spinner {
 }
 
 /* Mejoras visuales adicionales */
-::ng-deep .form-container .mat-mdc-select-arrow {
+:host ::ng-deep .form-container .mat-mdc-select-arrow {
   color: var(--color-primario);
 }
 
-::ng-deep .form-container .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+:host ::ng-deep .form-container .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
   color: var(--color-primario);
 }
 
 /* Estados de error más claros */
-::ng-deep .form-container .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+:host ::ng-deep .form-container .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
   background-color: var(--rojo-50);
 }
 

@@ -110,126 +110,53 @@
 
 
 
-/* Estilos para mat-chip - FORZAR ESTILOS */
-::ng-deep .mat-mdc-chip {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none !important;
-  border-width: 0 !important;
-  border-style: none !important;
-  border-color: transparent !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-::ng-deep .mat-mdc-chip .mat-mdc-chip-text {
-  color: white !important;
-}
-
-::ng-deep .mat-mdc-chip .mat-mdc-chip-text-wrapper {
-  color: white !important;
-}
-
-::ng-deep .mat-mdc-chip * {
-  color: white !important;
-}
-
-/* Forzar estilos en TODOS los chips */
-::ng-deep mat-chip {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-::ng-deep mat-chip * {
-  color: white !important;
-}
-
-/* Estilos específicos para chips de estado en la tabla */
-::ng-deep .preinscripciones-table .mat-mdc-chip {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 16px !important;
-  padding: 4px 12px !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-/* Eliminar todos los bordes del chip */
-::ng-deep .preinscripciones-table .mat-mdc-chip,
-::ng-deep .preinscripciones-table .mat-mdc-chip * {
-  border: none !important;
-  border-width: 0 !important;
-  border-style: none !important;
-  border-color: transparent !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-::ng-deep .preinscripciones-table .mat-mdc-chip .mat-mdc-chip-text {
-  color: white !important;
-}
-
-::ng-deep .preinscripciones-table .mat-mdc-chip .mat-mdc-chip-text-wrapper {
-  color: white !important;
-}
-
-::ng-deep .preinscripciones-table .mat-mdc-chip * {
-  color: white !important;
-}
-
 /* Forzar color del texto en toda la tabla */
-::ng-deep .preinscripciones-table {
+:host ::ng-deep .preinscripciones-table {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .preinscripciones-table th {
+:host ::ng-deep .preinscripciones-table th {
   background: var(--color-primario) !important;
   color: white !important;
 }
 
-::ng-deep .preinscripciones-table th * {
+:host ::ng-deep .preinscripciones-table th * {
   color: white !important;
 }
 
-::ng-deep .preinscripciones-table th .mat-sort-header-content {
+:host ::ng-deep .preinscripciones-table th .mat-sort-header-content {
   color: white !important;
 }
 
-::ng-deep .preinscripciones-table th .mat-sort-header-arrow {
+:host ::ng-deep .preinscripciones-table th .mat-sort-header-arrow {
   color: white !important;
 }
 
-::ng-deep .preinscripciones-table td {
+:host ::ng-deep .preinscripciones-table td {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .preinscripciones-table td * {
+:host ::ng-deep .preinscripciones-table td * {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .preinscripciones-table .estudiante-info {
+:host ::ng-deep .preinscripciones-table .estudiante-info {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .preinscripciones-table .estudiante-info strong {
+:host ::ng-deep .preinscripciones-table .estudiante-info strong {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .preinscripciones-table .estudiante-info small {
+:host ::ng-deep .preinscripciones-table .estudiante-info small {
   color: var(--gris-700) !important;
 }
 
-::ng-deep .preinscripciones-table .observaciones-cell {
+:host ::ng-deep .preinscripciones-table .observaciones-cell {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .preinscripciones-table .observaciones-cell {
+:host ::ng-deep .preinscripciones-table .observaciones-cell {
   color: var(--gris-900) !important;
   background: var(--gris-50) !important;
   border-left: 3px solid var(--color-primario) !important;
@@ -237,11 +164,11 @@
   padding: 8px 12px !important;
 }
 
-::ng-deep .preinscripciones-table .observaciones-cell span {
+:host ::ng-deep .preinscripciones-table .observaciones-cell span {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .preinscripciones-table .sin-observaciones {
+:host ::ng-deep .preinscripciones-table .sin-observaciones {
   color: var(--gris-500) !important;
   background: var(--gris-75) !important;
   border-left: 2px solid var(--gris-250) !important;
@@ -249,79 +176,21 @@
   padding: 4px 8px !important;
 }
 
-/* Estilos adicionales para chips de estado */
-::ng-deep .preinscripciones-table mat-chip {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none !important;
-}
-
-::ng-deep .preinscripciones-table mat-chip .mat-chip-text {
-  color: white !important;
-}
-
-::ng-deep .preinscripciones-table mat-chip .mat-chip-text-wrapper {
-  color: white !important;
-}
-
-::ng-deep .preinscripciones-table mat-chip * {
-  color: white !important;
-}
-
-/* Forzar estilos en todos los elementos del chip */
-::ng-deep .preinscripciones-table [style*="background-color"] {
+:host ::ng-deep .preinscripciones-table [style*="background-color"] {
   background-color: var(--color-primario) !important;
   color: white !important;
 }
 
-::ng-deep .preinscripciones-table [style*="color"] {
+:host ::ng-deep .preinscripciones-table [style*="color"] {
   color: white !important;
 }
 
-/* Estilos para el icono del ojo en acciones - FORZAR */
-::ng-deep .preinscripciones-table .mat-mdc-icon-button {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .preinscripciones-table .mat-mdc-icon-button .mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover {
+/* Botones de acción al pasar el ratón (en reposo, el color de los iconos lo fija `td *`) */
+:host ::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover {
   background-color: rgba(0, 19, 140, 0.1) !important;
 }
 
-::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover .mat-icon {
-  color: var(--color-primario-light) !important;
-}
-
-/* Forzar color en TODOS los iconos de la tabla */
-::ng-deep .preinscripciones-table mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .preinscripciones-table button mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .preinscripciones-table .mat-icon {
-  color: var(--color-primario) !important;
-}
-
-/* Estilos específicos para botones de acción */
-::ng-deep .preinscripciones-table button[mat-icon-button] {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .preinscripciones-table button[mat-icon-button] .mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .preinscripciones-table button[mat-icon-button]:hover {
-  background-color: rgba(0, 19, 140, 0.1) !important;
-}
-
-::ng-deep .preinscripciones-table button[mat-icon-button]:hover .mat-icon {
+:host ::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover .mat-icon {
   color: var(--color-primario-light) !important;
 }
 

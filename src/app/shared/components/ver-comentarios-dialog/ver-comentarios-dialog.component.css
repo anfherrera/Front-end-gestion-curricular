@@ -1,5 +1,5 @@
-/* Estilos del diálogo */
-::ng-deep .mat-mdc-dialog-container {
+/* El contenedor está fuera del componente: se acota con panelClass 'dialogo-comentarios' (seguimiento-solicitudes.base) */
+::ng-deep .dialogo-comentarios .mat-mdc-dialog-container {
   border-radius: 12px !important;
   overflow: hidden;
   padding: 0 !important;
@@ -218,18 +218,18 @@ mat-divider {
 }
 
 /* Ajustes para mat-card */
-::ng-deep .rechazo-card .mat-mdc-card-header {
+:host ::ng-deep .rechazo-card .mat-mdc-card-header {
   padding: 0;
 }
 
-::ng-deep .rechazo-card .mat-mdc-card-content {
+:host ::ng-deep .rechazo-card .mat-mdc-card-content {
   padding: 0;
 }
 
-::ng-deep .comentario-card .mat-mdc-card-header {
+:host ::ng-deep .comentario-card .mat-mdc-card-header {
   padding: 0;
 }
 
-::ng-deep .comentario-card .mat-mdc-card-content {
+:host ::ng-deep .comentario-card .mat-mdc-card-content {
   padding: 0;
 }

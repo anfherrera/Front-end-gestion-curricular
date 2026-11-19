@@ -63,40 +63,40 @@ mat-card {
 }
 
 /* Estilos mejorados para mat-form-field */
-::ng-deep .form-container mat-form-field {
+:host ::ng-deep .form-container mat-form-field {
   font-size: 16px;
 }
 
-::ng-deep .form-container .mat-mdc-text-field-wrapper {
+:host ::ng-deep .form-container .mat-mdc-text-field-wrapper {
   background-color: var(--gris-25);
 }
 
-::ng-deep .form-container .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+:host ::ng-deep .form-container .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
   background-color: var(--gris-75);
 }
 
 /* Iconos con colores distintivos */
-::ng-deep .form-container mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-icon[matprefix] {
   margin-right: 8px;
   transition: transform 0.2s ease;
 }
 
 /* Icono de código (badge) - Azul */
-::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo_docente"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo_docente"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
 /* Icono de nombre (person) - Azul */
-::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_docente"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_docente"]) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
 /* Efecto hover en iconos */
-::ng-deep .form-container mat-form-field:hover mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:hover mat-icon[matprefix] {
   }
 
 /* Hints más visibles */
-::ng-deep .form-container mat-hint {
+:host ::ng-deep .form-container mat-hint {
   font-size: 12px;
   color: var(--gris-600);
   font-style: italic;
@@ -157,7 +157,7 @@ mat-card {
 }
 
 /* Estados de error más claros */
-::ng-deep .form-container .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+:host ::ng-deep .form-container .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
   background-color: var(--rojo-50);
 }
 

@@ -64,12 +64,12 @@
   }
 }
 
-::ng-deep .search-section mat-icon[matprefix] {
+:host ::ng-deep .search-section mat-icon[matprefix] {
   color: var(--color-primario);
   margin-right: 8px;
 }
 
-::ng-deep .search-section .mat-mdc-text-field-wrapper {
+:host ::ng-deep .search-section .mat-mdc-text-field-wrapper {
   background-color: var(--gris-25);
 }
 
@@ -97,28 +97,28 @@ mat-table {
   width: 100%;
 }
 
-::ng-deep .table-container .mat-mdc-header-row {
+:host ::ng-deep .table-container .mat-mdc-header-row {
   background-color: var(--color-primario) !important;
   font-weight: 600;
 }
 
-::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
+:host ::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
   color: white !important;
   font-weight: 600 !important;
   background-color: var(--color-primario) !important;
   border-bottom: 2px solid #3949ab !important;
 }
 
-::ng-deep .table-container .mat-mdc-row {
+:host ::ng-deep .table-container .mat-mdc-row {
   transition: background-color 0.2s ease;
   border-bottom: 1px solid var(--gris-150) !important;
 }
 
-::ng-deep .table-container .mat-mdc-row .mat-mdc-cell {
+:host ::ng-deep .table-container .mat-mdc-row .mat-mdc-cell {
   border-bottom-color: var(--gris-150) !important;
 }
 
-::ng-deep .table-container .mat-mdc-row:hover {
+:host ::ng-deep .table-container .mat-mdc-row:hover {
   background-color: var(--primario-98) !important;
 }
 
@@ -128,7 +128,7 @@ mat-table {
   text-align: center;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab {
   width: 36px !important;
   height: 36px !important;
   background-color: var(--color-primario) !important;
@@ -136,22 +136,22 @@ mat-table {
   margin: 0 4px !important;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab mat-icon {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab mat-icon {
   font-size: 18px;
   width: 18px;
   height: 18px;
   color: white !important;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab:hover {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab:hover {
   background-color: #001066 !important;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn {
   background-color: var(--color-error) !important;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn:hover {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn:hover {
   background-color: var(--rojo-700) !important;
 }
 

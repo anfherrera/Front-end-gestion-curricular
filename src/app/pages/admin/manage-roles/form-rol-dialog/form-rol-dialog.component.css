@@ -1,4 +1,5 @@
-::ng-deep .mat-mdc-dialog-container {
+/* El contenedor está fuera del componente: se acota con panelClass 'dialogo-rol' (manage-roles) */
+::ng-deep .dialogo-rol .mat-mdc-dialog-container {
   border-radius: 16px !important;
   overflow: hidden;
 }
@@ -12,24 +13,24 @@
 }
 
 /* Iconos con color */
-::ng-deep .dialog-content mat-icon[matprefix] {
+:host ::ng-deep .dialog-content mat-icon[matprefix] {
   color: var(--color-primario);
   margin-right: 8px;
   transition: transform 0.2s ease;
 }
 
-::ng-deep .dialog-content mat-form-field:hover mat-icon[matprefix] {
+:host ::ng-deep .dialog-content mat-form-field:hover mat-icon[matprefix] {
   }
 
-::ng-deep .dialog-content .mat-mdc-text-field-wrapper {
+:host ::ng-deep .dialog-content .mat-mdc-text-field-wrapper {
   background-color: var(--gris-25);
 }
 
-::ng-deep .dialog-content .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+:host ::ng-deep .dialog-content .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
   background-color: var(--gris-75);
 }
 
 /* Estados de error */
-::ng-deep .dialog-content .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+:host ::ng-deep .dialog-content .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
   background-color: var(--rojo-50);
 }

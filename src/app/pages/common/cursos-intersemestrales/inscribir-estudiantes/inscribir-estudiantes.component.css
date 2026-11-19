@@ -95,90 +95,52 @@
 
 
 /* Forzar color del texto en toda la tabla */
-::ng-deep .inscripciones-table {
+:host ::ng-deep .inscripciones-table {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .inscripciones-table th {
+:host ::ng-deep .inscripciones-table th {
   background: var(--color-primario) !important;
   color: white !important;
 }
 
-::ng-deep .inscripciones-table th * {
+:host ::ng-deep .inscripciones-table th * {
   color: white !important;
 }
 
-::ng-deep .inscripciones-table th .mat-sort-header-content {
+:host ::ng-deep .inscripciones-table th .mat-sort-header-content {
   color: white !important;
 }
 
-::ng-deep .inscripciones-table th .mat-sort-header-arrow {
+:host ::ng-deep .inscripciones-table th .mat-sort-header-arrow {
   color: white !important;
 }
 
-::ng-deep .inscripciones-table td {
+:host ::ng-deep .inscripciones-table td {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .inscripciones-table td * {
+:host ::ng-deep .inscripciones-table td * {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .inscripciones-table .estudiante-info {
+:host ::ng-deep .inscripciones-table .estudiante-info {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .inscripciones-table .estudiante-info strong {
+:host ::ng-deep .inscripciones-table .estudiante-info strong {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .inscripciones-table .estudiante-info small {
+:host ::ng-deep .inscripciones-table .estudiante-info small {
   color: var(--gris-700) !important;
 }
 
-/* Estilos para el icono del ojo en acciones - FORZAR */
-::ng-deep .inscripciones-table .mat-mdc-icon-button {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .inscripciones-table .mat-mdc-icon-button .mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .inscripciones-table .mat-mdc-icon-button:hover {
+/* Botones de acción al pasar el ratón (en reposo, el color de los iconos lo fija `td *`) */
+:host ::ng-deep .inscripciones-table .mat-mdc-icon-button:hover {
   background-color: rgba(0, 19, 140, 0.1) !important;
 }
 
-::ng-deep .inscripciones-table .mat-mdc-icon-button:hover .mat-icon {
-  color: var(--color-primario-light) !important;
-}
-
-/* Forzar color en TODOS los iconos de la tabla */
-::ng-deep .inscripciones-table mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .inscripciones-table button mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .inscripciones-table .mat-icon {
-  color: var(--color-primario) !important;
-}
-
-/* Estilos específicos para botones de acción */
-::ng-deep .inscripciones-table button[mat-icon-button] {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .inscripciones-table button[mat-icon-button] .mat-icon {
-  color: var(--color-primario) !important;
-}
-
-::ng-deep .inscripciones-table button[mat-icon-button]:hover {
-  background-color: rgba(0, 19, 140, 0.1) !important;
-}
-
-::ng-deep .inscripciones-table button[mat-icon-button]:hover .mat-icon {
+:host ::ng-deep .inscripciones-table .mat-mdc-icon-button:hover .mat-icon {
   color: var(--color-primario-light) !important;
 }

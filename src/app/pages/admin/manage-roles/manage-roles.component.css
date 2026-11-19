@@ -70,28 +70,28 @@ mat-table {
   width: 100%;
 }
 
-::ng-deep .table-container .mat-mdc-header-row {
+:host ::ng-deep .table-container .mat-mdc-header-row {
   background-color: var(--color-primario) !important;
   font-weight: 600;
 }
 
-::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
+:host ::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
   color: white !important;
   font-weight: 600 !important;
   background-color: var(--color-primario) !important;
   border-bottom: 2px solid #3949ab !important;
 }
 
-::ng-deep .table-container .mat-mdc-row {
+:host ::ng-deep .table-container .mat-mdc-row {
   transition: background-color 0.2s ease;
   border-bottom: 1px solid var(--gris-150) !important;
 }
 
-::ng-deep .table-container .mat-mdc-row .mat-mdc-cell {
+:host ::ng-deep .table-container .mat-mdc-row .mat-mdc-cell {
   border-bottom-color: var(--gris-150) !important;
 }
 
-::ng-deep .table-container .mat-mdc-row:hover {
+:host ::ng-deep .table-container .mat-mdc-row:hover {
   background-color: var(--primario-98) !important;
 }
 
@@ -122,7 +122,7 @@ mat-table {
   color: white;
 }
 
-::ng-deep .table-container .mat-mdc-row {
+:host ::ng-deep .table-container .mat-mdc-row {
   transition: all 0.3s ease;
   opacity: 0;
   animation: fadeInRow 0.4s ease forwards;
@@ -139,16 +139,16 @@ mat-table {
   }
 }
 
-::ng-deep .table-container .mat-mdc-row:nth-child(1) { animation-delay: 0.05s; }
-::ng-deep .table-container .mat-mdc-row:nth-child(2) { animation-delay: 0.1s; }
-::ng-deep .table-container .mat-mdc-row:nth-child(3) { animation-delay: 0.15s; }
-::ng-deep .table-container .mat-mdc-row:nth-child(4) { animation-delay: 0.2s; }
-::ng-deep .table-container .mat-mdc-row:nth-child(5) { animation-delay: 0.25s; }
-::ng-deep .table-container .mat-mdc-row:nth-child(6) { animation-delay: 0.3s; }
-::ng-deep .table-container .mat-mdc-row:nth-child(7) { animation-delay: 0.35s; }
-::ng-deep .table-container .mat-mdc-row:nth-child(8) { animation-delay: 0.4s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(1) { animation-delay: 0.05s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(2) { animation-delay: 0.1s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(3) { animation-delay: 0.15s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(4) { animation-delay: 0.2s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(5) { animation-delay: 0.25s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(6) { animation-delay: 0.3s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(7) { animation-delay: 0.35s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(8) { animation-delay: 0.4s; }
 
-::ng-deep .table-container .mat-mdc-row:hover {
+:host ::ng-deep .table-container .mat-mdc-row:hover {
   background-color: var(--primario-98) !important;
   transform: scale(1.01);
   box-shadow: var(--sombra-1);
@@ -160,7 +160,7 @@ mat-table {
   text-align: center;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab {
   width: 36px !important;
   height: 36px !important;
   background-color: var(--color-primario) !important;
@@ -168,14 +168,14 @@ mat-table {
   margin: 0 4px !important;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab mat-icon {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab mat-icon {
   font-size: 18px;
   width: 18px;
   height: 18px;
   color: white !important;
 }
 
-::ng-deep .actions-column .mat-mdc-mini-fab:hover {
+:host ::ng-deep .actions-column .mat-mdc-mini-fab:hover {
   background-color: #001066 !important;
 }
 

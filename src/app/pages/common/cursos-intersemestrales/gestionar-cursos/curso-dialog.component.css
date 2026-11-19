@@ -50,157 +50,152 @@
 }
 
 /* Estilos para mat-form-field */
-::ng-deep .mat-mdc-form-field {
+:host ::ng-deep .mat-mdc-form-field {
   width: 100%;
 }
 
-::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
   background-color: var(--gris-50);
   border-radius: 8px;
 }
 
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-focus-overlay {
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-focus-overlay {
   background-color: rgba(0, 19, 140, 0.04);
 }
 
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-overlay {
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-overlay {
   background-color: rgba(0, 19, 140, 0.08);
 }
 
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
   color: var(--azul-50);
 }
 
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
   color: var(--color-primario);
 }
 
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
   color: var(--gris-650);
 }
 
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
   color: var(--color-primario);
 }
 
-/* Estilos para date picker */
-::ng-deep .mat-datepicker-toggle {
+/* Botón del calendario (en la plantilla) */
+:host ::ng-deep .mat-datepicker-toggle {
   color: var(--color-primario) !important;
 }
 
-::ng-deep .mat-datepicker-toggle:hover {
+:host ::ng-deep .mat-datepicker-toggle:hover {
   color: var(--color-primario-light) !important;
 }
 
-::ng-deep .mat-datepicker-content {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: var(--sombra-2);
-}
-
-::ng-deep .mat-calendar-header {
+/* Calendario: está en un overlay fuera del componente; panelClass="calendario-curso" cae en mat-calendar */
+::ng-deep .calendario-curso .mat-calendar-header {
   background-color: var(--color-primario);
   color: white !important;
 }
 
-::ng-deep .mat-calendar-header .mat-calendar-arrow {
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-arrow {
   color: white !important;
 }
 
-::ng-deep .mat-calendar-header .mat-calendar-period-button {
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button {
   color: white !important;
 }
 
-::ng-deep .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper {
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper {
   color: white !important;
 }
 
 /* Forzar color blanco en todo el header del calendario */
-::ng-deep .mat-calendar-header * {
+::ng-deep .calendario-curso .mat-calendar-header * {
   color: white !important;
 }
 
-::ng-deep .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper * {
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper * {
   color: white !important;
 }
 
 /* Estilos para el selector de mes y año */
-::ng-deep .mat-calendar-table {
+::ng-deep .calendario-curso .mat-calendar-table {
   background-color: white;
 }
 
-::ng-deep .mat-calendar-body-cell {
+::ng-deep .calendario-curso .mat-calendar-body-cell {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .mat-calendar-body-cell:hover:not(.mat-calendar-body-disabled) {
+::ng-deep .calendario-curso .mat-calendar-body-cell:hover:not(.mat-calendar-body-disabled) {
   background-color: rgba(0, 19, 140, 0.1) !important;
   color: var(--color-primario) !important;
 }
 
-::ng-deep .mat-calendar-body-selected {
+::ng-deep .calendario-curso .mat-calendar-body-selected {
   background-color: var(--color-primario) !important;
   color: white !important;
 }
 
-::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+::ng-deep .calendario-curso .mat-calendar-body-today:not(.mat-calendar-body-selected) {
   border-color: var(--color-primario) !important;
   color: var(--color-primario) !important;
 }
 
 /* Estilos para el panel de selección de mes/año */
-::ng-deep .mat-calendar-table-header th {
+::ng-deep .calendario-curso .mat-calendar-table-header th {
   background-color: var(--gris-50) !important;
   color: var(--color-primario) !important;
   font-weight: 600 !important;
 }
 
 /* Estilos para los botones de navegación del calendario */
-::ng-deep .mat-calendar-header .mat-calendar-previous-button,
-::ng-deep .mat-calendar-header .mat-calendar-next-button {
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-previous-button,
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-next-button {
   color: white !important;
 }
 
-::ng-deep .mat-calendar-header .mat-calendar-previous-button:hover,
-::ng-deep .mat-calendar-header .mat-calendar-next-button:hover {
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-previous-button:hover,
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-next-button:hover {
   background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Estilos para el panel de selección de mes/año (cuando haces clic en el header) */
-::ng-deep .mat-calendar-table .mat-calendar-body-cell {
+::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-cell {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .mat-calendar-table .mat-calendar-body-cell:hover {
+::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-cell:hover {
   background-color: rgba(0, 19, 140, 0.1) !important;
   color: var(--color-primario) !important;
 }
 
-::ng-deep .mat-calendar-table .mat-calendar-body-selected {
+::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-selected {
   background-color: var(--color-primario) !important;
   color: white !important;
 }
 
 /* Estilos para el contenido del calendario cuando está en modo selección de mes/año */
-::ng-deep .mat-calendar-content {
+::ng-deep .calendario-curso .mat-calendar-content {
   background-color: white;
 }
 
-::ng-deep .mat-calendar-content .mat-calendar-body-cell {
+::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-cell {
   color: var(--gris-900) !important;
 }
 
-::ng-deep .mat-calendar-content .mat-calendar-body-cell:hover {
+::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-cell:hover {
   background-color: rgba(0, 19, 140, 0.1) !important;
   color: var(--color-primario) !important;
 }
 
-::ng-deep .mat-calendar-content .mat-calendar-body-selected {
+::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-selected {
   background-color: var(--color-primario) !important;
   color: white !important;
 }
 
-::ng-deep .mat-calendar-table-header {
+::ng-deep .calendario-curso .mat-calendar-table-header {
   background-color: var(--gris-50);
   color: var(--color-primario);
   font-weight: 600;
@@ -256,23 +251,20 @@
 }
 
 /* Título del dialog */
-::ng-deep .mat-mdc-dialog-title {
+:host ::ng-deep .mat-mdc-dialog-title {
   background: var(--color-primario);
   color: white !important;
   padding: 20px 24px;
   margin: -24px -24px 0 -24px;
   border-radius: 8px 8px 0 0;
-  font-size: 20px;
-  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
 /* Contenido del dialog */
-::ng-deep .mat-mdc-dialog-content {
+:host ::ng-deep .mat-mdc-dialog-content {
   padding: 0 !important;
   margin: 0 !important;
 }
