@@ -531,9 +531,15 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 - [x] CI en GitHub Actions: [.github/workflows/ci.yml](.github/workflows/ci.yml) corre en cada push y PR a `main` (Node 22): `npm ci` (sin bajar el binario de Cypress), `npm run lint`, `ng build` y `ng test --watch=false --browsers=ChromeHeadlessCI`
   - `karma.conf.js` tiene el launcher `ChromeHeadlessCI` (`--no-sandbox`, `--disable-gpu`, `--disable-dev-shm-usage`); en local se sigue usando `ChromeHeadless` con Edge y los dos funcionan
   - Primera ejecución en GitHub confirmada: el push de `fb82260` pasó en 1m52s (run 43480529339, 2026-11-13)
-- [ ] Cobertura mínima en `karma.conf.js` (por ejemplo 60 %)
+- [x] Cobertura mínima en `karma.conf.js` (2026-11-19): `coverageReporter.check.global` con 48 % sentencias, 35 % ramas, 43 % funciones y 48 % líneas. La cobertura actual es 50,7 / 37,8 / 45,6 / 50,5 %, así que el 60 % no se cumple todavía: el mínimo evita que baje y se sube al añadir pruebas
+  - Verificación: `ng test --watch=false --code-coverage` con las 626 pruebas pasa (exit 0); con sentencias forzadas al 99 % falla (exit 1, "does not meet global threshold")
+  - Ojo: solo se comprueba con `--code-coverage` (`npm run test:usabilidad`, `test:all`). Si se pasa `--code-coverage` con `--include` de un solo spec, falla por cobertura baja
+  - Sin cambios visibles esperados
 - [ ] Opcional: Husky con lint-staged para correr lint antes de cada commit
-- [ ] README: sección de arquitectura (core/shared/pages, el patrón de revisión por rol), variables de entorno y la lista de scripts de test
+- [x] README: sección de arquitectura (core/shared/pages, el patrón de revisión por rol), variables de entorno y la lista de scripts de test (2026-11-19)
+  - Añadidos: estructura detallada, revisión por rol con `RevisionAprobacionComponent` (paz y salvo, reingreso, homologación), locale es-CO, `test:navegacion` (con `SIN_BACKEND`, `APP_URL`, `PASS`, `NAVEGADOR`), `lint`, mínimos de cobertura, comandos de verificación, login del backend y el rol DECANO. Quitado `npm run start:proxy`, que no existe
+  - Verificación: cada script y ruta citada se comprobó en package.json y en src
+  - Sin cambios visibles esperados
 - [ ] Revisar que las pruebas que existen sigan pasando después de cada fase (hay 56 specs con 607 pruebas, al 2026-11-18, y 11 pruebas de Cypress)
   - 2026-11-18: `ng test` daba a veces menos pruebas de las que hay (523, 507 o 465 de 598) y aun así TOTAL en verde: Edge headless se desconectaba a mitad ("Disconnected reconnect failed before timeout of 2000ms") con la máquina cargada. [karma.conf.js](karma.conf.js) sube `browserDisconnectTimeout` a 30 s con 2 reintentos, `browserNoActivityTimeout` a 120 s y `captureTimeout` a 120 s. Al verificar, mirar que salga "Executed N of N" con N igual al total
 

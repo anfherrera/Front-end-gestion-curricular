@@ -32,11 +32,21 @@ Abrir `http://localhost:4200/`
 
 ```
 src/app/
-├── core/           Servicios, guards, interceptors
-├── pages/          Módulos por rol (admin, coordinador, estudiante, funcionario, secretaria)
-├── shared/         Componentes reutilizables
-└── layout/         Header, sidebar, footer
+├── core/           Servicios HTTP, guards, interceptores (JWT, errores, límite de login), modelos, enums y utilidades
+├── shared/         Componentes reutilizables (solicitudes-bandeja, confirm-dialog, periodo-filtro-selector…)
+├── layout/         Header, sidebar (menú por rol en sidebar.config.ts) y footer
+└── pages/
+    ├── common/     Pantallas compartidas por varios roles (revisión de cada proceso, módulo estadístico, perfil…)
+    ├── estudiante/ funcionario/ secretaria/ admin/   Pantallas propias de cada rol
+    └── login/ welcome/
+src/styles/         Tokens de color y tipografía, y clases comunes (componentes.css)
 ```
+
+### Revisión por rol
+
+Las bandejas de revisión de paz y salvo, reingreso y homologación están en `pages/common/<proceso>-revision` y se apoyan en `RevisionAprobacionComponent` (`pages/common/revision-aprobacion`): el mismo componente sirve al funcionario, al coordinador y a secretaría, y lo que cambia por rol (endpoints, acciones, documentos) se pasa como configuración. Las rutas de cada rol y sus guards están en `app.routes.ts` y `pages/common/*.routes.ts`.
+
+La app usa el formato colombiano (`LOCALE_ID` = `es-CO` en `app.config.ts`) para fechas y números.
 
 ## Pruebas
 
@@ -52,14 +62,18 @@ src/app/
 | `npm run test:seguridad:e2e` | E2E de seguridad |
 | `npm run test:seguridad-accesibilidad` | Seguridad + accesibilidad |
 | `npm run test:reporte` | Genera reporte de usabilidad en `reporte-usabilidad.md` |
+| `npm run test:navegacion` | Recorre las pantallas de los 6 roles en el navegador (Edge/Chrome headless) con `ng serve` en marcha. Con `SIN_BACKEND=1` simula la sesión (prueba rutas y guards, no datos). Variables: `APP_URL`, `PASS`, `NAVEGADOR` |
+| `npm run lint` | ESLint (angular-eslint) |
 
-Cobertura: `coverage/front-end-gestion-curricular/index.html`
+Cobertura: `coverage/front-end-gestion-curricular/index.html`. Con `--code-coverage` la ejecución falla si la cobertura baja de los mínimos de `karma.conf.js` (`coverageReporter.check`).
+
+Antes de subir cambios: `npx tsc -p tsconfig.app.json --noEmit`, `npx tsc -p tsconfig.spec.json --noEmit`, `npm run lint`, `npx ng build` y `npx ng test --watch=false`.
 
 ## Configuración
 
 La API usa por defecto `http://localhost:5000/api`. Si el backend corre en otra URL, editar `src/environments/environment.ts` (desarrollo) y `environment.production.ts` (producción).
 
-Para usar proxy hacia el backend: `npm run start:proxy` (requiere `proxy.conf.json`).
+El backend (repositorio Back-end-gestion-curricular, Spring Boot con MySQL) escucha en el puerto 5000. Iniciar sesión: `POST /api/usuarios/login` con `{ correo, password }`; el token JWT se guarda en `localStorage` y lo añade el interceptor JWT.
 
 ## Roles
 
@@ -68,6 +82,7 @@ Para usar proxy hacia el backend: `npm run start:proxy` (requiere `proxy.conf.js
 - **COORDINADOR** - Aprobación y estadísticas
 - **FUNCIONARIO** - Gestión de procesos
 - **SECRETARIA** - Validación de documentos
+- **DECANO** - Módulo estadístico e historial completo (solo consulta)
 
 ## Build de producción
 

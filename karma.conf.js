@@ -47,7 +47,12 @@ module.exports = function (config) {
       reporters: [
         { type: 'html' },
         { type: 'text-summary' }
-      ]
+      ],
+      // Mínimos con --code-coverage (2026-11-19 había 50,7 % sentencias, 37,8 % ramas,
+      // 45,6 % funciones y 50,5 % líneas): impiden que baje. Subirlos al añadir pruebas.
+      check: {
+        global: { statements: 48, branches: 35, functions: 43, lines: 48 }
+      }
     },
     reporters: ['progress', 'kjhtml'],
     // Local: ChromeHeadless (con Edge si no hay Chrome, ver arriba).
