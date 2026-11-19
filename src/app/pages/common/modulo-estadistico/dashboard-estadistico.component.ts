@@ -84,6 +84,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
 
   readonly loading = signal(false);
+  /** Exportando un reporte: solo deshabilita los botones. No usa `loading`, que quitaría los <canvas> de los gráficos. */
+  readonly exportando = signal(false);
   readonly error = signal(false);
   readonly errorMensaje = signal<string | null>(null);
 
@@ -404,11 +406,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   private exportar(peticion$: Observable<Blob>, extension: string, formato: string): void {
-    this.loading.set(true);
+    this.exportando.set(true);
     this.mostrarExito(`Descargando reporte ${formato}...`);
     peticion$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (blob) => {
-        this.loading.set(false);
+        this.exportando.set(false);
         if (!blob || blob.size === 0) {
           this.mostrarError(`El archivo ${formato} está vacío o corrupto`);
           return;
@@ -417,7 +419,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         this.mostrarExito(`Reporte ${formato} del Dashboard General descargado exitosamente`);
       },
       error: (error: HttpErrorResponse) => {
-        this.loading.set(false);
+        this.exportando.set(false);
         this.mostrarError(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : `Error al exportar el reporte ${formato}`);
       }
     });

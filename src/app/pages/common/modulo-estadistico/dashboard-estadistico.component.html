@@ -16,11 +16,11 @@
           <mat-icon>refresh</mat-icon>
           Actualizar datos
         </button>
-        <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading() || !resumenCompleto()">
+        <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading() || exportando() || !resumenCompleto()">
           <mat-icon>picture_as_pdf</mat-icon>
           Exportar PDF
         </button>
-        <button mat-stroked-button (click)="exportarExcel()" [disabled]="loading() || !resumenCompleto()">
+        <button mat-stroked-button (click)="exportarExcel()" [disabled]="loading() || exportando() || !resumenCompleto()">
           <mat-icon>table_chart</mat-icon>
           Exportar Excel
         </button>
