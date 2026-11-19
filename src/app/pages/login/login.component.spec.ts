@@ -20,12 +20,12 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     id_usuario: 1,
     nombre_completo: 'Test User',
     correo: 'test@unicauca.edu.co',
-    rol: { nombre: 'ESTUDIANTE' }
+    rol: { nombre: 'ESTUDIANTE' },
   };
 
   const mockLoginResponse = {
     token: 'mock-jwt-token',
-    usuario: mockUsuario
+    usuario: mockUsuario,
   };
 
   beforeEach(async () => {
@@ -35,24 +35,20 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       'setRole',
       'restoreSession',
       'isAuthenticated',
-      'login'
+      'login',
     ]);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
-      imports: [
-        LoginComponent,
-        ReactiveFormsModule,
-        BrowserAnimationsModule
-      ],
+      imports: [LoginComponent, ReactiveFormsModule, BrowserAnimationsModule],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
-      ]
+        { provide: Router, useValue: routerSpy },
+      ],
     })
-    .overrideProvider(MatSnackBar, { useValue: snackBarSpy })
-    .compileComponents();
+      .overrideProvider(MatSnackBar, { useValue: snackBarSpy })
+      .compileComponents();
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
@@ -121,7 +117,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       const correo = component.loginForm.get('correo');
       correo?.setValue('');
       correo?.markAsTouched();
-      
+
       const mensaje = component.getEmailErrorMessage();
       expect(mensaje).toBe('El correo es requerido');
     });
@@ -130,7 +126,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       const correo = component.loginForm.get('correo');
       correo?.setValue('invalido');
       correo?.markAsTouched();
-      
+
       const mensaje = component.getEmailErrorMessage();
       expect(mensaje).toBe('Ingresa un correo válido');
     });
@@ -139,7 +135,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       const correo = component.loginForm.get('correo');
       correo?.setValue('test@gmail.com');
       correo?.markAsTouched();
-      
+
       const mensaje = component.getEmailErrorMessage();
       expect(mensaje).toBe('Debe ser un correo de @unicauca.edu.co');
     });
@@ -168,7 +164,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       const password = component.loginForm.get('password');
       password?.setValue('');
       password?.markAsTouched();
-      
+
       const mensaje = component.getPasswordErrorMessage();
       expect(mensaje).toBe('La contraseña es requerida');
     });
@@ -177,7 +173,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       const password = component.loginForm.get('password');
       password?.setValue('123');
       password?.markAsTouched();
-      
+
       const mensaje = component.getPasswordErrorMessage();
       expect(mensaje).toBe('La contraseña debe tener al menos 8 caracteres');
     });
@@ -188,27 +184,27 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
         password: 'password123',
-        remember: false
+        remember: false,
       });
-      
+
       expect(component.loginForm.valid).toBe(true);
     });
 
     it('LOG-020: El formulario debe ser inválido si falta algún campo', () => {
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
-        password: ''
+        password: '',
       });
-      
+
       expect(component.loginForm.valid).toBe(false);
     });
 
     it('LOG-021: El campo remember debe ser opcional', () => {
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
-        password: 'password123'
+        password: 'password123',
       });
-      
+
       expect(component.loginForm.valid).toBe(true);
     });
   });
@@ -218,90 +214,90 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
         password: 'password123',
-        remember: false
+        remember: false,
       });
     });
 
     it('LOG-022: Debe llamar al servicio de API con credenciales correctas', () => {
       authService.login.and.returnValue(of(mockLoginResponse));
-      
+
       component.onLogin();
-      
+
       expect(authService.login).toHaveBeenCalledWith('test@unicauca.edu.co', 'password123');
     });
 
     it('LOG-023: Debe guardar el token en AuthService', fakeAsync(() => {
       authService.login.and.returnValue(of(mockLoginResponse));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(authService.setToken).toHaveBeenCalledWith('mock-jwt-token');
     }));
 
     it('LOG-024: Debe guardar el usuario en AuthService', fakeAsync(() => {
       authService.login.and.returnValue(of(mockLoginResponse));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(authService.setUsuario).toHaveBeenCalledWith(mockUsuario);
     }));
 
     it('LOG-025: Debe guardar el rol del usuario', fakeAsync(() => {
       authService.login.and.returnValue(of(mockLoginResponse));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(authService.setRole).toHaveBeenCalledWith('ESTUDIANTE');
     }));
 
     it('LOG-026: Debe restaurar la sesión', fakeAsync(() => {
       authService.login.and.returnValue(of(mockLoginResponse));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(authService.restoreSession).toHaveBeenCalled();
     }));
 
     it('LOG-027: Debe mostrar mensaje de bienvenida', fakeAsync(() => {
       authService.login.and.returnValue(of(mockLoginResponse));
-      
+
       component.onLogin();
       tick(100); // Dar tiempo para que se complete el observable
       fixture.detectChanges();
-      
+
       expect(snackBar.open).toHaveBeenCalledWith(
         '¡Bienvenido, Test User!',
         'Cerrar',
         // Configuración estándar del sistema de diseño (SnackbarService)
         jasmine.objectContaining({
-          panelClass: ['snackbar-success']
+          panelClass: ['snackbar-success'],
         })
       );
     }));
 
     it('LOG-028: Debe navegar a /welcome después del login', fakeAsync(() => {
       authService.login.and.returnValue(of(mockLoginResponse));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     }));
 
     it('LOG-029: Debe cambiar el estado de cargando durante el proceso', fakeAsync(() => {
       // Usar delay para simular mejor el comportamiento asíncrono
       authService.login.and.returnValue(of(mockLoginResponse).pipe(delay(50)));
-      
+
       expect(component.cargando()).toBe(false);
-      
+
       component.onLogin();
       // Verificar que cargando se establece en true inmediatamente
       expect(component.cargando()).toBe(true);
-      
+
       tick(50); // Permitir que el observable se complete
       fixture.detectChanges();
       expect(component.cargando()).toBe(false);
@@ -312,18 +308,18 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     beforeEach(() => {
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
-        password: 'wrongpassword'
+        password: 'wrongpassword',
       });
     });
 
     it('LOG-030: Debe manejar error 401 (credenciales incorrectas)', fakeAsync(() => {
       const error = { status: 401, message: 'Unauthorized' };
       authService.login.and.returnValue(throwError(() => error));
-      
+
       component.onLogin();
       tick(100); // Dar tiempo para que se maneje el error
       fixture.detectChanges();
-      
+
       expect(component.errorMensaje()).toContain('Credenciales incorrectas');
       expect(snackBar.open).toHaveBeenCalled();
     }));
@@ -331,40 +327,40 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     it('LOG-031: Debe manejar error 403 (cuenta deshabilitada)', fakeAsync(() => {
       const error = { status: 403, message: 'Forbidden' };
       authService.login.and.returnValue(throwError(() => error));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(component.errorMensaje()).toContain('cuenta está deshabilitada');
     }));
 
     it('LOG-032: Debe manejar error 0 (sin conexión)', fakeAsync(() => {
       const error = { status: 0, message: 'Network error' };
       authService.login.and.returnValue(throwError(() => error));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(component.errorMensaje()).toContain('No se puede conectar al servidor');
     }));
 
     it('LOG-033: Debe manejar error 500 (error del servidor)', fakeAsync(() => {
       const error = { status: 500, message: 'Internal Server Error' };
       authService.login.and.returnValue(throwError(() => error));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(component.errorMensaje()).toContain('Error interno del servidor');
     }));
 
     it('LOG-034: Debe desactivar estado de cargando después de error', fakeAsync(() => {
       const error = { status: 401, message: 'Unauthorized' };
       authService.login.and.returnValue(throwError(() => error));
-      
+
       component.onLogin();
       tick();
-      
+
       expect(component.cargando()).toBe(false);
     }));
   });
@@ -373,22 +369,22 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     it('LOG-035: No debe enviar formulario inválido', () => {
       component.loginForm.patchValue({
         correo: '',
-        password: ''
+        password: '',
       });
-      
+
       component.onLogin();
-      
+
       expect(authService.login).not.toHaveBeenCalled();
     });
 
     it('LOG-036: Debe marcar todos los campos como tocados si formulario inválido', () => {
       component.loginForm.patchValue({
         correo: '',
-        password: ''
+        password: '',
       });
-      
+
       component.onLogin();
-      
+
       expect(component.loginForm.get('correo')?.touched).toBe(true);
       expect(component.loginForm.get('password')?.touched).toBe(true);
     });
@@ -396,13 +392,13 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     it('LOG-037: Debe mostrar mensaje si formulario es inválido', () => {
       component.loginForm.patchValue({
         correo: '',
-        password: ''
+        password: '',
       });
       fixture.detectChanges();
-      
+
       component.onLogin();
       fixture.detectChanges();
-      
+
       expect(snackBar.open).toHaveBeenCalledWith(
         'Por favor, completa todos los campos correctamente',
         'Cerrar',
@@ -414,9 +410,9 @@ describe('LoginComponent - Pruebas Unitarias', () => {
   describe('8. Funcionalidad de Limpiar Error', () => {
     it('LOG-038: Debe limpiar el mensaje de error', () => {
       component.errorMensaje.set('Error de prueba');
-      
+
       component.clearError();
-      
+
       expect(component.errorMensaje()).toBe('');
     });
   });
@@ -424,17 +420,17 @@ describe('LoginComponent - Pruebas Unitarias', () => {
   describe('9. Redirección si Ya Está Autenticado', () => {
     it('LOG-039: Debe redirigir a /welcome si ya está autenticado', () => {
       authService.isAuthenticated.and.returnValue(true);
-      
+
       component.ngOnInit();
-      
+
       expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
     });
 
     it('LOG-040: No debe redirigir si no está autenticado', () => {
       authService.isAuthenticated.and.returnValue(false);
-      
+
       component.ngOnInit();
-      
+
       expect(router.navigate).not.toHaveBeenCalled();
     });
   });
@@ -443,32 +439,31 @@ describe('LoginComponent - Pruebas Unitarias', () => {
     it('LOG-041: Debe manejar respuesta sin token', fakeAsync(() => {
       const invalidResponse = { usuario: mockUsuario };
       authService.login.and.returnValue(of(invalidResponse as unknown as LoginRespuesta));
-      
+
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
-        password: 'password123'
+        password: 'password123',
       });
-      
+
       component.onLogin();
       tick();
-      
+
       expect(component.errorMensaje()).toContain('respuesta del servidor inválida');
     }));
 
     it('LOG-042: Debe manejar respuesta sin usuario', fakeAsync(() => {
       const invalidResponse = { token: 'mock-token' };
       authService.login.and.returnValue(of(invalidResponse as unknown as LoginRespuesta));
-      
+
       component.loginForm.patchValue({
         correo: 'test@unicauca.edu.co',
-        password: 'password123'
+        password: 'password123',
       });
-      
+
       component.onLogin();
       tick();
-      
+
       expect(component.errorMensaje()).toContain('respuesta del servidor inválida');
     }));
   });
 });
-

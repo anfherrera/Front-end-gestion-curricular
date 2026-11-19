@@ -5,7 +5,7 @@ import { UsuarioDTOPeticion, UsuarioDTORespuesta } from '../models/usuario.inter
 import { ApiEndpoints } from '../utils/api-endpoints';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UsuariosService {
   private http = inject(HttpClient);
@@ -41,4 +41,3 @@ export class UsuariosService {
     return this.http.put<UsuarioDTORespuesta>(`${this.apiUrl}/cambiarEstado/${id}`, {});
   }
 }
-

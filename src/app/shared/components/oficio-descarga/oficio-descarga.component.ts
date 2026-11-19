@@ -11,7 +11,7 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatCardModule, MatButtonModule, MatIconModule],
   templateUrl: './oficio-descarga.component.html',
-  styleUrls: ['./oficio-descarga.component.css']
+  styleUrls: ['./oficio-descarga.component.css'],
 })
 export class OficioDescargaComponent {
   readonly solicitud = input.required<Solicitud>();

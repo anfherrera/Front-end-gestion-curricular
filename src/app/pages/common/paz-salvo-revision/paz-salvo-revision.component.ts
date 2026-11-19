@@ -7,7 +7,7 @@ import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,
-  rolRevisionDeRuta
+  rolRevisionDeRuta,
 } from '../revision-aprobacion/revision-aprobacion.component';
 import { aDocumentos } from './paz-salvo-filas';
 
@@ -19,7 +19,7 @@ import { aDocumentos } from './paz-salvo-filas';
   selector: 'app-paz-salvo-revision',
   imports: [RevisionAprobacionComponent],
   template: '<app-revision-aprobacion [config]="config" />',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PazSalvoRevisionComponent {
   private readonly rol = rolRevisionDeRuta(inject(ActivatedRoute));
@@ -34,7 +34,7 @@ export class PazSalvoRevisionComponent {
     // Al coordinador los documentos no le llegan con la lista: los pide por su endpoint
     ...(this.rol === 'coordinador' && {
       documentosAparte: (id: number) => this.servicio.obtenerDocumentosCoordinador(id).pipe(map(aDocumentos)),
-      dialogoRechazo: { titulo: 'Rechazar Paz y Salvo', descripcion: 'Indique el motivo de rechazo del paz y salvo:' }
-    })
+      dialogoRechazo: { titulo: 'Rechazar Paz y Salvo', descripcion: 'Indique el motivo de rechazo del paz y salvo:' },
+    }),
   };
 }

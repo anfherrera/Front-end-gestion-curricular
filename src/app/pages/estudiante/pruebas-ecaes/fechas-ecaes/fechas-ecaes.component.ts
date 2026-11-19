@@ -18,7 +18,7 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
   imports: [FormsModule, MatFormFieldModule, MatSelectModule, MatTableModule, CardContainerComponent],
   templateUrl: './fechas-ecaes.component.html',
   styleUrls: ['../ecaes-formularios.css', './fechas-ecaes.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FechasEcaesComponent implements OnInit {
   private pruebasEcaesService = inject(PruebasEcaesService);
@@ -38,7 +38,7 @@ export class FechasEcaesComponent implements OnInit {
     { concepto: 'Registro y recaudo extraordinario', campo: 'registro_recaudo_extraordinario' },
     { concepto: 'Citación', campo: 'citacion' },
     { concepto: 'Aplicación', campo: 'aplicacion' },
-    { concepto: 'Resultados individuales', campo: 'resultados_individuales' }
+    { concepto: 'Resultados individuales', campo: 'resultados_individuales' },
   ];
 
   ngOnInit(): void {
@@ -47,25 +47,28 @@ export class FechasEcaesComponent implements OnInit {
 
   /** Carga los calendarios y deja elegido el primer período. */
   cargarFechasEcaes(): void {
-    this.pruebasEcaesService.listarFechasEcaes()
+    this.pruebasEcaesService
+      .listarFechasEcaes()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: fechas => {
+        next: (fechas) => {
           this.fechasEcaes.set(fechas);
           if (fechas.length > 0) {
             this.periodoSeleccionado.set(fechas[0].periodoAcademico);
             this.fechasSeleccionadas.set(fechas[0]);
           }
         },
-        error: error => {
+        error: (error) => {
           this.logger.error('Error al cargar fechas ECAES:', error);
           this.snackbar.error(this.errorHandler.extraerMensajeError(error) || 'Error al cargar las fechas de ECAES');
-        }
+        },
       });
   }
 
   onPeriodoChange(): void {
-    this.fechasSeleccionadas.set(this.fechasEcaes().find(fecha => fecha.periodoAcademico === this.periodoSeleccionado()) || null);
+    this.fechasSeleccionadas.set(
+      this.fechasEcaes().find((fecha) => fecha.periodoAcademico === this.periodoSeleccionado()) || null
+    );
   }
 
   /** Fecha del calendario ECAES (dd/mm/aaaa). Solo cuenta el día: se descarta la hora, si viene. */

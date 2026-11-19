@@ -8,7 +8,11 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { Archivo, SolicitudHomologacionDTOPeticion, SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
+import {
+  Archivo,
+  SolicitudHomologacionDTOPeticion,
+  SolicitudHomologacionDTORespuesta,
+} from '@core/models/procesos.model';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
 import { RequestStatusTableComponent } from '@shared/components/request-status/request-status.component';
@@ -33,11 +37,11 @@ import { SolicitudEstudianteBase } from '../solicitud-estudiante.base';
     MatInputModule,
     FileUploadComponent,
     RequiredDocsComponent,
-    RequestStatusTableComponent
+    RequestStatusTableComponent,
   ],
   templateUrl: './homologacion-asignaturas.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomologacionAsignaturasComponent extends SolicitudEstudianteBase<SolicitudHomologacionDTORespuesta> {
   private homologacionService = inject(HomologacionAsignaturasService);
@@ -48,20 +52,20 @@ export class HomologacionAsignaturasComponent extends SolicitudEstudianteBase<So
   documentosRequeridos: Documento[] = [
     { label: 'PM-FO-4-FOR-22 Solicitud homologación de materias', obligatorio: true, formatoDisponibleUrl: '' },
     { label: 'Certificado de notas', obligatorio: true },
-    { label: 'Programa académico de la materia', obligatorio: true }
+    { label: 'Programa académico de la materia', obligatorio: true },
   ];
 
   protected override palabrasClaveDocumentos = {
-    'pmfo4for22': ['pmfo4for22', 'pm-fo-4-for-22', 'solicitud', 'homologacion', 'homologación'],
-    'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
-    'programa': ['programa', 'academico', 'materia', 'asignatura', 'syllabus']
+    pmfo4for22: ['pmfo4for22', 'pm-fo-4-for-22', 'solicitud', 'homologacion', 'homologación'],
+    certificado: ['certificado', 'notas', 'calificaciones', 'notas academicas'],
+    programa: ['programa', 'academico', 'materia', 'asignatura', 'syllabus'],
   };
 
   protected readonly mensajeExito = '¡Solicitud de homologación enviada correctamente!';
 
   readonly solicitudForm = this.fb.group({
     programa_origen: ['', [Validators.maxLength(200)]],
-    programa_destino: ['', [Validators.maxLength(200)]]
+    programa_destino: ['', [Validators.maxLength(200)]],
   });
 
   protected override alIniciar(): void {
@@ -87,12 +91,16 @@ export class HomologacionAsignaturasComponent extends SolicitudEstudianteBase<So
       archivos,
       // Opcionales: vacío se envía como null
       programa_origen: this.solicitudForm.value.programa_origen?.trim() || null,
-      programa_destino: this.solicitudForm.value.programa_destino?.trim() || null
+      programa_destino: this.solicitudForm.value.programa_destino?.trim() || null,
     };
     return this.homologacionService.crearSolicitud(solicitud);
   }
 
   descargarOficio(idSolicitud: number, nombreArchivo: string): void {
-    this.descargarOficioDelProceso(this.homologacionService, idSolicitud, nombreArchivo || `oficio_homologacion_${idSolicitud}.pdf`);
+    this.descargarOficioDelProceso(
+      this.homologacionService,
+      idSolicitud,
+      nombreArchivo || `oficio_homologacion_${idSolicitud}.pdf`
+    );
   }
 }

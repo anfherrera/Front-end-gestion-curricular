@@ -12,7 +12,7 @@ describe('Seguridad - Validación de inputs', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [FormBuilder]
+      providers: [FormBuilder],
     });
 
     formBuilder = TestBed.inject(FormBuilder);
@@ -27,7 +27,7 @@ describe('Seguridad - Validación de inputs', () => {
 
     beforeEach(() => {
       form = formBuilder.group({
-        email: ['', [Validators.required, Validators.email]]
+        email: ['', [Validators.required, Validators.email]],
       });
     });
 
@@ -60,11 +60,11 @@ describe('Seguridad - Validación de inputs', () => {
       const dangerousEmails = [
         'test<script>@unicauca.edu.co',
         'test@unicauca.edu.co"><script>alert(1)</script>',
-        'test@unicauca.edu.co\'--',
-        'test@unicauca.edu.co;DROP TABLE users;'
+        "test@unicauca.edu.co'--",
+        'test@unicauca.edu.co;DROP TABLE users;',
       ];
 
-      dangerousEmails.forEach(email => {
+      dangerousEmails.forEach((email) => {
         form.controls['email'].setValue(email);
         expect(form.controls['email'].valid).toBeFalse();
       });
@@ -75,11 +75,10 @@ describe('Seguridad - Validación de inputs', () => {
   // SEC-021: PREVENCIÓN DE XSS
   // =====================================
   describe('SEC-021: Prevención de XSS (Cross-Site Scripting)', () => {
-    
     it('SEC-021-A: Debe sanitizar script tags en inputs', () => {
       const dangerousInput = '<script>alert("XSS")</script>';
       const sanitized = sanitizer.sanitize(1, dangerousInput); // 1 = SecurityContext.HTML
-      
+
       expect(sanitized).not.toContain('<script>');
       expect(sanitized).not.toContain('alert');
     });
@@ -87,7 +86,7 @@ describe('Seguridad - Validación de inputs', () => {
     it('SEC-021-B: Debe sanitizar event handlers en inputs', () => {
       const dangerousInput = '<img src=x onerror="alert(1)">';
       const sanitized = sanitizer.sanitize(1, dangerousInput);
-      
+
       expect(sanitized).not.toContain('onerror');
       expect(sanitized).not.toContain('alert');
     });
@@ -95,7 +94,7 @@ describe('Seguridad - Validación de inputs', () => {
     it('SEC-021-C: Debe sanitizar javascript: URLs', () => {
       const dangerousInput = '<a href="javascript:alert(1)">Click</a>';
       const sanitized = sanitizer.sanitize(1, dangerousInput);
-      
+
       // Angular convierte javascript: a unsafe:javascript:
       expect(sanitized).toContain('unsafe');
     });
@@ -103,7 +102,7 @@ describe('Seguridad - Validación de inputs', () => {
     it('SEC-021-D: Debe permitir HTML seguro', () => {
       const safeInput = '<p>Este es un párrafo seguro</p>';
       const sanitized = sanitizer.sanitize(1, safeInput);
-      
+
       expect(sanitized).toContain('<p>');
       // Angular puede codificar algunos caracteres especiales
       expect(sanitized).toBeTruthy();
@@ -112,14 +111,14 @@ describe('Seguridad - Validación de inputs', () => {
     it('SEC-021-E: Debe sanitizar iframes maliciosos', () => {
       const dangerousInput = '<iframe src="javascript:alert(1)"></iframe>';
       const sanitized = sanitizer.sanitize(1, dangerousInput);
-      
+
       expect(sanitized).not.toContain('<iframe>');
     });
 
     it('SEC-021-F: Debe sanitizar data URIs peligrosas', () => {
       const dangerousInput = '<img src="data:text/html,<script>alert(1)</script>">';
       const sanitized = sanitizer.sanitize(1, dangerousInput);
-      
+
       // Angular permite data URIs pero escapa el contenido peligroso
       expect(sanitized).not.toContain('<script>');
       expect(sanitized).toBeTruthy();
@@ -134,10 +133,7 @@ describe('Seguridad - Validación de inputs', () => {
 
     beforeEach(() => {
       form = formBuilder.group({
-        password: ['', [
-          Validators.required,
-          Validators.minLength(8)
-        ]]
+        password: ['', [Validators.required, Validators.minLength(8)]],
       });
     });
 
@@ -166,27 +162,26 @@ describe('Seguridad - Validación de inputs', () => {
   // SEC-023: VALIDACIÓN DE ARCHIVOS
   // =====================================
   describe('SEC-023: Validación de Archivos', () => {
-    
     it('SEC-023-A: Debe validar extensión PDF', () => {
       const file = new File(['content'], 'document.pdf', { type: 'application/pdf' });
       const allowedTypes = ['application/pdf'];
-      
+
       expect(allowedTypes.includes(file.type)).toBeTrue();
     });
 
     it('SEC-023-B: Debe rechazar archivo ejecutable', () => {
       const file = new File(['content'], 'malware.exe', { type: 'application/x-msdownload' });
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-      
+
       expect(allowedTypes.includes(file.type)).toBeFalse();
     });
 
     it('SEC-023-C: Debe validar tamaño máximo de 5MB', () => {
       const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-      
+
       const validFile = new File(['x'.repeat(1024 * 1024)], 'small.pdf', { type: 'application/pdf' });
       expect(validFile.size).toBeLessThan(maxSizeInBytes);
-      
+
       const invalidFile = new File(['x'.repeat(10 * 1024 * 1024)], 'large.pdf', { type: 'application/pdf' });
       expect(invalidFile.size).toBeGreaterThan(maxSizeInBytes);
     });
@@ -194,18 +189,25 @@ describe('Seguridad - Validación de inputs', () => {
     it('SEC-023-D: Debe rechazar archivo sin extensión', () => {
       const file = new File(['content'], 'document', { type: '' });
       const allowedTypes = ['application/pdf'];
-      
+
       expect(allowedTypes.includes(file.type)).toBeFalse();
     });
 
     it('SEC-023-E: Debe validar múltiples tipos permitidos', () => {
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      
+      const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      ];
+
       const pdfFile = new File([''], 'doc.pdf', { type: 'application/pdf' });
       const jpgFile = new File([''], 'img.jpg', { type: 'image/jpeg' });
       const pngFile = new File([''], 'img.png', { type: 'image/png' });
-      const docxFile = new File([''], 'doc.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-      
+      const docxFile = new File([''], 'doc.docx', {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      });
+
       expect(allowedTypes.includes(pdfFile.type)).toBeTrue();
       expect(allowedTypes.includes(jpgFile.type)).toBeTrue();
       expect(allowedTypes.includes(pngFile.type)).toBeTrue();
@@ -215,7 +217,7 @@ describe('Seguridad - Validación de inputs', () => {
     it('SEC-023-F: Debe rechazar archivo con doble extensión maliciosa', () => {
       const file = new File(['content'], 'document.pdf.exe', { type: 'application/x-msdownload' });
       const allowedTypes = ['application/pdf'];
-      
+
       expect(allowedTypes.includes(file.type)).toBeFalse();
     });
   });
@@ -228,7 +230,7 @@ describe('Seguridad - Validación de inputs', () => {
 
     beforeEach(() => {
       form = formBuilder.group({
-        codigo: ['', [Validators.required, Validators.pattern(/^\d{6,10}$/)]]
+        codigo: ['', [Validators.required, Validators.pattern(/^\d{6,10}$/)]],
       });
     });
 
@@ -267,12 +269,11 @@ describe('Seguridad - Validación de inputs', () => {
   // SEC-025: VALIDACIÓN DE FECHAS
   // =====================================
   describe('SEC-025: Validación de Fechas', () => {
-    
     it('SEC-025-A: Debe rechazar fecha en el pasado para inscripciones futuras', () => {
       const today = new Date();
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      
+
       expect(yesterday < today).toBeTrue();
     });
 
@@ -280,27 +281,22 @@ describe('Seguridad - Validación de inputs', () => {
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
+
       expect(tomorrow > today).toBeTrue();
     });
 
     it('SEC-025-C: Debe validar formato de fecha ISO 8601', () => {
       const validDate = '2025-12-31';
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-      
+
       expect(dateRegex.test(validDate)).toBeTrue();
     });
 
     it('SEC-025-D: Debe rechazar formato de fecha inválido', () => {
-      const invalidDates = [
-        '31/12/2025',
-        '12-31-2025',
-        '2025/12/31',
-        'Invalid Date'
-      ];
+      const invalidDates = ['31/12/2025', '12-31-2025', '2025/12/31', 'Invalid Date'];
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-      
-      invalidDates.forEach(date => {
+
+      invalidDates.forEach((date) => {
         expect(dateRegex.test(date)).toBeFalse();
       });
     });
@@ -314,7 +310,7 @@ describe('Seguridad - Validación de inputs', () => {
 
     beforeEach(() => {
       form = formBuilder.group({
-        observaciones: ['', [Validators.maxLength(500)]]
+        observaciones: ['', [Validators.maxLength(500)]],
       });
     });
 
@@ -345,16 +341,15 @@ describe('Seguridad - Validación de inputs', () => {
   // SEC-027: PREVENCIÓN DE INYECCIÓN SQL
   // =====================================
   describe('SEC-027: Prevención de Inyección SQL', () => {
-    
     it('SEC-027-A: Debe detectar intento de inyección SQL simple', () => {
       const sqlInjections = [
         "'; DROP TABLE usuarios;--",
         "' OR '1'='1",
         "admin'--",
         "1' UNION SELECT NULL--",
-        "'; EXEC sp_MSForEachTable 'DROP TABLE ?'--"
+        "'; EXEC sp_MSForEachTable 'DROP TABLE ?'--",
       ];
-      
+
       const containsDangerousSQL = (input: string): boolean => {
         // Detectar patrones comunes de SQL injection
         const hasDoubleDash = /--/.test(input);
@@ -364,27 +359,22 @@ describe('Seguridad - Validación de inputs', () => {
         return sqlKeywords.test(input) || hasDoubleDash || hasSemicolon || hasORPattern;
       };
 
-      sqlInjections.forEach(injection => {
+      sqlInjections.forEach((injection) => {
         expect(containsDangerousSQL(injection)).toBeTrue();
       });
     });
 
     it('SEC-027-B: Debe permitir texto normal sin SQL', () => {
-      const safeInputs = [
-        'Estudiante necesita paz y salvo',
-        'Curso de programación',
-        'Observaciones generales'
-      ];
-      
+      const safeInputs = ['Estudiante necesita paz y salvo', 'Curso de programación', 'Observaciones generales'];
+
       const containsDangerousSQL = (input: string): boolean => {
         const sqlKeywords = /(\bDROP\b|\bDELETE\b|\bUNION\b|\bEXEC\b|\bUPDATE\b|\bINSERT\b|--|;)/i;
         return sqlKeywords.test(input);
       };
 
-      safeInputs.forEach(input => {
+      safeInputs.forEach((input) => {
         expect(containsDangerousSQL(input)).toBeFalse();
       });
     });
   });
 });
-

@@ -1,18 +1,16 @@
 <div class="revision-container">
-
   <app-solicitudes-bandeja
     #bandeja
     [pendientes]="pendientes()"
     [procesadas]="procesadas()"
     (solicitudSeleccionada)="onSolicitudSeleccionada($event)"
-    (periodoChange)="onPeriodoChange($event)">
+    (periodoChange)="onPeriodoChange($event)"
+  >
   </app-solicitudes-bandeja>
 
   <!-- Documentación de la solicitud seleccionada -->
   @if (seleccionada(); as sel) {
-    <app-card-container
-      title="Documentación Adjunta"
-      icon="description">
+    <app-card-container title="Documentación Adjunta" icon="description">
       @if (motivoRechazo(); as motivo) {
         <div class="comentario-rechazo">
           <mat-icon>error_outline</mat-icon>
@@ -28,7 +26,8 @@
         [proceso]="config().proceso"
         [servicio]="config().servicio"
         [puedeAgregarComentarios]="true"
-        (comentarioAgregado)="onComentarioAgregado($event)">
+        (comentarioAgregado)="onComentarioAgregado($event)"
+      >
       </app-documentation-viewer>
     </app-card-container>
   }
@@ -44,5 +43,4 @@
       </button>
     </div>
   }
-
 </div>

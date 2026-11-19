@@ -24,11 +24,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatCardModule
-],
+    MatCardModule,
+  ],
   templateUrl: './form-programa.component.html',
   styleUrls: ['./form-programa.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormProgramaComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -45,21 +45,13 @@ export class FormProgramaComponent implements OnInit {
 
   constructor() {
     this.programaForm = this.fb.group({
-      codigo: ['', [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(10)
-      ]],
-      nombre_programa: ['', [
-        Validators.required,
-        Validators.minLength(5),
-        Validators.maxLength(150)
-      ]]
+      codigo: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(10)]],
+      nombre_programa: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(150)]],
     });
   }
 
   ngOnInit(): void {
-    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['id']) {
         this.isEditMode.set(true);
         this.programaId = +params['id'];
@@ -76,7 +68,7 @@ export class FormProgramaComponent implements OnInit {
       next: (data) => {
         this.programaForm.patchValue({
           codigo: data.codigo,
-          nombre_programa: data.nombre_programa
+          nombre_programa: data.nombre_programa,
         });
         this.loading.set(false);
       },
@@ -84,7 +76,7 @@ export class FormProgramaComponent implements OnInit {
         this.snackbar.error('Error al cargar los datos del programa');
         this.router.navigate(['/admin/programas']);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -96,9 +88,9 @@ export class FormProgramaComponent implements OnInit {
     }
 
     this.loading.set(true);
-    
+
     const programaData: ProgramaDTOPeticion = {
-      ...this.programaForm.value
+      ...this.programaForm.value,
     };
 
     if (this.isEditMode() && this.programaId) {
@@ -119,7 +111,7 @@ export class FormProgramaComponent implements OnInit {
         const mensaje = err.error?.mensaje || 'Error al crear el programa';
         this.snackbar.error(mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -133,7 +125,7 @@ export class FormProgramaComponent implements OnInit {
         const mensaje = err.error?.mensaje || 'Error al actualizar el programa';
         this.snackbar.error(mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -150,4 +142,3 @@ export class FormProgramaComponent implements OnInit {
     return this.programaForm.get('nombre_programa');
   }
 }
-

@@ -24,18 +24,21 @@ table {
   overflow-x: auto;
   overflow-y: visible;
   width: 100%;
-  -webkit-overflow-scrolling: touch; }
+  -webkit-overflow-scrolling: touch;
+}
 
 /* Asegurar que la tabla no se corte */
 .mat-elevation-z8 {
   display: table;
   width: 100%;
-  min-width: 1200px; }
+  min-width: 1200px;
+}
 
 /* Asegurar que las celdas muestren todo el contenido */
 .mat-mdc-table {
   width: 100%;
-  min-width: 1200px; }
+  min-width: 1200px;
+}
 
 .mat-mdc-header-cell,
 .mat-mdc-cell {
@@ -49,7 +52,8 @@ table {
 .mat-mdc-cell {
   white-space: normal;
   word-wrap: break-word;
-  max-width: 200px; }
+  max-width: 200px;
+}
 
 /* Asegurar que el contenedor de la tabla tenga scroll horizontal */
 .tabla-container table {
@@ -100,7 +104,7 @@ button {
 }
 
 .preinscribir-icon:hover {
-  color: #0024CC !important;
+  color: #0024cc !important;
 }
 
 .inscribir-icon {
@@ -137,28 +141,29 @@ button {
     overflow-x: auto;
     overflow-y: visible;
   }
-  
+
   .filtro {
     width: 100%;
     max-width: 300px;
   }
-  
+
   .mat-elevation-z8 {
     overflow-x: auto;
     overflow-y: visible;
   }
-  
+
   .mat-mdc-table {
-    min-width: 1200px; }
-  
+    min-width: 1200px;
+  }
+
   table {
     min-width: 1200px;
   }
-  
+
   .action-icon-button {
     margin: 0 2px;
   }
-  
+
   .preinscribir-icon,
   .inscribir-icon,
   .ver-icon,
@@ -171,7 +176,7 @@ button {
   .tabla-container {
     padding: 4px;
   }
-  
+
   .preinscribir-icon,
   .inscribir-icon,
   .ver-icon,

@@ -8,8 +8,6 @@
   margin-bottom: 24px;
 }
 
-
-
 .error-container {
   display: flex;
   flex-direction: column;
@@ -185,8 +183,6 @@
   font-size: 0.9rem;
 }
 
-
-
 /* Lista de documentos */
 mat-list {
   padding: 0;
@@ -224,4 +220,3 @@ mat-list-item:last-child {
     font-size: 0.8rem;
   }
 }
-

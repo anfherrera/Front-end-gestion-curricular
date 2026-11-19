@@ -27,11 +27,11 @@ import { normalizarEstado } from '@core/utils/estado-solicitud.util';
     FechaPipe,
     EstadoColorPipe,
     EstadoIconoPipe,
-    EstadoLabelPipe
-],
+    EstadoLabelPipe,
+  ],
   templateUrl: './request-status.component.html',
   styleUrls: ['./request-status.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequestStatusTableComponent {
   readonly solicitudes = input<Solicitud[]>([]);
@@ -45,10 +45,12 @@ export class RequestStatusTableComponent {
   readonly mostrarInfoPreregistro = output<void>();
 
   readonly displayedColumns = computed(() => [
-    'nombre', 'fecha', 'estado',
+    'nombre',
+    'fecha',
+    'estado',
     ...(this.showOficio() ? ['acciones'] : []),
     ...(this.showComentarios() ? ['comentarios'] : []),
-    ...(this.showSeleccionar() ? ['seleccionar'] : [])
+    ...(this.showSeleccionar() ? ['seleccionar'] : []),
   ]);
   readonly selectedSolicitudId = signal<number | null>(null);
 
@@ -62,7 +64,7 @@ export class RequestStatusTableComponent {
    */
   onSeleccionarSolicitud(solicitudId: number): void {
     // Si ya está seleccionada, deseleccionar
-    this.selectedSolicitudId.update(actual => actual === solicitudId ? null : solicitudId);
+    this.selectedSolicitudId.update((actual) => (actual === solicitudId ? null : solicitudId));
 
     // Emitir el ID de la solicitud seleccionada (o null si se deseleccionó)
     this.solicitudSeleccionada.emit(this.selectedSolicitudId());

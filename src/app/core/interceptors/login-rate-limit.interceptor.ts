@@ -36,7 +36,10 @@ export function esErrorLimiteLogin(error: unknown): error is ErrorLimiteLogin {
   return typeof error === 'object' && error !== null && (error as ErrorLimiteLogin).rateLimited === true;
 }
 
-export const loginRateLimitInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
+export const loginRateLimitInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 429) {
@@ -46,7 +49,7 @@ export const loginRateLimitInterceptor: HttpInterceptorFn = (req: HttpRequest<un
           ...error,
           rateLimited: true,
           retryAfterSeconds: retryAfter,
-          message: `Demasiados intentos. Intenta de nuevo en ${retryAfter} segundos.`
+          message: `Demasiados intentos. Intenta de nuevo en ${retryAfter} segundos.`,
         };
         return throwError(() => limite);
       }
@@ -54,5 +57,3 @@ export const loginRateLimitInterceptor: HttpInterceptorFn = (req: HttpRequest<un
     })
   );
 };
-
-

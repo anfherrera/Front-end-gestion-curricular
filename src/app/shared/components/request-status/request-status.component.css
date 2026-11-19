@@ -26,7 +26,8 @@ mat-header-cell {
   font-size: 13px;
 }
 
-mat-cell, mat-header-cell {
+mat-cell,
+mat-header-cell {
   padding: 10px 12px;
 }
 
@@ -49,7 +50,7 @@ button[mat-icon-button]:hover {
 }
 
 /* Mejorar botón de seleccionar */
-button[mat-icon-button][color="primary"] {
+button[mat-icon-button][color='primary'] {
   background-color: var(--color-primario);
   color: white;
   border-radius: 4px;
@@ -57,23 +58,23 @@ button[mat-icon-button][color="primary"] {
   transition: all 0.2s ease-in-out;
 }
 
-button[mat-icon-button][color="primary"]:hover {
+button[mat-icon-button][color='primary']:hover {
   background-color: var(--color-primario-light);
   border-color: var(--color-primario-light);
   transform: scale(1.05);
 }
 
-button[mat-icon-button][color="primary"] mat-icon {
+button[mat-icon-button][color='primary'] mat-icon {
   color: white;
 }
 
 /* Estilo para botón seleccionado (checkbox style) */
-button[mat-icon-button][color="primary"].selected {
+button[mat-icon-button][color='primary'].selected {
   background-color: var(--notif-exito-borde);
   border-color: var(--notif-exito-borde);
 }
 
-button[mat-icon-button][color="primary"].selected:hover {
+button[mat-icon-button][color='primary'].selected:hover {
   background-color: #45a049;
   border-color: #45a049;
 }

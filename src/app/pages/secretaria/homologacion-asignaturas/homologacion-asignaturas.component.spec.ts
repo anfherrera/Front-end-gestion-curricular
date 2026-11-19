@@ -13,7 +13,10 @@ describe('HomologacionAsignaturasComponent (Secretaria)', () => {
 
   beforeEach(async () => {
     servicio = jasmine.createSpyObj<HomologacionAsignaturasService>('HomologacionAsignaturasService', [
-      'getSecretariaRequests', 'getSecretariaApprovedRequests', 'subirResolucion', 'approveDefinitively'
+      'getSecretariaRequests',
+      'getSecretariaApprovedRequests',
+      'subirResolucion',
+      'approveDefinitively',
     ]);
     servicio.getSecretariaRequests.and.returnValue(of([]));
     servicio.getSecretariaApprovedRequests.and.returnValue(of([]));
@@ -24,8 +27,8 @@ describe('HomologacionAsignaturasComponent (Secretaria)', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: HomologacionAsignaturasService, useValue: servicio }
-      ]
+        { provide: HomologacionAsignaturasService, useValue: servicio },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(HomologacionAsignaturasComponent);

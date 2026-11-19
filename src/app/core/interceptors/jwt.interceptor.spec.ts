@@ -24,8 +24,8 @@ describe('Seguridad - JWT Interceptor', () => {
         provideHttpClient(withInterceptors([JwtInterceptor])),
         provideHttpClientTesting(),
         { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
-      ]
+        { provide: Router, useValue: routerSpy },
+      ],
     });
 
     httpMock = TestBed.inject(HttpTestingController);
@@ -42,7 +42,6 @@ describe('Seguridad - JWT Interceptor', () => {
   // SEC-001: VALIDACIÓN DE TOKEN JWT
   // =====================================
   describe('SEC-001: Validación de Token JWT', () => {
-    
     it('SEC-001-A: Debe incluir Authorization header con token válido', () => {
       const validToken = createValidToken(3600); // expira en 1 hora
       authService.getToken.and.returnValue(validToken);
@@ -98,7 +97,6 @@ describe('Seguridad - JWT Interceptor', () => {
   // SEC-002: DETECCIÓN DE TOKENS EXPIRADOS
   // =====================================
   describe('SEC-002: Detección de Tokens Expirados', () => {
-    
     it('SEC-002-A: Con token expirado no cierra sesión y deja que el backend lo valide', () => {
       const expiredToken = createExpiredToken();
       authService.getToken.and.returnValue(expiredToken);
@@ -135,7 +133,8 @@ describe('Seguridad - JWT Interceptor', () => {
       // El interceptor intenta procesar el token
       // Si falla el parsing, el token simplemente no se incluye
       httpClient.get('/api/test').subscribe(
-        () => { // el resultado no importa aquí
+        () => {
+          // el resultado no importa aquí
         },
         (error) => {
           // Puede haber error al decodificar
@@ -146,7 +145,7 @@ describe('Seguridad - JWT Interceptor', () => {
       // Verificar que se intenta hacer la petición
       const reqs = httpMock.match('/api/test');
       if (reqs.length > 0) {
-        reqs.forEach(req => req.flush({}));
+        reqs.forEach((req) => req.flush({}));
       }
     });
 
@@ -167,7 +166,6 @@ describe('Seguridad - JWT Interceptor', () => {
   // SEC-003: PREVENCIÓN DE ATAQUES
   // =====================================
   describe('SEC-003: Prevención de Ataques', () => {
-    
     it('SEC-003-A: Debe validar estructura básica del token JWT', () => {
       // Token válido debe tener 3 partes
       const validToken = createValidToken(3600);
@@ -188,7 +186,7 @@ describe('Seguridad - JWT Interceptor', () => {
     it('SEC-003-C: Debe incluir signature en tokens válidos', () => {
       const validToken = createValidToken(3600);
       const parts = validToken.split('.');
-      
+
       expect(parts.length).toBe(3);
       expect(parts[2]).toBeTruthy(); // signature exists
     });
@@ -210,7 +208,6 @@ describe('Seguridad - JWT Interceptor', () => {
   // SEC-004: MANEJO SEGURO DE MÚLTIPLES PETICIONES
   // =====================================
   describe('SEC-004: Manejo Seguro de Múltiples Peticiones', () => {
-    
     it('SEC-004-A: Debe aplicar interceptor a múltiples peticiones simultáneas', () => {
       const validToken = createValidToken(3600);
       authService.getToken.and.returnValue(validToken);
@@ -222,10 +219,10 @@ describe('Seguridad - JWT Interceptor', () => {
       const reqs = [
         httpMock.expectOne('/api/test1'),
         httpMock.expectOne('/api/test2'),
-        httpMock.expectOne('/api/test3')
+        httpMock.expectOne('/api/test3'),
       ];
 
-      reqs.forEach(req => {
+      reqs.forEach((req) => {
         expect(req.request.headers.get('Authorization')).toBe(`Bearer ${validToken}`);
         req.flush({});
       });
@@ -242,12 +239,9 @@ describe('Seguridad - JWT Interceptor', () => {
       expect(authService.logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
 
-      const reqs = [
-        httpMock.expectOne('/api/test1'),
-        httpMock.expectOne('/api/test2')
-      ];
+      const reqs = [httpMock.expectOne('/api/test1'), httpMock.expectOne('/api/test2')];
 
-      reqs.forEach(req => {
+      reqs.forEach((req) => {
         // Ambas peticiones llevan el token para que el backend lo valide
         expect(req.request.headers.get('Authorization')).toBe(`Bearer ${expiredToken}`);
         req.flush({});
@@ -259,7 +253,6 @@ describe('Seguridad - JWT Interceptor', () => {
   // SEC-005: SEGURIDAD EN HEADERS
   // =====================================
   describe('SEC-005: Seguridad en Headers', () => {
-    
     it('SEC-005-A: Debe incluir Accept header para prevenir MIME confusion', () => {
       const validToken = createValidToken(3600);
       authService.getToken.and.returnValue(validToken);
@@ -314,4 +307,3 @@ describe('Seguridad - JWT Interceptor', () => {
     return `eyJhbGciOiJIUzI1NiJ9.${payload}.signature`;
   }
 });
-

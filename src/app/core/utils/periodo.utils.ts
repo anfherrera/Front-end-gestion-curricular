@@ -12,7 +12,7 @@ export function calcularDuracionSemanas(fechaInicio: string | Date, fechaFin: st
   try {
     const inicio = typeof fechaInicio === 'string' ? new Date(fechaInicio) : fechaInicio;
     const fin = typeof fechaFin === 'string' ? new Date(fechaFin) : fechaFin;
-    
+
     const dias = Math.abs((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
     return Math.round(dias / 7);
   } catch (error) {
@@ -27,7 +27,7 @@ export function calcularDuracionSemanas(fechaInicio: string | Date, fechaFin: st
  */
 export function validarPeriodo(periodo: string): boolean {
   if (!periodo) return false;
-  
+
   const regex = /^\d{4}-[12]$/;
   return regex.test(periodo);
 }
@@ -42,25 +42,25 @@ export function validarFechasCurso(fechaInicio: string | Date, fechaFin: string 
   try {
     const inicio = typeof fechaInicio === 'string' ? new Date(fechaInicio) : fechaInicio;
     const fin = typeof fechaFin === 'string' ? new Date(fechaFin) : fechaFin;
-    
+
     // Validar que la fecha de fin sea posterior a la de inicio
     if (fin <= inicio) {
       return 'La fecha de fin debe ser posterior a la fecha de inicio';
     }
-    
+
     // Calcular duración en semanas
     const semanas = calcularDuracionSemanas(inicio, fin);
-    
+
     // Validar duración mínima (3 semanas)
     if (semanas < 3) {
       return 'El curso debe durar al menos 3 semanas';
     }
-    
+
     // Validar duración máxima (12 semanas)
     if (semanas > 12) {
       return 'El curso no puede durar más de 12 semanas';
     }
-    
+
     return null; // Válido
   } catch (error) {
     return 'Error al validar las fechas';
@@ -76,11 +76,11 @@ export function getPeriodoActual(fecha?: Date): string {
   const referencia = fecha || new Date();
   const año = referencia.getFullYear();
   const mes = referencia.getMonth() + 1; // 0-11 -> 1-12
-  
+
   // Primer semestre: Enero a Junio (1-6)
   // Segundo semestre: Julio a Diciembre (7-12)
   const semestre = mes <= 6 ? 1 : 2;
-  
+
   return `${año}-${semestre}`;
 }
 
@@ -91,11 +91,11 @@ export function getPeriodoActual(fecha?: Date): string {
  */
 function parsearPeriodo(periodo: string): { año: number; numero: number } | null {
   if (!validarPeriodo(periodo)) return null;
-  
+
   const partes = periodo.split('-');
   return {
     año: parseInt(partes[0], 10),
-    numero: parseInt(partes[1], 10)
+    numero: parseInt(partes[1], 10),
   };
 }
 
@@ -108,17 +108,17 @@ function parsearPeriodo(periodo: string): { año: number; numero: number } | nul
 function compararPeriodos(periodo1: string, periodo2: string): number {
   const p1 = parsearPeriodo(periodo1);
   const p2 = parsearPeriodo(periodo2);
-  
+
   if (!p1 || !p2) return 0;
-  
+
   if (p1.año !== p2.año) {
     return p1.año < p2.año ? -1 : 1;
   }
-  
+
   if (p1.numero !== p2.numero) {
     return p1.numero < p2.numero ? -1 : 1;
   }
-  
+
   return 0;
 }
 
@@ -143,8 +143,7 @@ export function ordenarPeriodos(periodos: string[], orden: 'asc' | 'desc' = 'des
 export function formatearPeriodo(periodo: string): string {
   const parsed = parsearPeriodo(periodo);
   if (!parsed) return periodo;
-  
+
   const nombreSemestre = parsed.numero === 1 ? 'Primer Semestre' : 'Segundo Semestre';
   return `${parsed.año} - ${nombreSemestre}`;
 }
-

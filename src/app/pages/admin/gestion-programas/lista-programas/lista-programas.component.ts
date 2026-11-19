@@ -31,11 +31,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
-    MatInputModule
-],
+    MatInputModule,
+  ],
   templateUrl: './lista-programas.component.html',
   styleUrls: ['./lista-programas.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaProgramasComponent implements OnInit {
   private programasService = inject(ProgramasService);
@@ -55,7 +55,7 @@ export class ListaProgramasComponent implements OnInit {
 
   cargarProgramas(): void {
     this.loading.set(true);
-    
+
     this.programasService.listarProgramas().subscribe({
       next: (data) => {
         this.programas.set(corregirEncodingObjeto(data));
@@ -64,7 +64,7 @@ export class ListaProgramasComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al cargar la lista de programas');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -83,7 +83,7 @@ export class ListaProgramasComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al buscar programas');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -94,37 +94,41 @@ export class ListaProgramasComponent implements OnInit {
 
   eliminarPrograma(programa: ProgramaDTORespuesta): void {
     confirmar(this.dialog, {
-      titulo: 'Eliminar programa', textoConfirmar: 'Eliminar', peligro: true,
-      mensaje: `¿Está seguro de eliminar el programa "${programa.nombre_programa}"?\n\nEsta acción no se puede deshacer.`
-    }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading.set(true);
+      titulo: 'Eliminar programa',
+      textoConfirmar: 'Eliminar',
+      peligro: true,
+      mensaje: `¿Está seguro de eliminar el programa "${programa.nombre_programa}"?\n\nEsta acción no se puede deshacer.`,
+    })
+      .pipe(filter(Boolean))
+      .subscribe(() => {
+        this.loading.set(true);
 
-      this.programasService.eliminarPrograma(programa.id_programa).subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.snackbar.exito('Programa eliminado exitosamente');
-          this.cargarProgramas();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.loading.set(false);
-        
-          // Extraer mensaje de error usando el servicio
-          const mensaje = this.errorHandler.extraerMensajeError(error);
-        
-          // Determinar el tipo de error
-          if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
-            // Error de dependencias (400) - Programa tiene usuarios asociados
-            this.snackbar.advertencia(`${mensaje}`);
-          } else if (error.status === 404) {
-            // No encontrado
-            this.snackbar.error('Programa no encontrado');
-          } else {
-            // Otros errores
-            this.snackbar.error(`${mensaje}`);
-          }
-        }
+        this.programasService.eliminarPrograma(programa.id_programa).subscribe({
+          next: () => {
+            this.loading.set(false);
+            this.snackbar.exito('Programa eliminado exitosamente');
+            this.cargarProgramas();
+          },
+          error: (error: HttpErrorResponse) => {
+            this.loading.set(false);
+
+            // Extraer mensaje de error usando el servicio
+            const mensaje = this.errorHandler.extraerMensajeError(error);
+
+            // Determinar el tipo de error
+            if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+              // Error de dependencias (400) - Programa tiene usuarios asociados
+              this.snackbar.advertencia(`${mensaje}`);
+            } else if (error.status === 404) {
+              // No encontrado
+              this.snackbar.error('Programa no encontrado');
+            } else {
+              // Otros errores
+              this.snackbar.error(`${mensaje}`);
+            }
+          },
+        });
       });
-    });
   }
 
   editarPrograma(programa: ProgramaDTORespuesta): void {
@@ -135,4 +139,3 @@ export class ListaProgramasComponent implements OnInit {
     this.router.navigate(['/admin/programas/crear']);
   }
 }
-

@@ -31,7 +31,7 @@ const TIPOS_VALIDOS = ['CC', 'CE'];
 
 const TIPOS_DOCUMENTO_FIJOS = [
   { value: 'CC', label: 'Cédula de Ciudadanía' },
-  { value: 'CE', label: 'Cédula de Extranjería' }
+  { value: 'CE', label: 'Cédula de Extranjería' },
 ];
 
 /** Solo CC o CE; el vacío lo controla `required`. */
@@ -55,11 +55,11 @@ function tipoDocumentoValido(control: AbstractControl): ValidationErrors | null 
     MatButtonModule,
     MatIconModule,
     CardContainerComponent,
-    FileUploadComponent
+    FileUploadComponent,
   ],
   templateUrl: './preregistro-ecaes.component.html',
   styleUrls: ['../ecaes-formularios.css', './preregistro-ecaes.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PreregistroEcaesComponent implements OnInit {
   private pruebasEcaesService = inject(PruebasEcaesService);
@@ -79,7 +79,7 @@ export class PreregistroEcaesComponent implements OnInit {
     tipoDocumento: ['CC', [Validators.required, tipoDocumentoValido]],
     numero_documento: ['', [Validators.required, Validators.minLength(6)]],
     fecha_expedicion: [null as Date | null, Validators.required],
-    fecha_nacimiento: [null as Date | null, Validators.required]
+    fecha_nacimiento: [null as Date | null, Validators.required],
   });
 
   readonly archivos = signal<Archivo[]>([]);
@@ -97,19 +97,20 @@ export class PreregistroEcaesComponent implements OnInit {
 
   /** Tipos del backend, solo CC y CE; si no llega ninguno, los fijos. */
   cargarTiposDocumento(): void {
-    this.pruebasEcaesService.listarTiposDocumento()
+    this.pruebasEcaesService
+      .listarTiposDocumento()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: tipos => {
+        next: (tipos) => {
           const validos = tipos
-            .filter(tipo => TIPOS_VALIDOS.includes(tipo.codigo))
-            .map(tipo => ({ value: tipo.codigo, label: tipo.descripcion }));
+            .filter((tipo) => TIPOS_VALIDOS.includes(tipo.codigo))
+            .map((tipo) => ({ value: tipo.codigo, label: tipo.descripcion }));
           this.tiposDocumento.set(validos.length > 0 ? validos : TIPOS_DOCUMENTO_FIJOS);
         },
-        error: error => {
+        error: (error) => {
           this.logger.error('Error al cargar tipos de documento:', error);
           this.tiposDocumento.set(TIPOS_DOCUMENTO_FIJOS);
-        }
+        },
       });
   }
 
@@ -138,22 +139,31 @@ export class PreregistroEcaesComponent implements OnInit {
     this.subirArchivos()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: documentos => this.crearSolicitud({ ...solicitud, documentos }),
-        error: error => {
+        next: (documentos) => this.crearSolicitud({ ...solicitud, documentos }),
+        error: (error) => {
           // Los archivos se quedan en la lista para reintentar
           this.logger.error('Error al subir archivos:', error);
-          this.snackbar.error(this.errorHandler.extraerMensajeError(error) || 'Error al subir los archivos. Intente nuevamente.');
+          this.snackbar.error(
+            this.errorHandler.extraerMensajeError(error) || 'Error al subir los archivos. Intente nuevamente.'
+          );
           this.enviandoSolicitud.set(false);
-        }
+        },
       });
   }
 
   /** Uno tras otro, en el orden de la lista. */
   private subirArchivos(): Observable<DocumentoEcaes[]> {
     return from(this.archivos()).pipe(
-      concatMap(archivo => archivo.file
-        ? this.archivosService.subirPDF(archivo.file).pipe(map(respuesta => this.aDocumento(respuesta, archivo)))
-        : throwError(() => new Error(`No se pudo obtener el archivo ${archivo.nombre}. Asegúrese de que el archivo fue seleccionado correctamente.`))),
+      concatMap((archivo) =>
+        archivo.file
+          ? this.archivosService.subirPDF(archivo.file).pipe(map((respuesta) => this.aDocumento(respuesta, archivo)))
+          : throwError(
+              () =>
+                new Error(
+                  `No se pudo obtener el archivo ${archivo.nombre}. Asegúrese de que el archivo fue seleccionado correctamente.`
+                )
+            )
+      ),
       toArray()
     );
   }
@@ -169,7 +179,7 @@ export class PreregistroEcaesComponent implements OnInit {
       fecha_documento: new Date().toISOString(),
       esValido: true,
       comentario: 'Documento adjunto para inscripción ECAES',
-      tipoDocumentoSolicitudPazYSalvo: 'ECAES'
+      tipoDocumentoSolicitudPazYSalvo: 'ECAES',
     };
   }
 
@@ -186,12 +196,13 @@ export class PreregistroEcaesComponent implements OnInit {
       // El formulario es válido: las dos fechas están puestas
       fecha_expedicion: datos.fecha_expedicion?.toISOString() ?? '',
       fecha_nacimiento: datos.fecha_nacimiento?.toISOString() ?? '',
-      documentos: []
+      documentos: [],
     };
   }
 
   private crearSolicitud(solicitud: SolicitudEcaesRequest): void {
-    this.pruebasEcaesService.crearSolicitudEcaes(solicitud)
+    this.pruebasEcaesService
+      .crearSolicitudEcaes(solicitud)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -201,21 +212,28 @@ export class PreregistroEcaesComponent implements OnInit {
           this.limpiarFormulario();
           this.enviada.emit();
         },
-        error: error => {
+        error: (error) => {
           this.logger.error('Error al enviar solicitud:', error);
           const mensaje = this.errorHandler.extraerMensajeError(error);
-          this.snackbar.error(mensaje
-            ? `${mensaje} Debe corregir los datos y volver a adjuntar los documentos.`
-            : 'Error al enviar la solicitud. Debe volver a adjuntar los documentos.');
+          this.snackbar.error(
+            mensaje
+              ? `${mensaje} Debe corregir los datos y volver a adjuntar los documentos.`
+              : 'Error al enviar la solicitud. Debe volver a adjuntar los documentos.'
+          );
           this.enviandoSolicitud.set(false);
           // El backend puede invalidar los archivos subidos si la creación falla: hay que adjuntarlos otra vez
           this.archivos.set([]);
-        }
+        },
       });
   }
 
   limpiarFormulario(): void {
-    this.solicitudForm.reset({ tipoDocumento: 'CC', numero_documento: '', fecha_expedicion: null, fecha_nacimiento: null });
+    this.solicitudForm.reset({
+      tipoDocumento: 'CC',
+      numero_documento: '',
+      fecha_expedicion: null,
+      fecha_nacimiento: null,
+    });
     this.archivos.set([]);
     this.enviandoSolicitud.set(false);
   }

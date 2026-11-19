@@ -14,9 +14,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { merge } from 'rxjs';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import {
-  CreateCursoDTO, CursoOfertadoVerano, Docente, Materia, Salon, UpdateCursoDTO
+  CreateCursoDTO,
+  CursoOfertadoVerano,
+  Docente,
+  Materia,
+  Salon,
+  UpdateCursoDTO,
 } from '@core/models/cursos-intersemestrales.model';
-import { formatearPeriodo, validarFechasCurso, calcularDuracionSemanas, ordenarPeriodos, validarPeriodo } from '@core/utils/periodo.utils';
+import {
+  formatearPeriodo,
+  validarFechasCurso,
+  calcularDuracionSemanas,
+  ordenarPeriodos,
+  validarPeriodo,
+} from '@core/utils/periodo.utils';
 import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 import { SnackbarService } from '@core/services/snackbar.service';
 
@@ -46,11 +57,11 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
-    NombreDocentePipe
-],
+    NombreDocentePipe,
+  ],
   templateUrl: './curso-dialog.component.html',
   styleUrls: ['./curso-dialog.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursoDialogComponent implements OnInit {
   dialogRef = inject<MatDialogRef<CursoDialogComponent>>(MatDialogRef);
@@ -83,7 +94,8 @@ export class CursoDialogComponent implements OnInit {
 
   cargarSalones(): void {
     this.cargandoSalones.set(true);
-    this.cursosService.getSalones()
+    this.cursosService
+      .getSalones()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (salones) => {
@@ -100,15 +112,16 @@ export class CursoDialogComponent implements OnInit {
         error: () => {
           this.snackbar.error('Error al cargar la lista de salones');
           this.cargandoSalones.set(false);
-        }
+        },
       });
   }
 
   /** Períodos de los últimos años en orden cronológico; al crear se preselecciona el primero. */
   private cargarPeriodos(): void {
-    this.cursosService.getPeriodosRecientes()
+    this.cursosService
+      .getPeriodosRecientes()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(periodos => {
+      .subscribe((periodos) => {
         const ordenados = ordenarPeriodos(periodos, 'asc');
         this.periodos.set(ordenados);
         if (ordenados.length > 0 && !this.data.editando) {
@@ -156,7 +169,7 @@ export class CursoDialogComponent implements OnInit {
     const formData = this.data.form.value;
     const cambios: UpdateCursoDTO = {
       cupo_estimado: formData.cupo_estimado,
-      estado: formData.estado
+      estado: formData.estado,
     };
     // id_salon es lo recomendado; espacio_asignado solo para cursos antiguos sin salón
     if (formData.id_salon) {
@@ -165,7 +178,8 @@ export class CursoDialogComponent implements OnInit {
       cambios.espacio_asignado = formData.espacio_asignado;
     }
 
-    this.cursosService.actualizarCurso(idCurso, cambios)
+    this.cursosService
+      .actualizarCurso(idCurso, cambios)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -173,13 +187,14 @@ export class CursoDialogComponent implements OnInit {
           this.dialogRef.close('guardado');
         },
         error: (err: HttpErrorResponse) => {
-          const mensaje = err.error?.message
-            || (typeof err.error === 'string' ? err.error : '')
-            || (err.status === 400 ? 'Datos inválidos enviados al servidor' : 'Error al actualizar el curso');
+          const mensaje =
+            err.error?.message ||
+            (typeof err.error === 'string' ? err.error : '') ||
+            (err.status === 400 ? 'Datos inválidos enviados al servidor' : 'Error al actualizar el curso');
           this.snackbar.error(mensaje);
           // Se cierra igual para que la lista se recargue
           this.dialogRef.close('guardado');
-        }
+        },
       });
   }
 
@@ -187,11 +202,15 @@ export class CursoDialogComponent implements OnInit {
     const formValue = this.data.form.value;
     const periodoAcademico = formValue.periodoAcademico || '';
     if (!validarPeriodo(periodoAcademico)) {
-      this.snackbar.error('El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.');
+      this.snackbar.error(
+        'El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.'
+      );
       return;
     }
 
-    const grupo = String(formValue.grupo || 'A').toUpperCase().trim();
+    const grupo = String(formValue.grupo || 'A')
+      .toUpperCase()
+      .trim();
     const nuevo: CreateCursoDTO = {
       id_materia: Number(formValue.id_materia),
       id_docente: Number(formValue.id_docente),
@@ -199,7 +218,7 @@ export class CursoDialogComponent implements OnInit {
       fecha_inicio: formValue.fecha_inicio ? new Date(formValue.fecha_inicio).toISOString() : '',
       fecha_fin: formValue.fecha_fin ? new Date(formValue.fecha_fin).toISOString() : '',
       periodoAcademico,
-      grupo: GRUPOS.includes(grupo) ? grupo : 'A'
+      grupo: GRUPOS.includes(grupo) ? grupo : 'A',
     };
     if (formValue.id_salon) {
       nuevo.id_salon = Number(formValue.id_salon);
@@ -210,7 +229,8 @@ export class CursoDialogComponent implements OnInit {
       nuevo.estado = formValue.estado;
     }
 
-    this.cursosService.crearCurso(nuevo)
+    this.cursosService
+      .crearCurso(nuevo)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -220,7 +240,7 @@ export class CursoDialogComponent implements OnInit {
         // El diálogo sigue abierto para que el usuario corrija
         error: (err: HttpErrorResponse) => {
           this.snackbar.error(this.mensajeErrorCreacion(err));
-        }
+        },
       });
   }
 
@@ -232,8 +252,10 @@ export class CursoDialogComponent implements OnInit {
 
     const mensaje: string | undefined = cuerpo.message;
     if (cuerpo.codigo === 'CURSO_DUPLICADO' || mensaje?.includes('duplicado')) {
-      return (mensaje || 'Ya existe un curso con la misma materia, docente, período académico y grupo.')
-        + '\n\nPuedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.';
+      return (
+        (mensaje || 'Ya existe un curso con la misma materia, docente, período académico y grupo.') +
+        '\n\nPuedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.'
+      );
     }
     if (mensaje?.includes('período académico')) {
       this.cargarPeriodos();
@@ -248,7 +270,7 @@ export class CursoDialogComponent implements OnInit {
     this.data.form.reset({
       estado: 'Abierto',
       cupo_estimado: 25,
-      grupo: 'A'
+      grupo: 'A',
     });
   }
 

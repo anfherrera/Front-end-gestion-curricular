@@ -20,12 +20,12 @@ const CONDICIONES: Record<string, { texto: string; clase: string }> = {
   PRIMERA_VEZ: { texto: 'Primera Vez', clase: 'condicion-primera-vez' },
   Repeticion: { texto: 'Repetición', clase: 'condicion-repitencia' },
   REPITENCIA: { texto: 'Repetición', clase: 'condicion-repitencia' },
-  'REPETECIÓN': { texto: 'Repetición', clase: 'condicion-repitencia' },
+  REPETECIÓN: { texto: 'Repetición', clase: 'condicion-repitencia' },
   Homologacion: { texto: 'Habilitación', clase: 'condicion-habilitacion' },
   HABILITACION: { texto: 'Habilitación', clase: 'condicion-habilitacion' },
-  'HABILITACIÓN': { texto: 'Habilitación', clase: 'condicion-habilitacion' },
+  HABILITACIÓN: { texto: 'Habilitación', clase: 'condicion-habilitacion' },
   TRASLADO: { texto: 'Traslado', clase: 'condicion-traslado' },
-  'Preinscripción': { texto: 'Preinscripción', clase: 'condicion-preinscripcion' }
+  Preinscripción: { texto: 'Preinscripción', clase: 'condicion-preinscripcion' },
 };
 
 /** Textos de los estados de solicitudes de cursos (la clase CSS sale del pipe estadoClase). */
@@ -34,7 +34,7 @@ const ESTADOS_TEXTO: Record<string, string> = {
   APROBADO: 'Aprobado',
   RECHAZADO: 'Rechazado',
   PAGO_VALIDADO: 'Pago Validado',
-  PAGO_RECHAZADO: 'Pago Rechazado'
+  PAGO_RECHAZADO: 'Pago Rechazado',
 };
 
 /** Solicitudes de cursos intersemestrales filtradas por materia y período, con exportación a Excel. */
@@ -47,11 +47,11 @@ const ESTADOS_TEXTO: Record<string, string> = {
     PeriodoFiltroSelectorComponent,
     ...MATERIAL_IMPORTS,
     UtfFixPipe,
-    EstadoClasePipe
+    EstadoClasePipe,
   ],
   templateUrl: './visualizar-solicitudes.component.html',
   styleUrls: ['./visualizar-solicitudes.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisualizarSolicitudesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -76,18 +76,17 @@ export class VisualizarSolicitudesComponent implements OnInit {
   ngOnInit(): void {
     this.cargarMaterias();
     this.cargarSolicitudes();
-    this.filtroForm.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.cargarSolicitudes());
+    this.filtroForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.cargarSolicitudes());
   }
 
   /** El backend ya incluye "Todas las materias" (id 0). */
   cargarMaterias(): void {
-    this.cursosService.getMateriasFiltro()
+    this.cursosService
+      .getMateriasFiltro()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (materias) => this.materias.set(materias),
-        error: () => this.materias.set([TODAS_LAS_MATERIAS])
+        error: () => this.materias.set([TODAS_LAS_MATERIAS]),
       });
   }
 
@@ -95,7 +94,8 @@ export class VisualizarSolicitudesComponent implements OnInit {
     this.cargando.set(true);
     const idMateria = this.filtroForm.value.materia || undefined;
 
-    this.cursosService.getSolicitudesVisualizar(idMateria, this.periodoFiltro)
+    this.cursosService
+      .getSolicitudesVisualizar(idMateria, this.periodoFiltro)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (solicitudes) => {
@@ -105,7 +105,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
         error: () => {
           this.solicitudesFiltradas.set([]);
           this.cargando.set(false);
-        }
+        },
       });
   }
 
@@ -132,7 +132,8 @@ export class VisualizarSolicitudesComponent implements OnInit {
    */
   exportarSolicitudesExcel(): void {
     this.exportando.set(true);
-    this.cursosService.exportarSolicitudesExcel(this.periodoFiltro)
+    this.cursosService
+      .exportarSolicitudesExcel(this.periodoFiltro)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (archivo) => {
@@ -145,7 +146,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
           const porDefecto = 'Error al exportar las solicitudes. Por favor, intente nuevamente.';
           const mostrar = (mensaje: string) => this.snackbar.error(mensaje);
           if (error instanceof HttpErrorResponse && error.error instanceof Blob) {
-            error.error.text().then(texto => {
+            error.error.text().then((texto) => {
               try {
                 mostrar(JSON.parse(texto).message || porDefecto);
               } catch {
@@ -155,7 +156,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
           } else {
             mostrar(error.message || porDefecto);
           }
-        }
+        },
       });
   }
 }

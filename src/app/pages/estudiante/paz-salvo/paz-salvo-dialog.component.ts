@@ -7,16 +7,21 @@ import { MatButtonModule } from '@angular/material/button';
   template: `
     <h2 mat-dialog-title>Aviso Importante – Solicitud de Paz y Salvo Académico</h2>
     <mat-dialog-content>
+      <p>Información Importante - Inicio del Proceso de Solicitud de Paz y Salvo Académico.</p>
       <p>
-        Información Importante - Inicio del Proceso de Solicitud de Paz y Salvo Académico.
+        Antes de iniciar el proceso correspondiente, se informa a los estudiantes de los programas de Ingeniería en
+        Sistemas, Ingeniería Electrónica e Ingeniería en Automatización que deben solicitar el paz y salvo académico a
+        través de la plataforma SIMCA Web, adjuntando debidamente el formato PPH o TIH (acta de sustentación), según
+        corresponda.
       </p>
       <p>
-        Antes de iniciar el proceso correspondiente, se informa a los estudiantes de los programas de Ingeniería en Sistemas, Ingeniería Electrónica e Ingeniería en Automatización que deben solicitar el paz y salvo académico a través de la plataforma SIMCA Web, adjuntando debidamente el formato PPH o TIH (acta de sustentación), según corresponda.
+        Por su parte, los estudiantes pertenecientes al programa de Tecnología únicamente deben adjuntar una fotocopia
+        legible de su cédula de ciudadanía al realizar la solicitud.
       </p>
       <p>
-        Por su parte, los estudiantes pertenecientes al programa de Tecnología únicamente deben adjuntar una fotocopia legible de su cédula de ciudadanía al realizar la solicitud.
+        El cumplimiento de este requisito es indispensable para continuar con los trámites académicos y administrativos
+        asociados.
       </p>
-      <p> El cumplimiento de este requisito es indispensable para continuar con los trámites académicos y administrativos asociados.</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="onCancel()">Cancelar</button>
@@ -24,11 +29,10 @@ import { MatButtonModule } from '@angular/material/button';
     </mat-dialog-actions>
   `,
   imports: [MatDialogModule, MatButtonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PazSalvoDialogComponent {
   private dialogRef = inject<MatDialogRef<PazSalvoDialogComponent>>(MatDialogRef);
-
 
   onCancel() {
     this.dialogRef.close(false);

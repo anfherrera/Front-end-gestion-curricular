@@ -30,12 +30,16 @@ describe('ReingresoEstudianteComponent', () => {
     codigo: '12345',
     correo: 'test@unicauca.edu.co',
     rol: { nombre: 'ESTUDIANTE' },
-    objPrograma: { id_programa: 1, nombre_programa: 'Ingenieria' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingenieria' },
   };
 
   beforeEach(async () => {
     const reingresoServiceSpy = jasmine.createSpyObj('ReingresoEstudianteService', [
-      'listarSolicitudesPorRol', 'crearSolicitud', 'descargarArchivo', 'obtenerOficios', 'descargarOficioConNombre'
+      'listarSolicitudesPorRol',
+      'crearSolicitud',
+      'descargarArchivo',
+      'obtenerOficios',
+      'descargarOficioConNombre',
     ]);
     const formatosServiceSpy = jasmine.createSpyObj('FormatosInstitucionalesService', ['getReingreso']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -48,11 +52,7 @@ describe('ReingresoEstudianteComponent', () => {
     formatosServiceSpy.getReingreso.and.returnValue(null);
 
     await TestBed.configureTestingModule({
-      imports: [
-        ReingresoEstudianteComponent,
-        HttpClientTestingModule,
-        NoopAnimationsModule
-      ],
+      imports: [ReingresoEstudianteComponent, HttpClientTestingModule, NoopAnimationsModule],
       providers: [
         { provide: ReingresoEstudianteService, useValue: reingresoServiceSpy },
         { provide: FormatosInstitucionalesService, useValue: formatosServiceSpy },
@@ -60,8 +60,8 @@ describe('ReingresoEstudianteComponent', () => {
         { provide: MatDialog, useValue: dialogSpy },
         { provide: LoggerService, useValue: loggerSpy },
         { provide: ErrorHandlerService, useValue: errorHandlerSpy },
-        { provide: PeriodosAcademicosService, useValue: periodosServiceSpy }
-      ]
+        { provide: PeriodosAcademicosService, useValue: periodosServiceSpy },
+      ],
     }).compileComponents();
 
     reingresoService = TestBed.inject(ReingresoEstudianteService) as jasmine.SpyObj<ReingresoEstudianteService>;
@@ -135,18 +135,26 @@ describe('ReingresoEstudianteComponent', () => {
 
   /** Solicitud de reingreso con solo los campos que usa cada prueba. */
   const solicitud = (datos: Partial<SolicitudReingresoDTORespuesta>) => datos as SolicitudReingresoDTORespuesta;
-  const estado = (estado_actual: string, comentario?: string): EstadoSolicitudDTORespuesta =>
-    ({ id_estado: 1, estado_actual, fecha_registro_estado: '2025-01-01T00:00:00.000Z', comentario });
+  const estado = (estado_actual: string, comentario?: string): EstadoSolicitudDTORespuesta => ({
+    id_estado: 1,
+    estado_actual,
+    fecha_registro_estado: '2025-01-01T00:00:00.000Z',
+    comentario,
+  });
 
   it('RE-E-009: muestra el aviso de rechazo cuando el backend manda RECHAZADA', () => {
     component.procesarSolicitudes([
       solicitud({ id_solicitud: 1, nombre_solicitud: 'Primera', estadosSolicitud: [estado('ENVIADA')] }),
-      solicitud({ id_solicitud: 2, nombre_solicitud: 'Segunda', estadosSolicitud: [estado('ENVIADA'), estado('RECHAZADA', 'Falta la carta')] })
+      solicitud({
+        id_solicitud: 2,
+        nombre_solicitud: 'Segunda',
+        estadosSolicitud: [estado('ENVIADA'), estado('RECHAZADA', 'Falta la carta')],
+      }),
     ]);
     expect(component.ultimaRechazada()?.comentarios).toBe('Falta la carta');
 
     component.procesarSolicitudes([
-      solicitud({ id_solicitud: 3, nombre_solicitud: 'Tercera', estadosSolicitud: [estado('APROBADA')] })
+      solicitud({ id_solicitud: 3, nombre_solicitud: 'Tercera', estadosSolicitud: [estado('APROBADA')] }),
     ]);
     expect(component.ultimaRechazada()).toBeNull();
   });
@@ -155,12 +163,23 @@ describe('ReingresoEstudianteComponent', () => {
     const dialog = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
     // La página importa MatDialogModule y recibe su propio MatDialog: se sustituye por el espía
     component['dialog'] = dialog;
-    component.solicitudesCompletas = [solicitud({
-      id_solicitud: 4,
-      nombre_solicitud: 'Reingreso',
-      documentos: [{ id_documento: 1, nombre: 'carta.pdf', ruta_documento: 'carta.pdf', fecha_documento: '2025-01-01', esValido: false, comentario: 'Sin firma' }],
-      estadosSolicitud: [estado('ENVIADA'), estado('RECHAZADA', 'Corrige la carta')]
-    })];
+    component.solicitudesCompletas = [
+      solicitud({
+        id_solicitud: 4,
+        nombre_solicitud: 'Reingreso',
+        documentos: [
+          {
+            id_documento: 1,
+            nombre: 'carta.pdf',
+            ruta_documento: 'carta.pdf',
+            fecha_documento: '2025-01-01',
+            esValido: false,
+            comentario: 'Sin firma',
+          },
+        ],
+        estadosSolicitud: [estado('ENVIADA'), estado('RECHAZADA', 'Corrige la carta')],
+      }),
+    ];
 
     component.verComentarios(4);
 
@@ -176,7 +195,7 @@ describe('ReingresoEstudianteComponent', () => {
     component.archivosActuales.set(archivos);
     component.fileUploadComponent = {
       subirArchivosPendientes: () => of(archivos),
-      resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga')
+      resetearEstadoCarga: jasmine.createSpy('resetearEstadoCarga'),
     } as unknown as FileUploadComponent;
 
     component.onSolicitudEnviada();
@@ -190,8 +209,13 @@ describe('ReingresoEstudianteComponent', () => {
 
   describe('descargarOficio', () => {
     let nombreDescargado: string;
-    const documento = (nombre: string, fecha_documento: string) =>
-      ({ id_documento: 1, nombre, ruta_documento: nombre, fecha_documento, esValido: true });
+    const documento = (nombre: string, fecha_documento: string) => ({
+      id_documento: 1,
+      nombre,
+      ruta_documento: nombre,
+      fecha_documento,
+      esValido: true,
+    });
 
     beforeEach(() => {
       nombreDescargado = '';
@@ -203,14 +227,16 @@ describe('ReingresoEstudianteComponent', () => {
 
     it('RE-E-012: baja por su nombre la resolución más reciente, no los documentos del estudiante', () => {
       reingresoService.descargarArchivo.and.returnValue(of(new Blob()));
-      component.solicitudesCompletas = [solicitud({
-        id_solicitud: 7,
-        documentos: [
-          documento('Certificado de notas.pdf', '2026-11-01'),
-          documento('Oficio de reingreso.pdf', '2026-11-02'),
-          documento('Resolucion reingreso 7.pdf', '2026-11-10')
-        ]
-      })];
+      component.solicitudesCompletas = [
+        solicitud({
+          id_solicitud: 7,
+          documentos: [
+            documento('Certificado de notas.pdf', '2026-11-01'),
+            documento('Oficio de reingreso.pdf', '2026-11-02'),
+            documento('Resolucion reingreso 7.pdf', '2026-11-10'),
+          ],
+        }),
+      ];
 
       component.descargarOficio(7, 'oficio.pdf');
 
@@ -221,11 +247,17 @@ describe('ReingresoEstudianteComponent', () => {
 
     it('RE-E-013: sin resolución entre los documentos, pide el oficio al backend con el nombre de Content-Disposition', () => {
       reingresoService.obtenerOficios.and.returnValue(of([{ id: 8, nombre: 'oficio_8.pdf' }]));
-      reingresoService.descargarOficioConNombre.and.returnValue(of(new HttpResponse({
-        body: new Blob(),
-        headers: new HttpHeaders({ 'Content-Disposition': 'attachment; filename="Resolución 8.pdf"' })
-      })));
-      component.solicitudesCompletas = [solicitud({ id_solicitud: 8, documentos: [documento('Certificado de notas.pdf', '2026-11-01')] })];
+      reingresoService.descargarOficioConNombre.and.returnValue(
+        of(
+          new HttpResponse({
+            body: new Blob(),
+            headers: new HttpHeaders({ 'Content-Disposition': 'attachment; filename="Resolución 8.pdf"' }),
+          })
+        )
+      );
+      component.solicitudesCompletas = [
+        solicitud({ id_solicitud: 8, documentos: [documento('Certificado de notas.pdf', '2026-11-01')] }),
+      ];
 
       component.descargarOficio(8, 'oficio.pdf');
 
@@ -238,13 +270,19 @@ describe('ReingresoEstudianteComponent', () => {
       const snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
       reingresoService.descargarArchivo.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
       reingresoService.obtenerOficios.and.returnValue(of([]));
-      component.solicitudesCompletas = [solicitud({ id_solicitud: 9, documentos: [documento('Resolucion 9.pdf', '2026-11-10')] })];
+      component.solicitudesCompletas = [
+        solicitud({ id_solicitud: 9, documentos: [documento('Resolucion 9.pdf', '2026-11-10')] }),
+      ];
 
       component.descargarOficio(9, 'oficio.pdf');
 
       expect(reingresoService.obtenerOficios).toHaveBeenCalledWith(9);
       expect(reingresoService.descargarOficioConNombre).not.toHaveBeenCalled();
-      expect(snackBar.open).toHaveBeenCalledWith('No hay oficios disponibles para esta solicitud', 'Cerrar', jasmine.any(Object));
+      expect(snackBar.open).toHaveBeenCalledWith(
+        'No hay oficios disponibles para esta solicitud',
+        'Cerrar',
+        jasmine.any(Object)
+      );
       expect(nombreDescargado).toBe('');
     });
   });

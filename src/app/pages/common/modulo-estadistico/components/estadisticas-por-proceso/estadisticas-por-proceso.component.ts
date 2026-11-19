@@ -31,11 +31,11 @@ interface ProcesoData {
     MatProgressSpinnerModule,
     MatButtonModule,
     MatTooltipModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   templateUrl: './estadisticas-por-proceso.component.html',
   styleUrl: './estadisticas-por-proceso.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
@@ -43,7 +43,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   readonly autoLoad = input(true);
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
-  
+
   readonly procesosData = signal<ProcesoData[]>([]);
   readonly fechaConsulta = signal<string | null>(null);
   readonly loading = signal(false);
@@ -74,29 +74,28 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
 
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
-    
+
     const periodoAcademico = this.periodoAcademico();
     if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico !== 'todos') {
       filtros.periodoAcademico = periodoAcademico.trim();
     }
-    
+
     const idPrograma = this.idPrograma();
     if (idPrograma !== undefined && idPrograma !== null && !isNaN(idPrograma) && idPrograma > 0) {
       filtros.idPrograma = idPrograma;
     }
 
-    const sub = this.estadisticasService.getEstadisticasDetalladasPorProceso(filtros)
-      .subscribe({
-        next: (response: EstadisticasPorProcesoResponse) => {
-          this.fechaConsulta.set(response.fechaConsulta);
-          this.procesosData.set(this.procesarDatos(response.estadisticasPorProceso));
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-          this.error.set('Error al cargar estadísticas por proceso');
-        }
-      });
+    const sub = this.estadisticasService.getEstadisticasDetalladasPorProceso(filtros).subscribe({
+      next: (response: EstadisticasPorProcesoResponse) => {
+        this.fechaConsulta.set(response.fechaConsulta);
+        this.procesosData.set(this.procesarDatos(response.estadisticasPorProceso));
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set('Error al cargar estadísticas por proceso');
+      },
+    });
 
     this.subscription.add(sub);
   }
@@ -115,7 +114,7 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
           rechazadas: datos.rechazadas || 0,
           enProceso: datos.enProceso || 0,
           enviadas: datos.enviadas || 0,
-          porcentajeAprobacion: total > 0 ? (aprobadas / total) * 100 : 0
+          porcentajeAprobacion: total > 0 ? (aprobadas / total) * 100 : 0,
         };
       })
       .sort((a, b) => b.totalSolicitudes - a.totalSolicitudes);
@@ -123,37 +122,37 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
 
   private formatearNombreProceso(nombre: string): string {
     const nombres: Record<string, string> = {
-      'reingreso': 'Reingreso de Estudiante',
-      'homologacion': 'Homologación de Asignaturas',
+      reingreso: 'Reingreso de Estudiante',
+      homologacion: 'Homologación de Asignaturas',
       'cursos-intersemestrales': 'Cursos Intersemestrales',
       'pruebas-ecaes': 'Pruebas ECAES',
-      'paz-salvo': 'Paz y Salvo'
+      'paz-salvo': 'Paz y Salvo',
     };
-    
+
     return nombres[nombre.toLowerCase()] || nombre;
   }
 
   getProcesoClass(nombre: string): string {
     const clases: Record<string, string> = {
-      'reingreso': 'reingreso',
-      'homologacion': 'homologacion',
+      reingreso: 'reingreso',
+      homologacion: 'homologacion',
       'cursos-intersemestrales': 'cursos',
       'pruebas-ecaes': 'ecaes',
-      'paz-salvo': 'paz'
+      'paz-salvo': 'paz',
     };
-    
+
     return clases[nombre.toLowerCase()] || 'default';
   }
 
   getProcesoIcon(nombre: string): string {
     const iconos: Record<string, string> = {
-      'reingreso': 'person_add',
-      'homologacion': 'swap_horiz',
+      reingreso: 'person_add',
+      homologacion: 'swap_horiz',
       'cursos-intersemestrales': 'school',
       'pruebas-ecaes': 'quiz',
-      'paz-salvo': 'verified'
+      'paz-salvo': 'verified',
     };
-    
+
     return iconos[nombre.toLowerCase()] || 'description';
   }
 

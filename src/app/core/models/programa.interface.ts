@@ -9,4 +9,3 @@ export interface ProgramaDTORespuesta {
   codigo: string;
   nombre_programa: string;
 }
-

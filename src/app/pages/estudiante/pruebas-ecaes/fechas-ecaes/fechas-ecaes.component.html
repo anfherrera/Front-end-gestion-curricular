@@ -1,5 +1,4 @@
 <app-card-container title="Fechas" icon="event">
-
   <!-- Selector de período académico -->
   <div class="selector-periodo">
     <mat-form-field appearance="outline" class="periodo-select">
@@ -33,7 +32,7 @@
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="data-row"></tr>
       </table>
     </div>
   }
@@ -44,5 +43,4 @@
       <p>No hay fechas disponibles para mostrar.</p>
     </div>
   }
-
 </app-card-container>

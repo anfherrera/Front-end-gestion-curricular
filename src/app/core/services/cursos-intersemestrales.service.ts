@@ -26,7 +26,7 @@ import {
   SolicitudCreada,
   SolicitudCursoVerano,
   SolicitudVisualizar,
-  UpdateCursoDTO
+  UpdateCursoDTO,
 } from '../models/cursos-intersemestrales.model';
 
 const BASE = ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE;
@@ -35,8 +35,8 @@ const GRUPOS = ['A', 'B', 'C', 'D'];
 
 /** El backend recibe los estados de curso sin tilde. */
 const ESTADO_PARA_BACKEND: Record<string, string> = {
-  'Preinscripción': 'Preinscripcion',
-  'Inscripción': 'Inscripcion'
+  Preinscripción: 'Preinscripcion',
+  Inscripción: 'Inscripcion',
 };
 
 /** Valor de un filtro de período: vacío o "todos" significan sin filtro. */
@@ -81,7 +81,7 @@ type RespuestaPeriodos = string[] | { valor: string }[] | { success: boolean; da
 function aPeriodos(respuesta: RespuestaPeriodos | null): string[] {
   const datos = respuesta && !Array.isArray(respuesta) ? respuesta.data : respuesta;
   if (!Array.isArray(datos)) return [];
-  return datos.map(p => typeof p === 'string' ? p : p.valor);
+  return datos.map((p) => (typeof p === 'string' ? p : p.valor));
 }
 
 /**
@@ -91,7 +91,6 @@ function aPeriodos(respuesta: RespuestaPeriodos | null): string[] {
 @Injectable({ providedIn: 'root' })
 export class CursosIntersemestralesService {
   private http = inject(HttpClient);
-
 
   // ====== PERÍODOS ACADÉMICOS ======
 
@@ -128,25 +127,34 @@ export class CursosIntersemestralesService {
    * Cursos disponibles para el estudiante. Sin período, el backend usa el actual;
    * "todos" o `todosLosPeriodos` muestran todos. Si falla, lista vacía.
    */
-  getCursosDisponibles(periodoAcademico?: string | null, idPrograma?: number, todosLosPeriodos?: boolean): Observable<CursoOfertadoVerano[]> {
+  getCursosDisponibles(
+    periodoAcademico?: string | null,
+    idPrograma?: number,
+    todosLosPeriodos?: boolean
+  ): Observable<CursoOfertadoVerano[]> {
     const todos = todosLosPeriodos === true || periodoAcademico?.trim().toLowerCase() === 'todos';
     const params = parametros({
       todosLosPeriodos: todos ? 'true' : null,
       periodoAcademico: todos ? null : periodoAcademico,
-      idPrograma
+      idPrograma,
     });
-    return this.http.get<CursoOfertadoVerano[] | { data: CursoOfertadoVerano[] }>(VERANO.DISPONIBLES, conParametros(params)).pipe(
-      map(respuesta => (Array.isArray(respuesta) ? respuesta : respuesta?.data ?? []).map(normalizarCurso)),
-      catchError(() => of([]))
-    );
+    return this.http
+      .get<CursoOfertadoVerano[] | { data: CursoOfertadoVerano[] }>(VERANO.DISPONIBLES, conParametros(params))
+      .pipe(
+        map((respuesta) => (Array.isArray(respuesta) ? respuesta : (respuesta?.data ?? [])).map(normalizarCurso)),
+        catchError(() => of([]))
+      );
   }
 
   /** Todos los cursos (funcionario/coordinador). Sin período o con "todos" no filtra. */
-  getTodosLosCursosParaFuncionarios(periodoAcademico?: string | null, idPrograma?: number): Observable<CursoOfertadoVerano[]> {
+  getTodosLosCursosParaFuncionarios(
+    periodoAcademico?: string | null,
+    idPrograma?: number
+  ): Observable<CursoOfertadoVerano[]> {
     const params = parametros({ periodoAcademico: periodoFiltrado(periodoAcademico), idPrograma });
-    return this.http.get<CursoOfertadoVerano[]>(VERANO.TODOS, conParametros(params)).pipe(
-      map(cursos => cursos.map(normalizarCurso))
-    );
+    return this.http
+      .get<CursoOfertadoVerano[]>(VERANO.TODOS, conParametros(params))
+      .pipe(map((cursos) => cursos.map(normalizarCurso)));
   }
 
   /**
@@ -154,15 +162,18 @@ export class CursosIntersemestralesService {
    * los demás estados se filtran sobre la lista completa.
    */
   getCursosPorEstado(estado: string, periodoAcademico?: string | null): Observable<CursoOfertadoVerano[]> {
-    const url = estado === 'Preinscripción' ? VERANO.PREINSCRIPCION
-      : estado === 'Inscripción' ? VERANO.INSCRIPCION
-      : VERANO.TODOS;
+    const url =
+      estado === 'Preinscripción'
+        ? VERANO.PREINSCRIPCION
+        : estado === 'Inscripción'
+          ? VERANO.INSCRIPCION
+          : VERANO.TODOS;
     const params = parametros({ periodoAcademico: periodoFiltrado(periodoAcademico) });
     return this.http.get<CursoOfertadoVerano[]>(url, conParametros(params)).pipe(
-      map(cursos => {
+      map((cursos) => {
         const normalizados = cursos.map(normalizarCurso);
         return url === VERANO.TODOS
-          ? normalizados.filter(curso => (curso.estado || 'Borrador') === estado)
+          ? normalizados.filter((curso) => (curso.estado || 'Borrador') === estado)
           : normalizados;
       })
     );
@@ -174,7 +185,9 @@ export class CursosIntersemestralesService {
 
   /** Crea el curso. El backend toma nombre, código y descripción de la materia. */
   crearCurso(payload: CreateCursoDTO): Observable<CursoOfertadoVerano> {
-    const grupo = String(payload.grupo || 'A').toUpperCase().trim();
+    const grupo = String(payload.grupo || 'A')
+      .toUpperCase()
+      .trim();
     const cuerpo: CreateCursoDTO = {
       id_materia: Number(payload.id_materia),
       id_docente: Number(payload.id_docente),
@@ -182,7 +195,7 @@ export class CursosIntersemestralesService {
       fecha_inicio: payload.fecha_inicio,
       fecha_fin: payload.fecha_fin,
       periodoAcademico: payload.periodoAcademico,
-      grupo: GRUPOS.includes(grupo) ? grupo : 'A'
+      grupo: GRUPOS.includes(grupo) ? grupo : 'A',
     };
     if (payload.id_salon) {
       cuerpo.id_salon = Number(payload.id_salon);
@@ -199,7 +212,7 @@ export class CursosIntersemestralesService {
   actualizarCurso(id: number, payload: UpdateCursoDTO): Observable<CursoOfertadoVerano> {
     const cuerpo = {
       ...payload,
-      estado: payload.estado ? ESTADO_PARA_BACKEND[payload.estado] ?? payload.estado : payload.estado
+      estado: payload.estado ? (ESTADO_PARA_BACKEND[payload.estado] ?? payload.estado) : payload.estado,
     };
     return this.http.put<CursoOfertadoVerano>(`${VERANO.GESTION}/${id}`, cuerpo);
   }
@@ -210,16 +223,18 @@ export class CursosIntersemestralesService {
 
   getDashboardEstadisticas(): Observable<DashboardEstadisticas> {
     return this.http.get<DashboardEstadisticas>(VERANO.DASHBOARD_ESTADISTICAS).pipe(
-      catchError(() => of({
-        totalPreinscripciones: 0,
-        totalInscripciones: 0,
-        totalSolicitudesCursoNuevo: 0,
-        cursosActivos: 0,
-        totalCursos: 0,
-        cursosGestionados: 0,
-        porcentajeProgreso: 0,
-        fechaConsulta: new Date().toISOString()
-      }))
+      catchError(() =>
+        of({
+          totalPreinscripciones: 0,
+          totalInscripciones: 0,
+          totalSolicitudesCursoNuevo: 0,
+          cursosActivos: 0,
+          totalCursos: 0,
+          cursosGestionados: 0,
+          porcentajeProgreso: 0,
+          fechaConsulta: new Date().toISOString(),
+        })
+      )
     );
   }
 
@@ -290,25 +305,27 @@ export class CursosIntersemestralesService {
 
   getPreinscripcionesPorCurso(idCurso: number): Observable<SolicitudCursoVerano[]> {
     return this.http.get<PreinscripcionCurso[]>(`${BASE}/preinscripciones/curso/${idCurso}`).pipe(
-      map(preinscripciones => preinscripciones.map(p => ({
-        id_solicitud: p.id_solicitud,
-        id_preinscripcion: p.id_preinscripcion,
-        nombre_solicitud: `Preinscripción - ${p.objUsuario.nombre_completo}`,
-        fecha_solicitud: new Date(p.fecha_preinscripcion),
-        estado: p.estado,
-        observaciones: p.observaciones || undefined,
-        condicion: p.condicion || undefined,
-        objUsuario: {
-          id_usuario: p.objUsuario.id_usuario,
-          nombre_completo: p.objUsuario.nombre_completo,
-          correo: p.objUsuario.correo,
-          codigo: p.objUsuario.codigo,
-          codigo_estudiante: p.objUsuario.codigo_estudiante
-        },
-        objCurso: p.objCurso,
-        tipoSolicitud: 'PREINSCRIPCION' as const,
-        fecha_preinscripcion: p.fecha_preinscripcion
-      })))
+      map((preinscripciones) =>
+        preinscripciones.map((p) => ({
+          id_solicitud: p.id_solicitud,
+          id_preinscripcion: p.id_preinscripcion,
+          nombre_solicitud: `Preinscripción - ${p.objUsuario.nombre_completo}`,
+          fecha_solicitud: new Date(p.fecha_preinscripcion),
+          estado: p.estado,
+          observaciones: p.observaciones || undefined,
+          condicion: p.condicion || undefined,
+          objUsuario: {
+            id_usuario: p.objUsuario.id_usuario,
+            nombre_completo: p.objUsuario.nombre_completo,
+            correo: p.objUsuario.correo,
+            codigo: p.objUsuario.codigo,
+            codigo_estudiante: p.objUsuario.codigo_estudiante,
+          },
+          objCurso: p.objCurso,
+          tipoSolicitud: 'PREINSCRIPCION' as const,
+          fecha_preinscripcion: p.fecha_preinscripcion,
+        }))
+      )
     );
   }
 
@@ -328,9 +345,9 @@ export class CursosIntersemestralesService {
 
   /** Estudiantes con pago por validar o ya validado. */
   getEstudiantesElegibles(idCurso: number): Observable<EstudianteElegible[]> {
-    return this.http.get<EstudianteElegible[]>(VERANO.ESTUDIANTES_ELEGIBLES(idCurso)).pipe(
-      map(estudiantes => estudiantes || [])
-    );
+    return this.http
+      .get<EstudianteElegible[]>(VERANO.ESTUDIANTES_ELEGIBLES(idCurso))
+      .pipe(map((estudiantes) => estudiantes || []));
   }
 
   aceptarInscripcion(idInscripcion: number, observaciones = 'Inscripción aceptada'): Observable<RespuestaAccion> {
@@ -344,7 +361,7 @@ export class CursosIntersemestralesService {
   descargarComprobantePago(idInscripcion: number): Observable<Blob> {
     return this.http.get(ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION(idInscripcion), {
       responseType: 'blob',
-      headers: { Accept: 'application/pdf' }
+      headers: { Accept: 'application/pdf' },
     });
   }
 
@@ -370,7 +387,7 @@ export class CursosIntersemestralesService {
       idCurso,
       estado,
       fechaInicio,
-      fechaFin
+      fechaFin,
     });
     return this.http.get<SolicitudVisualizar[]>(`${BASE}/solicitudes`, conParametros(params));
   }
@@ -383,7 +400,11 @@ export class CursosIntersemestralesService {
   }
 
   exportarEstudiantesPDF(idCurso: number): Observable<ArchivoDescargado> {
-    return this.descargar(VERANO.EXPORTAR_ESTUDIANTES_PDF(idCurso), new HttpParams(), `estudiantes_curso_${idCurso}_${fechaHoy()}.pdf`);
+    return this.descargar(
+      VERANO.EXPORTAR_ESTUDIANTES_PDF(idCurso),
+      new HttpParams(),
+      `estudiantes_curso_${idCurso}_${fechaHoy()}.pdf`
+    );
   }
 
   /** Excel de solicitudes. Falla si el servidor no devuelve un Excel. */
@@ -394,29 +415,37 @@ export class CursosIntersemestralesService {
     fechaInicio?: string,
     fechaFin?: string
   ): Observable<ArchivoDescargado> {
-    const params = parametros({ periodoAcademico: periodoFiltrado(periodoAcademico), idCurso, estado, fechaInicio, fechaFin });
-    return this.http.get(VERANO.EXPORTAR_SOLICITUDES_EXCEL, { ...conParametros(params), responseType: 'blob', observe: 'response' }).pipe(
-      map(respuesta => {
-        const tipo = respuesta.headers.get('Content-Type') || '';
-        const esExcel = ['spreadsheetml.sheet', 'ms-excel', 'octet-stream'].some(t => tipo.includes(t));
-        if (!esExcel) {
-          throw new Error(`El servidor no devolvió un Excel válido. Content-Type: ${tipo}`);
-        }
-        return this.archivo(respuesta, `solicitudes_cursos_intersemestrales_${fechaHoy()}.xlsx`);
-      })
-    );
+    const params = parametros({
+      periodoAcademico: periodoFiltrado(periodoAcademico),
+      idCurso,
+      estado,
+      fechaInicio,
+      fechaFin,
+    });
+    return this.http
+      .get(VERANO.EXPORTAR_SOLICITUDES_EXCEL, { ...conParametros(params), responseType: 'blob', observe: 'response' })
+      .pipe(
+        map((respuesta) => {
+          const tipo = respuesta.headers.get('Content-Type') || '';
+          const esExcel = ['spreadsheetml.sheet', 'ms-excel', 'octet-stream'].some((t) => tipo.includes(t));
+          if (!esExcel) {
+            throw new Error(`El servidor no devolvió un Excel válido. Content-Type: ${tipo}`);
+          }
+          return this.archivo(respuesta, `solicitudes_cursos_intersemestrales_${fechaHoy()}.xlsx`);
+        })
+      );
   }
 
   private descargar(url: string, params: HttpParams, nombrePorDefecto: string): Observable<ArchivoDescargado> {
-    return this.http.get(url, { ...conParametros(params), responseType: 'blob', observe: 'response' }).pipe(
-      map(respuesta => this.archivo(respuesta, nombrePorDefecto))
-    );
+    return this.http
+      .get(url, { ...conParametros(params), responseType: 'blob', observe: 'response' })
+      .pipe(map((respuesta) => this.archivo(respuesta, nombrePorDefecto)));
   }
 
   private archivo(respuesta: HttpResponse<Blob>, nombrePorDefecto: string): ArchivoDescargado {
     return {
       blob: respuesta.body as Blob,
-      filename: nombreDeContentDisposition(respuesta.headers) || nombrePorDefecto
+      filename: nombreDeContentDisposition(respuesta.headers) || nombrePorDefecto,
     };
   }
 }

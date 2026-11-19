@@ -11,26 +11,19 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-estadisticas-por-estado',
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatButtonModule,
-    MatTooltipModule
-  ],
+  imports: [CommonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatTooltipModule],
   templateUrl: './estadisticas-por-estado.component.html',
   styleUrl: './estadisticas-por-estado.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
 
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
-  
+
   readonly data = signal<EstadoSolicitudesResponse | null>(null);
-  readonly estadosData = signal<({nombre: string} & EstadoInfo)[]>([]);
+  readonly estadosData = signal<({ nombre: string } & EstadoInfo)[]>([]);
   readonly totalSolicitudes = signal(0);
   readonly fechaConsulta = signal('');
   readonly loading = signal(true);
@@ -51,35 +44,34 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
 
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
-    
+
     const periodoAcademico = this.periodoAcademico();
     if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico !== 'todos') {
       filtros.periodoAcademico = periodoAcademico.trim();
     }
-    
+
     const idPrograma = this.idPrograma();
     if (idPrograma !== undefined && idPrograma !== null && !isNaN(idPrograma) && idPrograma > 0) {
       filtros.idPrograma = idPrograma;
     }
 
     // Usar el endpoint específico de estado de solicitudes que funciona
-    const sub = this.estadisticasService.getEstadoSolicitudes(filtros)
-      .subscribe({
-        next: (response: EstadoSolicitudesResponse) => {
-          
-          // Procesar datos desde el endpoint de estado de solicitudes
-          const estados = response.resumenPorEstado || response.estados || {};
-          this.totalSolicitudes.set(response.totalSolicitudes || 0);
-          this.fechaConsulta.set(response.fechaConsulta || new Date().toISOString());
-          
-          // Siempre mostrar los 4 estados principales, incluso con cantidad 0
-          // El backend ahora siempre devuelve: APROBADA, ENVIADA, EN_PROCESO, RECHAZADA
-          const estadosPrincipales = ['APROBADA', 'ENVIADA', 'EN_PROCESO', 'RECHAZADA'];
-          
-          // Usar el nuevo estado EN_PROCESO (combinado) en lugar de APROBADA_FUNCIONARIO y APROBADA_COORDINADOR
-          this.estadosData.set(estadosPrincipales.map(estadoKey => {
+    const sub = this.estadisticasService.getEstadoSolicitudes(filtros).subscribe({
+      next: (response: EstadoSolicitudesResponse) => {
+        // Procesar datos desde el endpoint de estado de solicitudes
+        const estados = response.resumenPorEstado || response.estados || {};
+        this.totalSolicitudes.set(response.totalSolicitudes || 0);
+        this.fechaConsulta.set(response.fechaConsulta || new Date().toISOString());
+
+        // Siempre mostrar los 4 estados principales, incluso con cantidad 0
+        // El backend ahora siempre devuelve: APROBADA, ENVIADA, EN_PROCESO, RECHAZADA
+        const estadosPrincipales = ['APROBADA', 'ENVIADA', 'EN_PROCESO', 'RECHAZADA'];
+
+        // Usar el nuevo estado EN_PROCESO (combinado) en lugar de APROBADA_FUNCIONARIO y APROBADA_COORDINADOR
+        this.estadosData.set(
+          estadosPrincipales.map((estadoKey) => {
             const estado = estados[estadoKey];
-            
+
             // Si el estado existe en la respuesta, usar sus datos
             if (estado) {
               return {
@@ -88,10 +80,10 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
                 porcentaje: estado.porcentaje || 0.0,
                 icono: estado.icono || this.getDefaultIcon(estadoKey),
                 color: estado.color || this.getDefaultColor(estadoKey),
-                descripcion: estado.descripcion || this.getDefaultDescription(estadoKey)
+                descripcion: estado.descripcion || this.getDefaultDescription(estadoKey),
               };
             }
-            
+
             // Si no existe, crear un estado por defecto con cantidad 0
             return {
               nombre: estadoKey,
@@ -99,33 +91,39 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
               porcentaje: 0.0,
               icono: this.getDefaultIcon(estadoKey),
               color: this.getDefaultColor(estadoKey),
-              descripcion: this.getDefaultDescription(estadoKey)
+              descripcion: this.getDefaultDescription(estadoKey),
             };
-          }));
-          
-          // Crear datos de análisis usando los estados principales
-          // Usar tasaResolucion del nivel raíz si está disponible, sino calcular
-          const tasaResolucion = response.tasaResolucion ?? (response.analisis?.tasaResolucion ?? (this.totalSolicitudes() > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes()) * 100 : 0));
-          const analisis = response.analisis;
-          this.data.set({
-            totalSolicitudes: this.totalSolicitudes(),
-            fechaConsulta: this.fechaConsulta(),
-            estados: estados,
-            analisis: {
-              solicitudesPendientes: analisis?.solicitudesPendientes ?? ((estados['ENVIADA']?.cantidad || 0) + (estados['EN_PROCESO']?.cantidad || 0)),
-              solicitudesCompletadas: analisis?.solicitudesCompletadas ?? (estados['APROBADA']?.cantidad || 0),
-              tasaResolucion: tasaResolucion,
-              estadoMasComun: analisis?.estadoMasComun || this.obtenerEstadoMasComun(estados)
-            }
-          });
-          
-          this.loading.set(false);
-        },
-        error: () => {
-          this.error.set(true);
-          this.loading.set(false);
-        }
-      });
+          })
+        );
+
+        // Crear datos de análisis usando los estados principales
+        // Usar tasaResolucion del nivel raíz si está disponible, sino calcular
+        const tasaResolucion =
+          response.tasaResolucion ??
+          response.analisis?.tasaResolucion ??
+          (this.totalSolicitudes() > 0 ? ((estados['APROBADA']?.cantidad || 0) / this.totalSolicitudes()) * 100 : 0);
+        const analisis = response.analisis;
+        this.data.set({
+          totalSolicitudes: this.totalSolicitudes(),
+          fechaConsulta: this.fechaConsulta(),
+          estados: estados,
+          analisis: {
+            solicitudesPendientes:
+              analisis?.solicitudesPendientes ??
+              (estados['ENVIADA']?.cantidad || 0) + (estados['EN_PROCESO']?.cantidad || 0),
+            solicitudesCompletadas: analisis?.solicitudesCompletadas ?? (estados['APROBADA']?.cantidad || 0),
+            tasaResolucion: tasaResolucion,
+            estadoMasComun: analisis?.estadoMasComun || this.obtenerEstadoMasComun(estados),
+          },
+        });
+
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set(true);
+        this.loading.set(false);
+      },
+    });
 
     this.subscription.add(sub);
   }
@@ -133,7 +131,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
   private obtenerEstadoMasComun(estados: Record<string, EstadoInfo>): string {
     let maxCantidad = 0;
     let estadoMasComun = 'N/A';
-    
+
     Object.entries(estados).forEach(([nombre, info]) => {
       const cantidad = info?.cantidad || 0;
       if (cantidad > maxCantidad) {
@@ -141,7 +139,7 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
         estadoMasComun = nombre.replace(/_/g, ' ');
       }
     });
-    
+
     return estadoMasComun;
   }
 
@@ -150,10 +148,10 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
    */
   private getDefaultIcon(estadoKey: string): string {
     const iconMap: Record<string, string> = {
-      'APROBADA': 'check_circle',
-      'ENVIADA': 'send',
-      'EN_PROCESO': 'schedule',
-      'RECHAZADA': 'cancel'
+      APROBADA: 'check_circle',
+      ENVIADA: 'send',
+      EN_PROCESO: 'schedule',
+      RECHAZADA: 'cancel',
     };
     return iconMap[estadoKey] || 'info';
   }
@@ -163,10 +161,10 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
    */
   private getDefaultColor(estadoKey: string): string {
     const colorMap: Record<string, string> = {
-      'APROBADA': '#249337',
-      'ENVIADA': '#1D72D3',
-      'EN_PROCESO': '#1D72D3',
-      'RECHAZADA': '#FF6D0A'
+      APROBADA: '#249337',
+      ENVIADA: '#1D72D3',
+      EN_PROCESO: '#1D72D3',
+      RECHAZADA: '#FF6D0A',
     };
     return colorMap[estadoKey] || '#454444';
   }
@@ -176,10 +174,10 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
    */
   private getDefaultDescription(estadoKey: string): string {
     const descMap: Record<string, string> = {
-      'APROBADA': 'Solicitudes completamente aprobadas',
-      'ENVIADA': 'Solicitudes enviadas pendientes de revisión',
-      'EN_PROCESO': 'Solicitudes en proceso de revisión',
-      'RECHAZADA': 'Solicitudes rechazadas'
+      APROBADA: 'Solicitudes completamente aprobadas',
+      ENVIADA: 'Solicitudes enviadas pendientes de revisión',
+      EN_PROCESO: 'Solicitudes en proceso de revisión',
+      RECHAZADA: 'Solicitudes rechazadas',
     };
     return descMap[estadoKey] || 'Estado de solicitud';
   }
@@ -197,11 +195,10 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
       'fas fa-clock': 'schedule',
       'fas fa-pause-circle': 'pause_circle',
       'fas fa-exclamation-circle': 'warning',
-      'fas fa-info-circle': 'info'
+      'fas fa-info-circle': 'info',
     };
     return faToMat[icono] || icono || 'help_outline';
   }
-
 
   /**
    * Formatea un número como porcentaje

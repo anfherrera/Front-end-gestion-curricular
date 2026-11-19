@@ -22,16 +22,19 @@ describe('DashboardEstadisticoComponent (exportar)', () => {
       getIdsProgramaPorNombre: () => NEVER,
       getTotalEstudiantes: () => NEVER,
       exportarPDF: () => respuestaPdf,
-      exportarExcel: () => respuestaExcel
+      exportarExcel: () => respuestaExcel,
     };
 
     await TestBed.configureTestingModule({
       imports: [DashboardEstadisticoComponent],
       providers: [
         { provide: EstadisticasService, useValue: estadisticas },
-        { provide: PeriodosAcademicosService, useValue: jasmine.createSpyObj('PeriodosAcademicosService', ['getValoresPeriodos']) },
-        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) }
-      ]
+        {
+          provide: PeriodosAcademicosService,
+          useValue: jasmine.createSpyObj('PeriodosAcademicosService', ['getValoresPeriodos']),
+        },
+        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) },
+      ],
     })
       // Solo se prueba la lógica de exportar: sin plantilla ni gráficos
       .overrideComponent(DashboardEstadisticoComponent, { set: { template: '' } })

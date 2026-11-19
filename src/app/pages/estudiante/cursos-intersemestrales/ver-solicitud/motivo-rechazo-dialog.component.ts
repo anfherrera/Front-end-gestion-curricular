@@ -33,67 +33,69 @@ export interface MotivoRechazoDialogData {
     <div mat-dialog-actions>
       <button mat-button mat-dialog-close>Cerrar</button>
     </div>
+  `,
+  styles: [
+    `
+      .motivo-dialog {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
+      }
+
+      .motivo-dialog__encabezado {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: #e3f2fd;
+        color: #0d47a1;
+        border-left: 4px solid #2196f3;
+      }
+
+      .motivo-dialog__encabezado--rechazo {
+        background: #ffebee;
+        color: #b71c1c;
+        border-left-color: #ff6d0a;
+      }
+
+      .motivo-dialog__encabezado mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+
+      .motivo-dialog__estado {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .motivo-dialog__estado-texto {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 13px;
+      }
+
+      .motivo-dialog__fecha {
+        font-size: 12px;
+        color: inherit;
+        opacity: 0.8;
+      }
+
+      .motivo-dialog__mensaje {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #424242;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
     `,
-  styles: [`
-    .motivo-dialog {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-width: 0;
-    }
-
-    .motivo-dialog__encabezado {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      background: #e3f2fd;
-      color: #0d47a1;
-      border-left: 4px solid #2196f3;
-    }
-
-    .motivo-dialog__encabezado--rechazo {
-      background: #ffebee;
-      color: #b71c1c;
-      border-left-color: #FF6D0A;
-    }
-
-    .motivo-dialog__encabezado mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-    }
-
-    .motivo-dialog__estado {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .motivo-dialog__estado-texto {
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 13px;
-    }
-
-    .motivo-dialog__fecha {
-      font-size: 12px;
-      color: inherit;
-      opacity: 0.8;
-    }
-
-    .motivo-dialog__mensaje {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.6;
-      color: #424242;
-      word-break: break-word;
-      white-space: pre-wrap;
-    }
-  `],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MotivoRechazoDialogComponent {
   data = inject<MotivoRechazoDialogData>(MAT_DIALOG_DATA);

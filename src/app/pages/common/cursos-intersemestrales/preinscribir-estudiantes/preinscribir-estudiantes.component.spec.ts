@@ -26,7 +26,7 @@ describe('PreinscribirEstudiantesComponent', () => {
       'getPreinscripcionesPorCurso',
       'getSolicitudesCursoNuevo',
       'aprobarPreinscripcion',
-      'rechazarPreinscripcion'
+      'rechazarPreinscripcion',
     ]);
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getUsuario']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -38,20 +38,14 @@ describe('PreinscribirEstudiantesComponent', () => {
     cursosServiceSpy.getPreinscripcionesPorCurso.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
-      imports: [
-        PreinscribirEstudiantesComponent,
-        HttpClientTestingModule,
-        MatSnackBarModule,
-        NoopAnimationsModule
-      ],
+      imports: [PreinscribirEstudiantesComponent, HttpClientTestingModule, MatSnackBarModule, NoopAnimationsModule],
       providers: [
         { provide: CursosIntersemestralesService, useValue: cursosServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
-        { provide: MatDialog, useValue: dialogSpy }
-      ]
-    })
-    .compileComponents();
+        { provide: MatDialog, useValue: dialogSpy },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PreinscribirEstudiantesComponent);
     component = fixture.componentInstance;

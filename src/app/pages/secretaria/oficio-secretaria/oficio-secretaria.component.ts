@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, input, viewChild, computed, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+  input,
+  viewChild,
+  computed,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, switchMap, tap } from 'rxjs';
 
@@ -16,7 +26,7 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 import { DocumentGeneratorComponent } from '@shared/components/document-generator/document-generator.component';
 import {
   DocumentationViewerComponent,
-  ServicioDocumentos
+  ServicioDocumentos,
 } from '@shared/components/documentation-viewer/documentation-viewer.component';
 import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
 
@@ -50,11 +60,11 @@ export interface ConfigOficioSecretaria<S extends SolicitudAprobable> {
     CardContainerComponent,
     DocumentGeneratorComponent,
     DocumentationViewerComponent,
-    SolicitudesBandejaComponent
+    SolicitudesBandejaComponent,
   ],
   templateUrl: './oficio-secretaria.component.html',
   styleUrls: ['../secretaria-comun.css', './oficio-secretaria.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OficioSecretariaComponent<S extends SolicitudAprobable> implements OnInit {
   readonly config = input.required<ConfigOficioSecretaria<S>>();
@@ -92,17 +102,23 @@ export class OficioSecretariaComponent<S extends SolicitudAprobable> implements 
   // ===== Listados =====
 
   cargarPendientes(): void {
-    this.config().pendientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => this.pendientes.set(sols),
-      error: (err) => this.mostrarError(err, 'Error al cargar solicitudes')
-    });
+    this.config()
+      .pendientes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (sols) => this.pendientes.set(sols),
+        error: (err) => this.mostrarError(err, 'Error al cargar solicitudes'),
+      });
   }
 
   cargarProcesadas(): void {
-    this.config().procesadas(this.periodo ?? undefined).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => this.procesadas.set(sols),
-      error: (err) => this.mostrarError(err, 'Error al cargar historial de solicitudes procesadas')
-    });
+    this.config()
+      .procesadas(this.periodo ?? undefined)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (sols) => this.procesadas.set(sols),
+        error: (err) => this.mostrarError(err, 'Error al cargar historial de solicitudes procesadas'),
+      });
   }
 
   onPeriodoChange(periodo: string | null): void {
@@ -129,18 +145,21 @@ export class OficioSecretariaComponent<S extends SolicitudAprobable> implements 
     const nombreEstudiante = seleccionada.objUsuario.nombre_completo;
 
     this.generando.set(true);
-    this.documentGenerator.generarDocumento(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (blob) => {
-        descargarBlob(blob, `${request.tipoDocumento}_${nombreEstudiante}_${new Date().getFullYear()}.docx`);
-        this.documentoGenerado.set(true);
-        this.generando.set(false);
-        this.snackbar.exito('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');
-      },
-      error: (err) => {
-        this.generando.set(false);
-        this.mostrarError(err, 'Error al generar documento');
-      }
-    });
+    this.documentGenerator
+      .generarDocumento(request)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob) => {
+          descargarBlob(blob, `${request.tipoDocumento}_${nombreEstudiante}_${new Date().getFullYear()}.docx`);
+          this.documentoGenerado.set(true);
+          this.generando.set(false);
+          this.snackbar.exito('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');
+        },
+        error: (err) => {
+          this.generando.set(false);
+          this.mostrarError(err, 'Error al generar documento');
+        },
+      });
   }
 
   onCancelarGeneracion(): void {
@@ -172,31 +191,33 @@ export class OficioSecretariaComponent<S extends SolicitudAprobable> implements 
 
     this.subiendoPDF.set(true);
     let pdfSubido = false;
-    subirPdf(id, archivoPDF).pipe(
-      tap(() => {
-        pdfSubido = true;
-        this.subiendoPDF.set(false);
-        this.enviandoPDF.set(true);
-      }),
-      switchMap(() => aprobar(id)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: () => {
-        this.snackbar.exito('Documento enviado al estudiante y solicitud aprobada exitosamente');
-        this.limpiarEstado();
-        this.seleccionada.set(null);
-        this.bandeja()?.resetSelection();
-        this.cargarPendientes();
-        this.cargarProcesadas();
-      },
-      error: (err) => {
-        this.subiendoPDF.set(false);
-        this.enviandoPDF.set(false);
-        // Si el PDF ya quedó subido hay que decirlo así, aunque el backend traiga su propio mensaje
-        if (pdfSubido) this.snackbar.error('PDF subido pero error al enviar al estudiante');
-        else this.mostrarError(err, 'Error al subir archivo PDF');
-      }
-    });
+    subirPdf(id, archivoPDF)
+      .pipe(
+        tap(() => {
+          pdfSubido = true;
+          this.subiendoPDF.set(false);
+          this.enviandoPDF.set(true);
+        }),
+        switchMap(() => aprobar(id)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: () => {
+          this.snackbar.exito('Documento enviado al estudiante y solicitud aprobada exitosamente');
+          this.limpiarEstado();
+          this.seleccionada.set(null);
+          this.bandeja()?.resetSelection();
+          this.cargarPendientes();
+          this.cargarProcesadas();
+        },
+        error: (err) => {
+          this.subiendoPDF.set(false);
+          this.enviandoPDF.set(false);
+          // Si el PDF ya quedó subido hay que decirlo así, aunque el backend traiga su propio mensaje
+          if (pdfSubido) this.snackbar.error('PDF subido pero error al enviar al estudiante');
+          else this.mostrarError(err, 'Error al subir archivo PDF');
+        },
+      });
   }
 
   private limpiarEstado(): void {

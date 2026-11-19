@@ -26,16 +26,9 @@ export interface ServicioDocumentos {
 @Component({
   selector: 'app-documentation-viewer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatDialogModule,
-    FechaPipe
-],
+  imports: [MatTableModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule, FechaPipe],
   templateUrl: './documentation-viewer.component.html',
-  styleUrls: ['./documentation-viewer.component.css']
+  styleUrls: ['./documentation-viewer.component.css'],
 })
 export class DocumentationViewerComponent {
   private snackbar = inject(SnackbarService);
@@ -54,7 +47,7 @@ export class DocumentationViewerComponent {
 
   /** La columna de comentarios solo aparece si algún documento tiene comentario. */
   readonly displayedColumns = computed(() =>
-    this.documentos().some(doc => this.tieneComentarios(doc))
+    this.documentos().some((doc) => this.tieneComentarios(doc))
       ? ['nombre', 'fecha', 'comentarios', 'acciones']
       : ['nombre', 'fecha', 'acciones']
   );
@@ -65,7 +58,7 @@ export class DocumentationViewerComponent {
    */
   verDocumento(documento: Documento): void {
     // verDocumento() llamado
-    
+
     // Mostrar mensaje de carga
     this.snackbar.info('Descargando documento...');
 
@@ -79,32 +72,38 @@ export class DocumentationViewerComponent {
     const docHomologacion = documento as DocumentoHomologacion;
     if (docHomologacion.id_documento && servicio.descargarArchivoPorId) {
       // Intentando descargar por ID del documento
-      servicio.descargarArchivoPorId(docHomologacion.id_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (blob: Blob) => {
-          // Documento descargado exitosamente por ID
-          this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
-        },
-        error: () => {
-          // Intentar por ruta como fallback
-          this.intentarDescargaPorRuta(documento);
-        }
-      });
+      servicio
+        .descargarArchivoPorId(docHomologacion.id_documento)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (blob: Blob) => {
+            // Documento descargado exitosamente por ID
+            this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+          },
+          error: () => {
+            // Intentar por ruta como fallback
+            this.intentarDescargaPorRuta(documento);
+          },
+        });
       return;
     }
 
     // PRIORIDAD 2: Intentar descargar por ruta del documento
     if (docHomologacion.ruta_documento && servicio.descargarArchivoPorRuta) {
       // Intentando descargar por ruta del documento
-      servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (blob: Blob) => {
-          // Documento descargado exitosamente por ruta
-          this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
-        },
-        error: () => {
-          // Intentar por nombre como último recurso
-          this.intentarDescargaPorNombre(documento);
-        }
-      });
+      servicio
+        .descargarArchivoPorRuta(docHomologacion.ruta_documento)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (blob: Blob) => {
+            // Documento descargado exitosamente por ruta
+            this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+          },
+          error: () => {
+            // Intentar por nombre como último recurso
+            this.intentarDescargaPorNombre(documento);
+          },
+        });
       return;
     }
 
@@ -123,15 +122,18 @@ export class DocumentationViewerComponent {
       return;
     }
 
-    servicio.descargarArchivoPorRuta(docHomologacion.ruta_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (blob: Blob) => {
-        // Documento descargado exitosamente por ruta
-        this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
-      },
-      error: () => {
-        this.intentarDescargaPorNombre(documento);
-      }
-    });
+    servicio
+      .descargarArchivoPorRuta(docHomologacion.ruta_documento)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob: Blob) => {
+          // Documento descargado exitosamente por ruta
+          this.mostrarDocumentoEnVentana(blob, documento.nombre || 'documento.pdf');
+        },
+        error: () => {
+          this.intentarDescargaPorNombre(documento);
+        },
+      });
   }
 
   /**
@@ -150,20 +152,23 @@ export class DocumentationViewerComponent {
     }
 
     // Intentando descargar por nombre del archivo
-    servicio.descargarArchivo(documento.nombre).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (blob: Blob) => {
-        // Documento descargado exitosamente por nombre
-        this.mostrarDocumentoEnVentana(blob, documento.nombre);
-      },
-      error: (error: HttpErrorResponse) => {
-        const errorMessage = error.status === 404 
-          ? 'El archivo no se encontró en el servidor. Verifique que el documento existe.'
-          : (error.error?.message || error.message || 'Error desconocido');
-        this.snackbar.error('Error al descargar documento: ' + errorMessage);
-      }
-    });
+    servicio
+      .descargarArchivo(documento.nombre)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob: Blob) => {
+          // Documento descargado exitosamente por nombre
+          this.mostrarDocumentoEnVentana(blob, documento.nombre);
+        },
+        error: (error: HttpErrorResponse) => {
+          const errorMessage =
+            error.status === 404
+              ? 'El archivo no se encontró en el servidor. Verifique que el documento existe.'
+              : error.error?.message || error.message || 'Error desconocido';
+          this.snackbar.error('Error al descargar documento: ' + errorMessage);
+        },
+      });
   }
-
 
   /**
    * Mostrar documento en nueva ventana (método común)
@@ -215,7 +220,7 @@ export class DocumentationViewerComponent {
    */
   verComentariosDocumento(documento: Documento): void {
     // verComentariosDocumento() llamado
-    
+
     if (!documento.comentario || documento.comentario.trim().length === 0) {
       // Documento sin comentarios
       this.snackbar.info('Este documento no tiene comentarios');
@@ -223,7 +228,7 @@ export class DocumentationViewerComponent {
     }
 
     // Mostrando comentarios
-    
+
     // Mostrar comentarios en un diálogo
     const comentario = documento.comentario.trim();
 
@@ -236,8 +241,8 @@ export class DocumentationViewerComponent {
         nombreDocumento: documento.nombre,
         valorInicial: comentario,
         soloLectura: true,
-        icono: 'comment'
-      } as TextoDialogData
+        icono: 'comment',
+      } as TextoDialogData,
     });
   }
 
@@ -252,7 +257,7 @@ export class DocumentationViewerComponent {
    * Obtener el número de comentarios
    */
   getNumeroComentarios(documento: Documento): number {
-    return (documento.comentario && documento.comentario.trim().length > 0) ? 1 : 0;
+    return documento.comentario && documento.comentario.trim().length > 0 ? 1 : 0;
   }
 
   /**
@@ -270,38 +275,44 @@ export class DocumentationViewerComponent {
         width: '520px',
         data: {
           titulo: 'Agregar comentario',
-          descripcion: 'Escribe las observaciones para el documento seleccionado. Los comentarios anteriores se muestran arriba.',
+          descripcion:
+            'Escribe las observaciones para el documento seleccionado. Los comentarios anteriores se muestran arriba.',
           etiqueta: 'Comentario',
           nombreDocumento: documento.nombre,
           historial: comentarioActual || undefined,
           textoConfirmar: 'Guardar comentario',
           icono: 'add_comment',
-          maxLength: 500
-        } as TextoDialogData
+          maxLength: 500,
+        } as TextoDialogData,
       });
 
-      dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((comentarioNuevo: string | undefined) => {
-        if (comentarioNuevo === undefined) return;
-        if (!comentarioNuevo.trim()) {
-          this.snackbar.advertencia('El comentario no puede estar vacío');
-          return;
-        }
-        // Solo emitir: el componente padre hace la llamada PUT (una sola vez). Si el viewer también llamara aquí, se duplicaría el comentario en backend.
-        this.comentarioAgregado.emit({ documento, comentario: comentarioNuevo.trim() });
-      });
+      dialogRef
+        .afterClosed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((comentarioNuevo: string | undefined) => {
+          if (comentarioNuevo === undefined) return;
+          if (!comentarioNuevo.trim()) {
+            this.snackbar.advertencia('El comentario no puede estar vacío');
+            return;
+          }
+          // Solo emitir: el componente padre hace la llamada PUT (una sola vez). Si el viewer también llamara aquí, se duplicaría el comentario en backend.
+          this.comentarioAgregado.emit({ documento, comentario: comentarioNuevo.trim() });
+        });
     };
 
     // Obtener documento actualizado para mostrar comentarios existentes (el backend concatena; solo enviamos lo nuevo)
     const servicio = this.servicio();
     if (servicio?.buscarDocumentoPorId) {
       this.snackbar.info('Cargando comentarios...');
-      servicio.buscarDocumentoPorId(documento.id_documento).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (doc) => abrirDialogConHistorial(doc.comentario ?? ''),
-        error: () => abrirDialogConHistorial(documento.comentario ?? '')
-      });
+      servicio
+        .buscarDocumentoPorId(documento.id_documento)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (doc) => abrirDialogConHistorial(doc.comentario ?? ''),
+          error: () => abrirDialogConHistorial(documento.comentario ?? ''),
+        });
     } else {
       abrirDialogConHistorial(documento.comentario ?? '');
     }
   }
-
 }

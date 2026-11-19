@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, input, OnChanges, output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  OnChanges,
+  output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -13,7 +22,8 @@ export interface Curso {
   cupos: number;
   creditos?: number;
   espacio?: string;
-  estado: 'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Abierto' | 'Publicado' | 'Borrador';
+  estado:
+    'Disponible' | 'Cerrado' | 'En espera' | 'Preinscripción' | 'Inscripción' | 'Abierto' | 'Publicado' | 'Borrador';
   // Campos de período y fechas
   periodo?: string;
   periodoAcademico?: string;
@@ -28,7 +38,7 @@ export interface Curso {
   imports: [...MATERIAL_IMPORTS, FechaPipe],
   templateUrl: './curso-list.component.html',
   styleUrls: ['./curso-list.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursoListComponent implements AfterViewInit, OnChanges {
   readonly cursos = input<Curso[]>([]);
@@ -38,7 +48,7 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
   readonly accionClick = output<{
     accion: string;
     curso: Curso;
-}>();
+  }>();
 
   dataSource = new MatTableDataSource<Curso>();
 
@@ -120,5 +130,4 @@ export class CursoListComponent implements AfterViewInit, OnChanges {
     // Formatear el período para visualización (ej: "2025-1" -> "2025 - Primer Semestre")
     return formatearPeriodo(periodo);
   }
-
 }

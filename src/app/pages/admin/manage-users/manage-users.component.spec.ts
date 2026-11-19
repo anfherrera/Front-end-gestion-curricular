@@ -16,14 +16,11 @@ describe('ManageUsersComponent', () => {
     const usuariosServiceSpy = jasmine.createSpyObj('UsuariosService', [
       'listarUsuarios',
       'cambiarEstadoUsuario',
-      'eliminarUsuario'
+      'eliminarUsuario',
     ]);
     usuariosServiceSpy.listarUsuarios.and.returnValue(of([]));
 
-    const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', [
-      'extraerMensajeError',
-      'esErrorDependencias'
-    ]);
+    const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['extraerMensajeError', 'esErrorDependencias']);
     errorHandlerSpy.extraerMensajeError.and.returnValue('Error');
     errorHandlerSpy.esErrorDependencias.and.returnValue(false);
 
@@ -35,10 +32,9 @@ describe('ManageUsersComponent', () => {
         { provide: UsuariosService, useValue: usuariosServiceSpy },
         { provide: ErrorHandlerService, useValue: errorHandlerSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
-        provideRouter([])
-      ]
-    })
-    .compileComponents();
+        provideRouter([]),
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ManageUsersComponent);
     component = fixture.componentInstance;

@@ -1,4 +1,13 @@
-import { Component, ChangeDetectionStrategy, OnChanges, SimpleChanges, inject, input, model, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnChanges,
+  SimpleChanges,
+  inject,
+  input,
+  model,
+  signal,
+} from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +28,7 @@ const TAMANO_MAXIMO = 10 * 1024 * 1024; // 10MB
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatButtonModule, MatIconModule],
   templateUrl: './file-upload-dialog.component.html',
-  styleUrls: ['./file-upload-dialog.component.css']
+  styleUrls: ['./file-upload-dialog.component.css'],
 })
 export class FileUploadComponent implements OnChanges {
   private archivosService = inject(ArchivosService);
@@ -28,9 +37,9 @@ export class FileUploadComponent implements OnChanges {
 
   /** Archivos elegidos; se usa con `[archivos]` y `(archivosChange)` (o `[(archivos)]`). */
   readonly archivos = model<Archivo[]>([]);
-  readonly reset = input(false);                  // Para reiniciar desde el padre
+  readonly reset = input(false); // Para reiniciar desde el padre
   readonly archivosExclusivos = input<string[]>([]); // Archivos que son mutuamente exclusivos
-  readonly proceso = input('general');    // Tipo de proceso: 'general', 'paz-salvo', etc.
+  readonly proceso = input('general'); // Tipo de proceso: 'general', 'paz-salvo', etc.
 
   readonly cargando = signal(false);
 
@@ -49,7 +58,7 @@ export class FileUploadComponent implements OnChanges {
     const nuevos = [...this.archivos()];
     const exclusivos = this.archivosExclusivos();
 
-    Array.from(input.files).forEach(file => {
+    Array.from(input.files).forEach((file) => {
       // Validaciones
       if (file.type !== 'application/pdf') {
         this.snackbar.advertencia('Solo se permiten archivos PDF');
@@ -57,34 +66,40 @@ export class FileUploadComponent implements OnChanges {
       }
 
       if (file.size > TAMANO_MAXIMO) {
-        this.snackbar.advertencia(`El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        this.snackbar.advertencia(
+          `El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`
+        );
         return;
       }
 
       // Validar archivos duplicados
-      if (nuevos.some(archivo => archivo.nombre === file.name)) {
-        this.snackbar.advertencia(`El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`);
+      if (nuevos.some((archivo) => archivo.nombre === file.name)) {
+        this.snackbar.advertencia(
+          `El archivo "${file.name}" ya ha sido seleccionado. No se permiten archivos duplicados.`
+        );
         return;
       }
 
       // Validar archivos exclusivos
-      if (exclusivos.length > 0 && exclusivos.some(exclusivo => file.name.includes(exclusivo))) {
-        const archivoExclusivoExistente = nuevos.find(archivo =>
-          exclusivos.some(exclusivo => archivo.nombre.includes(exclusivo))
+      if (exclusivos.length > 0 && exclusivos.some((exclusivo) => file.name.includes(exclusivo))) {
+        const archivoExclusivoExistente = nuevos.find((archivo) =>
+          exclusivos.some((exclusivo) => archivo.nombre.includes(exclusivo))
         );
         if (archivoExclusivoExistente) {
-          this.snackbar.advertencia(`Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${exclusivos.join(' o ')}`);
+          this.snackbar.advertencia(
+            `Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${exclusivos.join(' o ')}`
+          );
           return;
         }
       }
 
       // Solo agregar el archivo localmente, sin subirlo al backend
       nuevos.push({
-        file,                            // mantener referencia del archivo
+        file, // mantener referencia del archivo
         nombre: file.name,
         fecha: new Date().toISOString(), // fecha de selección
         estado: 'pendiente',
-        esValido: true                   // asumir válido hasta que se suba
+        esValido: true, // asumir válido hasta que se suba
       });
     });
 
@@ -93,7 +108,7 @@ export class FileUploadComponent implements OnChanges {
   }
 
   removeFile(index: number) {
-    this.archivos.update(archivos => archivos.filter((_, i) => i !== index));
+    this.archivos.update((archivos) => archivos.filter((_, i) => i !== index));
   }
 
   /**
@@ -101,7 +116,7 @@ export class FileUploadComponent implements OnChanges {
    * @returns Observable que emite cuando todos los archivos han sido subidos
    */
   subirArchivosPendientes(): Observable<Archivo[]> {
-    const archivosPendientes = this.archivos().filter(archivo => archivo.file && !archivo.id_documento);
+    const archivosPendientes = this.archivos().filter((archivo) => archivo.file && !archivo.id_documento);
 
     if (archivosPendientes.length === 0) {
       return of(this.archivos()); // Si no hay archivos pendientes, retornar los existentes
@@ -109,21 +124,22 @@ export class FileUploadComponent implements OnChanges {
 
     this.cargando.set(true);
 
-    const subidas$ = archivosPendientes.map(archivo => {
+    const subidas$ = archivosPendientes.map((archivo) => {
       const file = archivo.file!;
       return this.subir(file).pipe(
         // Actualizar el archivo local con la información del backend
         tap({
-          next: subido => this.reemplazar(file, actual => ({
-            ...actual,
-            ...subido,
-            nombre: subido?.nombre || subido?.nombreArchivo || subido?.titulo || actual.nombre,
-            file, // mantener referencia local
-            estado: 'aprobado',
-            esValido: true,
-            url: subido?.ruta_documento || subido?.ruta || subido?.url || actual.url
-          })),
-          error: () => this.reemplazar(file, actual => ({ ...actual, estado: 'error', esValido: false }))
+          next: (subido) =>
+            this.reemplazar(file, (actual) => ({
+              ...actual,
+              ...subido,
+              nombre: subido?.nombre || subido?.nombreArchivo || subido?.titulo || actual.nombre,
+              file, // mantener referencia local
+              estado: 'aprobado',
+              esValido: true,
+              url: subido?.ruta_documento || subido?.ruta || subido?.url || actual.url,
+            })),
+          error: () => this.reemplazar(file, (actual) => ({ ...actual, estado: 'error', esValido: false })),
         })
       );
     });
@@ -149,6 +165,6 @@ export class FileUploadComponent implements OnChanges {
   }
 
   private reemplazar(file: File, cambio: (archivo: Archivo) => Archivo): void {
-    this.archivos.update(archivos => archivos.map(a => a.file === file ? cambio(a) : a));
+    this.archivos.update((archivos) => archivos.map((a) => (a.file === file ? cambio(a) : a)));
   }
 }

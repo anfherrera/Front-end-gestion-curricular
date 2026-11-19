@@ -77,7 +77,7 @@ export interface SolicitudEcaesResponse {
 
 /** Solicitudes y fechas de las pruebas ECAES (Saber Pro). */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PruebasEcaesService extends SolicitudesBaseService {
   constructor() {
@@ -104,9 +104,9 @@ export class PruebasEcaesService extends SolicitudesBaseService {
 
   /** Tipos de documento de identidad registrados (lista vacía si el backend no responde bien). */
   listarTiposDocumento(): Observable<TipoDocumento[]> {
-    return this.http.get<TiposDocumentoRespuesta>(`${this.api}/tipos-documento/todos`).pipe(
-      map(respuesta => respuesta.success && respuesta.data ? respuesta.data : [])
-    );
+    return this.http
+      .get<TiposDocumentoRespuesta>(`${this.api}/tipos-documento/todos`)
+      .pipe(map((respuesta) => (respuesta.success && respuesta.data ? respuesta.data : [])));
   }
 
   // ---------- Solicitudes ----------
@@ -115,7 +115,11 @@ export class PruebasEcaesService extends SolicitudesBaseService {
     return this.http.post<SolicitudEcaesResponse>(`${this.apiUrl}/crearSolicitud-Ecaes`, solicitud);
   }
 
-  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudEcaesResponse[]> {
+  listarSolicitudesPorRol(
+    rol: string,
+    idUsuario?: number,
+    periodoAcademico?: string
+  ): Observable<SolicitudEcaesResponse[]> {
     let params = new HttpParams().set('rol', rol);
     if (idUsuario) params = params.set('idUsuario', idUsuario.toString());
     if (periodoAcademico) params = params.set('periodoAcademico', periodoAcademico);

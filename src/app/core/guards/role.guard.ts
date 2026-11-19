@@ -3,12 +3,11 @@ import { CanActivate, CanActivateChild, Router, ActivatedRouteSnapshot, RouterSt
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RoleGuard implements CanActivate, CanActivateChild {
   private authService = inject(AuthService);
   private router = inject(Router);
-
 
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     return this.canActivate(childRoute, state);
@@ -49,13 +48,13 @@ export class RoleGuard implements CanActivate, CanActivateChild {
 
   private normalizeRole(role: string | undefined | null): string {
     if (!role) return '';
-    
+
     const normalized = role.toLowerCase().trim();
-    
+
     // Mapear sinónimos
     if (normalized === 'administrador') return 'admin';
     if (normalized === 'secretario') return 'secretaria';
-    
+
     return normalized;
   }
 }

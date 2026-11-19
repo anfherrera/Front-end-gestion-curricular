@@ -20,7 +20,7 @@
 }
 
 :host ::ng-deep .dialog-content mat-form-field:hover mat-icon[matprefix] {
-  }
+}
 
 :host ::ng-deep .dialog-content .mat-mdc-text-field-wrapper {
   background-color: var(--gris-25);

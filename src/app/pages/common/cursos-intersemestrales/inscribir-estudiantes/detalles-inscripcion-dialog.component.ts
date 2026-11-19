@@ -30,17 +30,17 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule,
     MatChipsModule,
     MatIconModule,
-    UtfFixPipe
+    UtfFixPipe,
   ],
   templateUrl: './detalles-inscripcion-dialog.component.html',
   styleUrl: './detalles-inscripcion-dialog.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetallesInscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<DetallesInscripcionDialogComponent>>(MatDialogRef);
   data = inject<{
     estudiante: EstudianteElegible;
-}>(MAT_DIALOG_DATA);
+  }>(MAT_DIALOG_DATA);
   private cursosService = inject(CursosIntersemestralesService);
   private snackbar = inject(SnackbarService);
   private logger = inject(LoggerService);
@@ -50,43 +50,46 @@ export class DetallesInscripcionDialogComponent {
 
   async descargarComprobante(): Promise<void> {
     this.logger.debug('Descargando comprobante de pago');
-    
+
     try {
       // Verificar si hay archivo de pago disponible en los datos del estudiante
       if (!this.data.estudiante.archivoPago || !this.data.estudiante.archivoPago.nombre) {
         this.snackbar.advertencia('No se encontró el archivo de comprobante');
         return;
       }
-      
+
       const nombreArchivo = this.data.estudiante.archivoPago.nombre;
-      
+
       // Usar id_inscripcion si está disponible, sino usar id_solicitud
       const idParaDescarga = this.data.estudiante.id_inscripcion || this.data.estudiante.id_solicitud;
-      
+
       if (!idParaDescarga) {
         this.snackbar.error('Error: No se encontró ID para descargar comprobante');
         return;
       }
-      
+
       // Usar el servicio de cursos intersemestrales
-      this.cursosService.descargarComprobantePago(idParaDescarga).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (blob: Blob) => {
-          this.logger.debug('Comprobante descargado exitosamente');
-          
-          // Verificar que el blob no esté vacío
-          if (blob && blob.size > 0) {
-            descargarBlob(blob, nombreArchivo);
-            this.snackbar.exito('Comprobante descargado exitosamente');
-          } else {
-            this.snackbar.error('Error: El archivo PDF está vacío o corrupto');
-          }
-        },
-        error: (error: HttpErrorResponse) => {
-          this.logger.error('Error al descargar comprobante de pago', error);
-          const mensajeError = this.errorHandler.extraerMensajeError(error);
-          this.snackbar.error(mensajeError || 'Error al descargar el comprobante de pago');
-        }
-      });
+      this.cursosService
+        .descargarComprobantePago(idParaDescarga)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (blob: Blob) => {
+            this.logger.debug('Comprobante descargado exitosamente');
+
+            // Verificar que el blob no esté vacío
+            if (blob && blob.size > 0) {
+              descargarBlob(blob, nombreArchivo);
+              this.snackbar.exito('Comprobante descargado exitosamente');
+            } else {
+              this.snackbar.error('Error: El archivo PDF está vacío o corrupto');
+            }
+          },
+          error: (error: HttpErrorResponse) => {
+            this.logger.error('Error al descargar comprobante de pago', error);
+            const mensajeError = this.errorHandler.extraerMensajeError(error);
+            this.snackbar.error(mensajeError || 'Error al descargar el comprobante de pago');
+          },
+        });
     } catch (error) {
       this.logger.error('Error de conexión al descargar comprobante', error);
       this.snackbar.error('Error de conexión');

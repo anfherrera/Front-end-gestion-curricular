@@ -14,7 +14,7 @@ type SolicitudParcial = Omit<Partial<SolicitudHomologacionDTORespuesta>, 'estado
  * ================================================
  * PRUEBAS DE ACEPTACIÓN - PAZ Y SALVO
  * ================================================
- * 
+ *
  * Validan CRITERIOS DE ACEPTACIÓN DEL NEGOCIO
  * Formato BDD: Given/When/Then
  * Basadas en Historias de Usuario REALES
@@ -32,7 +32,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
     id_rol: 1,
     id_programa: 1,
     objRol: { id_rol: 1, nombre_rol: 'ESTUDIANTE' },
-    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Electrónica' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Electrónica' },
   };
 
   beforeEach(() => {
@@ -40,10 +40,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [
-        PazSalvoService,
-        { provide: AuthService, useValue: authServiceSpy }
-      ]
+      providers: [PazSalvoService, { provide: AuthService, useValue: authServiceSpy }],
     });
 
     service = TestBed.inject(PazSalvoService);
@@ -68,18 +65,18 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
     it('ACEP-PS-001: DADO que soy estudiante Y tengo documentos, CUANDO envío solicitud, ENTONCES se crea exitosamente', fakeAsync(() => {
       // GIVEN: Soy estudiante con documentos
       const idUsuario = mockEstudiante.id_usuario;
-      const archivos: Archivo[] = [
-        { nombre: 'carta.pdf', fecha: new Date().toISOString() }
-      ];
+      const archivos: Archivo[] = [{ nombre: 'carta.pdf', fecha: new Date().toISOString() }];
 
       // WHEN: Envío la solicitud
-      service.crearSolicitudConFormulario(idUsuario, archivos, {
-        nombre_solicitud: 'Paz y Salvo',
-        fecha_registro_solicitud: new Date().toISOString()
-      }).subscribe((response) => {
-        // THEN: Se crea exitosamente
-        expect(response).toBeTruthy();
-      });
+      service
+        .crearSolicitudConFormulario(idUsuario, archivos, {
+          nombre_solicitud: 'Paz y Salvo',
+          fecha_registro_solicitud: new Date().toISOString(),
+        })
+        .subscribe((response) => {
+          // THEN: Se crea exitosamente
+          expect(response).toBeTruthy();
+        });
       tick();
 
       const req = httpMock.expectOne((r) => r.url.includes('/crearSolicitud-PazYSalvo'));
@@ -104,13 +101,13 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
         {
           id_solicitud: 1,
           nombre_solicitud: 'Solicitud 1',
-          estadosSolicitud: [{ estado_actual: 'ENVIADA' }]
+          estadosSolicitud: [{ estado_actual: 'ENVIADA' }],
         },
         {
           id_solicitud: 2,
           nombre_solicitud: 'Solicitud 2',
-          estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA' }]
-        }
+          estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA' }],
+        },
       ];
 
       // WHEN: Consulto mis solicitudes
@@ -139,8 +136,11 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       // GIVEN: Hay solicitudes pendientes
       const mockSolicitudes: SolicitudParcial[] = [
         { id_solicitud: 1, estadosSolicitud: [{ estado_actual: 'ENVIADA' }] },
-        { id_solicitud: 2, estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA_FUNCIONARIO' }] },
-        { id_solicitud: 3, estadosSolicitud: [{ estado_actual: 'ENVIADA' }] }
+        {
+          id_solicitud: 2,
+          estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA_FUNCIONARIO' }],
+        },
+        { id_solicitud: 3, estadosSolicitud: [{ estado_actual: 'ENVIADA' }] },
       ];
 
       // WHEN: Listo solicitudes
@@ -245,11 +245,13 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
   describe('HU-07: Seguimiento de Solicitud', () => {
     it('ACEP-PS-007: DADO que soy estudiante con solicitud en proceso, CUANDO consulto seguimiento, ENTONCES veo mis solicitudes con sus estados', fakeAsync(() => {
       // GIVEN: Estudiante con una solicitud aprobada por el coordinador
-      const mockSolicitudes: SolicitudParcial[] = [{
-        id_solicitud: 1,
-        nombre_solicitud: 'Solicitud Paz y Salvo',
-        estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA_COORDINADOR' }]
-      }];
+      const mockSolicitudes: SolicitudParcial[] = [
+        {
+          id_solicitud: 1,
+          nombre_solicitud: 'Solicitud Paz y Salvo',
+          estadosSolicitud: [{ estado_actual: 'ENVIADA' }, { estado_actual: 'APROBADA_COORDINADOR' }],
+        },
+      ];
 
       // WHEN: Consulto mis solicitudes
       service.listarSolicitudesPorRol('ESTUDIANTE', mockEstudiante.id_usuario).subscribe((solicitudes) => {
@@ -259,10 +261,11 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) =>
-        r.url.includes('/listarSolicitud-PazYSalvo/porRol') &&
-        r.params.get('rol') === 'ESTUDIANTE' &&
-        r.params.get('idUsuario') === String(mockEstudiante.id_usuario)
+      const req = httpMock.expectOne(
+        (r) =>
+          r.url.includes('/listarSolicitud-PazYSalvo/porRol') &&
+          r.params.get('rol') === 'ESTUDIANTE' &&
+          r.params.get('idUsuario') === String(mockEstudiante.id_usuario)
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockSolicitudes);
@@ -276,9 +279,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       tick();
 
       const req = httpMock.expectOne((r) => r.url.includes('/descargarOficio/1'));
-      req.flush(new Blob(['%PDF']), { headers: { 'Content-Disposition': 'attachment; filename="OFICIO_PAZ_SALVO_1.pdf"' } });
+      req.flush(new Blob(['%PDF']), {
+        headers: { 'Content-Disposition': 'attachment; filename="OFICIO_PAZ_SALVO_1.pdf"' },
+      });
       tick();
     }));
   });
-
 });

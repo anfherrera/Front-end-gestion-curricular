@@ -9,7 +9,7 @@ import { ConfigOficioSecretaria, OficioSecretariaComponent } from '../oficio-sec
   selector: 'app-homologacion-asignaturas',
   imports: [OficioSecretariaComponent],
   template: '<app-oficio-secretaria [config]="config" />',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomologacionAsignaturasComponent {
   private readonly servicio = inject(HomologacionAsignaturasService);
@@ -21,12 +21,12 @@ export class HomologacionAsignaturasComponent {
       nombre: 'Oficio de Homologación',
       descripcion: 'Documento oficial que aprueba la homologación de asignaturas',
       camposRequeridos: ['numeroDocumento', 'fechaDocumento'],
-      camposOpcionales: ['observaciones']
+      camposOpcionales: ['observaciones'],
     },
     pendientes: () => this.servicio.getSecretariaRequests(),
     procesadas: (periodo) => this.servicio.getSecretariaApprovedRequests(periodo),
     subirPdf: (id, archivo) => this.servicio.subirResolucion(archivo, id),
     aprobar: (id) => this.servicio.approveDefinitively(id),
-    servicioDocumentos: this.servicio
+    servicioDocumentos: this.servicio,
   };
 }

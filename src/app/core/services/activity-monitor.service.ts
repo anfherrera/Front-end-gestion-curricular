@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from '@shared/components/confirm-dialog/confirm-dialog.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ActivityMonitorService implements OnDestroy {
   private platformId = inject(PLATFORM_ID);
@@ -41,7 +41,6 @@ export class ActivityMonitorService implements OnDestroy {
     this.stopMonitoring();
   }
 
-
   startMonitoring(): void {
     // Solo ejecutar en el navegador
     if (!isPlatformBrowser(this.platformId)) {
@@ -50,7 +49,6 @@ export class ActivityMonitorService implements OnDestroy {
     this.addEventListeners();
     this.resetInactivityTimer();
   }
-
 
   stopMonitoring(): void {
     // Solo ejecutar en el navegador
@@ -61,11 +59,9 @@ export class ActivityMonitorService implements OnDestroy {
     this.clearTimers();
   }
 
-
   setLogoutCallback(callback: () => void): void {
     this.logoutCallback = callback;
   }
-
 
   resetInactivityTimer(): void {
     this.clearTimers();
@@ -104,10 +100,10 @@ export class ActivityMonitorService implements OnDestroy {
         titulo: 'Sesión por expirar',
         mensaje: 'Tu sesión expirará en 1 minuto por inactividad.\n\n¿Deseas continuar con la sesión?',
         textoConfirmar: 'Continuar sesión',
-        textoCancelar: 'Cerrar sesión'
-      }
+        textoCancelar: 'Cerrar sesión',
+      },
     });
-    this.avisoRef.afterClosed().subscribe(continuar => {
+    this.avisoRef.afterClosed().subscribe((continuar) => {
       this.avisoRef = null;
       if (continuar === true) {
         this.resetInactivityTimer();
@@ -133,18 +129,15 @@ export class ActivityMonitorService implements OnDestroy {
     }
   }
 
-
   private addEventListeners(): void {
     // Solo ejecutar en el navegador
     if (!isPlatformBrowser(this.platformId) || typeof document === 'undefined') {
       return;
     }
 
-    const events = [
-      'mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'
-    ];
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
 
-    events.forEach(event => {
+    events.forEach((event) => {
       document.addEventListener(event, this.onUserActivity.bind(this), true);
     });
   }
@@ -158,15 +151,12 @@ export class ActivityMonitorService implements OnDestroy {
       return;
     }
 
-    const events = [
-      'mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'
-    ];
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
 
-    events.forEach(event => {
+    events.forEach((event) => {
       document.removeEventListener(event, this.onUserActivity.bind(this), true);
     });
   }
-
 
   private onUserActivity(): void {
     // Con el aviso abierto decide el diálogo; si ya hay un throttle activo, ignorar el evento

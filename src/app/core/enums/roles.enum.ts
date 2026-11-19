@@ -4,5 +4,5 @@ export enum UserRole {
   COORDINADOR = 'coordinador',
   SECRETARIA = 'secretaria',
   ESTUDIANTE = 'estudiante',
-  DECANO = 'decano'
+  DECANO = 'decano',
 }

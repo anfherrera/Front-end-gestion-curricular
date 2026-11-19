@@ -58,12 +58,14 @@
   letter-spacing: 0.5px;
 }
 
-.estado-aprobada, .estado-aprobada_coordinador {
+.estado-aprobada,
+.estado-aprobada_coordinador {
   background-color: #d4edda;
   color: #155724;
 }
 
-.estado-pendiente, .estado-enviada {
+.estado-pendiente,
+.estado-enviada {
   background-color: #fff3cd;
   color: var(--estado-advertencia-texto);
 }
@@ -129,7 +131,7 @@
 }
 
 /* Estilo para botón principal */
-.form-actions button[mat-raised-button][color="primary"] {
+.form-actions button[mat-raised-button][color='primary'] {
   background-color: var(--color-primario) !important;
   color: white !important;
   border: none;
@@ -140,18 +142,18 @@
   box-shadow: var(--sombra-1);
 }
 
-.form-actions button[mat-raised-button][color="primary"]:hover:not(:disabled) {
+.form-actions button[mat-raised-button][color='primary']:hover:not(:disabled) {
   background-color: var(--color-primario-light) !important;
   transform: translateY(-1px);
   box-shadow: var(--sombra-1);
 }
 
-.form-actions button[mat-raised-button][color="primary"]:active:not(:disabled) {
+.form-actions button[mat-raised-button][color='primary']:active:not(:disabled) {
   transform: translateY(0);
   box-shadow: var(--sombra-1);
 }
 
-.form-actions button[mat-raised-button][color="primary"]:disabled {
+.form-actions button[mat-raised-button][color='primary']:disabled {
   background-color: #d3d3d3 !important;
   color: var(--gris-550) !important;
   cursor: not-allowed;
@@ -194,8 +196,12 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive */
@@ -204,16 +210,16 @@
     padding: 16px;
     gap: 16px;
   }
-  
+
   .solicitud-details {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .form-actions button {
     width: 100%;
   }
@@ -310,6 +316,11 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
   color: var(--color-primario-light) !important;
 }
 
-:host ::ng-deep .document-generator-container mat-form-field.mat-focused mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
+:host
+  ::ng-deep
+  .document-generator-container
+  mat-form-field.mat-focused
+  mat-datepicker-toggle
+  .mat-datepicker-toggle-default-icon {
   color: var(--color-primario-light) !important;
 }

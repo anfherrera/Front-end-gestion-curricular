@@ -43,7 +43,7 @@ export function datosRechazo(
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './texto-dialog.component.html',
-  styleUrls: ['./texto-dialog.component.css']
+  styleUrls: ['./texto-dialog.component.css'],
 })
 export class TextoDialogComponent {
   readonly data: TextoDialogData = inject(MAT_DIALOG_DATA);

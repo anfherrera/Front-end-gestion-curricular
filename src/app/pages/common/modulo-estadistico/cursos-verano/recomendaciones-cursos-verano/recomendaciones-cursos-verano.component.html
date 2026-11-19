@@ -55,8 +55,12 @@
             {{ etiquetaPrioridad(rec.prioridad) }}
           </span>
           <h3>{{ rec.titulo }}</h3>
-          <button mat-icon-button class="btn-expandir" (click)="alternar(rec.id)"
-                  [attr.aria-label]="expandidas().has(rec.id) ? 'Ver menos' : 'Ver más'">
+          <button
+            mat-icon-button
+            class="btn-expandir"
+            (click)="alternar(rec.id)"
+            [attr.aria-label]="expandidas().has(rec.id) ? 'Ver menos' : 'Ver más'"
+          >
             <mat-icon>{{ expandidas().has(rec.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
           </button>
         </div>
@@ -66,8 +70,11 @@
         @if (rec.demandaActual) {
           <div class="seccion">
             <strong>Proyección</strong>
-            <p>{{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes
-               ({{ (rec.porcentajeCrecimiento ?? 0) > 0 ? '+' : '' }}{{ rec.porcentajeCrecimiento }}%)</p>
+            <p>
+              {{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes ({{
+                (rec.porcentajeCrecimiento ?? 0) > 0 ? '+' : ''
+              }}{{ rec.porcentajeCrecimiento }}%)
+            </p>
           </div>
         }
 
@@ -80,7 +87,9 @@
               @if (rec.recursos.laboratorios) {
                 <li>{{ rec.recursos.laboratorios }} laboratorio(s)</li>
               }
-              <li>{{ rec.recursos.gruposRecomendados }} grupo(s) de {{ rec.recursos.capacidadPorGrupo }} estudiantes</li>
+              <li>
+                {{ rec.recursos.gruposRecomendados }} grupo(s) de {{ rec.recursos.capacidadPorGrupo }} estudiantes
+              </li>
             </ul>
           </div>
         }

@@ -72,7 +72,7 @@ mat-dialog-actions button {
   min-width: 120px;
 }
 
-mat-dialog-actions button[color="primary"] {
+mat-dialog-actions button[color='primary'] {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -84,16 +84,16 @@ mat-dialog-actions button[color="primary"] {
     min-width: 90vw;
     max-width: 95vw;
   }
-  
+
   .curso-details {
     grid-template-columns: 1fr;
   }
-  
+
   mat-dialog-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   mat-dialog-actions button {
     min-width: auto;
   }

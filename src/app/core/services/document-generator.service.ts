@@ -9,7 +9,7 @@ import { DocumentData, DocumentRequest } from '../models/documento.model';
  * Paz y salvo tiene su propio endpoint; homologación y reingreso usan /documentos/generar.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DocumentGeneratorService {
   private readonly http = inject(HttpClient);
@@ -27,7 +27,9 @@ export class DocumentGeneratorService {
       if (request.datosDocumento.observaciones) {
         formData.append('observaciones', request.datosDocumento.observaciones);
       }
-      return this.http.post(`${this.api}/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`, formData, { responseType: 'blob' });
+      return this.http.post(`${this.api}/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`, formData, {
+        responseType: 'blob',
+      });
     }
 
     return this.http.post(`${this.api}/documentos/generar`, request, { responseType: 'blob' });

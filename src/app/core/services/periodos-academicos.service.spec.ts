@@ -10,7 +10,7 @@ describe('PeriodosAcademicosService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(PeriodosAcademicosService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -19,15 +19,15 @@ describe('PeriodosAcademicosService', () => {
   afterEach(() => httpMock.verify());
 
   it('getTodosLosPeriodos convierte los períodos que llegan como texto', (done) => {
-    service.getTodosLosPeriodos().subscribe(periodos => {
-      expect(periodos.map(p => [p.valor, p.año, p.numeroPeriodo])).toEqual([['2025-2', 2025, 2]]);
+    service.getTodosLosPeriodos().subscribe((periodos) => {
+      expect(periodos.map((p) => [p.valor, p.año, p.numeroPeriodo])).toEqual([['2025-2', 2025, 2]]);
       done();
     });
     httpMock.expectOne(ApiEndpoints.PERIODOS_ACADEMICOS.TODOS).flush({ success: true, data: ['2025-2'] });
   });
 
   it('getValoresPeriodos usa todos los períodos si hay', (done) => {
-    service.getValoresPeriodos().subscribe(valores => {
+    service.getValoresPeriodos().subscribe((valores) => {
       expect(valores).toEqual(['2025-1', '2024-2']);
       done();
     });
@@ -35,7 +35,7 @@ describe('PeriodosAcademicosService', () => {
   });
 
   it('getValoresPeriodos pasa a los recientes si /todos falla', (done) => {
-    service.getValoresPeriodos().subscribe(valores => {
+    service.getValoresPeriodos().subscribe((valores) => {
       expect(valores).toEqual(['2026-1']);
       done();
     });
@@ -44,7 +44,7 @@ describe('PeriodosAcademicosService', () => {
   });
 
   it('getValoresPeriodos devuelve una lista vacía si fallan los dos', (done) => {
-    service.getValoresPeriodos().subscribe(valores => {
+    service.getValoresPeriodos().subscribe((valores) => {
       expect(valores).toEqual([]);
       done();
     });

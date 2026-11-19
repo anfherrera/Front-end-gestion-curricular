@@ -165,28 +165,28 @@
   .welcome-container {
     padding: 10px;
   }
-  
+
   .welcome-title {
     font-size: 1.8rem;
   }
-  
+
   .welcome-subtitle {
     font-size: 1.2rem;
   }
-  
+
   .info-section {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .info-card {
     margin: 0;
   }
-  
+
   .welcome-header {
     padding: 20px;
   }
-  
+
   .continue-section {
     padding: 20px;
   }

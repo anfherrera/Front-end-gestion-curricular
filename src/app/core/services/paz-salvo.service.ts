@@ -45,14 +45,14 @@ const BANDEJA_POR_ROL: Record<string, string> = {
   FUNCIONARIO: 'Funcionario',
   COORDINADOR: 'Coordinador',
   SECRETARIA: 'Secretaria',
-  SECRETARIO: 'Secretaria'
+  SECRETARIO: 'Secretaria',
 };
 
 /**
  * Solicitudes de paz y salvo. El token lo añade JwtInterceptor a todas las peticiones.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PazSalvoService extends SolicitudesBaseService {
   private readonly authService = inject(AuthService);
@@ -75,7 +75,9 @@ export class PazSalvoService extends SolicitudesBaseService {
       const params = this.paramsPeriodo(periodoAcademico)
         .set('rol', 'ESTUDIANTE')
         .set('idUsuario', idUsuario?.toString() || '');
-      return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`, { params });
+      return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`, {
+        params,
+      });
     }
     return this.bandeja(BANDEJA_POR_ROL[rolUpper] ?? '', periodoAcademico);
   }
@@ -114,7 +116,10 @@ export class PazSalvoService extends SolicitudesBaseService {
   }
 
   private historial(rol: string, periodoAcademico?: string): Solicitudes {
-    return this.listarOVacio<SolicitudHomologacionDTORespuesta>(`listarSolicitud-PazYSalvo/${rol}/Aprobadas`, periodoAcademico);
+    return this.listarOVacio<SolicitudHomologacionDTORespuesta>(
+      `listarSolicitud-PazYSalvo/${rol}/Aprobadas`,
+      periodoAcademico
+    );
   }
 
   // ================================
@@ -154,7 +159,7 @@ export class PazSalvoService extends SolicitudesBaseService {
     } = {
       idUsuario: studentId,
       nombre_solicitud: nombreSolicitud,
-      fecha_registro_solicitud: datosFormulario.fecha_registro_solicitud
+      fecha_registro_solicitud: datosFormulario.fecha_registro_solicitud,
     };
     if (datosFormulario.periodo_academico) {
       body.periodo_academico = datosFormulario.periodo_academico;
@@ -191,9 +196,9 @@ export class PazSalvoService extends SolicitudesBaseService {
   // ================================
 
   obtenerComentarios(idSolicitud: number): Observable<ComentariosPazSalvo> {
-    return this.http.get<ComentariosPazSalvo>(`${this.apiUrl}/obtenerComentarios/${idSolicitud}`).pipe(
-      catchError(() => of({ mensaje: 'Error al obtener comentarios' }))
-    );
+    return this.http
+      .get<ComentariosPazSalvo>(`${this.apiUrl}/obtenerComentarios/${idSolicitud}`)
+      .pipe(catchError(() => of({ mensaje: 'Error al obtener comentarios' })));
   }
 
   // ================================
@@ -232,15 +237,22 @@ export class PazSalvoService extends SolicitudesBaseService {
    * del primer oficio de la solicitud. Queda en `blob.filename`.
    */
   descargarOficioPorSolicitud(idSolicitud: number): Observable<BlobConNombre> {
-    return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob', observe: 'response' }).pipe(
-      switchMap(resp => {
-        const nombre = this.nombreDesdeCabeceras(resp);
-        if (nombre) return of(this.conNombre(resp.body!, nombre));
-        return this.obtenerOficios(idSolicitud).pipe(
-          map(oficios => this.conNombre(resp.body!, oficios?.[0]?.nombreArchivo || oficios?.[0]?.nombre || `oficio_${idSolicitud}.pdf`))
-        );
-      })
-    );
+    return this.http
+      .get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob', observe: 'response' })
+      .pipe(
+        switchMap((resp) => {
+          const nombre = this.nombreDesdeCabeceras(resp);
+          if (nombre) return of(this.conNombre(resp.body!, nombre));
+          return this.obtenerOficios(idSolicitud).pipe(
+            map((oficios) =>
+              this.conNombre(
+                resp.body!,
+                oficios?.[0]?.nombreArchivo || oficios?.[0]?.nombre || `oficio_${idSolicitud}.pdf`
+              )
+            )
+          );
+        })
+      );
   }
 
   // Descargas que usa documentation-viewer. Paz y salvo descarga por su propio endpoint
@@ -266,9 +278,9 @@ export class PazSalvoService extends SolicitudesBaseService {
   }
 
   private descargarConNombre(url: string, nombrePorDefecto: string): Observable<BlobConNombre> {
-    return this.http.get(url, { responseType: 'blob', observe: 'response' }).pipe(
-      map(resp => this.conNombre(resp.body!, this.nombreDesdeCabeceras(resp) || nombrePorDefecto))
-    );
+    return this.http
+      .get(url, { responseType: 'blob', observe: 'response' })
+      .pipe(map((resp) => this.conNombre(resp.body!, this.nombreDesdeCabeceras(resp) || nombrePorDefecto)));
   }
 
   private conNombre(blob: Blob, nombre: string): BlobConNombre {

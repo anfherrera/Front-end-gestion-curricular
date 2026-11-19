@@ -19,17 +19,17 @@ import { SolicitudCursoVerano, EstadoSolicitudDetalle } from '@core/models/curso
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   templateUrl: './detalles-preinscripcion-dialog.component.html',
   styleUrl: './detalles-preinscripcion-dialog.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetallesPreinscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<DetallesPreinscripcionDialogComponent>>(MatDialogRef);
   data = inject<{
     solicitud: SolicitudCursoVerano;
-}>(MAT_DIALOG_DATA);
+  }>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
 
   observacionesForm: FormGroup;
@@ -39,7 +39,7 @@ export class DetallesPreinscripcionDialogComponent {
     const data = this.data;
 
     this.observacionesForm = this.fb.group({
-      observaciones: [data.solicitud.observaciones || '']
+      observaciones: [data.solicitud.observaciones || ''],
     });
     this.estadosOrdenados = this.obtenerEstadosOrdenados(data.solicitud.estadoSolicitud);
   }
@@ -47,7 +47,7 @@ export class DetallesPreinscripcionDialogComponent {
   guardarObservaciones(): void {
     if (this.observacionesForm.valid) {
       this.dialogRef.close({
-        observaciones: this.observacionesForm.value.observaciones
+        observaciones: this.observacionesForm.value.observaciones,
       });
     }
   }

@@ -13,7 +13,7 @@ export enum EstadosSolicitud {
   APROBADA_COORDINADOR = 'APROBADA_COORDINADOR',
   APROBADA = 'APROBADA',
   RECHAZADA = 'RECHAZADA',
-  PRE_REGISTRADO = 'PRE_REGISTRADO'
+  PRE_REGISTRADO = 'PRE_REGISTRADO',
 }
 
 export const ESTADOS_SOLICITUD_LABELS: Record<EstadosSolicitud, string> = {
@@ -25,5 +25,5 @@ export const ESTADOS_SOLICITUD_LABELS: Record<EstadosSolicitud, string> = {
   [EstadosSolicitud.APROBADA_COORDINADOR]: 'Aprobada por Coordinador',
   [EstadosSolicitud.APROBADA]: 'Aprobada',
   [EstadosSolicitud.RECHAZADA]: 'Rechazada',
-  [EstadosSolicitud.PRE_REGISTRADO]: 'Pre-registrado'
+  [EstadosSolicitud.PRE_REGISTRADO]: 'Pre-registrado',
 };

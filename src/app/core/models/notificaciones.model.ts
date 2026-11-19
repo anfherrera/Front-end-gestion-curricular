@@ -1,12 +1,10 @@
-
-
 export enum TipoSolicitud {
   ECAES = 'ECAES',
   REINGRESO = 'REINGRESO',
   HOMOLOGACION = 'HOMOLOGACION',
   PAZ_Y_SALVO = 'PAZ_Y_SALVO',
   CURSO_VERANO_PREINSCRIPCION = 'CURSO_VERANO_PREINSCRIPCION',
-  CURSO_VERANO_INSCRIPCION = 'CURSO_VERANO_INSCRIPCION'
+  CURSO_VERANO_INSCRIPCION = 'CURSO_VERANO_INSCRIPCION',
 }
 
 export enum TipoNotificacion {
@@ -14,9 +12,8 @@ export enum TipoNotificacion {
   CAMBIO_ESTADO = 'CAMBIO_ESTADO',
   APROBADA = 'APROBADA',
   RECHAZADA = 'RECHAZADA',
-  ENVIADA = 'ENVIADA'
+  ENVIADA = 'ENVIADA',
 }
-
 
 export interface NotificacionDTOPeticion {
   id_notificacion?: number;
@@ -33,7 +30,6 @@ export interface NotificacionDTOPeticion {
   idSolicitud?: number;
   idCurso?: number;
 }
-
 
 export interface NotificacionDTORespuesta {
   id_notificacion: number;
@@ -73,7 +69,6 @@ export interface Notificacion extends NotificacionDTORespuesta {
   color?: string;
 }
 
-
 export interface NotificacionesResponse {
   totalNoLeidas: number;
   cursosVeranoNoLeidas: number;
@@ -86,6 +81,3 @@ export interface NotificacionesResponse {
     PAZ_SALVO: number;
   };
 }
-
-
-

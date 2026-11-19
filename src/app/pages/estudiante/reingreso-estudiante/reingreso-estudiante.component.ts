@@ -31,11 +31,11 @@ import { documentoDeResolucion, nombreDesdeRuta } from './resolucion-reingreso';
     MatDialogModule,
     FileUploadComponent,
     RequiredDocsComponent,
-    RequestStatusTableComponent
+    RequestStatusTableComponent,
   ],
   templateUrl: './reingreso-estudiante.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReingresoEstudianteComponent extends SolicitudEstudianteBase<SolicitudReingresoDTORespuesta> {
   private reingresoService = inject(ReingresoEstudianteService);
@@ -47,19 +47,19 @@ export class ReingresoEstudianteComponent extends SolicitudEstudianteBase<Solici
     { label: 'PM-FO-4-FOR-17 Solicitud de Reingreso V2', obligatorio: true, formatoDisponibleUrl: '' },
     { label: 'Certificado de notas', obligatorio: true },
     { label: 'Documento de identidad', obligatorio: true },
-    { label: 'Carta de motivación', obligatorio: true }
+    { label: 'Carta de motivación', obligatorio: true },
   ];
 
   protected override palabrasClaveDocumentos = {
-    'pmfo4for17': ['pmfo4for17', 'pm-fo-4-for-17', 'solicitud', 'reingreso', 'reingreso v2'],
-    'certificado': ['certificado', 'notas', 'calificaciones', 'notas academicas'],
-    'documento': ['documento', 'identidad', 'cedula', 'cédula', 'tarjeta', 'identidad'],
-    'carta': ['carta', 'motivacion', 'motivación', 'motivo']
+    pmfo4for17: ['pmfo4for17', 'pm-fo-4-for-17', 'solicitud', 'reingreso', 'reingreso v2'],
+    certificado: ['certificado', 'notas', 'calificaciones', 'notas academicas'],
+    documento: ['documento', 'identidad', 'cedula', 'cédula', 'tarjeta', 'identidad'],
+    carta: ['carta', 'motivacion', 'motivación', 'motivo'],
   };
 
   protected readonly mensajeExito = '¡Solicitud de reingreso enviada correctamente!';
 
-  private readonly nombresDocumentosRequeridos = this.documentosRequeridos.map(doc => doc.label);
+  private readonly nombresDocumentosRequeridos = this.documentosRequeridos.map((doc) => doc.label);
 
   protected override alIniciar(): void {
     const reingreso = this.formatosService.getReingreso();
@@ -81,12 +81,12 @@ export class ReingresoEstudianteComponent extends SolicitudEstudianteBase<Solici
       periodo_academico: this.periodosService.getPeriodoActualValue()?.valor || getPeriodoActual(),
       fecha_ceremonia: null,
       objUsuario: usuarioParaSolicitud(usuario),
-      documentos: archivos.map(archivo => ({
+      documentos: archivos.map((archivo) => ({
         nombre: archivo.nombre,
         fecha_documento: new Date(),
         esValido: true,
-        comentario: archivo.comentario || undefined
-      }))
+        comentario: archivo.comentario || undefined,
+      })),
     };
     return this.reingresoService.crearSolicitud(solicitud);
   }
@@ -96,7 +96,10 @@ export class ReingresoEstudianteComponent extends SolicitudEstudianteBase<Solici
    * o no se puede bajar por su nombre, el oficio que da el backend (como en homologación).
    */
   descargarOficio(idSolicitud: number, nombreArchivo: string): void {
-    const resolucion = documentoDeResolucion(this.obtenerSolicitudCompleta(idSolicitud)?.documentos, this.nombresDocumentosRequeridos);
+    const resolucion = documentoDeResolucion(
+      this.obtenerSolicitudCompleta(idSolicitud)?.documentos,
+      this.nombresDocumentosRequeridos
+    );
     const respaldo = nombreArchivo || `oficio_reingreso_${idSolicitud}.pdf`;
     if (!resolucion) {
       this.descargarOficioDelProceso(this.reingresoService, idSolicitud, respaldo);
@@ -104,17 +107,18 @@ export class ReingresoEstudianteComponent extends SolicitudEstudianteBase<Solici
     }
 
     const nombreDescarga = nombreDesdeRuta(resolucion.nombre || resolucion.ruta_documento) || 'oficio_reingreso.pdf';
-    this.reingresoService.descargarArchivo(resolucion.nombre)
+    this.reingresoService
+      .descargarArchivo(resolucion.nombre)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: blob => {
+        next: (blob) => {
           descargarBlob(blob, nombreDescarga);
           this.snackbar.exito('Oficio descargado exitosamente');
         },
-        error: err => {
+        error: (err) => {
           this.logger.warn('No se pudo bajar la resolución por su nombre; se pide el oficio al backend', err);
           this.descargarOficioDelProceso(this.reingresoService, idSolicitud, nombreDescarga);
-        }
+        },
       });
   }
 }

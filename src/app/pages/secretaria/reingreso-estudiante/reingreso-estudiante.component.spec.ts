@@ -13,7 +13,10 @@ describe('ReingresoEstudianteComponent (Secretaria)', () => {
 
   beforeEach(async () => {
     servicio = jasmine.createSpyObj<ReingresoEstudianteService>('ReingresoEstudianteService', [
-      'getSecretariaRequests', 'getSecretariaApprovedRequests', 'subirArchivoPDF', 'approveDefinitively'
+      'getSecretariaRequests',
+      'getSecretariaApprovedRequests',
+      'subirArchivoPDF',
+      'approveDefinitively',
     ]);
     servicio.getSecretariaRequests.and.returnValue(of([]));
     servicio.getSecretariaApprovedRequests.and.returnValue(of([]));
@@ -24,8 +27,8 @@ describe('ReingresoEstudianteComponent (Secretaria)', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: ReingresoEstudianteService, useValue: servicio }
-      ]
+        { provide: ReingresoEstudianteService, useValue: servicio },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ReingresoEstudianteComponent);

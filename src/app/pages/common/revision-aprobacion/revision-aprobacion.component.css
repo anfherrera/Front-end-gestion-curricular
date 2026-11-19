@@ -76,11 +76,11 @@
   box-shadow: var(--sombra-1);
 }
 
-.botones-acciones button[color="warn"] {
+.botones-acciones button[color='warn'] {
   background-color: var(--rojo-700) !important;
 }
 
-.botones-acciones button[color="warn"]:hover {
+.botones-acciones button[color='warn']:hover {
   background-color: var(--rojo-800) !important;
 }
 

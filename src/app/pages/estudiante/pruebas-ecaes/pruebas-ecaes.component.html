@@ -1,5 +1,4 @@
 <div class="pruebas-ecaes-container">
-
   <!-- Primera Sección: Fechas -->
   <app-fechas-ecaes></app-fechas-ecaes>
 
@@ -8,7 +7,6 @@
 
   <!-- Tercera Sección: Seguimiento de Solicitud -->
   <app-card-container title="Seguimiento de Solicitud" icon="track_changes">
-
     <!-- Mensaje cuando no hay solicitudes -->
     @if (solicitudes().length === 0) {
       <div class="sin-solicitudes">
@@ -25,10 +23,9 @@
         [showComentarios]="true"
         [headerAcciones]="'Información'"
         (verComentarios)="verComentarios($event)"
-        (mostrarInfoPreregistro)="mostrarInfoPreregistro()">
+        (mostrarInfoPreregistro)="mostrarInfoPreregistro()"
+      >
       </app-request-status-table>
     }
-
   </app-card-container>
-
 </div>

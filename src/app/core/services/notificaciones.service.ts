@@ -9,7 +9,7 @@ import { Notificacion } from '../models/notificaciones.model';
  * (cierra sesión y redirige a /login).
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificacionesService {
   private readonly http = inject(HttpClient);
@@ -20,10 +20,9 @@ export class NotificacionesService {
   readonly cambios$ = this.cambios.asObservable();
 
   obtenerNoLeidas(idUsuario: number): Observable<Notificacion[]> {
-    return this.http.get<Notificacion[]>(`${this.apiUrl}/usuario/${idUsuario}/no-leidas`).pipe(
-      timeout(5000),
-      map(conFechas)
-    );
+    return this.http
+      .get<Notificacion[]>(`${this.apiUrl}/usuario/${idUsuario}/no-leidas`)
+      .pipe(timeout(5000), map(conFechas));
   }
 
   contarNoLeidas(idUsuario: number): Observable<number> {
@@ -50,8 +49,8 @@ export class NotificacionesService {
 
 /** El backend envía fechaCreacion como texto. */
 function conFechas(notificaciones: Notificacion[]): Notificacion[] {
-  return notificaciones.map(n => ({
+  return notificaciones.map((n) => ({
     ...n,
-    fechaCreacion: typeof n.fechaCreacion === 'string' ? new Date(n.fechaCreacion) : n.fechaCreacion
+    fechaCreacion: typeof n.fechaCreacion === 'string' ? new Date(n.fechaCreacion) : n.fechaCreacion,
   }));
 }

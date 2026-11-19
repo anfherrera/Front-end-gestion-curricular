@@ -20,8 +20,10 @@ export type CategoriaEstado = 'aprobada' | 'rechazada' | 'enviada' | 'proceso' |
 export function normalizarEstado(estado: string | null | undefined): string {
   if (!estado) return '';
   const codigo = estado
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .trim().toUpperCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim()
+    .toUpperCase()
     .replace(/[\s-]+/g, '_')
     .replace('_POR_', '_');
   return codigo === 'PREREGISTRADO' ? EstadosSolicitud.PRE_REGISTRADO : codigo;
@@ -39,8 +41,10 @@ export function estadoActual(sol: ConHistorialDeEstados): string {
 }
 
 /** Comentario del último rechazo del historial (RECHAZADA, Rechazada…), o null si no hay. */
-export function comentarioDeRechazo(sol: ConHistorialDeEstados<{ estado_actual: string; comentario?: string | null }>): string | null {
-  const rechazos = (sol.estadosSolicitud ?? []).filter(e => categoriaEstado(e.estado_actual) === 'rechazada');
+export function comentarioDeRechazo(
+  sol: ConHistorialDeEstados<{ estado_actual: string; comentario?: string | null }>
+): string | null {
+  const rechazos = (sol.estadosSolicitud ?? []).filter((e) => categoriaEstado(e.estado_actual) === 'rechazada');
   return rechazos.at(-1)?.comentario || null;
 }
 

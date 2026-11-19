@@ -41,11 +41,11 @@ import { RechazoPreinscripcionDialogComponent } from './rechazo-preinscripcion-d
     MatProgressSpinnerModule,
     CardContainerComponent,
     EstadoColorPipe,
-    NombreDocentePipe
+    NombreDocentePipe,
   ],
   templateUrl: './preinscribir-estudiantes.component.html',
   styleUrls: ['../filtro-curso-comun.css', './preinscribir-estudiantes.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PreinscribirEstudiantesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -55,47 +55,42 @@ export class PreinscribirEstudiantesComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   private readonly destroyRef = inject(DestroyRef);
-  
+
   // Datos
   readonly cursos = signal<CursoOfertadoVerano[]>([]);
   solicitudes: SolicitudCursoVerano[] = [];
   readonly solicitudesFiltradas = signal<SolicitudCursoVerano[]>([]);
   readonly cargando = signal(false);
-  
+
   // Formularios
   filtroForm: FormGroup;
   observacionForm: FormGroup;
-  
+
   // Estado
   readonly cursoSeleccionado = signal<CursoOfertadoVerano | null>(null);
   solicitudSeleccionada: SolicitudCursoVerano | null = null;
-  
+
   // Columnas de la tabla
-  displayedColumns: string[] = [
-    'estudiante', 
-    'fecha_solicitud', 
-    'estado', 
-    'observaciones', 
-    'acciones'
-  ];
+  displayedColumns: string[] = ['estudiante', 'fecha_solicitud', 'estado', 'observaciones', 'acciones'];
 
   constructor() {
     this.filtroForm = this.fb.group({
-      curso: ['', Validators.required]
+      curso: ['', Validators.required],
     });
-    
+
     this.observacionForm = this.fb.group({
-      observaciones: ['']
+      observaciones: [''],
     });
   }
 
   ngOnInit(): void {
     this.cargarCursos();
-    
+
     // Suscribirse a cambios en el filtro de curso
-    this.filtroForm.get('curso')?.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(cursoId => {
+    this.filtroForm
+      .get('curso')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((cursoId) => {
         if (cursoId) {
           this.cargarSolicitudesPorCurso(cursoId);
         } else {
@@ -107,59 +102,65 @@ export class PreinscribirEstudiantesComponent implements OnInit {
 
   cargarCursos(): void {
     this.cargando.set(true);
-    
+
     // Usar getCursosPorEstado para obtener cursos en estado "Preinscripción"
     // Sin período para mostrar TODOS los cursos de preinscripción
-    this.cursosService.getCursosPorEstado('Preinscripción').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (cursos) => {
-        this.cursos.set(cursos);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.cursos.set([]);
-        this.cargando.set(false);
-        this.snackbar.error('Error al cargar los cursos disponibles');
-      }
-    });
+    this.cursosService
+      .getCursosPorEstado('Preinscripción')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (cursos) => {
+          this.cursos.set(cursos);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.cursos.set([]);
+          this.cargando.set(false);
+          this.snackbar.error('Error al cargar los cursos disponibles');
+        },
+      });
   }
 
   cargarSolicitudesPorCurso(cursoId: number): void {
     this.cargando.set(true);
-    
+
     // Curso actualizado (si falla, el de la lista) y después sus preinscripciones
-    this.cursosService.getCursoPorId(cursoId).pipe(
-      catchError(() => of(this.cursos().find(c => c.id_curso === cursoId) || null)),
-      tap(curso => this.cursoSeleccionado.set(curso)),
-      switchMap(() => this.cursosService.getPreinscripcionesPorCurso(cursoId)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (solicitudes) => {
-        const curso = this.cursoSeleccionado();
-        if (curso) {
-          solicitudes.forEach(solicitud => {
-            if (!solicitud.objCursoOfertadoVerano) {
-              solicitud.objCursoOfertadoVerano = curso;
-            }
-          });
-        }
-        this.solicitudes = solicitudes;
-        this.solicitudesFiltradas.set(solicitudes);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.solicitudesFiltradas.set([]);
-        this.cargando.set(false);
-        this.snackbar.error('Error al cargar las preinscripciones del curso');
-      }
-    });
+    this.cursosService
+      .getCursoPorId(cursoId)
+      .pipe(
+        catchError(() => of(this.cursos().find((c) => c.id_curso === cursoId) || null)),
+        tap((curso) => this.cursoSeleccionado.set(curso)),
+        switchMap(() => this.cursosService.getPreinscripcionesPorCurso(cursoId)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (solicitudes) => {
+          const curso = this.cursoSeleccionado();
+          if (curso) {
+            solicitudes.forEach((solicitud) => {
+              if (!solicitud.objCursoOfertadoVerano) {
+                solicitud.objCursoOfertadoVerano = curso;
+              }
+            });
+          }
+          this.solicitudes = solicitudes;
+          this.solicitudesFiltradas.set(solicitudes);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.solicitudesFiltradas.set([]);
+          this.cargando.set(false);
+          this.snackbar.error('Error al cargar las preinscripciones del curso');
+        },
+      });
   }
 
   verDetalles(solicitud: SolicitudCursoVerano): void {
     this.solicitudSeleccionada = solicitud;
     this.observacionForm.patchValue({
-      observaciones: solicitud.observaciones || ''
+      observaciones: solicitud.observaciones || '',
     });
-    
+
     // Abrir dialog con detalles
     this.abrirDialogDetalles(solicitud);
   }
@@ -169,80 +170,86 @@ export class PreinscribirEstudiantesComponent implements OnInit {
       width: '600px',
       maxWidth: '90vw',
       data: {
-        solicitud: solicitud
-      }
+        solicitud: solicitud,
+      },
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
-      if (result && result.observaciones !== undefined) {
-        const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
-        this.actualizarObservaciones(idSolicitud, result.observaciones);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result && result.observaciones !== undefined) {
+          const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
+          this.actualizarObservaciones(idSolicitud, result.observaciones);
+        }
+      });
   }
 
   actualizarObservaciones(idSolicitud: number | undefined, observaciones: string): void {
-    
     if (!idSolicitud) {
       this.snackbar.error('Error: No se pudo identificar la preinscripción para guardar observaciones');
       return;
     }
-    
-    
-    this.cursosService.actualizarObservacionesPreinscripcion(idSolicitud, observaciones).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        
-        this.actualizarSolicitud(idSolicitud, { observaciones });
-        
-        this.snackbar.exito('Observaciones guardadas exitosamente');
-      },
-      error: () => {
-        this.snackbar.error('Error al guardar las observaciones');
-      }
-    });
+
+    this.cursosService
+      .actualizarObservacionesPreinscripcion(idSolicitud, observaciones)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.actualizarSolicitud(idSolicitud, { observaciones });
+
+          this.snackbar.exito('Observaciones guardadas exitosamente');
+        },
+        error: () => {
+          this.snackbar.error('Error al guardar las observaciones');
+        },
+      });
   }
 
   /** Cambia en la tabla la solicitud con ese ID por una copia con los cambios. */
   private actualizarSolicitud(idSolicitud: number, cambios: Partial<SolicitudCursoVerano>): void {
-    this.solicitudesFiltradas.update(lista => lista.map(s =>
-      (s.id_solicitud || s.id_preinscripcion) === idSolicitud ? { ...s, ...cambios } : s));
+    this.solicitudesFiltradas.update((lista) =>
+      lista.map((s) => ((s.id_solicitud || s.id_preinscripcion) === idSolicitud ? { ...s, ...cambios } : s))
+    );
   }
 
   aprobarSolicitud(solicitud: SolicitudCursoVerano): void {
     const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
-    
+
     if (!idSolicitud) {
       this.snackbar.error('Error: No se pudo identificar la preinscripción');
       return;
     }
-    
-    
-    this.cursosService.aprobarPreinscripcion(idSolicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        
-        this.actualizarSolicitud(idSolicitud, { estado: 'Aprobado' });
-        
-        this.snackbar.exito(`Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`);
-      },
-      error: (err) => {
-        
-        let errorMessage = 'Error al aprobar la preinscripción';
-        
-        if (err.status === 500) {
-          errorMessage = 'Error interno del servidor. Verifique los logs del backend.';
-        } else if (err.error && err.error.message) {
-          errorMessage = err.error.message;
-        } else if (err.error && typeof err.error === 'string') {
-          errorMessage = err.error;
-        } else if (err.status === 404) {
-          errorMessage = 'Preinscripción no encontrada';
-        } else if (err.status === 400) {
-          errorMessage = 'Datos inválidos para aprobar la preinscripción';
-        }
-        
-        this.snackbar.error(`${errorMessage}`);
-      }
-    });
+
+    this.cursosService
+      .aprobarPreinscripcion(idSolicitud)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.actualizarSolicitud(idSolicitud, { estado: 'Aprobado' });
+
+          this.snackbar.exito(
+            `Preinscripción de ${solicitud.objUsuario.nombre_completo} aprobada exitosamente. El estudiante puede proceder a inscripción.`
+          );
+        },
+        error: (err) => {
+          let errorMessage = 'Error al aprobar la preinscripción';
+
+          if (err.status === 500) {
+            errorMessage = 'Error interno del servidor. Verifique los logs del backend.';
+          } else if (err.error && err.error.message) {
+            errorMessage = err.error.message;
+          } else if (err.error && typeof err.error === 'string') {
+            errorMessage = err.error;
+          } else if (err.status === 404) {
+            errorMessage = 'Preinscripción no encontrada';
+          } else if (err.status === 400) {
+            errorMessage = 'Datos inválidos para aprobar la preinscripción';
+          }
+
+          this.snackbar.error(`${errorMessage}`);
+        },
+      });
   }
 
   rechazarSolicitud(solicitud: SolicitudCursoVerano): void {
@@ -250,65 +257,67 @@ export class PreinscribirEstudiantesComponent implements OnInit {
   }
 
   abrirModalRechazo(solicitud: SolicitudCursoVerano): void {
-    
     // Abrir diálogo de Angular Material
     const dialogRef = this.dialog.open(RechazoPreinscripcionDialogComponent, {
       width: '600px',
-      data: { 
+      data: {
         solicitud: solicitud,
-        curso: this.cursoSeleccionado() || solicitud.objCursoOfertadoVerano
+        curso: this.cursoSeleccionado() || solicitud.objCursoOfertadoVerano,
       },
-      disableClose: true
+      disableClose: true,
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
-      if (result && result.motivo) {
-        this.procesarRechazo(solicitud, result.motivo);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result && result.motivo) {
+          this.procesarRechazo(solicitud, result.motivo);
+        }
+      });
   }
 
   procesarRechazo(solicitud: SolicitudCursoVerano, motivo: string): void {
     const idSolicitud = solicitud.id_solicitud || solicitud.id_preinscripcion;
-    
+
     if (!idSolicitud) {
       this.snackbar.error('Error: No se pudo identificar la preinscripción para rechazar');
       return;
     }
-    
-    
-    this.cursosService.rechazarPreinscripcion(idSolicitud, motivo).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        
-        this.actualizarSolicitud(idSolicitud, { estado: 'Rechazado' });
-        
-        const motivoRespuesta = (response && response.motivo ? response.motivo : motivo);
-        this.snackbar.exito(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`);
 
-        const idCurso = this.cursoSeleccionado()?.id_curso;
-        if (idCurso) {
-          this.cargarSolicitudesPorCurso(idCurso);
-        }
-      },
-      error: (err) => {
-        
-        let errorMessage = 'Error al rechazar la preinscripción';
-        
-        if (err.status === 500) {
-          errorMessage = 'Error interno del servidor. Verifique los logs del backend.';
-        } else if (err.error && err.error.message) {
-          errorMessage = err.error.message;
-        } else if (err.error && typeof err.error === 'string') {
-          errorMessage = err.error;
-        } else if (err.status === 404) {
-          errorMessage = 'Preinscripción no encontrada';
-        } else if (err.status === 400) {
-          errorMessage = 'Datos inválidos para rechazar la preinscripción';
-        }
-        
-        this.snackbar.error(`${errorMessage}`);
-      }
-    });
+    this.cursosService
+      .rechazarPreinscripcion(idSolicitud, motivo)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.actualizarSolicitud(idSolicitud, { estado: 'Rechazado' });
+
+          const motivoRespuesta = response && response.motivo ? response.motivo : motivo;
+          this.snackbar.exito(`Preinscripción rechazada exitosamente. Motivo: ${motivoRespuesta}`);
+
+          const idCurso = this.cursoSeleccionado()?.id_curso;
+          if (idCurso) {
+            this.cargarSolicitudesPorCurso(idCurso);
+          }
+        },
+        error: (err) => {
+          let errorMessage = 'Error al rechazar la preinscripción';
+
+          if (err.status === 500) {
+            errorMessage = 'Error interno del servidor. Verifique los logs del backend.';
+          } else if (err.error && err.error.message) {
+            errorMessage = err.error.message;
+          } else if (err.error && typeof err.error === 'string') {
+            errorMessage = err.error;
+          } else if (err.status === 404) {
+            errorMessage = 'Preinscripción no encontrada';
+          } else if (err.status === 400) {
+            errorMessage = 'Datos inválidos para rechazar la preinscripción';
+          }
+
+          this.snackbar.error(`${errorMessage}`);
+        },
+      });
   }
 
   // ===== VALIDACIONES DE PERMISOS =====
@@ -328,7 +337,7 @@ export class PreinscribirEstudiantesComponent implements OnInit {
     if (!this.puedeGestionarPreinscripciones()) {
       return false;
     }
-    
+
     // Se pueden aprobar preinscripciones en estado ENVIADA, Enviada, Enviado o Pendiente
     const estado = solicitud.estado?.toString().toUpperCase() || '';
     return estado === 'ENVIADA' || estado === 'ENVIADO' || estado === 'PENDIENTE';
@@ -341,7 +350,7 @@ export class PreinscribirEstudiantesComponent implements OnInit {
     if (!this.puedeGestionarPreinscripciones()) {
       return false;
     }
-    
+
     // Se pueden rechazar preinscripciones en estado ENVIADA, Enviada, Enviado o Pendiente
     const estado = solicitud.estado?.toString().toUpperCase() || '';
     return estado === 'ENVIADA' || estado === 'ENVIADO' || estado === 'PENDIENTE';
@@ -354,5 +363,4 @@ export class PreinscribirEstudiantesComponent implements OnInit {
     // Todos los funcionarios pueden ver detalles
     return this.puedeGestionarPreinscripciones();
   }
-
 }

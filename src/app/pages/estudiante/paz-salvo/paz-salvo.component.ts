@@ -49,11 +49,11 @@ interface DatosSolicitudPazSalvo {
     MatNativeDateModule,
     RequestStatusTableComponent,
     FileUploadComponent,
-    RequiredDocsComponent
+    RequiredDocsComponent,
   ],
   templateUrl: './paz-salvo.component.html',
   styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologacionDTORespuesta> {
   private pazSalvoService = inject(PazSalvoService);
@@ -62,35 +62,40 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
   readonly solicitudForm = this.fb.group({
     fecha_terminacion_plan: [null as Date | null, Validators.required],
     titulo_trabajo_grado: [''],
-    director_trabajo_grado: ['']
+    director_trabajo_grado: [''],
   });
   requiereTrabajoGrado = false;
   maxDate: Date = new Date();
 
-  protected readonly mensajeExito = '¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.';
+  protected readonly mensajeExito =
+    '¡Solicitud de paz y salvo enviada correctamente! Los documentos se asociaron automáticamente.';
 
   documentosRequeridos: Documento[] = [
     { label: 'Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf', obligatorio: true },
-    { label: 'Autorización para publicar y permitir la consulta y uso de obras en el Repositorio Institucional.pdf', obligatorio: true },
+    {
+      label: 'Autorización para publicar y permitir la consulta y uso de obras en el Repositorio Institucional.pdf',
+      obligatorio: true,
+    },
     { label: 'Comprobante de pago de derechos de sustentación.pdf', obligatorio: true },
     { label: 'Documento final del trabajo de grado con sus anexos.pdf', obligatorio: true },
     { label: 'Formato TI-G (Acta sustentación TRABAJO DE INVESTIGACIÓN).pdf (según modalidad)', obligatorio: false },
-    { label: 'Formato TI-H (Constancia director y jurados TRABAJO DE INVESTIGACIÓN).pdf (según modalidad)', obligatorio: false },
+    {
+      label: 'Formato TI-H (Constancia director y jurados TRABAJO DE INVESTIGACIÓN).pdf (según modalidad)',
+      obligatorio: false,
+    },
     { label: 'Formato PP-G (Acta sustentación PRÁCTICA PROFESIONAL).pdf (según modalidad)', obligatorio: false },
-    { label: 'Formato PP-H (Constancia director y jurados PRÁCTICA PROFESIONAL).pdf (según modalidad)', obligatorio: false },
-    { label: 'Resultados de pruebas ECAES (opcional).pdf', obligatorio: false, opcional: true }
+    {
+      label: 'Formato PP-H (Constancia director y jurados PRÁCTICA PROFESIONAL).pdf (según modalidad)',
+      obligatorio: false,
+    },
+    { label: 'Resultados de pruebas ECAES (opcional).pdf', obligatorio: false, opcional: true },
   ];
 
   // Sistemas, Electrónica y Automática adjuntan uno de estos dos (también se suben a SIMCA Web).
   // PPH (sin guion) es el acta de sustentación; PP-H (con guion) es la constancia de práctica profesional.
-  archivosExclusivos: string[] = [
-    'Formato PPH.pdf',
-    'Formato TIH.pdf'
-  ];
+  archivosExclusivos: string[] = ['Formato PPH.pdf', 'Formato TIH.pdf'];
 
-  optionalFiles: string[] = [
-    'Fotocopia de cédula (Solo para Tecnología en Telemática).pdf'
-  ];
+  optionalFiles: string[] = ['Fotocopia de cédula (Solo para Tecnología en Telemática).pdf'];
 
   protected override alIniciar(): void {
     this.requiereTrabajoGrado = !this.esTelematica() && this.programaConTrabajoDeGrado();
@@ -113,7 +118,7 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
 
   private programaConTrabajoDeGrado(): boolean {
     const programa = this.programaNormalizado();
-    return PROGRAMAS_CON_TRABAJO_DE_GRADO.some(p => programa.includes(p));
+    return PROGRAMAS_CON_TRABAJO_DE_GRADO.some((p) => programa.includes(p));
   }
 
   /** Título y director son obligatorios solo si el programa exige trabajo de grado. */
@@ -157,8 +162,8 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
     const faltantes = super.obtenerDocumentosFaltantes();
 
     const tienePphOTih = this.archivosActuales()
-      .map(a => normalizarNombreArchivo(a.nombre))
-      .some(n => n.includes('pph') || n.includes('tih'));
+      .map((a) => normalizarNombreArchivo(a.nombre))
+      .some((n) => n.includes('pph') || n.includes('tih'));
     if (this.programaConTrabajoDeGrado() && !tienePphOTih) {
       faltantes.push('Formato PPH o TIH (requerido para tu programa)');
     }
@@ -169,19 +174,21 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
   /** Telemática solo exige la cédula; los formatos de trabajo de grado no aplican. */
   private validarDocumentosTelematica(): string[] {
     const errores: string[] = [];
-    const nombres = this.archivosActuales().map(a => normalizarNombreArchivo(a.nombre));
+    const nombres = this.archivosActuales().map((a) => normalizarNombreArchivo(a.nombre));
 
-    if (nombres.some(n => n.includes('tig') || n.includes('tih'))) {
+    if (nombres.some((n) => n.includes('tig') || n.includes('tih'))) {
       errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
     }
-    if (nombres.some(n => n.includes('ppg') || n.includes('pph'))) {
+    if (nombres.some((n) => n.includes('ppg') || n.includes('pph'))) {
       errores.push('Los formatos PP-G/PP-H no aplican para tu programa (Telemática)');
     }
-    if (nombres.some(n => DOCUMENTOS_NO_TELEMATICA.some(d => n.includes(d)))) {
-      errores.push('Los documentos obligatorios (PM-FO-4-FOR-27, Autorización, Comprobante, Trabajo de grado) no aplican para tu programa (Telemática)');
+    if (nombres.some((n) => DOCUMENTOS_NO_TELEMATICA.some((d) => n.includes(d)))) {
+      errores.push(
+        'Los documentos obligatorios (PM-FO-4-FOR-27, Autorización, Comprobante, Trabajo de grado) no aplican para tu programa (Telemática)'
+      );
     }
 
-    const faltantes = nombres.some(n => n.includes('cedula'))
+    const faltantes = nombres.some((n) => n.includes('cedula'))
       ? []
       : ['Fotocopia de cédula (obligatoria para Telemática)'];
 
@@ -196,15 +203,16 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
   /** Datos del formulario en el formato que espera el backend. */
   private datosSolicitud(usuario: UsuarioSesion): DatosSolicitudPazSalvo {
     const formValue = this.solicitudForm.value;
-    const fecha = formValue.fecha_terminacion_plan instanceof Date
-      ? formValue.fecha_terminacion_plan
-      : new Date(formValue.fecha_terminacion_plan ?? '');
+    const fecha =
+      formValue.fecha_terminacion_plan instanceof Date
+        ? formValue.fecha_terminacion_plan
+        : new Date(formValue.fecha_terminacion_plan ?? '');
 
     const nombreCompleto = usuario.nombre_completo?.trim() || 'Usuario';
 
     const datos: DatosSolicitudPazSalvo = {
       nombre_solicitud: `Solicitud Paz y Salvo - ${nombreCompleto}`,
-      fecha_registro_solicitud: fecha.toISOString().split('T')[0]
+      fecha_registro_solicitud: fecha.toISOString().split('T')[0],
     };
 
     if (this.requiereTrabajoGrado) {
@@ -220,7 +228,7 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
     this.solicitudForm.reset({
       fecha_terminacion_plan: null,
       titulo_trabajo_grado: '',
-      director_trabajo_grado: ''
+      director_trabajo_grado: '',
     });
     super.despuesDeEnviar();
   }
@@ -233,15 +241,23 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
       return;
     }
 
-    this.pazSalvoService.obtenerComentarios(solicitudCompleta.id_solicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (comentarios) => this.abrirComentarios({
-        titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
-        documentos: comentarios.documentosConComentarios?.map(doc => ({ nombre: doc.nombre, comentario: doc.comentario })) || [],
-        comentarioRechazo: comentarios.comentarioRechazo || null,
-        mensaje: comentarios.mensaje || undefined
-      }),
-      error: () => this.snackbar.error('Error al cargar los comentarios')
-    });
+    this.pazSalvoService
+      .obtenerComentarios(solicitudCompleta.id_solicitud)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (comentarios) =>
+          this.abrirComentarios({
+            titulo: `Comentarios - ${solicitudCompleta.nombre_solicitud}`,
+            documentos:
+              comentarios.documentosConComentarios?.map((doc) => ({
+                nombre: doc.nombre,
+                comentario: doc.comentario,
+              })) || [],
+            comentarioRechazo: comentarios.comentarioRechazo || null,
+            mensaje: comentarios.mensaje || undefined,
+          }),
+        error: () => this.snackbar.error('Error al cargar los comentarios'),
+      });
   }
 
   /**
@@ -249,18 +265,23 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
    * Content-Disposition o, si no viene, del primer oficio de la solicitud.
    */
   descargarOficio(idSolicitud: number, nombreArchivo: string): void {
-    this.pazSalvoService.descargarOficioPorSolicitud(idSolicitud).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (blob) => {
-        descargarBlob(blob, blob.filename || nombreArchivo || `oficio_${idSolicitud}.pdf`);
-        this.snackbar.exito('Oficio descargado exitosamente');
-      },
-      error: (err) => {
-        if (err.status === 404) {
-          this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
-        } else {
-          this.snackbar.error('Error al descargar el oficio: ' + (err.error?.message || err.message || 'Error desconocido'));
-        }
-      }
-    });
+    this.pazSalvoService
+      .descargarOficioPorSolicitud(idSolicitud)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob) => {
+          descargarBlob(blob, blob.filename || nombreArchivo || `oficio_${idSolicitud}.pdf`);
+          this.snackbar.exito('Oficio descargado exitosamente');
+        },
+        error: (err) => {
+          if (err.status === 404) {
+            this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
+          } else {
+            this.snackbar.error(
+              'Error al descargar el oficio: ' + (err.error?.message || err.message || 'Error desconocido')
+            );
+          }
+        },
+      });
   }
 }

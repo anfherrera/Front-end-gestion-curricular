@@ -27,15 +27,15 @@ describe('GestionarCursosComponent', () => {
       'getTodosLosDocentes',
       'createCurso',
       'updateCurso',
-      'deleteCurso'
+      'deleteCurso',
     ]);
     estadosServiceSpy = jasmine.createSpyObj('CursoEstadosService', [
-      'getEstadosDisponibles', 
-      'getEstadosPermitidos', 
+      'getEstadosDisponibles',
+      'getEstadosPermitidos',
       'getEstadosParaRol',
       'getColorEstado',
       'getIconoEstado',
-      'validarTransicionEstado'
+      'validarTransicionEstado',
     ]);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -53,16 +53,15 @@ describe('GestionarCursosComponent', () => {
         HttpClientTestingModule,
         MatSnackBarModule,
         MatDialogModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
       ],
       providers: [
         { provide: CursosIntersemestralesService, useValue: cursosServiceSpy },
         { provide: CursoEstadosService, useValue: estadosServiceSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
-        { provide: MatDialog, useValue: dialogSpy }
-      ]
-    })
-    .compileComponents();
+        { provide: MatDialog, useValue: dialogSpy },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(GestionarCursosComponent);
     component = fixture.componentInstance;

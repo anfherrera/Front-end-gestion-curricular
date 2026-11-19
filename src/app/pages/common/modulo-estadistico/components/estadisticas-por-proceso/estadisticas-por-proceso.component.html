@@ -4,9 +4,7 @@
       <mat-icon>analytics</mat-icon>
       Estadísticas por Proceso
     </mat-card-title>
-    <mat-card-subtitle>
-      Detalle de solicitudes por proceso académico
-    </mat-card-subtitle>
+    <mat-card-subtitle> Detalle de solicitudes por proceso académico </mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
@@ -32,9 +30,7 @@
       <div class="procesos-container">
         <div class="procesos-grid">
           @for (proceso of procesosData(); track proceso) {
-            <div
-              class="proceso-card"
-              [class]="'proceso-' + getProcesoClass(proceso.nombre)">
+            <div class="proceso-card" [class]="'proceso-' + getProcesoClass(proceso.nombre)">
               <div class="proceso-header">
                 <div class="proceso-icon">
                   <mat-icon>{{ getProcesoIcon(proceso.nombre) }}</mat-icon>
@@ -77,7 +73,7 @@
                     @if (proceso.porcentajeAprobacion !== undefined) {
                       <div class="stat-item porcentaje">
                         <mat-icon>trending_up</mat-icon>
-                        <span class="stat-value">{{ proceso.porcentajeAprobacion | number:'1.1-1' }}%</span>
+                        <span class="stat-value">{{ proceso.porcentajeAprobacion | number: '1.1-1' }}%</span>
                         <span class="stat-label">Aprobación</span>
                       </div>
                     }
@@ -88,8 +84,7 @@
                 <div class="proceso-datos-raw">
                   <mat-chip-set>
                     @for (key of getDatosKeys(proceso.datos); track key) {
-                      <mat-chip
-                        [matTooltip]="(proceso.datos[key] ?? '') + ''">
+                      <mat-chip [matTooltip]="(proceso.datos[key] ?? '') + ''">
                         {{ key }}: {{ proceso.datos[key] }}
                       </mat-chip>
                     }
@@ -112,19 +107,15 @@
 
   @if (!loading()) {
     <mat-card-actions>
-      <button mat-icon-button (click)="toggleDatosRaw()"
-        matTooltip="Mostrar/ocultar datos detallados">
+      <button mat-icon-button (click)="toggleDatosRaw()" matTooltip="Mostrar/ocultar datos detallados">
         <mat-icon>{{ mostrarDatosRaw ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      <button mat-icon-button (click)="cargarDatos()"
-        matTooltip="Actualizar datos">
+      <button mat-icon-button (click)="cargarDatos()" matTooltip="Actualizar datos">
         <mat-icon>refresh</mat-icon>
       </button>
       <span class="spacer"></span>
       @if (fechaConsulta()) {
-        <small class="fecha-actualizacion">
-          Actualizado: {{ fechaConsulta() | date:'short' }}
-        </small>
+        <small class="fecha-actualizacion"> Actualizado: {{ fechaConsulta() | date: 'short' }} </small>
       }
     </mat-card-actions>
   }

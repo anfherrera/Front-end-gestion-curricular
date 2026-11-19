@@ -7,8 +7,6 @@
   font-family: 'Roboto', sans-serif;
 }
 
-
-
 .menu {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -16,12 +14,16 @@
   margin-bottom: 30px;
 }
 
-
-
 @keyframes urgentPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .content {
@@ -45,25 +47,25 @@
     gap: 15px;
     text-align: center;
   }
-  
+
   .header h1 {
     font-size: 1.5rem;
   }
-  
+
   .menu {
     grid-template-columns: 1fr;
   }
-  
+
   .menu-content {
     padding: 15px;
   }
-  
+
   .menu-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
   }
-  
+
   .menu-text {
     font-size: 0.9rem;
   }

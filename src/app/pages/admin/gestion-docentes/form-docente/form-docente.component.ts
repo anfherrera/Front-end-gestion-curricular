@@ -24,11 +24,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatCardModule
-],
+    MatCardModule,
+  ],
   templateUrl: './form-docente.component.html',
   styleUrls: ['./form-docente.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormDocenteComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -45,21 +45,13 @@ export class FormDocenteComponent implements OnInit {
 
   constructor() {
     this.docenteForm = this.fb.group({
-      codigo_docente: ['', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(12)
-      ]],
-      nombre_docente: ['', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(100)
-      ]]
+      codigo_docente: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(12)]],
+      nombre_docente: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
     });
   }
 
   ngOnInit(): void {
-    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['id']) {
         this.isEditMode.set(true);
         this.docenteId = +params['id'];
@@ -76,7 +68,7 @@ export class FormDocenteComponent implements OnInit {
       next: (data) => {
         this.docenteForm.patchValue({
           codigo_docente: data.codigo_docente,
-          nombre_docente: data.nombre_docente
+          nombre_docente: data.nombre_docente,
         });
         this.loading.set(false);
       },
@@ -84,7 +76,7 @@ export class FormDocenteComponent implements OnInit {
         this.snackbar.error('Error al cargar los datos del docente');
         this.router.navigate(['/admin/docentes']);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -96,9 +88,9 @@ export class FormDocenteComponent implements OnInit {
     }
 
     this.loading.set(true);
-    
+
     const docenteData: DocenteDTOPeticion = {
-      ...this.docenteForm.value
+      ...this.docenteForm.value,
     };
 
     if (this.isEditMode() && this.docenteId) {
@@ -119,7 +111,7 @@ export class FormDocenteComponent implements OnInit {
         const mensaje = err.error?.mensaje || 'Error al crear el docente';
         this.snackbar.error(mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -133,7 +125,7 @@ export class FormDocenteComponent implements OnInit {
         const mensaje = err.error?.mensaje || 'Error al actualizar el docente';
         this.snackbar.error(mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -150,4 +142,3 @@ export class FormDocenteComponent implements OnInit {
     return this.docenteForm.get('nombre_docente');
   }
 }
-

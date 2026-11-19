@@ -390,24 +390,23 @@ table {
   color: #adb5bd;
 }
 
-
 /* Responsive */
 @media (max-width: 768px) {
   .acciones-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .btn-crear,
   .btn-actualizar {
     width: 100%;
   }
-  
+
   .acciones-container {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .btn-editar,
   .btn-eliminar {
     width: 100%;

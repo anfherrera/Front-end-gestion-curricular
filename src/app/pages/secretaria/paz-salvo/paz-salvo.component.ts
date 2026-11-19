@@ -9,7 +9,7 @@ import { ConfigOficioSecretaria, OficioSecretariaComponent } from '../oficio-sec
   selector: 'app-secretaria-paz-salvo',
   imports: [OficioSecretariaComponent],
   template: '<app-oficio-secretaria [config]="config" />',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SecretariaPazSalvoComponent {
   private readonly servicio = inject(PazSalvoService);
@@ -21,11 +21,11 @@ export class SecretariaPazSalvoComponent {
       nombre: 'Oficio de Paz y Salvo',
       descripcion: 'Documento oficial que aprueba el paz y salvo del estudiante',
       camposRequeridos: ['numeroDocumento', 'fechaDocumento'],
-      camposOpcionales: []
+      camposOpcionales: [],
     },
     pendientes: () => this.servicio.getSecretariaRequests(),
     procesadas: (periodo) => this.servicio.getSolicitudesProcesadasSecretaria(periodo),
     subirPdf: (id, archivo) => this.servicio.subirOficioPdf(id, archivo),
-    aprobar: (id) => this.servicio.approveDefinitively(id)
+    aprobar: (id) => this.servicio.approveDefinitively(id),
   };
 }

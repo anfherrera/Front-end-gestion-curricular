@@ -529,7 +529,10 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
   - Antes, después de reducir `document-generator.service`: 493 = 282 `prefer-inject` (Fase 6, inyección) + 211 `no-explicit-any` (Fase 6, tipado). Después de quitar `HttpClient` de los componentes eran 501 (283 + 218); después de la Fase 3 de homologación y reingreso eran 509 (286 + 223) y al cerrar la Fase 7, 539 (306 + 233). Cuando bajen a 0, pasar las dos reglas a `error`
 - [ ] Prettier más `.prettierrc` (ya existe `.editorconfig`)
   - [x] Configurado (2026-11-19): prettier 3.10.1 exacto, `.prettierrc.json` (comillas simples como `.editorconfig`, ancho 120, `trailingComma` es5, parser angular para HTML), `.prettierignore` y scripts `npm run format` / `npm run format:check`
-  - [ ] Formatear todo (`npm run format`) en un commit aparte: `format:check` dice que hay 346 archivos por formatear. Después pasar tsc, lint, build, pruebas y `test:navegacion`, y avisar a quien tenga cambios sin subir (el diff es enorme). Mirar si hace falta `eslint-config-prettier` por choques con el lint
+  - [x] Formateado todo (`npm run format`, 2026-11-19) en un commit aparte: 346 archivos, +8547/−7310 líneas, solo formato
+    - Verificación: tsc app y spec, lint sin errores ni avisos (no hizo falta `eslint-config-prettier`), build sin avisos, 626/626 pruebas. NO se pasó `test:navegacion` ni se miró en el navegador (cuota agotada): pendiente
+    - Probar a mano: recorrer algunas pantallas y comparar con antes; lo único que podría cambiar es el espacio entre elementos en línea de las plantillas HTML
+    - Cambios visibles esperados: ninguno (si aparece algún espacio de más o de menos entre textos o iconos, viene de aquí)
   - Verificación: `format:check` funciona. Sin cambios visibles esperados
 - [x] CI en GitHub Actions: [.github/workflows/ci.yml](.github/workflows/ci.yml) corre en cada push y PR a `main` (Node 22): `npm ci` (sin bajar el binario de Cypress), `npm run lint`, `ng build` y `ng test --watch=false --browsers=ChromeHeadlessCI`
   - `karma.conf.js` tiene el launcher `ChromeHeadlessCI` (`--no-sandbox`, `--disable-gpu`, `--disable-dev-shm-usage`); en local se sigue usando `ChromeHeadless` con Edge y los dos funcionan

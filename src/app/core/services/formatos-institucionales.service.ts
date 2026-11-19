@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 
 export const FORMATO_IDS = {
   REINGRESO: 'reingreso',
-  HOMOLOGACION: 'homologacion'
+  HOMOLOGACION: 'homologacion',
 } as const;
 
-export type FormatoId = typeof FORMATO_IDS[keyof typeof FORMATO_IDS];
+export type FormatoId = (typeof FORMATO_IDS)[keyof typeof FORMATO_IDS];
 
 export interface FormatoInstitucional {
   id: FormatoId;
@@ -21,21 +21,20 @@ const DEFAULTS: FormatoInstitucional[] = [
     id: FORMATO_IDS.REINGRESO,
     nombre: 'PM-FO-4-FOR-17 Solicitud de Reingreso V2',
     url: 'https://share.google/YWwAuZFs7tytr6sNu',
-    procesoLabel: 'Reingreso Estudiante'
+    procesoLabel: 'Reingreso Estudiante',
   },
   {
     id: FORMATO_IDS.HOMOLOGACION,
     nombre: 'PM-FO-4-FOR-22-Solicitud-Homologacion-de-Asignaturas-V1',
     url: 'https://share.google/JrNoszFyerPeZ0mX1',
-    procesoLabel: 'Homologación de Asignaturas'
-  }
+    procesoLabel: 'Homologación de Asignaturas',
+  },
 ];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FormatosInstitucionalesService {
-
   private cache = new Map<FormatoId, FormatoInstitucional>();
 
   constructor() {
@@ -48,13 +47,13 @@ export class FormatosInstitucionalesService {
       if (raw) {
         const arr: FormatoInstitucional[] = JSON.parse(raw);
         this.cache.clear();
-        arr.forEach(f => this.cache.set(f.id, f));
+        arr.forEach((f) => this.cache.set(f.id, f));
       }
     } catch {
       this.cache.clear();
     }
     // Asegurar que existan todos los formatos con valores por defecto
-    DEFAULTS.forEach(d => {
+    DEFAULTS.forEach((d) => {
       if (!this.cache.has(d.id)) {
         this.cache.set(d.id, { ...d });
       }
@@ -68,12 +67,12 @@ export class FormatosInstitucionalesService {
 
   /** Obtener todos los formatos (para la vista de administración) */
   getAll(): FormatoInstitucional[] {
-    return DEFAULTS.map(d => this.cache.get(d.id) ?? { ...d });
+    return DEFAULTS.map((d) => this.cache.get(d.id) ?? { ...d });
   }
 
   /** Obtener un formato por id (para vistas estudiante) */
   getFormato(id: FormatoId): FormatoInstitucional | null {
-    return this.cache.get(id) ?? DEFAULTS.find(d => d.id === id) ?? null;
+    return this.cache.get(id) ?? DEFAULTS.find((d) => d.id === id) ?? null;
   }
 
   /** Obtener nombre y url para Reingreso */
@@ -90,12 +89,12 @@ export class FormatosInstitucionalesService {
 
   /** Actualizar nombre y/o url de un formato */
   actualizar(id: FormatoId, datos: { nombre?: string; url?: string }): void {
-    const actual = this.cache.get(id) ?? DEFAULTS.find(d => d.id === id);
+    const actual = this.cache.get(id) ?? DEFAULTS.find((d) => d.id === id);
     if (!actual) return;
     const updated: FormatoInstitucional = {
       ...actual,
       ...(datos.nombre != null && { nombre: datos.nombre.trim() }),
-      ...(datos.url != null && { url: datos.url.trim() })
+      ...(datos.url != null && { url: datos.url.trim() }),
     };
     this.cache.set(id, updated);
     this.saveToStorage();

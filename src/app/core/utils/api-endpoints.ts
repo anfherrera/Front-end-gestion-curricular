@@ -5,7 +5,7 @@ export class ApiEndpoints {
 
   // ===== AUTENTICACIÓN =====
   static readonly AUTH = {
-    LOGIN: `${this.BASE_URL}/usuarios/login`
+    LOGIN: `${this.BASE_URL}/usuarios/login`,
   };
 
   // ===== PERÍODOS ACADÉMICOS =====
@@ -18,8 +18,8 @@ export class ApiEndpoints {
     INFO: (periodo: string) => `${this.BASE_URL}/periodos-academicos/info/${periodo}`,
     VALIDAR: (periodo: string) => `${this.BASE_URL}/periodos-academicos/validar/${periodo}`,
     ADMIN: {
-      PERIODO_ACTIVO: `${this.BASE_URL}/periodos-academicos/admin/periodo-activo`
-    }
+      PERIODO_ACTIVO: `${this.BASE_URL}/periodos-academicos/admin/periodo-activo`,
+    },
   };
 
   // ===== CURSOS INTERSEMESTRALES =====
@@ -32,20 +32,20 @@ export class ApiEndpoints {
     RECHAZAR: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/rechazar`,
     DOCUMENTOS: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos`,
     UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos/upload`,
-    
+
     // ===== CURSOS DE VERANO =====
     CURSOS_VERANO: {
       // Endpoints principales
       DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/disponibles`, // Para estudiantes
       TODOS: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos`, // Para funcionarios
-      
+
       // Endpoints de gestión (CRUD)
       GESTION: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano`, // Para crear, actualizar, eliminar
-      
+
       // Endpoints específicos por estado
       PREINSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/preinscripcion`,
       INSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/inscripcion`,
-      
+
       // Endpoints de gestión
       PREINSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones`,
       INSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones`,
@@ -53,34 +53,47 @@ export class ApiEndpoints {
       CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/materias-disponibles`,
       CONDICIONES: `${this.BASE_URL}/cursos-intersemestrales/condiciones-solicitud`,
       SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo`,
-      SOLICITUDES_CURSO_NUEVO_USUARIO: (idUsuario: number) => `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo/usuario/${idUsuario}`,
-      PREINSCRIPCIONES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/curso/${idCurso}`,
-      INSCRIPCIONES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/curso/${idCurso}`,
-      ESTUDIANTES_ELEGIBLES: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/inscripciones/estudiantes-elegibles/${idCurso}`,
-      ESTUDIANTES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes`,
-      APROBAR_PREINSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/aprobar`,
-      RECHAZAR_PREINSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/rechazar`,
-      VALIDAR_PAGO: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/validar-pago`,
-      COMPLETAR_INSCRIPCION: (id: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/completar`,
-      ACEPTAR_INSCRIPCION: (idPreinscripcion: number) => `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/aceptar`,
-      RECHAZAR_INSCRIPCION: (idPreinscripcion: number) => `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/rechazar`,
-      
+      SOLICITUDES_CURSO_NUEVO_USUARIO: (idUsuario: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo/usuario/${idUsuario}`,
+      PREINSCRIPCIONES_CURSO: (idCurso: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/curso/${idCurso}`,
+      INSCRIPCIONES_CURSO: (idCurso: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/curso/${idCurso}`,
+      ESTUDIANTES_ELEGIBLES: (idCurso: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/estudiantes-elegibles/${idCurso}`,
+      ESTUDIANTES_CURSO: (idCurso: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes`,
+      APROBAR_PREINSCRIPCION: (id: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/aprobar`,
+      RECHAZAR_PREINSCRIPCION: (id: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/rechazar`,
+      VALIDAR_PAGO: (id: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/validar-pago`,
+      COMPLETAR_INSCRIPCION: (id: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/completar`,
+      ACEPTAR_INSCRIPCION: (idPreinscripcion: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/aceptar`,
+      RECHAZAR_INSCRIPCION: (idPreinscripcion: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/rechazar`,
+
       // Nuevos endpoints de permisos
-      PERMISOS_ESTADO: (estado: string, rol: string) => `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,
-      
+      PERMISOS_ESTADO: (estado: string, rol: string) =>
+        `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,
+
       // Endpoint de exportación a Excel
       EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`,
-      
+
       // Endpoints de exportación a PDF
       EXPORTAR_CURSOS_PDF: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos/export/pdf`,
-      EXPORTAR_ESTUDIANTES_PDF: (idCurso: number) => `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes/export/pdf`,
-      
+      EXPORTAR_ESTUDIANTES_PDF: (idCurso: number) =>
+        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes/export/pdf`,
+
       // Endpoint de salones
       SALONES: `${this.BASE_URL}/cursos-intersemestrales/salones`,
-      
+
       // Endpoint de estadísticas del dashboard
-      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-intersemestrales/dashboard/estadisticas`
-    }
+      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-intersemestrales/dashboard/estadisticas`,
+    },
   };
 
   // ===== HOMOLOGACIÓN DE ASIGNATURAS =====
@@ -92,7 +105,7 @@ export class ApiEndpoints {
     APROBAR: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/aprobar`,
     RECHAZAR: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/rechazar`,
     DOCUMENTOS: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/documentos/upload`
+    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/documentos/upload`,
   };
 
   // ===== PAZ Y SALVO =====
@@ -104,7 +117,7 @@ export class ApiEndpoints {
     APROBAR: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/aprobar`,
     RECHAZAR: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/rechazar`,
     DOCUMENTOS: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/documentos/upload`
+    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/documentos/upload`,
   };
 
   // ===== REINGRESO DE ESTUDIANTE =====
@@ -116,7 +129,7 @@ export class ApiEndpoints {
     APROBAR: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/aprobar`,
     RECHAZAR: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/rechazar`,
     DOCUMENTOS: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/documentos/upload`
+    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/documentos/upload`,
   };
 
   // ===== SOLICITUDES (GENERAL) =====
@@ -124,7 +137,7 @@ export class ApiEndpoints {
     BASE: `${this.BASE_URL}/solicitudes`,
     HISTORIAL: `${this.BASE_URL}/solicitudes/historial`, // Historial completo de todas las solicitudes
     HISTORIAL_BY_ID: (id: number) => `${this.BASE_URL}/solicitudes/${id}/historial`, // Historial de una solicitud específica
-    EXPORTAR_PDF: `${this.BASE_URL}/solicitudes/historial/export/pdf` // Exportar historial a PDF
+    EXPORTAR_PDF: `${this.BASE_URL}/solicitudes/historial/export/pdf`, // Exportar historial a PDF
   };
 
   // ===== PRUEBAS ECAES =====
@@ -136,7 +149,7 @@ export class ApiEndpoints {
     APROBAR: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/aprobar`,
     RECHAZAR: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/rechazar`,
     DOCUMENTOS: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/documentos/upload`
+    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/documentos/upload`,
   };
 
   // ===== MÓDULO ESTADÍSTICO =====
@@ -146,7 +159,7 @@ export class ApiEndpoints {
     REPORTES: `${this.BASE_URL}/modulo-estadistico/reportes`,
     ESTADISTICAS: `${this.BASE_URL}/modulo-estadistico/estadisticas`,
     EXPORTAR: (formato: string) => `${this.BASE_URL}/modulo-estadistico/exportar/${formato}`,
-    
+
     // ===== ENDPOINTS DE ESTADÍSTICAS =====
     ESTADISTICAS_GLOBALES: `${this.BASE_URL}/estadisticas/globales`,
     ESTADISTICAS_PERIODO: `${this.BASE_URL}/estadisticas/periodo`,
@@ -155,43 +168,43 @@ export class ApiEndpoints {
     ESTADISTICAS_ESTADO: (estado: string) => `${this.BASE_URL}/estadisticas/estado/${estado}`,
     ESTADISTICAS_FILTRADAS: `${this.BASE_URL}/estadisticas/filtradas`,
     RESUMEN_COMPLETO: `${this.BASE_URL}/estadisticas/resumen-completo`,
-    
+
     // ===== Endpoints del backend =====
     POR_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porPeriodoEstadoPrograma`,
     POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
     POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`,
-    
+
     // ===== ENDPOINTS DE ESTUDIANTES =====
     TOTAL_ESTUDIANTES: `${this.BASE_URL}/estadisticas/total-estudiantes`,
     ESTUDIANTES_POR_PROGRAMA: `${this.BASE_URL}/estadisticas/estudiantes-por-programa`,
     ESTADISTICAS_POR_PROCESO: `${this.BASE_URL}/estadisticas/estadisticas-por-proceso`,
     ESTADO_SOLICITUDES: `${this.BASE_URL}/estadisticas/estado-solicitudes`,
-    
+
     // ===== ENDPOINTS MEJORADOS =====
     ESTADISTICAS_POR_PROGRAMA_MEJORADAS: `${this.BASE_URL}/estadisticas/por-programa`,
     ESTADISTICAS_POR_PERIODO_MEJORADAS: `${this.BASE_URL}/estadisticas/por-periodo`,
-    
+
     // ===== Endpoint - tendencias y comparativas =====
     TENDENCIAS_COMPARATIVAS: `${this.BASE_URL}/estadisticas/tendencias-comparativas`,
-    
+
     // ===== Endpoint - cursos de verano =====
     CURSOS_VERANO: `${this.BASE_URL}/estadisticas/cursos-verano`,
-    
+
     // ===== ENDPOINTS OPTIMIZADOS - CURSOS DE VERANO =====
     CURSOS_VERANO_TENDENCIAS_TEMPORALES: `${this.BASE_URL}/estadisticas/cursos-verano/tendencias-temporales`,
-    
+
     // ===== ENDPOINTS DE EXPORTACIÓN =====
     EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
     EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`,
-    
+
     // ===== ENDPOINTS DE EXPORTACIÓN ESPECÍFICOS =====
     // Dashboard General
     EXPORTAR_PDF_GENERAL: `${this.BASE_URL}/estadisticas/export/pdf/general`,
     EXPORTAR_EXCEL_GENERAL: `${this.BASE_URL}/estadisticas/export/excel/general`,
-    
+
     // Cursos de Verano
     EXPORTAR_PDF_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/pdf/cursos-verano`,
-    EXPORTAR_EXCEL_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/excel/cursos-verano`
+    EXPORTAR_EXCEL_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/excel/cursos-verano`,
   };
 
   // ===== DOCUMENTOS =====
@@ -200,15 +213,17 @@ export class ApiEndpoints {
     BY_ID: (id: string) => `${this.BASE_URL}/documentos/${id}`,
     DOWNLOAD: (id: string) => `${this.BASE_URL}/documentos/${id}/download`,
     DELETE: (id: string) => `${this.BASE_URL}/documentos/${id}`,
-    UPLOAD: `${this.BASE_URL}/documentos/upload`
+    UPLOAD: `${this.BASE_URL}/documentos/upload`,
   };
 
   // ===== ARCHIVOS =====
   static readonly ARCHIVOS = {
     BASE: `${this.BASE_URL}/archivos`,
     SUBIR_PDF: `${this.BASE_URL}/archivos/subir/pdf`,
-    DESCARGAR_PDF: (filename: string) => `${this.BASE_URL}/archivos/descargar/pdf?filename=${encodeURIComponent(filename)}`,
-    DESCARGAR_PDF_POR_INSCRIPCION: (inscripcionId: number) => `${this.BASE_URL}/archivos/descargar/pdf/inscripcion/${inscripcionId}`
+    DESCARGAR_PDF: (filename: string) =>
+      `${this.BASE_URL}/archivos/descargar/pdf?filename=${encodeURIComponent(filename)}`,
+    DESCARGAR_PDF_POR_INSCRIPCION: (inscripcionId: number) =>
+      `${this.BASE_URL}/archivos/descargar/pdf/inscripcion/${inscripcionId}`,
   };
 
   // ===== ROLES =====
@@ -218,6 +233,6 @@ export class ApiEndpoints {
     BY_NAME: (name: string) => `${this.BASE_URL}/roles/name/${name}`,
     PERMISOS: (id: string) => `${this.BASE_URL}/roles/${id}/permisos`,
     UPDATE: (id: string) => `${this.BASE_URL}/roles/${id}`,
-    DELETE: (id: string) => `${this.BASE_URL}/roles/${id}`
+    DELETE: (id: string) => `${this.BASE_URL}/roles/${id}`,
   };
 }

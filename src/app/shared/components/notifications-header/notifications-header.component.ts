@@ -14,11 +14,11 @@ import { NotificacionesService } from '@core/services/notificaciones.service';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { AuthService } from '@core/services/auth.service';
 import { Notificacion } from '@core/models/notificaciones.model';
-import { 
-  getColorByTipoSolicitud, 
+import {
+  getColorByTipoSolicitud,
   getCategoriaDisplay,
   getIconByTipoNotificacion,
-  enrichNotificaciones
+  enrichNotificaciones,
 } from '@core/utils/notificaciones.util';
 
 @Component({
@@ -31,10 +31,10 @@ import {
     MatBadgeModule,
     MatTooltipModule,
     MatDividerModule,
-    MatChipsModule
-],
+    MatChipsModule,
+  ],
   templateUrl: './notifications-header.component.html',
-  styleUrls: ['./notifications-header.component.css']
+  styleUrls: ['./notifications-header.component.css'],
 })
 export class NotificationsHeaderComponent implements OnInit, OnDestroy {
   private notificacionService = inject(NotificacionesService);
@@ -44,7 +44,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
   readonly userId = input<number>();
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
-  
+
   readonly notificaciones = signal<Notificacion[]>([]);
   readonly totalNoLeidas = signal(0);
   readonly isLoading = signal(false);
@@ -53,7 +53,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarContador();
-    
+
     const userId = this.userId() || this.authService.getUsuario()?.id_usuario;
     if (userId) {
       this.iniciarPollingContador(userId, 30000);
@@ -96,7 +96,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
       },
       error: () => {
         // Silenciar errores 403
-      }
+      },
     });
   }
 
@@ -122,11 +122,11 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.isLoading.set(false);
-        
+
         if (error.status !== 403) {
           this.snackbar.error('Error al cargar notificaciones');
         }
-      }
+      },
     });
   }
 
@@ -144,7 +144,7 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.snackbar.error('Error al marcar notificaciones como leídas');
-      }
+      },
     });
   }
 
@@ -160,13 +160,14 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     this.notificacionService.marcarComoLeida(notificacion.id_notificacion).subscribe({
       next: () => {
         // Actualizar estado local
-        this.notificaciones.update(lista => lista.map(n =>
-          n.id_notificacion === notificacion.id_notificacion ? { ...n, leida: true } : n));
-        this.totalNoLeidas.update(total => Math.max(0, total - 1));
+        this.notificaciones.update((lista) =>
+          lista.map((n) => (n.id_notificacion === notificacion.id_notificacion ? { ...n, leida: true } : n))
+        );
+        this.totalNoLeidas.update((total) => Math.max(0, total - 1));
       },
       error: () => {
         // Error silenciado
-      }
+      },
     });
   }
 
@@ -182,12 +183,11 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     if (this.menuTrigger && this.menuTrigger.menuOpen) {
       this.menuTrigger.closeMenu();
     }
-    
+
     setTimeout(() => {
       this.router.navigate(['/notificaciones']);
     }, 150);
   }
-
 
   actualizarManual(): void {
     // Siempre recargar al hacer clic en el ícono para datos actualizados
@@ -213,11 +213,11 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
 
   getAccionDisplay(accion: string): string {
     const acciones: Record<string, string> = {
-      'VER_SOLICITUD': 'Ver solicitud',
-      'REALIZAR_INSCRIPCION': 'Inscribirse',
-      'COMPLETAR_PAGO': 'Completar pago',
-      'REVISAR_DOCUMENTOS': 'Revisar documentos',
-      'ACTUALIZAR_INFO': 'Actualizar información'
+      VER_SOLICITUD: 'Ver solicitud',
+      REALIZAR_INSCRIPCION: 'Inscribirse',
+      COMPLETAR_PAGO: 'Completar pago',
+      REVISAR_DOCUMENTOS: 'Revisar documentos',
+      ACTUALIZAR_INFO: 'Actualizar información',
     };
     return acciones[accion] || accion;
   }
@@ -226,9 +226,8 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/notificaciones']);
   }
 
-
   tieneNotificacionesUrgentes(): boolean {
-    return this.notificaciones().some(n => n.esUrgente);
+    return this.notificaciones().some((n) => n.esUrgente);
   }
 
   private iniciarPollingContador(userId: number, intervalo = 30000): void {

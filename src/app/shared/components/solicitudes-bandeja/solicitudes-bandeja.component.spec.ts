@@ -15,13 +15,13 @@ describe('SolicitudesBandejaComponent', () => {
     nombre_solicitud: `Solicitud ${id}`,
     fecha_registro_solicitud: '2026-03-01',
     estadosSolicitud: [{ estado_actual: estado }],
-    documentos: []
+    documentos: [],
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SolicitudesBandejaComponent, NoopAnimationsModule],
-      providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SolicitudesBandejaComponent<SolicitudRevisable>);
@@ -32,7 +32,7 @@ describe('SolicitudesBandejaComponent', () => {
   it('arma las filas de pendientes e historial', () => {
     fixture.componentRef.setInput('pendientes', [solicitud(1, 'ENVIADA'), solicitud(2, 'ENVIADA')]);
     fixture.componentRef.setInput('procesadas', [solicitud(3, 'APROBADA_FUNCIONARIO')]);
-    expect(component.filasPendientes().map(f => f.id)).toEqual([1, 2]);
+    expect(component.filasPendientes().map((f) => f.id)).toEqual([1, 2]);
     expect(component.filasProcesadas()[0].estado).toBe('APROBADA_FUNCIONARIO');
   });
 
@@ -45,7 +45,7 @@ describe('SolicitudesBandejaComponent', () => {
     const elegida = solicitud(2, 'ENVIADA');
     fixture.componentRef.setInput('pendientes', [solicitud(1, 'ENVIADA'), elegida]);
     const emitidas: (SolicitudRevisable | null)[] = [];
-    component.solicitudSeleccionada.subscribe(s => emitidas.push(s));
+    component.solicitudSeleccionada.subscribe((s) => emitidas.push(s));
 
     component.onFilaSeleccionada(2);
     component.onFilaSeleccionada(null);
@@ -68,7 +68,7 @@ describe('SolicitudesBandejaComponent', () => {
 
   it('el período "todos" se emite como null', () => {
     const periodos: (string | null)[] = [];
-    component.periodoChange.subscribe(p => periodos.push(p));
+    component.periodoChange.subscribe((p) => periodos.push(p));
 
     component.onPeriodoChange('todos');
     component.onPeriodoChange('2026-1');

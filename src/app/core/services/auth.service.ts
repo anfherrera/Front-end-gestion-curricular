@@ -46,7 +46,7 @@ export class AuthService {
   }
 
   // ===== TOKEN =====
-  
+
   /**
    * Establece el token JWT y configura la expiración automática
    * @param token Token JWT recibido del servidor
@@ -88,7 +88,7 @@ export class AuthService {
   }
 
   // ===== USUARIO =====
-  
+
   /**
    * Almacena la información del usuario en localStorage
    * @param usuario Objeto con la información del usuario
@@ -113,28 +113,28 @@ export class AuthService {
     if (!userData) return null;
 
     const usuario = JSON.parse(userData) as UsuarioSesion | null;
-    
+
     // CORRECCIÓN: Sincronizar el rol del localStorage con el del usuario
     if (usuario?.rol?.nombre) {
       const rolActualEnStorage = storage.getItem(this.ROLE_KEY);
       const rolDelUsuario = usuario.rol.nombre.toLowerCase();
-      
+
       // Normalizar el rol esperado
       let rolEsperado = rolDelUsuario;
       if (rolDelUsuario === 'administrador') rolEsperado = 'admin';
       if (rolDelUsuario === 'secretario') rolEsperado = 'secretaria';
-      
+
       // Si el rol guardado no coincide con el del usuario, actualizarlo
       if (rolActualEnStorage !== rolEsperado) {
         this.setRole(usuario.rol.nombre);
       }
     }
-    
+
     return usuario;
   }
 
   // ===== ROL =====
-  
+
   /**
    * Establece el rol del usuario actual
    * Normaliza el nombre del rol y lo almacena en localStorage
@@ -145,14 +145,25 @@ export class AuthService {
 
     switch (role.toLowerCase()) {
       case 'admin':
-      case 'administrador': normalizedRole = UserRole.ADMIN; break;
-      case 'funcionario': normalizedRole = UserRole.FUNCIONARIO; break;
-      case 'coordinador': normalizedRole = UserRole.COORDINADOR; break;
+      case 'administrador':
+        normalizedRole = UserRole.ADMIN;
+        break;
+      case 'funcionario':
+        normalizedRole = UserRole.FUNCIONARIO;
+        break;
+      case 'coordinador':
+        normalizedRole = UserRole.COORDINADOR;
+        break;
       case 'secretario':
-      case 'secretaria': normalizedRole = UserRole.SECRETARIA; break;
-      case 'decano': normalizedRole = UserRole.DECANO; break;
+      case 'secretaria':
+        normalizedRole = UserRole.SECRETARIA;
+        break;
+      case 'decano':
+        normalizedRole = UserRole.DECANO;
+        break;
       case 'estudiante':
-      default: normalizedRole = UserRole.ESTUDIANTE;
+      default:
+        normalizedRole = UserRole.ESTUDIANTE;
     }
 
     const storage = this.safeLocalStorage();
@@ -182,7 +193,7 @@ export class AuthService {
   }
 
   // ===== AUTENTICACIÓN =====
-  
+
   /**
    * Realiza el proceso de login
    * @param correo Correo electrónico del usuario
@@ -209,7 +220,7 @@ export class AuthService {
   }
 
   // ===== LOGOUT =====
-  
+
   /**
    * Cierra la sesión del usuario
    * Limpia todos los datos almacenados y redirige al login

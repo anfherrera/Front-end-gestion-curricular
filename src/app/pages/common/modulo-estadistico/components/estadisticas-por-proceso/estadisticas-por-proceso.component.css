@@ -9,7 +9,9 @@
   display: flex;
   flex-direction: column;
   border-left: 4px solid var(--color-primario);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .estadisticas-por-proceso-card:hover {
@@ -38,7 +40,9 @@
   font-size: 0.9rem;
 }
 
-.loading-container, .error-container, .no-data {
+.loading-container,
+.error-container,
+.no-data {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,11 +95,21 @@
   box-shadow: var(--sombra-2);
 }
 
-.proceso-reingreso { border-left-color: #8e24aa; }
-.proceso-homologacion { border-left-color: var(--notif-exito-borde); }
-.proceso-cursos { border-left-color: var(--azul-500); }
-.proceso-ecaes { border-left-color: #00bcd4; }
-.proceso-paz { border-left-color: #ff9800; }
+.proceso-reingreso {
+  border-left-color: #8e24aa;
+}
+.proceso-homologacion {
+  border-left-color: var(--notif-exito-borde);
+}
+.proceso-cursos {
+  border-left-color: var(--azul-500);
+}
+.proceso-ecaes {
+  border-left-color: #00bcd4;
+}
+.proceso-paz {
+  border-left-color: #ff9800;
+}
 
 .proceso-header {
   display: flex;
@@ -188,11 +202,21 @@
   color: var(--gris-650);
 }
 
-.stat-item.aprobadas mat-icon { color: var(--notif-exito-borde); }
-.stat-item.rechazadas mat-icon { color: var(--color-error); }
-.stat-item.en-proceso mat-icon { color: #ff9800; }
-.stat-item.enviadas mat-icon { color: var(--estado-advertencia); }
-.stat-item.porcentaje mat-icon { color: var(--azul-500); }
+.stat-item.aprobadas mat-icon {
+  color: var(--notif-exito-borde);
+}
+.stat-item.rechazadas mat-icon {
+  color: var(--color-error);
+}
+.stat-item.en-proceso mat-icon {
+  color: #ff9800;
+}
+.stat-item.enviadas mat-icon {
+  color: var(--estado-advertencia);
+}
+.stat-item.porcentaje mat-icon {
+  color: var(--azul-500);
+}
 
 .proceso-datos-raw {
   margin-top: 12px;

@@ -26,11 +26,11 @@ import { SeguimientoSolicitudesBase } from '../seguimiento-solicitudes.base';
     CardContainerComponent,
     RequestStatusTableComponent,
     FechasEcaesComponent,
-    PreregistroEcaesComponent
+    PreregistroEcaesComponent,
   ],
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PruebasEcaesComponent extends SeguimientoSolicitudesBase<SolicitudEcaesResponse> {
   private pruebasEcaesService = inject(PruebasEcaesService);
@@ -48,7 +48,7 @@ export class PruebasEcaesComponent extends SeguimientoSolicitudesBase<SolicitudE
     return {
       ...fila,
       estado: this.mapearEstado(fila.estado),
-      oficioUrl: ''
+      oficioUrl: '',
     };
   }
 
@@ -58,7 +58,7 @@ export class PruebasEcaesComponent extends SeguimientoSolicitudesBase<SolicitudE
       maxWidth: '90vw',
       disableClose: false,
       autoFocus: true,
-      data: {}
+      data: {},
     });
   }
 

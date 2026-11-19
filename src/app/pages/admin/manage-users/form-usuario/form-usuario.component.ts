@@ -32,11 +32,11 @@ import { ProgramaDTORespuesta } from '@core/models/programa.interface';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatCardModule
-],
+    MatCardModule,
+  ],
   templateUrl: './form-usuario.component.html',
   styleUrls: ['./form-usuario.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormUsuarioComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -57,24 +57,16 @@ export class FormUsuarioComponent implements OnInit {
 
   constructor() {
     this.usuarioForm = this.fb.group({
-      codigo: ['', [
-        Validators.required, 
-        Validators.minLength(3),
-        Validators.maxLength(50)
-      ]],
-      nombre_completo: ['', [
-        Validators.required,
-        Validators.minLength(3)
-      ]],
-      correo: ['', [
-        Validators.required, 
-        Validators.email,
-        Validators.pattern(/^[a-zA-Z0-9._%+-]+@unicauca\.edu\.co$/)
-      ]],
+      codigo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      nombre_completo: ['', [Validators.required, Validators.minLength(3)]],
+      correo: [
+        '',
+        [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@unicauca\.edu\.co$/)],
+      ],
       password: ['', [Validators.required, Validators.minLength(6)]],
       estado_usuario: [1, Validators.required],
       id_rol: ['', Validators.required],
-      id_programa: ['', Validators.required]
+      id_programa: ['', Validators.required],
     });
   }
 
@@ -82,7 +74,7 @@ export class FormUsuarioComponent implements OnInit {
     this.cargarRoles();
     this.cargarProgramas();
 
-    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['id']) {
         this.isEditMode.set(true);
         this.usuarioId.set(+params['id']);
@@ -101,7 +93,7 @@ export class FormUsuarioComponent implements OnInit {
       },
       error: () => {
         this.snackbar.error('Error al cargar roles');
-      }
+      },
     });
   }
 
@@ -112,14 +104,14 @@ export class FormUsuarioComponent implements OnInit {
       },
       error: () => {
         this.snackbar.error('Error al cargar programas');
-      }
+      },
     });
   }
 
   cargarUsuario(): void {
     const usuarioId = this.usuarioId();
     if (!usuarioId) return;
-    
+
     this.loading.set(true);
     this.usuariosService.buscarUsuarioPorId(usuarioId).subscribe({
       next: (data) => {
@@ -134,14 +126,14 @@ export class FormUsuarioComponent implements OnInit {
           // El backend manda un booleano y el select usa 1 y 0
           estado_usuario: usuarioCorregido.estado_usuario === false ? 0 : 1,
           id_rol: usuarioCorregido.rol?.id_rol || '',
-          id_programa: usuarioCorregido.objPrograma?.id_programa || ''
+          id_programa: usuarioCorregido.objPrograma?.id_programa || '',
         });
-        
+
         // NO llenar el campo password para que quede vacío (indicando que no se cambiará)
         this.usuarioForm.get('password')?.setValue('');
-        
+
         this.loading.set(false);
-        
+
         // Mostrar mensaje informativo
         this.snackbar.exito('Usuario cargado correctamente. Modifique los campos que desee actualizar.');
       },
@@ -149,7 +141,7 @@ export class FormUsuarioComponent implements OnInit {
         this.snackbar.error('Error al cargar usuario');
         this.router.navigate(['/admin/manage-users']);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -162,15 +154,15 @@ export class FormUsuarioComponent implements OnInit {
 
     this.loading.set(true);
     const formValue = this.usuarioForm.value;
-    
+
     const usuarioData: UsuarioDTOPeticion = {
       codigo: formValue.codigo,
-      cedula: formValue.codigo,  // Usar el mismo valor de codigo para cedula
+      cedula: formValue.codigo, // Usar el mismo valor de codigo para cedula
       nombre_completo: formValue.nombre_completo,
       correo: formValue.correo,
       estado_usuario: formValue.estado_usuario === 1 || formValue.estado_usuario === true,
-      id_rol: +formValue.id_rol,           // Solo el ID (número)
-      id_programa: +formValue.id_programa  // Solo el ID (número)
+      id_rol: +formValue.id_rol, // Solo el ID (número)
+      id_programa: +formValue.id_programa, // Solo el ID (número)
     };
 
     // Password solo si tiene contenido
@@ -210,7 +202,7 @@ export class FormUsuarioComponent implements OnInit {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackbar.error('Error: ' + mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -225,7 +217,7 @@ export class FormUsuarioComponent implements OnInit {
         const mensaje = err.error?.message || err.error?.mensaje || err.message || 'Error desconocido';
         this.snackbar.error('Error: ' + mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -233,4 +225,3 @@ export class FormUsuarioComponent implements OnInit {
     this.router.navigate(['/admin/manage-users']);
   }
 }
-

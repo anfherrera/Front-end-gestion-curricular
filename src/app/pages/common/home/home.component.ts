@@ -20,17 +20,10 @@ interface OpcionProceso {
 
 @Component({
   selector: 'app-home',
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatCardModule,
-    MatIconModule,
-    MatDialogModule,
-    MatButtonModule
-  ],
+  imports: [CommonModule, RouterModule, MatCardModule, MatIconModule, MatDialogModule, MatButtonModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
   private authService = inject(AuthService);
@@ -47,9 +40,15 @@ export class HomeComponent implements OnInit {
     { name: 'Panel de Administración', route: 'dashboard', icon: 'dashboard', color: 'bg-blue', adminOnly: true },
     { name: 'Gestión de Docentes', route: 'docentes', icon: 'school', color: 'bg-green', adminOnly: true },
     { name: 'Gestión de Programas', route: 'programas', icon: 'assignment', color: 'bg-orange', adminOnly: true },
-    { name: 'Gestión de Roles', route: 'manage-roles', icon: 'admin_panel_settings', color: 'bg-purple', adminOnly: true },
+    {
+      name: 'Gestión de Roles',
+      route: 'manage-roles',
+      icon: 'admin_panel_settings',
+      color: 'bg-purple',
+      adminOnly: true,
+    },
     { name: 'Gestión de Usuarios', route: 'manage-users', icon: 'people', color: 'bg-red', adminOnly: true },
-    
+
     // Procesos generales
     { name: 'Proceso Paz y Salvo', route: 'paz-salvo', icon: 'check_circle', color: 'bg-blue' },
     { name: 'Pruebas ECAES', route: 'pruebas-ecaes', icon: 'assignment', color: 'bg-green' },
@@ -57,7 +56,7 @@ export class HomeComponent implements OnInit {
     { name: 'Reingreso Estudiante', route: 'reingreso-estudiante', icon: 'person_add', color: 'bg-purple' },
     { name: 'Homologación Asignaturas', route: 'homologacion-asignaturas', icon: 'sync_alt', color: 'bg-red' },
     { name: 'Módulo Estadístico', route: 'modulo-estadistico', icon: 'bar_chart', color: 'bg-teal' },
-    { name: 'Historial Completo', route: 'historial-completo', icon: 'history', color: 'bg-indigo' }
+    { name: 'Historial Completo', route: 'historial-completo', icon: 'history', color: 'bg-indigo' },
   ];
 
   ngOnInit(): void {
@@ -84,7 +83,7 @@ export class HomeComponent implements OnInit {
   private filterProcessesByRole(): void {
     if (!this.roleLower) return;
 
-    this.availableProcesses = this.processMap.filter(p => {
+    this.availableProcesses = this.processMap.filter((p) => {
       // Si el usuario es ADMIN, solo mostrar opciones adminOnly
       if (this.roleLower === 'admin') {
         return p.adminOnly === true;
@@ -98,13 +97,33 @@ export class HomeComponent implements OnInit {
       // Filtrar por rol para opciones generales
       switch (this.roleLower) {
         case 'coordinador':
-          return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo'].includes(p.route);
+          return [
+            'paz-salvo',
+            'reingreso-estudiante',
+            'homologacion-asignaturas',
+            'modulo-estadistico',
+            'historial-completo',
+          ].includes(p.route);
         case 'funcionario':
-          return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas', 'modulo-estadistico', 'historial-completo'].includes(p.route);
+          return [
+            'paz-salvo',
+            'pruebas-ecaes',
+            'cursos-intersemestrales',
+            'reingreso-estudiante',
+            'homologacion-asignaturas',
+            'modulo-estadistico',
+            'historial-completo',
+          ].includes(p.route);
         case 'decano':
           return ['modulo-estadistico', 'historial-completo'].includes(p.route);
         case 'estudiante':
-          return ['paz-salvo', 'pruebas-ecaes', 'cursos-intersemestrales', 'reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
+          return [
+            'paz-salvo',
+            'pruebas-ecaes',
+            'cursos-intersemestrales',
+            'reingreso-estudiante',
+            'homologacion-asignaturas',
+          ].includes(p.route);
         case 'secretaria':
           return ['paz-salvo', 'reingreso-estudiante', 'homologacion-asignaturas'].includes(p.route);
         default:
@@ -119,53 +138,59 @@ export class HomeComponent implements OnInit {
 
   getWelcomeText(): string {
     switch (this.roleLower) {
-      case 'admin': return 'Accede al panel de administración para gestionar docentes, programas, roles y usuarios del sistema.';
-      case 'coordinador': return 'Puedes administrar los procesos y supervisar estudiantes.';
-      case 'funcionario': return 'Accede a los procesos que gestionas.';
-      case 'decano': return 'Accede al historial completo y estadísticas del sistema.';
-      case 'estudiante': return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
-      case 'secretaria': return 'Gestiona los oficios y resoluciones según lo indicado.';
-      default: return 'Bienvenido al sistema.';
+      case 'admin':
+        return 'Accede al panel de administración para gestionar docentes, programas, roles y usuarios del sistema.';
+      case 'coordinador':
+        return 'Puedes administrar los procesos y supervisar estudiantes.';
+      case 'funcionario':
+        return 'Accede a los procesos que gestionas.';
+      case 'decano':
+        return 'Accede al historial completo y estadísticas del sistema.';
+      case 'estudiante':
+        return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
+      case 'secretaria':
+        return 'Gestiona los oficios y resoluciones según lo indicado.';
+      default:
+        return 'Bienvenido al sistema.';
     }
   }
 
   handleProcessClick(process: OpcionProceso): void {
-  const currentRole = this.roleLower ?? 'estudiante';
+    const currentRole = this.roleLower ?? 'estudiante';
 
-  // Caso especial: opciones del panel de administración
-  if (process.adminOnly && currentRole === 'admin') {
-    this.router.navigate(['/admin/' + process.route]);
-    return;
-  }
+    // Caso especial: opciones del panel de administración
+    if (process.adminOnly && currentRole === 'admin') {
+      this.router.navigate(['/admin/' + process.route]);
+      return;
+    }
 
-  // Rutas base por rol para procesos generales
-  const roleRoutes: Record<string, string> = {
-    estudiante: '/estudiante',
-    funcionario: '/funcionario',
-    coordinador: '/coordinador',
-    secretaria: '/secretaria',
-    decano: '/decano',
-    admin: '/admin'
-  };
+    // Rutas base por rol para procesos generales
+    const roleRoutes: Record<string, string> = {
+      estudiante: '/estudiante',
+      funcionario: '/funcionario',
+      coordinador: '/coordinador',
+      secretaria: '/secretaria',
+      decano: '/decano',
+      admin: '/admin',
+    };
 
-  // Caso especial: estudiante y Paz y Salvo
-  if (process.route === 'paz-salvo' && currentRole === 'estudiante') {
-    const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) this.router.navigate([roleRoutes[currentRole] + '/paz-salvo']);
-    });
-    return;
-  }
+    // Caso especial: estudiante y Paz y Salvo
+    if (process.route === 'paz-salvo' && currentRole === 'estudiante') {
+      const dialogRef = this.dialog.open(PazSalvoDialogComponent, { width: '500px' });
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) this.router.navigate([roleRoutes[currentRole] + '/paz-salvo']);
+      });
+      return;
+    }
 
-  if (process.route === 'homologacion-asignaturas' && currentRole === 'estudiante') {
+    if (process.route === 'homologacion-asignaturas' && currentRole === 'estudiante') {
       this.router.navigate(['/estudiante/homologacion-asignaturas']);
       return;
+    }
+
+    // Navegación normal para todos los procesos
+    this.router.navigate([roleRoutes[currentRole] + '/' + process.route]);
   }
-
-  // Navegación normal para todos los procesos
-  this.router.navigate([roleRoutes[currentRole] + '/' + process.route]);
-}
-
 
   logout(): void {
     this.authService.logout();

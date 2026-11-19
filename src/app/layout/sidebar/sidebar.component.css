@@ -1,4 +1,3 @@
-
 .sidebar {
   width: 260px;
   background: var(--color-primario);
@@ -91,7 +90,7 @@
 }
 
 /* Ocultar texto al minimizar solo en items normales (no toggle ni logout) */
-.sidebar.closed li:not([action="logout"]):not([action="toggle"]) span {
+.sidebar.closed li:not([action='logout']):not([action='toggle']) span {
   display: none;
 }
 

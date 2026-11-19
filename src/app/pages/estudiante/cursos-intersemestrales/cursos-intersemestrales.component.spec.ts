@@ -18,7 +18,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     elementosVisibles: 0,
     navegacionesExitosas: 0,
     interaccionesExitosas: 0,
-    validacionesCorrectas: 0
+    validacionesCorrectas: 0,
   };
 
   beforeEach(async () => {
@@ -32,15 +32,18 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
           { path: 'estudiante/cursos-intersemestrales/solicitudes', component: CursosIntersemestralesComponent },
           { path: 'estudiante/cursos-intersemestrales/cursos-ofertados', component: CursosIntersemestralesComponent },
           // Rutas adicionales usadas en pruebas
-          { path: 'estudiante/cursos-intersemestrales/cursos-preinscripcion', component: CursosIntersemestralesComponent },
-          { path: 'estudiante/cursos-intersemestrales/ver-solicitud', component: CursosIntersemestralesComponent }
+          {
+            path: 'estudiante/cursos-intersemestrales/cursos-preinscripcion',
+            component: CursosIntersemestralesComponent,
+          },
+          { path: 'estudiante/cursos-intersemestrales/ver-solicitud', component: CursosIntersemestralesComponent },
         ]),
-        BrowserAnimationsModule
-      ]
+        BrowserAnimationsModule,
+      ],
     }).compileComponents();
 
     router = TestBed.inject(Router);
-    
+
     fixture = TestBed.createComponent(CursosIntersemestralesComponent);
     component = fixture.componentInstance;
     compiled = fixture.nativeElement as HTMLElement;
@@ -54,7 +57,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     });
 
     it('CI-002: Las opciones deben tener título, ruta e icono', () => {
-      component.opciones.forEach(opcion => {
+      component.opciones.forEach((opcion) => {
         expect(opcion.titulo).toBeTruthy();
         expect(opcion.ruta).toBeTruthy();
         expect(opcion.icon).toBeTruthy();
@@ -64,9 +67,9 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
 
     it('CI-003: Los iconos de Material deben estar presentes', () => {
       const iconosEsperados = ['add_circle', 'school', 'playlist_add', 'list_alt'];
-      const iconosComponente = component.opciones.map(o => o.icon);
-      
-      iconosEsperados.forEach(icono => {
+      const iconosComponente = component.opciones.map((o) => o.icon);
+
+      iconosEsperados.forEach((icono) => {
         expect(iconosComponente).toContain(icono);
       });
       metricasUsabilidad.elementosVisibles += iconosEsperados.length;
@@ -75,7 +78,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     it('CI-004: Debe renderizar botones o tarjetas de navegación en el DOM', async () => {
       await fixture.whenStable();
       fixture.detectChanges();
-      
+
       // Buscar elementos de navegación (enlaces del menú, botones, tarjetas, etc.)
       const elementosNavegacion = compiled.querySelectorAll('a.menu-item, mat-card, .opcion-card, button, .menu-item');
       expect(elementosNavegacion.length).toBeGreaterThan(0);
@@ -86,13 +89,13 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
   describe('2. FUNCIONALIDAD DE NAVEGACIÓN', () => {
     it('CI-005: Debe navegar correctamente a "Realizar Solicitud"', fakeAsync(() => {
       const tiempoInicio = performance.now();
-      
+
       router.navigate(['estudiante/cursos-intersemestrales/solicitudes']);
       tick();
-      
+
       const tiempoFin = performance.now();
       metricasUsabilidad.tiemposRespuesta.push(tiempoFin - tiempoInicio);
-      
+
       expect(router.url).toContain('solicitudes');
       metricasUsabilidad.navegacionesExitosas++;
     }));
@@ -100,7 +103,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     it('CI-006: Debe navegar correctamente a "Cursos Disponibles"', fakeAsync(() => {
       router.navigate(['estudiante/cursos-intersemestrales/cursos-ofertados']);
       tick();
-      
+
       expect(router.url).toContain('cursos-ofertados');
       metricasUsabilidad.navegacionesExitosas++;
     }));
@@ -108,7 +111,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     it('CI-007: Debe navegar correctamente a "Preinscripción"', fakeAsync(() => {
       router.navigate(['estudiante/cursos-intersemestrales/cursos-preinscripcion']);
       tick();
-      
+
       expect(router.url).toContain('cursos-preinscripcion');
       metricasUsabilidad.navegacionesExitosas++;
     }));
@@ -116,7 +119,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     it('CI-008: Debe navegar correctamente a "Seguimiento"', fakeAsync(() => {
       router.navigate(['estudiante/cursos-intersemestrales/ver-solicitud']);
       tick();
-      
+
       expect(router.url).toContain('ver-solicitud');
       metricasUsabilidad.navegacionesExitosas++;
     }));
@@ -158,11 +161,11 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
 
     it('CI-012: Debe registrar navegaciones en consola (para debugging)', fakeAsync(() => {
       spyOn(console, 'log');
-      
+
       const mockNavigationEnd = new NavigationEnd(1, '/test', '/test');
       routerEventsSubject.next(mockNavigationEnd);
       tick();
-      
+
       metricasUsabilidad.interaccionesExitosas++;
     }));
   });
@@ -173,9 +176,9 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
         'Realizar Solicitud',
         'Cursos Disponibles',
         'Ver Lista de Cursos para Preinscripción',
-        'Seguimiento'
+        'Seguimiento',
       ];
-      
+
       component.opciones.forEach((opcion, index) => {
         expect(opcion.titulo).toBe(titulosDescriptivos[index]);
       });
@@ -183,8 +186,8 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     });
 
     it('CI-014: Las rutas deben ser claras y semánticas', () => {
-      const rutas = component.opciones.map(o => o.ruta);
-      
+      const rutas = component.opciones.map((o) => o.ruta);
+
       expect(rutas).toContain('solicitudes');
       expect(rutas).toContain('cursos-ofertados');
       expect(rutas).toContain('cursos-preinscripcion');
@@ -197,10 +200,10 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
         'Realizar Solicitud': 'add_circle',
         'Cursos Disponibles': 'school',
         'Ver Lista de Cursos para Preinscripción': 'playlist_add',
-        'Seguimiento': 'list_alt'
+        Seguimiento: 'list_alt',
       };
-      
-      component.opciones.forEach(opcion => {
+
+      component.opciones.forEach((opcion) => {
         expect(opcion.icon).toBe(mapaIconos[opcion.titulo as keyof typeof mapaIconos]);
       });
       metricasUsabilidad.validacionesCorrectas++;
@@ -210,33 +213,33 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
   describe('5. RENDIMIENTO Y TIEMPOS DE RESPUESTA', () => {
     it('CI-016: La inicialización debe ser instantánea', () => {
       const tiempoInicio = performance.now();
-      
+
       const newFixture = TestBed.createComponent(CursosIntersemestralesComponent);
       newFixture.detectChanges();
-      
+
       const tiempoFin = performance.now();
       const duracion = tiempoFin - tiempoInicio;
-      
+
       metricasUsabilidad.tiemposRespuesta.push(duracion);
       expect(duracion).toBeLessThan(500); // Menos de 0.5 segundos
     });
 
     it('CI-017: Las navegaciones deben ser rápidas', fakeAsync(() => {
       const tiempoInicio = performance.now();
-      
+
       router.navigate(['estudiante/cursos-intersemestrales/solicitudes']);
       tick();
-      
+
       const tiempoFin = performance.now();
       const duracion = tiempoFin - tiempoInicio;
-      
+
       metricasUsabilidad.tiemposRespuesta.push(duracion);
       expect(duracion).toBeLessThan(300);
     }));
 
     it('CI-018: El componente debe manejar múltiples navegaciones sin degradación', fakeAsync(() => {
       const tiempos: number[] = [];
-      
+
       for (let i = 0; i < 5; i++) {
         const tiempoInicio = performance.now();
         router.navigate([`estudiante/cursos-intersemestrales/${component.opciones[i % 4].ruta}`]);
@@ -244,10 +247,10 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
         const tiempoFin = performance.now();
         tiempos.push(tiempoFin - tiempoInicio);
       }
-      
+
       const promedio = tiempos.reduce((a, b) => a + b, 0) / tiempos.length;
       metricasUsabilidad.tiemposRespuesta.push(promedio);
-      
+
       // El tiempo promedio no debe aumentar significativamente
       expect(promedio).toBeLessThan(500);
       metricasUsabilidad.interaccionesExitosas++;
@@ -265,7 +268,7 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
       router.navigate(['/estudiante/cursos-intersemestrales/solicitudes']);
       tick();
       expect(router.url).toContain('solicitudes');
-      
+
       metricasUsabilidad.navegacionesExitosas++;
     }));
   });
@@ -278,13 +281,13 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     console.log(`Navegaciones exitosas: ${metricasUsabilidad.navegacionesExitosas}`);
     console.log(`Interacciones exitosas: ${metricasUsabilidad.interaccionesExitosas}`);
     console.log(`Validaciones correctas: ${metricasUsabilidad.validacionesCorrectas}`);
-    
+
     if (metricasUsabilidad.tiemposRespuesta.length > 0) {
-      const promedio = metricasUsabilidad.tiemposRespuesta.reduce((a, b) => a + b, 0) / 
-                      metricasUsabilidad.tiemposRespuesta.length;
+      const promedio =
+        metricasUsabilidad.tiemposRespuesta.reduce((a, b) => a + b, 0) / metricasUsabilidad.tiemposRespuesta.length;
       const maximo = Math.max(...metricasUsabilidad.tiemposRespuesta);
       const minimo = Math.min(...metricasUsabilidad.tiemposRespuesta);
-      
+
       console.log(`Tiempo promedio de respuesta: ${promedio.toFixed(2)}ms`);
       console.log(`Tiempo máximo: ${maximo.toFixed(2)}ms`);
       console.log(`Tiempo mínimo: ${minimo.toFixed(2)}ms`);
@@ -292,4 +295,3 @@ describe('CursosIntersemestralesComponent - Pruebas de Usabilidad', () => {
     console.log('═'.repeat(60));
   });
 });
-

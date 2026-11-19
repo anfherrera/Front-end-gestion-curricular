@@ -9,14 +9,8 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
   selector: 'app-layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
-  imports: [
-    RouterModule,
-    HeaderComponent,
-    FooterComponent,
-    SidebarComponent,
-    BreadcrumbComponent
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  imports: [RouterModule, HeaderComponent, FooterComponent, SidebarComponent, BreadcrumbComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   // Quitar ViewEncapsulation.None para que no meta CSS global
 })
 export class LayoutComponent {

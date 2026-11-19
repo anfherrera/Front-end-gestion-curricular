@@ -38,7 +38,8 @@
 }
 
 /* Loading y Error States */
-.loading-container, .error-container {
+.loading-container,
+.error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,7 +48,8 @@
   text-align: center;
 }
 
-.loading-container p, .error-container p {
+.loading-container p,
+.error-container p {
   margin-top: 20px;
   font-size: 1.1rem;
   color: var(--gris-700);
@@ -77,7 +79,9 @@
   border-radius: 12px;
   box-shadow: var(--sombra-2);
   border: 1px solid #e5e7eb;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   height: 100%;
   border-left: 4px solid var(--color-primario);
 }
@@ -216,18 +220,21 @@
   font-weight: 500;
 }
 
-.procesos-lista, .programas-lista {
+.procesos-lista,
+.programas-lista {
   margin-top: 16px;
 }
 
-.procesos-lista h5, .programas-lista h5 {
+.procesos-lista h5,
+.programas-lista h5 {
   margin: 0 0 12px 0;
   font-size: 1rem;
   font-weight: 600;
   color: var(--gris-900);
 }
 
-.proceso-item, .programa-item {
+.proceso-item,
+.programa-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -244,13 +251,15 @@
   transform: translateX(4px);
 }
 
-.proceso-info, .programa-info {
+.proceso-info,
+.programa-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.proceso-nombre, .programa-nombre {
+.proceso-nombre,
+.programa-nombre {
   font-weight: 500;
   color: var(--gris-900);
   font-size: 0.95rem;
@@ -270,7 +279,8 @@
   gap: 4px;
 }
 
-.programa-solicitudes, .programa-estudiantes {
+.programa-solicitudes,
+.programa-estudiantes {
   font-size: 0.8rem;
   color: var(--gris-650);
   font-weight: 500;
@@ -352,51 +362,53 @@
   .tendencias-comparativas-container {
     padding: 10px;
   }
-  
+
   .main-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .tendencias-grid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
-  .procesos-highlights, .programas-highlights {
+
+  .procesos-highlights,
+  .programas-highlights {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
+
   .resumen-metrics {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
+
   .main-card mat-card-title {
     font-size: 1.4rem;
   }
-  
+
   .section-card mat-card-title {
     font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .proceso-item, .programa-item {
+  .proceso-item,
+  .programa-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .programa-metrics {
     align-items: flex-start;
   }
-  
+
   .tendencia-valor {
     font-size: 1.2rem;
   }
-  
+
   .metric-valor {
     font-size: 1.6rem;
   }

@@ -7,7 +7,6 @@ export class authGuard implements CanActivate, CanActivateChild {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-
   // Necesario porque las rutas por rol usan canActivateChild: [authGuard, RoleGuard].
   // Sin este método Angular no puede ejecutar el guard y cancela la navegación.
   canActivateChild(): boolean {

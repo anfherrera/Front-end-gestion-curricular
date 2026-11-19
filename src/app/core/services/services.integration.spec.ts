@@ -13,10 +13,10 @@ import { CreatePreinscripcionDTO } from '../models/cursos-intersemestrales.model
  * ============================================
  * PRUEBAS DE INTEGRACIÓN - MÚLTIPLES SERVICIOS
  * ============================================
- * 
+ *
  * Estas pruebas verifican que MÚLTIPLES SERVICIOS trabajen juntos correctamente.
  * NO usan mocks de HTTP, sino HttpClientTestingModule real.
- * 
+ *
  * Diferencia con Unitarias:
  * - Unitarias: Prueban UN servicio aislado
  * - Integración: Prueban MÚLTIPLES servicios interactuando
@@ -36,7 +36,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
     id_rol: 1,
     id_programa: 1,
     objRol: { id_rol: 1, nombre_rol: 'ESTUDIANTE' },
-    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Electrónica' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Electrónica' },
   };
 
   beforeEach(() => {
@@ -51,8 +51,8 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
         PazSalvoService,
         CursosIntersemestralesService,
         EstadisticasService,
-        { provide: AuthService, useValue: authServiceSpy }
-      ]
+        { provide: AuthService, useValue: authServiceSpy },
+      ],
     });
 
     pazSalvoService = TestBed.inject(PazSalvoService);
@@ -78,9 +78,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       pazSalvoService.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe();
       tick();
 
-      const reqPazSalvo = httpMock.expectOne((req) =>
-        req.url.includes('/listarSolicitud-PazYSalvo/porRol')
-      );
+      const reqPazSalvo = httpMock.expectOne((req) => req.url.includes('/listarSolicitud-PazYSalvo/porRol'));
       reqPazSalvo.flush([
         {
           id_solicitud: 1,
@@ -88,7 +86,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
           fecha_registro_solicitud: new Date().toISOString(),
           estadosSolicitud: [{ estado_actual: 'APROBADA' }],
           documentos: [],
-          objUsuario: mockUsuario
+          objUsuario: mockUsuario,
         },
         {
           id_solicitud: 2,
@@ -96,8 +94,8 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
           fecha_registro_solicitud: new Date().toISOString(),
           estadosSolicitud: [{ estado_actual: 'PENDIENTE' }],
           documentos: [],
-          objUsuario: mockUsuario
-        }
+          objUsuario: mockUsuario,
+        },
       ]);
       tick();
 
@@ -105,15 +103,15 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'paz_salvo' }).subscribe();
       tick();
 
-      const reqEstadisticas = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'paz_salvo'
+      const reqEstadisticas = httpMock.expectOne(
+        (req) => req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'paz_salvo'
       );
       reqEstadisticas.flush({
         proceso: 'paz_salvo',
         totalSolicitudes: 50,
         aprobadas: 35,
         pendientes: 10,
-        rechazadas: 5
+        rechazadas: 5,
       });
       tick();
 
@@ -123,20 +121,18 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
     }));
 
     it('Debe crear solicitud Y actualizar estadísticas', fakeAsync(() => {
-      const mockArchivos: Archivo[] = [
-        { nombre: 'doc.pdf', fecha: new Date().toISOString() }
-      ];
+      const mockArchivos: Archivo[] = [{ nombre: 'doc.pdf', fecha: new Date().toISOString() }];
 
       // PASO 1: Crear solicitud
-      pazSalvoService.crearSolicitudConFormulario(1, mockArchivos, {
-        nombre_solicitud: 'Paz y Salvo',
-        fecha_registro_solicitud: new Date().toISOString()
-      }).subscribe();
+      pazSalvoService
+        .crearSolicitudConFormulario(1, mockArchivos, {
+          nombre_solicitud: 'Paz y Salvo',
+          fecha_registro_solicitud: new Date().toISOString(),
+        })
+        .subscribe();
       tick();
 
-      const reqCrear = httpMock.expectOne((req) =>
-        req.url.includes('/crearSolicitud-PazYSalvo')
-      );
+      const reqCrear = httpMock.expectOne((req) => req.url.includes('/crearSolicitud-PazYSalvo'));
       reqCrear.flush({ id_solicitud: 1, mensaje: 'Creada' });
       tick();
 
@@ -144,14 +140,12 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       estadisticasService.getResumenCompleto().subscribe();
       tick();
 
-      const reqStats = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/resumen-completo')
-      );
+      const reqStats = httpMock.expectOne((req) => req.url.includes('/estadisticas/resumen-completo'));
       reqStats.flush({
         totalSolicitudes: 51, // Incrementó en 1
         solicitudesAprobadas: 35,
         solicitudesPendientes: 11, // Incrementó en 1
-        solicitudesRechazadas: 5
+        solicitudesRechazadas: 5,
       });
       tick();
 
@@ -169,12 +163,10 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       cursosService.getCursosDisponibles().subscribe();
       tick();
 
-      const reqCursos = httpMock.expectOne((req) =>
-        req.url.includes('/cursos')
-      );
+      const reqCursos = httpMock.expectOne((req) => req.url.includes('/cursos'));
       reqCursos.flush([
         { id_curso: 1, nombre_curso: 'Cálculo', cupo_maximo: 30 },
-        { id_curso: 2, nombre_curso: 'Programación', cupo_maximo: 25 }
+        { id_curso: 2, nombre_curso: 'Programación', cupo_maximo: 25 },
       ]);
       tick();
 
@@ -182,14 +174,16 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'cursos_intersemestrales' }).subscribe();
       tick();
 
-      const reqStats = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'cursos_intersemestrales'
+      const reqStats = httpMock.expectOne(
+        (req) =>
+          req.url.includes('/estadisticas/estadisticas-por-proceso') &&
+          req.params.get('proceso') === 'cursos_intersemestrales'
       );
       reqStats.flush({
         proceso: 'cursos_intersemestrales',
         totalCursos: 2,
         estudiantesInscritos: 45,
-        cursosActivos: 2
+        cursosActivos: 2,
       });
       tick();
 
@@ -203,16 +197,14 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
         nombreSolicitud: 'Preinscripción',
         idUsuario: 1,
         idCurso: 1,
-        condicion: 'Primera_Vez'
+        condicion: 'Primera_Vez',
       };
 
       // PASO 1: Crear preinscripción
       cursosService.crearPreinscripcion(payload).subscribe();
       tick();
 
-      const reqCrear = httpMock.expectOne((req) =>
-        req.url.includes('/preinscripciones')
-      );
+      const reqCrear = httpMock.expectOne((req) => req.url.includes('/preinscripciones'));
       reqCrear.flush({ id: 1, mensaje: 'Preinscripción creada' });
       tick();
 
@@ -220,16 +212,14 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       cursosService.getPreinscripcionesUsuario(1).subscribe();
       tick();
 
-      const reqMis = httpMock.expectOne((req) =>
-        req.url.includes('/preinscripciones/usuario/1')
-      );
+      const reqMis = httpMock.expectOne((req) => req.url.includes('/preinscripciones/usuario/1'));
       reqMis.flush([
         {
           id: 1,
           idCurso: 1,
           nombreCurso: 'Cálculo',
-          estado: 'PENDIENTE'
-        }
+          estado: 'PENDIENTE',
+        },
       ]);
       tick();
 
@@ -248,14 +238,12 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       estadisticasService.getResumenCompleto().subscribe();
       tick();
 
-      const reqGlobal = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/resumen-completo')
-      );
+      const reqGlobal = httpMock.expectOne((req) => req.url.includes('/estadisticas/resumen-completo'));
       reqGlobal.flush({
         totalSolicitudes: 150,
         solicitudesAprobadas: 120,
         solicitudesPendientes: 20,
-        solicitudesRechazadas: 10
+        solicitudesRechazadas: 10,
       });
       tick();
 
@@ -263,12 +251,12 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'paz_salvo' }).subscribe();
       tick();
 
-      const reqPazSalvo = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'paz_salvo'
+      const reqPazSalvo = httpMock.expectOne(
+        (req) => req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'paz_salvo'
       );
       reqPazSalvo.flush({
         proceso: 'paz_salvo',
-        totalSolicitudes: 50
+        totalSolicitudes: 50,
       });
       tick();
 
@@ -276,12 +264,14 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       estadisticasService.getEstadisticasDetalladasPorProceso({ proceso: 'cursos_intersemestrales' }).subscribe();
       tick();
 
-      const reqCursos = httpMock.expectOne((req) =>
-        req.url.includes('/estadisticas/estadisticas-por-proceso') && req.params.get('proceso') === 'cursos_intersemestrales'
+      const reqCursos = httpMock.expectOne(
+        (req) =>
+          req.url.includes('/estadisticas/estadisticas-por-proceso') &&
+          req.params.get('proceso') === 'cursos_intersemestrales'
       );
       reqCursos.flush({
         proceso: 'cursos_intersemestrales',
-        totalCursos: 25
+        totalCursos: 25,
       });
       tick();
 
@@ -302,7 +292,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       const reqs = [
         httpMock.expectOne((req) => req.url.includes('PazYSalvo')),
         httpMock.expectOne((req) => req.url.includes('cursos')),
-        httpMock.expectOne((req) => req.url.includes('estadisticas'))
+        httpMock.expectOne((req) => req.url.includes('estadisticas')),
       ];
 
       reqs.forEach((req) => {
@@ -325,13 +315,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
         next: () => fail('Debería fallar'),
         error: (error) => {
           expect(error.status).toBe(500);
-        }
+        },
       });
       tick();
 
-      const reqPazSalvo = httpMock.expectOne((req) =>
-        req.url.includes('PazYSalvo')
-      );
+      const reqPazSalvo = httpMock.expectOne((req) => req.url.includes('PazYSalvo'));
       reqPazSalvo.flush('Error', { status: 500, statusText: 'Error' });
       tick();
 
@@ -339,13 +327,11 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       cursosService.getCursosDisponibles().subscribe({
         next: (cursos) => {
           expect(cursos.length).toBe(1);
-        }
+        },
       });
       tick();
 
-      const reqCursos = httpMock.expectOne((req) =>
-        req.url.includes('cursos')
-      );
+      const reqCursos = httpMock.expectOne((req) => req.url.includes('cursos'));
       reqCursos.flush([{ id_curso: 1, nombre_curso: 'Test' }]);
       tick();
 
@@ -368,12 +354,14 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // PASO 2: Preinscribirse
-      cursosService.crearPreinscripcion({
-        nombreSolicitud: 'Pre',
-        idUsuario: 1,
-        idCurso: 1,
-        condicion: 'Primera_Vez'
-      }).subscribe();
+      cursosService
+        .crearPreinscripcion({
+          nombreSolicitud: 'Pre',
+          idUsuario: 1,
+          idCurso: 1,
+          condicion: 'Primera_Vez',
+        })
+        .subscribe();
       tick();
       req = httpMock.expectOne((r) => r.url.includes('/preinscripciones'));
       req.flush({ id: 1 });
@@ -391,4 +379,3 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
     }));
   });
 });
-

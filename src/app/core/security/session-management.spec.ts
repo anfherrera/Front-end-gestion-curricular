@@ -25,7 +25,7 @@ describe('Seguridad - Manejo de sesiones', () => {
       'stopMonitoring',
       'isActive',
       'activity$',
-      'warning$'
+      'warning$',
     ]);
 
     localStorageSpy = jasmine.createSpyObj('localStorage', ['getItem', 'setItem', 'removeItem', 'clear']);
@@ -36,8 +36,8 @@ describe('Seguridad - Manejo de sesiones', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: Router, useValue: routerSpy },
-        { provide: ActivityMonitorService, useValue: activityMonitorSpy }
-      ]
+        { provide: ActivityMonitorService, useValue: activityMonitorSpy },
+      ],
     });
 
     authService = TestBed.inject(AuthService);
@@ -53,7 +53,7 @@ describe('Seguridad - Manejo de sesiones', () => {
   it('login hace POST a /usuarios/login con correo y contraseña', () => {
     const http = TestBed.inject(HttpTestingController);
     const respuesta = { token: 't', usuario: { id_usuario: 1, nombre_completo: 'Test' } };
-    authService.login('a@unicauca.edu.co', 'clave1234').subscribe(r => expect(r).toEqual(respuesta));
+    authService.login('a@unicauca.edu.co', 'clave1234').subscribe((r) => expect(r).toEqual(respuesta));
     const req = http.expectOne(ApiEndpoints.AUTH.LOGIN);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ correo: 'a@unicauca.edu.co', password: 'clave1234' });
@@ -65,7 +65,6 @@ describe('Seguridad - Manejo de sesiones', () => {
   // SEC-030: ALMACENAMIENTO SEGURO DE TOKENS
   // =====================================
   describe('SEC-030: Almacenamiento Seguro de Tokens', () => {
-    
     it('SEC-030-A: Debe almacenar token en localStorage al autenticar', () => {
       const token = createValidToken(3600);
       authService.setToken(token);
@@ -103,11 +102,10 @@ describe('Seguridad - Manejo de sesiones', () => {
   // SEC-031: EXPIRACIÓN AUTOMÁTICA DE SESIONES
   // =====================================
   describe('SEC-031: Expiración Automática de Sesiones', () => {
-    
     it('SEC-031-A: Debe detectar token expirado', () => {
       const token = createValidToken(3600);
       const expTime = (Date.now() + 3600 * 1000).toString();
-      
+
       localStorageSpy.getItem.and.callFake((key: string) => {
         if (key === 'token') return token;
         if (key === 'tokenExp') return expTime;
@@ -122,7 +120,7 @@ describe('Seguridad - Manejo de sesiones', () => {
     it('SEC-031-B: Debe rechazar token ya expirado', () => {
       const token = createValidToken(3600);
       const expiredTime = (Date.now() - 1000).toString(); // expiró hace 1 segundo
-      
+
       localStorageSpy.getItem.and.callFake((key: string) => {
         if (key === 'token') return token;
         if (key === 'tokenExp') return expiredTime;
@@ -159,7 +157,6 @@ describe('Seguridad - Manejo de sesiones', () => {
   // SEC-032: LIMPIEZA SEGURA AL CERRAR SESIÓN
   // =====================================
   describe('SEC-032: Limpieza Segura al Cerrar Sesión', () => {
-    
     it('SEC-032-A: Debe eliminar token al hacer logout', () => {
       authService.logout();
 
@@ -198,8 +195,8 @@ describe('Seguridad - Manejo de sesiones', () => {
 
     it('SEC-032-G: Debe limpiar rol del BehaviorSubject', (done) => {
       let firstEmission = true;
-      
-      authService.role$.subscribe(role => {
+
+      authService.role$.subscribe((role) => {
         if (!firstEmission && role === null) {
           expect(role).toBeNull();
           done();
@@ -215,7 +212,6 @@ describe('Seguridad - Manejo de sesiones', () => {
   // SEC-033: MONITOREO DE ACTIVIDAD
   // =====================================
   describe('SEC-033: Monitoreo de Actividad del Usuario', () => {
-    
     it('SEC-033-A: Debe iniciar monitoreo al establecer token', () => {
       const token = createValidToken(3600);
       authService.setToken(token);
@@ -247,7 +243,6 @@ describe('Seguridad - Manejo de sesiones', () => {
   // SEC-034: PREVENCIÓN DE SESIONES CONCURRENTES
   // =====================================
   describe('SEC-034: Gestión de Múltiples Sesiones', () => {
-    
     it('SEC-034-A: Debe sobrescribir sesión anterior al hacer nuevo login', () => {
       const oldToken = createValidToken(3600);
       const newToken = createValidToken(7200);
@@ -265,7 +260,7 @@ describe('Seguridad - Manejo de sesiones', () => {
 
       authService.setUsuario(usuario1);
       authService.setRole('ESTUDIANTE');
-      
+
       authService.setUsuario(usuario2);
       authService.setRole('COORDINADOR');
 
@@ -277,7 +272,6 @@ describe('Seguridad - Manejo de sesiones', () => {
   // SEC-035: RESTAURACIÓN SEGURA DE SESIÓN
   // =====================================
   describe('SEC-035: Restauración Segura de Sesión', () => {
-    
     it('SEC-035-A: Debe restaurar rol desde localStorage al inicializar', () => {
       localStorageSpy.getItem.and.callFake((key: string) => {
         if (key === 'userRole') return 'estudiante';
@@ -295,7 +289,7 @@ describe('Seguridad - Manejo de sesiones', () => {
       const usuario = {
         rol: { nombre: 'Coordinador' },
         id_usuario: 1,
-        nombre_completo: 'Test User'
+        nombre_completo: 'Test User',
       };
 
       localStorageSpy.getItem.and.callFake((key: string) => {
@@ -323,10 +317,9 @@ describe('Seguridad - Manejo de sesiones', () => {
   // SEC-036: TIMER DE LOGOUT AUTOMÁTICO
   // =====================================
   describe('SEC-036: Timer de Logout Automático', () => {
-    
     it('SEC-036-A: Debe configurar timer al establecer token', fakeAsync(() => {
       const token = createValidToken(1); // expira en 1 segundo
-      
+
       spyOn(authService, 'logout');
       authService.setToken(token);
 
@@ -376,4 +369,3 @@ describe('Seguridad - Manejo de sesiones', () => {
     return `eyJhbGciOiJIUzI1NiJ9.${payload}.signature`;
   }
 });
-

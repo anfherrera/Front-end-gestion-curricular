@@ -1,8 +1,6 @@
 <mat-card class="estadisticas-por-estado-card">
   <mat-card-header>
-    <mat-card-title>
-      <mat-icon>assessment</mat-icon> Estado de Solicitudes
-    </mat-card-title>
+    <mat-card-title> <mat-icon>assessment</mat-icon> Estado de Solicitudes </mat-card-title>
     <mat-card-subtitle>Distribución de solicitudes por estado</mat-card-subtitle>
   </mat-card-header>
 
@@ -37,9 +35,7 @@
         </div>
         <div class="estados-grid">
           @for (estado of estadosData(); track estado) {
-            <div
-              class="estado-card"
-              [style.border-left-color]="estado.color">
+            <div class="estado-card" [style.border-left-color]="estado.color">
               <div class="estado-header">
                 <div class="estado-icon" [style.background-color]="estado.color + '20'">
                   <mat-icon [style.color]="estado.color">{{ getIconName(estado.icono) }}</mat-icon>
@@ -53,9 +49,7 @@
                 <div class="estado-cantidad" [style.color]="estado.color">
                   {{ estado.cantidad }}
                 </div>
-                <div class="estado-porcentaje">
-                  {{ estado.porcentaje }}%
-                </div>
+                <div class="estado-porcentaje">{{ estado.porcentaje }}%</div>
               </div>
             </div>
           }
@@ -90,18 +84,14 @@
         </div>
       </div>
     }
-
   </mat-card-content>
 
   @if (!loading() && !error() && estadosData().length > 0) {
     <mat-card-actions>
-      <button mat-icon-button (click)="actualizarDatos()" [disabled]="loading()"
-        matTooltip="Actualizar datos">
+      <button mat-icon-button (click)="actualizarDatos()" [disabled]="loading()" matTooltip="Actualizar datos">
         <mat-icon>refresh</mat-icon>
       </button>
-      <small class="fecha-actualizacion">
-        Actualizado: {{ fechaConsulta() | date:'short' }}
-      </small>
+      <small class="fecha-actualizacion"> Actualizado: {{ fechaConsulta() | date: 'short' }} </small>
     </mat-card-actions>
   }
 </mat-card>

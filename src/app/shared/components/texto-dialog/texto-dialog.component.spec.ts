@@ -14,8 +14,8 @@ describe('TextoDialogComponent', () => {
       imports: [TextoDialogComponent, NoopAnimationsModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: data },
-        { provide: MatDialogRef, useValue: dialogRef }
-      ]
+        { provide: MatDialogRef, useValue: dialogRef },
+      ],
     });
     const fixture = TestBed.createComponent(TextoDialogComponent);
     fixture.detectChanges();
@@ -47,7 +47,9 @@ describe('TextoDialogComponent', () => {
   });
 
   it('datosRechazo da los textos de rechazo por defecto', () => {
-    expect(datosRechazo()).toEqual(jasmine.objectContaining({ titulo: 'Rechazar solicitud', textoConfirmar: 'Rechazar' }));
+    expect(datosRechazo()).toEqual(
+      jasmine.objectContaining({ titulo: 'Rechazar solicitud', textoConfirmar: 'Rechazar' })
+    );
   });
 });
 

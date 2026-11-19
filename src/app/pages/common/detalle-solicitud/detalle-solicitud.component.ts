@@ -10,7 +10,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { DetalleSolicitud, DocumentoDetalle, HistorialSolicitudesService } from '@core/services/historial-solicitudes.service';
+import {
+  DetalleSolicitud,
+  DocumentoDetalle,
+  HistorialSolicitudesService,
+} from '@core/services/historial-solicitudes.service';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { ArchivosService } from '@core/services/archivos.service';
 import { mensajeDeError } from '@core/utils/http-error.utils';
@@ -33,11 +37,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     CardContainerComponent,
     EstadoClasePipe,
     EstadoLabelPipe,
-    FechaPipe
-],
+    FechaPipe,
+  ],
   templateUrl: './detalle-solicitud.component.html',
   styleUrls: ['../estados-solicitud-comun.css', './detalle-solicitud.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetalleSolicitudComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -73,7 +77,7 @@ export class DetalleSolicitudComponent implements OnInit {
         this.error.set(mensaje);
         this.loading.set(false);
         this.snackbar.error(mensaje);
-      }
+      },
     });
   }
 
@@ -83,7 +87,7 @@ export class DetalleSolicitudComponent implements OnInit {
       next: (blob) => descargarBlob(blob, documento.nombre_documento),
       error: (error) => {
         this.snackbar.error(mensajeDeError(error, 'Error al descargar el documento'));
-      }
+      },
     });
   }
 
@@ -93,4 +97,3 @@ export class DetalleSolicitudComponent implements OnInit {
     this.router.navigate([basePath]);
   }
 }
-

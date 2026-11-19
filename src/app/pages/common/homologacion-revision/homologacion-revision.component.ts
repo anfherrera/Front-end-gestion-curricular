@@ -6,7 +6,7 @@ import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,
-  rolRevisionDeRuta
+  rolRevisionDeRuta,
 } from '../revision-aprobacion/revision-aprobacion.component';
 
 /**
@@ -17,7 +17,7 @@ import {
   selector: 'app-homologacion-revision',
   imports: [RevisionAprobacionComponent],
   template: '<app-revision-aprobacion [config]="config" />',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomologacionRevisionComponent {
   private readonly rol = rolRevisionDeRuta(inject(ActivatedRoute));
@@ -26,6 +26,6 @@ export class HomologacionRevisionComponent {
     rol: this.rol,
     servicio: inject(HomologacionAsignaturasService),
     proceso: 'homologacion',
-    nombreProceso: 'Homologación'
+    nombreProceso: 'Homologación',
   };
 }

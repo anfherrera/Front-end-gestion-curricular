@@ -1,23 +1,25 @@
 <!-- Contenedor principal de notificaciones -->
 <div class="notifications-container">
-
   <!-- Botón del icono de notificaciones con badge -->
-  <button mat-icon-button
+  <button
+    mat-icon-button
     #menuTrigger="matMenuTrigger"
     [matMenuTriggerFor]="notificationsMenu"
     matTooltip="Notificaciones"
     class="notifications-button"
-    (click)="actualizarManual(); $event.stopPropagation()">
-
+    (click)="actualizarManual(); $event.stopPropagation()"
+  >
     <!-- Icono de notificaciones -->
     <mat-icon class="notification-icon">notifications</mat-icon>
 
     <!-- Badge con contador de no leídas -->
     @if (totalNoLeidas() > 0) {
-      <span class="notification-badge"
+      <span
+        class="notification-badge"
         [class.urgent]="tieneNotificacionesUrgentes()"
         [attr.data-count]="totalNoLeidas()"
-        [title]="'Tienes ' + totalNoLeidas() + ' notificaciones no leídas'">
+        [title]="'Tienes ' + totalNoLeidas() + ' notificaciones no leídas'"
+      >
         {{ totalNoLeidas() > 99 ? '99+' : totalNoLeidas() }}
       </span>
     }
@@ -25,7 +27,6 @@
 
   <!-- Menú dropdown de notificaciones -->
   <mat-menu #notificationsMenu="matMenu" class="notifications-menu" (menuOpened)="onMenuOpened()">
-
     <!-- Header del menú -->
     <div class="menu-header">
       <div class="header-title">
@@ -34,17 +35,16 @@
       </div>
       <div class="header-actions">
         @if (totalNoLeidas() > 0) {
-          <button mat-icon-button
+          <button
+            mat-icon-button
             (click)="marcarTodasComoLeidas()"
             matTooltip="Marcar todas como leídas"
-            class="mark-all-button">
+            class="mark-all-button"
+          >
             <mat-icon>done_all</mat-icon>
           </button>
         }
-        <button mat-icon-button
-          (click)="actualizarManual()"
-          matTooltip="Actualizar"
-          class="refresh-button">
+        <button mat-icon-button (click)="actualizarManual()" matTooltip="Actualizar" class="refresh-button">
           <mat-icon [class.spinning]="isLoading()">refresh</mat-icon>
         </button>
       </div>
@@ -54,7 +54,6 @@
 
     <!-- Contenido del menú -->
     <div class="menu-content">
-
       <!-- Estado de carga -->
       @if (isLoading()) {
         <div class="loading-state">
@@ -67,17 +66,18 @@
       @if (!isLoading() && notificaciones().length > 0) {
         <div class="notifications-list">
           @for (notificacion of notificaciones(); track notificacion.id_notificacion) {
-            <div class="notification-item"
+            <div
+              class="notification-item"
               [class.urgent]="notificacion.esUrgente"
               [class.unread]="!notificacion.leida"
               tabindex="0"
               role="button"
               (click)="navegarANotificacion(notificacion, $event)"
-              (keydown.enter)="navegarANotificacion(notificacion, $event)">
+              (keydown.enter)="navegarANotificacion(notificacion, $event)"
+            >
               <!-- Icono de la notificación -->
               <div class="notification-icon-container">
-                <mat-icon [style.color]="getColorPorTipo(notificacion.tipoSolicitud)"
-                  class="notification-type-icon">
+                <mat-icon [style.color]="getColorPorTipo(notificacion.tipoSolicitud)" class="notification-type-icon">
                   {{ getIconoPorTipo(notificacion.tipoNotificacion) }}
                 </mat-icon>
                 @if (!notificacion.leida) {
@@ -87,14 +87,20 @@
               <!-- Contenido de la notificación -->
               <div class="notification-content">
                 <div class="notification-header">
-                  <h4 class="notification-title" [class.unread-title]="!notificacion.leida">{{ notificacion.titulo }}</h4>
-                  <span class="notification-time">{{ notificacion.tiempoTranscurrido || notificacion.fechaCreacion }}</span>
+                  <h4 class="notification-title" [class.unread-title]="!notificacion.leida">
+                    {{ notificacion.titulo }}
+                  </h4>
+                  <span class="notification-time">{{
+                    notificacion.tiempoTranscurrido || notificacion.fechaCreacion
+                  }}</span>
                 </div>
                 <p class="notification-message">{{ notificacion.mensaje }}</p>
                 <div class="notification-footer">
-                  <mat-chip class="category-chip"
+                  <mat-chip
+                    class="category-chip"
                     [style.background-color]="getColorPorTipo(notificacion.tipoSolicitud) + '20'"
-                    [style.color]="getColorPorTipo(notificacion.tipoSolicitud)">
+                    [style.color]="getColorPorTipo(notificacion.tipoSolicitud)"
+                  >
                     {{ getCategoriaDisplay(notificacion.tipoSolicitud) }}
                   </mat-chip>
                 </div>
@@ -118,22 +124,15 @@
           <p class="empty-message">No tienes notificaciones pendientes en este momento.</p>
         </div>
       }
-
     </div>
 
     <!-- Footer del menú -->
     <mat-divider></mat-divider>
     <div class="menu-footer">
-      <button mat-button
-        class="view-all-button"
-        (click)="verTodasLasNotificaciones()">
+      <button mat-button class="view-all-button" (click)="verTodasLasNotificaciones()">
         <mat-icon>list</mat-icon>
         Ver todas las notificaciones
       </button>
-
-
     </div>
-
   </mat-menu>
-
 </div>

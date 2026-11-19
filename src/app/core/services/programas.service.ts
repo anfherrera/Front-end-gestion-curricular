@@ -5,7 +5,7 @@ import { ProgramaDTOPeticion, ProgramaDTORespuesta } from '../models/programa.in
 import { environment } from '@env/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProgramasService {
   private http = inject(HttpClient);
@@ -42,4 +42,3 @@ export class ProgramasService {
     return this.http.delete<boolean>(`${this.apiUrl}/eliminarPrograma/${id}`);
   }
 }
-

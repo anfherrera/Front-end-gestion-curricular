@@ -6,7 +6,7 @@ import { SolicitudesAprobacionService } from './base/solicitudes-aprobacion.serv
 
 /** Solicitudes de homologación de asignaturas. */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HomologacionAsignaturasService extends SolicitudesAprobacionService<SolicitudHomologacionDTORespuesta> {
   constructor() {
@@ -14,7 +14,7 @@ export class HomologacionAsignaturasService extends SolicitudesAprobacionService
       recurso: 'solicitudes-homologacion',
       listar: 'listarSolicitud-Homologacion',
       estado: 'actualizarEstadoSolicitud',
-      tipoOficio: 'OFICIO_HOMOLOGACION'
+      tipoOficio: 'OFICIO_HOMOLOGACION',
     });
   }
 
@@ -27,11 +27,17 @@ export class HomologacionAsignaturasService extends SolicitudesAprobacionService
   }
 
   /** Todas las bandejas pasan por /porRol con el rol como parámetro. */
-  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudHomologacionDTORespuesta[]> {
+  listarSolicitudesPorRol(
+    rol: string,
+    idUsuario?: number,
+    periodoAcademico?: string
+  ): Observable<SolicitudHomologacionDTORespuesta[]> {
     let params = new HttpParams().set('rol', rol);
     if (idUsuario) params = params.set('idUsuario', idUsuario.toString());
     if (periodoAcademico) params = params.set('periodoAcademico', periodoAcademico);
-    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/porRol`, { params });
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-Homologacion/porRol`, {
+      params,
+    });
   }
 
   /** Secretaría sube la resolución firmada. */

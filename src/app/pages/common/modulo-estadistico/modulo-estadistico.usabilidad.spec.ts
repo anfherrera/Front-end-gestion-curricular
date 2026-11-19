@@ -20,13 +20,13 @@ describe('ModuloEstadisticoComponent (Funcionario)', () => {
 
   const estadisticasServiceStub = {
     getEstadisticasGlobales: () => of({}),
-    getTotalEstudiantes: () => of({ totalEstudiantes: 0, fechaConsulta: '', descripcion: '' })
+    getTotalEstudiantes: () => of({ totalEstudiantes: 0, fechaConsulta: '', descripcion: '' }),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ModuloEstadisticoComponent, BrowserAnimationsModule, HttpClientTestingModule],
-      providers: [{ provide: EstadisticasService, useValue: estadisticasServiceStub }]
+      providers: [{ provide: EstadisticasService, useValue: estadisticasServiceStub }],
     })
       .overrideComponent(ModuloEstadisticoComponent, {
         set: {
@@ -46,8 +46,8 @@ describe('ModuloEstadisticoComponent (Funcionario)', () => {
                 </mat-tab>
               </mat-tab-group>
             </div>
-          `
-        }
+          `,
+        },
       })
       .overrideProvider(EstadisticasService, { useValue: estadisticasServiceStub })
       .compileComponents();
@@ -102,19 +102,19 @@ describe('ModuloEstadisticoComponent (Funcionario)', () => {
     it('ME-FUNC-004: Debe permitir navegación fluida entre tabs', async () => {
       const tabGroupDebug = fixture.debugElement.query(By.directive(MatTabGroup));
       const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
-      
+
       tabGroup.selectedIndex = 0;
-      
+
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       tabGroup.selectedIndex = 1;
-      
+
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       expect(tabGroup.selectedIndex).toBe(1);
     });
 
@@ -132,7 +132,7 @@ describe('ModuloEstadisticoComponent (Funcionario)', () => {
       for (let i = 0; i < 3; i++) {
         fixture.detectChanges();
       }
-      
+
       const container = compiled.querySelector('.modulo-estadistico-container');
       expect(container).toBeTruthy();
     });

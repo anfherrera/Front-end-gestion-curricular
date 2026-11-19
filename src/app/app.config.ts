@@ -37,10 +37,10 @@ export const appConfig: ApplicationConfig = {
         // Manejo de 429 para login con contador Retry-After
         loginRateLimitInterceptor,
         JwtInterceptor,
-        errorInterceptor
-      ]), 
+        errorInterceptor,
+      ]),
       withFetch()
     ),
-    importProvidersFrom(BrowserAnimationsModule)
-  ]
+    importProvidersFrom(BrowserAnimationsModule),
+  ],
 };

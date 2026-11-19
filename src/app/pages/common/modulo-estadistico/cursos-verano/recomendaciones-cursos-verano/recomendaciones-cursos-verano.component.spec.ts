@@ -7,7 +7,13 @@ describe('RecomendacionesCursosVeranoComponent', () => {
   let el: HTMLElement;
 
   const rec = (id: string, prioridad: Recomendacion['prioridad']): Recomendacion => ({
-    id, tipo: 'DEMANDA', titulo: `Rec ${id}`, descripcion: 'd', prioridad, acciones: ['a'], justificacion: 'porque sí'
+    id,
+    tipo: 'DEMANDA',
+    titulo: `Rec ${id}`,
+    descripcion: 'd',
+    prioridad,
+    acciones: ['a'],
+    justificacion: 'porque sí',
   });
 
   beforeEach(() => {
@@ -18,7 +24,7 @@ describe('RecomendacionesCursosVeranoComponent', () => {
   it('ordena de la más a la menos prioritaria y muestra la etiqueta', () => {
     fixture.componentRef.setInput('recomendaciones', [rec('1', 'BAJA'), rec('2', 'CRITICA'), rec('3', 'MEDIA')]);
     fixture.detectChanges();
-    const titulos = Array.from(el.querySelectorAll('.rec-card h3')).map(h => h.textContent?.trim());
+    const titulos = Array.from(el.querySelectorAll('.rec-card h3')).map((h) => h.textContent?.trim());
     expect(titulos).toEqual(['Rec 2', 'Rec 3', 'Rec 1']);
     expect(el.querySelector('.rec-card .badge')?.textContent?.trim()).toBe('Crítica');
   });

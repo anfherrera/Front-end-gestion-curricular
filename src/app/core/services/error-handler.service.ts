@@ -38,10 +38,9 @@ function textoDeError(cuerpo: CuerpoError | null): string | null {
  * Servicio para manejar errores de forma centralizada
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ErrorHandlerService {
-
   /**
    * Extrae el mensaje de error desde la respuesta del backend
    * @param error Error HTTP recibido
@@ -65,8 +64,7 @@ export class ErrorHandlerService {
       const textoError = textoDeError(cuerpo);
       if (textoError) return textoError;
       // Mensajes de validación por campo (clave: nombre del campo, valor: mensaje)
-      const mensajesCampo = Object.values(crudo as object)
-        .filter((v): v is string => typeof v === 'string');
+      const mensajesCampo = Object.values(crudo as object).filter((v): v is string => typeof v === 'string');
       if (mensajesCampo.length > 0) {
         return mensajesCampo.join('. ');
       }
@@ -84,13 +82,13 @@ export class ErrorHandlerService {
 
     // Error 500 Internal Server Error
     if (status === 500) {
-      return cuerpo?.message || cuerpo?.mensaje ||
-             'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.';
+      return (
+        cuerpo?.message || cuerpo?.mensaje || 'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.'
+      );
     }
 
     // Otros errores
-    return cuerpo?.mensaje || cuerpo?.message || textoDeError(cuerpo) ||
-           'Ocurrió un error inesperado';
+    return cuerpo?.mensaje || cuerpo?.message || textoDeError(cuerpo) || 'Ocurrió un error inesperado';
   }
 
   /**
@@ -119,8 +117,6 @@ export class ErrorHandlerService {
    */
   esErrorDependencias(error: unknown): boolean {
     const mensaje = leerError(error).cuerpo?.mensaje?.toLowerCase() || '';
-    return mensaje.includes('asociados') ||
-           mensaje.includes('asignados') ||
-           mensaje.includes('reasigne');
+    return mensaje.includes('asociados') || mensaje.includes('asignados') || mensaje.includes('reasigne');
   }
 }

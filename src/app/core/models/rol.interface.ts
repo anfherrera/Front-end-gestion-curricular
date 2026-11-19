@@ -7,4 +7,3 @@ export interface RolDTORespuesta {
   id_rol: number;
   nombre: string;
 }
-

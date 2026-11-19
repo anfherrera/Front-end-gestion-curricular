@@ -43,7 +43,7 @@
         <!-- Fecha -->
         <ng-container matColumnDef="fecha">
           <th mat-header-cell *matHeaderCellDef>Fecha</th>
-          <td mat-cell *matCellDef="let preinscripcion">{{ preinscripcion.fecha | date:'short' }}</td>
+          <td mat-cell *matCellDef="let preinscripcion">{{ preinscripcion.fecha | date: 'short' }}</td>
         </ng-container>
         <!-- Estado -->
         <ng-container matColumnDef="estado">
@@ -60,7 +60,9 @@
           <td mat-cell *matCellDef="let preinscripcion" class="comentario-cell">
             @if (getComentarioEstadoActual(preinscripcion); as comentario) {
               <div class="motivo-container" [ngClass]="getMotivoClass(preinscripcion)">
-                <mat-icon class="motivo-icon">{{ esEstadoRechazado(preinscripcion.estado) ? 'error_outline' : 'info' }}</mat-icon>
+                <mat-icon class="motivo-icon">{{
+                  esEstadoRechazado(preinscripcion.estado) ? 'error_outline' : 'info'
+                }}</mat-icon>
                 <div class="motivo-texto">
                   <span class="motivo-label">{{ getMotivoLabel(preinscripcion) }}</span>
                   <span class="motivo-mensaje">{{ comentario }}</span>
@@ -93,63 +95,58 @@
             <!-- Botón de inscripción (solo si pasa validación) -->
             @if (mostrarBotonInscripcion(preinscripcion)) {
               <div class="acciones-container">
-                <button
-                  mat-raised-button
-                  color="primary"
-                  class="accion-btn"
-                  (click)="manejarAccion(preinscripcion)">
+                <button mat-raised-button color="primary" class="accion-btn" (click)="manejarAccion(preinscripcion)">
                   <mat-icon>school</mat-icon>
                   Inscribirse al Curso
                 </button>
               </div>
             }
             <!-- Mensaje cuando ya existe inscripción activa -->
-            @if (!mostrarBotonInscripcion(preinscripcion) &&
+            @if (
+              !mostrarBotonInscripcion(preinscripcion) &&
               preinscripcion.estadoCurso?.toUpperCase() === 'INSCRIPCION' &&
               preinscripcion.estado?.toUpperCase() === 'APROBADO' &&
-              tieneInscripcionEnCurso(preinscripcion.cursoId)) {
-              <span
-                >
+              tieneInscripcionEnCurso(preinscripcion.cursoId)
+            ) {
+              <span>
                 {{ getMensajeInscripcionExistente(preinscripcion.cursoId) }}
               </span>
             }
             <!-- Mensaje cuando está esperando aprobación -->
             @if (preinscripcion.estado?.toUpperCase() === 'ENVIADA') {
-              <span
-                >
-                Esperando aprobación
-              </span>
+              <span> Esperando aprobación </span>
             }
             <!-- Mensaje cuando la preinscripción fue rechazada -->
             @if (preinscripcion.estado?.toUpperCase() === 'RECHAZADO') {
-              <span
-                >
-                Preinscripción rechazada
-              </span>
+              <span> Preinscripción rechazada </span>
             }
             <!-- Mensaje cuando el curso no está en inscripción -->
-            @if (preinscripcion.estado?.toUpperCase() === 'APROBADO' &&
+            @if (
+              preinscripcion.estado?.toUpperCase() === 'APROBADO' &&
               preinscripcion.estadoCurso?.toUpperCase() !== 'INSCRIPCION' &&
-              !tieneInscripcionEnCurso(preinscripcion.cursoId)) {
-              <span
-                >
-                Esperando apertura de inscripciones
-              </span>
+              !tieneInscripcionEnCurso(preinscripcion.cursoId)
+            ) {
+              <span> Esperando apertura de inscripciones </span>
             }
             <!-- Sin acciones -->
-            @if (!preinscripcion.estado ||
+            @if (
+              !preinscripcion.estado ||
               (preinscripcion.estado?.toUpperCase() !== 'APROBADO' &&
-              preinscripcion.estado?.toUpperCase() !== 'ENVIADA' &&
-              preinscripcion.estado?.toUpperCase() !== 'RECHAZADO')) {
-              <span
-                class="text-muted">
-                Sin acciones
-              </span>
+                preinscripcion.estado?.toUpperCase() !== 'ENVIADA' &&
+                preinscripcion.estado?.toUpperCase() !== 'RECHAZADO')
+            ) {
+              <span class="text-muted"> Sin acciones </span>
             }
           </td>
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="['curso','fecha','estado','comentario','estadoCurso','acciones']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['curso','fecha','estado','comentario','estadoCurso','acciones'];"></tr>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="['curso', 'fecha', 'estado', 'comentario', 'estadoCurso', 'acciones']"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: ['curso', 'fecha', 'estado', 'comentario', 'estadoCurso', 'acciones']"
+        ></tr>
       </table>
     </div>
   }
@@ -167,7 +164,7 @@
         <!-- Fecha -->
         <ng-container matColumnDef="fecha">
           <th mat-header-cell *matHeaderCellDef>Fecha</th>
-          <td mat-cell *matCellDef="let inscripcion">{{ inscripcion.fecha | date:'short' }}</td>
+          <td mat-cell *matCellDef="let inscripcion">{{ inscripcion.fecha | date: 'short' }}</td>
         </ng-container>
         <!-- Estado -->
         <ng-container matColumnDef="estado">
@@ -184,7 +181,9 @@
           <td mat-cell *matCellDef="let inscripcion" class="comentario-cell">
             @if (getComentarioEstadoActual(inscripcion); as comentario) {
               <div class="motivo-container" [ngClass]="getMotivoClass(inscripcion)">
-                <mat-icon class="motivo-icon">{{ esEstadoRechazado(inscripcion.estado) ? 'error_outline' : 'info' }}</mat-icon>
+                <mat-icon class="motivo-icon">{{
+                  esEstadoRechazado(inscripcion.estado) ? 'error_outline' : 'info'
+                }}</mat-icon>
                 <div class="motivo-texto">
                   <span class="motivo-label">{{ getMotivoLabel(inscripcion) }}</span>
                   <span class="motivo-mensaje">{{ comentario }}</span>
@@ -217,32 +216,31 @@
             @if (inscripcion.accionesDisponibles && inscripcion.accionesDisponibles.length > 0) {
               <div class="acciones-container">
                 @if (esAccionClickeable(inscripcion.accionesDisponibles)) {
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    class="accion-btn"
-                    (click)="manejarAccion(inscripcion)">
+                  <button mat-raised-button color="primary" class="accion-btn" (click)="manejarAccion(inscripcion)">
                     <mat-icon>{{ getIconoAccion(inscripcion.accionesDisponibles) }}</mat-icon>
                     {{ getTextoAccion(inscripcion.accionesDisponibles) }}
                   </button>
                 }
                 @if (!esAccionClickeable(inscripcion.accionesDisponibles)) {
-                  <span
-                    >
+                  <span>
                     {{ getTextoAccion(inscripcion.accionesDisponibles) }}
                   </span>
                 }
               </div>
             }
             @if (!inscripcion.accionesDisponibles || inscripcion.accionesDisponibles.length === 0) {
-              <span class="text-muted">
-                Sin acciones
-              </span>
+              <span class="text-muted"> Sin acciones </span>
             }
           </td>
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="['curso','fecha','estado','comentario','estadoCurso','acciones']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['curso','fecha','estado','comentario','estadoCurso','acciones'];"></tr>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="['curso', 'fecha', 'estado', 'comentario', 'estadoCurso', 'acciones']"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: ['curso', 'fecha', 'estado', 'comentario', 'estadoCurso', 'acciones']"
+        ></tr>
       </table>
     </div>
   }

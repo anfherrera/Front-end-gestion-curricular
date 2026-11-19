@@ -14,7 +14,10 @@ describe('ActivityMonitorService', () => {
 
   beforeEach(() => {
     cerrado = new Subject();
-    dialogRef = { afterClosed: () => cerrado, close: jasmine.createSpy('close').and.callFake(() => cerrado.next(undefined)) };
+    dialogRef = {
+      afterClosed: () => cerrado,
+      close: jasmine.createSpy('close').and.callFake(() => cerrado.next(undefined)),
+    };
     dialog = jasmine.createSpyObj('MatDialog', ['open']);
     dialog.open.and.returnValue(dialogRef as unknown as MatDialogRef<unknown>);
     TestBed.configureTestingModule({ providers: [{ provide: MatDialog, useValue: dialog }] });

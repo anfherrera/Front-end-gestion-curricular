@@ -18,7 +18,6 @@ import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
-
 export const MATERIAL_IMPORTS = [
   MatDatepickerModule,
   MatNativeDateModule,
@@ -38,5 +37,5 @@ export const MATERIAL_IMPORTS = [
   MatProgressSpinnerModule,
   MatListModule,
   MatExpansionModule,
-  MatTooltipModule
+  MatTooltipModule,
 ];

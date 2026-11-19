@@ -14,7 +14,7 @@
  */
 function corregirEncoding(texto: string): string {
   if (!texto) return texto;
-  
+
   try {
     // Mapeo de caracteres mal codificados comunes
     const mapeoCaracteres: Record<string, string> = {
@@ -35,16 +35,16 @@ function corregirEncoding(texto: string): string {
       '\u00C3\u009C': '\u00DC', // Ü
       '\u00C3\u0096': '\u00D6', // Ö
       '\u00C3\u00A4': '\u00E4', // ä
-      '\u00C3\u0084': '\u00C4'  // Ä
+      '\u00C3\u0084': '\u00C4', // Ä
     };
 
     let textoCorregido = texto;
-    
+
     // Reemplazar cada caracter mal codificado
     for (const [mal, bien] of Object.entries(mapeoCaracteres)) {
       textoCorregido = textoCorregido.replace(new RegExp(mal, 'g'), bien);
     }
-    
+
     return textoCorregido;
   } catch (error) {
     return texto;
@@ -66,7 +66,7 @@ function corregirValor(obj: unknown): unknown {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(item => corregirValor(item));
+    return obj.map((item) => corregirValor(item));
   }
 
   if (typeof obj === 'object') {

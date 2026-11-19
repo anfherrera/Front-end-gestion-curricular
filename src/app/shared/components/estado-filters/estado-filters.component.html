@@ -14,13 +14,12 @@
         [class.loading]="cargandoFiltro()"
         [class.todos-chip]="true"
         [class.todos-selected]="estadoSeleccionado() === ''"
-        class="estado-chip">
+        class="estado-chip"
+      >
         <mat-icon>list</mat-icon>
         <span>TODOS</span>
         @if (cursos().length > 0) {
-          <span class="count">
-            ({{ cursos().length }})
-          </span>
+          <span class="count"> ({{ cursos().length }}) </span>
         }
         @if (cargandoFiltro() && estadoSeleccionado() === '') {
           <mat-spinner diameter="16" class="chip-spinner"></mat-spinner>
@@ -36,13 +35,14 @@
           [style.border]="'2px solid ' + estado.color"
           [class.selected]="estadoSeleccionado() === estado.value"
           [class.loading]="cargandoFiltro()"
-          class="estado-chip">
-          <mat-icon [style.color]="estadoSeleccionado() === estado.value ? 'white' : estado.color">{{ estado.icon }}</mat-icon>
+          class="estado-chip"
+        >
+          <mat-icon [style.color]="estadoSeleccionado() === estado.value ? 'white' : estado.color">{{
+            estado.icon
+          }}</mat-icon>
           <span>{{ estado.label }}</span>
           @if (conteosEstados()[estado.value] > 0) {
-            <span class="count">
-              ({{ conteosEstados()[estado.value] }})
-            </span>
+            <span class="count"> ({{ conteosEstados()[estado.value] }}) </span>
           }
           @if (cargandoFiltro() && estadoSeleccionado() === estado.value) {
             <mat-spinner diameter="16" class="chip-spinner"></mat-spinner>

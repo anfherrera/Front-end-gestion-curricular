@@ -10,23 +10,17 @@ import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-cursos-intersemestrales',
-  imports: [
-    RouterModule,
-    MatIconModule,
-    MatBadgeModule,
-    MatButtonModule,
-    MatTooltipModule
-],
+  imports: [RouterModule, MatIconModule, MatBadgeModule, MatButtonModule, MatTooltipModule],
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursosIntersemestralesComponent implements OnInit {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
   private readonly destroyRef = inject(DestroyRef);
-  
+
   opciones = [
     { titulo: 'Realizar Solicitud', ruta: 'solicitudes', icon: 'add_circle' },
     { titulo: 'Cursos Disponibles', ruta: 'cursos-ofertados', icon: 'school' },
@@ -41,7 +35,7 @@ export class CursosIntersemestralesComponent implements OnInit {
   private setupNavigation(): void {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd),
+        filter((event) => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef)
       )
       // hasActiveRoute() lee router.url: con OnPush hay que repintar al terminar cada navegación

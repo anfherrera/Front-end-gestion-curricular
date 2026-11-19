@@ -4,13 +4,13 @@ import { CondicionSolicitudVerano, CursoOfertadoVerano } from '../models/cursos-
 export const CONDICIONES_POR_DEFECTO: CondicionSolicitudVerano[] = [
   CondicionSolicitudVerano.Primera_Vez,
   CondicionSolicitudVerano.Habilitacion,
-  CondicionSolicitudVerano.Repeticion
+  CondicionSolicitudVerano.Repeticion,
 ];
 
 const NOMBRE_CONDICION: Record<string, string> = {
   [CondicionSolicitudVerano.Primera_Vez]: 'Primera Vez',
   [CondicionSolicitudVerano.Habilitacion]: 'Habilitación',
-  [CondicionSolicitudVerano.Repeticion]: 'Repetición'
+  [CondicionSolicitudVerano.Repeticion]: 'Repetición',
 };
 
 export function nombreCondicion(condicion: CondicionSolicitudVerano): string {

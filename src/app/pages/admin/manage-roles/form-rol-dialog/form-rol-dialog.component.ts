@@ -26,11 +26,11 @@ export interface FormRolDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatProgressSpinnerModule
-],
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './form-rol-dialog.component.html',
   styleUrls: ['./form-rol-dialog.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormRolDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -44,18 +44,14 @@ export class FormRolDialogComponent implements OnInit {
 
   constructor() {
     this.rolForm = this.fb.group({
-      nombre: ['', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(50)
-      ]]
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
     });
   }
 
   ngOnInit(): void {
     if (this.data.isEditMode && this.data.rol) {
       this.rolForm.patchValue({
-        nombre: this.data.rol.nombre
+        nombre: this.data.rol.nombre,
       });
     }
   }
@@ -68,9 +64,9 @@ export class FormRolDialogComponent implements OnInit {
     }
 
     this.loading.set(true);
-    
+
     const rolData: RolDTOPeticion = {
-      nombre: this.rolForm.value.nombre
+      nombre: this.rolForm.value.nombre,
     };
 
     if (this.data.isEditMode && this.data.rol) {
@@ -91,7 +87,7 @@ export class FormRolDialogComponent implements OnInit {
         const mensaje = err.error?.mensaje || 'Error al crear el rol';
         this.snackbar.error(mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -105,7 +101,7 @@ export class FormRolDialogComponent implements OnInit {
         const mensaje = err.error?.mensaje || 'Error al actualizar el rol';
         this.snackbar.error(mensaje);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -117,4 +113,3 @@ export class FormRolDialogComponent implements OnInit {
     return this.rolForm.get('nombre');
   }
 }
-

@@ -16,7 +16,10 @@ describe('ErrorHandlerService', () => {
     });
 
     it('400 con regla de negocio da solo el texto de la regla', () => {
-      const err = errorHttp(400, { mensaje: 'Violación a regla de negocio: Ya existe una solicitud', codigo: 'GC-0004' });
+      const err = errorHttp(400, {
+        mensaje: 'Violación a regla de negocio: Ya existe una solicitud',
+        codigo: 'GC-0004',
+      });
       expect(servicio.extraerMensajeError(err)).toBe('Ya existe una solicitud');
     });
 
@@ -26,12 +29,20 @@ describe('ErrorHandlerService', () => {
     });
 
     it('400 de cambio de estado rechazado da el texto de error', () => {
-      const err = errorHttp(400, { estadoActual: 'APROBADA', codigo: 'TRANSICION_NO_PERMITIDA', error: 'No se puede pasar de APROBADA a RECHAZADA' });
+      const err = errorHttp(400, {
+        estadoActual: 'APROBADA',
+        codigo: 'TRANSICION_NO_PERMITIDA',
+        error: 'No se puede pasar de APROBADA a RECHAZADA',
+      });
       expect(servicio.extraerMensajeError(err)).toBe('No se puede pasar de APROBADA a RECHAZADA');
     });
 
     it('403 con texto de error lo muestra', () => {
-      const err = errorHttp(403, { estadoActual: 'ENVIADA', codigo: 'ROL_NO_AUTORIZADO', error: 'El rol no puede decidir este paso' });
+      const err = errorHttp(403, {
+        estadoActual: 'ENVIADA',
+        codigo: 'ROL_NO_AUTORIZADO',
+        error: 'El rol no puede decidir este paso',
+      });
       expect(servicio.extraerMensajeError(err)).toBe('El rol no puede decidir este paso');
     });
 

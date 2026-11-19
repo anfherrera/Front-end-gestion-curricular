@@ -22,20 +22,13 @@ export interface VerComentariosDialogData {
 @Component({
   selector: 'app-ver-comentarios-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatDividerModule
-],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatCardModule, MatDividerModule],
   templateUrl: './ver-comentarios-dialog.component.html',
-  styleUrl: './ver-comentarios-dialog.component.css'
+  styleUrl: './ver-comentarios-dialog.component.css',
 })
 export class VerComentariosDialogComponent {
   dialogRef = inject<MatDialogRef<VerComentariosDialogComponent>>(MatDialogRef);
   data = inject<VerComentariosDialogData>(MAT_DIALOG_DATA);
-
 
   /**
    * Verificar si hay comentario de rechazo
@@ -51,9 +44,7 @@ export class VerComentariosDialogComponent {
     if (!this.data.documentos || this.data.documentos.length === 0) {
       return [];
     }
-    return this.data.documentos.filter(doc => 
-      doc.comentario && doc.comentario.trim().length > 0
-    );
+    return this.data.documentos.filter((doc) => doc.comentario && doc.comentario.trim().length > 0);
   }
 
   /**

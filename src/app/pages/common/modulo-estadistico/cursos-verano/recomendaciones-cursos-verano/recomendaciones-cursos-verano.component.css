@@ -134,7 +134,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: var(--sombra-1);
   }
   50% {
@@ -154,7 +155,8 @@
 }
 
 @keyframes pulse-border-alert {
-  0%, 100% {
+  0%,
+  100% {
     border-left-color: var(--estado-peligro);
     box-shadow: var(--sombra-2);
   }
@@ -217,7 +219,7 @@
 }
 
 .alerta-critica-card .acciones-urgentes ul li::before {
-  content: "!";
+  content: '!';
   position: absolute;
   left: -1.5rem;
   top: 0;
@@ -361,7 +363,7 @@
 }
 
 .rec-card .seccion ul li::before {
-  content: "•";
+  content: '•';
   color: var(--color-primario);
   font-weight: bold;
   font-size: 1.2rem;
@@ -435,46 +437,46 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
-  
+
   .stat {
     padding: 1.5rem 1rem;
   }
-  
+
   .stat .numero {
     font-size: 2.5rem;
   }
-  
+
   .stat .label {
     font-size: 0.85rem;
   }
-  
+
   .recomendaciones-list {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .rec-card h3 {
     font-size: 1.1rem;
   }
-  
+
   .rec-card .badge {
     font-size: 0.75rem;
     padding: 0.35rem 0.85rem;
   }
-  
+
   .rec-card .seccion {
     padding: 1rem;
   }
-  
+
   .rec-card .btn-expandir {
     width: 32px;
     height: 32px;
   }
-  
+
   .alerta-critica-card h3 {
     font-size: 1.15rem;
   }
-  
+
   .alerta-critica-card .acciones-urgentes {
     padding: 1rem;
   }
@@ -484,15 +486,15 @@
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .resumen-recomendaciones-card mat-card-content {
     padding: 1.5rem;
   }
-  
+
   .rec-card mat-card-content {
     padding: 1.25rem;
   }
-  
+
   .rec-card .descripcion {
     font-size: 0.9rem;
   }

@@ -5,10 +5,10 @@ import { LoggerService } from '../services/logger.service';
 
 /**
  * JWT Interceptor
- * 
+ *
  * Agrega automáticamente el token JWT en el header Authorization de todas las peticiones
  * excepto el endpoint de login (que es público).
- * 
+ *
  * Formato del header: Authorization: Bearer <token>
  */
 export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
@@ -17,7 +17,7 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   // EXCLUIR endpoint de login - no requiere token
   const isLoginEndpoint = req.url.includes('/usuarios/login');
-  
+
   if (isLoginEndpoint) {
     // Para el login, no agregar token (es un endpoint público)
     return next(req);
@@ -31,7 +31,7 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const exp = payload.exp * 1000; // Convertir a milisegundos
       const now = Date.now();
-      
+
       // Solo verificar expiración para logging, pero NO hacer logout aquí
       // El logout se manejará en el error interceptor cuando el backend responda con 401
       if (exp < now) {
@@ -46,9 +46,11 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
     // Agregar token JWT en el header Authorization
     // Formato: Authorization: Bearer <token>
     // Se aplica a TODAS las peticiones (JSON, blob/descargas PDF-Excel, texto, FormData)
-    return next(req.clone({
-      setHeaders: { Authorization: `Bearer ${token}`, ...defaultContentHeaders(req) }
-    }));
+    return next(
+      req.clone({
+        setHeaders: { Authorization: `Bearer ${token}`, ...defaultContentHeaders(req) },
+      })
+    );
   }
 
   // Peticiones sin token (pero que no son login)

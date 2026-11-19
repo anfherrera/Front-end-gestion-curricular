@@ -24,7 +24,7 @@ const ERRORES_INSCRIPCION: Record<number, string> = {
   0: 'Error de conexión: No se puede conectar al servidor. Verifica que el backend esté ejecutándose en el puerto 5000.',
   401: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
   403: 'No tienes permisos para realizar esta acción.',
-  500: 'Error interno del servidor. Por favor, contacta al administrador.'
+  500: 'Error interno del servidor. Por favor, contacta al administrador.',
 };
 
 /**
@@ -36,7 +36,7 @@ const ERRORES_INSCRIPCION: Record<number, string> = {
   imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './inscripcion-modal.component.html',
   styleUrls: ['./inscripcion-modal.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InscripcionModalComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -58,7 +58,7 @@ export class InscripcionModalComponent implements OnInit {
   constructor() {
     this.inscripcionForm = this.fb.group({
       nombreCompleto: ['', Validators.required],
-      codigo: ['', Validators.required]
+      codigo: ['', Validators.required],
     });
   }
 
@@ -66,7 +66,7 @@ export class InscripcionModalComponent implements OnInit {
     this.usuario = this.authService.getUsuario();
     this.inscripcionForm.patchValue({
       nombreCompleto: this.usuario?.nombre_completo || 'Usuario no identificado',
-      codigo: this.usuario?.codigo || 'Sin código'
+      codigo: this.usuario?.codigo || 'Sin código',
     });
   }
 
@@ -109,24 +109,29 @@ export class InscripcionModalComponent implements OnInit {
 
   /** Solo se puede inscribir quien tiene la preinscripción de este curso aprobada por un funcionario. */
   private verificarPreinscripcionAprobada(usuario: UsuarioSesion): void {
-    this.cursosService.getPreinscripcionesUsuario(usuario.id_usuario)
+    this.cursosService
+      .getPreinscripcionesUsuario(usuario.id_usuario)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (todas) => {
-          const delCurso = (todas || []).filter(p => p.cursoId === this.data.preinscripcion.cursoId);
-          if (delCurso.some(p => p.estado === 'Aprobado')) {
+          const delCurso = (todas || []).filter((p) => p.cursoId === this.data.preinscripcion.cursoId);
+          if (delCurso.some((p) => p.estado === 'Aprobado')) {
             this.crearInscripcion(usuario);
             return;
           }
           this.cargando.set(false);
-          this.snackbar.advertencia(delCurso.length > 0
+          this.snackbar.advertencia(
+            delCurso.length > 0
               ? 'Tu preinscripción aún no ha sido aprobada. Podrás inscribirte cuando un funcionario la apruebe.'
-              : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".');
+              : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".'
+          );
         },
         error: (error) => {
           this.cargando.set(false);
-          this.snackbar.error(mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.'));
-        }
+          this.snackbar.error(
+            mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.')
+          );
+        },
       });
   }
 
@@ -135,20 +140,22 @@ export class InscripcionModalComponent implements OnInit {
     const payload: CreateInscripcionDTO = {
       idUsuario: usuario.id_usuario,
       idCurso: this.data.preinscripcion.cursoId,
-      nombreSolicitud: `Solicitud Inscripción - ${nombreUsuario}`
+      nombreSolicitud: `Solicitud Inscripción - ${nombreUsuario}`,
     };
 
-    this.cursosService.crearInscripcion(payload)
+    this.cursosService
+      .crearInscripcion(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (inscripcion) => this.subirComprobante(inscripcion.id_solicitud),
         error: (error: HttpErrorResponse) => {
           this.cargando.set(false);
-          const mensaje = error.status === 400
-            ? `Error del servidor: ${error.error?.message || error.error?.error || 'Datos inválidos'}`
-            : ERRORES_INSCRIPCION[error.status] ?? 'Error al crear la inscripción. Por favor, inténtalo de nuevo.';
+          const mensaje =
+            error.status === 400
+              ? `Error del servidor: ${error.error?.message || error.error?.error || 'Datos inválidos'}`
+              : (ERRORES_INSCRIPCION[error.status] ?? 'Error al crear la inscripción. Por favor, inténtalo de nuevo.');
           this.snackbar.error(mensaje);
-        }
+        },
       });
   }
 
@@ -156,14 +163,20 @@ export class InscripcionModalComponent implements OnInit {
   private subirComprobante(inscripcionId: number): void {
     if (!this.archivoSeleccionado) return;
 
-    this.cursosService.subirComprobantePago(this.archivoSeleccionado, inscripcionId)
+    this.cursosService
+      .subirComprobantePago(this.archivoSeleccionado, inscripcionId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.terminar(
-          `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`, 'exito'),
-        error: () => this.terminar(
-          'Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.',
-          'advertencia')
+        next: () =>
+          this.terminar(
+            `Inscripción exitosa en ${this.data.preinscripcion.curso}. Comprobante de pago subido correctamente.`,
+            'exito'
+          ),
+        error: () =>
+          this.terminar(
+            'Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.',
+            'advertencia'
+          ),
       });
   }
 

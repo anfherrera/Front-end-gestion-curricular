@@ -1,7 +1,5 @@
 /* Estilos para el componente de preinscribir estudiantes */
 
-
-
 .preinscripciones-section {
   margin-bottom: 24px;
 }
@@ -14,8 +12,6 @@
   border-bottom: 2px solid var(--color-primario);
   padding-bottom: 8px;
 }
-
-
 
 .preinscripciones-table {
   width: 100%;
@@ -40,11 +36,9 @@
   color: var(--gris-900) !important;
 }
 
-.preinscripciones-table td *:not([class*="accion-"], [class*="accion-"] *) {
+.preinscripciones-table td *:not([class*='accion-'], [class*='accion-'] *) {
   color: var(--gris-900) !important;
 }
-
-
 
 .observaciones-cell {
   max-width: 200px;
@@ -80,35 +74,31 @@
   justify-content: center;
 }
 
-
-
 /* Responsive */
 @media (max-width: 768px) {
   .info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .info-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
-  
+
   .info-item strong {
     min-width: auto;
   }
-  
+
   .table-container {
     font-size: 12px;
   }
-  
+
   .preinscripciones-table th,
   .preinscripciones-table td {
     padding: 8px 4px;
   }
 }
-
-
 
 /* Forzar color del texto en toda la tabla */
 :host ::ng-deep .preinscripciones-table {
@@ -136,7 +126,7 @@
   color: var(--gris-900) !important;
 }
 
-:host ::ng-deep .preinscripciones-table td *:not([class*="accion-"], [class*="accion-"] *) {
+:host ::ng-deep .preinscripciones-table td *:not([class*='accion-'], [class*='accion-'] *) {
   color: var(--gris-900) !important;
 }
 
@@ -176,12 +166,12 @@
   padding: 4px 8px !important;
 }
 
-:host ::ng-deep .preinscripciones-table [style*="background-color"] {
+:host ::ng-deep .preinscripciones-table [style*='background-color'] {
   background-color: var(--color-primario) !important;
   color: white !important;
 }
 
-:host ::ng-deep .preinscripciones-table [style*="color"] {
+:host ::ng-deep .preinscripciones-table [style*='color'] {
   color: white !important;
 }
 
@@ -203,8 +193,6 @@
   flex-wrap: wrap;
 }
 
-
-
 /* Responsive para botones */
 @media (max-width: 768px) {
   .acciones-container {
@@ -212,17 +200,13 @@
     gap: 4px;
     align-items: stretch;
   }
-
 }
 
 @media (max-width: 480px) {
   .acciones-container {
     gap: 2px;
   }
-
 }
-
-
 
 /* Botones de iconos circulares - estilo consistente */
 .acciones-container button[mat-icon-button] {
@@ -247,56 +231,56 @@
 }
 
 /* Botón Ver - Azul */
-.acciones-container button[mat-icon-button][style*="00138C"] {
+.acciones-container button[mat-icon-button][style*='00138C'] {
   color: var(--color-primario) !important;
 }
 
-.acciones-container button[mat-icon-button][style*="00138C"]:hover {
+.acciones-container button[mat-icon-button][style*='00138C']:hover {
   background-color: rgba(0, 19, 140, 0.1) !important;
   color: var(--color-primario-light) !important;
 }
 
-.acciones-container button[mat-icon-button][style*="00138C"] mat-icon {
+.acciones-container button[mat-icon-button][style*='00138C'] mat-icon {
   color: var(--color-primario) !important;
 }
 
-.acciones-container button[mat-icon-button][style*="00138C"]:hover mat-icon {
+.acciones-container button[mat-icon-button][style*='00138C']:hover mat-icon {
   color: var(--color-primario-light) !important;
 }
 
 /* Botón Aprobar - Verde */
-.acciones-container button[mat-icon-button][style*="4CAF50"] {
-  color: #4CAF50 !important;
+.acciones-container button[mat-icon-button][style*='4CAF50'] {
+  color: #4caf50 !important;
 }
 
-.acciones-container button[mat-icon-button][style*="4CAF50"]:hover {
+.acciones-container button[mat-icon-button][style*='4CAF50']:hover {
   background-color: rgba(76, 175, 80, 0.1) !important;
   color: #45a049 !important;
 }
 
-.acciones-container button[mat-icon-button][style*="4CAF50"] mat-icon {
-  color: #4CAF50 !important;
+.acciones-container button[mat-icon-button][style*='4CAF50'] mat-icon {
+  color: #4caf50 !important;
 }
 
-.acciones-container button[mat-icon-button][style*="4CAF50"]:hover mat-icon {
+.acciones-container button[mat-icon-button][style*='4CAF50']:hover mat-icon {
   color: #45a049 !important;
 }
 
 /* Botón Rechazar - Rojo */
-.acciones-container button[mat-icon-button][style*="f44336"] {
+.acciones-container button[mat-icon-button][style*='f44336'] {
   color: var(--color-error) !important;
 }
 
-.acciones-container button[mat-icon-button][style*="f44336"]:hover {
+.acciones-container button[mat-icon-button][style*='f44336']:hover {
   background-color: rgba(244, 67, 54, 0.1) !important;
   color: #e53935 !important;
 }
 
-.acciones-container button[mat-icon-button][style*="f44336"] mat-icon {
+.acciones-container button[mat-icon-button][style*='f44336'] mat-icon {
   color: var(--color-error) !important;
 }
 
-.acciones-container button[mat-icon-button][style*="f44336"]:hover mat-icon {
+.acciones-container button[mat-icon-button][style*='f44336']:hover mat-icon {
   color: #e53935 !important;
 }
 

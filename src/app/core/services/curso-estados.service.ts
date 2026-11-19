@@ -17,10 +17,9 @@ export interface TransicionEstado {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CursoEstadosService {
-
   // Estados disponibles con sus propiedades
   readonly estadosDisponibles: EstadoCurso[] = [
     {
@@ -28,43 +27,43 @@ export class CursoEstadosService {
       label: 'Borrador',
       color: COLORS.neutralText,
       icon: 'edit',
-      descripcion: 'Curso en edición, no visible para estudiantes'
+      descripcion: 'Curso en edición, no visible para estudiantes',
     },
     {
       value: 'Abierto',
       label: 'Abierto',
       color: COLORS.primary,
       icon: 'lock_open',
-      descripcion: 'Curso configurado, listo para publicar'
+      descripcion: 'Curso configurado, listo para publicar',
     },
     {
       value: 'Publicado',
       label: 'Publicado',
       color: COLORS.tertiary,
       icon: 'visibility',
-      descripcion: 'Curso visible para estudiantes, pueden solicitar curso nuevo'
+      descripcion: 'Curso visible para estudiantes, pueden solicitar curso nuevo',
     },
     {
       value: 'Preinscripción',
       label: 'Preinscripción',
       color: COLORS.success,
       icon: 'assignment',
-      descripcion: 'Período de preinscripciones abierto'
+      descripcion: 'Período de preinscripciones abierto',
     },
     {
       value: 'Inscripción',
       label: 'Inscripción',
       color: COLORS.primary,
       icon: 'person_add',
-      descripcion: 'Período de inscripciones abierto'
+      descripcion: 'Período de inscripciones abierto',
     },
     {
       value: 'Cerrado',
       label: 'Cerrado',
       color: COLORS.error,
       icon: 'lock',
-      descripcion: 'Curso finalizado, solo consulta'
-    }
+      descripcion: 'Curso finalizado, solo consulta',
+    },
   ];
 
   // Transiciones válidas de estado
@@ -75,41 +74,41 @@ export class CursoEstadosService {
     { desde: 'Publicado', hacia: ['Preinscripción', 'Abierto'] },
     { desde: 'Preinscripción', hacia: ['Inscripción', 'Cerrado', 'Publicado'] },
     { desde: 'Inscripción', hacia: ['Cerrado', 'Preinscripción'] },
-    { desde: 'Cerrado', hacia: [] }
+    { desde: 'Cerrado', hacia: [] },
   ];
 
   // Matriz de permisos por estado y rol
   readonly permisosPorEstado: PermisosEstado = {
-    'Borrador': {
-      'FUNCIONARIO': ['ver', 'editar_completo', 'eliminar', 'cambiar_estado'],
-      'COORDINADOR': ['ver', 'editar_completo', 'eliminar', 'cambiar_estado'],
-      'ESTUDIANTE': []
+    Borrador: {
+      FUNCIONARIO: ['ver', 'editar_completo', 'eliminar', 'cambiar_estado'],
+      COORDINADOR: ['ver', 'editar_completo', 'eliminar', 'cambiar_estado'],
+      ESTUDIANTE: [],
     },
-    'Abierto': {
-      'FUNCIONARIO': ['ver', 'editar_parcial', 'cambiar_estado'],
-      'COORDINADOR': ['ver', 'editar_parcial', 'cambiar_estado'],
-      'ESTUDIANTE': []
+    Abierto: {
+      FUNCIONARIO: ['ver', 'editar_parcial', 'cambiar_estado'],
+      COORDINADOR: ['ver', 'editar_parcial', 'cambiar_estado'],
+      ESTUDIANTE: [],
     },
-    'Publicado': {
-      'FUNCIONARIO': ['ver', 'gestionar_solicitudes', 'cambiar_estado'],
-      'COORDINADOR': ['ver', 'gestionar_solicitudes', 'cambiar_estado'],
-      'ESTUDIANTE': ['ver', 'solicitar_curso_nuevo']
+    Publicado: {
+      FUNCIONARIO: ['ver', 'gestionar_solicitudes', 'cambiar_estado'],
+      COORDINADOR: ['ver', 'gestionar_solicitudes', 'cambiar_estado'],
+      ESTUDIANTE: ['ver', 'solicitar_curso_nuevo'],
     },
-    'Preinscripción': {
-      'FUNCIONARIO': ['ver', 'gestionar_preinscripciones', 'cambiar_estado'],
-      'COORDINADOR': ['ver', 'gestionar_preinscripciones', 'cambiar_estado'],
-      'ESTUDIANTE': ['ver', 'preinscribirse']
+    Preinscripción: {
+      FUNCIONARIO: ['ver', 'gestionar_preinscripciones', 'cambiar_estado'],
+      COORDINADOR: ['ver', 'gestionar_preinscripciones', 'cambiar_estado'],
+      ESTUDIANTE: ['ver', 'preinscribirse'],
     },
-    'Inscripción': {
-      'FUNCIONARIO': ['ver', 'gestionar_inscripciones', 'cambiar_estado'],
-      'COORDINADOR': ['ver', 'gestionar_inscripciones', 'cambiar_estado'],
-      'ESTUDIANTE': ['ver', 'inscribirse']
+    Inscripción: {
+      FUNCIONARIO: ['ver', 'gestionar_inscripciones', 'cambiar_estado'],
+      COORDINADOR: ['ver', 'gestionar_inscripciones', 'cambiar_estado'],
+      ESTUDIANTE: ['ver', 'inscribirse'],
     },
-    'Cerrado': {
-      'FUNCIONARIO': ['ver', 'consultar'],
-      'COORDINADOR': ['ver', 'consultar'],
-      'ESTUDIANTE': ['ver', 'consultar']
-    }
+    Cerrado: {
+      FUNCIONARIO: ['ver', 'consultar'],
+      COORDINADOR: ['ver', 'consultar'],
+      ESTUDIANTE: ['ver', 'consultar'],
+    },
   };
 
   /**
@@ -123,7 +122,7 @@ export class CursoEstadosService {
    * Obtiene un estado específico por su valor
    */
   getEstadoPorValor(valor: string): EstadoCurso | undefined {
-    return this.estadosDisponibles.find(estado => estado.value === valor);
+    return this.estadosDisponibles.find((estado) => estado.value === valor);
   }
 
   /**
@@ -146,7 +145,7 @@ export class CursoEstadosService {
    * Valida si una transición de estado es válida
    */
   validarTransicionEstado(estadoActual: string, nuevoEstado: string): boolean {
-    const transicion = this.transicionesValidas.find(t => t.desde === estadoActual);
+    const transicion = this.transicionesValidas.find((t) => t.desde === estadoActual);
     return transicion ? transicion.hacia.includes(nuevoEstado) : false;
   }
 
@@ -154,7 +153,7 @@ export class CursoEstadosService {
    * Obtiene los estados a los que se puede transicionar desde el estado actual
    */
   getEstadosPermitidos(estadoActual: string): string[] {
-    const transicion = this.transicionesValidas.find(t => t.desde === estadoActual);
+    const transicion = this.transicionesValidas.find((t) => t.desde === estadoActual);
     return transicion ? transicion.hacia : [];
   }
 
@@ -178,11 +177,11 @@ export class CursoEstadosService {
    */
   getMensajeErrorTransicion(estadoActual: string, _nuevoEstado: string): string {
     const estadosPermitidos = this.getEstadosPermitidos(estadoActual);
-    
+
     if (estadosPermitidos.length === 0) {
       return `El curso está en estado "${estadoActual}" y no se puede cambiar su estado`;
     }
-    
+
     return `Desde "${estadoActual}" solo se puede cambiar a: ${estadosPermitidos.join(', ')}`;
   }
 
@@ -191,12 +190,11 @@ export class CursoEstadosService {
    */
   getMensajeErrorPermiso(estado: string, rol: string, operacion: string): string {
     const permisos = this.getPermisos(estado, rol);
-    
+
     if (permisos.length === 0) {
       return `El rol ${rol} no tiene permisos para realizar operaciones en el estado: ${estado}`;
     }
-    
+
     return `El rol ${rol} no puede realizar la operación "${operacion}" en el estado ${estado}`;
   }
-
 }

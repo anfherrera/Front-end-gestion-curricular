@@ -7,10 +7,9 @@ import { environment } from '@env/environment';
  * Esto mejora el rendimiento significativamente
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LoggerService {
-  
   private enabled = !environment.production;
 
   /**
@@ -83,4 +82,3 @@ export class LoggerService {
     return this.enabled;
   }
 }
-

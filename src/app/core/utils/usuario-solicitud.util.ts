@@ -14,6 +14,6 @@ export function usuarioParaSolicitud(usuario: UsuarioSesion): UsuarioDTOPeticion
     correo: usuario.correo ?? '',
     estado_usuario: usuario.estado_usuario ?? true,
     id_rol: usuario.rol?.id_rol ?? 1,
-    id_programa: usuario.objPrograma?.id_programa ?? 1
+    id_programa: usuario.objPrograma?.id_programa ?? 1,
   };
 }

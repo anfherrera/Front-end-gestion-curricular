@@ -4,16 +4,16 @@ import { UsuarioDTOPeticion } from './usuario.interface';
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado' | 'error';
 
 export interface Archivo {
-  id_documento?: number;     // ID en backend
-  file?: File;               // Solo usado temporalmente cuando se sube
-  nombre: string;            // Nombre que se muestra
-  originalName?: string;     // Nombre original del archivo
-  ruta_documento?: string;   // Path en backend
-  fecha: string;             // Fecha de subida
-  esValido?: boolean;        // Validez del archivo
-  comentario?: string | null;// Comentarios de validación
-  estado?: ArchivoEstado;    // Estado del archivo
-  url?: string;              // URL para acceder al archivo
+  id_documento?: number; // ID en backend
+  file?: File; // Solo usado temporalmente cuando se sube
+  nombre: string; // Nombre que se muestra
+  originalName?: string; // Nombre original del archivo
+  ruta_documento?: string; // Path en backend
+  fecha: string; // Fecha de subida
+  esValido?: boolean; // Validez del archivo
+  comentario?: string | null; // Comentarios de validación
+  estado?: ArchivoEstado; // Estado del archivo
+  url?: string; // URL para acceder al archivo
 }
 
 export interface Usuario {
@@ -103,7 +103,6 @@ export interface SolicitudHomologacionDTORespuesta {
   programa_destino?: string | null; // Opcional, máximo 200 caracteres
 }
 
-
 export interface SolicitudHomologacionDTOPeticion {
   id_solicitud?: number;
   nombre_solicitud: string;
@@ -149,8 +148,6 @@ export interface CambioEstadoSolicitudDTOPeticion {
   nuevoEstado: string;
 }
 
-
-
 export interface EstadoSolicitudDTOPeticion {
   id_estado?: number;
   estado_actual: string;
@@ -193,4 +190,3 @@ export interface DocumentosDTORespuesta {
   esValido: boolean;
   comentario?: string;
 }
-

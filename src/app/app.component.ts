@@ -11,7 +11,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
   private authService = inject(AuthService);
@@ -25,13 +25,11 @@ export class AppComponent implements OnInit {
     this.authService.restoreSession();
     this.periodosService.inicializarPeriodoActual();
 
-    this.periodosService.cambioPeriodo$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(cambio => {
+    this.periodosService.cambioPeriodo$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cambio) => {
       if (cambio && cambio.anterior && cambio.actual) {
         const periodoAnteriorTexto = cambio.anterior.nombrePeriodo || formatearPeriodo(cambio.anterior.valor);
         const periodoActualTexto = cambio.actual.nombrePeriodo || formatearPeriodo(cambio.actual.valor);
-        
+
         this.snackbar.mostrar(
           `El período académico ha cambiado de ${periodoAnteriorTexto} a ${periodoActualTexto}`,
           'destacado',

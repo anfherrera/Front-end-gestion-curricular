@@ -8,16 +8,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-cursos-intersemestrales-gestion',
-  imports: [
-    RouterModule,
-    MatIconModule,
-    MatBadgeModule,
-    MatButtonModule,
-    MatTooltipModule
-],
+  imports: [RouterModule, MatIconModule, MatBadgeModule, MatButtonModule, MatTooltipModule],
   templateUrl: './cursos-intersemestrales.component.html',
   styleUrls: ['./menu-cursos-comun.css', './cursos-intersemestrales.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursosIntersemestralesGestionComponent {
   opciones = [

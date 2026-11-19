@@ -12,45 +12,40 @@ import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-i
 // Componente del modal para rechazar preinscripción
 @Component({
   selector: 'app-rechazo-preinscripcion-dialog',
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule
-],
+  imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule],
   templateUrl: './rechazo-preinscripcion-dialog.component.html',
   styleUrl: './rechazo-preinscripcion-dialog.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RechazoPreinscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<RechazoPreinscripcionDialogComponent>>(MatDialogRef);
   data = inject<{
     solicitud: SolicitudCursoVerano;
     curso?: CursoOfertadoVerano | null;
-}>(MAT_DIALOG_DATA);
+  }>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
 
   rechazoForm: FormGroup;
 
   constructor() {
     this.rechazoForm = this.fb.group({
-      motivo: ['', [Validators.required, Validators.minLength(10)]]
+      motivo: ['', [Validators.required, Validators.minLength(10)]],
     });
   }
 
   getNombreCurso(): string {
-    return this.data.curso?.nombre_curso
-      || this.data.solicitud.objCursoOfertadoVerano?.nombre_curso
-      || this.data.solicitud.objCurso?.nombre_curso
-      || 'N/A';
+    return (
+      this.data.curso?.nombre_curso ||
+      this.data.solicitud.objCursoOfertadoVerano?.nombre_curso ||
+      this.data.solicitud.objCurso?.nombre_curso ||
+      'N/A'
+    );
   }
 
   confirmarRechazo(): void {
     if (this.rechazoForm.valid) {
       this.dialogRef.close({
-        motivo: this.rechazoForm.value.motivo.trim()
+        motivo: this.rechazoForm.value.motivo.trim(),
       });
     }
   }

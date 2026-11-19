@@ -7,18 +7,22 @@ import { formatearPeriodo } from '../utils/periodo.utils';
 
 /** El backend devuelve a veces los períodos como texto ("2025-2") y a veces como objetos. */
 function aPeriodos(datos: PeriodoAcademico[] | string[]): PeriodoAcademico[] {
-  return datos.map(p => typeof p === 'string' ? {
-    valor: p,
-    año: parseInt(p.split('-')[0]) || new Date().getFullYear(),
-    numeroPeriodo: parseInt(p.split('-')[1]) || 1,
-    nombrePeriodo: formatearPeriodo(p),
-    fechaInicio: '',
-    fechaFin: '',
-    activo: true,
-    tipoPeriodo: 'ORDINARIO',
-    esPeriodoEspecial: false,
-    descripcion: ''
-  } : p);
+  return datos.map((p) =>
+    typeof p === 'string'
+      ? {
+          valor: p,
+          año: parseInt(p.split('-')[0]) || new Date().getFullYear(),
+          numeroPeriodo: parseInt(p.split('-')[1]) || 1,
+          nombrePeriodo: formatearPeriodo(p),
+          fechaInicio: '',
+          fechaFin: '',
+          activo: true,
+          tipoPeriodo: 'ORDINARIO',
+          esPeriodoEspecial: false,
+          descripcion: '',
+        }
+      : p
+  );
 }
 
 export interface PeriodoAcademico {
@@ -55,7 +59,7 @@ export interface PeriodoActivoResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PeriodosAcademicosService {
   private http = inject(HttpClient);
@@ -63,19 +67,20 @@ export class PeriodosAcademicosService {
   private periodoActualSubject = new BehaviorSubject<PeriodoAcademico | null>(null);
   public periodoActual$ = this.periodoActualSubject.asObservable();
   private periodoAnterior: PeriodoAcademico | null = null;
-  private cambioPeriodoSubject = new BehaviorSubject<{ anterior: PeriodoAcademico | null, actual: PeriodoAcademico | null } | null>(null);
+  private cambioPeriodoSubject = new BehaviorSubject<{
+    anterior: PeriodoAcademico | null;
+    actual: PeriodoAcademico | null;
+  } | null>(null);
   public cambioPeriodo$ = this.cambioPeriodoSubject.asObservable();
 
   constructor() {
     // Detectar cambios en el período
-    this.periodoActual$.pipe(
-      distinctUntilChanged((prev, curr) => prev?.valor === curr?.valor)
-    ).subscribe(periodo => {
+    this.periodoActual$.pipe(distinctUntilChanged((prev, curr) => prev?.valor === curr?.valor)).subscribe((periodo) => {
       if (this.periodoAnterior && periodo && this.periodoAnterior.valor !== periodo.valor) {
         // El período cambió
         this.cambioPeriodoSubject.next({
           anterior: this.periodoAnterior,
-          actual: periodo
+          actual: periodo,
         });
       }
       this.periodoAnterior = periodo;
@@ -88,17 +93,17 @@ export class PeriodosAcademicosService {
    */
   getPeriodoActual(): Observable<PeriodoAcademico | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL;
-    
+
     // El endpoint NO requiere autenticación según la documentación
     return this.http.get<PeriodoActualResponse>(url).pipe(
-      map(response => {
+      map((response) => {
         if (response.success && response.data) {
           // Convertir el string del período (ej: "2025-2") a un objeto PeriodoAcademico
           const periodoValor = response.data;
           const partes = periodoValor.split('-');
           const año = parseInt(partes[0]) || new Date().getFullYear();
           const numeroPeriodo = parseInt(partes[1]) || 1;
-          
+
           const periodoAcademico: PeriodoAcademico = {
             valor: periodoValor,
             año: año,
@@ -109,20 +114,20 @@ export class PeriodosAcademicosService {
             activo: true,
             tipoPeriodo: 'ORDINARIO',
             esPeriodoEspecial: false,
-            descripcion: ''
+            descripcion: '',
           };
-          
+
           const periodoAnterior = this.periodoActualSubject.value;
           this.periodoActualSubject.next(periodoAcademico);
-          
+
           // Detectar cambio de período
           if (periodoAnterior && periodoAnterior.valor !== periodoAcademico.valor) {
             this.cambioPeriodoSubject.next({
               anterior: periodoAnterior,
-              actual: periodoAcademico
+              actual: periodoAcademico,
             });
           }
-          
+
           return periodoAcademico;
         }
         // Si data es null, limpiar el subject
@@ -137,7 +142,6 @@ export class PeriodosAcademicosService {
     );
   }
 
-
   /**
    * Obtiene el período actual desde el subject (sin hacer petición HTTP)
    */
@@ -150,9 +154,9 @@ export class PeriodosAcademicosService {
    */
   getTodosLosPeriodos(): Observable<PeriodoAcademico[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.TODOS;
-    
+
     return this.http.get<{ success: boolean; data: PeriodoAcademico[] | string[] }>(url).pipe(
-      map(response => response.success && response.data ? aPeriodos(response.data) : []),
+      map((response) => (response.success && response.data ? aPeriodos(response.data) : [])),
       catchError(() => {
         return of([]);
       })
@@ -162,8 +166,8 @@ export class PeriodosAcademicosService {
   /** Valores ("2025-1") de todos los períodos o, si no hay, de los recientes. Lista vacía si fallan los dos. */
   getValoresPeriodos(): Observable<string[]> {
     return this.getTodosLosPeriodos().pipe(
-      switchMap(periodos => periodos.length ? of(periodos) : this.getPeriodosRecientes()),
-      map(periodos => periodos.map(p => p.valor))
+      switchMap((periodos) => (periodos.length ? of(periodos) : this.getPeriodosRecientes())),
+      map((periodos) => periodos.map((p) => p.valor))
     );
   }
 
@@ -172,9 +176,9 @@ export class PeriodosAcademicosService {
    */
   getPeriodosFuturos(): Observable<PeriodoAcademico[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.FUTUROS;
-    
+
     return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url).pipe(
-      map(response => response.success ? response.data : []),
+      map((response) => (response.success ? response.data : [])),
       catchError(() => {
         return of([]);
       })
@@ -183,20 +187,20 @@ export class PeriodosAcademicosService {
 
   /**
    * Obtiene períodos recientes (últimos 5 años)
-   * 
+   *
    * Endpoint: GET /api/periodos-academicos/recientes
-   * 
+   *
    * NOTA: El endpoint puede retornar:
    * - Array de strings: ["2025-2", "2025-1", "2024-2", ...]
    * - Array de objetos PeriodoAcademico completos
-   * 
+   *
    * Este método maneja ambos casos convirtiendo strings a objetos PeriodoAcademico si es necesario.
    */
   getPeriodosRecientes(): Observable<PeriodoAcademico[]> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES;
-    
+
     return this.http.get<{ success: boolean; data: PeriodoAcademico[] | string[] }>(url).pipe(
-      map(response => response.success && response.data ? aPeriodos(response.data) : []),
+      map((response) => (response.success && response.data ? aPeriodos(response.data) : [])),
       catchError(() => {
         return of([]);
       })
@@ -208,9 +212,9 @@ export class PeriodosAcademicosService {
    */
   getInfoPeriodo(periodo: string): Observable<PeriodoAcademico | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.INFO(periodo);
-    
+
     return this.http.get<{ success: boolean; data: PeriodoAcademico }>(url).pipe(
-      map(response => response.success ? response.data : null),
+      map((response) => (response.success ? response.data : null)),
       catchError(() => {
         return of(null);
       })
@@ -222,9 +226,9 @@ export class PeriodosAcademicosService {
    */
   getPeriodoActivoConfig(): Observable<PeriodoActivoConfig | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.ADMIN.PERIODO_ACTIVO;
-    
+
     return this.http.get<PeriodoActivoResponse>(url).pipe(
-      map(response => response.success ? response.data : null),
+      map((response) => (response.success ? response.data : null)),
       catchError(() => {
         return of(null);
       })
@@ -237,9 +241,9 @@ export class PeriodosAcademicosService {
    */
   setPeriodoActivo(periodoAcademico: string | null): Observable<PeriodoActivoConfig | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.ADMIN.PERIODO_ACTIVO;
-    
+
     return this.http.put<PeriodoActivoResponse>(url, { periodoAcademico }).pipe(
-      map(response => {
+      map((response) => {
         if (response.success && response.data) {
           // Si se cambió el período, actualizar el período actual
           if (periodoAcademico) {
@@ -269,4 +273,3 @@ export class PeriodosAcademicosService {
     }
   }
 }
-

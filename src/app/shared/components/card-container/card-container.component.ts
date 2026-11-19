@@ -12,15 +12,15 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [MatCardModule, MatIconModule],
   templateUrl: './card-container.component.html',
   styleUrls: ['./card-container.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardContainerComponent {
   /** Título principal de la tarjeta */
   readonly title = input('');
-  
+
   /** Subtítulo opcional de la tarjeta */
   readonly subtitle = input<string>();
-  
+
   /** Nombre del ícono Material a mostrar */
   readonly icon = input<string>();
 }

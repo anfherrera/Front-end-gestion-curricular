@@ -1,4 +1,12 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject, output } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  inject,
+  output,
+} from '@angular/core';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,8 +31,8 @@ import { formatearPeriodo } from '@core/utils/periodo.utils';
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    NotificationsHeaderComponent
-]
+    NotificationsHeaderComponent,
+  ],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
@@ -54,7 +62,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     // Suscribirse primero al período actual para recibir actualizaciones
-    this.periodoSubscription = this.periodosService.periodoActual$.subscribe(periodo => {
+    this.periodoSubscription = this.periodosService.periodoActual$.subscribe((periodo) => {
       this.periodoActual = periodo;
       if (periodo) {
         this.periodoFormateado = periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
@@ -88,7 +96,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
           error: () => {
             this.periodoFormateado = '';
             this.cdr.markForCheck();
-          }
+          },
         });
       }
     }
@@ -128,13 +136,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private calculateUserRole(): string {
     const role = this.authService.getRole();
     switch (role?.toLowerCase()) {
-      case 'admin': return 'Administrador';
-      case 'funcionario': return 'Funcionario';
-      case 'coordinador': return 'Coordinador';
+      case 'admin':
+        return 'Administrador';
+      case 'funcionario':
+        return 'Funcionario';
+      case 'coordinador':
+        return 'Coordinador';
       case 'secretario':
-      case 'secretaria': return 'Secretaria';
-      case 'estudiante': return 'Estudiante';
-      default: return 'Usuario';
+      case 'secretaria':
+        return 'Secretaria';
+      case 'estudiante':
+        return 'Estudiante';
+      default:
+        return 'Usuario';
     }
   }
 

@@ -16,9 +16,13 @@ function solicitud(id: number, comentario = ''): SolicitudEcaesResponse {
     nombre_solicitud: `ECAES ${id}`,
     fecha_registro_solicitud: '2026-03-01',
     periodo_academico: '2026-1',
-    estadosSolicitud: [{ id_estado: 1, estado_actual: 'ENVIADA', fecha_registro_estado: '2026-03-01', objSolicitud: null }],
-    documentos: [{ id_documento: id * 10, nombre: 'cc.pdf', ruta_documento: '', fecha_documento: '', esValido: false, comentario }],
-    tipoDocumento: 'CC'
+    estadosSolicitud: [
+      { id_estado: 1, estado_actual: 'ENVIADA', fecha_registro_estado: '2026-03-01', objSolicitud: null },
+    ],
+    documentos: [
+      { id_documento: id * 10, nombre: 'cc.pdf', ruta_documento: '', fecha_documento: '', esValido: false, comentario },
+    ],
+    tipoDocumento: 'CC',
   } as SolicitudEcaesResponse;
 }
 
@@ -31,13 +35,19 @@ describe('PruebasEcaesFuncionarioComponent', () => {
 
   beforeEach(async () => {
     servicio = jasmine.createSpyObj<PruebasEcaesService>('PruebasEcaesService', [
-      'listarSolicitudesFuncionario', 'approveRequest', 'rejectRequest', 'agregarComentario', 'buscarFechasPorPeriodo'
+      'listarSolicitudesFuncionario',
+      'approveRequest',
+      'rejectRequest',
+      'agregarComentario',
+      'buscarFechasPorPeriodo',
     ]);
     servicio.listarSolicitudesFuncionario.and.returnValue(of([solicitud(1), solicitud(2)]));
     servicio.approveRequest.and.returnValue(of({}));
     servicio.rejectRequest.and.returnValue(of({}));
     servicio.agregarComentario.and.returnValue(of({}));
-    const periodos = jasmine.createSpyObj<PeriodosAcademicosService>('PeriodosAcademicosService', ['getValoresPeriodos']);
+    const periodos = jasmine.createSpyObj<PeriodosAcademicosService>('PeriodosAcademicosService', [
+      'getValoresPeriodos',
+    ]);
     periodos.getValoresPeriodos.and.returnValue(of(['2026-1']));
     snackbar = jasmine.createSpyObj<SnackbarService>('SnackbarService', ['exito', 'error', 'advertencia', 'info']);
     dialog = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
@@ -49,8 +59,8 @@ describe('PruebasEcaesFuncionarioComponent', () => {
         provideHttpClientTesting(),
         { provide: PruebasEcaesService, useValue: servicio },
         { provide: PeriodosAcademicosService, useValue: periodos },
-        { provide: SnackbarService, useValue: snackbar }
-      ]
+        { provide: SnackbarService, useValue: snackbar },
+      ],
     })
       // MatDialogModule (lo importa documentation-viewer) registra su propio MatDialog
       .overrideProvider(MatDialog, { useValue: dialog })

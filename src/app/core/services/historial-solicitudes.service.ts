@@ -100,11 +100,11 @@ export enum TipoSolicitud {
   REINGRESO = 'REINGRESO',
   HOMOLOGACION = 'HOMOLOGACION',
   CURSO_VERANO_PREINSCRIPCION = 'CURSO_VERANO_PREINSCRIPCION',
-  CURSO_VERANO_INSCRIPCION = 'CURSO_VERANO_INSCRIPCION'
+  CURSO_VERANO_INSCRIPCION = 'CURSO_VERANO_INSCRIPCION',
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HistorialSolicitudesService {
   private http = inject(HttpClient);
@@ -131,22 +131,21 @@ export class HistorialSolicitudesService {
       params = params.set('idUsuario', filtros.idUsuario.toString());
     }
 
-    return this.http.get<HistorialResponse>(
-      this.apiUrl,
-      {
-        params: params.keys().length > 0 ? params : undefined
-      }
-    ).pipe(
-      catchError(() => {
-        return of({
-          solicitudes: [],
-          total: 0,
-          total_solicitudes_sistema: 0,
-          total_solicitudes_procesadas: 0,
-          total_solicitudes_no_procesadas: 0
-        });
+    return this.http
+      .get<HistorialResponse>(this.apiUrl, {
+        params: params.keys().length > 0 ? params : undefined,
       })
-    );
+      .pipe(
+        catchError(() => {
+          return of({
+            solicitudes: [],
+            total: 0,
+            total_solicitudes_sistema: 0,
+            total_solicitudes_procesadas: 0,
+            total_solicitudes_no_procesadas: 0,
+          });
+        })
+      );
   }
 
   /**
@@ -159,7 +158,7 @@ export class HistorialSolicitudesService {
       { codigo: TipoSolicitud.REINGRESO, display: 'Reingreso' },
       { codigo: TipoSolicitud.HOMOLOGACION, display: 'Homologación' },
       { codigo: TipoSolicitud.CURSO_VERANO_PREINSCRIPCION, display: 'Curso Intersemestral - Preinscripción' },
-      { codigo: TipoSolicitud.CURSO_VERANO_INSCRIPCION, display: 'Curso Intersemestral - Inscripción' }
+      { codigo: TipoSolicitud.CURSO_VERANO_INSCRIPCION, display: 'Curso Intersemestral - Inscripción' },
     ];
   }
 
@@ -167,14 +166,7 @@ export class HistorialSolicitudesService {
    * Obtener estados disponibles
    */
   getEstadosDisponibles(): string[] {
-    return [
-      'ENVIADA',
-      'APROBADA_FUNCIONARIO',
-      'APROBADA_COORDINADOR',
-      'APROBADA',
-      'RECHAZADA',
-      'EN_PROCESO'
-    ];
+    return ['ENVIADA', 'APROBADA_FUNCIONARIO', 'APROBADA_COORDINADOR', 'APROBADA', 'RECHAZADA', 'EN_PROCESO'];
   }
 
   /**
@@ -184,7 +176,7 @@ export class HistorialSolicitudesService {
   obtenerHistorialSolicitud(id: number): Observable<DetalleSolicitud> {
     const url = ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(id);
     return this.http.get<DetalleSolicitud>(url).pipe(
-      catchError(error => {
+      catchError((error) => {
         throw error;
       })
     );
@@ -192,12 +184,12 @@ export class HistorialSolicitudesService {
 
   /**
    * Exporta el historial de solicitudes a PDF
-   * 
+   *
    * El endpoint respeta todos los filtros enviados como parámetros de consulta.
    * - Si se envían filtros, el PDF solo incluirá las solicitudes que cumplan con esos criterios.
    * - Si NO se envían filtros (filtros vacío o undefined), el PDF incluirá todas las solicitudes del sistema.
    * - El PDF siempre mostrará qué filtros se aplicaron (o "Todos" si no hay filtro).
-   * 
+   *
    * @param filtros Objeto con los filtros opcionales a aplicar:
    *   - periodoAcademico: Filtra por período académico (ej: "2025-2")
    *   - tipoSolicitud: Filtra por tipo (ej: "Reingreso", "Homologacion", "Curso de Verano", "ECAES", "Paz y Salvo")
@@ -207,11 +199,11 @@ export class HistorialSolicitudesService {
    */
   exportarHistorialPDF(filtros?: FiltrosHistorial): Observable<{ blob: Blob; filename: string }> {
     const url = ApiEndpoints.SOLICITUDES.EXPORTAR_PDF;
-    
+
     // Construir parámetros solo con los que tienen valor
     // Si no se envían parámetros, el backend incluirá todas las solicitudes
     let params = new HttpParams();
-    
+
     if (filtros?.periodoAcademico) {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
     }
@@ -225,45 +217,45 @@ export class HistorialSolicitudesService {
       params = params.set('idUsuario', filtros.idUsuario.toString());
     }
 
-    return this.http.get(url, {
-      params: params.keys().length > 0 ? params : undefined,
-      responseType: 'blob',
-      observe: 'response' // Necesario para acceder a los headers
-    }).pipe(
-      catchError(error => {
-        return throwError(() => error);
-      }),
-      // Mapear la respuesta para incluir el blob y el nombre del archivo
-      map(response => {
-        const blob = response.body as Blob;
-        let filename = 'historial_solicitudes.pdf';
-        
-        // Intentar obtener el nombre del archivo del header Content-Disposition
-        const contentDisposition = response.headers.get('content-disposition');
-        if (contentDisposition) {
-          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-          if (filenameMatch && filenameMatch[1]) {
-            filename = filenameMatch[1].replace(/['"]/g, '');
-            // Decodificar si está codificado en URL
-            try {
-              filename = decodeURIComponent(filename);
-            } catch (e) {
-              // Si falla la decodificación, usar el nombre tal cual
+    return this.http
+      .get(url, {
+        params: params.keys().length > 0 ? params : undefined,
+        responseType: 'blob',
+        observe: 'response', // Necesario para acceder a los headers
+      })
+      .pipe(
+        catchError((error) => {
+          return throwError(() => error);
+        }),
+        // Mapear la respuesta para incluir el blob y el nombre del archivo
+        map((response) => {
+          const blob = response.body as Blob;
+          let filename = 'historial_solicitudes.pdf';
+
+          // Intentar obtener el nombre del archivo del header Content-Disposition
+          const contentDisposition = response.headers.get('content-disposition');
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1].replace(/['"]/g, '');
+              // Decodificar si está codificado en URL
+              try {
+                filename = decodeURIComponent(filename);
+              } catch (e) {
+                // Si falla la decodificación, usar el nombre tal cual
+              }
             }
           }
-        }
-        
-        // Si no se obtuvo del header, generar uno con la fecha actual
-        if (filename === 'historial_solicitudes.pdf') {
-          const fecha = new Date();
-          const fechaStr = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
-          filename = `historial_solicitudes_${fechaStr}.pdf`;
-        }
-        
-        return { blob, filename };
-      })
-    );
+
+          // Si no se obtuvo del header, generar uno con la fecha actual
+          if (filename === 'historial_solicitudes.pdf') {
+            const fecha = new Date();
+            const fechaStr = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+            filename = `historial_solicitudes_${fechaStr}.pdf`;
+          }
+
+          return { blob, filename };
+        })
+      );
   }
 }
-
-

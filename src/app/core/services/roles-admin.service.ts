@@ -5,7 +5,7 @@ import { RolDTOPeticion, RolDTORespuesta } from '../models/rol.interface';
 import { environment } from '@env/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RolesAdminService {
   private http = inject(HttpClient);
@@ -37,4 +37,3 @@ export class RolesAdminService {
     return this.http.delete<boolean>(`${this.apiUrl}/eliminarRol/${id}`);
   }
 }
-

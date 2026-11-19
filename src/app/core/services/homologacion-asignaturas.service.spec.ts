@@ -22,8 +22,8 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
         provideHttpClientTesting(),
         { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', { getToken: 'mock-token' }) },
         HomologacionAsignaturasService,
-        { provide: LoggerService, useValue: loggerSpyObj }
-      ]
+        { provide: LoggerService, useValue: loggerSpyObj },
+      ],
     });
     service = TestBed.inject(HomologacionAsignaturasService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -82,7 +82,10 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
 
   describe('3. Crear y actualizar estado', () => {
     it('HA-007: Debe crear solicitud de homologacion', (done) => {
-      const body = { nombre_solicitud: 'Homologacion Test', objUsuario: {} } as unknown as SolicitudHomologacionDTOPeticion;
+      const body = {
+        nombre_solicitud: 'Homologacion Test',
+        objUsuario: {},
+      } as unknown as SolicitudHomologacionDTOPeticion;
       service.crearSolicitud(body).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-Homologacion`);
       expect(req.request.method).toBe('POST');

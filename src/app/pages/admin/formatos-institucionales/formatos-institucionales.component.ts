@@ -11,23 +11,16 @@ import {
   FormatosInstitucionalesService,
   FormatoInstitucional,
   FormatoId,
-  FORMATO_IDS
+  FORMATO_IDS,
 } from '@core/services/formatos-institucionales.service';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-formatos-institucionales',
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule
-],
+  imports: [ReactiveFormsModule, MatCardModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule],
   templateUrl: './formatos-institucionales.component.html',
   styleUrls: ['./formatos-institucionales.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormatosInstitucionalesComponent implements OnInit {
   private formatosService = inject(FormatosInstitucionalesService);
@@ -43,7 +36,7 @@ export class FormatosInstitucionalesComponent implements OnInit {
   constructor() {
     this.editForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(1)]],
-      url: ['', [Validators.required, Validators.minLength(10)]]
+      url: ['', [Validators.required, Validators.minLength(10)]],
     });
   }
 

@@ -12,7 +12,7 @@ import { formatearPeriodo } from '@core/utils/periodo.utils';
 
 /** De dónde salen los períodos de la lista. */
 export type FuentePeriodos =
-  | 'recientes'   // PeriodosAcademicosService.getPeriodosRecientes()
+  | 'recientes' // PeriodosAcademicosService.getPeriodosRecientes()
   | 'con-cursos'; // períodos con cursos intersemestrales registrados (si falla, todos los períodos)
 
 interface OpcionPeriodo {
@@ -27,14 +27,9 @@ interface OpcionPeriodo {
 @Component({
   selector: 'app-periodo-filtro-selector',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    MatIconModule,
-    MatProgressSpinnerModule
-],
+  imports: [MatFormFieldModule, MatSelectModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './periodo-filtro-selector.component.html',
-  styleUrl: './periodo-filtro-selector.component.css'
+  styleUrl: './periodo-filtro-selector.component.css',
 })
 export class PeriodoFiltroSelectorComponent implements OnInit {
   readonly label = input('');
@@ -62,12 +57,15 @@ export class PeriodoFiltroSelectorComponent implements OnInit {
     if (actual) {
       this.periodoActualTexto.set(textoPeriodo(actual));
     } else {
-      this.periodosService.getPeriodoActual().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: periodo => this.periodoActualTexto.set(periodo ? textoPeriodo(periodo) : 'No disponible'),
-        error: () => this.periodoActualTexto.set('No disponible')
-      });
+      this.periodosService
+        .getPeriodoActual()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (periodo) => this.periodoActualTexto.set(periodo ? textoPeriodo(periodo) : 'No disponible'),
+          error: () => this.periodoActualTexto.set('No disponible'),
+        });
     }
-    this.periodosService.periodoActual$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodo => {
+    this.periodosService.periodoActual$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((periodo) => {
       this.periodoActualTexto.set(periodo ? textoPeriodo(periodo) : 'No disponible');
     });
 
@@ -76,13 +74,15 @@ export class PeriodoFiltroSelectorComponent implements OnInit {
 
   cargarPeriodos(): void {
     this.cargando.set(true);
-    this.opcionesDeFuente().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: opciones => {
-        this.opciones.set(opciones);
-        this.cargando.set(false);
-      },
-      error: () => this.cargando.set(false)
-    });
+    this.opcionesDeFuente()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (opciones) => {
+          this.opciones.set(opciones);
+          this.cargando.set(false);
+        },
+        error: () => this.cargando.set(false),
+      });
   }
 
   onPeriodoChange(periodo: string): void {
@@ -93,21 +93,21 @@ export class PeriodoFiltroSelectorComponent implements OnInit {
   getPeriodoTexto(periodo: string): string {
     if (periodo === 'todos') return 'Todos los Períodos';
     if (!periodo) return this.periodoActualTexto() || 'Período actual';
-    return this.opciones().find(o => o.valor === periodo)?.texto ?? formatearPeriodo(periodo);
+    return this.opciones().find((o) => o.valor === periodo)?.texto ?? formatearPeriodo(periodo);
   }
 
   private opcionesDeFuente(): Observable<OpcionPeriodo[]> {
     if (this.fuente() === 'con-cursos') {
-      const aOpciones = (valores: string[]) => valores.map(valor => ({ valor, texto: formatearPeriodo(valor) }));
+      const aOpciones = (valores: string[]) => valores.map((valor) => ({ valor, texto: formatearPeriodo(valor) }));
       return this.cursosService.getPeriodosRegistrados().pipe(
         // Si falla, todos los períodos (el servicio devuelve [] si también falla)
         catchError(() => this.cursosService.getPeriodosAcademicos()),
         map(aOpciones)
       );
     }
-    return this.periodosService.getPeriodosRecientes().pipe(
-      map(periodos => periodos.map(p => ({ valor: p.valor, texto: textoPeriodo(p) })))
-    );
+    return this.periodosService
+      .getPeriodosRecientes()
+      .pipe(map((periodos) => periodos.map((p) => ({ valor: p.valor, texto: textoPeriodo(p) }))));
   }
 }
 

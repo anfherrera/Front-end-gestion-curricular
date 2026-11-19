@@ -3,14 +3,16 @@
  * Se aceptan las dos convenciones de nombre que usa el proyecto: snackbar-x y x-snackbar.
  */
 
-.snackbar-success, .success-snackbar {
+.snackbar-success,
+.success-snackbar {
   --aviso-fondo: var(--notif-exito-fondo);
   --aviso-texto: var(--notif-exito-texto);
   --aviso-borde: var(--notif-exito-borde);
   --aviso-accion: var(--notif-exito-borde);
 }
 
-.snackbar-error, .error-snackbar {
+.snackbar-error,
+.error-snackbar {
   --aviso-fondo: var(--notif-error-fondo);
   --aviso-texto: var(--notif-error-texto);
   --aviso-borde: var(--notif-error-borde);
@@ -18,24 +20,30 @@
 }
 
 /* Advertencia: mismo fondo que el error, con el naranja institucional */
-.snackbar-warning, .warning-snackbar {
+.snackbar-warning,
+.warning-snackbar {
   --aviso-fondo: var(--notif-error-fondo);
   --aviso-texto: var(--notif-error-texto);
   --aviso-borde: var(--color-error);
   --aviso-accion: var(--color-error);
 }
 
-.snackbar-info, .info-snackbar {
+.snackbar-info,
+.info-snackbar {
   --aviso-fondo: var(--notif-info-fondo);
   --aviso-texto: var(--notif-info-texto);
   --aviso-borde: var(--notif-info-borde);
   --aviso-accion: var(--notif-info-borde);
 }
 
-.snackbar-success, .success-snackbar,
-.snackbar-error, .error-snackbar,
-.snackbar-warning, .warning-snackbar,
-.snackbar-info, .info-snackbar {
+.snackbar-success,
+.success-snackbar,
+.snackbar-error,
+.error-snackbar,
+.snackbar-warning,
+.warning-snackbar,
+.snackbar-info,
+.info-snackbar {
   background-color: var(--aviso-fondo) !important;
   color: var(--aviso-texto) !important;
   font-weight: 600 !important;
@@ -49,22 +57,47 @@
   --mdc-snackbar-supporting-text-color: inherit !important;
 }
 
-:is(.snackbar-success, .success-snackbar, .snackbar-error, .error-snackbar,
-    .snackbar-warning, .warning-snackbar, .snackbar-info, .info-snackbar)
+:is(
+    .snackbar-success,
+    .success-snackbar,
+    .snackbar-error,
+    .error-snackbar,
+    .snackbar-warning,
+    .warning-snackbar,
+    .snackbar-info,
+    .info-snackbar
+  )
   :is(.mdc-snackbar__label, .mat-mdc-snack-bar-label) {
   color: var(--aviso-texto) !important;
   font-weight: 600 !important;
 }
 
-:is(.snackbar-success, .success-snackbar, .snackbar-error, .error-snackbar,
-    .snackbar-warning, .warning-snackbar, .snackbar-info, .info-snackbar)
+:is(
+    .snackbar-success,
+    .success-snackbar,
+    .snackbar-error,
+    .error-snackbar,
+    .snackbar-warning,
+    .warning-snackbar,
+    .snackbar-info,
+    .info-snackbar
+  )
   .mat-mdc-button {
   color: var(--aviso-accion) !important;
   font-weight: 600 !important;
 }
 
-.mat-mdc-snack-bar-container:is(.snackbar-success, .success-snackbar, .snackbar-error, .error-snackbar,
-    .snackbar-warning, .warning-snackbar, .snackbar-info, .info-snackbar) .mdc-snackbar__surface {
+.mat-mdc-snack-bar-container:is(
+    .snackbar-success,
+    .success-snackbar,
+    .snackbar-error,
+    .error-snackbar,
+    .snackbar-warning,
+    .warning-snackbar,
+    .snackbar-info,
+    .info-snackbar
+  )
+  .mdc-snackbar__surface {
   background-color: var(--aviso-fondo) !important;
   border-left: 4px solid var(--aviso-borde) !important;
 }
@@ -77,4 +110,6 @@
   border-left: 4px solid #fff !important;
 }
 
-.mat-mdc-snack-bar-container { animation: slideInFromTop 0.3s ease-out !important; }
+.mat-mdc-snack-bar-container {
+  animation: slideInFromTop 0.3s ease-out !important;
+}

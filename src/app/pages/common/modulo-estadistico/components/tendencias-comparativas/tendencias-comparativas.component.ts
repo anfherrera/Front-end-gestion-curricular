@@ -12,15 +12,10 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
   selector: 'app-tendencias-comparativas',
-  imports: [
-    MatCardModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatButtonModule
-],
+  imports: [MatCardModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule],
   templateUrl: './tendencias-comparativas.component.html',
   styleUrls: ['./tendencias-comparativas.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
@@ -28,11 +23,11 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
 
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
-  
+
   readonly data = signal<TendenciasComparativasResponse | null>(null);
   readonly loading = signal(false);
   readonly error = signal(false);
-  
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
@@ -44,7 +39,7 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   /**
@@ -53,33 +48,32 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
   cargarTendenciasComparativas(): void {
     this.loading.set(true);
     this.error.set(false);
-    
+
     // Preparar filtros
     const filtros: { periodoAcademico?: string; idPrograma?: number } = {};
-    
+
     const periodoAcademico = this.periodoAcademico();
     if (periodoAcademico && periodoAcademico.trim() !== '' && periodoAcademico !== 'todos') {
       filtros.periodoAcademico = periodoAcademico.trim();
     }
-    
+
     const idPrograma = this.idPrograma();
     if (idPrograma !== undefined && idPrograma !== null && !isNaN(idPrograma) && idPrograma > 0) {
       filtros.idPrograma = idPrograma;
     }
-    
-    const subscription = this.estadisticasService.getTendenciasComparativas(filtros)
-      .subscribe({
-        next: (response) => {
-          this.data.set(response);
-          this.loading.set(false);
-          this.mostrarExito('Tendencias y comparativas cargadas correctamente');
-        },
-        error: () => {
-          this.loading.set(false);
-          this.error.set(true);
-          this.mostrarError('Error al cargar tendencias y comparativas');
-        }
-      });
+
+    const subscription = this.estadisticasService.getTendenciasComparativas(filtros).subscribe({
+      next: (response) => {
+        this.data.set(response);
+        this.loading.set(false);
+        this.mostrarExito('Tendencias y comparativas cargadas correctamente');
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set(true);
+        this.mostrarError('Error al cargar tendencias y comparativas');
+      },
+    });
 
     this.subscriptions.push(subscription);
   }

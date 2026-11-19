@@ -16,7 +16,7 @@ const FECHAS: FechaEcaes = {
   registro_recaudo_extraordinario: '2026-03-20',
   citacion: '2026-04-01',
   aplicacion: '2026-04-15',
-  resultados_individuales: '2026-05-30'
+  resultados_individuales: '2026-05-30',
 };
 
 describe('PublicarFechasEcaesComponent', () => {
@@ -28,7 +28,9 @@ describe('PublicarFechasEcaesComponent', () => {
 
   beforeEach(async () => {
     servicio = jasmine.createSpyObj<PruebasEcaesService>('PruebasEcaesService', [
-      'buscarFechasPorPeriodo', 'publicarFechasEcaes', 'actualizarFechasEcaes'
+      'buscarFechasPorPeriodo',
+      'publicarFechasEcaes',
+      'actualizarFechasEcaes',
     ]);
     servicio.buscarFechasPorPeriodo.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
     servicio.publicarFechasEcaes.and.returnValue(of({ ...FECHAS, idFechaEcaes: 9 }));
@@ -42,8 +44,8 @@ describe('PublicarFechasEcaesComponent', () => {
       providers: [
         { provide: PruebasEcaesService, useValue: servicio },
         { provide: PeriodosAcademicosService, useValue: periodos },
-        { provide: SnackbarService, useValue: snackbar }
-      ]
+        { provide: SnackbarService, useValue: snackbar },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PublicarFechasEcaesComponent);
@@ -58,7 +60,7 @@ describe('PublicarFechasEcaesComponent', () => {
       registro_recaudo_extraordinario: new Date(2026, 2, 20),
       citacion: new Date(2026, 3, 1),
       aplicacion: new Date(2026, 3, 15),
-      resultados_individuales: new Date(2026, 4, 30)
+      resultados_individuales: new Date(2026, 4, 30),
     });
   }
 
@@ -93,11 +95,13 @@ describe('PublicarFechasEcaesComponent', () => {
 
     component.publicar();
 
-    expect(servicio.publicarFechasEcaes).toHaveBeenCalledWith(jasmine.objectContaining({
-      periodoAcademico: '2026-2',
-      inscripcion_est_by_facultad: '2026-03-01',
-      resultados_individuales: '2026-05-30'
-    }));
+    expect(servicio.publicarFechasEcaes).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        periodoAcademico: '2026-2',
+        inscripcion_est_by_facultad: '2026-03-01',
+        resultados_individuales: '2026-05-30',
+      })
+    );
     expect(component.idFechaEcaes()).toBe(9);
     expect(component.form.controls.periodoAcademico.value).toBe('2026-2');
     expect(component.form.controls.citacion.value).toBeNull();
@@ -109,7 +113,9 @@ describe('PublicarFechasEcaesComponent', () => {
 
     component.publicar();
 
-    expect(servicio.actualizarFechasEcaes).toHaveBeenCalledWith(jasmine.objectContaining({ idFechaEcaes: 5, citacion: '2026-04-01' }));
+    expect(servicio.actualizarFechasEcaes).toHaveBeenCalledWith(
+      jasmine.objectContaining({ idFechaEcaes: 5, citacion: '2026-04-01' })
+    );
     expect(servicio.publicarFechasEcaes).not.toHaveBeenCalled();
   });
 

@@ -1,5 +1,5 @@
 // src/app/layout/sidebar/sidebar.config.ts
-import { UserRole } from "@core/enums/roles.enum";
+import { UserRole } from '@core/enums/roles.enum';
 
 export interface SidebarItem {
   label: string;
@@ -15,7 +15,7 @@ const ALL_ROLES: UserRole[] = [
   UserRole.COORDINADOR,
   UserRole.SECRETARIA,
   UserRole.ESTUDIANTE,
-  UserRole.DECANO
+  UserRole.DECANO,
 ];
 
 export const SIDEBAR_ITEMS: SidebarItem[] = [
@@ -29,8 +29,18 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Gestión de Programas', icon: 'assignment', route: '/admin/programas', roles: [UserRole.ADMIN] },
   { label: 'Gestión de Roles', icon: 'admin_panel_settings', route: '/admin/manage-roles', roles: [UserRole.ADMIN] },
   { label: 'Gestión de Usuarios', icon: 'people', route: '/admin/manage-users', roles: [UserRole.ADMIN] },
-  { label: 'Configurar Período Académico', icon: 'calendar_today', route: '/admin/configurar-periodo', roles: [UserRole.ADMIN] },
-  { label: 'Administración de Formatos Institucionales', icon: 'description', route: '/admin/formatos-institucionales', roles: [UserRole.ADMIN] },
+  {
+    label: 'Configurar Período Académico',
+    icon: 'calendar_today',
+    route: '/admin/configurar-periodo',
+    roles: [UserRole.ADMIN],
+  },
+  {
+    label: 'Administración de Formatos Institucionales',
+    icon: 'description',
+    route: '/admin/formatos-institucionales',
+    roles: [UserRole.ADMIN],
+  },
 
   // Separador para Admin
   { label: '---', icon: 'horizontal_rule', action: 'separator', roles: [UserRole.ADMIN] },
@@ -41,8 +51,18 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
 
   // Paz y Salvo
   { label: 'Proceso Paz y Salvo', icon: 'check_circle', route: '/estudiante/paz-salvo', roles: [UserRole.ESTUDIANTE] },
-  { label: 'Proceso Paz y Salvo', icon: 'check_circle', route: '/funcionario/paz-salvo', roles: [UserRole.FUNCIONARIO] },
-  { label: 'Proceso Paz y Salvo', icon: 'check_circle', route: '/coordinador/paz-salvo', roles: [UserRole.COORDINADOR] },
+  {
+    label: 'Proceso Paz y Salvo',
+    icon: 'check_circle',
+    route: '/funcionario/paz-salvo',
+    roles: [UserRole.FUNCIONARIO],
+  },
+  {
+    label: 'Proceso Paz y Salvo',
+    icon: 'check_circle',
+    route: '/coordinador/paz-salvo',
+    roles: [UserRole.COORDINADOR],
+  },
   { label: 'Proceso Paz y Salvo', icon: 'check_circle', route: '/secretaria/paz-salvo', roles: [UserRole.SECRETARIA] },
 
   // Pruebas ECAES
@@ -50,35 +70,110 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Pruebas ECAES', icon: 'assignment', route: '/funcionario/pruebas-ecaes', roles: [UserRole.FUNCIONARIO] },
 
   // Cursos Intersemestrales
-  { label: 'Cursos Intersemestrales', icon: 'school', route: '/estudiante/cursos-intersemestrales', roles: [UserRole.ESTUDIANTE] },
-  { label: 'Cursos Intersemestrales', icon: 'school', route: '/funcionario/cursos-intersemestrales', roles: [UserRole.FUNCIONARIO] },
-  { label: 'Cursos Intersemestrales', icon: 'school', route: '/coordinador/cursos-intersemestrales', roles: [UserRole.COORDINADOR] },
+  {
+    label: 'Cursos Intersemestrales',
+    icon: 'school',
+    route: '/estudiante/cursos-intersemestrales',
+    roles: [UserRole.ESTUDIANTE],
+  },
+  {
+    label: 'Cursos Intersemestrales',
+    icon: 'school',
+    route: '/funcionario/cursos-intersemestrales',
+    roles: [UserRole.FUNCIONARIO],
+  },
+  {
+    label: 'Cursos Intersemestrales',
+    icon: 'school',
+    route: '/coordinador/cursos-intersemestrales',
+    roles: [UserRole.COORDINADOR],
+  },
 
   // Reingreso Estudiante
-  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/estudiante/reingreso-estudiante', roles: [UserRole.ESTUDIANTE] },
-  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/funcionario/reingreso-estudiante', roles: [UserRole.FUNCIONARIO] },
-  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/coordinador/reingreso-estudiante', roles: [UserRole.COORDINADOR] },
-  { label: 'Reingreso Estudiante', icon: 'person_add', route: '/secretaria/reingreso-estudiante', roles: [UserRole.SECRETARIA] },
+  {
+    label: 'Reingreso Estudiante',
+    icon: 'person_add',
+    route: '/estudiante/reingreso-estudiante',
+    roles: [UserRole.ESTUDIANTE],
+  },
+  {
+    label: 'Reingreso Estudiante',
+    icon: 'person_add',
+    route: '/funcionario/reingreso-estudiante',
+    roles: [UserRole.FUNCIONARIO],
+  },
+  {
+    label: 'Reingreso Estudiante',
+    icon: 'person_add',
+    route: '/coordinador/reingreso-estudiante',
+    roles: [UserRole.COORDINADOR],
+  },
+  {
+    label: 'Reingreso Estudiante',
+    icon: 'person_add',
+    route: '/secretaria/reingreso-estudiante',
+    roles: [UserRole.SECRETARIA],
+  },
 
   // Homologación de Asignaturas
-  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/estudiante/homologacion-asignaturas', roles: [UserRole.ESTUDIANTE] },
-  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/funcionario/homologacion-asignaturas', roles: [UserRole.FUNCIONARIO] },
-  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/coordinador/homologacion-asignaturas', roles: [UserRole.COORDINADOR] },
-  { label: 'Homologación de Asignaturas', icon: 'sync_alt', route: '/secretaria/homologacion-asignaturas', roles: [UserRole.SECRETARIA] },
+  {
+    label: 'Homologación de Asignaturas',
+    icon: 'sync_alt',
+    route: '/estudiante/homologacion-asignaturas',
+    roles: [UserRole.ESTUDIANTE],
+  },
+  {
+    label: 'Homologación de Asignaturas',
+    icon: 'sync_alt',
+    route: '/funcionario/homologacion-asignaturas',
+    roles: [UserRole.FUNCIONARIO],
+  },
+  {
+    label: 'Homologación de Asignaturas',
+    icon: 'sync_alt',
+    route: '/coordinador/homologacion-asignaturas',
+    roles: [UserRole.COORDINADOR],
+  },
+  {
+    label: 'Homologación de Asignaturas',
+    icon: 'sync_alt',
+    route: '/secretaria/homologacion-asignaturas',
+    roles: [UserRole.SECRETARIA],
+  },
 
   // Módulo Estadístico
-  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/funcionario/modulo-estadistico', roles: [UserRole.FUNCIONARIO] },
-  { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/coordinador/modulo-estadistico', roles: [UserRole.COORDINADOR] },
+  {
+    label: 'Módulo Estadístico',
+    icon: 'bar_chart',
+    route: '/funcionario/modulo-estadistico',
+    roles: [UserRole.FUNCIONARIO],
+  },
+  {
+    label: 'Módulo Estadístico',
+    icon: 'bar_chart',
+    route: '/coordinador/modulo-estadistico',
+    roles: [UserRole.COORDINADOR],
+  },
   { label: 'Módulo Estadístico', icon: 'bar_chart', route: '/decano/modulo-estadistico', roles: [UserRole.DECANO] },
 
   // Historial Completo
-  { label: 'Historial Completo', icon: 'history', route: '/funcionario/historial-completo', roles: [UserRole.FUNCIONARIO] },
-  { label: 'Historial Completo', icon: 'history', route: '/coordinador/historial-completo', roles: [UserRole.COORDINADOR] },
+  {
+    label: 'Historial Completo',
+    icon: 'history',
+    route: '/funcionario/historial-completo',
+    roles: [UserRole.FUNCIONARIO],
+  },
+  {
+    label: 'Historial Completo',
+    icon: 'history',
+    route: '/coordinador/historial-completo',
+    roles: [UserRole.COORDINADOR],
+  },
   { label: 'Historial Completo', icon: 'history', route: '/decano/historial-completo', roles: [UserRole.DECANO] },
 
   // Separador visual
   { label: '---', icon: 'horizontal_rule', action: 'separator', roles: ALL_ROLES },
-  
+
   // Cerrar sesión
-  { label: 'Cerrar sesión', icon: 'logout', action: 'logout', roles: ALL_ROLES }
+  { label: 'Cerrar sesión', icon: 'logout', action: 'logout', roles: ALL_ROLES },
 ];

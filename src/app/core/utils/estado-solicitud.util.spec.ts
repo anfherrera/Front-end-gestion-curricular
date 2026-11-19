@@ -1,7 +1,14 @@
 import { EstadosSolicitud } from '../enums/estados-solicitud.enum';
 import { COLORS } from '../design-system/design-tokens';
 import {
-  comentarioDeRechazo, estadoActual, estadoClase, estadoColor, estadoIcono, estadoLabel, normalizarEstado, ultimoEstado
+  comentarioDeRechazo,
+  estadoActual,
+  estadoClase,
+  estadoColor,
+  estadoIcono,
+  estadoLabel,
+  normalizarEstado,
+  ultimoEstado,
 } from './estado-solicitud.util';
 
 describe('estado-solicitud.util', () => {
@@ -51,8 +58,8 @@ describe('estado-solicitud.util', () => {
         { estado_actual: 'RECHAZADA', comentario: 'Primero' },
         { estado_actual: 'ENVIADA', comentario: 'Reenviada' },
         { estado_actual: 'Rechazada', comentario: 'Falta la firma' },
-        { estado_actual: 'ENVIADA' }
-      ]
+        { estado_actual: 'ENVIADA' },
+      ],
     };
     expect(comentarioDeRechazo(sol)).toBe('Falta la firma');
     expect(comentarioDeRechazo({ estadosSolicitud: [{ estado_actual: 'RECHAZADA', comentario: '' }] })).toBeNull();

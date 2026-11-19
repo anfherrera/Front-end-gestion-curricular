@@ -1,16 +1,16 @@
 // Tendencias y comparativas entre procesos y programas.
 
 export interface CrecimientoTemporal {
-  tendenciaSolicitudes?: string;  // Legacy: Mantener para compatibilidad
-  tendenciaEstudiantes?: string;  // Legacy: Mantener para compatibilidad
-  tendencia?: string;              // Campo unificado según guía actualizada
+  tendenciaSolicitudes?: string; // Legacy: Mantener para compatibilidad
+  tendenciaEstudiantes?: string; // Legacy: Mantener para compatibilidad
+  tendencia?: string; // Campo unificado según guía actualizada
   crecimientoSolicitudes: number;
   crecimientoEstudiantes: number;
   mesesAnalizados: number;
-  solicitudesPorMes?: Record<string, number>;  // Solicitudes por mes
-  estudiantesPorMes?: Record<string, number>;  // Estudiantes por mes
-  totalSolicitudes?: number;                       // Total de solicitudes
-  totalEstudiantes?: number;                       // Total de estudiantes
+  solicitudesPorMes?: Record<string, number>; // Solicitudes por mes
+  estudiantesPorMes?: Record<string, number>; // Estudiantes por mes
+  totalSolicitudes?: number; // Total de solicitudes
+  totalEstudiantes?: number; // Total de estudiantes
 }
 
 export interface ComparativaProcesos {

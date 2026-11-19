@@ -10,9 +10,8 @@ describe('VisualizarSolicitudesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VisualizarSolicitudesComponent, HttpClientTestingModule, NoopAnimationsModule]
-    })
-    .compileComponents();
+      imports: [VisualizarSolicitudesComponent, HttpClientTestingModule, NoopAnimationsModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(VisualizarSolicitudesComponent);
     component = fixture.componentInstance;

@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, ChangeDetectorRef, computed, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+  ChangeDetectorRef,
+  computed,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -26,7 +35,7 @@ export const CAMPOS_FECHA: { campo: CampoFecha; etiqueta: string }[] = [
   { campo: 'registro_recaudo_extraordinario', etiqueta: 'Registro y recaudo extraordinario' },
   { campo: 'citacion', etiqueta: 'Citación' },
   { campo: 'aplicacion', etiqueta: 'Aplicación' },
-  { campo: 'resultados_individuales', etiqueta: 'Resultados individuales' }
+  { campo: 'resultados_individuales', etiqueta: 'Resultados individuales' },
 ];
 
 /** "2026-03-15" como día local (new Date() la tomaría en UTC y en Colombia saldría el 14). */
@@ -59,11 +68,11 @@ function aTexto(fecha: Date | null): string {
     MatInputModule,
     MatNativeDateModule,
     MatSelectModule,
-    CardContainerComponent
+    CardContainerComponent,
   ],
   templateUrl: './publicar-fechas-ecaes.component.html',
   styleUrl: './publicar-fechas-ecaes.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicarFechasEcaesComponent implements OnInit {
   private readonly ecaesService = inject(PruebasEcaesService);
@@ -82,7 +91,7 @@ export class PublicarFechasEcaesComponent implements OnInit {
     registro_recaudo_extraordinario: [null as Date | null, Validators.required],
     citacion: [null as Date | null, Validators.required],
     aplicacion: [null as Date | null, Validators.required],
-    resultados_individuales: [null as Date | null, Validators.required]
+    resultados_individuales: [null as Date | null, Validators.required],
   });
 
   readonly periodos = signal<string[]>([]);
@@ -95,7 +104,7 @@ export class PublicarFechasEcaesComponent implements OnInit {
     this.cargarPeriodos();
     // El botón se deshabilita con form.invalid, que no es una signal
     this.form.statusChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.cdr.markForCheck());
-    this.form.controls.periodoAcademico.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodo => {
+    this.form.controls.periodoAcademico.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((periodo) => {
       this.idFechaEcaes.set(null);
       this.limpiarFechas();
       if (periodo) this.buscarFechas(periodo);
@@ -104,31 +113,37 @@ export class PublicarFechasEcaesComponent implements OnInit {
 
   /** Todos los períodos o, si no hay, los recientes; si fallan los dos, 2020-1 a 2030-2. */
   private cargarPeriodos(): void {
-    this.periodosService.getValoresPeriodos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(periodos => {
-      if (periodos.length > 0) {
-        this.periodos.set(periodos);
-        return;
-      }
-      const predeterminados: string[] = [];
-      for (let anio = 2020; anio <= 2030; anio++) predeterminados.push(`${anio}-1`, `${anio}-2`);
-      this.periodos.set(predeterminados);
-      this.snackbar.advertencia('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.');
-    });
+    this.periodosService
+      .getValoresPeriodos()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((periodos) => {
+        if (periodos.length > 0) {
+          this.periodos.set(periodos);
+          return;
+        }
+        const predeterminados: string[] = [];
+        for (let anio = 2020; anio <= 2030; anio++) predeterminados.push(`${anio}-1`, `${anio}-2`);
+        this.periodos.set(predeterminados);
+        this.snackbar.advertencia('Usando períodos predeterminados (2020-2030). Verifique la conexión con el backend.');
+      });
   }
 
   private buscarFechas(periodo: string): void {
-    this.ecaesService.buscarFechasPorPeriodo(periodo).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (fechas) => {
-        if (this.form.controls.periodoAcademico.value !== periodo) return;
-        this.idFechaEcaes.set(fechas.idFechaEcaes);
-        this.form.patchValue(Object.fromEntries(this.campos.map(({ campo }) => [campo, aFecha(fechas[campo])])));
-        this.snackbar.exito('Fechas existentes cargadas. Puede editarlas.');
-      },
-      error: (err: HttpErrorResponse) => {
-        // 404: el período aún no tiene fechas, se publican nuevas
-        if (err.status !== 404) this.mostrarError(err, 'Error al buscar fechas existentes');
-      }
-    });
+    this.ecaesService
+      .buscarFechasPorPeriodo(periodo)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (fechas) => {
+          if (this.form.controls.periodoAcademico.value !== periodo) return;
+          this.idFechaEcaes.set(fechas.idFechaEcaes);
+          this.form.patchValue(Object.fromEntries(this.campos.map(({ campo }) => [campo, aFecha(fechas[campo])])));
+          this.snackbar.exito('Fechas existentes cargadas. Puede editarlas.');
+        },
+        error: (err: HttpErrorResponse) => {
+          // 404: el período aún no tiene fechas, se publican nuevas
+          if (err.status !== 404) this.mostrarError(err, 'Error al buscar fechas existentes');
+        },
+      });
   }
 
   publicar(): void {
@@ -139,7 +154,7 @@ export class PublicarFechasEcaesComponent implements OnInit {
     const valor = this.form.getRawValue();
     const fechas = {
       periodoAcademico: valor.periodoAcademico ?? '',
-      ...Object.fromEntries(this.campos.map(({ campo }) => [campo, aTexto(valor[campo])]))
+      ...Object.fromEntries(this.campos.map(({ campo }) => [campo, aTexto(valor[campo])])),
     } as Omit<FechaEcaes, 'idFechaEcaes'>;
     const editar = this.esEdicion();
     const accion = editar ? 'actualizadas' : 'publicadas';
@@ -159,7 +174,7 @@ export class PublicarFechasEcaesComponent implements OnInit {
       error: (err) => {
         this.publicando.set(false);
         this.mostrarError(err, `Error al ${editar ? 'actualizar' : 'publicar'} las fechas`);
-      }
+      },
     });
   }
 

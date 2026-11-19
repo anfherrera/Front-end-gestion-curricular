@@ -34,13 +34,13 @@
 }
 
 .form-section h3::before {
-  content: "";
+  content: '';
   font-size: 20px;
   flex-shrink: 0;
 }
 
 .form-section:nth-child(3) h3::before {
-  content: "";
+  content: '';
 }
 
 /* Campos del formulario */
@@ -225,25 +225,25 @@
   box-shadow: var(--sombra-1);
 }
 
-.dialog-actions button[color="primary"] {
+.dialog-actions button[color='primary'] {
   background: var(--color-primario) !important;
   color: white !important;
   border: none !important;
 }
 
-.dialog-actions button[color="primary"]:hover {
+.dialog-actions button[color='primary']:hover {
   background: var(--color-primario-light) !important;
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
 
-.dialog-actions button:not([color="primary"]) {
+.dialog-actions button:not([color='primary']) {
   background: white !important;
   color: var(--color-primario) !important;
   border: 2px solid var(--color-primario) !important;
 }
 
-.dialog-actions button:not([color="primary"]):hover {
+.dialog-actions button:not([color='primary']):hover {
   background: var(--color-primario) !important;
   color: white !important;
   transform: translateY(-2px);
@@ -275,23 +275,23 @@
     max-height: 50vh;
     padding: 16px;
   }
-  
+
   .form-section {
     padding: 16px;
     margin-bottom: 20px;
   }
-  
+
   .form-section h3 {
     font-size: 16px;
     margin-bottom: 16px;
   }
-  
+
   .dialog-actions {
     flex-direction: column;
     gap: 8px;
     padding: 16px;
   }
-  
+
   .dialog-actions button {
     width: 100%;
     min-width: auto;

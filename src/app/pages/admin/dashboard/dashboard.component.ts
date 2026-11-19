@@ -12,16 +12,10 @@ import { RolesAdminService } from '@core/services/roles-admin.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [
-    RouterModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule
-],
+  imports: [RouterModule, MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   private docentesService = inject(DocentesService);
@@ -29,7 +23,7 @@ export class DashboardComponent implements OnInit {
   private rolesService = inject(RolesAdminService);
 
   readonly loading = signal(true);
-  
+
   readonly totalDocentes = signal(0);
   readonly totalProgramas = signal(0);
   readonly totalRoles = signal(0);
@@ -49,7 +43,7 @@ export class DashboardComponent implements OnInit {
       },
       error: () => {
         this.verificarCargaCompleta();
-      }
+      },
     });
 
     // Cargar programas
@@ -60,7 +54,7 @@ export class DashboardComponent implements OnInit {
       },
       error: () => {
         this.verificarCargaCompleta();
-      }
+      },
     });
 
     // Cargar roles
@@ -71,7 +65,7 @@ export class DashboardComponent implements OnInit {
       },
       error: () => {
         this.verificarCargaCompleta();
-      }
+      },
     });
   }
 

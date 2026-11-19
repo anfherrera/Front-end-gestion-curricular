@@ -6,15 +6,13 @@
   @if (!cargando()) {
     <app-curso-list
       [cursos]="cursos()"
-      [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','estado','acciones']"
+      [displayedColumns]="['codigo', 'nombre', 'creditos', 'docente', 'cupos', 'espacio', 'estado', 'acciones']"
       [acciones]="['preinscribir']"
       (accionClick)="onAccionCurso($event)"
     ></app-curso-list>
   }
 
   @if (!cargando() && cursos().length === 0) {
-    <div class="sin-datos">
-      No hay cursos disponibles para preinscripción.
-    </div>
+    <div class="sin-datos">No hay cursos disponibles para preinscripción.</div>
   }
 </app-card-container>

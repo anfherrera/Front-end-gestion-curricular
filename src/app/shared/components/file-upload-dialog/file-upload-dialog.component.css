@@ -22,7 +22,9 @@
   height: 36px;
   line-height: 1;
   text-transform: none;
-  transition: background-color 0.3s ease, transform 0.1s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.1s ease;
   box-shadow: var(--sombra-1);
 }
 
@@ -72,7 +74,9 @@
   font-size: 14px;
   border: 1px solid var(--gris-100);
   box-shadow: var(--sombra-1);
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .uploaded-list li:hover {
@@ -101,7 +105,9 @@
 /* Botón eliminar */
 .delete-icon {
   color: #e53935; /* Rojo fuerte */
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .col-accion button:hover .delete-icon {

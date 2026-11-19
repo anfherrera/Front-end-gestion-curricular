@@ -133,7 +133,7 @@
 }
 
 .form-section h3::before {
-  content: "";
+  content: '';
   font-size: 18px;
 }
 
@@ -374,80 +374,80 @@
     margin-bottom: 16px;
     padding: 12px 0;
   }
-  
+
   .modal-header h2 {
     font-size: 18px;
     gap: 8px;
   }
-  
+
   .modal-header h2 mat-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
   }
-  
+
   .modal-body {
     margin-bottom: 16px;
   }
-  
+
   .curso-info {
     margin-bottom: 20px;
   }
-  
+
   .info-card {
     padding: 12px;
   }
-  
+
   .inscripcion-form {
     gap: 16px;
   }
-  
+
   .form-section {
     padding: 16px;
     margin-bottom: 16px;
   }
-  
+
   .form-section h3 {
     font-size: 15px;
     margin-bottom: 12px;
     padding-bottom: 6px;
   }
-  
+
   .file-upload-section {
     gap: 12px;
   }
-  
+
   .file-input-label {
     padding: 16px;
     min-height: 60px;
     font-size: 13px;
     gap: 8px;
   }
-  
+
   .file-input-label mat-icon {
     font-size: 24px;
     width: 24px;
     height: 24px;
   }
-  
+
   .file-info {
     padding: 10px 12px;
     gap: 8px;
   }
-  
+
   .file-requirements {
     padding: 12px;
   }
-  
+
   .file-requirements p {
     font-size: 13px;
     margin-bottom: 8px;
   }
-  
+
   .file-requirements ul {
     font-size: 12px;
   }
-  
+
   .modal-footer {
     flex-direction: column;
     gap: 8px;
@@ -458,14 +458,14 @@
     border-top: 2px solid var(--azul-50);
     margin-top: 16px;
   }
-  
+
   .submit-button {
     width: 100%;
     min-width: auto;
     height: 44px;
     font-size: 14px;
   }
-  
+
   .modal-footer button[mat-button] {
     width: 100%;
     height: 44px;
@@ -478,133 +478,133 @@
     padding: 8px 0;
     margin-bottom: 12px;
   }
-  
+
   .modal-header h2 {
     font-size: 16px;
     gap: 6px;
   }
-  
+
   .modal-header h2 mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
-  
+
   .modal-body {
     margin-bottom: 12px;
   }
-  
+
   .curso-info {
     margin-bottom: 16px;
   }
-  
+
   .info-card {
     padding: 10px;
   }
-  
+
   .info-card p {
     font-size: 13px;
     margin: 6px 0;
   }
-  
+
   .estado-aprobado,
   .estado-inscripcion {
     font-size: 11px;
     padding: 3px 8px;
   }
-  
+
   .inscripcion-form {
     gap: 12px;
   }
-  
+
   .form-section {
     padding: 12px;
     margin-bottom: 12px;
   }
-  
+
   .form-section h3 {
     font-size: 14px;
     margin-bottom: 10px;
     padding-bottom: 4px;
   }
-  
+
   .form-section h3::before {
     font-size: 16px;
   }
-  
+
   .file-upload-section {
     gap: 10px;
   }
-  
+
   .file-input-label {
     padding: 12px;
     font-size: 12px;
     min-height: 50px;
     gap: 6px;
   }
-  
+
   .file-input-label mat-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
   }
-  
+
   .file-info {
     padding: 8px 10px;
     gap: 6px;
   }
-  
+
   .file-icon,
   .success-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
-  
+
   .file-name {
     font-size: 13px;
   }
-  
+
   .file-requirements {
     padding: 10px;
   }
-  
+
   .file-requirements p {
     font-size: 12px;
     margin-bottom: 6px;
   }
-  
+
   .file-requirements p mat-icon {
     font-size: 16px;
     width: 16px;
     height: 16px;
   }
-  
+
   .file-requirements ul {
     font-size: 11px;
     padding-left: 16px;
   }
-  
+
   .file-requirements li {
     margin: 4px 0;
   }
-  
+
   .modal-footer {
     padding-top: 12px;
     margin-top: 12px;
     gap: 6px;
   }
-  
+
   .submit-button {
     height: 40px;
     font-size: 13px;
   }
-  
+
   .modal-footer button[mat-button] {
     height: 40px;
     font-size: 13px;
   }
-  
+
   .modal-footer button mat-icon {
     font-size: 16px;
     width: 16px;
@@ -636,16 +636,16 @@
   .modal-header h2 {
     font-size: 14px;
   }
-  
+
   .form-section h3 {
     font-size: 13px;
   }
-  
+
   .file-input-label {
     font-size: 11px;
     padding: 10px;
   }
-  
+
   .submit-button,
   .modal-footer button[mat-button] {
     height: 36px;

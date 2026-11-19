@@ -4,7 +4,7 @@ export interface MateriaPrediccion {
   nombre: string;
   demandaActual: number;
   demandaEstimada: number;
-  tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
+  tendencia: 'CRECIENTE' | 'DECRECIENTE' | 'ESTABLE';
   variacion: number;
   porcentajeVariacion: number;
   // Backend ya no envía: pendiente, rSquared, modeloUtilizado
@@ -14,7 +14,7 @@ export interface ProgramaPrediccion {
   nombre: string;
   demandaActual: number;
   demandaEstimada: number;
-  tendencia: "CRECIENTE" | "DECRECIENTE" | "ESTABLE";
+  tendencia: 'CRECIENTE' | 'DECRECIENTE' | 'ESTABLE';
   variacion: number;
   porcentajeVariacion: number;
   // Backend ya no envía: pendiente, rSquared, modeloUtilizado
@@ -37,7 +37,7 @@ export interface PrediccionesCursosVerano {
   programasConTendenciaDecreciente: ProgramaPrediccion[];
   prediccionesTemporales: PrediccionesTemporales;
   // recomendacionesFuturas ahora está en el nivel superior como 'recomendaciones'
-  confiabilidad: "ALTA" | "MEDIA" | "BAJA";
+  confiabilidad: 'ALTA' | 'MEDIA' | 'BAJA';
   fechaPrediccion: string;
   // metodologia eliminado (campo técnico innecesario)
   // Nuevos campos para la pestaña de Recomendaciones
@@ -66,7 +66,7 @@ export interface TendenciaTemporal {
 export interface EstadosSolicitudes {
   APROBADA: number;
   ENVIADA: number;
-  EN_PROCESO: number;  // Estado combinado (reemplaza APROBADA_FUNCIONARIO + APROBADA_COORDINADOR)
+  EN_PROCESO: number; // Estado combinado (reemplaza APROBADA_FUNCIONARIO + APROBADA_COORDINADOR)
   RECHAZADA: number;
   // Legacy: Mantener para compatibilidad con versiones anteriores
   APROBADA_FUNCIONARIO?: number;
@@ -155,9 +155,9 @@ export interface CursosVeranoResponse {
   topMaterias: TopMateria[];
   analisisPorPrograma: AnalisisPrograma[];
   tendenciasTemporales: TendenciaTemporal[];
-  estadosSolicitudes: EstadosSolicitudes;  // Mapa simple: { APROBADA: 0, ENVIADA: 9, ... }
-  estadosSolicitudesEstructurados?: EstadosSolicitudesEstructurados;  // Mapa estructurado con porcentajes
+  estadosSolicitudes: EstadosSolicitudes; // Mapa simple: { APROBADA: 0, ENVIADA: 9, ... }
+  estadosSolicitudesEstructurados?: EstadosSolicitudesEstructurados; // Mapa estructurado con porcentajes
   recomendaciones: Recomendacion[];
   predicciones: PrediccionesCursosVerano;
-  todosLosMeses?: string[];  // Array con todos los meses (Enero-Diciembre)
+  todosLosMeses?: string[]; // Array con todos los meses (Enero-Diciembre)
 }

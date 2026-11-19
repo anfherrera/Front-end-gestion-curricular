@@ -36,9 +36,14 @@ import {
   formatearNombreProceso,
   generarKPIs,
   resumenDesdeAPI,
-  resumenDesdeEndpoints
+  resumenDesdeEndpoints,
 } from './dashboard-estadistico.datos';
-import { graficoProcesos, graficoProcesosDesdeResumen, graficoProgramas, graficoTendencia } from './dashboard-estadistico.graficos';
+import {
+  graficoProcesos,
+  graficoProcesosDesdeResumen,
+  graficoProgramas,
+  graficoTendencia,
+} from './dashboard-estadistico.graficos';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 Chart.register(...registerables);
@@ -71,11 +76,11 @@ type NombreGrafico = 'chartProcesos' | 'chartTendencia' | 'chartDistribucion';
     EstadisticasPorProcesoComponent,
     EstadisticasPorEstadoComponent,
     TendenciasComparativasComponent,
-    PeriodoFiltroSelectorComponent
+    PeriodoFiltroSelectorComponent,
   ],
   templateUrl: './dashboard-estadistico.component.html',
   styleUrls: ['./dashboard-comun.css', './dashboard-estadistico.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private estadisticasService = inject(EstadisticasService);
@@ -117,13 +122,14 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     this.filtrosForm = this.fb.group({
       proceso: [''],
       idPrograma: [''],
-      periodoAcademico: ['']
+      periodoAcademico: [''],
     });
 
     this.procesosDisponibles = this.estadisticasService.getProcesosDisponibles();
-    this.estadisticasService.getProgramasDisponibles()
+    this.estadisticasService
+      .getProgramasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(programas => this.programasDisponibles.set(programas));
+      .subscribe((programas) => this.programasDisponibles.set(programas));
 
     this.cargarDatos();
   }
@@ -140,29 +146,35 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     this.errorMensaje.set(null);
 
     // Primero el catálogo de programas (en caché tras la primera vez) para resolver ids reales
-    this.estadisticasService.getIdsProgramaPorNombre().pipe(
-      switchMap(ids => {
-        this.idsProgramaPorNombre = ids;
-        return this.estadisticasService.getResumenCompleto(filtrosParaBackend(filtros));
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (resumenAPI) => {
-        try {
-          this.mostrarResumen(resumenDesdeAPI(resumenAPI, this.idPrograma), 'Datos cargados correctamente desde el backend');
-        } catch {
+    this.estadisticasService
+      .getIdsProgramaPorNombre()
+      .pipe(
+        switchMap((ids) => {
+          this.idsProgramaPorNombre = ids;
+          return this.estadisticasService.getResumenCompleto(filtrosParaBackend(filtros));
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (resumenAPI) => {
+          try {
+            this.mostrarResumen(
+              resumenDesdeAPI(resumenAPI, this.idPrograma),
+              'Datos cargados correctamente desde el backend'
+            );
+          } catch {
+            this.cargarDatosConEndpointsAlternativos(filtros);
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          // 401/403: los endpoints alternativos fallarían igual
+          if (esErrorDeAcceso(error)) {
+            this.manejarErrorDeAcceso(error);
+            return;
+          }
           this.cargarDatosConEndpointsAlternativos(filtros);
-        }
-      },
-      error: (error: HttpErrorResponse) => {
-        // 401/403: los endpoints alternativos fallarían igual
-        if (esErrorDeAcceso(error)) {
-          this.manejarErrorDeAcceso(error);
-          return;
-        }
-        this.cargarDatosConEndpointsAlternativos(filtros);
-      }
-    });
+        },
+      });
 
     this.cargarTotalEstudiantes();
   }
@@ -197,63 +209,86 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
     const filtrosBackend = filtrosParaBackend(filtros);
     const errores: { endpoint: string; error: unknown }[] = [];
     const tolerante = <T>(peticion$: Observable<T>, endpoint: string): Observable<T | null> =>
-      peticion$.pipe(catchError(error => {
-        errores.push({ endpoint, error });
-        return of(null);
-      }));
+      peticion$.pipe(
+        catchError((error) => {
+          errores.push({ endpoint, error });
+          return of(null);
+        })
+      );
 
     forkJoin({
       ids: this.estadisticasService.getIdsProgramaPorNombre(),
       estadoSolicitudes: tolerante(this.estadisticasService.getEstadoSolicitudes(filtrosBackend), 'estado-solicitudes'),
-      porProceso: tolerante(this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosBackend), 'estadisticas-por-proceso'),
-      estudiantesPorPrograma: tolerante(this.estadisticasService.getEstudiantesPorPrograma(filtrosBackend), 'estudiantes-por-programa'),
-      porPeriodo: tolerante(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosBackend), 'por-periodo')
-    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ ids, estadoSolicitudes, porProceso, estudiantesPorPrograma }) => {
-      const errorDeAcceso = errores.map(e => e.error).find(esErrorDeAcceso);
-      if (errorDeAcceso) {
-        this.manejarErrorDeAcceso(errorDeAcceso);
-        return;
-      }
-      if (errores.length === 4) {
-        this.loading.set(false);
-        this.error.set(true);
-        this.mostrarError('No se pudieron cargar las estadísticas. Por favor, inténtalo de nuevo.');
-        return;
-      }
-
-      this.idsProgramaPorNombre = ids;
-      try {
-        const resumen = resumenDesdeEndpoints(estadoSolicitudes, porProceso, estudiantesPorPrograma, this.totalEstudiantes, this.idPrograma);
-        this.mostrarResumen(resumen, errores.length > 0 ? null : 'Datos cargados usando endpoints alternativos');
-        if (errores.length > 0) {
-          this.mostrarError(`Datos cargados parcialmente. Algunos endpoints fallaron: ${errores.map(e => e.endpoint).join(', ')}`);
+      porProceso: tolerante(
+        this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosBackend),
+        'estadisticas-por-proceso'
+      ),
+      estudiantesPorPrograma: tolerante(
+        this.estadisticasService.getEstudiantesPorPrograma(filtrosBackend),
+        'estudiantes-por-programa'
+      ),
+      porPeriodo: tolerante(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosBackend), 'por-periodo'),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ ids, estadoSolicitudes, porProceso, estudiantesPorPrograma }) => {
+        const errorDeAcceso = errores.map((e) => e.error).find(esErrorDeAcceso);
+        if (errorDeAcceso) {
+          this.manejarErrorDeAcceso(errorDeAcceso);
+          return;
         }
-      } catch {
-        this.loading.set(false);
-        this.error.set(true);
-        this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
-      }
-    });
+        if (errores.length === 4) {
+          this.loading.set(false);
+          this.error.set(true);
+          this.mostrarError('No se pudieron cargar las estadísticas. Por favor, inténtalo de nuevo.');
+          return;
+        }
+
+        this.idsProgramaPorNombre = ids;
+        try {
+          const resumen = resumenDesdeEndpoints(
+            estadoSolicitudes,
+            porProceso,
+            estudiantesPorPrograma,
+            this.totalEstudiantes,
+            this.idPrograma
+          );
+          this.mostrarResumen(resumen, errores.length > 0 ? null : 'Datos cargados usando endpoints alternativos');
+          if (errores.length > 0) {
+            this.mostrarError(
+              `Datos cargados parcialmente. Algunos endpoints fallaron: ${errores.map((e) => e.endpoint).join(', ')}`
+            );
+          }
+        } catch {
+          this.loading.set(false);
+          this.error.set(true);
+          this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
+        }
+      });
   }
 
   private cargarTotalEstudiantes(): void {
     this.loadingEstudiantes.set(true);
-    this.estadisticasService.getTotalEstudiantes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        this.totalEstudiantes = response.totalEstudiantes;
-        this.loadingEstudiantes.set(false);
-        const total = this.totalEstudiantes;
-        this.kpis.update(kpis => kpis.map(k => k.titulo === TITULO_KPI_ESTUDIANTES ? { ...k, valor: total } : k));
-      },
-      error: (error: HttpErrorResponse) => {
-        this.loadingEstudiantes.set(false);
-        this.totalEstudiantes = 0;
-        // Si es 401/403, el mensaje ya lo muestra cargarDatos()
-        if (!esErrorDeAcceso(error)) {
-          this.mostrarError('Error al cargar el total de estudiantes');
-        }
-      }
-    });
+    this.estadisticasService
+      .getTotalEstudiantes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.totalEstudiantes = response.totalEstudiantes;
+          this.loadingEstudiantes.set(false);
+          const total = this.totalEstudiantes;
+          this.kpis.update((kpis) =>
+            kpis.map((k) => (k.titulo === TITULO_KPI_ESTUDIANTES ? { ...k, valor: total } : k))
+          );
+        },
+        error: (error: HttpErrorResponse) => {
+          this.loadingEstudiantes.set(false);
+          this.totalEstudiantes = 0;
+          // Si es 401/403, el mensaje ya lo muestra cargarDatos()
+          if (!esErrorDeAcceso(error)) {
+            this.mostrarError('Error al cargar el total de estudiantes');
+          }
+        },
+      });
   }
 
   /** 401/403: no mostrar el dashboard en ceros, sino un mensaje claro. */
@@ -278,23 +313,30 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /** Por proceso con el endpoint detallado; si falla, con el resumen. */
   private async crearChartProcesos(): Promise<void> {
-    const datos = await this.consultar(this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosParaBackend(this.filtros())));
+    const datos = await this.consultar(
+      this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosParaBackend(this.filtros()))
+    );
     if (datos?.estadisticasPorProceso) {
       this.dibujar('chartProcesos', graficoProcesos(datos.estadisticasPorProceso));
       return;
     }
     const procesos = this.resumenCompleto()?.estadisticasPorProceso ?? [];
     if (procesos.length) {
-      this.dibujar('chartProcesos', graficoProcesosDesdeResumen(
-        procesos.map(p => formatearNombreProceso(p.nombreProceso)),
-        procesos.map(p => p.totalSolicitudes)
-      ));
+      this.dibujar(
+        'chartProcesos',
+        graficoProcesosDesdeResumen(
+          procesos.map((p) => formatearNombreProceso(p.nombreProceso)),
+          procesos.map((p) => p.totalSolicitudes)
+        )
+      );
     }
   }
 
   /** Sin datos mensuales no se dibuja nada inventado: la vista muestra un aviso. */
   private async crearChartTendencia(): Promise<void> {
-    const datos = await this.consultar(this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosParaBackend(this.filtros())));
+    const datos = await this.consultar(
+      this.estadisticasService.getEstadisticasPorPeriodoMejoradas(filtrosParaBackend(this.filtros()))
+    );
     this.tendenciaSinDatos.set(!datos?.porMes);
     if (datos?.porMes) {
       this.dibujar('chartTendencia', graficoTendencia(datos));
@@ -303,16 +345,30 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   /** Por programa con /por-programa; si falla, con el resumen. */
   private async crearChartDistribucion(): Promise<void> {
-    const datos = await this.consultar(this.estadisticasService.getEstadisticasPorProgramaMejoradas(filtrosParaBackend(this.filtros())));
+    const datos = await this.consultar(
+      this.estadisticasService.getEstadisticasPorProgramaMejoradas(filtrosParaBackend(this.filtros()))
+    );
     if (datos?.solicitudesPorPrograma) {
       const porPrograma = datos.solicitudesPorPrograma;
       const programas = Object.keys(porPrograma);
-      this.dibujar('chartDistribucion', graficoProgramas(programas, programas.map(p => porPrograma[p] || 0)));
+      this.dibujar(
+        'chartDistribucion',
+        graficoProgramas(
+          programas,
+          programas.map((p) => porPrograma[p] || 0)
+        )
+      );
       return;
     }
     const programas = this.resumenCompleto()?.estadisticasPorPrograma ?? [];
     if (programas.length) {
-      this.dibujar('chartDistribucion', graficoProgramas(programas.map(p => p.nombrePrograma), programas.map(p => p.totalSolicitudes)));
+      this.dibujar(
+        'chartDistribucion',
+        graficoProgramas(
+          programas.map((p) => p.nombrePrograma),
+          programas.map((p) => p.totalSolicitudes)
+        )
+      );
     }
   }
 
@@ -365,16 +421,19 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       aplicar();
       return;
     }
-    this.periodosService.getPeriodoActual().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (periodo) => {
-        if (periodo?.valor) {
-          filtros.periodoAcademico = periodo.valor;
-        }
-        aplicar();
-      },
-      // Sin período actual, se carga sin filtro de período
-      error: () => aplicar()
-    });
+    this.periodosService
+      .getPeriodoActual()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (periodo) => {
+          if (periodo?.valor) {
+            filtros.periodoAcademico = periodo.valor;
+          }
+          aplicar();
+        },
+        // Sin período actual, se carga sin filtro de período
+        error: () => aplicar(),
+      });
   }
 
   limpiarFiltros(): void {
@@ -402,7 +461,11 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   exportarExcel(): void {
-    this.exportar(this.estadisticasService.exportarExcel(filtrosParaExportar(this.filtrosForm?.value)), 'xlsx', 'Excel');
+    this.exportar(
+      this.estadisticasService.exportarExcel(filtrosParaExportar(this.filtrosForm?.value)),
+      'xlsx',
+      'Excel'
+    );
   }
 
   private exportar(peticion$: Observable<Blob>, extension: string, formato: string): void {
@@ -420,15 +483,14 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       },
       error: (error: HttpErrorResponse) => {
         this.exportando.set(false);
-        this.mostrarError(esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : `Error al exportar el reporte ${formato}`);
-      }
+        this.mostrarError(
+          esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : `Error al exportar el reporte ${formato}`
+        );
+      },
     });
   }
 
   // ===== Plantilla =====
-
-
-
 
   private mostrarExito(mensaje: string): void {
     this.snackbar.exito(mensaje);

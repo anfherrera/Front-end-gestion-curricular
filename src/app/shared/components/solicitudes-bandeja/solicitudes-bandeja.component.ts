@@ -17,9 +17,15 @@ import { PeriodoFiltroSelectorComponent } from '../periodo-filtro-selector/perio
 @Component({
   selector: 'app-solicitudes-bandeja',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, MatTabsModule,CardContainerComponent, RequestStatusTableComponent, PeriodoFiltroSelectorComponent],
+  imports: [
+    NgTemplateOutlet,
+    MatTabsModule,
+    CardContainerComponent,
+    RequestStatusTableComponent,
+    PeriodoFiltroSelectorComponent,
+  ],
   templateUrl: './solicitudes-bandeja.component.html',
-  styleUrls: ['./solicitudes-bandeja.component.css']
+  styleUrls: ['./solicitudes-bandeja.component.css'],
 })
 export class SolicitudesBandejaComponent<S extends SolicitudRevisable = SolicitudRevisable> {
   readonly pendientes = input<S[] | null | undefined>([]);
@@ -38,7 +44,7 @@ export class SolicitudesBandejaComponent<S extends SolicitudRevisable = Solicitu
   readonly filasProcesadas = computed(() => (this.procesadas() ?? []).map(aFilaSolicitud));
 
   onFilaSeleccionada(id: number | null): void {
-    const solicitud = id === null ? undefined : (this.pendientes() ?? []).find(sol => sol.id_solicitud === id);
+    const solicitud = id === null ? undefined : (this.pendientes() ?? []).find((sol) => sol.id_solicitud === id);
     this.solicitudSeleccionada.emit(solicitud ?? null);
   }
 

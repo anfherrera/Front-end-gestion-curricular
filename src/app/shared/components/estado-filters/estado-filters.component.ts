@@ -14,15 +14,9 @@ import { estadoCurso } from '@core/utils/cursos-verano.utils';
 @Component({
   selector: 'app-estado-filters',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatIconModule,
-    MatProgressSpinnerModule
-],
+  imports: [MatFormFieldModule, MatSelectModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './estado-filters.component.html',
-  styleUrl: './estado-filters.component.css'
+  styleUrl: './estado-filters.component.css',
 })
 export class EstadoFiltersComponent implements OnInit {
   private cursoEstadosService = inject(CursoEstadosService);
@@ -54,7 +48,8 @@ export class EstadoFiltersComponent implements OnInit {
 
     if (estado) {
       // Pedir al backend los cursos de ese estado
-      this.cursosService.getCursosPorEstado(estado)
+      this.cursosService
+        .getCursosPorEstado(estado)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (cursos) => {
@@ -66,7 +61,7 @@ export class EstadoFiltersComponent implements OnInit {
             // Si falla, filtrar localmente
             this.aplicarFiltro();
             this.cargandoFiltro.set(false);
-          }
+          },
         });
     } else {
       // Sin estado: todos los cursos
@@ -79,9 +74,7 @@ export class EstadoFiltersComponent implements OnInit {
 
   private aplicarFiltro(): void {
     const estado = this.estadoSeleccionado();
-    const filtrados = estado
-      ? this.cursos().filter(curso => estadoCurso(curso) === estado)
-      : [...this.cursos()];
+    const filtrados = estado ? this.cursos().filter((curso) => estadoCurso(curso) === estado) : [...this.cursos()];
     this.cursosFiltrados.set(filtrados);
     this.cursosFiltradosChange.emit(filtrados);
   }
@@ -89,18 +82,21 @@ export class EstadoFiltersComponent implements OnInit {
   private calcularConteos(): void {
     // Conteos locales primero
     const conteos: Record<string, number> = {};
-    this.estadosDisponibles().forEach(estado => {
-      conteos[estado.value] = this.cursos().filter(curso => estadoCurso(curso) === estado.value).length;
+    this.estadosDisponibles().forEach((estado) => {
+      conteos[estado.value] = this.cursos().filter((curso) => estadoCurso(curso) === estado.value).length;
     });
     this.conteosEstados.set(conteos);
 
     // Luego los del backend para cada estado (si falla, se mantiene el local)
-    this.estadosDisponibles().forEach(estado => {
-      this.cursosService.getCursosPorEstado(estado.value)
+    this.estadosDisponibles().forEach((estado) => {
+      this.cursosService
+        .getCursosPorEstado(estado.value)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (cursos) => this.conteosEstados.update(actuales => ({ ...actuales, [estado.value]: cursos.length })),
-          error: () => { /* se mantiene el conteo local */ }
+          next: (cursos) => this.conteosEstados.update((actuales) => ({ ...actuales, [estado.value]: cursos.length })),
+          error: () => {
+            /* se mantiene el conteo local */
+          },
         });
     });
   }

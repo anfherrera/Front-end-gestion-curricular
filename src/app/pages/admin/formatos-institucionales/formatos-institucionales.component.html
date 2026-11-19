@@ -10,9 +10,9 @@
       <div class="info-section">
         <h3>
           <mat-icon>info</mat-icon>
-          En esta sección se administran los enlaces oficiales para descargar los formatos institucionales
-          relacionados con los procesos cubiertos por el sistema (Reingreso y Homologación de Asignaturas).
-          Puede modificar el nombre del formato y la URL de descarga cuando la institución actualice los documentos.
+          En esta sección se administran los enlaces oficiales para descargar los formatos institucionales relacionados
+          con los procesos cubiertos por el sistema (Reingreso y Homologación de Asignaturas). Puede modificar el nombre
+          del formato y la URL de descarga cuando la institución actualice los documentos.
         </h3>
       </div>
 
@@ -35,7 +35,9 @@
                 </div>
                 <div class="valor-fila">
                   <span class="label">Link de descarga:</span>
-                  <a [href]="f.url" target="_blank" rel="noopener noreferrer" class="link-preview">{{ truncarUrl(f.url) }}</a>
+                  <a [href]="f.url" target="_blank" rel="noopener noreferrer" class="link-preview">{{
+                    truncarUrl(f.url)
+                  }}</a>
                   <button mat-stroked-button color="primary" type="button" (click)="iniciarEdicion(f)">
                     <mat-icon>edit</mat-icon>
                     Modificar

@@ -6,15 +6,9 @@
   <div class="form-section">
     <h3>Información de la Solicitud</h3>
     <div class="info-grid">
-      <div class="info-item">
-        <strong>Nombre Completo:</strong> {{ data.solicitud.objUsuario.nombre_completo }}
-      </div>
-      <div class="info-item">
-        <strong>Código:</strong> {{ data.solicitud.objUsuario.codigo || 'N/A' }}
-      </div>
-      <div class="info-item">
-        <strong>Condición:</strong> {{ data.solicitud.condicion || 'N/A' }}
-      </div>
+      <div class="info-item"><strong>Nombre Completo:</strong> {{ data.solicitud.objUsuario.nombre_completo }}</div>
+      <div class="info-item"><strong>Código:</strong> {{ data.solicitud.objUsuario.codigo || 'N/A' }}</div>
+      <div class="info-item"><strong>Condición:</strong> {{ data.solicitud.condicion || 'N/A' }}</div>
     </div>
   </div>
 
@@ -24,10 +18,12 @@
     <form [formGroup]="observacionesForm">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Agrega observaciones sobre esta preinscripción</mat-label>
-        <textarea matInput
+        <textarea
+          matInput
           formControlName="observaciones"
           placeholder="Ej: Estudiante con buen rendimiento académico, cumple requisitos..."
-          rows="4">
+          rows="4"
+        >
         </textarea>
       </mat-form-field>
     </form>
@@ -39,9 +35,7 @@
       <h3>Historial de estados</h3>
       <div class="timeline">
         @for (estado of estadosOrdenados; track estado) {
-          <div
-            class="timeline-item"
-            [ngClass]="{ 'timeline-item--rechazo': esRechazo(estado.estado) }">
+          <div class="timeline-item" [ngClass]="{ 'timeline-item--rechazo': esRechazo(estado.estado) }">
             <div class="timeline-dot"></div>
             <div class="timeline-line"></div>
             <div class="timeline-content">
@@ -64,10 +58,7 @@
 
 <div mat-dialog-actions class="dialog-actions">
   <button mat-button (click)="dialogRef.close()">Cancelar</button>
-  <button mat-raised-button
-    color="primary"
-    (click)="guardarObservaciones()"
-    [disabled]="observacionesForm.invalid">
+  <button mat-raised-button color="primary" (click)="guardarObservaciones()" [disabled]="observacionesForm.invalid">
     Guardar Observaciones
   </button>
 </div>

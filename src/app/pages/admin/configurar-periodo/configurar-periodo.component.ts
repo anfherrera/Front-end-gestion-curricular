@@ -9,7 +9,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PeriodosAcademicosService, PeriodoAcademico, PeriodoActivoConfig } from '@core/services/periodos-academicos.service';
+import {
+  PeriodosAcademicosService,
+  PeriodoAcademico,
+  PeriodoActivoConfig,
+} from '@core/services/periodos-academicos.service';
 import { formatearPeriodo } from '@core/utils/periodo.utils';
 import { SnackbarService } from '@core/services/snackbar.service';
 
@@ -24,11 +28,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatButtonModule,
     MatIconModule,
     MatRadioModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './configurar-periodo.component.html',
   styleUrls: ['./configurar-periodo.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigurarPeriodoComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -46,29 +50,30 @@ export class ConfigurarPeriodoComponent implements OnInit {
   constructor() {
     this.configForm = this.fb.group({
       modo: ['automatico', Validators.required],
-      periodoSeleccionado: ['']
+      periodoSeleccionado: [''],
     });
   }
 
   ngOnInit(): void {
     // Período actual: el servicio lo emite cada vez que cambia
-    this.periodosService.periodoActual$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(periodo => {
-        this.periodoActual.set(periodo);
-      });
+    this.periodosService.periodoActual$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((periodo) => {
+      this.periodoActual.set(periodo);
+    });
 
     this.cargarDatos();
 
     // Suscribirse a cambios en el modo
-    this.configForm.get('modo')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(modo => {
-      if (modo === 'automatico') {
-        this.configForm.get('periodoSeleccionado')?.clearValidators();
-      } else {
-        this.configForm.get('periodoSeleccionado')?.setValidators([Validators.required]);
-      }
-      this.configForm.get('periodoSeleccionado')?.updateValueAndValidity();
-    });
+    this.configForm
+      .get('modo')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((modo) => {
+        if (modo === 'automatico') {
+          this.configForm.get('periodoSeleccionado')?.clearValidators();
+        } else {
+          this.configForm.get('periodoSeleccionado')?.setValidators([Validators.required]);
+        }
+        this.configForm.get('periodoSeleccionado')?.updateValueAndValidity();
+      });
   }
 
   cargarDatos(): void {
@@ -81,13 +86,13 @@ export class ConfigurarPeriodoComponent implements OnInit {
         if (config) {
           this.configForm.patchValue({
             modo: config.modo,
-            periodoSeleccionado: config.periodoAcademico || ''
+            periodoSeleccionado: config.periodoAcademico || '',
           });
         }
       },
       error: () => {
         this.snackbar.error('Error al cargar la configuración actual');
-      }
+      },
     });
 
     // Cargar período actual
@@ -106,7 +111,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
       error: () => {
         this.cargando.set(false);
         this.snackbar.error('Error al cargar los períodos disponibles');
-      }
+      },
     });
   }
 
@@ -118,17 +123,17 @@ export class ConfigurarPeriodoComponent implements OnInit {
 
     this.guardando.set(true);
     const modo = this.configForm.get('modo')?.value;
-    const periodoSeleccionado = modo === 'manual' 
-      ? this.configForm.get('periodoSeleccionado')?.value 
-      : null;
+    const periodoSeleccionado = modo === 'manual' ? this.configForm.get('periodoSeleccionado')?.value : null;
 
     this.periodosService.setPeriodoActivo(periodoSeleccionado).subscribe({
       next: (config) => {
         if (config) {
           this.configActual.set(config);
-          this.snackbar.exito(modo === 'automatico' 
-              ? 'Modo automático activado correctamente' 
-              : `Período ${formatearPeriodo(periodoSeleccionado)} establecido correctamente`);
+          this.snackbar.exito(
+            modo === 'automatico'
+              ? 'Modo automático activado correctamente'
+              : `Período ${formatearPeriodo(periodoSeleccionado)} establecido correctamente`
+          );
           // Recargar período actual
           this.periodosService.getPeriodoActual().subscribe();
         }
@@ -137,7 +142,7 @@ export class ConfigurarPeriodoComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al guardar la configuración');
         this.guardando.set(false);
-      }
+      },
     });
   }
 
@@ -149,4 +154,3 @@ export class ConfigurarPeriodoComponent implements OnInit {
     return periodo.nombrePeriodo || formatearPeriodo(periodo.valor);
   }
 }
-

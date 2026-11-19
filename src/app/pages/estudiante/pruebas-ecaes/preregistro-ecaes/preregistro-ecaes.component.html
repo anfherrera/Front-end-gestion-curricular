@@ -1,8 +1,6 @@
 <app-card-container title="Documentación Adjunta" icon="description">
-
   <!-- Formulario de datos personales -->
   <form [formGroup]="solicitudForm" class="formulario-solicitud">
-
     <!-- Fila 1: Tipo de documento y número -->
     <div class="form-row">
       <mat-form-field appearance="outline" class="form-field">
@@ -20,15 +18,13 @@
           </mat-error>
         }
         @if (solicitudForm.get('tipoDocumento')?.hasError('tipoDocumentoInvalido')) {
-          <mat-error>
-            Solo se aceptan Cédula de Ciudadanía (CC) o Cédula de Extranjería (CE)
-          </mat-error>
+          <mat-error> Solo se aceptan Cédula de Ciudadanía (CC) o Cédula de Extranjería (CE) </mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="form-field">
         <mat-label>Número de Documento</mat-label>
-        <input matInput formControlName="numero_documento" placeholder="Ej: 1007914110">
+        <input matInput formControlName="numero_documento" placeholder="Ej: 1007914110" />
         @if (esCampoInvalido('numero_documento')) {
           <mat-error>
             {{ obtenerMensajeError('numero_documento') }}
@@ -41,7 +37,7 @@
     <div class="form-row">
       <mat-form-field appearance="outline" class="form-field">
         <mat-label>Fecha de Nacimiento</mat-label>
-        <input matInput [matDatepicker]="nacimientoPicker" formControlName="fecha_nacimiento">
+        <input matInput [matDatepicker]="nacimientoPicker" formControlName="fecha_nacimiento" />
         <mat-datepicker-toggle matSuffix [for]="nacimientoPicker"></mat-datepicker-toggle>
         <mat-datepicker #nacimientoPicker></mat-datepicker>
         @if (esCampoInvalido('fecha_nacimiento')) {
@@ -53,7 +49,7 @@
 
       <mat-form-field appearance="outline" class="form-field">
         <mat-label>Fecha de Expedición</mat-label>
-        <input matInput [matDatepicker]="expedicionPicker" formControlName="fecha_expedicion">
+        <input matInput [matDatepicker]="expedicionPicker" formControlName="fecha_expedicion" />
         <mat-datepicker-toggle matSuffix [for]="expedicionPicker"></mat-datepicker-toggle>
         <mat-datepicker #expedicionPicker></mat-datepicker>
         @if (esCampoInvalido('fecha_expedicion')) {
@@ -63,21 +59,18 @@
         }
       </mat-form-field>
     </div>
-
   </form>
 
   <!-- Sección de carga de archivos -->
   <div class="seccion-archivos">
     <div class="documento-especifico">
       <p class="texto-documento">
-        <strong>Documento requerido:</strong> Fotocopia de su cédula de ciudadanía por ambos lados (anverso y reverso) en un solo archivo PDF.
+        <strong>Documento requerido:</strong> Fotocopia de su cédula de ciudadanía por ambos lados (anverso y reverso)
+        en un solo archivo PDF.
       </p>
     </div>
 
-    <app-file-upload
-      [archivos]="archivos()"
-      (archivosChange)="onArchivosChange($event)">
-    </app-file-upload>
+    <app-file-upload [archivos]="archivos()" (archivosChange)="onArchivosChange($event)"> </app-file-upload>
   </div>
 
   <!-- Botón de envío -->
@@ -87,7 +80,8 @@
       color="primary"
       (click)="enviarSolicitud()"
       [disabled]="enviandoSolicitud() || solicitudForm.invalid || archivos().length === 0"
-      class="btn-enviar">
+      class="btn-enviar"
+    >
       @if (!enviandoSolicitud()) {
         <mat-icon>send</mat-icon>
       }
@@ -97,5 +91,4 @@
       {{ enviandoSolicitud() ? 'Enviando...' : 'Enviar Solicitud' }}
     </button>
   </div>
-
 </app-card-container>

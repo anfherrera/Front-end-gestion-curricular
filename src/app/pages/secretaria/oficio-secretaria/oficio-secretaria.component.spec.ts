@@ -20,7 +20,7 @@ function solicitud(id: number): Sol {
     periodo_academico: '2026-1',
     estadosSolicitud: [{ id_estado: 1, estado_actual: 'APROBADA_COORDINADOR', fecha_registro_estado: '2026-03-01' }],
     objUsuario: { nombre_completo: 'Ana Pérez', codigo: '1001' },
-    documentos: []
+    documentos: [],
   } as unknown as Sol;
 }
 
@@ -48,8 +48,8 @@ describe('OficioSecretariaComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: SnackbarService, useValue: snackbar },
-        { provide: DocumentGeneratorService, useValue: generador }
-      ]
+        { provide: DocumentGeneratorService, useValue: generador },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OficioSecretariaComponent<Sol>);
@@ -57,7 +57,7 @@ describe('OficioSecretariaComponent', () => {
     fixture.componentRef.setInput('config', {
       ...config,
       proceso: 'paz-salvo',
-      plantilla: { id: 'OFICIO_PAZ_SALVO', nombre: 'Oficio', descripcion: '', camposRequeridos: [] }
+      plantilla: { id: 'OFICIO_PAZ_SALVO', nombre: 'Oficio', descripcion: '', camposRequeridos: [] },
     } satisfies ConfigOficioSecretaria<Sol>);
     fixture.detectChanges();
   });

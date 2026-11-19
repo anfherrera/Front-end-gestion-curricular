@@ -13,7 +13,7 @@ describe('DocumentGeneratorService', () => {
     idSolicitud: 7,
     tipoDocumento,
     datosDocumento: { numeroDocumento: '001-2026', fechaDocumento: new Date(2026, 0, 5) },
-    datosSolicitud: { idSolicitud: 7, estado: 'APROBADA_COORDINADOR', cedula: '123' }
+    datosSolicitud: { idSolicitud: 7, estado: 'APROBADA_COORDINADOR', cedula: '123' },
   });
 
   beforeEach(() => {

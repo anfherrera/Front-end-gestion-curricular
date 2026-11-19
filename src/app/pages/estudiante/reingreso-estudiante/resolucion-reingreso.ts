@@ -17,15 +17,17 @@ export function documentoDeResolucion<D extends DocumentoDeSolicitud>(
   documentos: D[] | null | undefined,
   nombresRequeridos: string[]
 ): D | undefined {
-  const requeridos = nombresRequeridos.map(nombre => nombre.toLowerCase().trim());
+  const requeridos = nombresRequeridos.map((nombre) => nombre.toLowerCase().trim());
   const esResolucion = (doc: D): boolean => {
     if (!doc.nombre) return false;
     const nombre = doc.nombre.toLowerCase();
     const sinExtension = nombre.replace(/\.[^/.]+$/, '').trim();
     if (requeridos.includes(nombre) || requeridos.includes(sinExtension)) return false;
-    return PATRON_RESOLUCION.test(doc.nombre) ||
+    return (
+      PATRON_RESOLUCION.test(doc.nombre) ||
       (!!doc.ruta_documento && PATRON_RESOLUCION.test(doc.ruta_documento)) ||
-      nombre.endsWith('.pdf');
+      nombre.endsWith('.pdf')
+    );
   };
   return (documentos ?? [])
     .filter(esResolucion)

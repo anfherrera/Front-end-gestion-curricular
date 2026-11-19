@@ -13,7 +13,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 
-import { HistorialSolicitudesService, HistorialResponse, HistorialSolicitud, FiltrosHistorial } from '@core/services/historial-solicitudes.service';
+import {
+  HistorialSolicitudesService,
+  HistorialResponse,
+  HistorialSolicitud,
+  FiltrosHistorial,
+} from '@core/services/historial-solicitudes.service';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
@@ -41,11 +46,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     UtfFixPipe,
     EstadoClasePipe,
     EstadoLabelPipe,
-    FechaPipe
-],
+    FechaPipe,
+  ],
   templateUrl: './historial-completo.component.html',
   styleUrls: ['../estados-solicitud-comun.css', './historial-completo.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistorialCompletoComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -66,7 +71,7 @@ export class HistorialCompletoComponent implements OnInit {
     'usuario',
     'periodo_academico',
     'estado_actual',
-    'fecha_registro'
+    'fecha_registro',
   ];
 
   tiposSolicitud: { codigo: string; display: string }[] = [];
@@ -78,7 +83,7 @@ export class HistorialCompletoComponent implements OnInit {
     this.filtrosForm = this.fb.group({
       periodoAcademico: [''],
       tipoSolicitud: [''],
-      estadoActual: ['']
+      estadoActual: [''],
     });
 
     this.tiposSolicitud = this.historialService.getTiposSolicitud();
@@ -90,11 +95,7 @@ export class HistorialCompletoComponent implements OnInit {
 
     // Suscribirse a cambios en los filtros con debounce
     this.filtrosForm.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef)
-      )
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.cargarHistorial();
       });
@@ -115,27 +116,28 @@ export class HistorialCompletoComponent implements OnInit {
       filtros.estadoActual = formValue.estadoActual;
     }
 
-    this.historialService.obtenerHistorialCompleto(filtros).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (response) => {
-        this.historial.set(response);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        this.logger.error('Error al cargar el historial de solicitudes:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || 'Error al cargar el historial de solicitudes');
-        this.loading.set(false);
-      }
-    });
+    this.historialService
+      .obtenerHistorialCompleto(filtros)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.historial.set(response);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.logger.error('Error al cargar el historial de solicitudes:', error);
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackbar.error(mensaje || 'Error al cargar el historial de solicitudes');
+          this.loading.set(false);
+        },
+      });
   }
 
   limpiarFiltros(): void {
     this.filtrosForm.reset({
       periodoAcademico: '',
       tipoSolicitud: '',
-      estadoActual: ''
+      estadoActual: '',
     });
   }
 
@@ -152,7 +154,8 @@ export class HistorialCompletoComponent implements OnInit {
     if (nombreSolicitud.includes('Homologacion') || nombreSolicitud.includes('Homologación')) return 'Homologación';
     if (nombreSolicitud.includes('Paz y Salvo')) return 'Paz y Salvo';
     if (nombreSolicitud.includes('ECAES')) return 'ECAES';
-    if (nombreSolicitud.includes('Curso Verano') || nombreSolicitud.includes('Curso Intersemestral')) return 'Cursos de Verano';
+    if (nombreSolicitud.includes('Curso Verano') || nombreSolicitud.includes('Curso Intersemestral'))
+      return 'Cursos de Verano';
     return 'Otro';
   }
 
@@ -196,60 +199,61 @@ export class HistorialCompletoComponent implements OnInit {
       filtros.estadoActual = formValue.estadoActual;
     }
 
-    this.historialService.exportarHistorialPDF(filtros).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (response) => {
-        try {
-          const { blob, filename } = response;
-          
-          // Crear URL del blob
-          const url = window.URL.createObjectURL(blob);
-          
-          // Crear elemento <a> para descargar
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = filename;
-          
-          // Simular click para descargar
-          document.body.appendChild(link);
-          link.click();
-          
-          // Limpiar
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-          
-          this.snackbar.exito('PDF exportado exitosamente');
-        } catch (error) {
-          this.logger.error('Error al procesar el archivo PDF:', error);
-          this.snackbar.error('Error al procesar el archivo PDF');
-        } finally {
-          this.exportandoPDF.set(false);
-        }
-      },
-      error: (err) => {
-        this.exportandoPDF.set(false);
-        this.logger.error('Error al exportar PDF:', err);
-        
-        let mensaje = 'Error al exportar PDF';
-        if (err.status === 401) {
-          mensaje = 'No autorizado. Por favor, inicia sesión nuevamente';
-        } else if (err.status === 403) {
-          mensaje = 'No tienes permisos para exportar el historial';
-        } else if (err.status === 500) {
-          mensaje = 'Error del servidor al generar el PDF';
-        } else if (err.status === 0) {
-          mensaje = 'Error de conexión. Verifica tu conexión a internet';
-        } else {
-          const mensajeError = this.errorHandler.extraerMensajeError(err);
-          if (mensajeError && mensajeError !== 'Ocurrió un error inesperado') {
-            mensaje = mensajeError;
+    this.historialService
+      .exportarHistorialPDF(filtros)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          try {
+            const { blob, filename } = response;
+
+            // Crear URL del blob
+            const url = window.URL.createObjectURL(blob);
+
+            // Crear elemento <a> para descargar
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+
+            // Simular click para descargar
+            document.body.appendChild(link);
+            link.click();
+
+            // Limpiar
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            this.snackbar.exito('PDF exportado exitosamente');
+          } catch (error) {
+            this.logger.error('Error al procesar el archivo PDF:', error);
+            this.snackbar.error('Error al procesar el archivo PDF');
+          } finally {
+            this.exportandoPDF.set(false);
           }
-        }
-        
-        this.snackbar.error(mensaje);
-      }
-    });
+        },
+        error: (err) => {
+          this.exportandoPDF.set(false);
+          this.logger.error('Error al exportar PDF:', err);
+
+          let mensaje = 'Error al exportar PDF';
+          if (err.status === 401) {
+            mensaje = 'No autorizado. Por favor, inicia sesión nuevamente';
+          } else if (err.status === 403) {
+            mensaje = 'No tienes permisos para exportar el historial';
+          } else if (err.status === 500) {
+            mensaje = 'Error del servidor al generar el PDF';
+          } else if (err.status === 0) {
+            mensaje = 'Error de conexión. Verifica tu conexión a internet';
+          } else {
+            const mensajeError = this.errorHandler.extraerMensajeError(err);
+            if (mensajeError && mensajeError !== 'Ocurrió un error inesperado') {
+              mensaje = mensajeError;
+            }
+          }
+
+          this.snackbar.error(mensaje);
+        },
+      });
   }
 
   /**
@@ -262,5 +266,3 @@ export class HistorialCompletoComponent implements OnInit {
     return solicitud.id_solicitud || index;
   }
 }
-
-

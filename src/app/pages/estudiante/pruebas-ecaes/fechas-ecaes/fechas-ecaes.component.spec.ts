@@ -24,7 +24,7 @@ describe('FechasEcaesComponent', () => {
       registro_recaudo_extraordinario: '2025-02-15',
       citacion: '2025-03-01',
       aplicacion: '2025-03-15',
-      resultados_individuales: '2025-04-01'
+      resultados_individuales: '2025-04-01',
     },
     {
       idFechaEcaes: 2,
@@ -34,8 +34,8 @@ describe('FechasEcaesComponent', () => {
       registro_recaudo_extraordinario: '2025-09-15',
       citacion: '2025-10-01',
       aplicacion: '2025-10-15',
-      resultados_individuales: '2025-11-01'
-    }
+      resultados_individuales: '2025-11-01',
+    },
   ];
 
   beforeEach(async () => {
@@ -51,8 +51,8 @@ describe('FechasEcaesComponent', () => {
         { provide: PruebasEcaesService, useValue: pruebasEcaesService },
         { provide: MatSnackBar, useValue: snackBar },
         { provide: ErrorHandlerService, useValue: errorHandler },
-        { provide: LoggerService, useValue: jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']) }
-      ]
+        { provide: LoggerService, useValue: jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']) },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FechasEcaesComponent);

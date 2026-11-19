@@ -31,11 +31,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
-    MatDialogModule
-],
+    MatDialogModule,
+  ],
   templateUrl: './manage-roles.component.html',
   styleUrls: ['./manage-roles.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageRolesComponent implements OnInit {
   private rolesService = inject(RolesAdminService);
@@ -54,7 +54,7 @@ export class ManageRolesComponent implements OnInit {
 
   cargarRoles(): void {
     this.loading.set(true);
-    
+
     this.rolesService.listarRoles().subscribe({
       next: (data) => {
         this.roles.set(corregirEncodingObjeto(data));
@@ -63,7 +63,7 @@ export class ManageRolesComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al cargar la lista de roles');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -82,7 +82,7 @@ export class ManageRolesComponent implements OnInit {
       error: () => {
         this.snackbar.error('No se encontró el rol');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -93,47 +93,51 @@ export class ManageRolesComponent implements OnInit {
 
   eliminarRol(rol: RolDTORespuesta): void {
     confirmar(this.dialog, {
-      titulo: 'Eliminar rol', textoConfirmar: 'Eliminar', peligro: true,
-      mensaje: `¿Está seguro de eliminar el rol "${rol.nombre}"?\n\nEsta acción no se puede deshacer.`
-    }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading.set(true);
+      titulo: 'Eliminar rol',
+      textoConfirmar: 'Eliminar',
+      peligro: true,
+      mensaje: `¿Está seguro de eliminar el rol "${rol.nombre}"?\n\nEsta acción no se puede deshacer.`,
+    })
+      .pipe(filter(Boolean))
+      .subscribe(() => {
+        this.loading.set(true);
 
-      this.rolesService.eliminarRol(rol.id_rol).subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.snackbar.exito('Rol eliminado exitosamente');
-          this.cargarRoles();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.loading.set(false);
-        
-          // Extraer mensaje de error usando el servicio
-          const mensaje = this.errorHandler.extraerMensajeError(error);
-        
-          // Determinar el tipo de error
-          if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
-            // Error de dependencias (400) - Rol tiene usuarios asociados
-            this.snackbar.advertencia(`${mensaje}`);
-          } else if (error.status === 404) {
-            // No encontrado
-            this.snackbar.error('Rol no encontrado');
-          } else {
-            // Otros errores
-            this.snackbar.error(`${mensaje}`);
-          }
-        }
+        this.rolesService.eliminarRol(rol.id_rol).subscribe({
+          next: () => {
+            this.loading.set(false);
+            this.snackbar.exito('Rol eliminado exitosamente');
+            this.cargarRoles();
+          },
+          error: (error: HttpErrorResponse) => {
+            this.loading.set(false);
+
+            // Extraer mensaje de error usando el servicio
+            const mensaje = this.errorHandler.extraerMensajeError(error);
+
+            // Determinar el tipo de error
+            if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+              // Error de dependencias (400) - Rol tiene usuarios asociados
+              this.snackbar.advertencia(`${mensaje}`);
+            } else if (error.status === 404) {
+              // No encontrado
+              this.snackbar.error('Rol no encontrado');
+            } else {
+              // Otros errores
+              this.snackbar.error(`${mensaje}`);
+            }
+          },
+        });
       });
-    });
   }
 
   editarRol(rol: RolDTORespuesta): void {
     const dialogRef = this.dialog.open(FormRolDialogComponent, {
       width: '500px',
       panelClass: 'dialogo-rol',
-      data: { rol, isEditMode: true }
+      data: { rol, isEditMode: true },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.cargarRoles();
       }
@@ -144,10 +148,10 @@ export class ManageRolesComponent implements OnInit {
     const dialogRef = this.dialog.open(FormRolDialogComponent, {
       width: '500px',
       panelClass: 'dialogo-rol',
-      data: { rol: null, isEditMode: false }
+      data: { rol: null, isEditMode: false },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.cargarRoles();
       }

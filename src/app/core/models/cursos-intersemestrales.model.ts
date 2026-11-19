@@ -38,7 +38,7 @@ export interface Salon {
 export enum CondicionSolicitudVerano {
   Primera_Vez = 'Primera_Vez',
   Habilitacion = 'Habilitación',
-  Repeticion = 'Repeteción'
+  Repeticion = 'Repeteción',
 }
 
 // ================== CURSOS ==================

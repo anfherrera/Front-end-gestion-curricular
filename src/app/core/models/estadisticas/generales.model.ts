@@ -56,24 +56,30 @@ export interface ResumenCompletoAPI {
     porPrograma: Record<string, number>;
     fechaConsulta: string;
   };
-  porTipoProceso: Record<string, {
-    tipoProceso: string;
-    totalSolicitudes: number;
-    totalAprobadas: number;
-    totalRechazadas: number;
-    totalEnProceso: number;
-    porcentajeAprobacion: number;
-    porEstado: Record<string, number>;
-  }>;
-  porEstado: Record<string, {
-    estado: string;
-    totalSolicitudes: number;
-    totalAprobadas: number;
-    totalRechazadas: number;
-    totalEnProceso: number;
-    porTipoProceso?: Record<string, number>;
-    porPrograma?: Record<string, number>;
-  }>;
+  porTipoProceso: Record<
+    string,
+    {
+      tipoProceso: string;
+      totalSolicitudes: number;
+      totalAprobadas: number;
+      totalRechazadas: number;
+      totalEnProceso: number;
+      porcentajeAprobacion: number;
+      porEstado: Record<string, number>;
+    }
+  >;
+  porEstado: Record<
+    string,
+    {
+      estado: string;
+      totalSolicitudes: number;
+      totalAprobadas: number;
+      totalRechazadas: number;
+      totalEnProceso: number;
+      porTipoProceso?: Record<string, number>;
+      porPrograma?: Record<string, number>;
+    }
+  >;
   totalProgramas: number;
   fechaGeneracion: string;
   filtrosAplicados?: {
@@ -189,7 +195,7 @@ export interface EstadoInfo {
   descripcion: string;
   color: string;
   icono: string;
-  procesos?: Record<string, number>;  // Distribución por proceso
+  procesos?: Record<string, number>; // Distribución por proceso
   programas?: Record<string, number>; // Distribución por programa
 }
 
@@ -199,12 +205,13 @@ export interface EstadoInfo {
  */
 export interface EstadoSolicitudesResponse {
   totalSolicitudes: number;
-  resumenPorEstado?: Record<string, EstadoInfo>;  // Campo actualizado del backend
-  estados?: Record<string, EstadoInfo>;           // Legacy: Mantener para compatibilidad
-  tasaResolucion?: number;                               // Tasa de resolución en nivel raíz
+  resumenPorEstado?: Record<string, EstadoInfo>; // Campo actualizado del backend
+  estados?: Record<string, EstadoInfo>; // Legacy: Mantener para compatibilidad
+  tasaResolucion?: number; // Tasa de resolución en nivel raíz
   fechaConsulta: string;
   descripcion?: string;
-  analisis?: {                    // Sección de análisis (legacy)
+  analisis?: {
+    // Sección de análisis (legacy)
     solicitudesPendientes: number;
     solicitudesCompletadas: number;
     tasaResolucion: number;

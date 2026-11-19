@@ -10,11 +10,10 @@ import { Router } from '@angular/router';
   imports: [MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WelcomeComponent {
   private router = inject(Router);
-
 
   continuar() {
     this.router.navigate(['/home']);

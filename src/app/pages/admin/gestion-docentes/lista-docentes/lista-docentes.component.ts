@@ -31,11 +31,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
-    MatInputModule
-],
+    MatInputModule,
+  ],
   templateUrl: './lista-docentes.component.html',
   styleUrls: ['./lista-docentes.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaDocentesComponent implements OnInit {
   private docentesService = inject(DocentesService);
@@ -55,7 +55,7 @@ export class ListaDocentesComponent implements OnInit {
 
   cargarDocentes(): void {
     this.loading.set(true);
-    
+
     this.docentesService.listarDocentes().subscribe({
       next: (data) => {
         this.docentes.set(corregirEncodingObjeto(data));
@@ -64,7 +64,7 @@ export class ListaDocentesComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al cargar la lista de docentes');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -83,7 +83,7 @@ export class ListaDocentesComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al buscar docentes');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -94,41 +94,45 @@ export class ListaDocentesComponent implements OnInit {
 
   eliminarDocente(docente: DocenteDTORespuesta): void {
     confirmar(this.dialog, {
-      titulo: 'Eliminar docente', textoConfirmar: 'Eliminar', peligro: true,
-      mensaje: `¿Está seguro de eliminar al docente "${docente.nombre_docente}"?\n\nEsta acción no se puede deshacer.`
-    }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading.set(true);
+      titulo: 'Eliminar docente',
+      textoConfirmar: 'Eliminar',
+      peligro: true,
+      mensaje: `¿Está seguro de eliminar al docente "${docente.nombre_docente}"?\n\nEsta acción no se puede deshacer.`,
+    })
+      .pipe(filter(Boolean))
+      .subscribe(() => {
+        this.loading.set(true);
 
-      this.docentesService.eliminarDocente(docente.id_docente).subscribe({
-        next: () => {
-          this.loading.set(false);
-          // Status 200 OK - Éxito
-          this.snackbar.exito('Docente eliminado exitosamente');
-          this.cargarDocentes();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.loading.set(false);
+        this.docentesService.eliminarDocente(docente.id_docente).subscribe({
+          next: () => {
+            this.loading.set(false);
+            // Status 200 OK - Éxito
+            this.snackbar.exito('Docente eliminado exitosamente');
+            this.cargarDocentes();
+          },
+          error: (error: HttpErrorResponse) => {
+            this.loading.set(false);
 
-          // Extraer mensaje de error usando el servicio
-          const mensaje = this.errorHandler.extraerMensajeError(error);
-        
-          // Manejo de errores específicos
-          if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
-            // Error de dependencias (400) - Docente tiene cursos asignados
-            this.snackbar.advertencia(`${mensaje}`);
-          } else if (error.status === 409) {
-            // Conflicto (respaldo para compatibilidad)
-            this.snackbar.advertencia(`${mensaje}`);
-          } else if (error.status === 404) {
-            // Docente no encontrado
-            this.snackbar.error('Docente no encontrado');
-          } else {
-            // Otros errores (500, etc.)
-            this.snackbar.error(`${mensaje}`);
-          }
-        }
+            // Extraer mensaje de error usando el servicio
+            const mensaje = this.errorHandler.extraerMensajeError(error);
+
+            // Manejo de errores específicos
+            if (this.errorHandler.esErrorDependencias(error) || error.status === 400) {
+              // Error de dependencias (400) - Docente tiene cursos asignados
+              this.snackbar.advertencia(`${mensaje}`);
+            } else if (error.status === 409) {
+              // Conflicto (respaldo para compatibilidad)
+              this.snackbar.advertencia(`${mensaje}`);
+            } else if (error.status === 404) {
+              // Docente no encontrado
+              this.snackbar.error('Docente no encontrado');
+            } else {
+              // Otros errores (500, etc.)
+              this.snackbar.error(`${mensaje}`);
+            }
+          },
+        });
       });
-    });
   }
 
   editarDocente(docente: DocenteDTORespuesta): void {
@@ -139,4 +143,3 @@ export class ListaDocentesComponent implements OnInit {
     this.router.navigate(['/admin/docentes/crear']);
   }
 }
-

@@ -3,10 +3,17 @@
   <mat-card-content>
     <!-- Texto introductorio solo para Paz y Salvo -->
     @if (esPazYSalvo()) {
-      <p class="info-intro">Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva programada por la Secretaría General de la Universidad del Cauca.</p>
+      <p class="info-intro">
+        Los estudiantes de pregrado de la FIET que hayan cumplido con todos los requisitos de grado, incluyendo la
+        aprobación del examen de sustentación, pueden solicitar el paz y salvo para la Ceremonia de Grado Colectiva
+        programada por la Secretaría General de la Universidad del Cauca.
+      </p>
     }
 
-    <p class="info-text">Debes subir los siguientes documentos necesarios en formato PDF. Todos los formatos deben estar debidamente diligenciados y firmados:</p>
+    <p class="info-text">
+      Debes subir los siguientes documentos necesarios en formato PDF. Todos los formatos deben estar debidamente
+      diligenciados y firmados:
+    </p>
 
     <!-- Notas específicas solo para Paz y Salvo -->
     @if (esPazYSalvo()) {
@@ -16,21 +23,31 @@
           <p><strong>Importante para estudiantes de Sistemas, Electrónica y Automática:</strong></p>
           <ul class="lista-requisitos">
             <li>Debes subir los 4 documentos obligatorios marcados con (*)</li>
-            <li><strong>Además, debes subir OBLIGATORIAMENTE uno de estos formatos:</strong> PPH o TIH (solo uno de los dos, marcado con *)</li>
-            <li><strong>Y según tu modalidad de trabajo de grado:</strong> Si es TRABAJO DE INVESTIGACIÓN, sube TI-G y TI-H. Si es PRÁCTICA PROFESIONAL, sube PP-G y PP-H. <strong>NO subas ambos grupos</strong></li>
+            <li>
+              <strong>Además, debes subir OBLIGATORIAMENTE uno de estos formatos:</strong> PPH o TIH (solo uno de los
+              dos, marcado con *)
+            </li>
+            <li>
+              <strong>Y según tu modalidad de trabajo de grado:</strong> Si es TRABAJO DE INVESTIGACIÓN, sube TI-G y
+              TI-H. Si es PRÁCTICA PROFESIONAL, sube PP-G y PP-H. <strong>NO subas ambos grupos</strong>
+            </li>
           </ul>
         </div>
       }
       <!-- Nota para Telemática -->
       @if (esTelematica) {
         <p class="info-ayuda-telematica">
-          <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir la fotocopia de tu cédula (marcada con *). Los formatos TI-G/TI-H, PP-G/PP-H, PPH/TIH y los demás documentos no aplican para tu programa.
+          <strong>Importante para estudiantes de Telemática:</strong> Solo debes subir la fotocopia de tu cédula
+          (marcada con *). Los formatos TI-G/TI-H, PP-G/PP-H, PPH/TIH y los demás documentos no aplican para tu
+          programa.
         </p>
       }
       <!-- Nota para otros programas -->
       @if (!esTelematica && !esSistemasElectronicaAutomatica) {
         <p class="info-ayuda">
-          <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de trabajo de grado.
+          <strong>Nota:</strong> Los formatos TI-G/TI-H son para modalidad TRABAJO DE INVESTIGACIÓN. Los formatos
+          PP-G/PP-H son para modalidad PRÁCTICA PROFESIONAL. Debes subir los formatos que correspondan a tu modalidad de
+          trabajo de grado.
         </p>
       }
     }
@@ -45,7 +62,13 @@
             @if (doc.formatoDisponibleUrl) {
               <span class="formato-disponible-wrap">
                 <span class="formato-disponible-texto">Formato disponible en:</span>
-                <a [href]="doc.formatoDisponibleUrl" target="_blank" rel="noopener noreferrer" class="formato-disponible-link" title="Abrir formato en nueva pestaña">
+                <a
+                  [href]="doc.formatoDisponibleUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="formato-disponible-link"
+                  title="Abrir formato en nueva pestaña"
+                >
                   <mat-icon class="formato-disponible-icon">download</mat-icon> Descargar formato
                 </a>
               </span>
@@ -93,10 +116,14 @@
     @if (esPazYSalvo()) {
       <div class="info-adicional">
         <p class="info-nota">
-          <strong>Nota importante sobre pruebas ECAES:</strong> Los resultados de las pruebas ECAES deben estar registrados en la historia académica. De lo contrario, el estudiante debe presentar el resultado a DARCA para su inclusión.
+          <strong>Nota importante sobre pruebas ECAES:</strong> Los resultados de las pruebas ECAES deben estar
+          registrados en la historia académica. De lo contrario, el estudiante debe presentar el resultado a DARCA para
+          su inclusión.
         </p>
         <p class="info-nota">
-          <strong>Descuento en derechos de grado:</strong> Los estudiantes que obtengan un percentil igual o superior al 75 en las pruebas SABER-PRO y SABER TyT, realizadas en los 18 meses previos a la graduación, tendrán un descuento del 50% en los derechos de grado.
+          <strong>Descuento en derechos de grado:</strong> Los estudiantes que obtengan un percentil igual o superior al
+          75 en las pruebas SABER-PRO y SABER TyT, realizadas en los 18 meses previos a la graduación, tendrán un
+          descuento del 50% en los derechos de grado.
         </p>
       </div>
     }

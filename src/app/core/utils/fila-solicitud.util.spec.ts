@@ -8,11 +8,21 @@ describe('aFilaSolicitud', () => {
     fecha_registro_solicitud: '2026-03-01T10:00:00',
     estadosSolicitud: [
       { estado_actual: 'ENVIADA', fecha_registro_estado: '2026-03-01T10:00:00' },
-      { estado_actual: 'APROBADA_FUNCIONARIO', fecha_registro_estado: '2026-03-02T09:00:00', comentario: 'Todo en orden' }
+      {
+        estado_actual: 'APROBADA_FUNCIONARIO',
+        fecha_registro_estado: '2026-03-02T09:00:00',
+        comentario: 'Todo en orden',
+      },
     ],
     documentos: [
-      { id_documento: 3, nombre: 'notas.pdf', ruta_documento: '/d/notas.pdf', fecha_documento: '2026-03-01', esValido: true }
-    ]
+      {
+        id_documento: 3,
+        nombre: 'notas.pdf',
+        ruta_documento: '/d/notas.pdf',
+        fecha_documento: '2026-03-01',
+        esValido: true,
+      },
+    ],
   };
 
   it('usa el último estado y su comentario', () => {
@@ -35,12 +45,18 @@ describe('aFilaSolicitud', () => {
     const fila = aFilaSolicitud({
       ...base,
       fecha_registro_solicitud: fecha,
-      documentos: [{ ...base.documentos![0], fecha_documento: fecha }]
+      documentos: [{ ...base.documentos![0], fecha_documento: fecha }],
     });
     expect(fila.fecha).toBe('2026-03-01T00:00:00.000Z');
-    expect(fila.archivos).toEqual([{
-      id_documento: 3, nombre: 'notas.pdf', ruta_documento: '/d/notas.pdf',
-      fecha: '2026-03-01T00:00:00.000Z', esValido: true, comentario: undefined
-    }]);
+    expect(fila.archivos).toEqual([
+      {
+        id_documento: 3,
+        nombre: 'notas.pdf',
+        ruta_documento: '/d/notas.pdf',
+        fecha: '2026-03-01T00:00:00.000Z',
+        esValido: true,
+        comentario: undefined,
+      },
+    ]);
   });
 });

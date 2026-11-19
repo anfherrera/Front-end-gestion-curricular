@@ -4,7 +4,8 @@
     <mat-select
       [value]="periodoSeleccionado()"
       (selectionChange)="onPeriodoChange($event.value)"
-      [disabled]="cargando()">
+      [disabled]="cargando()"
+    >
       @if (mostrarTodos()) {
         <mat-option [value]="'todos'">
           <span class="option-text">Todos los Períodos</span>
@@ -12,7 +13,9 @@
       }
       @if (incluirActual()) {
         <mat-option [value]="''">
-          <span class="option-text">Período actual{{ periodoActualTexto() ? ' (' + periodoActualTexto() + ')' : '' }}</span>
+          <span class="option-text"
+            >Período actual{{ periodoActualTexto() ? ' (' + periodoActualTexto() + ')' : '' }}</span
+          >
         </mat-option>
       }
       @for (opcion of opciones(); track opcion) {
@@ -31,14 +34,10 @@
       <mat-icon>info</mat-icon>
       @switch (periodoSeleccionado()) {
         @case ('todos') {
-          <span>
-            Mostrando <strong>todos los cursos</strong> de todos los períodos
-          </span>
+          <span> Mostrando <strong>todos los cursos</strong> de todos los períodos </span>
         }
         @case ('') {
-          <span>
-            Mostrando datos del <strong>período académico actual</strong>
-          </span>
+          <span> Mostrando datos del <strong>período académico actual</strong> </span>
         }
         @default {
           <span>

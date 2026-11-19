@@ -15,37 +15,30 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 const ERRORES_CARGA: Record<number, string> = {
   403: 'No tienes permisos para ver esta información',
-  404: 'Curso no encontrado'
+  404: 'Curso no encontrado',
 };
 
 const ERRORES_EXPORTAR: Record<number, string> = {
   401: 'Sesión expirada. Por favor, inicia sesión nuevamente',
   403: 'No tienes permisos para exportar estudiantes',
   404: 'Curso no encontrado',
-  500: 'Error interno del servidor al generar el PDF'
+  500: 'Error interno del servidor al generar el PDF',
 };
 
 /** Preinscritos e inscritos de un curso, con exportación a PDF. */
 @Component({
   selector: 'app-estudiantes-curso-dialog',
-  imports: [
-    MatDialogModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatProgressSpinnerModule
-],
+  imports: [MatDialogModule, MatTableModule, MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule],
   templateUrl: './estudiantes-curso-dialog.component.html',
   styleUrls: ['./estudiantes-curso-dialog.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstudiantesCursoDialogComponent implements OnInit {
   dialogRef = inject<MatDialogRef<EstudiantesCursoDialogComponent>>(MatDialogRef);
   data = inject<{
     idCurso: number;
     nombreCurso: string;
-}>(MAT_DIALOG_DATA);
+  }>(MAT_DIALOG_DATA);
   private cursosService = inject(CursosIntersemestralesService);
   private snackbar = inject(SnackbarService);
 
@@ -61,7 +54,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
     'tipo',
     'estado_preinscripcion',
     'estado_inscripcion',
-    'correo'
+    'correo',
   ];
 
   private destroyRef = inject(DestroyRef);
@@ -74,7 +67,8 @@ export class EstudiantesCursoDialogComponent implements OnInit {
     this.cargando.set(true);
     this.error.set(null);
 
-    this.cursosService.getEstudiantesDelCurso(this.data.idCurso)
+    this.cursosService
+      .getEstudiantesDelCurso(this.data.idCurso)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (respuesta) => {
@@ -86,7 +80,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
           this.cargando.set(false);
           this.error.set(mensaje);
           this.snackbar.error(mensaje);
-        }
+        },
       });
   }
 
@@ -100,7 +94,8 @@ export class EstudiantesCursoDialogComponent implements OnInit {
       return;
     }
 
-    this.cursosService.exportarEstudiantesPDF(this.data.idCurso)
+    this.cursosService
+      .exportarEstudiantesPDF(this.data.idCurso)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (archivo) => {
@@ -109,7 +104,7 @@ export class EstudiantesCursoDialogComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.snackbar.error(ERRORES_EXPORTAR[err.status] ?? 'Error al exportar el PDF');
-        }
+        },
       });
   }
 }

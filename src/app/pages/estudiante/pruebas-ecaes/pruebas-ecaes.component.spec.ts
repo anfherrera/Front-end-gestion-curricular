@@ -37,7 +37,7 @@ describe('PruebasEcaesComponent', () => {
     cedula: '123456',
     correo: 'test@unicauca.edu.co',
     rol: { nombre: 'ESTUDIANTE' },
-    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería' },
   };
 
   const mockFechasEcaes: FechaEcaes[] = [
@@ -49,8 +49,8 @@ describe('PruebasEcaesComponent', () => {
       registro_recaudo_extraordinario: '2025-02-15',
       citacion: '2025-03-01',
       aplicacion: '2025-03-15',
-      resultados_individuales: '2025-04-01'
-    }
+      resultados_individuales: '2025-04-01',
+    },
   ];
 
   beforeEach(async () => {
@@ -59,7 +59,7 @@ describe('PruebasEcaesComponent', () => {
       'listarSolicitudesPorRol',
       'crearSolicitudEcaes',
       'actualizarEstadoSolicitud',
-      'listarTiposDocumento'
+      'listarTiposDocumento',
     ]);
     const archivosServiceSpy = jasmine.createSpyObj('ArchivosService', ['subirPDF']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -71,11 +71,7 @@ describe('PruebasEcaesComponent', () => {
     const loggerSpy = jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']);
 
     await TestBed.configureTestingModule({
-      imports: [
-        PruebasEcaesComponent,
-        BrowserAnimationsModule,
-        HttpClientTestingModule
-      ],
+      imports: [PruebasEcaesComponent, BrowserAnimationsModule, HttpClientTestingModule],
       providers: [
         { provide: PruebasEcaesService, useValue: pruebasEcaesServiceSpy },
         { provide: ArchivosService, useValue: archivosServiceSpy },
@@ -85,8 +81,8 @@ describe('PruebasEcaesComponent', () => {
         { provide: PeriodosAcademicosService, useValue: periodosServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: NotificacionesService, useValue: notificacionesServiceSpy },
-        { provide: LoggerService, useValue: loggerSpy }
-      ]
+        { provide: LoggerService, useValue: loggerSpy },
+      ],
     }).compileComponents();
 
     pruebasEcaesService = TestBed.inject(PruebasEcaesService) as jasmine.SpyObj<PruebasEcaesService>;
@@ -94,10 +90,12 @@ describe('PruebasEcaesComponent', () => {
 
     pruebasEcaesService.listarFechasEcaes.and.returnValue(of(mockFechasEcaes));
     pruebasEcaesService.listarSolicitudesPorRol.and.returnValue(of([]));
-    pruebasEcaesService.listarTiposDocumento.and.returnValue(of([
-      { codigo: 'CC', descripcion: 'Cédula de Ciudadanía' },
-      { codigo: 'TI', descripcion: 'Tarjeta de Identidad' }
-    ]));
+    pruebasEcaesService.listarTiposDocumento.and.returnValue(
+      of([
+        { codigo: 'CC', descripcion: 'Cédula de Ciudadanía' },
+        { codigo: 'TI', descripcion: 'Tarjeta de Identidad' },
+      ])
+    );
     errorHandler.extraerMensajeError.and.returnValue('');
     periodosServiceSpy.getPeriodoActualValue.and.returnValue({ valor: '2025-1' });
     authServiceSpy.getUsuario.and.returnValue(mockUsuario);
@@ -129,8 +127,10 @@ describe('PruebasEcaesComponent', () => {
   });
 
   it('pasa el usuario al preregistro, que pone su cédula, y el calendario carga su período', () => {
-    const preregistro = fixture.debugElement.query(By.directive(PreregistroEcaesComponent)).componentInstance as PreregistroEcaesComponent;
-    const fechas = fixture.debugElement.query(By.directive(FechasEcaesComponent)).componentInstance as FechasEcaesComponent;
+    const preregistro = fixture.debugElement.query(By.directive(PreregistroEcaesComponent))
+      .componentInstance as PreregistroEcaesComponent;
+    const fechas = fixture.debugElement.query(By.directive(FechasEcaesComponent))
+      .componentInstance as FechasEcaesComponent;
     expect(preregistro.usuario()).toEqual(mockUsuario);
     expect(preregistro.solicitudForm.value.numero_documento).toBe('123456');
     expect(fechas.periodoSeleccionado()).toBe('2025-1');
@@ -138,7 +138,8 @@ describe('PruebasEcaesComponent', () => {
 
   it('recarga el seguimiento cuando el preregistro avisa que se envió', () => {
     pruebasEcaesService.listarSolicitudesPorRol.calls.reset();
-    const preregistro = fixture.debugElement.query(By.directive(PreregistroEcaesComponent)).componentInstance as PreregistroEcaesComponent;
+    const preregistro = fixture.debugElement.query(By.directive(PreregistroEcaesComponent))
+      .componentInstance as PreregistroEcaesComponent;
     preregistro.enviada.emit();
     expect(pruebasEcaesService.listarSolicitudesPorRol).toHaveBeenCalledWith('ESTUDIANTE', 1);
   });
@@ -164,16 +165,18 @@ describe('PruebasEcaesComponent', () => {
         id_solicitud: 1,
         nombre_solicitud: 'Solicitud ECAES',
         fecha_registro_solicitud: '2025-01-01T00:00:00.000Z',
-        estadosSolicitud: [{
-          id_estado: 1,
-          estado_actual: 'ENVIADA',
-          fecha_registro_estado: '2025-01-01T00:00:00.000Z',
-          comentario: null,
-          objSolicitud: null
-        }],
+        estadosSolicitud: [
+          {
+            id_estado: 1,
+            estado_actual: 'ENVIADA',
+            fecha_registro_estado: '2025-01-01T00:00:00.000Z',
+            comentario: null,
+            objSolicitud: null,
+          },
+        ],
         objUsuario: { nombre_completo: 'Test' },
-        documentos: []
-      })
+        documentos: [],
+      }),
     ];
     component.procesarSolicitudes(data);
     expect(component.solicitudes().length).toBe(1);
@@ -183,7 +186,11 @@ describe('PruebasEcaesComponent', () => {
 
   it('la fila muestra nombre_solicitud tal cual (ya trae el nombre del estudiante)', () => {
     component.procesarSolicitudes([
-      solicitudEcaes({ id_solicitud: 2, nombre_solicitud: 'Solicitud ECAES - Daniel Cisneros', objUsuario: { nombre_completo: 'Daniel Cisneros' } })
+      solicitudEcaes({
+        id_solicitud: 2,
+        nombre_solicitud: 'Solicitud ECAES - Daniel Cisneros',
+        objUsuario: { nombre_completo: 'Daniel Cisneros' },
+      }),
     ]);
     expect(component.solicitudes()[0].nombre).toBe('Solicitud ECAES - Daniel Cisneros');
   });
@@ -200,5 +207,4 @@ describe('PruebasEcaesComponent', () => {
     expect(component.obtenerSolicitudCompleta(5)?.id_solicitud).toBe(5);
     expect(component.obtenerSolicitudCompleta(99)).toBeUndefined();
   });
-
 });

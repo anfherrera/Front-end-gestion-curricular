@@ -8,14 +8,14 @@ import {
   CreateInscripcionDTO,
   CreatePreinscripcionDTO,
   CursoOfertadoVerano,
-  PreinscripcionUsuario
+  PreinscripcionUsuario,
 } from '@core/models/cursos-intersemestrales.model';
 
 /**
  * ======================================================
  * PRUEBAS DE ACEPTACIÓN - CURSOS INTERSEMESTRALES
  * ======================================================
- * 
+ *
  * Formato BDD: Given/When/Then
  * Basadas en Historias de Usuario REALES
  */
@@ -32,7 +32,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
     id_rol: 1,
     id_programa: 1,
     objRol: { id_rol: 1, nombre_rol: 'ESTUDIANTE' },
-    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería de Sistemas' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería de Sistemas' },
   };
 
   beforeEach(() => {
@@ -40,10 +40,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [
-        CursosIntersemestralesService,
-        { provide: AuthService, useValue: authServiceSpy }
-      ]
+      providers: [CursosIntersemestralesService, { provide: AuthService, useValue: authServiceSpy }],
     });
 
     service = TestBed.inject(CursosIntersemestralesService);
@@ -73,15 +70,15 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
           nombre_curso: 'Cálculo Diferencial',
           codigo_curso: 'CALC-101',
           cupo_maximo: 30,
-          estado: 'Disponible'
+          estado: 'Disponible',
         },
         {
           id_curso: 2,
           nombre_curso: 'Programación Avanzada',
           codigo_curso: 'PROG-301',
           cupo_maximo: 25,
-          estado: 'Disponible'
-        }
+          estado: 'Disponible',
+        },
       ];
 
       // WHEN: Consulto cursos disponibles
@@ -112,7 +109,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
         nombreSolicitud: 'Preinscripción Cálculo',
         idUsuario: mockEstudiante.id_usuario,
         idCurso: 1,
-        condicion: 'Primera_Vez'
+        condicion: 'Primera_Vez',
       };
 
       // WHEN: Me preinscribo
@@ -142,7 +139,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       // GIVEN: Tengo preinscripciones
       const mockPreinscripciones: Partial<PreinscripcionUsuario>[] = [
         { id: 1, cursoNombre: 'Cálculo', estado: 'PENDIENTE' },
-        { id: 2, cursoNombre: 'Programación', estado: 'APROBADA' }
+        { id: 2, cursoNombre: 'Programación', estado: 'APROBADA' },
       ];
 
       // WHEN: Consulto mis preinscripciones
@@ -154,7 +151,9 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${mockEstudiante.id_usuario}`);
+      const req = httpMock.expectOne(
+        `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${mockEstudiante.id_usuario}`
+      );
       req.flush(mockPreinscripciones);
       tick();
     }));
@@ -172,7 +171,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       const payload: CreateInscripcionDTO = {
         nombreSolicitud: 'Inscripción Cálculo',
         idUsuario: mockEstudiante.id_usuario,
-        idCurso: 1
+        idCurso: 1,
       };
 
       // WHEN: Me inscribo formalmente
@@ -205,7 +204,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
         fecha_inicio: '2025-06-15',
         fecha_fin: '2025-07-31',
         periodoAcademico: '2025-1',
-        estado: 'Borrador'
+        estado: 'Borrador',
       };
 
       // WHEN: Creo el curso
@@ -220,13 +219,13 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       // El backend recibe id_materia e id_docente; el nombre lo toma de la materia
       expect(req.request.body.id_materia).toBe(3);
       expect(req.request.body.id_docente).toBe(10);
-      req.flush({ 
-        id_curso: 5, 
+      req.flush({
+        id_curso: 5,
         mensaje: 'Curso creado',
         nombre_curso: 'Algoritmos Avanzados',
         codigo_curso: 'ALG-401',
         periodo: '2025-1',
-        grupo: 'A'
+        grupo: 'A',
       });
       tick();
     }));
@@ -241,16 +240,18 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
   describe('HU-08: Seguimiento de Solicitudes', () => {
     it('ACEP-CI-008: DADO que tengo preinscripciones, CUANDO consulto seguimiento, ENTONCES veo cada curso con su estado', fakeAsync(() => {
       // GIVEN: Estudiante con una preinscripción pendiente
-      const mockPreinscripciones = [{
-        id: 1,
-        fecha: '2025-06-01',
-        estado: 'PENDIENTE',
-        tipo: 'Preinscripcion',
-        estudianteId: 1,
-        cursoId: 5,
-        cursoNombre: 'Cálculo Diferencial',
-        accionesDisponibles: ['esperando_respuesta']
-      }];
+      const mockPreinscripciones = [
+        {
+          id: 1,
+          fecha: '2025-06-01',
+          estado: 'PENDIENTE',
+          tipo: 'Preinscripcion',
+          estudianteId: 1,
+          cursoId: 5,
+          cursoNombre: 'Cálculo Diferencial',
+          accionesDisponibles: ['esperando_respuesta'],
+        },
+      ];
 
       // WHEN: Consulto mis preinscripciones
       service.getPreinscripcionesUsuario(1).subscribe((preinscripciones) => {
@@ -267,5 +268,4 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       tick();
     }));
   });
-
 });

@@ -31,11 +31,11 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
     PeriodoFiltroSelectorComponent,
     ...MATERIAL_IMPORTS,
     FechaPipe,
-    NombreDocentePipe
-],
+    NombreDocentePipe,
+  ],
   templateUrl: './gestionar-cursos.component.html',
   styleUrls: ['./gestionar-cursos.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GestionarCursosComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -45,7 +45,7 @@ export class GestionarCursosComponent implements OnInit {
   private snackbar = inject(SnackbarService);
 
   private readonly destroyRef = inject(DestroyRef);
-  
+
   readonly cursos = signal<CursoOfertadoVerano[]>([]);
   readonly cursosFiltrados = signal<CursoOfertadoVerano[]>([]);
   materias: Materia[] = [];
@@ -53,15 +53,15 @@ export class GestionarCursosComponent implements OnInit {
   readonly cargando = signal(true);
   estadoFiltro = '';
   periodoFiltro = 'todos'; // Filtro por período académico - Inicializar con 'todos' para mostrar todos los cursos por defecto
-  
+
   // Formulario para crear/editar curso
   cursoForm: FormGroup;
   editando = false;
   cursoEditando: CursoOfertadoVerano | null = null;
-  
+
   // Formulario específico para edición (solo campos editables)
   edicionForm: FormGroup;
-  
+
   // Columnas de la tabla
   displayedColumns: string[] = [
     'nombre_curso',
@@ -75,7 +75,7 @@ export class GestionarCursosComponent implements OnInit {
     'cupo_maximo',
     'salon',
     'estado',
-    'acciones'
+    'acciones',
   ];
 
   constructor() {
@@ -89,12 +89,12 @@ export class GestionarCursosComponent implements OnInit {
       fecha_inicio: ['', Validators.required],
       fecha_fin: ['', Validators.required],
       periodoAcademico: ['', Validators.required],
-      
+
       // Campos OPCIONALES
       id_salon: [''], // Opcional - ID del salón seleccionado
       espacio_asignado: [''], // Deprecated - mantener para compatibilidad con edición
       estado: ['Abierto'], // Opcional - valor por defecto "Abierto"
-      grupo: ['A'] // Opcional - valor por defecto "A" (A, B, C, D)
+      grupo: ['A'], // Opcional - valor por defecto "A" (A, B, C, D)
     });
 
     // Formulario específico para edición (solo campos editables)
@@ -102,7 +102,7 @@ export class GestionarCursosComponent implements OnInit {
       cupo_estimado: [25, [Validators.required, Validators.min(1), Validators.max(100)]],
       id_salon: [''], // ID del salón seleccionado
       espacio_asignado: [''], // Deprecated: mantener para compatibilidad
-      estado: ['Borrador', Validators.required]
+      estado: ['Borrador', Validators.required],
     });
   }
 
@@ -116,53 +116,62 @@ export class GestionarCursosComponent implements OnInit {
     this.cargando.set(true);
     this.cursos.set([]);
     this.cursosFiltrados.set([]);
-    
+
     // Determinar el período a usar: si es 'todos' o vacío, pasar null/undefined
-    const periodoParam = this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '' 
-      ? this.periodoFiltro.trim() 
-      : undefined;
-    
-    
+    const periodoParam =
+      this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== ''
+        ? this.periodoFiltro.trim()
+        : undefined;
+
     // Cargar cursos del backend con filtro de período
-    this.cursosService.getTodosLosCursosParaFuncionarios(periodoParam).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (cursos) => {
-        this.cursos.set(cursos);
-        this.cursosFiltrados.set([...cursos]); // Inicializar con todos los cursos
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.snackbar.advertencia('No se pudieron cargar los cursos - Intenta recargar la página');
-        this.cargando.set(false);
-        // Mostrar mensaje de error sin datos de prueba
-        this.cursos.set([]);
-        this.cursosFiltrados.set([]);
-        this.cargarMateriasYDocentes();
-      }
-    });
+    this.cursosService
+      .getTodosLosCursosParaFuncionarios(periodoParam)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (cursos) => {
+          this.cursos.set(cursos);
+          this.cursosFiltrados.set([...cursos]); // Inicializar con todos los cursos
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.snackbar.advertencia('No se pudieron cargar los cursos - Intenta recargar la página');
+          this.cargando.set(false);
+          // Mostrar mensaje de error sin datos de prueba
+          this.cursos.set([]);
+          this.cursosFiltrados.set([]);
+          this.cargarMateriasYDocentes();
+        },
+      });
   }
 
   cargarMateriasYDocentes() {
     // Cargar materias reales del backend
-    this.cursosService.getTodasLasMaterias().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (materias) => {
-        this.materias = materias;
-      },
-      error: () => {
-        this.materias = []; // Array vacío en lugar de datos de prueba
-        this.snackbar.error('No se pudieron cargar las materias. Verifica la conexión con el backend.');
-      }
-    });
+    this.cursosService
+      .getTodasLasMaterias()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (materias) => {
+          this.materias = materias;
+        },
+        error: () => {
+          this.materias = []; // Array vacío en lugar de datos de prueba
+          this.snackbar.error('No se pudieron cargar las materias. Verifica la conexión con el backend.');
+        },
+      });
 
     // Cargar docentes reales del backend
-    this.cursosService.getTodosLosDocentes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (docentes) => {
-        this.docentes = docentes;
-      },
-      error: () => {
-        this.docentes = []; // Array vacío en lugar de datos de prueba
-        this.snackbar.error('No se pudieron cargar los docentes. Verifica la conexión con el backend.');
-      }
-    });
+    this.cursosService
+      .getTodosLosDocentes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (docentes) => {
+          this.docentes = docentes;
+        },
+        error: () => {
+          this.docentes = []; // Array vacío en lugar de datos de prueba
+          this.snackbar.error('No se pudieron cargar los docentes. Verifica la conexión con el backend.');
+        },
+      });
   }
 
   // Método duplicado eliminado - ahora se usa cargarMateriasYDocentes()
@@ -174,7 +183,7 @@ export class GestionarCursosComponent implements OnInit {
     this.cursoForm.reset({
       estado: 'Abierto',
       cupo_estimado: 25,
-      grupo: 'A'
+      grupo: 'A',
     });
 
     // Abrir dialog
@@ -186,15 +195,18 @@ export class GestionarCursosComponent implements OnInit {
         editando: this.editando,
         titulo: 'Crear Nuevo Curso',
         materias: this.materias,
-        docentes: this.docentes
-      }
+        docentes: this.docentes,
+      },
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
-      if (result === 'guardado') {
-        this.cargarDatos();
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result === 'guardado') {
+          this.cargarDatos();
+        }
+      });
   }
 
   abrirDialogEstudiantes(curso: CursoOfertadoVerano): void {
@@ -204,9 +216,9 @@ export class GestionarCursosComponent implements OnInit {
       maxHeight: '90vh',
       data: {
         idCurso: curso.id_curso,
-        nombreCurso: curso.nombre_curso
+        nombreCurso: curso.nombre_curso,
       },
-      disableClose: false
+      disableClose: false,
     });
   }
 
@@ -214,13 +226,13 @@ export class GestionarCursosComponent implements OnInit {
   abrirDialogEditar(curso: CursoOfertadoVerano) {
     this.editando = true;
     this.cursoEditando = curso;
-    
+
     // Solo llenar campos editables
     this.edicionForm.patchValue({
       cupo_estimado: curso.cupo_estimado,
       id_salon: curso.id_salon || curso.salonInfo?.id_salon || null,
       espacio_asignado: curso.espacio_asignado, // Mantener para compatibilidad
-      estado: curso.estado
+      estado: curso.estado,
     });
 
     // Abrir dialog
@@ -234,47 +246,53 @@ export class GestionarCursosComponent implements OnInit {
         cursoEditando: curso,
         materias: this.materias,
         docentes: this.docentes,
-        soloEdicion: true // Flag para indicar que es solo edición
-      }
+        soloEdicion: true, // Flag para indicar que es solo edición
+      },
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
-      if (result === 'guardado') {
-        this.cargarDatos();
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result === 'guardado') {
+          this.cargarDatos();
+        }
+      });
   }
 
   eliminarCurso(curso: CursoOfertadoVerano) {
     confirmar(this.dialog, {
       titulo: 'Eliminar curso',
-      mensaje: `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
-               `Esta acción no se puede deshacer. Si hay estudiantes inscritos, la eliminación fallará.`,
+      mensaje:
+        `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
+        `Esta acción no se puede deshacer. Si hay estudiantes inscritos, la eliminación fallará.`,
       textoConfirmar: 'Eliminar',
-      peligro: true
-    }).pipe(
-      filter(Boolean),
-      switchMap(() => this.cursosService.eliminarCurso(curso.id_curso)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: () => {
-        this.snackbar.exito('Curso eliminado exitosamente');
-        this.cargarDatos();
-      },
-      error: (err) => {
-        let mensajeError = 'Error al eliminar el curso';
-        if (err.status === 400) {
-          mensajeError = 'No se puede eliminar el curso porque tiene estudiantes inscritos';
-        } else if (err.status === 404) {
-          mensajeError = 'El curso no fue encontrado';
-        } else if (err.status === 500) {
-          mensajeError = 'Error interno del servidor';
-        }
-        this.snackbar.error(mensajeError);
-        // Recargar datos incluso si hay error para sincronizar
-        this.cargarDatos();
-      }
-    });
+      peligro: true,
+    })
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.cursosService.eliminarCurso(curso.id_curso)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: () => {
+          this.snackbar.exito('Curso eliminado exitosamente');
+          this.cargarDatos();
+        },
+        error: (err) => {
+          let mensajeError = 'Error al eliminar el curso';
+          if (err.status === 400) {
+            mensajeError = 'No se puede eliminar el curso porque tiene estudiantes inscritos';
+          } else if (err.status === 404) {
+            mensajeError = 'El curso no fue encontrado';
+          } else if (err.status === 500) {
+            mensajeError = 'Error interno del servidor';
+          }
+          this.snackbar.error(mensajeError);
+          // Recargar datos incluso si hay error para sincronizar
+          this.cargarDatos();
+        },
+      });
   }
 
   obtenerPeriodoCodigo(curso: CursoOfertadoVerano): string {
@@ -342,31 +360,34 @@ export class GestionarCursosComponent implements OnInit {
 
   // Exportar cursos a PDF
   exportarCursosPDF(): void {
-    const periodoParam = this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== '' 
-      ? this.periodoFiltro.trim() 
-      : undefined;
-    
-    
-    this.cursosService.exportarCursosPDF(periodoParam).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (result) => {
-        descargarBlob(result.blob, result.filename);
-        this.snackbar.exito('PDF exportado correctamente');
-      },
-      error: (err) => {
-        let mensajeError = 'Error al exportar el PDF';
-        
-        if (err.status === 401) {
-          mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente';
-        } else if (err.status === 403) {
-          mensajeError = 'No tienes permisos para exportar cursos';
-        } else if (err.status === 404) {
-          mensajeError = 'No se encontraron cursos para exportar';
-        } else if (err.status === 500) {
-          mensajeError = 'Error interno del servidor al generar el PDF';
-        }
-        
-        this.snackbar.error(mensajeError);
-      }
-    });
+    const periodoParam =
+      this.periodoFiltro && this.periodoFiltro !== 'todos' && this.periodoFiltro.trim() !== ''
+        ? this.periodoFiltro.trim()
+        : undefined;
+
+    this.cursosService
+      .exportarCursosPDF(periodoParam)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          descargarBlob(result.blob, result.filename);
+          this.snackbar.exito('PDF exportado correctamente');
+        },
+        error: (err) => {
+          let mensajeError = 'Error al exportar el PDF';
+
+          if (err.status === 401) {
+            mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente';
+          } else if (err.status === 403) {
+            mensajeError = 'No tienes permisos para exportar cursos';
+          } else if (err.status === 404) {
+            mensajeError = 'No se encontraron cursos para exportar';
+          } else if (err.status === 500) {
+            mensajeError = 'Error interno del servidor al generar el PDF';
+          }
+
+          this.snackbar.error(mensajeError);
+        },
+      });
   }
 }

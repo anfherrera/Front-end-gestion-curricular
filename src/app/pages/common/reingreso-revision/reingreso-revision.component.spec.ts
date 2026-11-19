@@ -14,7 +14,10 @@ describe('ReingresoRevisionComponent', () => {
 
   async function crear(rolRevision: RolRevision): Promise<ReingresoRevisionComponent> {
     servicio = jasmine.createSpyObj<ReingresoEstudianteService>('ReingresoEstudianteService', [
-      'getPendingRequests', 'getCoordinadorRequests', 'getSolicitudesProcesadasFuncionario', 'getSolicitudesProcesadasCoordinador'
+      'getPendingRequests',
+      'getCoordinadorRequests',
+      'getSolicitudesProcesadasFuncionario',
+      'getSolicitudesProcesadasCoordinador',
     ]);
     servicio.getPendingRequests.and.returnValue(of([]));
     servicio.getCoordinadorRequests.and.returnValue(of([]));
@@ -27,8 +30,8 @@ describe('ReingresoRevisionComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: ReingresoEstudianteService, useValue: servicio },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { rolRevision } } } }
-      ]
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { rolRevision } } } },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ReingresoRevisionComponent);

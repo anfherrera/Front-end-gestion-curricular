@@ -33,11 +33,11 @@ import { UsuarioDTORespuesta } from '@core/models/usuario.interface';
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   templateUrl: './manage-users.component.html',
   styleUrl: './manage-users.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageUsersComponent implements OnInit {
   private usuariosService = inject(UsuariosService);
@@ -56,7 +56,7 @@ export class ManageUsersComponent implements OnInit {
 
   cargarUsuarios(): void {
     this.loading.set(true);
-    
+
     this.usuariosService.listarUsuarios().subscribe({
       next: (data) => {
         // Corregir encoding de caracteres especiales (tildes, ñ, etc.)
@@ -66,7 +66,7 @@ export class ManageUsersComponent implements OnInit {
       error: () => {
         this.snackbar.error('Error al cargar usuarios');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -77,11 +77,12 @@ export class ManageUsersComponent implements OnInit {
     }
 
     this.loading.set(true);
-    const usuariosFiltrados = this.usuarios().filter(u => 
-      u.nombre_completo.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      u.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
+    const usuariosFiltrados = this.usuarios().filter(
+      (u) =>
+        u.nombre_completo.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        u.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
-    
+
     this.usuarios.set(usuariosFiltrados);
     this.loading.set(false);
   }
@@ -96,68 +97,77 @@ export class ManageUsersComponent implements OnInit {
    */
   cambiarEstado(usuario: UsuarioDTORespuesta): void {
     const nuevoEstado = !usuario.estado_usuario ? 'activar' : 'desactivar';
-    
+
     confirmar(this.dialog, {
       titulo: !usuario.estado_usuario ? 'Activar usuario' : 'Desactivar usuario',
       textoConfirmar: !usuario.estado_usuario ? 'Activar' : 'Desactivar',
       peligro: !!usuario.estado_usuario,
-      mensaje: `¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`
-    }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading.set(true);
+      mensaje: `¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`,
+    })
+      .pipe(filter(Boolean))
+      .subscribe(() => {
+        this.loading.set(true);
 
-      this.usuariosService.cambiarEstadoUsuario(usuario.id_usuario).subscribe({
-        next: (response) => {
-          this.loading.set(false);
-          // Actualizar el estado en la tabla sin recargar toda la lista
-          this.usuarios.update(lista => lista.map(u =>
-            u.id_usuario === usuario.id_usuario ? { ...u, estado_usuario: response.estado_usuario } : u));
-        
-          // Mostrar mensaje de éxito
-          this.snackbar.exito(`Usuario ${nuevoEstado}do exitosamente`);
-        },
-        error: () => {
-          this.loading.set(false);
-        
-          // Mostrar mensaje de error
-          this.snackbar.error('Error al cambiar el estado del usuario');
-        }
+        this.usuariosService.cambiarEstadoUsuario(usuario.id_usuario).subscribe({
+          next: (response) => {
+            this.loading.set(false);
+            // Actualizar el estado en la tabla sin recargar toda la lista
+            this.usuarios.update((lista) =>
+              lista.map((u) =>
+                u.id_usuario === usuario.id_usuario ? { ...u, estado_usuario: response.estado_usuario } : u
+              )
+            );
+
+            // Mostrar mensaje de éxito
+            this.snackbar.exito(`Usuario ${nuevoEstado}do exitosamente`);
+          },
+          error: () => {
+            this.loading.set(false);
+
+            // Mostrar mensaje de error
+            this.snackbar.error('Error al cambiar el estado del usuario');
+          },
+        });
       });
-    });
   }
 
   eliminarUsuario(usuario: UsuarioDTORespuesta): void {
     confirmar(this.dialog, {
-      titulo: 'Eliminar usuario', textoConfirmar: 'Eliminar', peligro: true,
-      mensaje: `¿Está seguro de ELIMINAR al usuario "${usuario.nombre_completo}"?\n\nEsta acción no se puede deshacer.`
-    }).pipe(filter(Boolean)).subscribe(() => {
-      this.loading.set(true);
+      titulo: 'Eliminar usuario',
+      textoConfirmar: 'Eliminar',
+      peligro: true,
+      mensaje: `¿Está seguro de ELIMINAR al usuario "${usuario.nombre_completo}"?\n\nEsta acción no se puede deshacer.`,
+    })
+      .pipe(filter(Boolean))
+      .subscribe(() => {
+        this.loading.set(true);
 
-      this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.snackbar.exito('Usuario eliminado exitosamente');
-          this.cargarUsuarios();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.loading.set(false);
-        
-          // Extraer mensaje de error usando el servicio
-          const mensaje = this.errorHandler.extraerMensajeError(error);
-        
-          // Determinar el tipo de error para mostrar el color correcto
-          if (this.errorHandler.esErrorDependencias(error)) {
-            // Error de dependencias (400) - Naranja/Advertencia
-            this.snackbar.advertencia(`${mensaje}`);
-          } else if (error.status === 404) {
-            // No encontrado
-            this.snackbar.error('Usuario no encontrado');
-          } else {
-            // Otros errores
-            this.snackbar.error(`${mensaje}`);
-          }
-        }
+        this.usuariosService.eliminarUsuario(usuario.id_usuario).subscribe({
+          next: () => {
+            this.loading.set(false);
+            this.snackbar.exito('Usuario eliminado exitosamente');
+            this.cargarUsuarios();
+          },
+          error: (error: HttpErrorResponse) => {
+            this.loading.set(false);
+
+            // Extraer mensaje de error usando el servicio
+            const mensaje = this.errorHandler.extraerMensajeError(error);
+
+            // Determinar el tipo de error para mostrar el color correcto
+            if (this.errorHandler.esErrorDependencias(error)) {
+              // Error de dependencias (400) - Naranja/Advertencia
+              this.snackbar.advertencia(`${mensaje}`);
+            } else if (error.status === 404) {
+              // No encontrado
+              this.snackbar.error('Usuario no encontrado');
+            } else {
+              // Otros errores
+              this.snackbar.error(`${mensaje}`);
+            }
+          },
+        });
       });
-    });
   }
 
   getRolChipColor(rol: string): string {

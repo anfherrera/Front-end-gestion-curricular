@@ -21,13 +21,13 @@ export function aFilaSolicitud(sol: SolicitudRevisable): Solicitud {
     fecha: aTexto(sol.fecha_registro_solicitud),
     estado: ultimo?.estado_actual || EstadosSolicitud.ENVIADA,
     comentarios: ultimo?.comentario || '',
-    archivos: (sol.documentos ?? []).map(doc => ({
+    archivos: (sol.documentos ?? []).map((doc) => ({
       id_documento: doc.id_documento,
       nombre: doc.nombre,
       ruta_documento: doc.ruta_documento,
       fecha: aTexto(doc.fecha_documento),
       esValido: doc.esValido,
-      comentario: doc.comentario
-    }))
+      comentario: doc.comentario,
+    })),
   };
 }

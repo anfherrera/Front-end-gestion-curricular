@@ -12,20 +12,24 @@ describe('PeriodoFiltroSelectorComponent', () => {
   let cursos: jasmine.SpyObj<CursosIntersemestralesService>;
 
   beforeEach(async () => {
-    periodos = jasmine.createSpyObj('PeriodosAcademicosService',
+    periodos = jasmine.createSpyObj(
+      'PeriodosAcademicosService',
       ['getPeriodoActualValue', 'getPeriodoActual', 'getPeriodosRecientes'],
-      { periodoActual$: new BehaviorSubject(null) });
+      { periodoActual$: new BehaviorSubject(null) }
+    );
     periodos.getPeriodoActualValue.and.returnValue(null);
     periodos.getPeriodoActual.and.returnValue(of(null));
-    periodos.getPeriodosRecientes.and.returnValue(of([{ valor: '2025-2', nombrePeriodo: 'Segundo 2025' } as PeriodoAcademico]));
+    periodos.getPeriodosRecientes.and.returnValue(
+      of([{ valor: '2025-2', nombrePeriodo: 'Segundo 2025' } as PeriodoAcademico])
+    );
     cursos = jasmine.createSpyObj('CursosIntersemestralesService', ['getPeriodosRegistrados', 'getPeriodosAcademicos']);
 
     await TestBed.configureTestingModule({
       imports: [PeriodoFiltroSelectorComponent, NoopAnimationsModule],
       providers: [
         { provide: PeriodosAcademicosService, useValue: periodos },
-        { provide: CursosIntersemestralesService, useValue: cursos }
-      ]
+        { provide: CursosIntersemestralesService, useValue: cursos },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PeriodoFiltroSelectorComponent);
@@ -51,14 +55,14 @@ describe('PeriodoFiltroSelectorComponent', () => {
     fixture.componentRef.setInput('fuente', 'con-cursos');
     fixture.detectChanges();
     expect(cursos.getPeriodosAcademicos).toHaveBeenCalled();
-    expect(component.opciones().map(o => o.valor)).toEqual(['2024-1']);
+    expect(component.opciones().map((o) => o.valor)).toEqual(['2024-1']);
     expect(periodos.getPeriodosRecientes).not.toHaveBeenCalled();
   });
 
   it('emite el período elegido', () => {
     fixture.detectChanges();
     const emitidos: string[] = [];
-    component.periodoChange.subscribe(p => emitidos.push(p));
+    component.periodoChange.subscribe((p) => emitidos.push(p));
     component.onPeriodoChange('2025-2');
     expect(emitidos).toEqual(['2025-2']);
     expect(component.getPeriodoTexto('2025-2')).toBe('Segundo 2025');

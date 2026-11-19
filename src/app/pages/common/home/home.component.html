@@ -1,15 +1,14 @@
 <section class="welcome-container">
   <h2>Bienvenido, {{ userName }}</h2>
-  <p>Rol: <strong>{{ role }}</strong></p>
+  <p>
+    Rol: <strong>{{ role }}</strong>
+  </p>
   <p class="description">{{ getWelcomeText() }}</p>
 </section>
 
 <section class="dashboard-container">
   @for (p of availableProcesses; track p) {
-    <mat-card
-      class="dashboard-card"
-      (click)="handleProcessClick(p)"
-      >
+    <mat-card class="dashboard-card" (click)="handleProcessClick(p)">
       <mat-icon class="dashboard-icon" [ngClass]="p.color">{{ p.icon }}</mat-icon>
       <span>{{ p.name }}</span>
     </mat-card>

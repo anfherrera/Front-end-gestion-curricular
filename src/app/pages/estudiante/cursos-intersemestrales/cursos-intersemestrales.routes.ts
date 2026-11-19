@@ -15,6 +15,6 @@ export const cursosIntersemestralesRoutes: Routes = [
       { path: 'cursos-ofertados', component: CursosOfertadosComponent },
       { path: 'cursos-preinscripcion', component: CursosPreinscripcionComponent },
       { path: 'ver-solicitud', component: VerSolicitudComponent },
-    ]
-  }
+    ],
+  },
 ];

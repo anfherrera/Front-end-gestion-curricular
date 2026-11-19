@@ -1,27 +1,22 @@
 <app-card-container title="Gestión de Cursos">
-
   <!-- Botón para crear nuevo curso -->
   <div class="acciones-header">
-    <button mat-raised-button
-      color="primary"
-      (click)="abrirDialogCrear()"
-      class="btn-crear">
+    <button mat-raised-button color="primary" (click)="abrirDialogCrear()" class="btn-crear">
       <mat-icon>add</mat-icon>
       Crear Nuevo Curso
     </button>
 
-    <button mat-stroked-button
-      (click)="cargarDatos()"
-      [disabled]="cargando()"
-      class="btn-actualizar">
+    <button mat-stroked-button (click)="cargarDatos()" [disabled]="cargando()" class="btn-actualizar">
       <mat-icon>refresh</mat-icon>
       Actualizar
     </button>
 
-    <button mat-stroked-button
+    <button
+      mat-stroked-button
       (click)="exportarCursosPDF()"
       [disabled]="cargando() || cursos().length === 0"
-      class="btn-exportar">
+      class="btn-exportar"
+    >
       <mat-icon>picture_as_pdf</mat-icon>
       Exportar a PDF
     </button>
@@ -45,7 +40,8 @@
         [mostrarInfo]="true"
         [periodoInicial]="periodoFiltro"
         label="Filtrar por período académico"
-        (periodoChange)="onPeriodoChange($event)">
+        (periodoChange)="onPeriodoChange($event)"
+      >
       </app-periodo-filtro-selector>
     </div>
   }
@@ -55,7 +51,8 @@
     <app-estado-filters
       [cursos]="cursos()"
       (cursosFiltradosChange)="onCursosFiltradosChange($event)"
-      (estadoSeleccionadoChange)="onEstadoSeleccionadoChange($event)">
+      (estadoSeleccionadoChange)="onEstadoSeleccionadoChange($event)"
+    >
     </app-estado-filters>
   }
 
@@ -166,9 +163,7 @@
               </span>
             }
             @if (!curso.salonInfo?.descripcion && !curso.salon) {
-              <span class="sin-salon">
-                Sin asignar
-              </span>
+              <span class="sin-salon"> Sin asignar </span>
             }
           </td>
         </ng-container>
@@ -185,7 +180,8 @@
               [style.--mdc-chip-container-color]="getEstadoColor(curso.estado)"
               [style.--mdc-chip-outline-color]="'transparent'"
               [style.--mdc-chip-outline-width]="'0'"
-              class="estado-chip">
+              class="estado-chip"
+            >
               <span [style.color]="'white'">{{ curso.estado }}</span>
             </mat-chip>
           </td>
@@ -195,25 +191,21 @@
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let curso">
             <div class="acciones-container">
-              <button mat-icon-button
+              <button
+                mat-icon-button
                 (click)="abrirDialogEstudiantes(curso)"
                 matTooltip="Ver estudiantes del curso"
-                class="btn-estudiantes">
+                class="btn-estudiantes"
+              >
                 <mat-icon>people</mat-icon>
               </button>
               @if (puedeEditar(curso)) {
-                <button mat-icon-button
-                  (click)="abrirDialogEditar(curso)"
-                  matTooltip="Editar curso"
-                  class="btn-editar">
+                <button mat-icon-button (click)="abrirDialogEditar(curso)" matTooltip="Editar curso" class="btn-editar">
                   <mat-icon>edit</mat-icon>
                 </button>
               }
               @if (puedeEliminar(curso)) {
-                <button mat-icon-button
-                  (click)="eliminarCurso(curso)"
-                  matTooltip="Eliminar curso"
-                  class="btn-eliminar">
+                <button mat-icon-button (click)="eliminarCurso(curso)" matTooltip="Eliminar curso" class="btn-eliminar">
                   <mat-icon>delete</mat-icon>
                 </button>
               }
@@ -221,7 +213,7 @@
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
       <!-- Mensaje cuando no hay cursos -->
       @if (cursos().length === 0) {
@@ -233,6 +225,4 @@
       }
     </div>
   }
-
 </app-card-container>
-

@@ -71,12 +71,12 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .action-button {
     min-width: auto;
     justify-content: center;
   }
-  
+
   .solicitud-form {
     padding: 16px 0;
   }

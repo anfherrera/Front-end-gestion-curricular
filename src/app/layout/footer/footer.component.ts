@@ -6,10 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css'],
-  imports: [
-    MatIconModule
-],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  imports: [MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
   // Propiedad para mostrar el año actual automáticamente

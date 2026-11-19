@@ -20,7 +20,7 @@ describe('ModuloEstadisticoComponent', () => {
 
   const estadisticasServiceStub = {
     getEstadisticasGlobales: () => of({}),
-    getTotalEstudiantes: () => of({ totalEstudiantes: 0, fechaConsulta: '', descripcion: '' })
+    getTotalEstudiantes: () => of({ totalEstudiantes: 0, fechaConsulta: '', descripcion: '' }),
   };
 
   beforeEach(async () => {
@@ -29,9 +29,9 @@ describe('ModuloEstadisticoComponent', () => {
       providers: [
         {
           provide: EstadisticasService,
-          useValue: estadisticasServiceStub
-        }
-      ]
+          useValue: estadisticasServiceStub,
+        },
+      ],
     })
       .overrideComponent(ModuloEstadisticoComponent, {
         set: {
@@ -51,8 +51,8 @@ describe('ModuloEstadisticoComponent', () => {
                 </mat-tab>
               </mat-tab-group>
             </div>
-          `
-        }
+          `,
+        },
       })
       .overrideProvider(EstadisticasService, { useValue: estadisticasServiceStub })
       .compileComponents();
@@ -102,47 +102,47 @@ describe('ModuloEstadisticoComponent', () => {
     it('ME-006: Debe permitir cambiar entre pestañas sin error', async () => {
       const tabGroupDebug = fixture.debugElement.query(By.directive(MatTabGroup));
       const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
-      
+
       expect(tabGroup.selectedIndex).toBe(0);
-      
+
       tabGroup.selectedIndex = 1;
-      
+
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       expect(tabGroup.selectedIndex).toBe(1);
-      
+
       tabGroup.selectedIndex = 0;
-      
+
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       expect(tabGroup.selectedIndex).toBe(0);
     });
 
     it('ME-007: Las pestañas deben tener etiquetas descriptivas', async () => {
       await fixture.whenStable();
       fixture.detectChanges();
-      
+
       // Buscar las pestañas renderizadas por Material
       const tabs = compiled.querySelectorAll('.mdc-tab');
       expect(tabs.length).toBeGreaterThanOrEqual(2);
-      
+
       // Obtener las etiquetas de las pestañas
       const tabLabels: string[] = [];
-      tabs.forEach(tab => {
+      tabs.forEach((tab) => {
         const labelElement = tab.querySelector('.mdc-tab__text-label');
         if (labelElement) {
           tabLabels.push(labelElement.textContent?.trim() || '');
         }
       });
-      
+
       // Verificar que las etiquetas sean descriptivas
-      const hasDashboard = tabLabels.some(label => label.includes('Dashboard') || label.includes('General'));
-      const hasVerano = tabLabels.some(label => label.includes('Verano'));
-      
+      const hasDashboard = tabLabels.some((label) => label.includes('Dashboard') || label.includes('General'));
+      const hasVerano = tabLabels.some((label) => label.includes('Verano'));
+
       expect(hasDashboard || tabLabels.length >= 2).toBe(true);
       expect(hasVerano || tabLabels.length >= 2).toBe(true);
     });
@@ -161,25 +161,25 @@ describe('ModuloEstadisticoComponent', () => {
     it('ME-010: Debe manejar múltiples cambios de pestaña consecutivos', async () => {
       const tabGroupDebug = fixture.debugElement.query(By.directive(MatTabGroup));
       const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
-      
+
       // Cambiar a pestaña 1
       tabGroup.selectedIndex = 1;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       // Cambiar a pestaña 0
       tabGroup.selectedIndex = 0;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       // Cambiar de nuevo a pestaña 1
       tabGroup.selectedIndex = 1;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       expect(tabGroup.selectedIndex).toBe(1);
     });
 
@@ -197,7 +197,7 @@ describe('ModuloEstadisticoComponent', () => {
       for (let i = 0; i < 5; i++) {
         fixture.detectChanges();
       }
-      
+
       expect(component).toBeTruthy();
       expect(compiled.querySelector('mat-tab-group')).toBeTruthy();
     });
@@ -205,40 +205,40 @@ describe('ModuloEstadisticoComponent', () => {
     it('ME-014: Las pestañas deben ser accesibles mediante selección programática', async () => {
       await fixture.whenStable();
       fixture.detectChanges();
-      
+
       const tabGroupDebug = fixture.debugElement.query(By.directive(MatTabGroup));
       expect(tabGroupDebug).toBeTruthy();
-      
+
       const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
-      
+
       // Verificar índice inicial
       expect(tabGroup.selectedIndex).toBe(0);
-      
+
       // Cambiar a la segunda pestaña
       tabGroup.selectedIndex = 1;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       // Verificar que el cambio se aplicó
       expect(tabGroup.selectedIndex).toBe(1);
-      
+
       // Volver a la primera pestaña
       tabGroup.selectedIndex = 0;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       expect(tabGroup.selectedIndex).toBe(0);
     });
 
     it('ME-015: Debe renderizar correctamente después de detección de cambios', () => {
       fixture.detectChanges();
       expect(compiled.querySelector('.modulo-estadistico-container')).toBeTruthy();
-      
+
       fixture.detectChanges();
       expect(compiled.querySelector('mat-tab-group')).toBeTruthy();
-      
+
       fixture.detectChanges();
       expect(compiled.querySelectorAll('.mdc-tab').length).toBeGreaterThanOrEqual(2);
     });
@@ -246,22 +246,22 @@ describe('ModuloEstadisticoComponent', () => {
     it('ME-016: El contenido de las pestañas debe estar correctamente ocultado/mostrado', async () => {
       const tabGroupDebug = fixture.debugElement.query(By.directive(MatTabGroup));
       const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
-      
+
       // Primera pestaña debe estar activa por defecto
       tabGroup.selectedIndex = 0;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       const dashboardStub = compiled.querySelector('.dashboard-stub');
       expect(dashboardStub).toBeTruthy();
-      
+
       // Cambiar a segunda pestaña
       tabGroup.selectedIndex = 1;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       const cursosStub = compiled.querySelector('.cursos-verano-stub');
       expect(cursosStub).toBeTruthy();
     });
@@ -275,27 +275,27 @@ describe('ModuloEstadisticoComponent', () => {
     it('ME-018: Los componentes stub deben tener contenido visible', async () => {
       await fixture.whenStable();
       fixture.detectChanges();
-      
+
       // Primero verificar que la primera pestaña (Dashboard) está activa y tiene contenido
       const tabGroupDebug = fixture.debugElement.query(By.directive(MatTabGroup));
       const tabGroup = tabGroupDebug.componentInstance as MatTabGroup;
-      
+
       // Verificar contenido de la primera pestaña (Dashboard)
       tabGroup.selectedIndex = 0;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       const dashboardStub = compiled.querySelector('.dashboard-stub');
       expect(dashboardStub).toBeTruthy();
       expect(dashboardStub?.textContent?.trim()).toBeTruthy();
-      
+
       // Cambiar a la segunda pestaña y verificar su contenido
       tabGroup.selectedIndex = 1;
       marcarCambio(tabGroupDebug);
       fixture.detectChanges();
       await fixture.whenStable();
-      
+
       const cursosStub = compiled.querySelector('.cursos-verano-stub');
       expect(cursosStub).toBeTruthy();
       expect(cursosStub?.textContent?.trim()).toBeTruthy();
@@ -303,12 +303,12 @@ describe('ModuloEstadisticoComponent', () => {
 
     it('ME-019: Debe soportar múltiples ciclos de renderizado', () => {
       const initialTabs = compiled.querySelectorAll('.mdc-tab').length;
-      
+
       // Múltiples detectChanges
       for (let i = 0; i < 10; i++) {
         fixture.detectChanges();
       }
-      
+
       const finalTabs = compiled.querySelectorAll('.mdc-tab').length;
       expect(finalTabs).toBe(initialTabs);
     });
@@ -323,8 +323,8 @@ describe('ModuloEstadisticoComponent', () => {
       const tabs = compiled.querySelectorAll('mat-tab');
       const ids = new Set<string>();
       let hasIds = false;
-      
-      tabs.forEach(tab => {
+
+      tabs.forEach((tab) => {
         const id = tab.getAttribute('id');
         if (id) {
           hasIds = true;
@@ -332,7 +332,7 @@ describe('ModuloEstadisticoComponent', () => {
           ids.add(id);
         }
       });
-      
+
       // Verificar que si hay tabs, la estructura es válida
       expect(tabs.length).toBeGreaterThanOrEqual(0);
       // Si hay IDs, verificar que no hay duplicados

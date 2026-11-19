@@ -8,8 +8,6 @@
   font-family: 'Roboto', sans-serif;
 }
 
-
-
 /* Títulos de tarjetas */
 .card-title {
   font-size: 1.2rem;
@@ -22,8 +20,6 @@
   margin-bottom: 0.5rem;
 }
 
-
-
 /* Botón Enviar Solicitud */
 .btn-enviar {
   background-color: var(--color-primario) !important;
@@ -35,8 +31,6 @@
   transition: all 0.2s ease-in-out;
   box-shadow: var(--sombra-1);
 }
-
-
 
 .btn-enviar:disabled {
   background-color: #d3d3d3 !important;
@@ -118,5 +112,3 @@
   display: inline;
   font-weight: 600;
 }
-
-

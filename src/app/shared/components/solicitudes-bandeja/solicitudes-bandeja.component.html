@@ -6,20 +6,18 @@
       [showOficio]="false"
       [showComentarios]="false"
       [showSeleccionar]="true"
-      (solicitudSeleccionada)="onFilaSeleccionada($event)">
+      (solicitudSeleccionada)="onFilaSeleccionada($event)"
+    >
     </app-request-status-table>
 
     @if (filasPendientes().length === 0) {
-      <p class="no-solicitudes">
-        No hay solicitudes pendientes de procesar
-      </p>
+      <p class="no-solicitudes">No hay solicitudes pendientes de procesar</p>
     }
   </app-card-container>
 </ng-template>
 
 @if (conHistorial()) {
   <mat-tab-group>
-
     <mat-tab label="Pendientes de Procesar">
       <div class="tab-content">
         <ng-container [ngTemplateOutlet]="pendientesTpl" />
@@ -35,7 +33,8 @@
               [mostrarTodos]="true"
               [incluirActual]="true"
               [mostrarInfo]="false"
-              (periodoChange)="onPeriodoChange($event)">
+              (periodoChange)="onPeriodoChange($event)"
+            >
             </app-periodo-filtro-selector>
           </div>
 
@@ -43,18 +42,16 @@
             [solicitudes]="filasProcesadas()"
             [showOficio]="false"
             [showComentarios]="false"
-            [showSeleccionar]="false">
+            [showSeleccionar]="false"
+          >
           </app-request-status-table>
 
           @if (filasProcesadas().length === 0) {
-            <p class="no-solicitudes">
-              No hay solicitudes procesadas todavía
-            </p>
+            <p class="no-solicitudes">No hay solicitudes procesadas todavía</p>
           }
         </app-card-container>
       </div>
     </mat-tab>
-
   </mat-tab-group>
 } @else {
   <ng-container [ngTemplateOutlet]="pendientesTpl" />

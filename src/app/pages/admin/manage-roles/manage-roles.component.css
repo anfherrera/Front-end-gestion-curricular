@@ -114,11 +114,11 @@ mat-table {
 }
 
 /* Colores de los botones de acción */
-.actions-column button[color="primary"] mat-icon {
+.actions-column button[color='primary'] mat-icon {
   color: white;
 }
 
-.actions-column button[color="warn"] mat-icon {
+.actions-column button[color='warn'] mat-icon {
   color: white;
 }
 
@@ -139,14 +139,30 @@ mat-table {
   }
 }
 
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(1) { animation-delay: 0.05s; }
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(2) { animation-delay: 0.1s; }
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(3) { animation-delay: 0.15s; }
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(4) { animation-delay: 0.2s; }
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(5) { animation-delay: 0.25s; }
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(6) { animation-delay: 0.3s; }
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(7) { animation-delay: 0.35s; }
-:host ::ng-deep .table-container .mat-mdc-row:nth-child(8) { animation-delay: 0.4s; }
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(1) {
+  animation-delay: 0.05s;
+}
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(2) {
+  animation-delay: 0.1s;
+}
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(3) {
+  animation-delay: 0.15s;
+}
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(4) {
+  animation-delay: 0.2s;
+}
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(5) {
+  animation-delay: 0.25s;
+}
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(6) {
+  animation-delay: 0.3s;
+}
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(7) {
+  animation-delay: 0.35s;
+}
+:host ::ng-deep .table-container .mat-mdc-row:nth-child(8) {
+  animation-delay: 0.4s;
+}
 
 :host ::ng-deep .table-container .mat-mdc-row:hover {
   background-color: var(--primario-98) !important;
@@ -200,21 +216,21 @@ mat-table {
 }
 
 /* Botón nuevo con estilo */
-button[color="primary"] {
+button[color='primary'] {
   box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
   font-weight: 500;
 }
 
-button[color="primary"]:hover {
+button[color='primary']:hover {
   box-shadow: var(--sombra-2);
   transform: translateY(-2px);
 }
 
-button[color="primary"] mat-icon {
+button[color='primary'] mat-icon {
   margin-right: 8px;
   color: white;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 /* Responsive */

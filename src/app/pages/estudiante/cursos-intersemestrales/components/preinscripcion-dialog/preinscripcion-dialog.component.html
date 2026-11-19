@@ -22,28 +22,23 @@
 
     <!-- Formulario de preinscripción -->
     <form [formGroup]="preinscripcionForm" (ngSubmit)="onSubmitPreinscripcion()" class="preinscripcion-form">
-
       <!-- Nombre Completo -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nombre Completo</mat-label>
-        <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo">
+        <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo" />
         <mat-icon matSuffix>person</mat-icon>
         @if (preinscripcionForm.get('nombreCompleto')?.hasError('required')) {
-          <mat-error>
-            El nombre completo es requerido
-          </mat-error>
+          <mat-error> El nombre completo es requerido </mat-error>
         }
       </mat-form-field>
 
       <!-- Código del Estudiante -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Código</mat-label>
-        <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante">
+        <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante" />
         <mat-icon matSuffix>badge</mat-icon>
         @if (preinscripcionForm.get('codigo')?.hasError('required')) {
-          <mat-error>
-            El código es requerido
-          </mat-error>
+          <mat-error> El código es requerido </mat-error>
         }
       </mat-form-field>
 
@@ -59,22 +54,20 @@
         </mat-select>
         <mat-icon matSuffix>assignment</mat-icon>
         @if (preinscripcionForm.get('condicion')?.hasError('required')) {
-          <mat-error>
-            Debes seleccionar una condición
-          </mat-error>
+          <mat-error> Debes seleccionar una condición </mat-error>
         }
       </mat-form-field>
-
     </form>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="onCancel()" [disabled]="loading()">
-      Cancelar
-    </button>
-    <button mat-raised-button color="primary"
+    <button mat-button (click)="onCancel()" [disabled]="loading()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="primary"
       (click)="onSubmitPreinscripcion()"
-      [disabled]="preinscripcionForm.invalid || loading()">
+      [disabled]="preinscripcionForm.invalid || loading()"
+    >
       @if (!loading()) {
         <mat-icon>send</mat-icon>
       }

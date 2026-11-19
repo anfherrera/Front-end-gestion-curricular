@@ -25,24 +25,24 @@ export interface Documento {
   imports: [MatCardModule, MatIconModule],
   templateUrl: './required-docs.component.html',
   styleUrls: ['./required-docs.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequiredDocsComponent {
   /** Lista de documentos requeridos */
   readonly requiredFiles = input<Documento[]>([]);
-  
+
   /** Archivos que son mutuamente exclusivos */
   readonly exclusiveFiles = input<string[]>([]);
-  
+
   /** Archivos opcionales */
   readonly optionalFiles = input<string[]>([]);
-  
+
   /** Archivos ya subidos por el estudiante */
   readonly archivos = input<Archivo[]>([]);
-  
+
   /** Nombre del programa del estudiante */
   readonly programaEstudiante = input('');
-  
+
   /** Indica si es para el proceso de Paz y Salvo */
   readonly esPazYSalvo = input(false);
 
@@ -58,37 +58,39 @@ export class RequiredDocsComponent {
     if (!programaEstudiante) return false;
     const programa = programaEstudiante.toLowerCase().trim();
     // Verificar variaciones del nombre del programa
-    return programa.includes('sistemas') || 
-           programa.includes('electrónica') || 
-           programa.includes('electronica') ||
-           programa.includes('electrónica y telecomunicaciones') ||
-           programa.includes('electronica y telecomunicaciones') ||
-           programa.includes('automática') ||
-           programa.includes('automatica') ||
-           programa.includes('automatización') ||
-           programa.includes('automatizacion') ||
-           programa.includes('ingeniería de sistemas') ||
-           programa.includes('ingenieria de sistemas') ||
-           programa.includes('ingeniería en sistemas') ||
-           programa.includes('ingenieria en sistemas');
+    return (
+      programa.includes('sistemas') ||
+      programa.includes('electrónica') ||
+      programa.includes('electronica') ||
+      programa.includes('electrónica y telecomunicaciones') ||
+      programa.includes('electronica y telecomunicaciones') ||
+      programa.includes('automática') ||
+      programa.includes('automatica') ||
+      programa.includes('automatización') ||
+      programa.includes('automatizacion') ||
+      programa.includes('ingeniería de sistemas') ||
+      programa.includes('ingenieria de sistemas') ||
+      programa.includes('ingeniería en sistemas') ||
+      programa.includes('ingenieria en sistemas')
+    );
   }
 
   get documentosObligatorios(): Documento[] {
     if (this.esTelematica) {
       return []; // Telemática solo sube la cédula, no los 4 documentos obligatorios
     }
-    return this.requiredFiles().filter(doc => doc.obligatorio);
+    return this.requiredFiles().filter((doc) => doc.obligatorio);
   }
 
   get documentosSegunModalidad(): Documento[] {
     if (this.esTelematica) {
       return []; // Telemática no necesita estos formatos
     }
-    return this.requiredFiles().filter(doc => !doc.obligatorio && !doc.opcional);
+    return this.requiredFiles().filter((doc) => !doc.obligatorio && !doc.opcional);
   }
 
   get documentosOpcionales(): Documento[] {
-    return this.requiredFiles().filter(doc => doc.opcional === true);
+    return this.requiredFiles().filter((doc) => doc.opcional === true);
   }
 
   get archivosExclusivosFiltrados(): string[] {
@@ -120,25 +122,19 @@ export class RequiredDocsComponent {
 
   isUploaded(file: string): boolean {
     const target = this.normalizarTexto(file);
-    return this.archivos().some(a =>
-      this.normalizarTexto(a.nombre).includes(target)
-    );
+    return this.archivos().some((a) => this.normalizarTexto(a.nombre).includes(target));
   }
 
   exclusiveUploaded(): string | null {
-    const exclusivosNormalizados = this.exclusiveFiles().map(nombre => this.normalizarTexto(nombre));
-    const encontrados = this.archivos().filter(a =>
-      exclusivosNormalizados.some(exclusivo =>
-        this.normalizarTexto(a.nombre).includes(exclusivo)
-      )
+    const exclusivosNormalizados = this.exclusiveFiles().map((nombre) => this.normalizarTexto(nombre));
+    const encontrados = this.archivos().filter((a) =>
+      exclusivosNormalizados.some((exclusivo) => this.normalizarTexto(a.nombre).includes(exclusivo))
     );
     return encontrados.length ? encontrados[0].nombre : null;
   }
 
   optionalUploaded(file: string): boolean {
     const target = this.normalizarTexto(file);
-    return this.archivos().some(a =>
-      this.normalizarTexto(a.nombre).includes(target)
-    );
+    return this.archivos().some((a) => this.normalizarTexto(a.nombre).includes(target));
   }
 }

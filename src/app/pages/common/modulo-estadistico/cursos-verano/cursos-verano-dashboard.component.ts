@@ -25,11 +25,22 @@ import { EstadisticasService } from '@core/services/estadisticas.service';
 import { esErrorDeAcceso, mensajeErrorDeAcceso } from '@core/utils/http-error.utils';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { descargarBlob } from '@core/utils/download.util';
-import { AlertaCritica, AnalisisPrograma, CursosVeranoResponse, EstadisticasRecomendaciones, Recomendacion, TendenciaTemporal, TopMateria } from '@core/models/estadisticas/cursos-verano.model';
+import {
+  AlertaCritica,
+  AnalisisPrograma,
+  CursosVeranoResponse,
+  EstadisticasRecomendaciones,
+  Recomendacion,
+  TendenciaTemporal,
+  TopMateria,
+} from '@core/models/estadisticas/cursos-verano.model';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { RecomendacionesCursosVeranoComponent } from './recomendaciones-cursos-verano/recomendaciones-cursos-verano.component';
 
-interface FiltrosCursosVerano { periodoAcademico?: string; idPrograma?: number }
+interface FiltrosCursosVerano {
+  periodoAcademico?: string;
+  idPrograma?: number;
+}
 
 // Registrar todos los componentes de Chart.js
 Chart.register(...registerables);
@@ -56,11 +67,11 @@ Chart.register(...registerables);
     MatSelectModule,
     MatInputModule,
     PeriodoFiltroSelectorComponent,
-    RecomendacionesCursosVeranoComponent
+    RecomendacionesCursosVeranoComponent,
   ],
   templateUrl: './cursos-verano-dashboard.component.html',
   styleUrls: ['../dashboard-comun.css', './cursos-verano-dashboard.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   private estadisticasService = inject(EstadisticasService);
@@ -102,22 +113,23 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     // Inicializar formulario de filtros
     this.filtrosForm = this.fb.group({
       periodoAcademico: [''],
-      idPrograma: ['']
+      idPrograma: [''],
     });
-    
+
     // Cargar programas disponibles
-    this.estadisticasService.getProgramasDisponibles()
+    this.estadisticasService
+      .getProgramasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(programas => this.programasDisponibles.set(programas));
-    
+      .subscribe((programas) => this.programasDisponibles.set(programas));
+
     // Cargar primero las tendencias temporales de forma optimizada para una carga más rápida
     this.cargarTendenciasTemporalesOptimizadas();
-    
+
     // Luego cargar todos los datos completos en segundo plano
     setTimeout(() => {
       this.cargarDatos();
     }, 100);
-    
+
     // El usuario puede refrescar con el botón "Actualizar datos"
   }
 
@@ -137,15 +149,15 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
 
     const formValue = this.filtrosForm.value;
     const filtros: FiltrosCursosVerano = {};
-    
+
     if (formValue.periodoAcademico) {
       filtros.periodoAcademico = formValue.periodoAcademico;
     }
-    
+
     if (formValue.idPrograma) {
       filtros.idPrograma = formValue.idPrograma;
     }
-    
+
     return filtros;
   }
 
@@ -165,7 +177,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     if (this.filtrosForm) {
       this.filtrosForm.patchValue({
         periodoAcademico: '',
-        idPrograma: ''
+        idPrograma: '',
       });
     }
     this.filtrosAplicados = {};
@@ -178,60 +190,66 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    */
   cargarTendenciasTemporalesOptimizadas(): void {
     const filtros = this.obtenerFiltrosActuales();
-    this.estadisticasService.getCursosVeranoTendenciasTemporales(filtros).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        // Asignar solo los datos de tendencias temporales
-        this.tendenciasTemporalesData.set(response.tendenciasTemporales || []);
-        
-        // Actualizar la gráfica inmediatamente
-        if (this.tendenciasTemporalesData().length > 0) {
-          this.crearGraficaTendencias();
-        }
-      },
-      error: (error) => {
-        // 401/403: cargarDatos() ya muestra el mensaje; no reintentar
-        if (esErrorDeAcceso(error)) {
-          return;
-        }
-        // Fallback: cargar datos completos
-        this.cargarDatos();
-      }
-    });
+    this.estadisticasService
+      .getCursosVeranoTendenciasTemporales(filtros)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          // Asignar solo los datos de tendencias temporales
+          this.tendenciasTemporalesData.set(response.tendenciasTemporales || []);
+
+          // Actualizar la gráfica inmediatamente
+          if (this.tendenciasTemporalesData().length > 0) {
+            this.crearGraficaTendencias();
+          }
+        },
+        error: (error) => {
+          // 401/403: cargarDatos() ya muestra el mensaje; no reintentar
+          if (esErrorDeAcceso(error)) {
+            return;
+          }
+          // Fallback: cargar datos completos
+          this.cargarDatos();
+        },
+      });
   }
 
   cargarDatos(): void {
     this.loading.set(true);
     this.error.set(null);
     const filtros = this.obtenerFiltrosActuales();
-    this.estadisticasService.getCursosVeranoEstadisticas(filtros).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (response) => {
-        this.data.set(response);
-        this.tendenciasTemporalesData.set(response.tendenciasTemporales || []);
-        this.topMateriasData.set(response.topMaterias || []);
-        this.analisisProgramaData.set(response.analisisPorPrograma || []);
+    this.estadisticasService
+      .getCursosVeranoEstadisticas(filtros)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.data.set(response);
+          this.tendenciasTemporalesData.set(response.tendenciasTemporales || []);
+          this.topMateriasData.set(response.topMaterias || []);
+          this.analisisProgramaData.set(response.analisisPorPrograma || []);
 
-        this.recomendaciones.set(response.recomendaciones || []);
-        if (response.predicciones) {
-          this.alertasCriticas.set(response.predicciones.alertasCriticas || []);
-          this.estadisticasRecomendaciones.set(response.predicciones.estadisticasRecomendaciones || {});
-        }
-        this.ultimaActualizacion.set(new Date()); // Actualizar timestamp
-        this.loading.set(false);
-        
-        // Cargar gráficas después de un pequeño delay
-        setTimeout(() => {
-          this.cargarGraficasAsync();
-        }, 200);
-      },
-      error: (error) => {
-        this.error.set(esErrorDeAcceso(error)
-          ? mensajeErrorDeAcceso(error)
-          : 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.');
-        this.loading.set(false);
-      }
-    });
+          this.recomendaciones.set(response.recomendaciones || []);
+          if (response.predicciones) {
+            this.alertasCriticas.set(response.predicciones.alertasCriticas || []);
+            this.estadisticasRecomendaciones.set(response.predicciones.estadisticasRecomendaciones || {});
+          }
+          this.ultimaActualizacion.set(new Date()); // Actualizar timestamp
+          this.loading.set(false);
+
+          // Cargar gráficas después de un pequeño delay
+          setTimeout(() => {
+            this.cargarGraficasAsync();
+          }, 200);
+        },
+        error: (error) => {
+          this.error.set(
+            esErrorDeAcceso(error)
+              ? mensajeErrorDeAcceso(error)
+              : 'Error al cargar datos del backend. Verifique que el servidor esté ejecutándose.'
+          );
+          this.loading.set(false);
+        },
+      });
   }
 
   refrescarDatos(): void {
@@ -269,12 +287,12 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
       if (this.tendenciasTemporalesData() && this.tendenciasTemporalesData().length > 0) {
         this.crearGraficaTendencias();
       }
-      
+
       // Inicializar gráfica de top materias
       if (this.topMateriasData() && this.topMateriasData().length > 0) {
         this.crearGraficaTopMaterias();
       }
-      
+
       // Inicializar gráfica de análisis por programa
       if (this.analisisProgramaData() && this.analisisProgramaData().length > 0) {
         this.crearGraficaAnalisisPrograma();
@@ -289,39 +307,41 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     if (!ctx) {
       return;
     }
-    
+
     // Destruir gráfica anterior si existe
     if (this.chartTendencias) {
       this.chartTendencias.destroy();
     }
-    
+
     // NO filtrar meses con solicitudes 0 - mostrar todos los meses del array tendenciasTemporales
     // Crear nueva gráfica
     this.chartTendencias = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: this.tendenciasTemporalesData().map(t => t.mes),
-        datasets: [{
-          label: 'Solicitudes',
-          data: this.tendenciasTemporalesData().map(t => t.solicitudes),
-          borderColor: '#36A2EB',
-          backgroundColor: 'rgba(54, 162, 235, 0.1)',
-          fill: true,
-          tension: 0.1
-        }]
+        labels: this.tendenciasTemporalesData().map((t) => t.mes),
+        datasets: [
+          {
+            label: 'Solicitudes',
+            data: this.tendenciasTemporalesData().map((t) => t.solicitudes),
+            borderColor: '#36A2EB',
+            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+            fill: true,
+            tension: 0.1,
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-          duration: 1000 // Animación más rápida
+          duration: 1000, // Animación más rápida
         },
         scales: {
           y: {
-            beginAtZero: true
-          }
-        }
-      }
+            beginAtZero: true,
+          },
+        },
+      },
     });
   }
 
@@ -330,35 +350,31 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     if (!ctx) {
       return;
     }
-    
+
     // Destruir gráfica anterior si existe
     if (this.chartMaterias) {
       this.chartMaterias.destroy();
     }
-    
+
     // Crear nueva gráfica
     this.chartMaterias = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: this.topMateriasData().map(m => m.nombre),
-        datasets: [{
-          data: this.topMateriasData().map(m => m.solicitudes),
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF'
-          ]
-        }]
+        labels: this.topMateriasData().map((m) => m.nombre),
+        datasets: [
+          {
+            data: this.topMateriasData().map((m) => m.solicitudes),
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-          duration: 1000
-        }
-      }
+          duration: 1000,
+        },
+      },
     });
   }
 
@@ -367,35 +383,37 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     if (!ctx) {
       return;
     }
-    
+
     // Destruir gráfica anterior si existe
     if (this.chartProgramas) {
       this.chartProgramas.destroy();
     }
-    
+
     // Crear nueva gráfica
     this.chartProgramas = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: this.analisisProgramaData().map(p => p.nombre),
-        datasets: [{
-          label: 'Solicitudes por Programa',
-          data: this.analisisProgramaData().map(p => p.solicitudes),
-          backgroundColor: '#FF6384'
-        }]
+        labels: this.analisisProgramaData().map((p) => p.nombre),
+        datasets: [
+          {
+            label: 'Solicitudes por Programa',
+            data: this.analisisProgramaData().map((p) => p.solicitudes),
+            backgroundColor: '#FF6384',
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-          duration: 1000
+          duration: 1000,
         },
         scales: {
           y: {
-            beginAtZero: true
-          }
-        }
-      }
+            beginAtZero: true,
+          },
+        },
+      },
     });
   }
 
@@ -409,20 +427,28 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   getTendenciaIcon(tendencia: string): string {
-    switch(tendencia) {
-      case 'CRECIENTE': return 'trending_up';
-      case 'DECRECIENTE': return 'trending_down';
-      case 'ESTABLE': return 'trending_flat';
-      default: return 'help';
+    switch (tendencia) {
+      case 'CRECIENTE':
+        return 'trending_up';
+      case 'DECRECIENTE':
+        return 'trending_down';
+      case 'ESTABLE':
+        return 'trending_flat';
+      default:
+        return 'help';
     }
   }
 
   getTendenciaColor(tendencia: string): string {
-    switch(tendencia) {
-      case 'CRECIENTE': return '#28a745';
-      case 'DECRECIENTE': return '#dc3545';
-      case 'ESTABLE': return '#ffc107';
-      default: return '#6c757d';
+    switch (tendencia) {
+      case 'CRECIENTE':
+        return '#28a745';
+      case 'DECRECIENTE':
+        return '#dc3545';
+      case 'ESTABLE':
+        return '#ffc107';
+      default:
+        return '#6c757d';
     }
   }
 
@@ -447,28 +473,36 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
    */
   generarNombreArchivo(extension: 'pdf' | 'xlsx', filtros: FiltrosCursosVerano): string {
     let nombre = 'estadisticas_cursos_verano';
-    
+
     if (filtros.periodoAcademico) {
       // Reemplazar guiones por guiones bajos para el nombre de archivo
       const periodo = filtros.periodoAcademico.replace(/-/g, '_');
       nombre += `_${periodo}`;
     }
-    
+
     if (filtros.idPrograma !== undefined && filtros.idPrograma !== null) {
       nombre += `_programa_${filtros.idPrograma}`;
     }
-    
+
     return `${nombre}.${extension}`;
   }
 
   exportarPDF(): void {
     const filtros = this.obtenerFiltrosActuales();
-    this.exportar(this.estadisticasService.exportarReporteCursosVerano(filtros), this.generarNombreArchivo('pdf', filtros), 'PDF');
+    this.exportar(
+      this.estadisticasService.exportarReporteCursosVerano(filtros),
+      this.generarNombreArchivo('pdf', filtros),
+      'PDF'
+    );
   }
 
   exportarExcel(): void {
     const filtros = this.obtenerFiltrosActuales();
-    this.exportar(this.estadisticasService.exportarExcelCursosVerano(filtros), this.generarNombreArchivo('xlsx', filtros), 'Excel');
+    this.exportar(
+      this.estadisticasService.exportarExcelCursosVerano(filtros),
+      this.generarNombreArchivo('xlsx', filtros),
+      'Excel'
+    );
   }
 
   private exportar(peticion$: Observable<Blob>, nombreArchivo: string, formato: string): void {
@@ -482,9 +516,11 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: HttpErrorResponse) => {
-        const mensaje = esErrorDeAcceso(error) ? mensajeErrorDeAcceso(error) : `Error al exportar el reporte ${formato}`;
+        const mensaje = esErrorDeAcceso(error)
+          ? mensajeErrorDeAcceso(error)
+          : `Error al exportar el reporte ${formato}`;
         this.snackbar.error(mensaje);
-      }
+      },
     });
   }
 
@@ -496,5 +532,4 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     // Redondear a 2 decimales
     return Math.round((cantidad / total) * 100 * 100) / 100;
   }
-
 }

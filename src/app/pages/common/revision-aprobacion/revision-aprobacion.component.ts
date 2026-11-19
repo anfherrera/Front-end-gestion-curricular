@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, ViewChild, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  ViewChild,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ActivatedRoute } from '@angular/router';
@@ -17,7 +27,7 @@ import { ESTADO_SIN_HISTORIAL, estadoActual, normalizarEstado } from '@core/util
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import {
   DocumentationViewerComponent,
-  ServicioDocumentos
+  ServicioDocumentos,
 } from '@shared/components/documentation-viewer/documentation-viewer.component';
 import { SolicitudesBandejaComponent } from '@shared/components/solicitudes-bandeja/solicitudes-bandeja.component';
 import { TextoDialogComponent, datosRechazo } from '@shared/components/texto-dialog/texto-dialog.component';
@@ -26,11 +36,18 @@ import { TextoDialogComponent, datosRechazo } from '@shared/components/texto-dia
  * Lo que la revisión usa del servicio del proceso. Lo cumplen SolicitudesAprobacionService
  * (homologación y reingreso) y PazSalvoService.
  */
-export type ServicioRevision<S> = Pick<SolicitudesAprobacionService<S>,
-  | 'getPendingRequests' | 'getCoordinadorRequests'
-  | 'getSolicitudesProcesadasFuncionario' | 'getSolicitudesProcesadasCoordinador'
-  | 'approveRequest' | 'approveAsCoordinador' | 'rejectRequest' | 'agregarComentario'
-> & ServicioDocumentos;
+export type ServicioRevision<S> = Pick<
+  SolicitudesAprobacionService<S>,
+  | 'getPendingRequests'
+  | 'getCoordinadorRequests'
+  | 'getSolicitudesProcesadasFuncionario'
+  | 'getSolicitudesProcesadasCoordinador'
+  | 'approveRequest'
+  | 'approveAsCoordinador'
+  | 'rejectRequest'
+  | 'agregarComentario'
+> &
+  ServicioDocumentos;
 
 /** Lo que cambia entre procesos; lo que depende del rol se deduce de `rol`. */
 export interface ConfigRevisionAprobacion<S extends SolicitudAprobable> {
@@ -62,10 +79,16 @@ export function rolRevisionDeRuta(route: ActivatedRoute): RolRevision {
  */
 @Component({
   selector: 'app-revision-aprobacion',
-  imports: [MatButtonModule, MatIconModule, CardContainerComponent, DocumentationViewerComponent, SolicitudesBandejaComponent],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    CardContainerComponent,
+    DocumentationViewerComponent,
+    SolicitudesBandejaComponent,
+  ],
   templateUrl: './revision-aprobacion.component.html',
   styleUrls: ['./revision-aprobacion.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RevisionAprobacionComponent<S extends SolicitudAprobable> implements OnInit {
   readonly config = input.required<ConfigRevisionAprobacion<S>>();
@@ -89,10 +112,12 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   readonly esCoordinador = computed(() => this.config().rol === 'coordinador');
 
   readonly textoAprobar = computed(() =>
-    this.esCoordinador() ? 'Aprobar Definitivamente' : `Aprobar ${this.config().nombreProceso}`);
+    this.esCoordinador() ? 'Aprobar Definitivamente' : `Aprobar ${this.config().nombreProceso}`
+  );
 
-  readonly documentos = computed<(DocumentoHomologacion | DocumentosDTORespuesta)[]>(() =>
-    this.seleccionada()?.documentos ?? []);
+  readonly documentos = computed<(DocumentoHomologacion | DocumentosDTORespuesta)[]>(
+    () => this.seleccionada()?.documentos ?? []
+  );
 
   /** El funcionario decide las solicitudes enviadas; el coordinador, las aprobadas por el funcionario. */
   readonly puedeDecidir = computed(() => {
@@ -108,8 +133,9 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   readonly motivoRechazo = computed<string | null>(() => {
     const seleccionada = this.seleccionada();
     if (!seleccionada || normalizarEstado(estadoActual(seleccionada)) !== EstadosSolicitud.RECHAZADA) return null;
-    const rechazos = (seleccionada.estadosSolicitud ?? [])
-      .filter(e => normalizarEstado(e.estado_actual) === EstadosSolicitud.RECHAZADA);
+    const rechazos = (seleccionada.estadosSolicitud ?? []).filter(
+      (e) => normalizarEstado(e.estado_actual) === EstadosSolicitud.RECHAZADA
+    );
     return rechazos.at(-1)?.comentario || null;
   });
 
@@ -123,7 +149,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
         this.pendientes.set(sols);
         this.refrescarSeleccion(sols);
       },
-      error: (err) => this.mostrarError(err, 'Error al cargar solicitudes')
+      error: (err) => this.mostrarError(err, 'Error al cargar solicitudes'),
     });
   }
 
@@ -135,7 +161,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
       : servicio.getSolicitudesProcesadasFuncionario(periodo);
     procesadas$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (sols) => this.procesadas.set(sols),
-      error: (err) => this.mostrarError(err, 'Error al cargar historial de solicitudes procesadas')
+      error: (err) => this.mostrarError(err, 'Error al cargar historial de solicitudes procesadas'),
     });
   }
 
@@ -152,7 +178,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   private refrescarSeleccion(sols: S[]): void {
     const id = this.seleccionada()?.id_solicitud;
     if (id === undefined) return;
-    const recargada = sols.find(sol => sol.id_solicitud === id) ?? null;
+    const recargada = sols.find((sol) => sol.id_solicitud === id) ?? null;
     this.seleccionar(recargada);
     if (!recargada) this.bandeja?.resetSelection();
   }
@@ -163,29 +189,33 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
     if (!solicitud || !documentosAparte) return;
 
     const id = solicitud.id_solicitud;
-    documentosAparte(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (documentos) => this.ponerDocumentos(id, documentos),
-      error: (err) => {
-        this.ponerDocumentos(id, []);
-        this.mostrarError(err, 'Error al cargar documentos');
-      }
-    });
+    documentosAparte(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (documentos) => this.ponerDocumentos(id, documentos),
+        error: (err) => {
+          this.ponerDocumentos(id, []);
+          this.mostrarError(err, 'Error al cargar documentos');
+        },
+      });
   }
 
   /** Si sigue elegida la misma solicitud, la cambia por una copia con esos documentos. */
   private ponerDocumentos(idSolicitud: number, documentos: DocumentoHomologacion[]): void {
-    this.seleccionada.update(sol => sol?.id_solicitud === idSolicitud ? { ...sol, documentos } : sol);
+    this.seleccionada.update((sol) => (sol?.id_solicitud === idSolicitud ? { ...sol, documentos } : sol));
   }
 
   onComentarioAgregado(event: { documento: DocumentoHomologacion | DocumentosDTORespuesta; comentario: string }): void {
     if (!event.documento.id_documento) return;
-    this.config().servicio.agregarComentario(event.documento.id_documento, event.comentario)
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.config()
+      .servicio.agregarComentario(event.documento.id_documento, event.comentario)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           this.snackbar.exito('Comentario añadido correctamente');
           this.cargarPendientes();
         },
-        error: (err) => this.mostrarError(err, 'Error al añadir comentario')
+        error: (err) => this.mostrarError(err, 'Error al añadir comentario'),
       });
   }
 
@@ -200,7 +230,7 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
 
     aprobar$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this.finalizarDecision(mensaje),
-      error: (err) => this.mostrarError(err, 'Error al aprobar solicitud')
+      error: (err) => this.mostrarError(err, 'Error al aprobar solicitud'),
     });
   }
 
@@ -210,14 +240,18 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
     const { dialogoRechazo, mensajeRechazada } = this.config();
     const data = datosRechazo(dialogoRechazo?.titulo, dialogoRechazo?.descripcion);
 
-    this.dialog.open(TextoDialogComponent, { width: '450px', data }).afterClosed().pipe(
-      filter((motivo: string | undefined): motivo is string => !!motivo),
-      switchMap(motivo => this.config().servicio.rejectRequest(id, motivo)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: () => this.finalizarDecision(mensajeRechazada ?? 'Solicitud rechazada'),
-      error: (err) => this.mostrarError(err, 'Error al rechazar solicitud')
-    });
+    this.dialog
+      .open(TextoDialogComponent, { width: '450px', data })
+      .afterClosed()
+      .pipe(
+        filter((motivo: string | undefined): motivo is string => !!motivo),
+        switchMap((motivo) => this.config().servicio.rejectRequest(id, motivo)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: () => this.finalizarDecision(mensajeRechazada ?? 'Solicitud rechazada'),
+        error: (err) => this.mostrarError(err, 'Error al rechazar solicitud'),
+      });
   }
 
   private finalizarDecision(mensaje: string): void {

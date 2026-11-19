@@ -23,7 +23,7 @@ const TIPOS_DOCUMENTO: Record<string, string> = {
   CE: 'Cédula de Extranjería',
   TI: 'Tarjeta de Identidad',
   PA: 'Pasaporte',
-  RC: 'Registro Civil'
+  RC: 'Registro Civil',
 };
 
 /**
@@ -41,11 +41,11 @@ const TIPOS_DOCUMENTO: Record<string, string> = {
     DocumentationViewerComponent,
     SolicitudesBandejaComponent,
     PublicarFechasEcaesComponent,
-    FechaPipe
+    FechaPipe,
   ],
   templateUrl: './pruebas-ecaes.component.html',
   styleUrl: './pruebas-ecaes.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PruebasEcaesFuncionarioComponent implements OnInit {
   readonly pruebasEcaesService = inject(PruebasEcaesService);
@@ -68,19 +68,22 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
   }
 
   cargarPendientes(): void {
-    this.pruebasEcaesService.listarSolicitudesFuncionario().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (sols) => {
-        this.pendientes.set(sols);
-        // La selección pasa a la copia nueva (con los comentarios al día)
-        const actual = this.seleccionada();
-        if (actual) {
-          const nueva = sols.find(sol => sol.id_solicitud === actual.id_solicitud) ?? null;
-          this.seleccionada.set(nueva);
-          if (!nueva) this.bandeja()?.resetSelection();
-        }
-      },
-      error: (err) => this.mostrarError(err, 'Error al cargar solicitudes ECAES')
-    });
+    this.pruebasEcaesService
+      .listarSolicitudesFuncionario()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (sols) => {
+          this.pendientes.set(sols);
+          // La selección pasa a la copia nueva (con los comentarios al día)
+          const actual = this.seleccionada();
+          if (actual) {
+            const nueva = sols.find((sol) => sol.id_solicitud === actual.id_solicitud) ?? null;
+            this.seleccionada.set(nueva);
+            if (!nueva) this.bandeja()?.resetSelection();
+          }
+        },
+        error: (err) => this.mostrarError(err, 'Error al cargar solicitudes ECAES'),
+      });
   }
 
   onSolicitudSeleccionada(solicitud: SolicitudEcaesResponse | null): void {
@@ -92,13 +95,15 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
       this.snackbar.error('Error: No se pudo identificar el documento');
       return;
     }
-    this.pruebasEcaesService.agregarComentario(event.documento.id_documento, event.comentario)
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.pruebasEcaesService
+      .agregarComentario(event.documento.id_documento, event.comentario)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           this.snackbar.exito('Comentario añadido correctamente');
           this.cargarPendientes();
         },
-        error: (err) => this.mostrarError(err, 'Error al añadir comentario')
+        error: (err) => this.mostrarError(err, 'Error al añadir comentario'),
       });
   }
 
@@ -106,17 +111,23 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
   aprobar(): void {
     const seleccionada = this.seleccionada();
     if (!seleccionada) return;
-    this.decidir(this.pruebasEcaesService.approveRequest(seleccionada.id_solicitud),
-      'Solicitud marcada como Pre-registrada exitosamente', 'Error al aprobar solicitud');
+    this.decidir(
+      this.pruebasEcaesService.approveRequest(seleccionada.id_solicitud),
+      'Solicitud marcada como Pre-registrada exitosamente',
+      'Error al aprobar solicitud'
+    );
   }
 
   rechazar(): void {
     const id = this.seleccionada()?.id_solicitud;
     if (id === undefined) return;
-    const rechazo$ = this.dialog.open(TextoDialogComponent, { width: '450px', data: datosRechazo() }).afterClosed().pipe(
-      filter((motivo: string | undefined): motivo is string => !!motivo),
-      switchMap(motivo => this.pruebasEcaesService.rejectRequest(id, motivo))
-    );
+    const rechazo$ = this.dialog
+      .open(TextoDialogComponent, { width: '450px', data: datosRechazo() })
+      .afterClosed()
+      .pipe(
+        filter((motivo: string | undefined): motivo is string => !!motivo),
+        switchMap((motivo) => this.pruebasEcaesService.rejectRequest(id, motivo))
+      );
     this.decidir(rechazo$, 'Solicitud rechazada exitosamente', 'Error al rechazar solicitud');
   }
 
@@ -128,7 +139,7 @@ export class PruebasEcaesFuncionarioComponent implements OnInit {
         this.bandeja()?.resetSelection();
         this.cargarPendientes();
       },
-      error: (err) => this.mostrarError(err, error)
+      error: (err) => this.mostrarError(err, error),
     });
   }
 

@@ -2,16 +2,18 @@ import { usuarioParaSolicitud } from './usuario-solicitud.util';
 
 describe('usuarioParaSolicitud', () => {
   it('arma el objUsuario plano que espera el backend', () => {
-    expect(usuarioParaSolicitud({
-      id_usuario: 7,
-      nombre_completo: 'Ana Pérez',
-      codigo: '104612345',
-      cedula: '1061000000',
-      correo: 'ana@unicauca.edu.co',
-      estado_usuario: true,
-      rol: { id_rol: 2, nombre: 'Estudiante' },
-      objPrograma: { id_programa: 3, nombre_programa: 'Ingenieria Automatica Industrial' }
-    })).toEqual({
+    expect(
+      usuarioParaSolicitud({
+        id_usuario: 7,
+        nombre_completo: 'Ana Pérez',
+        codigo: '104612345',
+        cedula: '1061000000',
+        correo: 'ana@unicauca.edu.co',
+        estado_usuario: true,
+        rol: { id_rol: 2, nombre: 'Estudiante' },
+        objPrograma: { id_programa: 3, nombre_programa: 'Ingenieria Automatica Industrial' },
+      })
+    ).toEqual({
       id_usuario: 7,
       nombre_completo: 'Ana Pérez',
       codigo: '104612345',
@@ -19,7 +21,7 @@ describe('usuarioParaSolicitud', () => {
       correo: 'ana@unicauca.edu.co',
       estado_usuario: true,
       id_rol: 2,
-      id_programa: 3
+      id_programa: 3,
     });
   });
 

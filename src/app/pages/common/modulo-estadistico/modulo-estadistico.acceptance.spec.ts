@@ -6,14 +6,18 @@ import { ApiEndpoints } from '@core/utils/api-endpoints';
 import { ProcesoDetallado, ResumenCompletoAPI } from '@core/models/estadisticas/generales.model';
 
 /** Respuestas parciales: cada prueba solo envía los campos que comprueba. */
-interface ResumenParcial { estadisticasGlobales: Partial<ResumenCompletoAPI['estadisticasGlobales']> }
-interface PorProcesoParcial { estadisticasPorProceso: Record<string, Partial<ProcesoDetallado>> }
+interface ResumenParcial {
+  estadisticasGlobales: Partial<ResumenCompletoAPI['estadisticasGlobales']>;
+}
+interface PorProcesoParcial {
+  estadisticasPorProceso: Record<string, Partial<ProcesoDetallado>>;
+}
 
 /**
  * ===================================================
  * PRUEBAS DE ACEPTACIÓN - MÓDULO ESTADÍSTICO
  * ===================================================
- * 
+ *
  * Formato BDD: Given/When/Then
  * Basadas en Historias de Usuario para reportes y análisis
  */
@@ -30,7 +34,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
     id_rol: 3,
     id_programa: 1,
     objRol: { id_rol: 3, nombre_rol: 'COORDINADOR' },
-    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Electrónica' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Electrónica' },
   };
 
   beforeEach(() => {
@@ -38,10 +42,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [
-        EstadisticasService,
-        { provide: AuthService, useValue: authServiceSpy }
-      ]
+      providers: [EstadisticasService, { provide: AuthService, useValue: authServiceSpy }],
     });
 
     service = TestBed.inject(EstadisticasService);
@@ -66,7 +67,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
     it('ACEP-EST-001: DADO que soy coordinador, CUANDO accedo a estadísticas, ENTONCES veo resumen global', fakeAsync(() => {
       // GIVEN: El sistema tiene solicitudes registradas
       const mockResumen: ResumenParcial = {
-        estadisticasGlobales: { totalSolicitudes: 250, totalAprobadas: 180, totalRechazadas: 20, totalEnProceso: 50 }
+        estadisticasGlobales: { totalSolicitudes: 250, totalAprobadas: 180, totalRechazadas: 20, totalEnProceso: 50 },
       };
 
       // WHEN: Consulto el resumen completo sin filtros
@@ -93,7 +94,9 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
   describe('HU-02: Estadísticas por Proceso', () => {
     it('ACEP-EST-002: DADO que quiero analizar paz y salvo, CUANDO filtro por ese proceso, ENTONCES el backend recibe el proceso', fakeAsync(() => {
       // GIVEN: Quiero analizar paz y salvo
-      const mockProceso: PorProcesoParcial = { estadisticasPorProceso: { 'Paz y Salvo': { totalSolicitudes: 75, aprobadas: 60 } } };
+      const mockProceso: PorProcesoParcial = {
+        estadisticasPorProceso: { 'Paz y Salvo': { totalSolicitudes: 75, aprobadas: 60 } },
+      };
 
       // WHEN: Consulto las estadísticas filtradas por proceso
       service.getEstadisticasDetalladasPorProceso({ proceso: 'Paz y Salvo' }).subscribe((stats) => {
@@ -102,8 +105,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) =>
-        r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO && r.params.get('proceso') === 'Paz y Salvo'
+      const req = httpMock.expectOne(
+        (r) =>
+          r.url === ApiEndpoints.MODULO_ESTADISTICO.ESTADISTICAS_POR_PROCESO &&
+          r.params.get('proceso') === 'Paz y Salvo'
       );
       req.flush(mockProceso);
       tick();
@@ -138,8 +143,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) =>
-        r.url === ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO && r.params.get('idPrograma') === String(programaId)
+      const req = httpMock.expectOne(
+        (r) =>
+          r.url === ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO &&
+          r.params.get('idPrograma') === String(programaId)
       );
       req.flush({ estadisticasGlobales: { totalSolicitudes: 50 } });
       tick();
@@ -157,7 +164,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       // GIVEN: Quiero ver solo período 2025-1
       const periodo = '2025-1';
       const mockEstadisticas: ResumenParcial = {
-        estadisticasGlobales: { totalSolicitudes: 100, totalAprobadas: 80, totalEnProceso: 15, totalRechazadas: 5 }
+        estadisticasGlobales: { totalSolicitudes: 100, totalAprobadas: 80, totalEnProceso: 15, totalRechazadas: 5 },
       };
 
       // WHEN: Aplico filtro de período al resumen del panel
@@ -168,8 +175,9 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       tick();
 
       // El backend recibe el período como query param: /estadisticas/resumen-completo?periodoAcademico=...
-      const req = httpMock.expectOne((r) =>
-        r.url === ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO && r.params.get('periodoAcademico') === periodo
+      const req = httpMock.expectOne(
+        (r) =>
+          r.url === ApiEndpoints.MODULO_ESTADISTICO.RESUMEN_COMPLETO && r.params.get('periodoAcademico') === periodo
       );
       req.flush(mockEstadisticas);
       tick();
@@ -188,7 +196,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       const mockTotal = {
         totalEstudiantes: 1500,
         fechaConsulta: new Date().toISOString(),
-        descripcion: 'Total actualizado'
+        descripcion: 'Total actualizado',
       };
 
       // WHEN: Consulto total de estudiantes
@@ -218,10 +226,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
         estados: {
           APROBADA: { cantidad: 100, porcentaje: 66.6, descripcion: '', color: '', icono: '' },
           PENDIENTE: { cantidad: 30, porcentaje: 20, descripcion: '', color: '', icono: '' },
-          RECHAZADA: { cantidad: 20, porcentaje: 13.4, descripcion: '', color: '', icono: '' }
+          RECHAZADA: { cantidad: 20, porcentaje: 13.4, descripcion: '', color: '', icono: '' },
         },
         fechaConsulta: new Date().toISOString(),
-        descripcion: 'Distribución actual'
+        descripcion: 'Distribución actual',
       };
 
       // WHEN: Consulto estado de solicitudes
@@ -250,8 +258,8 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
         estadisticasPorProceso: {
           'Paz y Salvo': { totalSolicitudes: 50 },
           'Cursos de Verano': { totalSolicitudes: 150 },
-          'Homologación': { totalSolicitudes: 30 }
-        }
+          Homologación: { totalSolicitudes: 30 },
+        },
       };
 
       service.getEstadisticasDetalladasPorProceso().subscribe((stats) => {
@@ -265,6 +273,4 @@ describe('PRUEBAS DE ACEPTACIÓN - Módulo Estadístico', () => {
       tick();
     }));
   });
-
 });
-

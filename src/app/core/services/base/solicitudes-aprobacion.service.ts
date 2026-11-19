@@ -97,11 +97,18 @@ export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseSer
 
   /** Como descargarOficio, pero con la respuesta entera para leer el nombre en Content-Disposition. */
   descargarOficioConNombre(idSolicitud: number): Observable<HttpResponse<Blob>> {
-    return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob', observe: 'response' });
+    return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, {
+      responseType: 'blob',
+      observe: 'response',
+    });
   }
 
   /** Sube un PDF al endpoint genérico de archivos, asociado a la solicitud si se indica. */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<unknown> {
-    return this.subirPdf(`${this.api}/archivos/subir/pdf`, archivo, idSolicitud ? { idSolicitud: String(idSolicitud) } : {});
+    return this.subirPdf(
+      `${this.api}/archivos/subir/pdf`,
+      archivo,
+      idSolicitud ? { idSolicitud: String(idSolicitud) } : {}
+    );
   }
 }

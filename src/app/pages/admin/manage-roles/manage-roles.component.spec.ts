@@ -13,9 +13,8 @@ describe('ManageRolesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ManageRolesComponent, NoopAnimationsModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])]
-    })
-    .compileComponents();
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ManageRolesComponent);
     component = fixture.componentInstance;

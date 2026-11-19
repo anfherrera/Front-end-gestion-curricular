@@ -3,7 +3,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import {
-  AlertaCritica, EstadisticasRecomendaciones, PrioridadRecomendacion, Recomendacion
+  AlertaCritica,
+  EstadisticasRecomendaciones,
+  PrioridadRecomendacion,
+  Recomendacion,
 } from '@core/models/estadisticas/cursos-verano.model';
 
 const ORDEN_PRIORIDAD: Record<PrioridadRecomendacion, number> = { CRITICA: 0, ALTA: 1, MEDIA: 2, BAJA: 3 };
@@ -11,13 +14,13 @@ const COLOR_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
   CRITICA: '#DC2626',
   ALTA: '#EF4444',
   MEDIA: '#F59E0B',
-  BAJA: '#10B981'
+  BAJA: '#10B981',
 };
 const ETIQUETA_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
   CRITICA: 'Crítica',
   ALTA: 'Alta',
   MEDIA: 'Media',
-  BAJA: 'Baja'
+  BAJA: 'Baja',
 };
 
 /** Pestaña "Recomendaciones" del dashboard de cursos de verano: resumen, alertas y tarjetas que se expanden. */
@@ -26,7 +29,7 @@ const ETIQUETA_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
   imports: [MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './recomendaciones-cursos-verano.component.html',
   styleUrl: './recomendaciones-cursos-verano.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecomendacionesCursosVeranoComponent {
   readonly recomendaciones = input<Recomendacion[]>([]);
@@ -43,7 +46,7 @@ export class RecomendacionesCursosVeranoComponent {
   readonly expandidas = signal(new Set<string>());
 
   alternar(id: string): void {
-    this.expandidas.update(actual => {
+    this.expandidas.update((actual) => {
       const nuevo = new Set(actual);
       if (!nuevo.delete(id)) nuevo.add(id);
       return nuevo;

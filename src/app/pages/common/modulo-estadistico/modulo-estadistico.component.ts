@@ -6,15 +6,9 @@ import { CursosVeranoDashboardComponent } from './cursos-verano/cursos-verano-da
 
 @Component({
   selector: 'app-modulo-estadistico',
-  imports: [
-    MatTabsModule,
-    DashboardEstadisticoComponent,
-    CursosVeranoDashboardComponent
-],
+  imports: [MatTabsModule, DashboardEstadisticoComponent, CursosVeranoDashboardComponent],
   templateUrl: './modulo-estadistico.component.html',
   styleUrl: './modulo-estadistico.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModuloEstadisticoComponent {
-
-}
+export class ModuloEstadisticoComponent {}

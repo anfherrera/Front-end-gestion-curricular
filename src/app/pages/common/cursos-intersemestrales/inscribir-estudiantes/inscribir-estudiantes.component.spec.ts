@@ -10,9 +10,8 @@ describe('InscribirEstudiantesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InscribirEstudiantesComponent, HttpClientTestingModule, NoopAnimationsModule]
-    })
-    .compileComponents();
+      imports: [InscribirEstudiantesComponent, HttpClientTestingModule, NoopAnimationsModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(InscribirEstudiantesComponent);
     component = fixture.componentInstance;

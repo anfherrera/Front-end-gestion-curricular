@@ -15,7 +15,19 @@
   @if (!cargando()) {
     <app-curso-list
       [cursos]="cursos()"
-      [displayedColumns]="['codigo','nombre','creditos','docente','cupos','espacio','periodo','fecha_inicio','fecha_fin','duracion','estado']"
+      [displayedColumns]="[
+        'codigo',
+        'nombre',
+        'creditos',
+        'docente',
+        'cupos',
+        'espacio',
+        'periodo',
+        'fecha_inicio',
+        'fecha_fin',
+        'duracion',
+        'estado',
+      ]"
       [acciones]="[]"
     ></app-curso-list>
   }
@@ -28,23 +40,21 @@
         @if (!periodoSeleccionado || periodoSeleccionado === '') {
           <p>
             No hay cursos disponibles para el período académico actual.
-            <br>
-              <span class="sugerencia">Puedes seleccionar un período específico en el filtro de arriba.</span>
-            </p>
-          }
-          @if (periodoSeleccionado && periodoSeleccionado !== 'todos' && periodoSeleccionado !== '') {
-            <p>
-              No hay cursos disponibles para el período seleccionado: <strong>{{ periodoSeleccionado }}</strong>.
-              <br>
-                <span class="sugerencia">Intenta seleccionar otro período o el período actual.</span>
-              </p>
-            }
-            @if (periodoSeleccionado === 'todos') {
-              <p>
-                No hay cursos disponibles en ningún período.
-              </p>
-            }
-          </div>
-        </div>
-      }
-    </app-card-container>
+            <br />
+            <span class="sugerencia">Puedes seleccionar un período específico en el filtro de arriba.</span>
+          </p>
+        }
+        @if (periodoSeleccionado && periodoSeleccionado !== 'todos' && periodoSeleccionado !== '') {
+          <p>
+            No hay cursos disponibles para el período seleccionado: <strong>{{ periodoSeleccionado }}</strong>.
+            <br />
+            <span class="sugerencia">Intenta seleccionar otro período o el período actual.</span>
+          </p>
+        }
+        @if (periodoSeleccionado === 'todos') {
+          <p>No hay cursos disponibles en ningún período.</p>
+        }
+      </div>
+    </div>
+  }
+</app-card-container>

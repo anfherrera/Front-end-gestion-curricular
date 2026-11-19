@@ -82,18 +82,18 @@ mat-card {
 }
 
 /* Icono de código (badge) - Azul */
-:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="codigo"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname='codigo']) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
 /* Icono de nombre (school) - Azul */
-:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname="nombre_programa"]) mat-icon[matprefix] {
+:host ::ng-deep .form-container mat-form-field:has(input[formcontrolname='nombre_programa']) mat-icon[matprefix] {
   color: var(--color-primario);
 }
 
 /* Efecto hover en iconos */
 :host ::ng-deep .form-container mat-form-field:hover mat-icon[matprefix] {
-  }
+}
 
 /* Hints más visibles */
 :host ::ng-deep .form-container mat-hint {
@@ -125,11 +125,11 @@ mat-card {
   transition: transform 0.2s ease;
 }
 
-.form-actions button[color="primary"] {
+.form-actions button[color='primary'] {
   box-shadow: var(--sombra-1);
 }
 
-.form-actions button[color="primary"]:hover {
+.form-actions button[color='primary']:hover {
   box-shadow: var(--sombra-2);
   transform: translateY(-1px);
 }
@@ -138,9 +138,9 @@ mat-card {
   background-color: var(--gris-75);
 }
 
-.form-actions button[color="primary"] mat-icon {
+.form-actions button[color='primary'] mat-icon {
   color: white;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .form-actions button:not([color]) mat-icon {

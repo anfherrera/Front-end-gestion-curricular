@@ -30,21 +30,45 @@ export interface ConfirmDialogData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button [mat-dialog-close]="false">{{ data.textoCancelar || 'Cancelar' }}</button>
-      <button mat-raised-button cdkFocusInitial
-              [class.btn-peligro]="data.peligro" [class.btn-confirmar]="!data.peligro"
-              [mat-dialog-close]="true">
+      <button
+        mat-raised-button
+        cdkFocusInitial
+        [class.btn-peligro]="data.peligro"
+        [class.btn-confirmar]="!data.peligro"
+        [mat-dialog-close]="true"
+      >
         {{ data.textoConfirmar || 'Aceptar' }}
       </button>
     </mat-dialog-actions>
   `,
-  styles: [`
-    .titulo { display: flex; align-items: center; gap: 8px; }
-    .titulo mat-icon { color: var(--color-primario); }
-    .titulo mat-icon.peligro { color: var(--color-error); }
-    .mensaje { white-space: pre-line; line-height: 1.5; margin: 0; }
-    .btn-confirmar { background-color: var(--color-primario) !important; color: white !important; }
-    .btn-peligro { background-color: var(--color-error) !important; color: white !important; }
-  `]
+  styles: [
+    `
+      .titulo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .titulo mat-icon {
+        color: var(--color-primario);
+      }
+      .titulo mat-icon.peligro {
+        color: var(--color-error);
+      }
+      .mensaje {
+        white-space: pre-line;
+        line-height: 1.5;
+        margin: 0;
+      }
+      .btn-confirmar {
+        background-color: var(--color-primario) !important;
+        color: white !important;
+      }
+      .btn-peligro {
+        background-color: var(--color-error) !important;
+        color: white !important;
+      }
+    `,
+  ],
 })
 export class ConfirmDialogComponent {
   readonly data: ConfirmDialogData = inject(MAT_DIALOG_DATA);
@@ -60,7 +84,11 @@ export function confirmar(
   config: MatDialogConfig = {}
 ): Observable<boolean> {
   return dialog
-    .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, { width: '440px', ...config, data })
+    .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+      width: '440px',
+      ...config,
+      data,
+    })
     .afterClosed()
-    .pipe(map(resultado => resultado === true));
+    .pipe(map((resultado) => resultado === true));
 }

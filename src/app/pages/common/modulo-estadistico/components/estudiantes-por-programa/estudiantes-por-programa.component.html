@@ -4,9 +4,7 @@
       <mat-icon>school</mat-icon>
       Estudiantes por Programa
     </mat-card-title>
-    <mat-card-subtitle>
-      Distribución de estudiantes por programa académico
-    </mat-card-subtitle>
+    <mat-card-subtitle> Distribución de estudiantes por programa académico </mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
@@ -32,15 +30,11 @@
       <div class="programas-container">
         <div class="programas-list">
           @for (programa of programasData(); track programa; let i = $index) {
-            <div
-              class="programa-item"
-              [class.odd]="i % 2 === 1">
+            <div class="programa-item" [class.odd]="i % 2 === 1">
               <div class="programa-info">
                 <div class="programa-nombre">{{ programa.nombre }}</div>
                 @if (programa.porcentaje) {
-                  <div class="programa-porcentaje">
-                    {{ programa.porcentaje | number:'1.1-1' }}%
-                  </div>
+                  <div class="programa-porcentaje">{{ programa.porcentaje | number: '1.1-1' }}%</div>
                 }
               </div>
               <div class="programa-cantidad">
@@ -73,15 +67,12 @@
 
   @if (!loading()) {
     <mat-card-actions>
-      <button mat-icon-button (click)="cargarDatos()"
-        matTooltip="Actualizar datos">
+      <button mat-icon-button (click)="cargarDatos()" matTooltip="Actualizar datos">
         <mat-icon>refresh</mat-icon>
       </button>
       <span class="spacer"></span>
       @if (fechaConsulta()) {
-        <small class="fecha-actualizacion">
-          Actualizado: {{ fechaConsulta() | date:'short' }}
-        </small>
+        <small class="fecha-actualizacion"> Actualizado: {{ fechaConsulta() | date: 'short' }} </small>
       }
     </mat-card-actions>
   }

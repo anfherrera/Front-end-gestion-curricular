@@ -19,7 +19,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   imports: [CardContainerComponent, CursoListComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-preinscripcion.component.html',
   styleUrls: ['./cursos-preinscripcion.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursosPreinscripcionComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -42,25 +42,28 @@ export class CursosPreinscripcionComponent implements OnInit {
 
   loadCursos(): void {
     this.cargando.set(true);
-    this.cursosService.getCursosPorEstado('Preinscripción')
+    this.cursosService
+      .getCursosPorEstado('Preinscripción')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cursos) => {
           this.cursosOriginales = cursos;
-          this.cursos.set(cursos.map(curso => ({
-            codigo: curso.codigo_curso || curso.id_curso?.toString() || 'N/A',
-            nombre: curso.nombre_curso || 'Sin nombre',
-            docente: nombreDocente(curso),
-            cupos: curso.cupo_disponible || curso.cupo_estimado || 0,
-            creditos: curso.objMateria?.creditos || 0,
-            espacio: curso.espacio_asignado || 'Por asignar',
-            estado: estadoCurso(curso) as Curso['estado']
-          })));
+          this.cursos.set(
+            cursos.map((curso) => ({
+              codigo: curso.codigo_curso || curso.id_curso?.toString() || 'N/A',
+              nombre: curso.nombre_curso || 'Sin nombre',
+              docente: nombreDocente(curso),
+              cupos: curso.cupo_disponible || curso.cupo_estimado || 0,
+              creditos: curso.objMateria?.creditos || 0,
+              espacio: curso.espacio_asignado || 'Por asignar',
+              estado: estadoCurso(curso) as Curso['estado'],
+            }))
+          );
           this.cargando.set(false);
         },
         error: () => {
           this.cargando.set(false);
-        }
+        },
       });
   }
 
@@ -70,8 +73,8 @@ export class CursosPreinscripcionComponent implements OnInit {
       return;
     }
 
-    const cursoOriginal = this.cursosOriginales.find(c =>
-      c.codigo_curso === event.curso.codigo || c.id_curso?.toString() === event.curso.codigo
+    const cursoOriginal = this.cursosOriginales.find(
+      (c) => c.codigo_curso === event.curso.codigo || c.id_curso?.toString() === event.curso.codigo
     );
     if (!cursoOriginal) {
       this.snackbar.error('Error: Curso no encontrado');
@@ -84,14 +87,16 @@ export class CursosPreinscripcionComponent implements OnInit {
   }
 
   private abrirDialogoPreinscripcion(curso: CursoOfertadoVerano): void {
-    this.dialog.open(PreinscripcionDialogComponent, {
-      width: '600px',
-      maxWidth: '90vw',
-      data: { curso },
-      disableClose: true
-    }).afterClosed()
+    this.dialog
+      .open(PreinscripcionDialogComponent, {
+        width: '600px',
+        maxWidth: '90vw',
+        data: { curso },
+        disableClose: true,
+      })
+      .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(result => {
+      .subscribe((result) => {
         if (result === true) {
           this.loadCursos();
         }

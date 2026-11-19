@@ -6,10 +6,14 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
-import { CursoOfertadoVerano, CreatePreinscripcionDTO, CondicionSolicitudVerano } from '@core/models/cursos-intersemestrales.model';
+import {
+  CursoOfertadoVerano,
+  CreatePreinscripcionDTO,
+  CondicionSolicitudVerano,
+} from '@core/models/cursos-intersemestrales.model';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { AuthService } from '@core/services/auth.service';
-import { CONDICIONES_POR_DEFECTO, nombreCondicion, } from '@core/utils/cursos-verano.utils';
+import { CONDICIONES_POR_DEFECTO, nombreCondicion } from '@core/utils/cursos-verano.utils';
 import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 import { SnackbarService } from '@core/services/snackbar.service';
 
@@ -21,7 +25,7 @@ export interface PreinscripcionDialogData {
 const ERRORES_POR_CODIGO: Record<string, string> = {
   DUPLICATE_PREINSCRIPTION: 'Ya tienes una preinscripción activa para este curso.',
   COURSE_NOT_AVAILABLE: 'Este curso no está disponible para preinscripción.',
-  NO_CUPOS_AVAILABLE: 'No hay cupos disponibles para este curso.'
+  NO_CUPOS_AVAILABLE: 'No hay cupos disponibles para este curso.',
 };
 
 @Component({
@@ -29,7 +33,7 @@ const ERRORES_POR_CODIGO: Record<string, string> = {
   imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS, NombreDocentePipe],
   templateUrl: './preinscripcion-dialog.component.html',
   styleUrls: ['./preinscripcion-dialog.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PreinscripcionDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -50,22 +54,23 @@ export class PreinscripcionDialogComponent implements OnInit {
     this.preinscripcionForm = this.fb.group({
       nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
       codigo: ['', [Validators.required, Validators.minLength(5)]],
-      condicion: ['', [Validators.required]]
+      condicion: ['', [Validators.required]],
     });
 
     this.usuario = this.authService.getUsuario();
     if (this.usuario) {
       this.preinscripcionForm.patchValue({
         nombreCompleto: this.usuario.nombre_completo,
-        codigo: this.usuario.codigo || ''
+        codigo: this.usuario.codigo || '',
       });
     }
 
-    this.cursosService.getCondicionesSolicitud()
+    this.cursosService
+      .getCondicionesSolicitud()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (condiciones) => this.condiciones.set(condiciones),
-        error: () => this.condiciones.set(CONDICIONES_POR_DEFECTO)
+        error: () => this.condiciones.set(CONDICIONES_POR_DEFECTO),
       });
   }
 
@@ -82,10 +87,11 @@ export class PreinscripcionDialogComponent implements OnInit {
       idUsuario: this.usuario.id_usuario,
       idCurso: this.data.curso.id_curso,
       nombreSolicitud: `Solicitud Preinscripción - ${nombre}`,
-      condicion: formData.condicion
+      condicion: formData.condicion,
     };
 
-    this.cursosService.crearPreinscripcion(payload)
+    this.cursosService
+      .crearPreinscripcion(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -95,12 +101,15 @@ export class PreinscripcionDialogComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           this.loading.set(false);
-          const mensaje = ERRORES_POR_CODIGO[error.error?.codigo]
-            ?? (error.status === 400 ? 'Datos inválidos. Verifica la información e inténtalo de nuevo.'
-              : error.status === 500 ? 'Error del servidor. Inténtalo más tarde.'
-              : 'Error al enviar la preinscripción. Inténtalo de nuevo.');
+          const mensaje =
+            ERRORES_POR_CODIGO[error.error?.codigo] ??
+            (error.status === 400
+              ? 'Datos inválidos. Verifica la información e inténtalo de nuevo.'
+              : error.status === 500
+                ? 'Error del servidor. Inténtalo más tarde.'
+                : 'Error al enviar la preinscripción. Inténtalo de nuevo.');
           this.snackbar.error(mensaje);
-        }
+        },
       });
   }
 
@@ -111,5 +120,4 @@ export class PreinscripcionDialogComponent implements OnInit {
   getCondicionDisplayName(condicion: CondicionSolicitudVerano): string {
     return nombreCondicion(condicion);
   }
-
 }

@@ -3,17 +3,14 @@ import { Routes } from '@angular/router';
 export const CommonRoutes: Routes = [
   {
     path: 'home',
-    loadComponent: () =>
-      import('./home/home.component').then(m => m.HomeComponent)
+    loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'perfil',
-    loadComponent: () =>
-      import('./perfil/perfil.component').then(m => m.PerfilComponent)
+    loadComponent: () => import('./perfil/perfil.component').then((m) => m.PerfilComponent),
   },
   {
     path: 'notificaciones',
-    loadComponent: () =>
-      import('./notificaciones/notificaciones.component').then(m => m.NotificacionesComponent)
-  }
+    loadComponent: () => import('./notificaciones/notificaciones.component').then((m) => m.NotificacionesComponent),
+  },
 ];

@@ -31,7 +31,10 @@ const TAMANO_MAXIMO_PDF = 10 * 1024 * 1024; // 10 MB
 export function validarPdf(archivo: File): ErrorArchivo | null {
   if (archivo.size > TAMANO_MAXIMO_PDF) {
     const mb = (archivo.size / (1024 * 1024)).toFixed(2);
-    return { status: 413, error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${mb}MB` } };
+    return {
+      status: 413,
+      error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${mb}MB` },
+    };
   }
   if (!archivo.name.toLowerCase().endsWith('.pdf')) {
     return { status: 415, error: { message: 'Solo se permiten archivos PDF' } };
@@ -61,7 +64,9 @@ export abstract class SolicitudesBaseService {
   // ---------- Documentos (los usa documentation-viewer a través de [servicio]) ----------
 
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
-    return this.http.get(`${this.api}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`, { responseType: 'blob' });
+    return this.http.get(`${this.api}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`, {
+      responseType: 'blob',
+    });
   }
 
   /** Por id de documento: más confiable que por nombre. */
@@ -100,7 +105,7 @@ export abstract class SolicitudesBaseService {
   /** Como listar, pero si falla devuelve una lista vacía (los historiales son secundarios). */
   protected listarOVacio<T>(ruta: string, periodoAcademico?: string): Observable<T[]> {
     return this.listar<T>(ruta, periodoAcademico).pipe(
-      catchError(error => {
+      catchError((error) => {
         this.logger.error(`Error obteniendo ${ruta}`, error);
         return of([] as T[]);
       })

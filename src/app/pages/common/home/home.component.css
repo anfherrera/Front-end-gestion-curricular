@@ -48,7 +48,9 @@
   border-radius: 16px;
   background-color: var(--blanco); /* color sólido de tarjeta */
   box-shadow: var(--sombra-2); /* sombra suave */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
   opacity: 0;
@@ -57,8 +59,14 @@
 
 /* Animación de entrada */
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Hover: escala y sombra suave */
@@ -78,17 +86,33 @@
   justify-content: center;
   color: var(--blanco);
   margin-bottom: 12px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Sombra degradada en iconos (puedes mantenerla o simplificar) */
-.dashboard-icon.bg-blue { background: var(--azul-500); }
-.dashboard-icon.bg-green { background: var(--notif-exito-borde); }
-.dashboard-icon.bg-orange { background: #ff9800; }
-.dashboard-icon.bg-purple { background: #9c27b0; }
-.dashboard-icon.bg-red { background: var(--color-error); }
-.dashboard-icon.bg-teal { background: #009688; }
-.dashboard-icon.bg-indigo { background: #3f51b5; }
+.dashboard-icon.bg-blue {
+  background: var(--azul-500);
+}
+.dashboard-icon.bg-green {
+  background: var(--notif-exito-borde);
+}
+.dashboard-icon.bg-orange {
+  background: #ff9800;
+}
+.dashboard-icon.bg-purple {
+  background: #9c27b0;
+}
+.dashboard-icon.bg-red {
+  background: var(--color-error);
+}
+.dashboard-icon.bg-teal {
+  background: #009688;
+}
+.dashboard-icon.bg-indigo {
+  background: #3f51b5;
+}
 
 /* Animación leve en iconos al pasar el mouse */
 .dashboard-card:hover .dashboard-icon {
@@ -100,7 +124,9 @@
   font-weight: 600;
   font-size: 14px;
   color: var(--gris-900);
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .dashboard-card:hover span {

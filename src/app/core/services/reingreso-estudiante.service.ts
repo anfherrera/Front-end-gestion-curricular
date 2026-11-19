@@ -6,12 +6,12 @@ import { SolicitudesAprobacionService } from './base/solicitudes-aprobacion.serv
 const BANDEJA_POR_ROL: Record<string, string> = {
   funcionario: 'Funcionario',
   coordinador: 'Coordinador',
-  secretaria: 'Secretaria'
+  secretaria: 'Secretaria',
 };
 
 /** Solicitudes de reingreso de estudiantes. */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReingresoEstudianteService extends SolicitudesAprobacionService<SolicitudReingresoDTORespuesta> {
   constructor() {
@@ -19,7 +19,7 @@ export class ReingresoEstudianteService extends SolicitudesAprobacionService<Sol
       recurso: 'solicitudes-reingreso',
       listar: 'listarSolicitud-Reingreso',
       estado: 'actualizarEstadoSolicitud-Reingreso',
-      tipoOficio: 'OFICIO_REINGRESO'
+      tipoOficio: 'OFICIO_REINGRESO',
     });
   }
 
@@ -32,11 +32,17 @@ export class ReingresoEstudianteService extends SolicitudesAprobacionService<Sol
   }
 
   /** Funcionario, coordinador y secretaría tienen su bandeja; el estudiante usa /porUser. */
-  listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Observable<SolicitudReingresoDTORespuesta[]> {
+  listarSolicitudesPorRol(
+    rol: string,
+    idUsuario?: number,
+    periodoAcademico?: string
+  ): Observable<SolicitudReingresoDTORespuesta[]> {
     const bandeja = BANDEJA_POR_ROL[rol.toLowerCase()];
-    if (bandeja) return this.listar<SolicitudReingresoDTORespuesta>(`${this.rutas.listar}/${bandeja}`, periodoAcademico);
+    if (bandeja)
+      return this.listar<SolicitudReingresoDTORespuesta>(`${this.rutas.listar}/${bandeja}`, periodoAcademico);
 
     let params = this.paramsPeriodo(periodoAcademico).set('rol', rol);
-    if (idUsuario) params = params.set('idUsuario', idUsuario.toString());    return this.http.get<SolicitudReingresoDTORespuesta[]>(`${this.apiUrl}/${this.rutas.listar}/porUser`, { params });
+    if (idUsuario) params = params.set('idUsuario', idUsuario.toString());
+    return this.http.get<SolicitudReingresoDTORespuesta[]>(`${this.apiUrl}/${this.rutas.listar}/porUser`, { params });
   }
 }

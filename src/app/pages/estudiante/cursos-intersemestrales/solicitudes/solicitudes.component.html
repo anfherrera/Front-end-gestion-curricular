@@ -9,23 +9,19 @@
       <!-- Nombre Completo -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nombre Completo</mat-label>
-        <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo">
+        <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo" />
         <mat-icon matSuffix>person</mat-icon>
         @if (solicitudForm.get('nombreCompleto')?.hasError('required')) {
-          <mat-error>
-            El nombre completo es requerido
-          </mat-error>
+          <mat-error> El nombre completo es requerido </mat-error>
         }
       </mat-form-field>
       <!-- Código del Estudiante -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Código</mat-label>
-        <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante">
+        <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante" />
         <mat-icon matSuffix>badge</mat-icon>
         @if (solicitudForm.get('codigo')?.hasError('required')) {
-          <mat-error>
-            El código es requerido
-          </mat-error>
+          <mat-error> El código es requerido </mat-error>
         }
       </mat-form-field>
       <!-- Materia Solicitada -->
@@ -40,9 +36,7 @@
         </mat-select>
         <mat-icon matSuffix>school</mat-icon>
         @if (solicitudForm.get('curso')?.hasError('required')) {
-          <mat-error>
-            Debes seleccionar una materia
-          </mat-error>
+          <mat-error> Debes seleccionar una materia </mat-error>
         }
       </mat-form-field>
       <!-- Condición -->
@@ -57,9 +51,7 @@
         </mat-select>
         <mat-icon matSuffix>assignment</mat-icon>
         @if (solicitudForm.get('condicion')?.hasError('required')) {
-          <mat-error>
-            Debes seleccionar una condición
-          </mat-error>
+          <mat-error> Debes seleccionar una condición </mat-error>
         }
       </mat-form-field>
       <!-- Botones -->
@@ -68,8 +60,13 @@
           <mat-icon>clear</mat-icon>
           Limpiar
         </button>
-        <button type="submit" mat-raised-button color="primary"
-          [disabled]="solicitudForm.invalid || loading()" class="action-button">
+        <button
+          type="submit"
+          mat-raised-button
+          color="primary"
+          [disabled]="solicitudForm.invalid || loading()"
+          class="action-button"
+        >
           <mat-icon>send</mat-icon>
           Enviar Solicitud
         </button>

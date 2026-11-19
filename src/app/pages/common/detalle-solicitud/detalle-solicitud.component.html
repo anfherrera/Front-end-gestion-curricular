@@ -1,6 +1,5 @@
 <div class="detalle-solicitud-container">
   <app-card-container title="Detalle de Solicitud">
-
     <!-- Botón Volver -->
     <div class="header-actions">
       <button mat-raised-button color="primary" (click)="volver()">
@@ -22,9 +21,7 @@
       <div class="error-container">
         <mat-icon>error</mat-icon>
         <p>{{ error() }}</p>
-        <button mat-raised-button color="primary" (click)="volver()">
-          Volver al Historial
-        </button>
+        <button mat-raised-button color="primary" (click)="volver()">Volver al Historial</button>
       </div>
     }
 
@@ -65,18 +62,18 @@
               </div>
               <div class="info-item">
                 <span class="info-label">Fecha Registro:</span>
-                <span class="info-value">{{ detalle.fecha_registro_solicitud | fecha:'larga-hora':'-' }}</span>
+                <span class="info-value">{{ detalle.fecha_registro_solicitud | fecha: 'larga-hora' : '-' }}</span>
               </div>
               @if (detalle.fecha_ultimo_estado) {
                 <div class="info-item">
                   <span class="info-label">Última Actualización:</span>
-                  <span class="info-value">{{ detalle.fecha_ultimo_estado | fecha:'larga-hora':'-' }}</span>
+                  <span class="info-value">{{ detalle.fecha_ultimo_estado | fecha: 'larga-hora' : '-' }}</span>
                 </div>
               }
               @if (detalle.fecha_ceremonia) {
                 <div class="info-item">
                   <span class="info-label">Fecha Ceremonia:</span>
-                  <span class="info-value">{{ detalle.fecha_ceremonia | fecha:'larga-hora':'-' }}</span>
+                  <span class="info-value">{{ detalle.fecha_ceremonia | fecha: 'larga-hora' : '-' }}</span>
                 </div>
               }
             </div>
@@ -128,8 +125,7 @@
           <mat-card-content>
             <div class="timeline">
               @for (estado of detalle.historial_estados; track estado; let i = $index) {
-                <div
-                  class="timeline-item">
+                <div class="timeline-item">
                   <div class="timeline-marker">
                     <div class="timeline-number">{{ i + 1 }}</div>
                   </div>
@@ -138,7 +134,7 @@
                       <mat-chip [class]="estado.estado_actual | estadoClase">
                         {{ estado.estado_actual | estadoLabel }}
                       </mat-chip>
-                      <span class="timeline-date">{{ estado.fecha_registro_estado | fecha:'larga-hora':'-' }}</span>
+                      <span class="timeline-date">{{ estado.fecha_registro_estado | fecha: 'larga-hora' : '-' }}</span>
                     </div>
                     @if (estado.comentario) {
                       <p class="timeline-comentario">
@@ -168,10 +164,12 @@
                     <mat-icon matListItemIcon>description</mat-icon>
                     <div matListItemTitle>{{ documento.nombre_documento }}</div>
                     <div matListItemLine>Tipo: {{ documento.tipo_documento }}</div>
-                    <button mat-icon-button
+                    <button
+                      mat-icon-button
                       matListItemMeta
                       (click)="descargarDocumento(documento)"
-                      matTooltip="Descargar documento">
+                      matTooltip="Descargar documento"
+                    >
                       <mat-icon>download</mat-icon>
                     </button>
                   </mat-list-item>
@@ -182,8 +180,7 @@
         }
         <!-- Información Adicional (solo para Paz y Salvo) -->
         @if (detalle.informacion_adicional && detalle.tipo_solicitud === 'PAZ_SALVO') {
-          <mat-card class="info-card"
-            >
+          <mat-card class="info-card">
             <mat-card-header>
               <mat-card-title>
                 <mat-icon>school</mat-icon>
@@ -212,4 +209,3 @@
     }
   </app-card-container>
 </div>
-

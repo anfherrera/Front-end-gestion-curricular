@@ -3,12 +3,12 @@ import { ProgramaDTORespuesta } from './programa.interface';
 
 /** Cuerpo de `crearUsuario` y `actualizarUsuario` (igual que `UsuarioDTOPeticion` del backend). */
 export interface UsuarioDTOPeticion {
-  id_usuario?: number;        // Solo al actualizar
+  id_usuario?: number; // Solo al actualizar
   codigo: string;
-  cedula: string;             // 5-20 dígitos
+  cedula: string; // 5-20 dígitos
   nombre_completo: string;
-  correo: string;             // Correo @unicauca.edu.co
-  password?: string;          // Opcional al actualizar
+  correo: string; // Correo @unicauca.edu.co
+  password?: string; // Opcional al actualizar
   estado_usuario: boolean;
   id_rol: number;
   id_programa: number;

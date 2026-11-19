@@ -12,7 +12,7 @@ import { categoriaEstado, comentarioDeRechazo, estadoActual, ultimoEstado } from
 import {
   DocumentoConComentario,
   VerComentariosDialogComponent,
-  VerComentariosDialogData
+  VerComentariosDialogData,
 } from '@shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component';
 
 /** Lo que las vistas del estudiante usan de la solicitud que devuelve el backend. */
@@ -73,17 +73,19 @@ export abstract class SeguimientoSolicitudesBase<S extends SolicitudDelEstudiant
     this.listar(usuario)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: data => this.procesarSolicitudes(data),
-        error: err => this.snackbar.error(
-          this.errorHandler.extraerMensajeError(err) || 'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.'
-        )
+        next: (data) => this.procesarSolicitudes(data),
+        error: (err) =>
+          this.snackbar.error(
+            this.errorHandler.extraerMensajeError(err) ||
+              'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.'
+          ),
       });
   }
 
   procesarSolicitudes(data: S[]): void {
     const lista = Array.isArray(data) ? data : [];
     this.solicitudesCompletas = lista;
-    this.solicitudes.set(lista.map(sol => this.aFila(sol)));
+    this.solicitudes.set(lista.map((sol) => this.aFila(sol)));
   }
 
   /** Fila de la tabla: el estado y el comentario son los del último registro del historial. */
@@ -93,12 +95,12 @@ export abstract class SeguimientoSolicitudesBase<S extends SolicitudDelEstudiant
       nombre: sol.nombre_solicitud,
       fecha: sol.fecha_registro_solicitud, // ISO: la tabla la formatea con el pipe fecha
       estado: estadoActual(sol),
-      comentarios: ultimoEstado(sol)?.comentario || ''
+      comentarios: ultimoEstado(sol)?.comentario || '',
     };
   }
 
   obtenerSolicitudCompleta(idSolicitud: number): S | undefined {
-    return this.solicitudesCompletas.find(sol => sol.id_solicitud === idSolicitud);
+    return this.solicitudesCompletas.find((sol) => sol.id_solicitud === idSolicitud);
   }
 
   /** Abre los comentarios de los documentos y el del último rechazo. */
@@ -115,7 +117,7 @@ export abstract class SeguimientoSolicitudesBase<S extends SolicitudDelEstudiant
     this.abrirComentarios({
       titulo: `Comentarios - ${solicitud.nombre_solicitud}`,
       documentos: solicitud.documentos,
-      comentarioRechazo: comentarioDeRechazo(solicitud)
+      comentarioRechazo: comentarioDeRechazo(solicitud),
     });
   }
 

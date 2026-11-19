@@ -12,9 +12,8 @@ describe('PerfilComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PerfilComponent, NoopAnimationsModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])]
-    })
-    .compileComponents();
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PerfilComponent);
     component = fixture.componentInstance;
@@ -25,4 +24,3 @@ describe('PerfilComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

@@ -168,21 +168,21 @@ mat-table {
 }
 
 /* Botón nuevo con estilo */
-button[color="primary"] {
+button[color='primary'] {
   box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
   font-weight: 500;
 }
 
-button[color="primary"]:hover {
+button[color='primary']:hover {
   box-shadow: var(--sombra-2);
   transform: translateY(-2px);
 }
 
-button[color="primary"] mat-icon {
+button[color='primary'] mat-icon {
   margin-right: 8px;
   color: white;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 /* Responsive */
@@ -203,7 +203,7 @@ button[color="primary"] mat-icon {
     font-size: 22px;
   }
 
-.table-container {
+  .table-container {
     padding: 16px;
     overflow-x: auto;
   }

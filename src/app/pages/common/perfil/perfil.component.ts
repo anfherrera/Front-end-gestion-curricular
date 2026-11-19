@@ -11,17 +11,10 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 
 @Component({
   selector: 'app-perfil',
-  imports: [
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatChipsModule,
-    CardContainerComponent
-],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, MatDividerModule, MatChipsModule, CardContainerComponent],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerfilComponent implements OnInit {
   private authService = inject(AuthService);
@@ -37,14 +30,21 @@ export class PerfilComponent implements OnInit {
   getRoleDisplayName(): string {
     const role = this.authService.getRole();
     switch (role?.toLowerCase()) {
-      case 'admin': return 'Administrador';
-      case 'funcionario': return 'Funcionario';
-      case 'coordinador': return 'Coordinador';
+      case 'admin':
+        return 'Administrador';
+      case 'funcionario':
+        return 'Funcionario';
+      case 'coordinador':
+        return 'Coordinador';
       case 'secretario':
-      case 'secretaria': return 'Secretaria';
-      case 'estudiante': return 'Estudiante';
-      case 'docente': return 'Docente';
-      default: return 'Usuario';
+      case 'secretaria':
+        return 'Secretaria';
+      case 'estudiante':
+        return 'Estudiante';
+      case 'docente':
+        return 'Docente';
+      default:
+        return 'Usuario';
     }
   }
 
@@ -73,4 +73,3 @@ export class PerfilComponent implements OnInit {
     return this.usuario?.objPrograma?.nombre_programa || 'No disponible';
   }
 }
-

@@ -6,7 +6,7 @@ import { SolicitudReingresoDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,
-  rolRevisionDeRuta
+  rolRevisionDeRuta,
 } from '../revision-aprobacion/revision-aprobacion.component';
 
 /**
@@ -17,13 +17,13 @@ import {
   selector: 'app-reingreso-revision',
   imports: [RevisionAprobacionComponent],
   template: '<app-revision-aprobacion [config]="config" />',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReingresoRevisionComponent {
   readonly config: ConfigRevisionAprobacion<SolicitudReingresoDTORespuesta> = {
     rol: rolRevisionDeRuta(inject(ActivatedRoute)),
     servicio: inject(ReingresoEstudianteService),
     proceso: 'reingreso',
-    nombreProceso: 'Reingreso'
+    nombreProceso: 'Reingreso',
   };
 }

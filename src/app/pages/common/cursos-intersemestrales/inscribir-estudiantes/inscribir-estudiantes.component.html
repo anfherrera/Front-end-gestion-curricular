@@ -1,5 +1,4 @@
 <app-card-container title="Inscribir Estudiantes">
-
   <!-- Filtro por curso -->
   <div class="filtro-section">
     <h3>Seleccionar Curso</h3>
@@ -33,7 +32,12 @@
         <div class="no-data">
           <mat-icon>info</mat-icon>
           <p>No hay estudiantes elegibles para inscripción en este curso.</p>
-          <p><small>Los estudiantes deben haber completado el proceso de preinscripción aprobada y tener su pago validado.</small></p>
+          <p>
+            <small
+              >Los estudiantes deben haber completado el proceso de preinscripción aprobada y tener su pago
+              validado.</small
+            >
+          </p>
         </div>
       }
       @if (estudiantesFiltrados().length > 0) {
@@ -72,29 +76,19 @@
               <th mat-header-cell *matHeaderCellDef>Estado del Proceso</th>
               <td mat-cell *matCellDef="let estudiante">
                 @if (estudiante.estado_inscripcion === 'Pago_Rechazado') {
-                  <span>
-                    Inscripción rechazada
-                  </span>
+                  <span> Inscripción rechazada </span>
                 }
                 @if (estudiante.estado_inscripcion === 'Pago_Validado') {
-                  <span>
-                    Pago validado
-                  </span>
+                  <span> Pago validado </span>
                 }
                 @if (estudiante.estado_inscripcion === 'APROBADA') {
-                  <span>
-                    Inscripción aprobada
-                  </span>
+                  <span> Inscripción aprobada </span>
                 }
                 @if (estudiante.estado_inscripcion === 'Enviada') {
-                  <span>
-                    Pendiente de revisión
-                  </span>
+                  <span> Pendiente de revisión </span>
                 }
                 @if (!estudiante.estado_inscripcion) {
-                  <span>
-                    Listo para inscripción
-                  </span>
+                  <span> Listo para inscripción </span>
                 }
               </td>
             </ng-container>
@@ -103,25 +97,31 @@
               <th mat-header-cell *matHeaderCellDef>Acciones</th>
               <td mat-cell *matCellDef="let estudiante">
                 <div class="acciones-container">
-                  <button mat-icon-button
+                  <button
+                    mat-icon-button
                     (click)="verDetalles(estudiante)"
                     matTooltip="Ver detalles de inscripción y comprobante"
-                    class="accion-ver">
+                    class="accion-ver"
+                  >
                     <mat-icon>visibility</mat-icon>
                   </button>
                   @if (estudiante.tiene_inscripcion_formal) {
-                    <button mat-icon-button
+                    <button
+                      mat-icon-button
                       (click)="confirmarInscripcion(estudiante)"
                       matTooltip="Confirmar inscripción oficial - El estudiante completó todos los requisitos y pago validado"
-                      class="accion-aprobar">
+                      class="accion-aprobar"
+                    >
                       <mat-icon>check_circle</mat-icon>
                     </button>
                   }
                   @if (estudiante.tiene_inscripcion_formal) {
-                    <button mat-icon-button
+                    <button
+                      mat-icon-button
                       (click)="rechazarInscripcion(estudiante)"
                       matTooltip="Rechazar inscripción"
-                      class="accion-rechazar">
+                      class="accion-rechazar"
+                    >
                       <mat-icon>cancel</mat-icon>
                     </button>
                   }
@@ -129,7 +129,7 @@
               </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
           </table>
         </div>
       }
@@ -141,20 +141,13 @@
     <div class="curso-info">
       <h4>Información del Curso</h4>
       <div class="info-grid">
-        <div class="info-item">
-          <strong>Docente:</strong> {{ sel | nombreDocente }}
-        </div>
-        <div class="info-item">
-          <strong>Cupo Estimado:</strong> {{ sel.cupo_estimado }} estudiantes
-        </div>
-        <div class="info-item">
-          <strong>Espacio:</strong> {{ sel.espacio_asignado }}
-        </div>
+        <div class="info-item"><strong>Docente:</strong> {{ sel | nombreDocente }}</div>
+        <div class="info-item"><strong>Cupo Estimado:</strong> {{ sel.cupo_estimado }} estudiantes</div>
+        <div class="info-item"><strong>Espacio:</strong> {{ sel.espacio_asignado }}</div>
         <div class="info-item">
           <strong>Estudiantes Elegibles:</strong> {{ estudiantesFiltrados().length }} estudiantes
         </div>
       </div>
     </div>
   }
-
 </app-card-container>

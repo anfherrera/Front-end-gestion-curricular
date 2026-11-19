@@ -15,53 +15,56 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         }
       </div>
     </div>
+  `,
+  styles: [
+    `
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .loading-container.overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.9);
+        z-index: 9999;
+        backdrop-filter: blur(2px);
+      }
+
+      .loading-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .loading-message {
+        color: var(--color-primario);
+        font-weight: 500;
+        margin: 0;
+        text-align: center;
+      }
+
+      mat-spinner {
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
     `,
-  styles: [`
-    .loading-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .loading-container.overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(255, 255, 255, 0.9);
-      z-index: 9999;
-      backdrop-filter: blur(2px);
-    }
-
-    .loading-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .loading-message {
-      color: var(--color-primario);
-      font-weight: 500;
-      margin: 0;
-      text-align: center;
-    }
-
-    mat-spinner {
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.7;
-      }
-    }
-  `]
+  ],
 })
 export class LoadingSpinnerComponent {
   readonly size = input(50);

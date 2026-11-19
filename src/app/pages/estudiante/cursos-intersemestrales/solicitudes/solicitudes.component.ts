@@ -6,7 +6,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
-import { Materia, CondicionSolicitudVerano, CreateSolicitudCursoNuevoDTO } from '@core/models/cursos-intersemestrales.model';
+import {
+  Materia,
+  CondicionSolicitudVerano,
+  CreateSolicitudCursoNuevoDTO,
+} from '@core/models/cursos-intersemestrales.model';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { AuthService } from '@core/services/auth.service';
 import { NotificacionesService } from '@core/services/notificaciones.service';
@@ -17,7 +21,7 @@ const ERRORES_ENVIO: Record<number, string> = {
   400: 'Datos inválidos. Verifica la información e inténtalo de nuevo.',
   401: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
   403: 'No tienes permisos para realizar esta acción.',
-  500: 'Error del servidor. Por favor, verifica los datos e inténtalo de nuevo.'
+  500: 'Error del servidor. Por favor, verifica los datos e inténtalo de nuevo.',
 };
 
 /** Solicitud de apertura de un curso intersemestral nuevo. */
@@ -26,7 +30,7 @@ const ERRORES_ENVIO: Record<number, string> = {
   imports: [CardContainerComponent, ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './solicitudes.component.html',
   styleUrls: ['./solicitudes.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SolicitudesComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -50,22 +54,24 @@ export class SolicitudesComponent implements OnInit {
       nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
       codigo: ['', [Validators.required, Validators.minLength(5)]],
       curso: ['', [Validators.required]],
-      condicion: ['', [Validators.required]]
+      condicion: ['', [Validators.required]],
     });
     this.loadUserData();
 
-    this.cursosService.getMateriasDisponibles()
+    this.cursosService
+      .getMateriasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (materias) => this.materiasDisponibles.set(materias),
-        error: () => this.snackbar.error('Error al cargar las materias disponibles')
+        error: () => this.snackbar.error('Error al cargar las materias disponibles'),
       });
 
-    this.cursosService.getCondicionesSolicitud()
+    this.cursosService
+      .getCondicionesSolicitud()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (condiciones) => this.condiciones.set(condiciones),
-        error: () => this.condiciones.set(CONDICIONES_POR_DEFECTO)
+        error: () => this.condiciones.set(CONDICIONES_POR_DEFECTO),
       });
   }
 
@@ -74,7 +80,7 @@ export class SolicitudesComponent implements OnInit {
     if (this.usuario) {
       this.solicitudForm.patchValue({
         nombreCompleto: this.usuario.nombre_completo,
-        codigo: this.usuario.codigo || ''
+        codigo: this.usuario.codigo || '',
       });
     }
   }
@@ -93,10 +99,11 @@ export class SolicitudesComponent implements OnInit {
       codigo: formData.codigo,
       curso: formData.curso,
       condicion: formData.condicion,
-      idUsuario: usuario.id_usuario
+      idUsuario: usuario.id_usuario,
     };
 
-    this.cursosService.crearSolicitudCursoNuevo(payload)
+    this.cursosService
+      .crearSolicitudCursoNuevo(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -111,7 +118,7 @@ export class SolicitudesComponent implements OnInit {
           this.loading.set(false);
           const mensaje = ERRORES_ENVIO[error.status] ?? 'Error al enviar la solicitud. Inténtalo de nuevo.';
           this.snackbar.error(mensaje);
-        }
+        },
       });
   }
 

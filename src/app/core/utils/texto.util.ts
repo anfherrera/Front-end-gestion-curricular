@@ -23,7 +23,7 @@ export function coincidenPorPalabrasClave(
 ): boolean {
   for (const [clave, palabras] of Object.entries(palabrasClave)) {
     if (nombre1.includes(clave) || nombre2.includes(clave)) {
-      return palabras.some(palabra => nombre1.includes(palabra) && nombre2.includes(palabra));
+      return palabras.some((palabra) => nombre1.includes(palabra) && nombre2.includes(palabra));
     }
   }
   return false;

@@ -4,11 +4,11 @@
  */
 
 export type FormatoFecha =
-  | 'corta'       // 15/01/2025
-  | 'corta-hora'  // 15/01/2025, 14:30
-  | 'media'       // 15 ene 2025
-  | 'media-hora'  // 15 ene 2025, 14:30
-  | 'larga'       // 15 de enero de 2025
+  | 'corta' // 15/01/2025
+  | 'corta-hora' // 15/01/2025, 14:30
+  | 'media' // 15 ene 2025
+  | 'media-hora' // 15 ene 2025, 14:30
+  | 'larga' // 15 de enero de 2025
   | 'larga-hora'; // 15 de enero de 2025, 14:30
 
 const LOCALE = 'es-ES';
@@ -18,11 +18,11 @@ const DIA_MEDIO: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short',
 const DIA_LARGO: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
 
 const OPCIONES: Record<FormatoFecha, Intl.DateTimeFormatOptions> = {
-  'corta': DIA_CORTO,
+  corta: DIA_CORTO,
   'corta-hora': { ...DIA_CORTO, ...HORA },
-  'media': DIA_MEDIO,
+  media: DIA_MEDIO,
   'media-hora': { ...DIA_MEDIO, ...HORA },
-  'larga': DIA_LARGO,
+  larga: DIA_LARGO,
   'larga-hora': { ...DIA_LARGO, ...HORA },
 };
 
@@ -36,9 +36,7 @@ export function aFecha(valor: string | Date | null | undefined): Date | null {
   if (!valor) return null;
   if (valor instanceof Date) return isNaN(valor.getTime()) ? null : valor;
   const soloDia = SOLO_DIA.exec(valor.trim());
-  const fecha = soloDia
-    ? new Date(Number(soloDia[1]), Number(soloDia[2]) - 1, Number(soloDia[3]))
-    : new Date(valor);
+  const fecha = soloDia ? new Date(Number(soloDia[1]), Number(soloDia[2]) - 1, Number(soloDia[3])) : new Date(valor);
   return isNaN(fecha.getTime()) ? null : fecha;
 }
 

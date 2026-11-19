@@ -2,10 +2,7 @@
   <app-header (toggleSidebar)="toggleSidebar()"></app-header>
 
   <div class="layout-body">
-    <app-sidebar
-      [class.closed]="!isSidebarOpen"
-      [isOpen]="isSidebarOpen">
-    </app-sidebar>
+    <app-sidebar [class.closed]="!isSidebarOpen" [isOpen]="isSidebarOpen"> </app-sidebar>
 
     <div class="main-content" [class.sidebar-closed]="!isSidebarOpen">
       <app-breadcrumb></app-breadcrumb>

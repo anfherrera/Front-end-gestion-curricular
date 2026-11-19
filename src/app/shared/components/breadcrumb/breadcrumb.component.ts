@@ -23,82 +23,90 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </nav>
     }
   `,
-  styles: [`
-    .breadcrumb {
-      display: flex;
-      flex-wrap: wrap;
-      font-family: var(--breadcrumb-font, 'Open Sans'), sans-serif;
-      font-size: var(--breadcrumb-size, 14px);
-      font-weight: var(--breadcrumb-weight, 300);
-      color: var(--breadcrumb-color, #A7A6B0);
-      margin-bottom: 8px;
-    }
-    .breadcrumb a {
-      color: var(--breadcrumb-color, #A7A6B0);
-      text-decoration: none;
-    }
-    .breadcrumb a:hover {
-      color: var(--color-primario);
-      text-decoration: underline;
-    }
-    .breadcrumb-separator {
-      margin: 0 8px;
-      color: var(--breadcrumb-color, #A7A6B0);
-    }
-    .breadcrumb-current {
-      color: var(--color-neutro-texto);
-    }
-  `]
+  styles: [
+    `
+      .breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        font-family: var(--breadcrumb-font, 'Open Sans'), sans-serif;
+        font-size: var(--breadcrumb-size, 14px);
+        font-weight: var(--breadcrumb-weight, 300);
+        color: var(--breadcrumb-color, #a7a6b0);
+        margin-bottom: 8px;
+      }
+      .breadcrumb a {
+        color: var(--breadcrumb-color, #a7a6b0);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: var(--color-primario);
+        text-decoration: underline;
+      }
+      .breadcrumb-separator {
+        margin: 0 8px;
+        color: var(--breadcrumb-color, #a7a6b0);
+      }
+      .breadcrumb-current {
+        color: var(--color-neutro-texto);
+      }
+    `,
+  ],
 })
 export class BreadcrumbComponent {
   private router = inject(Router);
 
   /** URL actual (sin query), al día con cada navegación. */
   private readonly url = toSignal(
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd), map(() => this.router.url)),
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url)
+    ),
     { initialValue: this.router.url }
   );
 
   readonly items = computed(() => this.construirMigas(this.url()));
 
   private labels: Record<string, string> = {
-    'estudiante': 'Estudiante',
-    'funcionario': 'Funcionario',
-    'coordinador': 'Coordinador',
-    'secretaria': 'Secretaría',
-    'admin': 'Administración',
+    estudiante: 'Estudiante',
+    funcionario: 'Funcionario',
+    coordinador: 'Coordinador',
+    secretaria: 'Secretaría',
+    admin: 'Administración',
     'paz-salvo': 'Paz y Salvo',
     'pruebas-ecaes': 'Pruebas ECAES',
     'cursos-intersemestrales': 'Cursos Intersemestrales',
     'homologacion-asignaturas': 'Homologación',
     'reingreso-estudiante': 'Reingreso',
     'modulo-estadistico': 'Estadísticas',
-    'dashboard': 'Inicio',
-    'solicitudes': 'Solicitudes',
-    'gestionar': 'Gestionar Cursos',
-    'preinscribir': 'Preinscribir',
-    'inscribir': 'Inscribir',
+    dashboard: 'Inicio',
+    solicitudes: 'Solicitudes',
+    gestionar: 'Gestionar Cursos',
+    preinscribir: 'Preinscribir',
+    inscribir: 'Inscribir',
     'manage-users': 'Usuarios',
-    'crear': 'Crear',
-    'editar': 'Editar',
-    'programas': 'Programas',
-    'docentes': 'Docentes',
+    crear: 'Crear',
+    editar: 'Editar',
+    programas: 'Programas',
+    docentes: 'Docentes',
     'manage-roles': 'Roles',
     'configurar-periodo': 'Configurar Período',
-    'welcome': 'Inicio',
-    'home': 'Inicio',
-    'perfil': 'Mi Perfil',
+    welcome: 'Inicio',
+    home: 'Inicio',
+    perfil: 'Mi Perfil',
     'historial-completo': 'Historial',
   };
 
   private construirMigas(url: string): { label: string; url: string }[] {
-    const segments = url.split('?')[0].split('/').filter(s => s);
+    const segments = url
+      .split('?')[0]
+      .split('/')
+      .filter((s) => s);
 
     // Solo mostrar cuando hay más de 3 niveles (Sistema de Diseño TIC)
     if (segments.length <= 3) return [];
 
     let path = '';
-    return segments.map(seg => {
+    return segments.map((seg) => {
       path += '/' + seg;
       return { label: this.labels[seg] || this.formatLabel(seg), url: path };
     });
@@ -106,6 +114,6 @@ export class BreadcrumbComponent {
 
   private formatLabel(seg: string): string {
     if (/^\d+$/.test(seg)) return `#${seg}`;
-    return seg.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return seg.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   }
 }

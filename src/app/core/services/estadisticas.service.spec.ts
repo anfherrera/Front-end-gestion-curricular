@@ -10,7 +10,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [EstadisticasService]
+      providers: [EstadisticasService],
     });
 
     service = TestBed.inject(EstadisticasService);
@@ -32,11 +32,11 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       const mockResumen = {
         estadisticasGlobales: {
           totalSolicitudes: 200,
-          solicitudesAprobadas: 150
+          solicitudesAprobadas: 150,
         },
         estadisticasPorProceso: [],
         estadisticasPorPrograma: [],
-        tendencias: []
+        tendencias: [],
       };
 
       service.getResumenCompleto().subscribe((resumen) => {
@@ -45,9 +45,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('/estadisticas/resumen')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('/estadisticas/resumen'));
       req.flush(mockResumen);
     });
   });
@@ -57,7 +55,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       const mockResponse: TotalEstudiantesResponse = {
         totalEstudiantes: 1500,
         fechaConsulta: '2025-01-15',
-        descripcion: 'Total de estudiantes'
+        descripcion: 'Total de estudiantes',
       };
 
       service.getTotalEstudiantes().subscribe((datos) => {
@@ -65,9 +63,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('/estadisticas/total-estudiantes')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('/estadisticas/total-estudiantes'));
       req.flush(mockResponse);
     });
   });
@@ -76,9 +72,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
     it('EST-016: Debe obtener tendencias comparativas', (done) => {
       service.getTendenciasComparativas().subscribe(() => done());
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('/estadisticas/tendencias')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('/estadisticas/tendencias'));
       req.flush({});
     });
 
@@ -105,7 +99,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       const mockEstado: EstadoSolicitudesResponse = {
         totalSolicitudes: 150,
         tasaResolucion: 0.87,
-        fechaConsulta: '2025-01-15'
+        fechaConsulta: '2025-01-15',
       };
 
       service.getEstadoSolicitudes().subscribe((datos) => {
@@ -114,26 +108,21 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('/estadisticas/estado-solicitudes')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('/estadisticas/estado-solicitudes'));
       req.flush(mockEstado);
     });
   });
 
   describe('11. Manejo de Errores', () => {
-
     it('EST-023: Debe manejar error 500 del servidor', (done) => {
       service.getResumenCompleto().subscribe({
         error: (error) => {
           expect(error.status).toBe(500);
           done();
-        }
+        },
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('/estadisticas/resumen')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('/estadisticas/resumen'));
       req.flush({ message: 'Error interno' }, { status: 500, statusText: 'Internal Server Error' });
     });
   });
@@ -149,6 +138,4 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       done();
     });
   });
-
 });
-

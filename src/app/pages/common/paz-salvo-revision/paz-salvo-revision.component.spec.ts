@@ -14,8 +14,11 @@ describe('PazSalvoRevisionComponent', () => {
 
   async function crear(rolRevision?: RolRevision): Promise<PazSalvoRevisionComponent> {
     servicio = jasmine.createSpyObj<PazSalvoService>('PazSalvoService', [
-      'getPendingRequests', 'getCoordinadorRequests', 'getSolicitudesProcesadasFuncionario',
-      'getSolicitudesProcesadasCoordinador', 'obtenerDocumentosCoordinador'
+      'getPendingRequests',
+      'getCoordinadorRequests',
+      'getSolicitudesProcesadasFuncionario',
+      'getSolicitudesProcesadasCoordinador',
+      'obtenerDocumentosCoordinador',
     ]);
     servicio.getPendingRequests.and.returnValue(of([]));
     servicio.getCoordinadorRequests.and.returnValue(of([]));
@@ -28,8 +31,8 @@ describe('PazSalvoRevisionComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: PazSalvoService, useValue: servicio },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: rolRevision ? { rolRevision } : {} } } }
-      ]
+        { provide: ActivatedRoute, useValue: { snapshot: { data: rolRevision ? { rolRevision } : {} } } },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(PazSalvoRevisionComponent);
@@ -52,17 +55,32 @@ describe('PazSalvoRevisionComponent', () => {
     expect(servicio.getCoordinadorRequests).toHaveBeenCalled();
     expect(component.config.dialogoRechazo?.titulo).toBe('Rechazar Paz y Salvo');
 
-    servicio.obtenerDocumentosCoordinador.and.returnValue(of([
-      { id: 9, nombre: 'Formato', nombreArchivo: 'formato.pdf', ruta: '/docs/formato.pdf', fecha: '2026-03-01', esValido: true }
-    ]));
+    servicio.obtenerDocumentosCoordinador.and.returnValue(
+      of([
+        {
+          id: 9,
+          nombre: 'Formato',
+          nombreArchivo: 'formato.pdf',
+          ruta: '/docs/formato.pdf',
+          fecha: '2026-03-01',
+          esValido: true,
+        },
+      ])
+    );
     let documentos: unknown;
-    component.config.documentosAparte!(4).subscribe(d => documentos = d);
+    component.config.documentosAparte!(4).subscribe((d) => (documentos = d));
 
     expect(servicio.obtenerDocumentosCoordinador).toHaveBeenCalledWith(4);
-    expect(documentos).toEqual([{
-      id_documento: 9, nombre: 'formato.pdf', ruta_documento: '/docs/formato.pdf',
-      fecha_documento: '2026-03-01', esValido: true, comentario: undefined
-    }]);
+    expect(documentos).toEqual([
+      {
+        id_documento: 9,
+        nombre: 'formato.pdf',
+        ruta_documento: '/docs/formato.pdf',
+        fecha_documento: '2026-03-01',
+        esValido: true,
+        comentario: undefined,
+      },
+    ]);
   });
 
   it('sin rol en la ruta trabaja como funcionario', async () => {

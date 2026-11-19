@@ -23,8 +23,8 @@ describe('ReingresoEstudianteService - Pruebas Unitarias', () => {
         provideHttpClientTesting(),
         { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', { getToken: 'mock-token' }) },
         ReingresoEstudianteService,
-        { provide: LoggerService, useValue: loggerSpyObj }
-      ]
+        { provide: LoggerService, useValue: loggerSpyObj },
+      ],
     });
     service = TestBed.inject(ReingresoEstudianteService);
     httpMock = TestBed.inject(HttpTestingController);

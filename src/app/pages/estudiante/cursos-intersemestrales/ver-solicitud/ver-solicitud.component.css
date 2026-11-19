@@ -1,4 +1,5 @@
-.cargando, .sin-datos {
+.cargando,
+.sin-datos {
   text-align: center;
   font-style: italic;
   margin: 16px 0;
@@ -282,47 +283,47 @@ td.mat-cell:last-child {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .resumen-item {
     min-width: auto;
   }
-  
+
   .section h3 {
     font-size: 14px;
   }
-  
+
   .sin-datos {
     padding: 32px 20px;
   }
-  
+
   .sin-datos mat-icon {
     font-size: 36px;
     width: 36px;
     height: 36px;
   }
-  
+
   th.mat-header-cell {
     font-size: 12px;
     padding: 12px 8px;
   }
-  
+
   td.mat-cell {
     padding: 12px 8px;
     font-size: 13px;
   }
-  
+
   /* Responsive para acciones */
   .accion-btn {
     font-size: 11px;
     padding: 4px 8px;
   }
 
-.comentario-cell {
+  .comentario-cell {
     min-width: 200px;
     max-width: 100%;
     padding: 12px 8px !important;
   }
-  
+
   .motivo-container {
     flex-direction: row;
     align-items: flex-start;
@@ -330,21 +331,21 @@ td.mat-cell:last-child {
     padding: 10px 12px;
     gap: 10px;
   }
-  
+
   .motivo-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
-  
+
   .motivo-texto {
     gap: 4px;
   }
-  
+
   .motivo-label {
     font-size: 10px;
   }
-  
+
   .motivo-mensaje {
     font-size: 12px;
   }

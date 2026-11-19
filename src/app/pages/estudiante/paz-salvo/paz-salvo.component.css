@@ -8,8 +8,6 @@
   font-family: 'Open Sans', 'Titillium Web', sans-serif;
 }
 
-
-
 /* Títulos de tarjetas - Color primario TIC */
 .card-title {
   font-size: 1.2rem;
@@ -22,8 +20,6 @@
   font-family: 'Titillium Web', sans-serif;
   margin-bottom: 0.5rem;
 }
-
-
 
 /* Botón Enviar Solicitud - Color primario TIC */
 .btn-enviar {
@@ -38,11 +34,9 @@
   box-shadow: var(--sombra-1);
 }
 
-
-
 .btn-enviar:disabled {
-  background-color: #C8C5D0 !important;
-  color: #46464F !important;
+  background-color: #c8c5d0 !important;
+  color: #46464f !important;
   cursor: not-allowed;
   opacity: 0.5;
   transform: none;
@@ -72,8 +66,6 @@
   margin-bottom: 8px;
   color: var(--estado-advertencia-texto);
 }
-
-
 
 /* Estilos del formulario */
 .solicitud-form {

@@ -20,8 +20,19 @@ function solicitud(id: number, estado: string, comentario = '', comentarioEstado
     nombre_solicitud: `Solicitud ${id}`,
     fecha_registro_solicitud: '2026-03-01',
     periodo_academico: '2026-1',
-    estadosSolicitud: [{ id_estado: 1, estado_actual: estado, fecha_registro_estado: '2026-03-01', comentario: comentarioEstado }],
-    documentos: [{ id_documento: id * 10, nombre: 'doc.pdf', ruta_documento: '', fecha_documento: '', esValido: false, comentario }]
+    estadosSolicitud: [
+      { id_estado: 1, estado_actual: estado, fecha_registro_estado: '2026-03-01', comentario: comentarioEstado },
+    ],
+    documentos: [
+      {
+        id_documento: id * 10,
+        nombre: 'doc.pdf',
+        ruta_documento: '',
+        fecha_documento: '',
+        esValido: false,
+        comentario,
+      },
+    ],
   } as Sol;
 }
 
@@ -32,11 +43,20 @@ describe('RevisionAprobacionComponent', () => {
   let snackbar: jasmine.SpyObj<SnackbarService>;
   let dialog: jasmine.SpyObj<MatDialog>;
 
-  async function crear(rol: RolRevision, pendientes: Sol[] = [], extra: Partial<ConfigRevisionAprobacion<Sol>> = {}): Promise<void> {
+  async function crear(
+    rol: RolRevision,
+    pendientes: Sol[] = [],
+    extra: Partial<ConfigRevisionAprobacion<Sol>> = {}
+  ): Promise<void> {
     servicio = jasmine.createSpyObj<HomologacionAsignaturasService>('HomologacionAsignaturasService', [
-      'getPendingRequests', 'getCoordinadorRequests', 'getSolicitudesProcesadasFuncionario',
-      'getSolicitudesProcesadasCoordinador', 'approveRequest', 'approveAsCoordinador', 'rejectRequest',
-      'agregarComentario'
+      'getPendingRequests',
+      'getCoordinadorRequests',
+      'getSolicitudesProcesadasFuncionario',
+      'getSolicitudesProcesadasCoordinador',
+      'approveRequest',
+      'approveAsCoordinador',
+      'rejectRequest',
+      'agregarComentario',
     ]);
     servicio.getPendingRequests.and.returnValue(of(pendientes));
     servicio.getCoordinadorRequests.and.returnValue(of(pendientes));
@@ -50,11 +70,7 @@ describe('RevisionAprobacionComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [RevisionAprobacionComponent, NoopAnimationsModule],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: SnackbarService, useValue: snackbar }
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: SnackbarService, useValue: snackbar }],
     })
       // MatDialogModule (lo importa documentation-viewer) registra su propio MatDialog
       .overrideProvider(MatDialog, { useValue: dialog })
@@ -62,7 +78,13 @@ describe('RevisionAprobacionComponent', () => {
 
     fixture = TestBed.createComponent(RevisionAprobacionComponent<Sol>);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('config', { rol, servicio, proceso: 'homologacion', nombreProceso: 'Homologación', ...extra });
+    fixture.componentRef.setInput('config', {
+      rol,
+      servicio,
+      proceso: 'homologacion',
+      nombreProceso: 'Homologación',
+      ...extra,
+    });
     fixture.detectChanges();
   }
 
@@ -215,7 +237,7 @@ describe('RevisionAprobacionComponent', () => {
       return crear('coordinador', [solicitud(5, 'APROBADA_FUNCIONARIO')], {
         documentosAparte,
         mensajeRechazada: 'Paz y Salvo rechazado',
-        dialogoRechazo: { titulo: 'Rechazar Paz y Salvo', descripcion: 'Indique el motivo:' }
+        dialogoRechazo: { titulo: 'Rechazar Paz y Salvo', descripcion: 'Indique el motivo:' },
       });
     });
 

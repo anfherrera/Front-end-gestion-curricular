@@ -1,10 +1,10 @@
 <div class="pruebas-ecaes-funcionario-container">
-
   <app-solicitudes-bandeja
     #bandeja
     [pendientes]="pendientes()"
     [conHistorial]="false"
-    (solicitudSeleccionada)="onSolicitudSeleccionada($event)">
+    (solicitudSeleccionada)="onSolicitudSeleccionada($event)"
+  >
   </app-solicitudes-bandeja>
 
   @if (seleccionada(); as sel) {
@@ -28,11 +28,11 @@
             </div>
             <div class="info-item">
               <span class="info-label">Fecha de Expedición:</span>
-              <span class="info-value">{{ sel.fecha_expedicion | fecha:'corta':'-' }}</span>
+              <span class="info-value">{{ sel.fecha_expedicion | fecha: 'corta' : '-' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Fecha de Nacimiento:</span>
-              <span class="info-value">{{ sel.fecha_nacimiento | fecha:'corta':'-' }}</span>
+              <span class="info-value">{{ sel.fecha_nacimiento | fecha: 'corta' : '-' }}</span>
             </div>
           </div>
         </mat-card-content>
@@ -43,17 +43,14 @@
         [proceso]="'ecaes'"
         [servicio]="pruebasEcaesService"
         [puedeAgregarComentarios]="true"
-        (comentarioAgregado)="onComentarioAgregado($event)">
+        (comentarioAgregado)="onComentarioAgregado($event)"
+      >
       </app-documentation-viewer>
     </app-card-container>
 
     <div class="botones-acciones">
-      <button mat-raised-button color="primary" (click)="aprobar()">
-        Marcar como Pre-registrada
-      </button>
-      <button mat-raised-button color="warn" (click)="rechazar()">
-        Rechazar Solicitud
-      </button>
+      <button mat-raised-button color="primary" (click)="aprobar()">Marcar como Pre-registrada</button>
+      <button mat-raised-button color="warn" (click)="rechazar()">Rechazar Solicitud</button>
     </div>
   } @else if (pendientes().length > 0) {
     <app-card-container title="Documentación Adjunta" icon="description">
@@ -65,5 +62,4 @@
   }
 
   <app-publicar-fechas-ecaes />
-
 </div>

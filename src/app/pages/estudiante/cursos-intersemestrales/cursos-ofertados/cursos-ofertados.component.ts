@@ -15,7 +15,7 @@ import { estadoCurso, nombreDocente, periodoCurso } from '@core/utils/cursos-ver
   imports: [CardContainerComponent, CursoListComponent, PeriodoFiltroSelectorComponent, ...MATERIAL_IMPORTS],
   templateUrl: './cursos-ofertados.component.html',
   styleUrls: ['./cursos-ofertados.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursosOfertadosComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -37,9 +37,10 @@ export class CursosOfertadosComponent implements OnInit {
     const periodo = !todos && this.periodoSeleccionado.trim() ? this.periodoSeleccionado : undefined;
 
     // El servicio devuelve [] si falla
-    this.cursosService.getCursosDisponibles(periodo, undefined, todos)
+    this.cursosService
+      .getCursosDisponibles(periodo, undefined, todos)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(cursos => {
+      .subscribe((cursos) => {
         if (cursos.length === 0 && !this.periodoSeleccionado && !todos) {
           this.mostrarTodosLosCursos = true;
           this.loadCursos();
@@ -69,6 +70,6 @@ function aFila(curso: CursoOfertadoVerano): Curso {
     periodo: periodoCurso(curso),
     periodoAcademico: periodoCurso(curso),
     fecha_inicio: curso.fecha_inicio,
-    fecha_fin: curso.fecha_fin
+    fecha_fin: curso.fecha_fin,
   };
 }

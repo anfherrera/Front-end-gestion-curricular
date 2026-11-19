@@ -1,7 +1,5 @@
 /* Estilos para el estado del proceso */
 
-
-
 .inscripciones-section {
   margin-bottom: 24px;
 }
@@ -14,8 +12,6 @@
   border-bottom: 2px solid var(--color-primario);
   padding-bottom: 8px;
 }
-
-
 
 .inscripciones-table {
   width: 100%;
@@ -40,11 +36,9 @@
   color: var(--gris-900) !important;
 }
 
-.inscripciones-table td *:not([class*="accion-"], [class*="accion-"] *) {
+.inscripciones-table td *:not([class*='accion-'], [class*='accion-'] *) {
   color: var(--gris-900) !important;
 }
-
-
 
 /* Contenedor de acciones */
 .acciones-container {
@@ -64,35 +58,31 @@
   box-shadow: var(--sombra-1);
 }
 
-
-
 /* Responsive */
 @media (max-width: 768px) {
   .info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .info-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
-  
+
   .info-item strong {
     min-width: auto;
   }
-  
+
   .table-container {
     font-size: 12px;
   }
-  
+
   .inscripciones-table th,
   .inscripciones-table td {
     padding: 8px 4px;
   }
 }
-
-
 
 /* Forzar color del texto en toda la tabla */
 :host ::ng-deep .inscripciones-table {
@@ -120,7 +110,7 @@
   color: var(--gris-900) !important;
 }
 
-:host ::ng-deep .inscripciones-table td *:not([class*="accion-"], [class*="accion-"] *) {
+:host ::ng-deep .inscripciones-table td *:not([class*='accion-'], [class*='accion-'] *) {
   color: var(--gris-900) !important;
 }
 

@@ -2,7 +2,6 @@
 
 <form [formGroup]="data.form" (ngSubmit)="guardarCurso()">
   <div mat-dialog-content class="form-container">
-
     <!-- Información básica (solo para crear) -->
     @if (!data.soloEdicion) {
       <div class="form-section">
@@ -19,9 +18,7 @@
             }
           </mat-select>
           @if (data.form.get('id_materia')?.hasError('required')) {
-            <mat-error>
-              La materia es requerida
-            </mat-error>
+            <mat-error> La materia es requerida </mat-error>
           }
           <mat-hint>El nombre y código del curso se obtendrán automáticamente de la materia seleccionada</mat-hint>
         </mat-form-field>
@@ -35,9 +32,7 @@
             }
           </mat-select>
           @if (data.form.get('id_docente')?.hasError('required')) {
-            <mat-error>
-              El docente es requerido
-            </mat-error>
+            <mat-error> El docente es requerido </mat-error>
           }
         </mat-form-field>
       </div>
@@ -48,22 +43,16 @@
       <div class="form-section">
         <h3>Información del Curso</h3>
         <div class="info-display">
+          <div class="info-item"><strong>Nombre:</strong> {{ data.cursoEditando.nombre_curso }}</div>
+          <div class="info-item"><strong>Código:</strong> {{ data.cursoEditando.codigo_curso }}</div>
           <div class="info-item">
-            <strong>Nombre:</strong> {{ data.cursoEditando.nombre_curso }}
+            <strong>Materia:</strong> {{ data.cursoEditando.objMateria.nombre }} ({{
+              data.cursoEditando.objMateria.codigo
+            }})
           </div>
-          <div class="info-item">
-            <strong>Código:</strong> {{ data.cursoEditando.codigo_curso }}
-          </div>
-          <div class="info-item">
-            <strong>Materia:</strong> {{ data.cursoEditando.objMateria.nombre }} ({{ data.cursoEditando.objMateria.codigo }})
-          </div>
-          <div class="info-item">
-            <strong>Docente:</strong> {{ data.cursoEditando | nombreDocente }}
-          </div>
+          <div class="info-item"><strong>Docente:</strong> {{ data.cursoEditando | nombreDocente }}</div>
           @if (data.cursoEditando.grupo) {
-            <div class="info-item">
-              <strong>Grupo:</strong> {{ data.cursoEditando.grupo }}
-            </div>
+            <div class="info-item"><strong>Grupo:</strong> {{ data.cursoEditando.grupo }}</div>
           }
         </div>
       </div>
@@ -84,9 +73,7 @@
             }
           </mat-select>
           @if (data.form.get('periodoAcademico')?.hasError('required')) {
-            <mat-error>
-              El período académico es requerido
-            </mat-error>
+            <mat-error> El período académico es requerido </mat-error>
           }
           <mat-hint>Selecciona un período académico válido del listado</mat-hint>
         </mat-form-field>
@@ -99,28 +86,39 @@
             <mat-option value="C">Grupo C</mat-option>
             <mat-option value="D">Grupo D</mat-option>
           </mat-select>
-          <mat-hint>Opcional. Puedes crear múltiples grupos (A, B, C, D) de la misma materia. Si no se selecciona, se asignará "A" por defecto.</mat-hint>
+          <mat-hint
+            >Opcional. Puedes crear múltiples grupos (A, B, C, D) de la misma materia. Si no se selecciona, se asignará
+            "A" por defecto.</mat-hint
+          >
         </mat-form-field>
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Fecha de Inicio</mat-label>
-          <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio" placeholder="Selecciona la fecha de inicio" (dateChange)="onFechaChange()">
+          <input
+            matInput
+            [matDatepicker]="pickerInicio"
+            formControlName="fecha_inicio"
+            placeholder="Selecciona la fecha de inicio"
+            (dateChange)="onFechaChange()"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
           <mat-datepicker #pickerInicio panelClass="calendario-curso"></mat-datepicker>
           @if (data.form.get('fecha_inicio')?.hasError('required')) {
-            <mat-error>
-              La fecha de inicio es requerida
-            </mat-error>
+            <mat-error> La fecha de inicio es requerida </mat-error>
           }
         </mat-form-field>
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Fecha de Fin</mat-label>
-          <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin" placeholder="Selecciona la fecha de fin" (dateChange)="onFechaChange()">
+          <input
+            matInput
+            [matDatepicker]="pickerFin"
+            formControlName="fecha_fin"
+            placeholder="Selecciona la fecha de fin"
+            (dateChange)="onFechaChange()"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
           <mat-datepicker #pickerFin panelClass="calendario-curso"></mat-datepicker>
           @if (data.form.get('fecha_fin')?.hasError('required')) {
-            <mat-error>
-              La fecha de fin es requerida
-            </mat-error>
+            <mat-error> La fecha de fin es requerida </mat-error>
           }
           @if (errorFechas(); as mensaje) {
             <mat-error>
@@ -132,28 +130,25 @@
         @if (mostrarDuracion()) {
           <div class="duracion-info">
             <mat-icon>schedule</mat-icon>
-            <span>Duración: <strong>{{ duracionSemanas() }} {{ duracionSemanas() === 1 ? 'semana' : 'semanas' }}</strong></span>
+            <span
+              >Duración:
+              <strong>{{ duracionSemanas() }} {{ duracionSemanas() === 1 ? 'semana' : 'semanas' }}</strong></span
+            >
           </div>
         }
         <!-- NOTA: cupo_maximo se calcula automáticamente igual a cupo_estimado -->
         <!-- Este campo NO se muestra porque el backend lo calcula automáticamente -->
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Cupo Estimado</mat-label>
-          <input matInput type="number" formControlName="cupo_estimado" min="1" max="100">
+          <input matInput type="number" formControlName="cupo_estimado" min="1" max="100" />
           @if (data.form.get('cupo_estimado')?.hasError('required')) {
-            <mat-error>
-              El cupo estimado es requerido
-            </mat-error>
+            <mat-error> El cupo estimado es requerido </mat-error>
           }
           @if (data.form.get('cupo_estimado')?.hasError('min')) {
-            <mat-error>
-              El cupo debe ser mayor a 0
-            </mat-error>
+            <mat-error> El cupo debe ser mayor a 0 </mat-error>
           }
           @if (data.form.get('cupo_estimado')?.hasError('max')) {
-            <mat-error>
-              El cupo no puede ser mayor a 100
-            </mat-error>
+            <mat-error> El cupo no puede ser mayor a 100 </mat-error>
           }
           <mat-hint>El cupo máximo será igual al cupo estimado</mat-hint>
         </mat-form-field>
@@ -175,9 +170,7 @@
           }
         </mat-select>
         @if (data.form.get('id_salon')?.hasError('required')) {
-          <mat-error>
-            El salón es requerido
-          </mat-error>
+          <mat-error> El salón es requerido </mat-error>
         }
         @if (!cargandoSalones()) {
           <mat-hint>
@@ -186,7 +179,13 @@
             }
             @if (data.soloEdicion && data.cursoEditando) {
               <span>
-                Salón actual: {{ data.cursoEditando.salonInfo?.descripcion || data.cursoEditando.salon || data.cursoEditando.espacio_asignado || 'No asignado' }}
+                Salón actual:
+                {{
+                  data.cursoEditando.salonInfo?.descripcion ||
+                    data.cursoEditando.salon ||
+                    data.cursoEditando.espacio_asignado ||
+                    'No asignado'
+                }}
               </span>
             }
           </mat-hint>
@@ -209,23 +208,15 @@
         <mat-hint>Opcional. Si no se selecciona, se asignará "Abierto" por defecto</mat-hint>
       </mat-form-field>
     </div>
-
   </div>
 
   <!-- Botones del dialog -->
   <div mat-dialog-actions class="dialog-actions">
     @if (!data.soloEdicion) {
-      <button mat-button type="button" (click)="limpiarFormulario()">
-        Limpiar
-      </button>
+      <button mat-button type="button" (click)="limpiarFormulario()">Limpiar</button>
     }
-    <button mat-button type="button" (click)="cerrarDialog()">
-      Cancelar
-    </button>
-    <button mat-raised-button
-      color="primary"
-      type="submit"
-      [disabled]="data.form.invalid">
+    <button mat-button type="button" (click)="cerrarDialog()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="data.form.invalid">
       {{ data.editando ? 'Actualizar' : 'Crear' }} Curso
     </button>
   </div>

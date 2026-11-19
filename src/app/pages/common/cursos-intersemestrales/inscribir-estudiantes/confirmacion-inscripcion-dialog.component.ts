@@ -11,24 +11,17 @@ import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
 // Componente del modal de confirmación de inscripción
 @Component({
   selector: 'app-confirmacion-inscripcion-dialog',
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    UtfFixPipe
-],
+  imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatIconModule, UtfFixPipe],
   templateUrl: './confirmacion-inscripcion-dialog.component.html',
   styleUrl: './confirmacion-inscripcion-dialog.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmacionInscripcionDialogComponent {
   dialogRef = inject<MatDialogRef<ConfirmacionInscripcionDialogComponent>>(MatDialogRef);
   data = inject<{
     estudiante: EstudianteElegible;
     curso: CursoOfertadoVerano | null;
-}>(MAT_DIALOG_DATA);
-
+  }>(MAT_DIALOG_DATA);
 
   confirmar(): void {
     this.dialogRef.close('confirmar');

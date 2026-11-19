@@ -6,7 +6,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 
 import { PreregistroEcaesComponent } from './preregistro-ecaes.component';
-import { PruebasEcaesService, SolicitudEcaesRequest, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import {
+  PruebasEcaesService,
+  SolicitudEcaesRequest,
+  SolicitudEcaesResponse,
+} from '@core/services/pruebas-ecaes.service';
 import { ArchivosService, PdfSubido } from '@core/services/archivos.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
@@ -33,17 +37,18 @@ describe('PreregistroEcaesComponent', () => {
     cedula: '123456',
     correo: 'test@unicauca.edu.co',
     rol: { nombre: 'ESTUDIANTE' },
-    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería' }
+    objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería' },
   } as UsuarioSesion;
 
   const pdfSubido = (nombre: string): PdfSubido => ({ id: 1, nombre, ruta: `ecaes/${nombre}` });
 
-  const llenarFormulario = () => component.solicitudForm.patchValue({
-    tipoDocumento: 'CC',
-    numero_documento: '123456',
-    fecha_expedicion: new Date('2000-01-01'),
-    fecha_nacimiento: new Date('1999-01-01')
-  });
+  const llenarFormulario = () =>
+    component.solicitudForm.patchValue({
+      tipoDocumento: 'CC',
+      numero_documento: '123456',
+      fecha_expedicion: new Date('2000-01-01'),
+      fecha_nacimiento: new Date('1999-01-01'),
+    });
 
   beforeEach(async () => {
     pruebasEcaesService = jasmine.createSpyObj('PruebasEcaesService', ['listarTiposDocumento', 'crearSolicitudEcaes']);
@@ -53,10 +58,12 @@ describe('PreregistroEcaesComponent', () => {
     const errorHandler = jasmine.createSpyObj('ErrorHandlerService', ['extraerMensajeError']);
     const periodosService = jasmine.createSpyObj('PeriodosAcademicosService', ['getPeriodoActualValue']);
 
-    pruebasEcaesService.listarTiposDocumento.and.returnValue(of([
-      { codigo: 'CC', descripcion: 'Cédula de Ciudadanía' },
-      { codigo: 'TI', descripcion: 'Tarjeta de Identidad' }
-    ]));
+    pruebasEcaesService.listarTiposDocumento.and.returnValue(
+      of([
+        { codigo: 'CC', descripcion: 'Cédula de Ciudadanía' },
+        { codigo: 'TI', descripcion: 'Tarjeta de Identidad' },
+      ])
+    );
     errorHandler.extraerMensajeError.and.returnValue('');
     periodosService.getPeriodoActualValue.and.returnValue({ valor: '2025-1' });
 
@@ -69,8 +76,8 @@ describe('PreregistroEcaesComponent', () => {
         { provide: MatSnackBar, useValue: snackBar },
         { provide: ErrorHandlerService, useValue: errorHandler },
         { provide: PeriodosAcademicosService, useValue: periodosService },
-        { provide: LoggerService, useValue: jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']) }
-      ]
+        { provide: LoggerService, useValue: jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']) },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PreregistroEcaesComponent);
@@ -90,7 +97,7 @@ describe('PreregistroEcaesComponent', () => {
   it('EC-034: tipos de documento fijos si el backend no devuelve CC ni CE', () => {
     pruebasEcaesService.listarTiposDocumento.and.returnValue(of([]));
     component.cargarTiposDocumento();
-    expect(component.tiposDocumento().map(t => t.value)).toEqual(['CC', 'CE']);
+    expect(component.tiposDocumento().map((t) => t.value)).toEqual(['CC', 'CE']);
   });
 
   it('EC-018: Debe actualizar archivos en onArchivosChange', () => {
@@ -144,7 +151,7 @@ describe('PreregistroEcaesComponent', () => {
 
   it('sube los archivos en orden, crea la solicitud con sus rutas, limpia y avisa que se envió', () => {
     let enviada = false;
-    component.enviada.subscribe(() => enviada = true);
+    component.enviada.subscribe(() => (enviada = true));
     archivosService.subirPDF.and.callFake((file: File) => of(pdfSubido(file.name)));
     pruebasEcaesService.crearSolicitudEcaes.and.returnValue(of({} as SolicitudEcaesResponse));
     llenarFormulario();
@@ -153,13 +160,14 @@ describe('PreregistroEcaesComponent', () => {
     component.enviarSolicitud();
 
     expect(archivosService.subirPDF.calls.allArgs().map(([file]) => file.name)).toEqual(['cedula.pdf', 'otro.pdf']);
-    const enviadaAlBackend = pruebasEcaesService.crearSolicitudEcaes.calls.mostRecent().args[0] as SolicitudEcaesRequest;
+    const enviadaAlBackend = pruebasEcaesService.crearSolicitudEcaes.calls.mostRecent()
+      .args[0] as SolicitudEcaesRequest;
     expect(enviadaAlBackend.nombre_solicitud).toBe('Solicitud ECAES - Estudiante Test');
     expect(enviadaAlBackend.periodo_academico).toBe('2025-1');
     expect(enviadaAlBackend.tipoDocumento).toBe('CC');
     expect(enviadaAlBackend.numero_documento).toBe('123456');
     expect(enviadaAlBackend.fecha_expedicion).toBe(new Date('2000-01-01').toISOString());
-    expect(enviadaAlBackend.documentos.map(d => d.ruta_documento)).toEqual(['ecaes/cedula.pdf', 'ecaes/otro.pdf']);
+    expect(enviadaAlBackend.documentos.map((d) => d.ruta_documento)).toEqual(['ecaes/cedula.pdf', 'ecaes/otro.pdf']);
     expect(enviadaAlBackend.documentos[0].tipoDocumentoSolicitudPazYSalvo).toBe('ECAES');
     expect(notificaciones.actualizarNotificaciones).toHaveBeenCalled();
     expect(snackBar.open).toHaveBeenCalledWith('Solicitud enviada exitosamente', 'Cerrar', jasmine.any(Object));
@@ -177,7 +185,11 @@ describe('PreregistroEcaesComponent', () => {
     component.enviarSolicitud();
 
     expect(pruebasEcaesService.crearSolicitudEcaes).not.toHaveBeenCalled();
-    expect(snackBar.open).toHaveBeenCalledWith('Error al subir los archivos. Intente nuevamente.', 'Cerrar', jasmine.any(Object));
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Error al subir los archivos. Intente nuevamente.',
+      'Cerrar',
+      jasmine.any(Object)
+    );
     expect(component.archivos()).toEqual(archivos);
     expect(component.enviandoSolicitud()).toBeFalse();
   });
@@ -195,7 +207,7 @@ describe('PreregistroEcaesComponent', () => {
 
   it('si falla la creación, vacía los archivos (hay que adjuntarlos otra vez) y no avisa que se envió', () => {
     let enviada = false;
-    component.enviada.subscribe(() => enviada = true);
+    component.enviada.subscribe(() => (enviada = true));
     archivosService.subirPDF.and.callFake((file: File) => of(pdfSubido(file.name)));
     pruebasEcaesService.crearSolicitudEcaes.and.returnValue(throwError(() => new HttpErrorResponse({ status: 400 })));
     llenarFormulario();
@@ -203,7 +215,11 @@ describe('PreregistroEcaesComponent', () => {
 
     component.enviarSolicitud();
 
-    expect(snackBar.open).toHaveBeenCalledWith('Error al enviar la solicitud. Debe volver a adjuntar los documentos.', 'Cerrar', jasmine.any(Object));
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Error al enviar la solicitud. Debe volver a adjuntar los documentos.',
+      'Cerrar',
+      jasmine.any(Object)
+    );
     expect(component.archivos()).toEqual([]);
     expect(component.enviandoSolicitud()).toBeFalse();
     expect(enviada).toBeFalse();

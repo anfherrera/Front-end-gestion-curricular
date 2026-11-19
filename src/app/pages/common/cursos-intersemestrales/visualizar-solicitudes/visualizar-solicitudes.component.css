@@ -107,7 +107,7 @@ app-card-container {
 .solicitudes-table {
   width: 100%;
   background: white;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .solicitudes-table th {
@@ -125,13 +125,13 @@ app-card-container {
 .solicitudes-table td {
   border-bottom: 1px solid var(--gris-150);
   color: var(--gris-900) !important;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   font-weight: 400 !important;
 }
 
 .solicitudes-table td * {
   color: var(--gris-900) !important;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   font-weight: 400 !important;
 }
 
@@ -140,20 +140,20 @@ app-card-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .estudiante-info strong {
   color: var(--gris-900) !important;
   font-size: 14px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   font-weight: 400 !important;
 }
 
 .estudiante-info small {
   color: var(--gris-700) !important;
   font-size: 12px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   font-weight: 400 !important;
 }
 
@@ -162,20 +162,20 @@ app-card-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .curso-info strong {
   color: var(--gris-900) !important;
   font-size: 14px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   font-weight: 400 !important;
 }
 
 .curso-info small {
   color: var(--gris-700) !important;
   font-size: 12px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   font-weight: 400 !important;
 }
 
@@ -183,7 +183,7 @@ app-card-container {
 .codigo-text {
   color: var(--gris-900) !important;
   font-weight: 400 !important;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   font-size: 13px;
 }
 
@@ -195,7 +195,7 @@ app-card-container {
   font-weight: 400 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
-  font-family: Roboto, "Helvetica Neue", sans-serif !important;
+  font-family: Roboto, 'Helvetica Neue', sans-serif !important;
   border: 0 !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -248,7 +248,7 @@ app-card-container {
 
 /* Estilo para el texto del motivo de la solicitud */
 .motivo-text {
-  font-family: Roboto, "Helvetica Neue", sans-serif !important;
+  font-family: Roboto, 'Helvetica Neue', sans-serif !important;
   font-weight: 400 !important;
   font-size: 13px !important;
   color: var(--gris-900) !important;
@@ -270,7 +270,7 @@ app-card-container {
   border: none;
   outline: none;
   box-shadow: none;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
 /* Estados específicos */
@@ -418,7 +418,7 @@ app-card-container {
 /* Eliminar cualquier borde que pueda venir de Material Design */
 :host ::ng-deep .solicitudes-table .mat-mdc-chip,
 :host ::ng-deep .solicitudes-table .mat-chip,
-:host ::ng-deep .solicitudes-table [class*="mat-chip"] {
+:host ::ng-deep .solicitudes-table [class*='mat-chip'] {
   border: none !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -457,11 +457,10 @@ app-card-container {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filtro-field {
     min-width: auto;
   }
-
 }
 
 .btn-exportar-excel {

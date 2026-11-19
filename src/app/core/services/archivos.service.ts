@@ -19,7 +19,7 @@ export interface PdfSubido {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ArchivosService {
   private http = inject(HttpClient);
@@ -35,7 +35,7 @@ export class ArchivosService {
   subirPDF(file: File, inscripcionId?: number, tipoSolicitud?: string): Observable<PdfSubido> {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     if (inscripcionId) {
       formData.append('inscripcionId', inscripcionId.toString());
       // También enviar como alias para compatibilidad
@@ -59,7 +59,7 @@ export class ArchivosService {
   descargarPDF(nombreArchivo: string): Observable<Blob> {
     const url = ApiEndpoints.ARCHIVOS.DESCARGAR_PDF(nombreArchivo);
     return this.http.get(url, {
-      responseType: 'blob'
+      responseType: 'blob',
     });
   }
 
@@ -69,7 +69,7 @@ export class ArchivosService {
   descargarPDFPorInscripcion(inscripcionId: number): Observable<Blob> {
     const url = ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION(inscripcionId);
     return this.http.get(url, {
-      responseType: 'blob'
+      responseType: 'blob',
     });
   }
 }

@@ -1,6 +1,12 @@
-
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +20,11 @@ import { AuthService } from '@core/services/auth.service';
 import { LoggerService } from '@core/services/logger.service';
 import { MENSAJE_SIN_CONEXION } from '@core/services/error-handler.service';
 import { interval, Subscription } from 'rxjs';
-import { getLoginCooldownRemainingSeconds, esErrorLimiteLogin, ErrorLimiteLogin } from '@core/interceptors/login-rate-limit.interceptor';
+import {
+  getLoginCooldownRemainingSeconds,
+  esErrorLimiteLogin,
+  ErrorLimiteLogin,
+} from '@core/interceptors/login-rate-limit.interceptor';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 @Component({
@@ -26,11 +36,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatIconModule,
     MatFormFieldModule,
     MatCheckboxModule,
-    MatProgressSpinnerModule
-],
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
@@ -52,7 +62,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginForm = this.fb.group({
       correo: ['', [Validators.required, Validators.email, this.unicaucaEmailValidator]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      remember: [false]
+      remember: [false],
     });
   }
 
@@ -65,7 +75,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     // Iniciar contador de cooldown si aplica
     this.tickRate();
-    
+
     // Solo iniciar el intervalo si localStorage está disponible (evitar problemas con SSR/HMR)
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       this.rateSub = interval(1000).subscribe(() => {
@@ -106,11 +116,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   private unicaucaEmailValidator(control: AbstractControl): ValidationErrors | null {
     const email = control.value;
     if (!email) return null;
-    
-    const unicaucaPattern = /^[a-zA-Z0-9._%+-]+@unicauca\.edu\.co$/;
-    return unicaucaPattern.test(email) ? null : { 'unicaucaEmail': true };
-  }
 
+    const unicaucaPattern = /^[a-zA-Z0-9._%+-]+@unicauca\.edu\.co$/;
+    return unicaucaPattern.test(email) ? null : { unicaucaEmail: true };
+  }
 
   onLogin(): void {
     if (this.loginDisabled()) {
@@ -125,7 +134,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
       this.authService.login(correo, password).subscribe({
         next: (response) => {
-
           if (response.token && response.usuario) {
             // Guardar token JWT después del login exitoso
             // El token se guarda en localStorage y se usará automáticamente
@@ -134,7 +142,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.authService.setUsuario(response.usuario);
             this.authService.setRole(response.usuario.rol?.nombre || 'Usuario');
             this.authService.restoreSession();
-
 
             // Mostrar mensaje de éxito
             this.snackbar.exito(`¡Bienvenido, ${response.usuario.nombre_completo}!`);
@@ -159,8 +166,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           if (esErrorLimiteLogin(err) && err.retryAfterSeconds) {
             errorMessage = err.message || 'Demasiados intentos. Intenta más tarde.';
             this.tickRate(); // actualizar contador
-          } else
-          if (err.status === 401) {
+          } else if (err.status === 401) {
             // 401: Credenciales incorrectas
             errorMessage = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
           } else if (err.status === 403) {
@@ -176,16 +182,16 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           this.errorMensaje.set(errorMessage);
           this.snackbar.error(errorMessage);
-          
+
           this.cargando.set(false);
-        }
+        },
       });
     } else {
       // Marcar todos los campos como tocados para mostrar errores
-      Object.keys(this.loginForm.controls).forEach(key => {
+      Object.keys(this.loginForm.controls).forEach((key) => {
         this.loginForm.get(key)?.markAsTouched();
       });
-      
+
       this.snackbar.advertencia('Por favor, completa todos los campos correctamente');
     }
   }

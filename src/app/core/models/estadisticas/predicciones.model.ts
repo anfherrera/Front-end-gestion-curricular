@@ -17,17 +17,17 @@ export interface PrediccionesGlobales {
   demandaTotalEstimada: number;
   variacionTotal: number;
   porcentajeVariacionTotal: number;
-  
+
   // Predicciones por Proceso
   procesosConTendenciaCreciente: PrediccionItem[];
   procesosConTendenciaDecreciente: PrediccionItem[];
   procesosEstables: PrediccionItem[];
-  
+
   // Predicciones por Programa
   programasConTendenciaCreciente: PrediccionItem[];
   programasConTendenciaDecreciente: PrediccionItem[];
   programasEstables: PrediccionItem[];
-  
+
   // Metadata
   // metodologia eliminado (campo técnico innecesario)
   confiabilidad: 'ALTA' | 'MEDIA' | 'BAJA';

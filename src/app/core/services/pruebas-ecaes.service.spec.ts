@@ -3,7 +3,12 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { AuthService } from './auth.service';
-import { PruebasEcaesService, FechaEcaes, SolicitudEcaesRequest, SolicitudEcaesResponse } from './pruebas-ecaes.service';
+import {
+  PruebasEcaesService,
+  FechaEcaes,
+  SolicitudEcaesRequest,
+  SolicitudEcaesResponse,
+} from './pruebas-ecaes.service';
 import { LoggerService } from './logger.service';
 import { environment } from '@env/environment';
 
@@ -22,8 +27,8 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         provideHttpClientTesting(),
         { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', { getToken: 'mock-token' }) },
         PruebasEcaesService,
-        { provide: LoggerService, useValue: loggerSpyObj }
-      ]
+        { provide: LoggerService, useValue: loggerSpyObj },
+      ],
     });
     service = TestBed.inject(PruebasEcaesService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -50,16 +55,17 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
 
   describe('Tipos de documento', () => {
     it('EC-035: devuelve los tipos de /tipos-documento/todos', (done) => {
-      service.listarTiposDocumento().subscribe(tipos => {
+      service.listarTiposDocumento().subscribe((tipos) => {
         expect(tipos).toEqual([{ codigo: 'CC', descripcion: 'Cédula' }]);
         done();
       });
-      httpMock.expectOne(`${environment.apiUrl}/tipos-documento/todos`)
+      httpMock
+        .expectOne(`${environment.apiUrl}/tipos-documento/todos`)
         .flush({ success: true, data: [{ codigo: 'CC', descripcion: 'Cédula' }] });
     });
 
     it('EC-036: lista vacía si la respuesta no es success', (done) => {
-      service.listarTiposDocumento().subscribe(tipos => {
+      service.listarTiposDocumento().subscribe((tipos) => {
         expect(tipos).toEqual([]);
         done();
       });
@@ -78,8 +84,8 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
           registro_recaudo_extraordinario: '2025-02-15',
           citacion: '2025-03-01',
           aplicacion: '2025-03-15',
-          resultados_individuales: '2025-04-01'
-        }
+          resultados_individuales: '2025-04-01',
+        },
       ];
       service.listarFechasEcaes().subscribe((fechas) => {
         expect(fechas.length).toBe(1);
@@ -101,7 +107,7 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         registro_recaudo_extraordinario: '2025-02-15',
         citacion: '2025-03-01',
         aplicacion: '2025-03-15',
-        resultados_individuales: '2025-04-01'
+        resultados_individuales: '2025-04-01',
       };
       service.buscarFechasPorPeriodo(periodo).subscribe((fecha) => {
         expect(fecha.periodoAcademico).toBe(periodo);
@@ -114,8 +120,13 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
 
     it('EC-005: Debe publicar fechas ECAES', (done) => {
       const fechasData = {
-        periodoAcademico: '2025-1', inscripcion_est_by_facultad: '2025-01-15', registro_recaudo_ordinario: '2025-02-01',
-        registro_recaudo_extraordinario: '2025-02-15', citacion: '2025-03-01', aplicacion: '2025-03-15', resultados_individuales: '2025-05-01'
+        periodoAcademico: '2025-1',
+        inscripcion_est_by_facultad: '2025-01-15',
+        registro_recaudo_ordinario: '2025-02-01',
+        registro_recaudo_extraordinario: '2025-02-15',
+        citacion: '2025-03-01',
+        aplicacion: '2025-03-15',
+        resultados_individuales: '2025-05-01',
       };
       service.publicarFechasEcaes(fechasData).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/publicarFechasEcaes`);
@@ -126,8 +137,14 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
 
     it('EC-006: Debe actualizar fechas ECAES', (done) => {
       const fechasData = {
-        idFechaEcaes: 1, periodoAcademico: '2025-1', inscripcion_est_by_facultad: '2025-01-15', registro_recaudo_ordinario: '2025-02-01',
-        registro_recaudo_extraordinario: '2025-02-15', citacion: '2025-03-01', aplicacion: '2025-03-15', resultados_individuales: '2025-05-01'
+        idFechaEcaes: 1,
+        periodoAcademico: '2025-1',
+        inscripcion_est_by_facultad: '2025-01-15',
+        registro_recaudo_ordinario: '2025-02-01',
+        registro_recaudo_extraordinario: '2025-02-15',
+        citacion: '2025-03-01',
+        aplicacion: '2025-03-15',
+        resultados_individuales: '2025-05-01',
       };
       service.actualizarFechasEcaes(fechasData).subscribe(() => done());
       const req = httpMock.expectOne(`${apiUrl}/actualizarFechasEcaes`);
@@ -142,12 +159,21 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         nombre_solicitud: 'Solicitud ECAES - Test',
         fecha_registro_solicitud: new Date().toISOString(),
         periodo_academico: '2025-1',
-        objUsuario: { id_usuario: 1, nombre_completo: 'Test', codigo: '123', cedula: '123', correo: 't@t.co', estado_usuario: true, id_rol: 2, id_programa: 1 },
+        objUsuario: {
+          id_usuario: 1,
+          nombre_completo: 'Test',
+          codigo: '123',
+          cedula: '123',
+          correo: 't@t.co',
+          estado_usuario: true,
+          id_rol: 2,
+          id_programa: 1,
+        },
         tipoDocumento: 'CC',
         numero_documento: '123',
         fecha_expedicion: '2020-01-01',
         fecha_nacimiento: '1999-01-01',
-        documentos: []
+        documentos: [],
       };
       const mockResponse: SolicitudEcaesResponse = {
         id_solicitud: 10,
@@ -156,14 +182,20 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         periodo_academico: '2025-1',
         estadosSolicitud: [],
         objUsuario: {
-          id_usuario: 1, nombre_completo: 'Test', rol: { id_rol: 1, nombre: 'ESTUDIANTE' }, codigo: '123', cedula: '123',
-          correo: 't@t.co', estado_usuario: true, objPrograma: { id_programa: 1, codigo: 'IS', nombre_programa: 'Ingeniería de Sistemas' }
+          id_usuario: 1,
+          nombre_completo: 'Test',
+          rol: { id_rol: 1, nombre: 'ESTUDIANTE' },
+          codigo: '123',
+          cedula: '123',
+          correo: 't@t.co',
+          estado_usuario: true,
+          objPrograma: { id_programa: 1, codigo: 'IS', nombre_programa: 'Ingeniería de Sistemas' },
         },
         documentos: [],
         tipoDocumento: 'CC',
         numero_documento: '123',
         fecha_expedicion: '2020-01-01',
-        fecha_nacimiento: '1999-01-01'
+        fecha_nacimiento: '1999-01-01',
       };
       service.crearSolicitudEcaes(solicitud).subscribe((res) => {
         expect(res.id_solicitud).toBe(10);

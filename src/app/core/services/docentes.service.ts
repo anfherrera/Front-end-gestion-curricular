@@ -5,7 +5,7 @@ import { DocenteDTOPeticion, DocenteDTORespuesta } from '../models/docente.inter
 import { environment } from '@env/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DocentesService {
   private http = inject(HttpClient);
@@ -42,4 +42,3 @@ export class DocentesService {
     return this.http.delete<boolean>(`${this.apiUrl}/eliminarDocente/${id}`);
   }
 }
-

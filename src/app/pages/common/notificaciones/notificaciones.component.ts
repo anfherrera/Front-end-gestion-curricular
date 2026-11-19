@@ -19,7 +19,7 @@ import {
   getIconByTipoSolicitud,
   getColorByTipoSolicitud,
   getCategoriaDisplay,
-  enrichNotificaciones
+  enrichNotificaciones,
 } from '@core/utils/notificaciones.util';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoggerService } from '@core/services/logger.service';
@@ -37,11 +37,11 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatDividerModule,
-    MatTooltipModule
-],
+    MatTooltipModule,
+  ],
   templateUrl: './notificaciones.component.html',
   styleUrls: ['./notificaciones.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificacionesComponent implements OnInit {
   private notificacionService = inject(NotificacionesService);
@@ -54,11 +54,11 @@ export class NotificacionesComponent implements OnInit {
   readonly todasLasNotificaciones = signal<Notificacion[]>([]);
   readonly notificacionesFiltradas = signal<Notificacion[]>([]);
   readonly notificacionesNoLeidas = signal<Notificacion[]>([]);
-  
+
   readonly isLoading = signal(false);
   tabSeleccionada = 0;
   filtroTipoSolicitud: string | null = null;
-  
+
   tiposSolicitud = [
     { valor: null, etiqueta: 'Todas' },
     { valor: TipoSolicitud.ECAES, etiqueta: 'ECAES' },
@@ -66,7 +66,7 @@ export class NotificacionesComponent implements OnInit {
     { valor: TipoSolicitud.HOMOLOGACION, etiqueta: 'Homologación' },
     { valor: TipoSolicitud.PAZ_Y_SALVO, etiqueta: 'Paz y Salvo' },
     { valor: TipoSolicitud.CURSO_VERANO_PREINSCRIPCION, etiqueta: 'Cursos Verano - Preinscripción' },
-    { valor: TipoSolicitud.CURSO_VERANO_INSCRIPCION, etiqueta: 'Cursos Verano - Inscripción' }
+    { valor: TipoSolicitud.CURSO_VERANO_INSCRIPCION, etiqueta: 'Cursos Verano - Inscripción' },
   ];
 
   private readonly destroyRef = inject(DestroyRef);
@@ -106,9 +106,7 @@ export class NotificacionesComponent implements OnInit {
         observable = this.notificacionService.obtenerTodas(usuarioId);
     }
 
-    observable.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
+    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (notificaciones: Notificacion[]) => {
         // Enriquecer notificaciones con campos calculados
         const notificacionesEnriquecidas = enrichNotificaciones(notificaciones);
@@ -126,13 +124,13 @@ export class NotificacionesComponent implements OnInit {
       error: (error: HttpErrorResponse) => {
         this.isLoading.set(false);
         this.logger.error('Error al cargar notificaciones:', error);
-        
+
         // Si es 403, no mostrar error (puede ser normal)
         if (error.status !== 403) {
           const mensaje = this.errorHandler.extraerMensajeError(error);
           this.snackbar.error(mensaje || 'Error al cargar notificaciones');
         }
-      }
+      },
     });
   }
 
@@ -148,15 +146,17 @@ export class NotificacionesComponent implements OnInit {
 
     // Aplicar filtro por tipo de solicitud
     if (this.filtroTipoSolicitud) {
-      notificaciones = notificaciones.filter(n => n.tipoSolicitud === this.filtroTipoSolicitud);
+      notificaciones = notificaciones.filter((n) => n.tipoSolicitud === this.filtroTipoSolicitud);
     }
 
     // Ordenar por fecha (más recientes primero), sobre una copia para que la signal cambie
-    this.notificacionesFiltradas.set([...notificaciones].sort((a, b) => {
-      const fechaA = new Date(a.fechaCreacion).getTime();
-      const fechaB = new Date(b.fechaCreacion).getTime();
-      return fechaB - fechaA;
-    }));
+    this.notificacionesFiltradas.set(
+      [...notificaciones].sort((a, b) => {
+        const fechaA = new Date(a.fechaCreacion).getTime();
+        const fechaB = new Date(b.fechaCreacion).getTime();
+        return fechaB - fechaA;
+      })
+    );
   }
 
   cambiarTab(index: number): void {
@@ -179,23 +179,26 @@ export class NotificacionesComponent implements OnInit {
       return;
     }
 
-    this.notificacionService.marcarComoLeida(notificacion.id_notificacion).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: () => {
-        const id = notificacion.id_notificacion;
-        this.todasLasNotificaciones.update(lista => lista.map(n => n.id_notificacion === id ? { ...n, leida: true } : n));
-        // Remover de la lista de no leídas si está ahí
-        this.notificacionesNoLeidas.update(lista => lista.filter(n => n.id_notificacion !== id));
-        this.aplicarFiltros();
-        this.snackbar.exito('Notificación marcada como leída');
-      },
-      error: (error: HttpErrorResponse) => {
-        this.logger.error('Error al marcar notificación como leída:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || 'Error al marcar notificación como leída');
-      }
-    });
+    this.notificacionService
+      .marcarComoLeida(notificacion.id_notificacion)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const id = notificacion.id_notificacion;
+          this.todasLasNotificaciones.update((lista) =>
+            lista.map((n) => (n.id_notificacion === id ? { ...n, leida: true } : n))
+          );
+          // Remover de la lista de no leídas si está ahí
+          this.notificacionesNoLeidas.update((lista) => lista.filter((n) => n.id_notificacion !== id));
+          this.aplicarFiltros();
+          this.snackbar.exito('Notificación marcada como leída');
+        },
+        error: (error: HttpErrorResponse) => {
+          this.logger.error('Error al marcar notificación como leída:', error);
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackbar.error(mensaje || 'Error al marcar notificación como leída');
+        },
+      });
   }
 
   marcarTodasComoLeidas(): void {
@@ -205,21 +208,22 @@ export class NotificacionesComponent implements OnInit {
       return;
     }
 
-    this.notificacionService.marcarTodasComoLeidas(usuarioId).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: () => {
-        this.todasLasNotificaciones.update(lista => lista.map(n => ({ ...n, leida: true })));
-        this.notificacionesNoLeidas.set([]);
-        this.aplicarFiltros();
-        this.snackbar.exito('Todas las notificaciones marcadas como leídas');
-      },
-      error: (error: HttpErrorResponse) => {
-        this.logger.error('Error al marcar notificaciones como leídas:', error);
-        const mensaje = this.errorHandler.extraerMensajeError(error);
-        this.snackbar.error(mensaje || 'Error al marcar notificaciones como leídas');
-      }
-    });
+    this.notificacionService
+      .marcarTodasComoLeidas(usuarioId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.todasLasNotificaciones.update((lista) => lista.map((n) => ({ ...n, leida: true })));
+          this.notificacionesNoLeidas.set([]);
+          this.aplicarFiltros();
+          this.snackbar.exito('Todas las notificaciones marcadas como leídas');
+        },
+        error: (error: HttpErrorResponse) => {
+          this.logger.error('Error al marcar notificaciones como leídas:', error);
+          const mensaje = this.errorHandler.extraerMensajeError(error);
+          this.snackbar.error(mensaje || 'Error al marcar notificaciones como leídas');
+        },
+      });
   }
 
   navegarANotificacion(notificacion: Notificacion): void {
@@ -241,8 +245,4 @@ export class NotificacionesComponent implements OnInit {
   getCategoriaDisplay(tipoSolicitud: string): string {
     return getCategoriaDisplay(tipoSolicitud);
   }
-
 }
-
-
-

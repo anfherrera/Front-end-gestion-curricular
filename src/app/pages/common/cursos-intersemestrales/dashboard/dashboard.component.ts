@@ -12,7 +12,7 @@ import { CursoOfertadoVerano, DashboardEstadisticas } from '@core/models/cursos-
 import { CursoEstadosService } from '@core/services/curso-estados.service';
 import { AuthService } from '@core/services/auth.service';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
-import { estadoCurso, } from '@core/utils/cursos-verano.utils';
+import { estadoCurso } from '@core/utils/cursos-verano.utils';
 import { formatearFecha } from '@core/utils/fecha.util';
 import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 
@@ -25,11 +25,11 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
     MatChipsModule,
     MatDividerModule,
     RouterModule,
-    NombreDocentePipe
-],
+    NombreDocentePipe,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardCursosIntersemestralesComponent implements OnInit {
   private cursosService = inject(CursosIntersemestralesService);
@@ -37,18 +37,18 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
   private authService = inject(AuthService);
 
   private readonly destroyRef = inject(DestroyRef);
-  
+
   usuario: UsuarioSesion | null = null;
   readonly cursosActivos = signal<CursoOfertadoVerano[]>([]);
-  
+
   // Estadísticas del backend
   estadisticas: DashboardEstadisticas | null = null;
-  
+
   // Variables para el template (se actualizan desde el backend)
   readonly totalCursosActivos = signal(0);
   readonly preinscripcionesPendientes = signal(0);
   readonly inscripcionesPendientes = signal(0);
-  
+
   cargandoEstadisticas = false;
 
   ngOnInit(): void {
@@ -65,29 +65,31 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
 
   private cargarEstadisticas(): void {
     this.cargandoEstadisticas = true;
-    
-    this.cursosService.getDashboardEstadisticas()
+
+    this.cursosService
+      .getDashboardEstadisticas()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (estadisticas: DashboardEstadisticas) => {
           this.estadisticas = estadisticas;
-          
+
           // Actualizar variables para el template desde el backend
           this.totalCursosActivos.set(estadisticas.cursosActivos || 0);
           this.preinscripcionesPendientes.set(estadisticas.totalPreinscripciones || 0);
           this.inscripcionesPendientes.set(estadisticas.totalInscripciones || 0);
-          
+
           this.cargandoEstadisticas = false;
         },
         error: () => {
           // Mantener valores por defecto (ya inicializados en 0)
           this.cargandoEstadisticas = false;
-        }
+        },
       });
   }
 
   private cargarCursosActivos(): void {
-    this.cursosService.getTodosLosCursosParaFuncionarios()
+    this.cursosService
+      .getTodosLosCursosParaFuncionarios()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cursos) => {
@@ -99,24 +101,31 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
         },
         error: () => {
           // Sin cursos: el resumen se queda con los contadores en cero
-        }
+        },
       });
   }
 
   private calcularEstadisticasCursos(cursos: CursoOfertadoVerano[]): void {
     // Contar cursos por estado usando la nueva estructura
-    this.preinscripcionesPendientes.set(cursos.filter(c => {
-      const estadoActual = this.obtenerEstadoActual(c);
-      return estadoActual === 'Preinscripción';
-    }).length);
-    
-    this.inscripcionesPendientes.set(cursos.filter(c => {
-      const estadoActual = this.obtenerEstadoActual(c);
-      return estadoActual === 'Inscripción';
-    }).length);
+    this.preinscripcionesPendientes.set(
+      cursos.filter((c) => {
+        const estadoActual = this.obtenerEstadoActual(c);
+        return estadoActual === 'Preinscripción';
+      }).length
+    );
+
+    this.inscripcionesPendientes.set(
+      cursos.filter((c) => {
+        const estadoActual = this.obtenerEstadoActual(c);
+        return estadoActual === 'Inscripción';
+      }).length
+    );
   }
 
-  formatearRangoFechas(fechaInicio: Date | string | null | undefined, fechaFin: Date | string | null | undefined): string {
+  formatearRangoFechas(
+    fechaInicio: Date | string | null | undefined,
+    fechaFin: Date | string | null | undefined
+  ): string {
     if (!fechaInicio && !fechaFin) {
       return 'Fechas no definidas';
     }

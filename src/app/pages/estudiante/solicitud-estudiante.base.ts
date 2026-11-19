@@ -48,18 +48,20 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
   /** Documentos obligatorios que no se reconocen entre los archivos subidos. */
   obtenerDocumentosFaltantes(): string[] {
     return this.documentosRequeridos
-      .filter(doc => doc.obligatorio && !this.archivoSubido(doc.label))
-      .map(doc => doc.label);
+      .filter((doc) => doc.obligatorio && !this.archivoSubido(doc.label))
+      .map((doc) => doc.label);
   }
 
   /** Si algún archivo se parece al documento: por nombre (en cualquier sentido) o por palabras clave. */
   protected archivoSubido(nombreDocumento: string): boolean {
     const nombreDoc = normalizarNombreArchivo(nombreDocumento);
-    return this.archivosActuales().some(archivo => {
+    return this.archivosActuales().some((archivo) => {
       const nombreArchivo = normalizarNombreArchivo(archivo.nombre);
-      return nombreArchivo.includes(nombreDoc) ||
+      return (
+        nombreArchivo.includes(nombreDoc) ||
         nombreDoc.includes(nombreArchivo) ||
-        coincidenPorPalabrasClave(nombreArchivo, nombreDoc, this.palabrasClaveDocumentos);
+        coincidenPorPalabrasClave(nombreArchivo, nombreDoc, this.palabrasClaveDocumentos)
+      );
     });
   }
 
@@ -76,21 +78,25 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
       return;
     }
 
-    fileUpload.subirArchivosPendientes()
+    fileUpload
+      .subirArchivosPendientes()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: archivosSubidos => this.crearSolicitud(usuario, archivosSubidos)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-            next: () => this.despuesDeEnviar(),
-            error: err => this.avisarErrorAlCrear(err)
-          }),
-        error: err => {
-          this.snackbar.error(this.esErrorDeValidacion(err)
-            ? this.errorHandler.extraerMensajeError(err)
-            : 'Error al subir documentos. Por favor, inténtalo de nuevo.');
+        next: (archivosSubidos) =>
+          this.crearSolicitud(usuario, archivosSubidos)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: () => this.despuesDeEnviar(),
+              error: (err) => this.avisarErrorAlCrear(err),
+            }),
+        error: (err) => {
+          this.snackbar.error(
+            this.esErrorDeValidacion(err)
+              ? this.errorHandler.extraerMensajeError(err)
+              : 'Error al subir documentos. Por favor, inténtalo de nuevo.'
+          );
           fileUpload.resetearEstadoCarga();
-        }
+        },
       });
   }
 
@@ -109,11 +115,16 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
    * oficios y, si está vacía, avisa. El nombre sale de Content-Disposition o, si no viene, del
    * primer oficio o del respaldo. Sin la lista (error) se intenta igual la descarga.
    */
-  protected descargarOficioDelProceso(servicio: SolicitudesAprobacionService<unknown>, idSolicitud: number, nombreRespaldo: string): void {
-    servicio.obtenerOficios(idSolicitud)
+  protected descargarOficioDelProceso(
+    servicio: SolicitudesAprobacionService<unknown>,
+    idSolicitud: number,
+    nombreRespaldo: string
+  ): void {
+    servicio
+      .obtenerOficios(idSolicitud)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: oficios => {
+        next: (oficios) => {
           if (!oficios || oficios.length === 0) {
             this.snackbar.advertencia('No hay oficios disponibles para esta solicitud');
             return;
@@ -121,28 +132,36 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
           const oficio = oficios[0];
           this.descargarOficioConNombre(servicio, idSolicitud, oficio.nombre || oficio.nombreArchivo || nombreRespaldo);
         },
-        error: () => this.descargarOficioConNombre(servicio, idSolicitud, nombreRespaldo)
+        error: () => this.descargarOficioConNombre(servicio, idSolicitud, nombreRespaldo),
       });
   }
 
-  private descargarOficioConNombre(servicio: SolicitudesAprobacionService<unknown>, idSolicitud: number, nombreRespaldo: string): void {
-    servicio.descargarOficioConNombre(idSolicitud)
+  private descargarOficioConNombre(
+    servicio: SolicitudesAprobacionService<unknown>,
+    idSolicitud: number,
+    nombreRespaldo: string
+  ): void {
+    servicio
+      .descargarOficioConNombre(idSolicitud)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: response => {
+        next: (response) => {
           const nombre = nombreDeContentDisposition(response.headers) || nombreRespaldo;
           if (response.body) descargarBlob(response.body, nombre);
           this.snackbar.exito('Oficio descargado exitosamente');
         },
-        error: err => this.snackbar.error(
-          this.errorHandler.extraerMensajeError(err) || 'Error al descargar archivo. Por favor, inténtalo de nuevo.'
-        )
+        error: (err) =>
+          this.snackbar.error(
+            this.errorHandler.extraerMensajeError(err) || 'Error al descargar archivo. Por favor, inténtalo de nuevo.'
+          ),
       });
   }
 
   private avisarErrorAlCrear(err: unknown): void {
     if (this.esErrorDeValidacion(err)) {
-      this.snackbar.advertencia(this.errorHandler.extraerMensajeError(err) || 'Error de validación: revisa los datos de la solicitud');
+      this.snackbar.advertencia(
+        this.errorHandler.extraerMensajeError(err) || 'Error de validación: revisa los datos de la solicitud'
+      );
     } else if ((err as { status?: number })?.status === 401) {
       this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
     } else {

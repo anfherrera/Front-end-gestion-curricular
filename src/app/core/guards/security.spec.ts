@@ -16,19 +16,15 @@ describe('Seguridad - Guards', () => {
   beforeEach(() => {
     // authGuard lee router.url para no redirigir si ya está en /login
     const routerSpy = jasmine.createSpyObj('Router', ['navigate'], { url: '/funcionario/paz-salvo' });
-    const authServiceSpy = jasmine.createSpyObj('AuthService', [
-      'isAuthenticated',
-      'getRole',
-      'getToken'
-    ]);
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated', 'getRole', 'getToken']);
 
     TestBed.configureTestingModule({
       providers: [
         authGuard,
         RoleGuard,
         { provide: Router, useValue: routerSpy },
-        { provide: AuthService, useValue: authServiceSpy }
-      ]
+        { provide: AuthService, useValue: authServiceSpy },
+      ],
     });
 
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
@@ -39,10 +35,9 @@ describe('Seguridad - Guards', () => {
   // SEC-010: PREVENCIÓN DE ACCESO NO AUTORIZADO
   // =====================================
   describe('SEC-010: Auth Guard - Prevención de Acceso No Autorizado', () => {
-    
     it('SEC-010-A: Debe bloquear acceso sin token de autenticación', () => {
       authService.isAuthenticated.and.returnValue(false);
-      
+
       const guard = TestBed.inject(authGuard);
       const result = guard.canActivate();
 
@@ -52,7 +47,7 @@ describe('Seguridad - Guards', () => {
 
     it('SEC-010-B: Debe permitir acceso con token válido', () => {
       authService.isAuthenticated.and.returnValue(true);
-      
+
       const guard = TestBed.inject(authGuard);
       const result = guard.canActivate();
 
@@ -62,7 +57,7 @@ describe('Seguridad - Guards', () => {
 
     it('SEC-010-C: Debe redirigir a login si token expiró durante navegación', () => {
       authService.isAuthenticated.and.returnValue(false);
-      
+
       const guard = TestBed.inject(authGuard);
       guard.canActivate();
 
@@ -72,7 +67,7 @@ describe('Seguridad - Guards', () => {
     it('SEC-010-D: NO debe permitir acceso con token null', () => {
       authService.isAuthenticated.and.returnValue(false);
       authService.getToken.and.returnValue(null);
-      
+
       const guard = TestBed.inject(authGuard);
       const result = guard.canActivate();
 
@@ -317,17 +312,36 @@ describe('Seguridad - Guards', () => {
     });
 
     const rolesMatrix = [
-      { userRole: UserRole.ADMIN, allowedRoutes: ['admin'], deniedRoutes: ['estudiante', 'coordinador', 'funcionario', 'secretaria'] },
-      { userRole: UserRole.ESTUDIANTE, allowedRoutes: ['estudiante'], deniedRoutes: ['admin', 'coordinador', 'funcionario', 'secretaria'] },
-      { userRole: UserRole.COORDINADOR, allowedRoutes: ['coordinador'], deniedRoutes: ['admin', 'estudiante', 'funcionario', 'secretaria'] },
-      { userRole: UserRole.FUNCIONARIO, allowedRoutes: ['funcionario'], deniedRoutes: ['admin', 'estudiante', 'coordinador', 'secretaria'] },
-      { userRole: UserRole.SECRETARIA, allowedRoutes: ['secretaria'], deniedRoutes: ['admin', 'estudiante', 'coordinador', 'funcionario'] }
+      {
+        userRole: UserRole.ADMIN,
+        allowedRoutes: ['admin'],
+        deniedRoutes: ['estudiante', 'coordinador', 'funcionario', 'secretaria'],
+      },
+      {
+        userRole: UserRole.ESTUDIANTE,
+        allowedRoutes: ['estudiante'],
+        deniedRoutes: ['admin', 'coordinador', 'funcionario', 'secretaria'],
+      },
+      {
+        userRole: UserRole.COORDINADOR,
+        allowedRoutes: ['coordinador'],
+        deniedRoutes: ['admin', 'estudiante', 'funcionario', 'secretaria'],
+      },
+      {
+        userRole: UserRole.FUNCIONARIO,
+        allowedRoutes: ['funcionario'],
+        deniedRoutes: ['admin', 'estudiante', 'coordinador', 'secretaria'],
+      },
+      {
+        userRole: UserRole.SECRETARIA,
+        allowedRoutes: ['secretaria'],
+        deniedRoutes: ['admin', 'estudiante', 'coordinador', 'funcionario'],
+      },
     ];
 
     rolesMatrix.forEach(({ userRole, allowedRoutes, deniedRoutes }) => {
       describe(`Usuario con rol ${userRole}`, () => {
-        
-        allowedRoutes.forEach(allowedRoute => {
+        allowedRoutes.forEach((allowedRoute) => {
           it(`SEC-015: Debe PERMITIR acceso a ruta "${allowedRoute}"`, () => {
             authService.getRole.and.returnValue(userRole);
             route.data = { role: allowedRoute };
@@ -339,7 +353,7 @@ describe('Seguridad - Guards', () => {
           });
         });
 
-        deniedRoutes.forEach(deniedRoute => {
+        deniedRoutes.forEach((deniedRoute) => {
           it(`SEC-015: Debe DENEGAR acceso a ruta "${deniedRoute}"`, () => {
             authService.getRole.and.returnValue(userRole);
             route.data = { role: deniedRoute };
@@ -347,11 +361,10 @@ describe('Seguridad - Guards', () => {
             const result = roleGuard.canActivate(route, state);
 
             expect(result).toBeFalse();
-          expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
+            expect(router.navigate).toHaveBeenCalledWith(['/welcome']);
           });
         });
       });
     });
   });
 });
-

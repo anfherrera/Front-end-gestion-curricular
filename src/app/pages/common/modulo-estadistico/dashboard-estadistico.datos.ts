@@ -1,4 +1,14 @@
-import { EstadisticasPorProcesoResponse, EstadisticasProceso, EstadisticasPrograma, EstadoSolicitudesResponse, EstudiantesPorProgramaResponse, FiltroEstadisticas, KPIData, ResumenCompleto, ResumenCompletoAPI } from '@core/models/estadisticas/generales.model';
+import {
+  EstadisticasPorProcesoResponse,
+  EstadisticasProceso,
+  EstadisticasPrograma,
+  EstadoSolicitudesResponse,
+  EstudiantesPorProgramaResponse,
+  FiltroEstadisticas,
+  KPIData,
+  ResumenCompleto,
+  ResumenCompletoAPI,
+} from '@core/models/estadisticas/generales.model';
 
 /** Filtros tal como los aceptan los endpoints de estadísticas. */
 export interface FiltrosBackend {
@@ -88,7 +98,7 @@ function claveProceso(nombre: string): string {
 /** /estadisticas/resumen-completo al formato que usa el dashboard. */
 export function resumenDesdeAPI(api: ResumenCompletoAPI, idPrograma: ResolverIdPrograma): ResumenCompleto {
   const porTipo = api.porTipoProceso || {};
-  const estadisticasPorProceso: EstadisticasProceso[] = Object.keys(porTipo).map(nombre => {
+  const estadisticasPorProceso: EstadisticasProceso[] = Object.keys(porTipo).map((nombre) => {
     const proceso = porTipo[nombre];
     return {
       nombreProceso: claveProceso(nombre),
@@ -99,18 +109,18 @@ export function resumenDesdeAPI(api: ResumenCompletoAPI, idPrograma: ResolverIdP
       pendientes: 0,
       porcentajeAprobacion: proceso.porcentajeAprobacion || 0,
       tendenciaMensual: [],
-      distribucionPorPrograma: []
+      distribucionPorPrograma: [],
     };
   });
 
   const globales = api.estadisticasGlobales;
   const porPrograma = globales?.porPrograma || {};
-  const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(porPrograma).map(nombrePrograma => ({
+  const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(porPrograma).map((nombrePrograma) => ({
     idPrograma: idPrograma(nombrePrograma),
     nombrePrograma,
     totalSolicitudes: porPrograma[nombrePrograma] || 0,
     distribucionPorProceso: [],
-    tendenciaAnual: []
+    tendenciaAnual: [],
   }));
 
   return {
@@ -121,11 +131,11 @@ export function resumenDesdeAPI(api: ResumenCompletoAPI, idPrograma: ResolverIdP
       solicitudesEnviadas: 0,
       solicitudesEnProceso: globales?.totalEnProceso || 0,
       totalEstudiantes: 0,
-      totalProgramas: api.totalProgramas || 0
+      totalProgramas: api.totalProgramas || 0,
     },
     estadisticasPorProceso,
     estadisticasPorPrograma,
-    ultimaActualizacion: api.fechaGeneracion || new Date().toISOString()
+    ultimaActualizacion: api.fechaGeneracion || new Date().toISOString(),
   };
 }
 
@@ -154,9 +164,9 @@ export function resumenDesdeEndpoints(
     enviadas = estados['ENVIADA']?.cantidad || 0;
     enProceso = estados['EN_PROCESO']?.cantidad || 0;
     // Si el backend no da el total, se suma por estado
-    totalSolicitudes = estadoSolicitudes.totalSolicitudes || (aprobadas + rechazadas + enviadas + enProceso);
+    totalSolicitudes = estadoSolicitudes.totalSolicitudes || aprobadas + rechazadas + enviadas + enProceso;
   } else {
-    Object.values(procesos).forEach(proceso => {
+    Object.values(procesos).forEach((proceso) => {
       totalSolicitudes += proceso.totalSolicitudes || 0;
       aprobadas += proceso.aprobadas || 0;
       rechazadas += proceso.rechazadas || 0;
@@ -165,7 +175,7 @@ export function resumenDesdeEndpoints(
     });
   }
 
-  const estadisticasPorProceso: EstadisticasProceso[] = Object.keys(procesos).map(nombre => {
+  const estadisticasPorProceso: EstadisticasProceso[] = Object.keys(procesos).map((nombre) => {
     const proceso = procesos[nombre];
     return {
       nombreProceso: claveProceso(nombre),
@@ -175,19 +185,20 @@ export function resumenDesdeEndpoints(
       enProceso: proceso.enProceso || 0,
       enviadas: proceso.enviadas || 0,
       pendientes: 0,
-      porcentajeAprobacion: proceso.totalSolicitudes > 0 ? ((proceso.aprobadas || 0) / proceso.totalSolicitudes) * 100 : 0,
+      porcentajeAprobacion:
+        proceso.totalSolicitudes > 0 ? ((proceso.aprobadas || 0) / proceso.totalSolicitudes) * 100 : 0,
       tendenciaMensual: [],
-      distribucionPorPrograma: []
+      distribucionPorPrograma: [],
     };
   });
 
   const programas = estudiantesPorPrograma?.estudiantesPorPrograma || {};
-  const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(programas).map(nombrePrograma => ({
+  const estadisticasPorPrograma: EstadisticasPrograma[] = Object.keys(programas).map((nombrePrograma) => ({
     idPrograma: idPrograma(nombrePrograma),
     nombrePrograma,
     totalSolicitudes: 0, // Este endpoint no lo trae
     distribucionPorProceso: [],
-    tendenciaAnual: []
+    tendenciaAnual: [],
   }));
 
   return {
@@ -198,11 +209,11 @@ export function resumenDesdeEndpoints(
       solicitudesEnviadas: enviadas,
       solicitudesEnProceso: enProceso,
       totalEstudiantes: totalEstudiantes || 0,
-      totalProgramas: Object.keys(programas).length
+      totalProgramas: Object.keys(programas).length,
     },
     estadisticasPorProceso,
     estadisticasPorPrograma,
-    ultimaActualizacion: new Date().toISOString()
+    ultimaActualizacion: new Date().toISOString(),
   };
 }
 
@@ -211,13 +222,55 @@ export const TITULO_KPI_ESTUDIANTES = 'Estudiantes';
 export function generarKPIs(resumen: ResumenCompleto | null, totalEstudiantes: number): KPIData[] {
   const e = resumen?.estadisticasGlobales;
   return [
-    { titulo: 'Total Solicitudes', valor: e?.totalSolicitudes || 0, icono: 'description', color: 'primary', descripcion: 'Solicitudes en todos los procesos' },
-    { titulo: 'Aprobadas', valor: e?.solicitudesAprobadas || 0, icono: 'check_circle', color: 'success', descripcion: 'Solicitudes aprobadas' },
-    { titulo: 'Enviadas', valor: e?.solicitudesEnviadas || 0, icono: 'send', color: 'accent', descripcion: 'Solicitudes enviadas pendientes' },
-    { titulo: 'En Proceso', valor: e?.solicitudesEnProceso || 0, icono: 'pending', color: 'warning', descripcion: 'Solicitudes en revisión' },
-    { titulo: 'Rechazadas', valor: e?.solicitudesRechazadas || 0, icono: 'cancel', color: 'error', descripcion: 'Solicitudes rechazadas' },
-    { titulo: TITULO_KPI_ESTUDIANTES, valor: totalEstudiantes || 0, icono: 'people', color: 'info', descripcion: 'Total de estudiantes registrados' },
-    { titulo: 'Programas', valor: e?.totalProgramas || 0, icono: 'school', color: 'purple', descripcion: 'Programas académicos' }
+    {
+      titulo: 'Total Solicitudes',
+      valor: e?.totalSolicitudes || 0,
+      icono: 'description',
+      color: 'primary',
+      descripcion: 'Solicitudes en todos los procesos',
+    },
+    {
+      titulo: 'Aprobadas',
+      valor: e?.solicitudesAprobadas || 0,
+      icono: 'check_circle',
+      color: 'success',
+      descripcion: 'Solicitudes aprobadas',
+    },
+    {
+      titulo: 'Enviadas',
+      valor: e?.solicitudesEnviadas || 0,
+      icono: 'send',
+      color: 'accent',
+      descripcion: 'Solicitudes enviadas pendientes',
+    },
+    {
+      titulo: 'En Proceso',
+      valor: e?.solicitudesEnProceso || 0,
+      icono: 'pending',
+      color: 'warning',
+      descripcion: 'Solicitudes en revisión',
+    },
+    {
+      titulo: 'Rechazadas',
+      valor: e?.solicitudesRechazadas || 0,
+      icono: 'cancel',
+      color: 'error',
+      descripcion: 'Solicitudes rechazadas',
+    },
+    {
+      titulo: TITULO_KPI_ESTUDIANTES,
+      valor: totalEstudiantes || 0,
+      icono: 'people',
+      color: 'info',
+      descripcion: 'Total de estudiantes registrados',
+    },
+    {
+      titulo: 'Programas',
+      valor: e?.totalProgramas || 0,
+      icono: 'school',
+      color: 'purple',
+      descripcion: 'Programas académicos',
+    },
   ];
 }
 
@@ -228,7 +281,7 @@ const NOMBRES_PROCESO: Record<string, string> = {
   'homologacion-asignaturas': 'Homologación',
   'cursos-de-verano': 'Cursos de Verano',
   'cursos-intersemestrales': 'Cursos de Verano',
-  'pruebas-ecaes': 'ECAES'
+  'pruebas-ecaes': 'ECAES',
 };
 
 export function formatearNombreProceso(proceso: string): string {

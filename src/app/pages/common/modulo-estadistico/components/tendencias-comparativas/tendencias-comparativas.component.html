@@ -23,9 +23,7 @@
         <div class="error-container">
           <mat-icon class="error-icon">error</mat-icon>
           <p>Error al cargar las tendencias y comparativas</p>
-          <button mat-raised-button color="primary" (click)="cargarTendenciasComparativas()">
-            Reintentar
-          </button>
+          <button mat-raised-button color="primary" (click)="cargarTendenciasComparativas()">Reintentar</button>
         </div>
       }
 
@@ -47,9 +45,28 @@
                   <div class="tendencias-grid">
                     <div class="tendencia-item">
                       <h4>Solicitudes</h4>
-                      <div class="tendencia-valor" [style.color]="getTendenciaColor(datos.crecimientoTemporal.tendenciaSolicitudes || datos.crecimientoTemporal.tendencia || 'Nueva')">
-                        <mat-icon>{{ getTendenciaIcon(datos.crecimientoTemporal.tendenciaSolicitudes || datos.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
-                        {{ datos.crecimientoTemporal.tendenciaSolicitudes || datos.crecimientoTemporal.tendencia || 'Nueva' }}
+                      <div
+                        class="tendencia-valor"
+                        [style.color]="
+                          getTendenciaColor(
+                            datos.crecimientoTemporal.tendenciaSolicitudes ||
+                              datos.crecimientoTemporal.tendencia ||
+                              'Nueva'
+                          )
+                        "
+                      >
+                        <mat-icon>{{
+                          getTendenciaIcon(
+                            datos.crecimientoTemporal.tendenciaSolicitudes ||
+                              datos.crecimientoTemporal.tendencia ||
+                              'Nueva'
+                          )
+                        }}</mat-icon>
+                        {{
+                          datos.crecimientoTemporal.tendenciaSolicitudes ||
+                            datos.crecimientoTemporal.tendencia ||
+                            'Nueva'
+                        }}
                       </div>
                       <div class="tendencia-porcentaje">
                         {{ formatPorcentaje(datos.crecimientoTemporal.crecimientoSolicitudes) }} vs mes anterior
@@ -57,9 +74,28 @@
                     </div>
                     <div class="tendencia-item">
                       <h4>Estudiantes</h4>
-                      <div class="tendencia-valor" [style.color]="getTendenciaColor(datos.crecimientoTemporal.tendenciaEstudiantes || datos.crecimientoTemporal.tendencia || 'Nueva')">
-                        <mat-icon>{{ getTendenciaIcon(datos.crecimientoTemporal.tendenciaEstudiantes || datos.crecimientoTemporal.tendencia || 'Nueva') }}</mat-icon>
-                        {{ datos.crecimientoTemporal.tendenciaEstudiantes || datos.crecimientoTemporal.tendencia || 'Nueva' }}
+                      <div
+                        class="tendencia-valor"
+                        [style.color]="
+                          getTendenciaColor(
+                            datos.crecimientoTemporal.tendenciaEstudiantes ||
+                              datos.crecimientoTemporal.tendencia ||
+                              'Nueva'
+                          )
+                        "
+                      >
+                        <mat-icon>{{
+                          getTendenciaIcon(
+                            datos.crecimientoTemporal.tendenciaEstudiantes ||
+                              datos.crecimientoTemporal.tendencia ||
+                              'Nueva'
+                          )
+                        }}</mat-icon>
+                        {{
+                          datos.crecimientoTemporal.tendenciaEstudiantes ||
+                            datos.crecimientoTemporal.tendencia ||
+                            'Nueva'
+                        }}
                       </div>
                       <div class="tendencia-porcentaje">
                         {{ formatPorcentaje(datos.crecimientoTemporal.crecimientoEstudiantes) }} vs mes anterior
@@ -68,14 +104,10 @@
                   </div>
                   <div class="analisis-info">
                     @if (datos.crecimientoTemporal.mesesAnalizados === 1) {
-                      <span>
-                        Analizado en 1 mes. Se necesita más tiempo para calcular tendencias.
-                      </span>
+                      <span> Analizado en 1 mes. Se necesita más tiempo para calcular tendencias. </span>
                     }
                     @if (datos.crecimientoTemporal.mesesAnalizados > 1) {
-                      <span>
-                        Analizado en {{ datos.crecimientoTemporal.mesesAnalizados }} meses
-                      </span>
+                      <span> Analizado en {{ datos.crecimientoTemporal.mesesAnalizados }} meses </span>
                     }
                   </div>
                 </mat-card-content>
@@ -95,12 +127,16 @@
                     <div class="highlight-item mas-demandado">
                       <h4>Más Demandado</h4>
                       <div class="highlight-valor">{{ datos.comparativaProcesos.procesoMasDemandado }}</div>
-                      <div class="highlight-descripcion">{{ datos.comparativaProcesos.demandaMasAlta }} solicitudes</div>
+                      <div class="highlight-descripcion">
+                        {{ datos.comparativaProcesos.demandaMasAlta }} solicitudes
+                      </div>
                     </div>
                     <div class="highlight-item mas-eficiente">
                       <h4>Más Eficiente</h4>
                       <div class="highlight-valor">{{ datos.comparativaProcesos.procesoMasEficiente || 'N/A' }}</div>
-                      <div class="highlight-descripcion">{{ formatPorcentaje(datos.comparativaProcesos.eficienciaMasAlta) }} aprobación</div>
+                      <div class="highlight-descripcion">
+                        {{ formatPorcentaje(datos.comparativaProcesos.eficienciaMasAlta) }} aprobación
+                      </div>
                     </div>
                   </div>
                   <div class="procesos-lista">
@@ -109,7 +145,9 @@
                       <div class="proceso-item">
                         <div class="proceso-info">
                           <span class="proceso-nombre">{{ proceso }}</span>
-                          <span class="proceso-cantidad">{{ datos.comparativaProcesos.solicitudesPorProceso[proceso] }} solicitudes</span>
+                          <span class="proceso-cantidad"
+                            >{{ datos.comparativaProcesos.solicitudesPorProceso[proceso] }} solicitudes</span
+                          >
                         </div>
                       </div>
                     }
@@ -131,23 +169,34 @@
                     <div class="highlight-item mas-activo">
                       <h4>Más Activo</h4>
                       <div class="highlight-valor">{{ datos.comparativaProgramas.programaMasActivo }}</div>
-                      <div class="highlight-descripcion">{{ datos.comparativaProgramas.maxSolicitudes }} solicitudes</div>
+                      <div class="highlight-descripcion">
+                        {{ datos.comparativaProgramas.maxSolicitudes }} solicitudes
+                      </div>
                     </div>
                     <div class="highlight-item mas-estudiantes">
                       <h4>Más Estudiantes</h4>
                       <div class="highlight-valor">{{ datos.comparativaProgramas.programaConMasEstudiantes }}</div>
-                      <div class="highlight-descripcion">{{ datos.comparativaProgramas.maxEstudiantes }} estudiantes</div>
+                      <div class="highlight-descripcion">
+                        {{ datos.comparativaProgramas.maxEstudiantes }} estudiantes
+                      </div>
                     </div>
                   </div>
                   <div class="programas-lista">
                     <h5>Detalle por Programa:</h5>
-                    @for (programa of getObjectKeys(datos.comparativaProgramas.solicitudesPorPrograma); track programa) {
+                    @for (
+                      programa of getObjectKeys(datos.comparativaProgramas.solicitudesPorPrograma);
+                      track programa
+                    ) {
                       <div class="programa-item">
                         <div class="programa-info">
                           <span class="programa-nombre">{{ programa }}</span>
                           <div class="programa-metrics">
-                            <span class="programa-solicitudes">{{ datos.comparativaProgramas.solicitudesPorPrograma[programa] }} solicitudes</span>
-                            <span class="programa-estudiantes">{{ datos.comparativaProgramas.estudiantesPorPrograma[programa] }} estudiantes</span>
+                            <span class="programa-solicitudes"
+                              >{{ datos.comparativaProgramas.solicitudesPorPrograma[programa] }} solicitudes</span
+                            >
+                            <span class="programa-estudiantes"
+                              >{{ datos.comparativaProgramas.estudiantesPorPrograma[programa] }} estudiantes</span
+                            >
                           </div>
                         </div>
                       </div>
@@ -184,9 +233,7 @@
                     <h4>Recomendación Estratégica</h4>
                     <p>{{ datos.resumenEstrategico.recomendacionEstrategica }}</p>
                   </div>
-                  <div class="periodo-info">
-                    Período analizado: {{ datos.resumenEstrategico.periodoAnalizado }}
-                  </div>
+                  <div class="periodo-info">Período analizado: {{ datos.resumenEstrategico.periodoAnalizado }}</div>
                 </mat-card-content>
               </mat-card>
             </div>

@@ -9,4 +9,3 @@ export interface DocenteDTORespuesta {
   codigo_docente: string;
   nombre_docente: string;
 }
-

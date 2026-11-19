@@ -57,8 +57,8 @@ html {
 }
 
 .mat-mdc-raised-button.mat-primary:disabled {
-  background-color: #C8C5D0 !important;
-  color: #46464F !important;
+  background-color: #c8c5d0 !important;
+  color: #46464f !important;
 }
 
 /* Botón secundario */
@@ -91,12 +91,20 @@ html {
 }
 
 /* FAB */
-.mat-mdc-fab.mat-primary { background-color: var(--color-primario) !important; }
-.mat-mdc-fab.mat-primary:hover { background-color: var(--color-primario-light) !important; }
+.mat-mdc-fab.mat-primary {
+  background-color: var(--color-primario) !important;
+}
+.mat-mdc-fab.mat-primary:hover {
+  background-color: var(--color-primario-light) !important;
+}
 
 /* Campos de formulario */
-.mat-mdc-form-field { font-size: 14px !important; }
-.mat-mdc-form-field .mat-mdc-text-field-wrapper { border-radius: 6px !important; }
+.mat-mdc-form-field {
+  font-size: 14px !important;
+}
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  border-radius: 6px !important;
+}
 
 .mat-mdc-form-field-label,
 .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
@@ -116,7 +124,9 @@ html {
   overflow: hidden !important;
 }
 
-.mat-mdc-header-row { background-color: var(--primario-90) !important; }
+.mat-mdc-header-row {
+  background-color: var(--primario-90) !important;
+}
 
 .mat-mdc-header-cell {
   font-weight: 600 !important;
@@ -126,7 +136,9 @@ html {
 }
 
 /* Diálogos, chips y tooltips */
-.mat-mdc-dialog-container .mdc-dialog__surface { border-radius: 28px !important; }
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 28px !important;
+}
 
 .mat-mdc-chip.mat-primary {
   background-color: var(--primario-90) !important;

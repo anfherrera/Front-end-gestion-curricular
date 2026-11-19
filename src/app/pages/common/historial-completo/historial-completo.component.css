@@ -11,7 +11,6 @@
   justify-content: flex-end;
 }
 
-
 .header-actions button mat-spinner {
   margin-right: 8px;
 }
@@ -148,11 +147,11 @@
   .filtros-grid {
     flex-direction: column;
   }
-  
+
   .filtro-item {
     max-width: 100%;
   }
-  
+
   .filtro-actions {
     max-width: 100%;
   }
@@ -185,8 +184,6 @@
   margin-right: 4px;
   vertical-align: middle;
 }
-
-
 
 /* Tabla */
 .tabla-container {
@@ -259,8 +256,6 @@
   font-size: 0.9rem;
 }
 
-
-
 /* No Solicitudes */
 .no-solicitudes {
   display: flex;
@@ -301,5 +296,5 @@
   }
 
   .displayedColumns {
-    }
+  }
 }

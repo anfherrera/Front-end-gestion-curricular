@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, computed, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -10,7 +20,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate, SolicitudParaDocumento } from '@core/models/documento.model';
+import {
+  DatosSolicitudDocumento,
+  DocumentRequest,
+  DocumentTemplate,
+  SolicitudParaDocumento,
+} from '@core/models/documento.model';
 
 @Component({
   selector: 'app-document-generator',
@@ -24,11 +39,11 @@ import { DatosSolicitudDocumento, DocumentRequest, DocumentTemplate, SolicitudPa
     MatNativeDateModule,
     MatIconModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
   ],
   templateUrl: './document-generator.component.html',
   styleUrls: ['./document-generator.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentGeneratorComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -63,7 +78,7 @@ export class DocumentGeneratorComponent implements OnInit {
       estado: estadoActual || 'Pendiente',
       // Paz y salvo: datos del trabajo de grado, si llegan
       tituloTrabajoGrado: solicitud.titulo_trabajo_grado || undefined,
-      directorTrabajoGrado: solicitud.director_trabajo_grado || undefined
+      directorTrabajoGrado: solicitud.director_trabajo_grado || undefined,
     };
   });
 
@@ -71,9 +86,7 @@ export class DocumentGeneratorComponent implements OnInit {
     this.initializeForm();
     // La plantilla lee documentForm.invalid: el popup del datepicker va en un overlay,
     // así que se revisa la vista con cada cambio de estado del formulario.
-    this.documentForm.statusChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.cdr.markForCheck());
+    this.documentForm.statusChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.cdr.markForCheck());
   }
 
   private initializeForm(): void {
@@ -81,13 +94,13 @@ export class DocumentGeneratorComponent implements OnInit {
       numeroDocumento: ['', [Validators.required, Validators.minLength(1)]],
       // No inicializar con fecha por defecto - el usuario debe seleccionar la fecha
       // Si no se selecciona, el backend usará la fecha actual
-      fechaDocumento: [null, Validators.required]
+      fechaDocumento: [null, Validators.required],
     };
 
     // Agregar campos opcionales si existen
     const template = this.template();
     if (template.camposOpcionales) {
-      template.camposOpcionales.forEach(campo => {
+      template.camposOpcionales.forEach((campo) => {
         if (campo === 'observaciones' && !this.mostrarObservaciones()) {
           return;
         }
@@ -117,9 +130,9 @@ export class DocumentGeneratorComponent implements OnInit {
           fechaDocumento: formData.fechaDocumento,
           ...(this.mostrarObservaciones() ? { observaciones: formData.observaciones || '' } : {}),
           // Agregar campos adicionales específicos del proceso
-          ...this.getAdditionalFields(formData)
+          ...this.getAdditionalFields(formData),
         },
-        datosSolicitud
+        datosSolicitud,
       };
 
       // DocumentRequest creado
@@ -149,7 +162,7 @@ export class DocumentGeneratorComponent implements OnInit {
     // Agregar campos opcionales del formulario
     const template = this.template();
     if (template.camposOpcionales) {
-      template.camposOpcionales.forEach(campo => {
+      template.camposOpcionales.forEach((campo) => {
         if (campo === 'observaciones' && !this.mostrarObservaciones()) {
           return;
         }
@@ -163,7 +176,7 @@ export class DocumentGeneratorComponent implements OnInit {
   }
 
   private markFormGroupTouched(): void {
-    Object.keys(this.documentForm.controls).forEach(key => {
+    Object.keys(this.documentForm.controls).forEach((key) => {
       const control = this.documentForm.get(key);
       control?.markAsTouched();
     });
@@ -190,7 +203,7 @@ export class DocumentGeneratorComponent implements OnInit {
     const labels: Record<string, string> = {
       numeroDocumento: 'Número de documento',
       fechaDocumento: 'Fecha del documento',
-      observaciones: 'Observaciones'
+      observaciones: 'Observaciones',
     };
     return labels[fieldName] || fieldName;
   }
@@ -202,27 +215,27 @@ export class DocumentGeneratorComponent implements OnInit {
 
   getTemplateIcon(): string {
     const icons: Record<string, string> = {
-      'OFICIO_HOMOLOGACION': 'description',
-      'PAZ_SALVO': 'verified_user',
-      'RESOLUCION_REINGRESO': 'assignment_turned_in'
+      OFICIO_HOMOLOGACION: 'description',
+      PAZ_SALVO: 'verified_user',
+      RESOLUCION_REINGRESO: 'assignment_turned_in',
     };
     return icons[this.template().id] || 'description';
   }
 
   getFieldPlaceholder(fieldName: string): string {
     const placeholders: Record<string, string> = {
-      'observaciones': 'Observaciones adicionales...',
-      'semestre': 'Ej: 2024-1',
-      'motivoReingreso': 'Motivo del reingreso...'
+      observaciones: 'Observaciones adicionales...',
+      semestre: 'Ej: 2024-1',
+      motivoReingreso: 'Motivo del reingreso...',
     };
     return placeholders[fieldName] || '';
   }
 
   getFieldIcon(fieldName: string): string {
     const icons: Record<string, string> = {
-      'observaciones': 'note',
-      'semestre': 'calendar_today',
-      'motivoReingreso': 'help_outline'
+      observaciones: 'note',
+      semestre: 'calendar_today',
+      motivoReingreso: 'help_outline',
     };
     return icons[fieldName] || 'info';
   }
