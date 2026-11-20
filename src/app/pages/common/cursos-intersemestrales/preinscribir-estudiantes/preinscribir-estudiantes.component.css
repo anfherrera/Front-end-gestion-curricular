@@ -102,11 +102,6 @@
   }
 }
 
-/* Etiqueta de estado: esta regla le gana al fondo que pone el pipe estadoColor (pendiente, ver CHECKLIST) */
-:host ::ng-deep .preinscripciones-table [style*='background-color'] {
-  background-color: var(--color-primario) !important;
-}
-
 /* Botones de acción al pasar el ratón (en reposo, el color de los iconos lo fijan .accion-ver/-aprobar/-rechazar de componentes.css) */
 :host ::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover .mat-icon {
   color: var(--color-primario-light) !important;
@@ -149,8 +144,9 @@
   margin: 0 !important;
 }
 
-/* Etiqueta de estado en la tabla (el fondo lo pone el pipe estadoColor) */
-.estado-etiqueta {
+/* Etiqueta de estado en la tabla (el fondo lo pone el pipe estadoColor).
+   Lleva "td" en el selector para que el texto blanco le gane a la regla td * de arriba. */
+.preinscripciones-table td .estado-etiqueta {
   color: var(--blanco) !important;
   padding: 4px 8px;
   border-radius: 4px;

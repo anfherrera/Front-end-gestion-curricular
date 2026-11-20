@@ -33,6 +33,7 @@ export const ICONS_BY_STATE: Record<string, string> = {
   APROBADA: 'check_circle',
   APROBADA_FUNCIONARIO: 'check_circle',
   APROBADA_COORDINADOR: 'check_circle',
+  APROBADO: 'check_circle',
   PAGO_VALIDADO: 'check_circle',
   RECHAZADA: 'cancel',
   RECHAZADO: 'cancel',
@@ -57,6 +58,7 @@ export const COLORS_BY_STATE: Record<string, string> = {
   APROBADA: COLORS.success,
   APROBADA_FUNCIONARIO: COLORS.success,
   APROBADA_COORDINADOR: COLORS.success,
+  APROBADO: COLORS.success, // preinscripciones de cursos de verano
   PAGO_VALIDADO: COLORS.success,
   RECHAZADA: COLORS.error,
   RECHAZADO: COLORS.error,

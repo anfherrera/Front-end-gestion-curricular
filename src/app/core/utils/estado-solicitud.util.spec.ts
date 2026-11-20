@@ -37,6 +37,8 @@ describe('estado-solicitud.util', () => {
 
   it('da color e icono institucionales', () => {
     expect(estadoColor('Aprobada')).toBe(COLORS.success);
+    expect(estadoColor('Aprobado')).toBe(COLORS.success); // preinscripción de curso de verano
+    expect(estadoIcono('Aprobado')).toBe('check_circle');
     expect(estadoColor('desconocido')).toBe(COLORS.neutralText);
     expect(estadoIcono('RECHAZADA')).toBe('cancel');
     expect(estadoIcono(null)).toBe('info');
