@@ -16,6 +16,7 @@
 .inscripciones-table {
   width: 100%;
   background: white;
+  color: var(--gris-900) !important;
 }
 
 .inscripciones-table th {
@@ -82,48 +83,6 @@
   .inscripciones-table td {
     padding: 8px 4px;
   }
-}
-
-/* Forzar color del texto en toda la tabla */
-:host ::ng-deep .inscripciones-table {
-  color: var(--gris-900) !important;
-}
-
-:host ::ng-deep .inscripciones-table th {
-  background: var(--color-primario) !important;
-  color: white !important;
-}
-
-:host ::ng-deep .inscripciones-table th * {
-  color: white !important;
-}
-
-:host ::ng-deep .inscripciones-table th .mat-sort-header-content {
-  color: white !important;
-}
-
-:host ::ng-deep .inscripciones-table th .mat-sort-header-arrow {
-  color: white !important;
-}
-
-:host ::ng-deep .inscripciones-table td {
-  color: var(--gris-900) !important;
-}
-
-:host ::ng-deep .inscripciones-table td *:not([class*='accion-'], [class*='accion-'] *) {
-  color: var(--gris-900) !important;
-}
-
-:host ::ng-deep .inscripciones-table .estudiante-info {
-  color: var(--gris-900) !important;
-}
-
-:host ::ng-deep .inscripciones-table .estudiante-info strong {
-  color: var(--gris-900) !important;
-}
-
-:host ::ng-deep .inscripciones-table .estudiante-info small {
-  color: var(--gris-700) !important;
 }
 
 /* Botones de acción al pasar el ratón (en reposo, el color de los iconos lo fijan .accion-ver/-aprobar/-rechazar de componentes.css) */
