@@ -94,7 +94,7 @@ export class PeriodosAcademicosService {
   getPeriodoActual(): Observable<PeriodoAcademico | null> {
     const url = ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL;
 
-    // El endpoint NO requiere autenticación según la documentación
+    // Pide token: sin sesión el backend responde 403 (y aquí se devuelve null)
     return this.http.get<PeriodoActualResponse>(url).pipe(
       map((response) => {
         if (response.success && response.data) {
@@ -263,11 +263,9 @@ export class PeriodosAcademicosService {
   }
 
   /**
-   * Inicializa el período actual (llamar al iniciar la app)
-   * Solo intenta cargar si hay un token disponible
+   * Carga el período actual al iniciar la app. El endpoint pide token: AppComponent solo lo llama con sesión.
    */
   inicializarPeriodoActual(): void {
-    // El endpoint NO requiere autenticación, así que siempre intentamos cargarlo
     if (typeof window !== 'undefined') {
       this.getPeriodoActual().subscribe();
     }

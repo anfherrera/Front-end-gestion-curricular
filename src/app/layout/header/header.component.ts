@@ -79,8 +79,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.periodoFormateado = periodoCargado.nombrePeriodo || formatearPeriodo(periodoCargado.valor);
       this.cdr.markForCheck();
     } else {
-      // Si no hay período cargado, intentar cargarlo
-      // El endpoint NO requiere autenticación
+      // Si no hay período cargado (p. ej. justo después de iniciar sesión), cargarlo
       if (typeof window !== 'undefined') {
         this.periodosService.getPeriodoActual().subscribe({
           next: (periodo) => {

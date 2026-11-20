@@ -23,7 +23,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.restoreSession();
-    this.periodosService.inicializarPeriodoActual();
+    // El backend pide token para /periodos-academicos/actual (sin él responde 403). Sin sesión no se pide:
+    // la cabecera, que solo aparece con sesión, lo carga si todavía no está.
+    if (this.authService.isAuthenticated()) {
+      this.periodosService.inicializarPeriodoActual();
+    }
 
     this.periodosService.cambioPeriodo$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cambio) => {
       if (cambio && cambio.anterior && cambio.actual) {
