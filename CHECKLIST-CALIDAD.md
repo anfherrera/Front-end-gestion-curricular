@@ -12,6 +12,7 @@ Revisión del 2026-11-13 (commit `9b46f87`). Las cifras son de esa fecha; vuelve
 Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion` (sin backend: todas las rutas abren, sin errores en consola).
 
 ### Archivos sin ningún uso
+
 - [x] Borrar `ArchivoListComponent` (`shared/components/archivo-list/`)
 - [x] Borrar `shared/directives/autofocus.directive.ts`
 - [x] Borrar `core/utils/date.util.ts`
@@ -20,12 +21,14 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - [x] Borrar `core/config/snackbar.config.ts` (solo volvía a exportar `design-tokens`)
 
 ### Funciones exportadas que nadie usa
+
 - [x] `corregirEncoding`: se deja interna (la usa `corregirEncodingObjeto`)
 - [x] `esErrorSinPermisos` borrada; `MENSAJE_SESION_INVALIDA` se deja interna
 - [x] `getColorByTipoNotificacion` borrada; `enrichNotificacion` se deja interna
 - [x] `calcularDuracionDias`, `esCursoActivo`, `getColorPeriodo`, `generarPeriodos` y `getEstadoCursoPorFechas` borradas; `parsearPeriodo` y `compararPeriodos` se dejan internas
 
 ### Configuración y dependencias
+
 - [x] `environment.*.ts`: se quitan `debug`, `logLevel`, `httpTimeout`, `maxRetries` y `retryDelay`, que nadie leía. Quedan solo `production` y `apiUrl`
 - [x] Se borra `environment.development.ts`, que repetía `environment.ts`, junto con su `fileReplacements` en `angular.json`
 - [x] Se borra el script `start:proxy`, que apuntaba a un `proxy.conf.json` inexistente
@@ -36,9 +39,11 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 - [x] Versión `1.0.0` en `package.json`
 
 ### Funciones a medio hacer en la interfaz
+
 - [x] Se elimina la página **Ajustes**: ningún valor que guardaba se leía en otra parte, y tres botones solo decían “próximamente”. Se quitan su ruta, la entrada del menú lateral, la opción del menú de usuario del header, la tarjeta del home y la miga de pan
 
 ### Pendiente detectado al cerrar la fase
+
 - [x] Aviso de build: `file-saver` no era ESM. [document-generator.service.ts](src/app/core/services/document-generator.service.ts) usa ahora `descargarBlob` de [download.util.ts](src/app/core/utils/download.util.ts) y se desinstalan `file-saver` y `@types/file-saver`. `ng build` ya no da avisos
 - [x] Revisar a ojo el modal de inscripción a cursos y las páginas del estudiante (paz y salvo, homologación, reingreso) con datos reales (2026-11-19)
   - Las páginas del estudiante se probaron con backend el 2026-11-18 y el 2026-11-19 (ver Fase 3, "Vistas del estudiante")
@@ -58,6 +63,7 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
     - Después de abrir el modal de inscripción, los demás diálogos ya no pierden su relleno ni su ancho máximo
 
 ### Encontrado después (2026-11-18)
+
 - [x] Se borra la gestión de procesos de admin: `manage-processes` y `form-proceso-dialog` (con el spec del componente), `ProcesosService` (con su spec) y `proceso.interface.ts`. No la usaba ninguna ruta ni menú: el commit que la creó (`9a84873`) quitó a la vez su ruta de `admin.routes.ts`. Además, el backend no tiene ningún endpoint `/procesos` (buscado en `Back-end-gestion-curricular/gestion_curricular/src/main/java`), así que ninguna petición habría funcionado
 - [x] Se borra `notificaciones-guia` (`shared/components`) y su ruta `/notificaciones-guia` de `common.routes.ts`: ningún menú ni componente enlazaba a ella. La página de notificaciones (`/notificaciones`) y la campana del header no la usaban
 - Componentes: 88 → 85. Pruebas: 589 → 585 (las 4 eran de lo borrado: 3 del servicio y 1 del componente), specs 56 → 54
@@ -74,6 +80,7 @@ Verificado con `ng build` (sin errores), `ng test` (499/499) y `test:navegacion`
 Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al empezar) y `test:navegacion` sin backend.
 
 ### Servicios duplicados
+
 - [x] Hay dos `ErrorHandlerService`: queda solo [core/services/error-handler.service.ts](src/app/core/services/error-handler.service.ts). El de `shared/components/error-handler/` (264 líneas) se borra: su único uso real era `handleCargaError('cursos')` en `gestionar-cursos`, que pasa a `SnackbarService.warning()`
 - [x] Notificaciones: [SnackbarService](src/app/core/services/snackbar.service.ts) con `exito()`, `error()`, `advertencia()`, `info()` y `mostrar(msg, tipo, duración)` (tipo `destacado` para el aviso de cambio de período). Lo usan 51 archivos y `MatSnackBar` ya solo aparece dentro del servicio. Se borran `snackbarConfig()`, los `MatSnackBarModule` de los componentes y los `mostrarMensaje` de las páginas del estudiante
   - Cambio visible esperado: homologación y reingreso del estudiante mostraban los avisos centrados (4 o 6 s) y ahora salen arriba a la derecha (5 s) como el resto; el aviso de cambio de período pasa de abajo al centro a arriba a la derecha (sigue con fondo institucional y 8 s)
@@ -84,6 +91,7 @@ Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al 
   - Specs: `login` y `session-management` dejan de simular `ApiService`; se añaden `procesos.service.spec.ts` y una prueba del POST de `AuthService.login`
 
 ### Estados de solicitud
+
 - [x] Un solo enum: [estados-solicitud.enum.ts](src/app/core/enums/estados-solicitud.enum.ts) (`EstadosSolicitud`) con los códigos del backend y `ESTADOS_SOLICITUD_LABELS`. Se borra `solicitud-status.enum.ts`, cuyos valores eran textos ("Aprobada") aunque los componentes le metían códigos con un cast. `Solicitud.estado` pasa a `string`
 - [x] Helpers de estado en [estado-solicitud.util.ts](src/app/core/utils/estado-solicitud.util.ts) (`normalizarEstado`, `ultimoEstado`, `estadoActual`, `estadoLabel`, `estadoColor`, `estadoIcono`, `estadoClase`) y pipes en [estado.pipes.ts](src/app/shared/pipes/estado.pipes.ts) (`estadoLabel`, `estadoColor`, `estadoIcono`, `estadoClase`)
   - `getEstadoActual`: 7 copias + `estadoActual` de paz-salvo-filas → `estadoActual()`; la de estudiante/homologación no se usaba y se borra
@@ -93,6 +101,7 @@ Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al 
   - Cambio visible esperado: la tabla de seguimiento, detalle-solicitud e historial muestran el texto ("Aprobada por Funcionario") en lugar del código (`APROBADA_FUNCIONARIO`); en preinscribir, ENVIADA y PENDIENTE usan los colores institucionales (#1D72D3 y #FF6D0A en lugar de #2196f3 y #ff9800)
 
 ### Fechas y textos
+
 - [x] Fechas: [fecha.util.ts](src/app/core/utils/fecha.util.ts) tiene `formatearFecha(valor, formato, vacío)` (formatos `corta`, `corta-hora`, `media`, `media-hora`, `larga`, `larga-hora`) y `fechaRelativa`; [FechaPipe](src/app/shared/pipes/fecha.pipe.ts) la usa (`| fecha:'larga'`). Ya no queda ningún `toLocaleDateString` ni `formatearFecha` de componente
   - Las 14 filas de tabla que hacían `new Date(...).toLocaleDateString()` ahora pasan la fecha ISO: la tabla ya aplicaba `| fecha` encima, y con el navegador en español "13/11/2026" no se podía volver a leer
   - Corrección: "2025-01-15" se lee como día local (antes `new Date()` lo tomaba en UTC y en Colombia mostraba el 14)
@@ -100,6 +109,7 @@ Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al 
 - [x] `obtenerNombreDocente` (6 envoltorios de `nombreDocente`) → pipe [nombreDocente](src/app/shared/pipes/nombre-docente.pipe.ts); `normalizarNombre` (3) y `coincidenciaFuzzy` (2, con distintas palabras clave) → [texto.util.ts](src/app/core/utils/texto.util.ts); `obtenerPeriodoActualFallback` (3) era igual a `getPeriodoActual()` de periodo.utils, que es lo que se usa ahora
 
 ### Diálogos
+
 - [x] `comentarios-dialog` (solo muestra comentarios) pasa a [ver-comentarios-dialog](src/app/shared/components/ver-comentarios-dialog/ver-comentarios-dialog.component.ts) (`VerComentariosDialogComponent`)
 - [x] `prompt-dialog`, `rechazo-dialog` y `comentario-dialog` se unen en [TextoDialogComponent](src/app/shared/components/texto-dialog/texto-dialog.component.ts) (`titulo`, `descripcion`, `etiqueta`, `valorInicial`, `textoConfirmar`, `icono`, `nombreDocumento`, `historial`, `soloLectura`, `maxLength`). `datosRechazo()` arma el caso de rechazo, que 7 llamadas repetían igual. Se quitan 4 imports de `ComentarioDialogComponent` que no se usaban
   - Corrección: en inscribir-estudiantes, cancelar el rechazo mostraba "Debe ingresar un motivo…"; ahora no hace nada
@@ -109,6 +119,7 @@ Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al 
   - Pendiente revisar a ojo: diálogo de confirmación en admin y gestionar-cursos, y diálogo de texto en rechazos y comentarios de documentos
 
 ### Selectores de período
+
 - [x] Queda solo [periodo-filtro-selector](src/app/shared/components/periodo-filtro-selector/periodo-filtro-selector.component.ts). `periodo-selector` (solo lo usaba cursos-ofertados del estudiante) se borra; su diferencia pasa a la entrada `fuente="con-cursos"` (períodos con cursos registrados y, si falla, todos). `periodoInicial=""` permite arrancar en el período actual
   - Corrección: en cursos-ofertados el selector está dentro de `*ngIf="!cargando"` y volvía a "Período actual" después de cada carga; ahora conserva la elección
   - Se añade `/estudiante/cursos-intersemestrales/cursos-ofertados` a `test:navegacion`
@@ -121,12 +132,14 @@ Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al 
 Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/common/paz-salvo-revision/) es un solo componente para funcionario y coordinador (con `data: { rolRevision }` en la ruta) y comparte la bandeja con secretaría. Hay que llevar ese patrón a los demás procesos.
 
 ### Bandeja genérica
+
 - [x] `PazSalvoBandejaComponent` pasa a [SolicitudesBandejaComponent](src/app/shared/components/solicitudes-bandeja/solicitudes-bandeja.component.ts) (`app-solicitudes-bandeja`), con pestañas Pendientes/Historial y filtro de período (`periodo-filtro-selector`; "todos" se emite como `null`)
   - Recibe las solicitudes tal como llegan del backend (cualquier tipo que cumpla [SolicitudRevisable](src/app/core/models/solicitud-revision.model.ts)), arma ella las filas con [aFilaSolicitud](src/app/core/utils/fila-solicitud.util.ts) y emite la solicitud elegida, no su id. Así las páginas ya no guardan `pendientesOriginales` para buscarla
   - `aFilaTabla`/`aFilaHistorial` de `paz-salvo-filas` se unen en `aFilaSolicitud`; `paz-salvo-filas` se queda solo con `aDocumentos`. Se quita `fechaProcesamiento` de las filas del historial, que la tabla nunca mostraba
   - La usan paz-salvo-revision (funcionario y coordinador) y secretaría/paz-salvo, sin cambios visibles. Specs nuevos de la bandeja y de `aFilaSolicitud` (537/537)
 
 ### Revisión (funcionario / coordinador / secretaría)
+
 - [x] **Homologación**: funcionario y coordinador (unas 450 líneas de TS entre los dos) se unen en [homologacion-revision](src/app/pages/common/homologacion-revision/homologacion-revision.component.ts), con `data: { rolRevision }` en `app.routes.ts`. Las URLs no cambian
   - La lógica va en [RevisionAprobacionComponent](src/app/pages/common/revision-aprobacion/revision-aprobacion.component.ts) (`app-revision-aprobacion`), que sirve a cualquier proceso con `SolicitudesAprobacionService`: bandeja genérica, visor de documentos, aprobar y rechazar (`TextoDialogComponent` con `datosRechazo()`) y avisos con `SnackbarService`. Cada página solo le pasa un `ConfigRevisionAprobacion` (rol, servicio, proceso, nombre y si marca los documentos al decidir). Los tipos `RolRevision` y `SolicitudAprobable` van en [solicitud-revision.model.ts](src/app/core/models/solicitud-revision.model.ts)
   - Se mantiene lo de cada rol: el funcionario aprueba (`APROBADA_FUNCIONARIO`) y marca los documentos como válidos o no válidos; el coordinador aprueba definitivamente (`APROBADA_COORDINADOR`) sin tocarlos
@@ -184,6 +197,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
       - Errores: al cargar o decidir, el aviso trae el mensaje del backend o el de conexión ("No se puede conectar al servidor. Verifica tu conexión.") en lugar de "Error al cargar solicitudes", "Error al aprobar solicitud: …" o "Error al rechazar solicitud". En homologación y reingreso, un cambio de estado rechazado por el backend muestra solo su texto
 
 ### Vistas del estudiante (paz y salvo, homologación, reingreso, ECAES)
+
 - [x] Las cuatro páginas repiten `obtenerDocumentosFaltantes`, `onArchivosChange`, `puedeEnviar`, `onSolicitudEnviada`, `listarSolicitudes`, `descargarOficio` y `verComentarios`. Extraer un componente `SolicitudEstudianteComponent` (o una clase base) que reciba el proceso y su servicio
   - Hecho el 2026-11-18 con dos **clases base** (no un componente). Así cada página conserva su plantilla y sus métodos públicos con el mismo nombre, y sus specs siguen valiendo
     - [SeguimientoSolicitudesBase](src/app/pages/estudiante/seguimiento-solicitudes.base.ts) (las 4): carga el usuario de la sesión, lista las solicitudes (`listar` lo pone cada página), arma las filas de la tabla (`aFila`, que ECAES cambia para añadir el nombre y normalizar el estado), `obtenerSolicitudCompleta`, `verComentarios` (documentos y comentario del último rechazo) y `ultimaRechazada` (`computed()`)
@@ -235,6 +249,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
     - Homologación: ninguno (si un oficio no trae nombre, el de respaldo es `oficio_homologacion_<id>.pdf` en lugar de `oficio_<id>.pdf`)
 
 ### Rutas
+
 - [x] En [app.routes.ts](src/app/app.routes.ts), `modulo-estadistico`, `historial-completo` y `cursos-intersemestrales` se repiten en cada rol. Generar esas rutas desde una configuración por rol, o pasar cada rol a su archivo `*.routes.ts` como ya hacen `admin` y `estudiante`
   - Hecho el 2026-11-18. Las rutas hijas de funcionario, coordinador y decano pasan a [gestion.routes.ts](src/app/pages/common/gestion.routes.ts) (`FuncionarioRoutes`, `CoordinadorRoutes`, `DecanoRoutes`), armadas con las rutas comunes `moduloEstadistico`, `historialCompleto` y `cursosIntersemestrales`, y con `rutasDeRevision(rol)` para paz y salvo, reingreso y homologación (la misma pantalla con `data.rolRevision`). Las de secretaría pasan a [secretaria.routes.ts](src/app/pages/secretaria/secretaria.routes.ts). El decano no tenía `cursos-intersemestrales` y sigue sin tenerla
   - En app.routes.ts cada rol (estudiante, funcionario, coordinador, secretaría y decano) se declara con `rutasDeRol(path, rol, loadChildren)`: `canActivateChild: [authGuard, RoleGuard]` y `data.role` en el padre, como ya hacía estudiante. El decano ponía el `RoleGuard` ruta por ruta (3 rutas `decano/...` sueltas); ahora lo hereda del padre `decano`. Admin no cambia (su guard va con `canActivate`). app.routes.ts: 143 → 63 líneas
@@ -600,7 +615,15 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/pages/com
 
 ## Pendientes vistos al probar con backend (2026-11-20)
 
-- [ ] Porcentajes con punto decimal en el módulo estadístico (ya pasaba antes del LOCALE_ID, que solo cambia los pipes): `formatearPorcentaje` de [estadisticas-por-estado](src/app/pages/common/modulo-estadistico/components/estadisticas-por-estado/estadisticas-por-estado.component.ts) y de [tendencias-comparativas](src/app/pages/common/modulo-estadistico/components/tendencias-comparativas/tendencias-comparativas.component.ts) usan `toFixed(1)` ("39.34%", "52.5%", "120.0% vs mes anterior"), [dashboard-estadistico.graficos.ts](src/app/pages/common/modulo-estadistico/dashboard-estadistico.graficos.ts) también, y el dashboard de cursos de verano pinta tal cual los porcentajes del backend ("33.33%"). Arreglo posible: `formatNumber(valor, LOCALE_ID, '1.1-1')` o el pipe `number` en la plantilla
+- [x] Porcentajes con punto decimal en el módulo estadístico (ya pasaba antes del LOCALE_ID, que solo cambia los pipes): `formatearPorcentaje` de [estadisticas-por-estado](src/app/pages/common/modulo-estadistico/components/estadisticas-por-estado/estadisticas-por-estado.component.ts) y de [tendencias-comparativas](src/app/pages/common/modulo-estadistico/components/tendencias-comparativas/tendencias-comparativas.component.ts) usan `toFixed(1)` ("39.34%", "52.5%", "120.0% vs mes anterior"), [dashboard-estadistico.graficos.ts](src/app/pages/common/modulo-estadistico/dashboard-estadistico.graficos.ts) también, y el dashboard de cursos de verano pinta tal cual los porcentajes del backend ("33.33%"). Arreglo posible: `formatNumber(valor, LOCALE_ID, '1.1-1')` o el pipe `number` en la plantilla
+  - Resuelto el 2026-11-20, con los mismos decimales que antes:
+    - Donde había `toFixed(1)` (`formatPorcentaje` de estado de solicitudes y de tendencias comparativas, y el porcentaje de los tooltips de los gráficos de procesos y de programas): `formatNumber(valor, LOCALE_ID, '1.1-1')`. Las funciones de `dashboard-estadistico.graficos.ts` que llevan tooltip con porcentaje reciben el locale como último parámetro; `DashboardEstadisticoComponent` le pasa su `LOCALE_ID`
+    - Donde se pintaba el número del backend tal cual (porcentaje de cada estado en "Estado de Solicitudes"; en cursos de verano la tasa de aprobación, top materias, programas, tendencias, las 4 tarjetas de estado, las variaciones de predicciones y el crecimiento de las recomendaciones): pipe `number: '1.0-2'`, que no añade decimales ("60%" sigue igual) y deja como mucho dos. `tasaAprobacion` de cursos de verano llega sin redondear del backend (`EstadisticasCursosVerano`); hoy da 60 justo, pero con otros datos saldría "33,33%" en vez de "33.333333333333336%"
+    - El formato de la app sigue siendo "N%" sin espacio, como los `| number: '1.1-1' }}%` que ya había
+    - Spec nuevo [dashboard-estadistico.graficos.spec.ts](src/app/pages/common/modulo-estadistico/dashboard-estadistico.graficos.spec.ts) (4 pruebas): registra es-CO y comprueba los dos tooltips (y uno en en-US) y los dos `formatPorcentaje` (con `LOCALE_ID` es-CO en el TestBed). El resto de pruebas sigue en en-US
+  - Verificado con backend en Edge (funcionario, `/funcionario/modulo-estadistico`): "39,34%", "18,03%", "29,51%", "13,11%" en Estado de Solicitudes, "Tasa de Resolución 52,5%", "120,0% vs mes anterior", "60,0% aprobación"; en Cursos de Verano "33,33%", "26,67%", "6,67%", "13,33%" (y "60%", "40%", "20%" igual que antes); predicciones "-17%", "-20%", "-25%" (enteros, sin cambio)
+  - Probar a mano: como funcionario, coordinador o decano, Módulo Estadístico: tarjetas de Estado de Solicitudes, Análisis de Rendimiento, Tendencias Comparativas, y pasar el ratón por los gráficos de procesos y de programas (tooltip "(33,3%)"); pestaña Cursos de Verano (análisis actual, predicciones y recomendaciones)
+  - Cambio visible esperado: coma decimal en todos esos porcentajes ("39,34%" en vez de "39.34%"); los enteros no cambian. Fuera de esto quedan los tamaños de archivo con `toFixed(2)` de los mensajes de error de subida ("2.35MB"), que no son de este pendiente
 - [ ] Inscribir: en la columna Información sale "Condición: Primera_VezFormal: Sí", porque `.info-estudiante` no tiene estilos y Angular quita el salto de línea entre sus dos `<small>`. Ya pasaba antes. Arreglo posible: `.info-estudiante { display: flex; flex-direction: column; }` como `.estudiante-info`
 - [ ] Inscribir y preinscribir: los `<small>` de la columna Estudiante salen en #333 y no en `--gris-700` (#666), porque la regla local `td *` gana a `.estudiante-info small` (ver Fase 5). Ya pasaba antes. Al quitar las reglas duplicadas (2026-11-20) se borró también la `::ng-deep … .estudiante-info small`, que perdía; si se quiere el gris claro, hace falta una regla local más fuerte (cambio visible)
 - [x] Preinscribir: la etiqueta de estado sale siempre con fondo azul primario, porque `:host ::ng-deep .preinscripciones-table [style*='background-color']` (con `!important`) le gana al `[style.background-color]` del pipe `estadoColor`. Ya pasaba antes. Quitar esa regla haría que cada estado tenga su color (cambio visible)

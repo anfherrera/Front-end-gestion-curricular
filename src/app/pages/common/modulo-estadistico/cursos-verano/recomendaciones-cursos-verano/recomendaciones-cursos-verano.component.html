@@ -73,7 +73,7 @@
             <p>
               {{ rec.demandaActual }} → {{ rec.demandaProyectada }} estudiantes ({{
                 (rec.porcentajeCrecimiento ?? 0) > 0 ? '+' : ''
-              }}{{ rec.porcentajeCrecimiento }}%)
+              }}{{ rec.porcentajeCrecimiento | number: '1.0-2' }}%)
             </p>
           </div>
         }

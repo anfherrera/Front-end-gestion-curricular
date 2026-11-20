@@ -1,4 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, OnChanges, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  LOCALE_ID,
+  OnInit,
+  OnDestroy,
+  OnChanges,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { formatNumber } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +31,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
 export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
   private snackbar = inject(SnackbarService);
+  private locale = inject(LOCALE_ID);
 
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
@@ -110,11 +122,9 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
     }
   }
 
-  /**
-   * Formatea un número como porcentaje
-   */
+  /** Porcentaje con un decimal y el separador del locale: 52.5 → "52,5%" en es-CO. */
   formatPorcentaje(valor: number): string {
-    return `${valor.toFixed(1)}%`;
+    return `${formatNumber(valor, this.locale, '1.1-1')}%`;
   }
 
   /**

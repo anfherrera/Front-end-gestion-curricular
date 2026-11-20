@@ -49,7 +49,7 @@
                 <div class="estado-cantidad" [style.color]="estado.color">
                   {{ estado.cantidad }}
                 </div>
-                <div class="estado-porcentaje">{{ estado.porcentaje }}%</div>
+                <div class="estado-porcentaje">{{ estado.porcentaje | number: '1.0-2' }}%</div>
               </div>
             </div>
           }

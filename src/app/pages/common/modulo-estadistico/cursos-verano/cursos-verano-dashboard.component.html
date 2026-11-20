@@ -157,7 +157,7 @@
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <div class="kpi-value">{{ datos.resumen.tasaAprobacion }}%</div>
+              <div class="kpi-value">{{ datos.resumen.tasaAprobacion | number: '1.0-2' }}%</div>
               <div class="kpi-description">Porcentaje de aprobación</div>
             </mat-card-content>
           </mat-card>
@@ -213,7 +213,7 @@
                           <div class="materia-item">
                             <div class="materia-nombre">{{ materia.nombre }}</div>
                             <div class="materia-solicitudes">{{ materia.solicitudes }} solicitudes</div>
-                            <div class="materia-porcentaje">{{ materia.porcentaje }}%</div>
+                            <div class="materia-porcentaje">{{ materia.porcentaje | number: '1.0-2' }}%</div>
                           </div>
                         }
                       </div>
@@ -247,7 +247,7 @@
                           <div class="programa-item">
                             <div class="programa-nombre">{{ programa.nombre }}</div>
                             <div class="programa-solicitudes">{{ programa.solicitudes }} solicitudes</div>
-                            <div class="programa-porcentaje">{{ programa.porcentaje }}%</div>
+                            <div class="programa-porcentaje">{{ programa.porcentaje | number: '1.0-2' }}%</div>
                           </div>
                         }
                       </div>
@@ -288,7 +288,7 @@
                             <div class="tendencia-card">
                               <div class="tendencia-mes">{{ tendencia.mes }}</div>
                               <div class="tendencia-solicitudes">{{ tendencia.solicitudes }} solicitudes</div>
-                              <div class="tendencia-porcentaje">{{ tendencia.porcentaje }}%</div>
+                              <div class="tendencia-porcentaje">{{ tendencia.porcentaje | number: '1.0-2' }}%</div>
                             </div>
                           }
                         </div>
@@ -324,7 +324,7 @@
                           calcularPorcentajeEstado(
                             datos.estadosSolicitudes.APROBADA || 0,
                             datos.resumen.totalSolicitudes || 0
-                          )
+                          ) | number: '1.0-2'
                         }}%
                       </div>
                     }
@@ -343,7 +343,7 @@
                           calcularPorcentajeEstado(
                             datos.estadosSolicitudes.ENVIADA || 0,
                             datos.resumen.totalSolicitudes || 0
-                          )
+                          ) | number: '1.0-2'
                         }}%
                       </div>
                     }
@@ -371,7 +371,7 @@
                               (datos.estadosSolicitudes.APROBADA_FUNCIONARIO || 0) +
                                 (datos.estadosSolicitudes.APROBADA_COORDINADOR || 0),
                             datos.resumen.totalSolicitudes || 0
-                          )
+                          ) | number: '1.0-2'
                         }}%
                       </div>
                     }
@@ -390,7 +390,7 @@
                           calcularPorcentajeEstado(
                             datos.estadosSolicitudes.RECHAZADA || 0,
                             datos.resumen.totalSolicitudes || 0
-                          )
+                          ) | number: '1.0-2'
                         }}%
                       </div>
                     }
@@ -589,7 +589,7 @@
                             <h4>{{ materia.nombre }}</h4>
                             <mat-chip [color]="'primary'" selected>
                               <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
-                              {{ materia.porcentajeVariacion }}%
+                              {{ materia.porcentajeVariacion | number: '1.0-2' }}%
                             </mat-chip>
                           </div>
                           <div class="tendencia-datos">
@@ -634,7 +634,7 @@
                             <h4>{{ materia.nombre }}</h4>
                             <mat-chip [color]="'warn'" selected>
                               <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
-                              {{ materia.porcentajeVariacion }}%
+                              {{ materia.porcentajeVariacion | number: '1.0-2' }}%
                             </mat-chip>
                           </div>
                           <div class="tendencia-datos">
@@ -679,7 +679,7 @@
                             <h4>{{ materia.nombre }}</h4>
                             <mat-chip [color]="'accent'" selected>
                               <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
-                              {{ materia.porcentajeVariacion }}%
+                              {{ materia.porcentajeVariacion | number: '1.0-2' }}%
                             </mat-chip>
                           </div>
                           <div class="tendencia-datos">

@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, DestroyRef, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  LOCALE_ID,
+  OnInit,
+  OnDestroy,
+  inject,
+  DestroyRef,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -87,6 +96,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private periodosService = inject(PeriodosAcademicosService);
   private snackbar = inject(SnackbarService);
   private fb = inject(FormBuilder);
+  private locale = inject(LOCALE_ID);
 
   readonly loading = signal(false);
   /** Exportando un reporte: solo deshabilita los botones. No usa `loading`, que quitaría los <canvas> de los gráficos. */
@@ -317,7 +327,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
       this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosParaBackend(this.filtros()))
     );
     if (datos?.estadisticasPorProceso) {
-      this.dibujar('chartProcesos', graficoProcesos(datos.estadisticasPorProceso));
+      this.dibujar('chartProcesos', graficoProcesos(datos.estadisticasPorProceso, this.locale));
       return;
     }
     const procesos = this.resumenCompleto()?.estadisticasPorProceso ?? [];
@@ -326,7 +336,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         'chartProcesos',
         graficoProcesosDesdeResumen(
           procesos.map((p) => formatearNombreProceso(p.nombreProceso)),
-          procesos.map((p) => p.totalSolicitudes)
+          procesos.map((p) => p.totalSolicitudes),
+          this.locale
         )
       );
     }
@@ -355,7 +366,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         'chartDistribucion',
         graficoProgramas(
           programas,
-          programas.map((p) => porPrograma[p] || 0)
+          programas.map((p) => porPrograma[p] || 0),
+          this.locale
         )
       );
       return;
@@ -366,7 +378,8 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         'chartDistribucion',
         graficoProgramas(
           programas.map((p) => p.nombrePrograma),
-          programas.map((p) => p.totalSolicitudes)
+          programas.map((p) => p.totalSolicitudes),
+          this.locale
         )
       );
     }

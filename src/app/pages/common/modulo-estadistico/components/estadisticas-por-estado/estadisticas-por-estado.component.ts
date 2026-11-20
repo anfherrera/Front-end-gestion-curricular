@@ -1,5 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, OnChanges, inject, input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  LOCALE_ID,
+  OnInit,
+  OnDestroy,
+  OnChanges,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { CommonModule, formatNumber } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -18,6 +28,7 @@ import { Subscription } from 'rxjs';
 })
 export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChanges {
   private estadisticasService = inject(EstadisticasService);
+  private locale = inject(LOCALE_ID);
 
   readonly periodoAcademico = input<string>();
   readonly idPrograma = input<number>();
@@ -200,11 +211,9 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
     return faToMat[icono] || icono || 'help_outline';
   }
 
-  /**
-   * Formatea un número como porcentaje
-   */
+  /** Porcentaje con un decimal y el separador del locale: 39.34 → "39,3%" en es-CO. */
   formatPorcentaje(valor: number): string {
-    return `${valor.toFixed(1)}%`;
+    return `${formatNumber(valor, this.locale, '1.1-1')}%`;
   }
 
   ngOnDestroy(): void {

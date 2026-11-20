@@ -1,3 +1,4 @@
+import { formatNumber } from '@angular/common';
 import type { ChartConfiguration, TooltipItem } from 'chart.js';
 import { EstadisticasPorPeriodoMejoradasResponse } from '@core/models/estadisticas/mejoradas.model';
 import { ProcesoDetallado } from '@core/models/estadisticas/generales.model';
@@ -19,9 +20,10 @@ const COLORES_PROCESOS_RESUMEN = ['#ff9800', '#8e24aa', '#249337', '#2196f3'];
 const COLORES_PROGRAMAS = ['#2196f3', '#ff9800', '#249337', '#9c27b0'];
 const BORDES_PROGRAMAS = ['#1976d2', '#f57c00', '#388e3c', '#7b1fa2'];
 
-function porcentaje(valor: number, datos: number[]): string {
+/** Parte de `valor` sobre la suma de `datos`, con un decimal y el separador del locale ("39,3" en es-CO). */
+function porcentaje(valor: number, datos: number[], locale: string): string {
   const total = datos.reduce((a, b) => a + b, 0);
-  return total > 0 ? ((valor / total) * 100).toFixed(1) : '0.0';
+  return formatNumber(total > 0 ? (valor / total) * 100 : 0, locale, '1.1-1');
 }
 
 function colorDeProceso(nombre: string): string {
@@ -30,7 +32,12 @@ function colorDeProceso(nombre: string): string {
   return parecido ? COLOR_POR_PROCESO[parecido] : COLOR_PROCESO_DESCONOCIDO;
 }
 
-function dona(etiquetas: string[], valores: number[], colores: string[]): ChartConfiguration<'doughnut'> {
+function dona(
+  etiquetas: string[],
+  valores: number[],
+  colores: string[],
+  locale: string
+): ChartConfiguration<'doughnut'> {
   return {
     type: 'doughnut',
     data: {
@@ -57,7 +64,7 @@ function dona(etiquetas: string[], valores: number[], colores: string[]): ChartC
         tooltip: {
           callbacks: {
             label: (context: TooltipItem<'doughnut'>) =>
-              `${context.label || ''}: ${context.parsed} (${porcentaje(context.parsed, context.dataset.data as number[])}%)`,
+              `${context.label || ''}: ${context.parsed} (${porcentaje(context.parsed, context.dataset.data as number[], locale)}%)`,
           },
         },
       },
@@ -66,18 +73,25 @@ function dona(etiquetas: string[], valores: number[], colores: string[]): ChartC
   };
 }
 
-/** Solicitudes por proceso (de /estadisticas-por-proceso). */
-export function graficoProcesos(procesos: Record<string, ProcesoDetallado>): ChartConfiguration<'doughnut'> {
+/** Solicitudes por proceso (de /estadisticas-por-proceso). `locale` formatea el porcentaje del tooltip. */
+export function graficoProcesos(
+  procesos: Record<string, ProcesoDetallado>,
+  locale: string
+): ChartConfiguration<'doughnut'> {
   const etiquetas = Object.keys(procesos).map((nombre) =>
     nombre.replace('Solicitud de ', '').replace('Solicitud ', '')
   );
   const valores = Object.values(procesos).map((p) => p.totalSolicitudes || 0);
-  return dona(etiquetas, valores, etiquetas.map(colorDeProceso));
+  return dona(etiquetas, valores, etiquetas.map(colorDeProceso), locale);
 }
 
 /** Solicitudes por proceso a partir del resumen, si el endpoint detallado falla. */
-export function graficoProcesosDesdeResumen(etiquetas: string[], valores: number[]): ChartConfiguration<'doughnut'> {
-  return dona(etiquetas, valores, COLORES_PROCESOS_RESUMEN);
+export function graficoProcesosDesdeResumen(
+  etiquetas: string[],
+  valores: number[],
+  locale: string
+): ChartConfiguration<'doughnut'> {
+  return dona(etiquetas, valores, COLORES_PROCESOS_RESUMEN, locale);
 }
 
 /** Solicitudes y aprobadas por mes. */
@@ -143,8 +157,8 @@ export function graficoTendencia(datos: EstadisticasPorPeriodoMejoradasResponse)
   };
 }
 
-/** Solicitudes por programa académico. */
-export function graficoProgramas(programas: string[], valores: number[]): ChartConfiguration<'bar'> {
+/** Solicitudes por programa académico. `locale` formatea el porcentaje del tooltip. */
+export function graficoProgramas(programas: string[], valores: number[], locale: string): ChartConfiguration<'bar'> {
   return {
     type: 'bar',
     data: {
@@ -175,7 +189,7 @@ export function graficoProgramas(programas: string[], valores: number[]): ChartC
           callbacks: {
             label: (context: TooltipItem<'bar'>) => {
               const valor = context.parsed?.y || 0;
-              return `${context.label || ''}: ${valor} solicitudes (${porcentaje(valor, context.dataset.data as number[])}%)`;
+              return `${context.label || ''}: ${valor} solicitudes (${porcentaje(valor, context.dataset.data as number[], locale)}%)`;
             },
           },
         },

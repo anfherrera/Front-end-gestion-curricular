@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,7 +27,7 @@ const ETIQUETA_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
 /** Pestaña "Recomendaciones" del dashboard de cursos de verano: resumen, alertas y tarjetas que se expanden. */
 @Component({
   selector: 'app-recomendaciones-cursos-verano',
-  imports: [MatButtonModule, MatCardModule, MatIconModule],
+  imports: [DecimalPipe, MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './recomendaciones-cursos-verano.component.html',
   styleUrl: './recomendaciones-cursos-verano.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
