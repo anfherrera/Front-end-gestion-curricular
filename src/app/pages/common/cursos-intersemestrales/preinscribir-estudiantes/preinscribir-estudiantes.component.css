@@ -37,7 +37,9 @@
   color: var(--gris-900) !important;
 }
 
-.preinscripciones-table td *:not([class*='accion-'], [class*='accion-'] *) {
+/* Sin los iconos de acción, la etiqueta de estado (texto blanco) ni los datos secundarios del estudiante
+   (gris claro en filtro-curso-comun.css) */
+.preinscripciones-table td *:not([class*='accion-'], [class*='accion-'] *, .estado-etiqueta, .estudiante-info small) {
   color: var(--gris-900) !important;
 }
 
@@ -144,9 +146,8 @@
   margin: 0 !important;
 }
 
-/* Etiqueta de estado en la tabla (el fondo lo pone el pipe estadoColor).
-   Lleva "td" en el selector para que el texto blanco le gane a la regla td * de arriba. */
-.preinscripciones-table td .estado-etiqueta {
+/* Etiqueta de estado en la tabla (el fondo lo pone el pipe estadoColor; la regla td * de arriba la excluye) */
+.estado-etiqueta {
   color: var(--blanco) !important;
   padding: 4px 8px;
   border-radius: 4px;

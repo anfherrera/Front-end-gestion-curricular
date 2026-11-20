@@ -37,8 +37,16 @@
   color: var(--gris-900) !important;
 }
 
-.inscripciones-table td *:not([class*='accion-'], [class*='accion-'] *) {
+/* Sin los iconos de acción ni los datos secundarios del estudiante (gris claro en filtro-curso-comun.css) */
+.inscripciones-table td *:not([class*='accion-'], [class*='accion-'] *, .estudiante-info small) {
   color: var(--gris-900) !important;
+}
+
+/* Columna Información: "Condición" y "Formal" en dos líneas, como .estudiante-info */
+.info-estudiante {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* Contenedor de acciones */
