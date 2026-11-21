@@ -61,7 +61,7 @@
               <th mat-header-cell *matHeaderCellDef>Estado</th>
               <td mat-cell *matCellDef="let solicitud">
                 <span [style.background-color]="solicitud.estado | estadoColor" class="estado-etiqueta">
-                  {{ solicitud.estado }}
+                  {{ solicitud.estado | estadoLabel }}
                 </span>
               </td>
             </ng-container>
