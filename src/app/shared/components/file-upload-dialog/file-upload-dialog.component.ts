@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  LOCALE_ID,
   OnChanges,
   SimpleChanges,
   inject,
@@ -17,6 +18,7 @@ import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { Observable, of, forkJoin } from 'rxjs';
 import { finalize, map, tap } from 'rxjs/operators';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { tamanoEnMb } from '@core/utils/texto.util';
 
 /** Lo que devuelve el backend al subir un archivo (cada servicio usa nombres algo distintos). */
 type RespuestaSubida = Partial<Archivo> & { nombreArchivo?: string; titulo?: string; ruta?: string };
@@ -34,6 +36,7 @@ export class FileUploadComponent implements OnChanges {
   private archivosService = inject(ArchivosService);
   private pazSalvoService = inject(PazSalvoService);
   private snackbar = inject(SnackbarService);
+  private locale = inject(LOCALE_ID);
 
   /** Archivos elegidos; se usa con `[archivos]` y `(archivosChange)` (o `[(archivos)]`). */
   readonly archivos = model<Archivo[]>([]);
@@ -67,7 +70,7 @@ export class FileUploadComponent implements OnChanges {
 
       if (file.size > TAMANO_MAXIMO) {
         this.snackbar.advertencia(
-          `El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(2)}MB`
+          `El archivo "${file.name}" es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${tamanoEnMb(file.size, this.locale)}MB`
         );
         return;
       }

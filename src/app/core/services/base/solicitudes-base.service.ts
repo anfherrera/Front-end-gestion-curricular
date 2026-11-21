@@ -1,7 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { LOCALE_ID, inject } from '@angular/core';
 import { Observable, catchError, of, throwError } from 'rxjs';
 import { environment } from '@env/environment';
+import { tamanoEnMb } from '../../utils/texto.util';
 import { LoggerService } from '../logger.service';
 
 /** Documento como lo devuelve /documentos/buscarPorId (el visor solo usa el comentario). */
@@ -27,10 +28,10 @@ export interface ErrorArchivo {
 
 const TAMANO_MAXIMO_PDF = 10 * 1024 * 1024; // 10 MB
 
-/** Comprueba que el archivo sea un PDF de 10 MB como máximo. */
-export function validarPdf(archivo: File): ErrorArchivo | null {
+/** Comprueba que el archivo sea un PDF de 10 MB como máximo. `locale` da el separador decimal del tamaño. */
+export function validarPdf(archivo: File, locale: string): ErrorArchivo | null {
   if (archivo.size > TAMANO_MAXIMO_PDF) {
-    const mb = (archivo.size / (1024 * 1024)).toFixed(2);
+    const mb = tamanoEnMb(archivo.size, locale);
     return {
       status: 413,
       error: { message: `El archivo es demasiado grande. Tamaño máximo: 10MB. Tamaño actual: ${mb}MB` },
@@ -50,6 +51,7 @@ export function validarPdf(archivo: File): ErrorArchivo | null {
 export abstract class SolicitudesBaseService {
   protected readonly http = inject(HttpClient);
   protected readonly logger = inject(LoggerService);
+  protected readonly locale = inject(LOCALE_ID);
   protected readonly api = environment.apiUrl;
 
   /**
@@ -119,7 +121,7 @@ export abstract class SolicitudesBaseService {
 
   /** Sube un PDF tras validarlo; los campos extra van en el mismo FormData. */
   protected subirPdf<T>(url: string, archivo: File, extra: Record<string, string> = {}): Observable<T> {
-    const error = validarPdf(archivo);
+    const error = validarPdf(archivo, this.locale);
     if (error) return throwError(() => error);
     const formData = new FormData();
     formData.append('file', archivo);

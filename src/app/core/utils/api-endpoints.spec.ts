@@ -59,7 +59,6 @@ describe('ApiEndpoints', () => {
       `${base}/cursos-intersemestrales/permisos-estado/Preinscripcion/FUNCIONARIO`
     );
     expect(ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(45)).toBe(`${base}/solicitudes/45/historial`);
-    expect(ApiEndpoints.PERIODOS_ACADEMICOS.INFO('2026-2')).toBe(`${base}/periodos-academicos/info/2026-2`);
   });
 
   it('codifica el nombre del archivo al descargar un PDF', () => {

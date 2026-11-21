@@ -1,3 +1,10 @@
+import { formatNumber } from '@angular/common';
+
+/** Tamaño en MB con dos decimales y el separador del locale: 2465792 bytes → "2,35" en es-CO. */
+export function tamanoEnMb(bytes: number, locale: string): string {
+  return formatNumber(bytes / (1024 * 1024), locale, '1.2-2');
+}
+
 /**
  * Nombre de archivo listo para comparar: minúsculas, sin tildes, sin extensión
  * y sin espacios ni signos. "Certificado de Notas.PDF" → "certificadodenotas".

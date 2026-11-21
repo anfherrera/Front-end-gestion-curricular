@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, LOCALE_ID, OnInit, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -11,6 +11,7 @@ import { AuthService } from '@core/services/auth.service';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
 import { mensajeDeError } from '@core/utils/http-error.utils';
+import { tamanoEnMb } from '@core/utils/texto.util';
 import { SnackbarService, TipoSnackbar } from '@core/services/snackbar.service';
 
 export interface InscripcionModalData {
@@ -46,6 +47,7 @@ export class InscripcionModalComponent implements OnInit {
   private authService = inject(AuthService);
   private snackbar = inject(SnackbarService);
   private notificacionesService = inject(NotificacionesService);
+  private locale = inject(LOCALE_ID);
 
   inscripcionForm!: FormGroup;
   archivoSeleccionado: File | null = null;
@@ -80,7 +82,7 @@ export class InscripcionModalComponent implements OnInit {
       return;
     }
     if (file.size > TAMANO_MAXIMO) {
-      const mb = (file.size / (1024 * 1024)).toFixed(2);
+      const mb = tamanoEnMb(file.size, this.locale);
       this.rechazarArchivo(`El archivo es muy grande (${mb} MB). El límite máximo es 15 MB.`);
       return;
     }

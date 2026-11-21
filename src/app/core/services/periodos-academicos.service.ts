@@ -172,20 +172,6 @@ export class PeriodosAcademicosService {
   }
 
   /**
-   * Obtiene períodos futuros
-   */
-  getPeriodosFuturos(): Observable<PeriodoAcademico[]> {
-    const url = ApiEndpoints.PERIODOS_ACADEMICOS.FUTUROS;
-
-    return this.http.get<{ success: boolean; data: PeriodoAcademico[] }>(url).pipe(
-      map((response) => (response.success ? response.data : [])),
-      catchError(() => {
-        return of([]);
-      })
-    );
-  }
-
-  /**
    * Obtiene períodos recientes (últimos 5 años)
    *
    * Endpoint: GET /api/periodos-academicos/recientes
@@ -203,20 +189,6 @@ export class PeriodosAcademicosService {
       map((response) => (response.success && response.data ? aPeriodos(response.data) : [])),
       catchError(() => {
         return of([]);
-      })
-    );
-  }
-
-  /**
-   * Obtiene información de un período específico
-   */
-  getInfoPeriodo(periodo: string): Observable<PeriodoAcademico | null> {
-    const url = ApiEndpoints.PERIODOS_ACADEMICOS.INFO(periodo);
-
-    return this.http.get<{ success: boolean; data: PeriodoAcademico }>(url).pipe(
-      map((response) => (response.success ? response.data : null)),
-      catchError(() => {
-        return of(null);
       })
     );
   }

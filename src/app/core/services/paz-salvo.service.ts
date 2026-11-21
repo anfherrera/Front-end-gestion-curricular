@@ -207,7 +207,7 @@ export class PazSalvoService extends SolicitudesBaseService {
 
   /** Sube un documento SIN asociarlo: el backend lo asocia al crear la solicitud. */
   subirDocumento(archivo: File): Observable<DocumentoSubidoPazSalvo> {
-    const error = validarPdf(archivo);
+    const error = validarPdf(archivo, this.locale);
     if (error) return throwError(() => error);
 
     const formData = new FormData();

@@ -37,16 +37,23 @@
   color: var(--gris-900) !important;
 }
 
-/* Sin los iconos de acción ni los datos secundarios del estudiante (gris claro en filtro-curso-comun.css) */
-.inscripciones-table td *:not([class*='accion-'], [class*='accion-'] *, .estudiante-info small) {
+/* Sin los iconos de acción ni los datos secundarios (gris claro en filtro-curso-comun.css y abajo) */
+.inscripciones-table
+  td
+  *:not([class*='accion-'], [class*='accion-'] *, .estudiante-info small, .info-estudiante small) {
   color: var(--gris-900) !important;
 }
 
-/* Columna Información: "Condición" y "Formal" en dos líneas, como .estudiante-info */
+/* Columna Información: "Condición" y "Formal" en dos líneas y con el estilo de .estudiante-info */
 .info-estudiante {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.info-estudiante small {
+  color: var(--gris-700) !important;
+  font-size: 12px;
 }
 
 /* Contenedor de acciones */

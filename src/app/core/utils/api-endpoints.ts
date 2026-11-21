@@ -15,7 +15,6 @@ export class ApiEndpoints {
     FUTUROS: `${this.BASE_URL}/periodos-academicos/futuros`,
     RECIENTES: `${this.BASE_URL}/periodos-academicos/recientes`,
     ACTUAL: `${this.BASE_URL}/periodos-academicos/actual`,
-    INFO: (periodo: string) => `${this.BASE_URL}/periodos-academicos/info/${periodo}`,
     VALIDAR: (periodo: string) => `${this.BASE_URL}/periodos-academicos/validar/${periodo}`,
     ADMIN: {
       PERIODO_ACTIVO: `${this.BASE_URL}/periodos-academicos/admin/periodo-activo`,
