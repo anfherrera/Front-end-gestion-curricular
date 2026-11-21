@@ -8,6 +8,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatChipsModule } from '@angular/material/chips';
 
 import { SolicitudCursoVerano, EstadoSolicitudDetalle } from '@core/models/cursos-intersemestrales.model';
+import { EstadoLabelPipe } from '@shared/pipes/estado.pipes';
 
 // Componente del dialog para ver detalles de preinscripción
 @Component({
@@ -20,6 +21,7 @@ import { SolicitudCursoVerano, EstadoSolicitudDetalle } from '@core/models/curso
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
+    EstadoLabelPipe,
   ],
   templateUrl: './detalles-preinscripcion-dialog.component.html',
   styleUrl: './detalles-preinscripcion-dialog.component.css',

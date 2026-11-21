@@ -40,7 +40,7 @@
             <div class="timeline-line"></div>
             <div class="timeline-content">
               <div class="timeline-header">
-                <span class="timeline-estado">{{ estado.estado }}</span>
+                <span class="timeline-estado">{{ estado.estado | estadoLabel }}</span>
                 @if (estado.fecha) {
                   <span class="timeline-fecha">{{ estado.fecha }}</span>
                 }
