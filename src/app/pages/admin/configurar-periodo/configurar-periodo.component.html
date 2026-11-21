@@ -32,14 +32,18 @@
                   <span class="label">Valor:</span>
                   <span class="value">{{ actual.valor }}</span>
                 </div>
-                <div class="periodo-item">
-                  <span class="label">Fecha Inicio:</span>
-                  <span class="value">{{ actual.fechaInicio | date: 'dd/MM/yyyy' }}</span>
-                </div>
-                <div class="periodo-item">
-                  <span class="label">Fecha Fin:</span>
-                  <span class="value">{{ actual.fechaFin | date: 'dd/MM/yyyy' }}</span>
-                </div>
+                @if (actual.fechaInicio) {
+                  <div class="periodo-item">
+                    <span class="label">Fecha Inicio:</span>
+                    <span class="value">{{ actual.fechaInicio | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                }
+                @if (actual.fechaFin) {
+                  <div class="periodo-item">
+                    <span class="label">Fecha Fin:</span>
+                    <span class="value">{{ actual.fechaFin | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                }
               </div>
             </div>
           }

@@ -136,6 +136,9 @@ export class ConfigurarPeriodoComponent implements OnInit {
           );
           // Recargar período actual
           this.periodosService.getPeriodoActual().subscribe();
+        } else {
+          // El servicio convierte los errores HTTP (404, 400…) en null
+          this.snackbar.error('No se pudo guardar la configuración del período');
         }
         this.guardando.set(false);
       },
