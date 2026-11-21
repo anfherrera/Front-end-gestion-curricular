@@ -22,6 +22,29 @@ interface ProcesoData {
   porcentajeAprobacion: number;
 }
 
+interface PresentacionProceso {
+  nombre: string;
+  clase: string;
+  icono: string;
+}
+
+/**
+ * Presentación de cada proceso, por la clave que envía el backend (TipoProcesoSolicitud: "Homologacion",
+ * "Paz y Salvo", "Reingreso", "Cursos de Verano", "ECAES"), sin tildes y en minúsculas.
+ */
+const PRESENTACION_PROCESOS: Record<string, PresentacionProceso> = {
+  reingreso: { nombre: 'Reingreso de Estudiante', clase: 'reingreso', icono: 'person_add' },
+  homologacion: { nombre: 'Homologación de Asignaturas', clase: 'homologacion', icono: 'swap_horiz' },
+  'cursos de verano': { nombre: 'Cursos de Verano', clase: 'cursos', icono: 'school' },
+  ecaes: { nombre: 'Pruebas ECAES', clase: 'ecaes', icono: 'quiz' },
+  'paz y salvo': { nombre: 'Paz y Salvo', clase: 'paz', icono: 'verified' },
+};
+
+function presentacionProceso(nombre: string): PresentacionProceso | undefined {
+  const clave = nombre.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
+  return PRESENTACION_PROCESOS[clave];
+}
+
 @Component({
   selector: 'app-estadisticas-por-proceso',
   imports: [
@@ -121,39 +144,15 @@ export class EstadisticasPorProcesoComponent implements OnInit, OnDestroy, OnCha
   }
 
   private formatearNombreProceso(nombre: string): string {
-    const nombres: Record<string, string> = {
-      reingreso: 'Reingreso de Estudiante',
-      homologacion: 'Homologación de Asignaturas',
-      'cursos-intersemestrales': 'Cursos Intersemestrales',
-      'pruebas-ecaes': 'Pruebas ECAES',
-      'paz-salvo': 'Paz y Salvo',
-    };
-
-    return nombres[nombre.toLowerCase()] || nombre;
+    return presentacionProceso(nombre)?.nombre ?? nombre;
   }
 
   getProcesoClass(nombre: string): string {
-    const clases: Record<string, string> = {
-      reingreso: 'reingreso',
-      homologacion: 'homologacion',
-      'cursos-intersemestrales': 'cursos',
-      'pruebas-ecaes': 'ecaes',
-      'paz-salvo': 'paz',
-    };
-
-    return clases[nombre.toLowerCase()] || 'default';
+    return presentacionProceso(nombre)?.clase ?? 'default';
   }
 
   getProcesoIcon(nombre: string): string {
-    const iconos: Record<string, string> = {
-      reingreso: 'person_add',
-      homologacion: 'swap_horiz',
-      'cursos-intersemestrales': 'school',
-      'pruebas-ecaes': 'quiz',
-      'paz-salvo': 'verified',
-    };
-
-    return iconos[nombre.toLowerCase()] || 'description';
+    return presentacionProceso(nombre)?.icono ?? 'description';
   }
 
   /** Hasta 5 campos del proceso, para la vista de datos detallados. */

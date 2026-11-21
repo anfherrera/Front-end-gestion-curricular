@@ -53,7 +53,7 @@ describe('EstadisticasPorProcesoComponent', () => {
     expect(procesos.map((p) => p.porcentajeAprobacion)).toEqual([50, 50, 0]);
     expect(procesos[0].nombreFormateado).toBe('Reingreso de Estudiante');
     expect(procesos[1].nombreFormateado).toBe('Homologación de Asignaturas');
-    expect(procesos[2].nombreFormateado).toBe('ECAES');
+    expect(procesos[2].nombreFormateado).toBe('Pruebas ECAES');
     expect(component.fechaConsulta()).toBe(respuesta.fechaConsulta);
   });
 
@@ -97,11 +97,49 @@ describe('EstadisticasPorProcesoComponent', () => {
     expect(servicio.getEstadisticasDetalladasPorProceso).not.toHaveBeenCalled();
   });
 
-  it('da clase e icono por proceso, con valores por defecto', () => {
-    expect(component.getProcesoClass('Reingreso')).toBe('reingreso');
-    expect(component.getProcesoIcon('Homologacion')).toBe('swap_horiz');
+  it('da clase e icono a cada clave del backend (TipoProcesoSolicitud)', () => {
+    const claves = ['Homologacion', 'Paz y Salvo', 'Reingreso', 'Cursos de Verano', 'ECAES'];
+    expect(claves.map((c) => component.getProcesoClass(c))).toEqual([
+      'homologacion',
+      'paz',
+      'reingreso',
+      'cursos',
+      'ecaes',
+    ]);
+    expect(claves.map((c) => component.getProcesoIcon(c))).toEqual([
+      'swap_horiz',
+      'verified',
+      'person_add',
+      'school',
+      'quiz',
+    ]);
+  });
+
+  it('ignora tildes y mayúsculas y usa valores por defecto para un proceso desconocido', () => {
+    expect(component.getProcesoClass('Homologación')).toBe('homologacion');
+    expect(component.getProcesoIcon('PAZ Y SALVO')).toBe('verified');
     expect(component.getProcesoClass('Otro')).toBe('default');
     expect(component.getProcesoIcon('Otro')).toBe('description');
+  });
+
+  it('pinta cada tarjeta con la clase e icono de su proceso', () => {
+    servicio.getEstadisticasDetalladasPorProceso.and.returnValue(
+      of({
+        ...respuesta,
+        estadisticasPorProceso: {
+          'Paz y Salvo': detalle('Paz y Salvo', 3, 1),
+          'Cursos de Verano': detalle('Cursos de Verano', 2, 1),
+        },
+      })
+    );
+    fixture.detectChanges();
+    const tarjetas = [...fixture.nativeElement.querySelectorAll('.proceso-card')] as HTMLElement[];
+    expect(tarjetas[0].classList).toContain('proceso-paz');
+    expect(tarjetas[1].classList).toContain('proceso-cursos');
+    expect(tarjetas.map((t) => t.querySelector('.proceso-icon mat-icon')?.textContent?.trim())).toEqual([
+      'verified',
+      'school',
+    ]);
   });
 
   it('muestra hasta 5 campos del detalle y alterna la vista de datos', () => {
