@@ -76,12 +76,14 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     cy.intercept('GET', '**/api/solicitudes-ecaes/**', { statusCode: 200, body: [] }).as('listarEcaes');
+    // Los listados van a la raíz del recurso con ?rol=… (EST-7, paso 6), que el patrón anterior no cubre
+    cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes' }, { statusCode: 200, body: [] });
     cy.intercept('GET', '**/api/periodos-academicos/**', { statusCode: 200, body: ['2025-1', '2024-2'] }).as('periodos');
   });
 
   describe('1. Estudiante – Visualización de fechas publicadas', () => {
     it('E2E-EC-001: Debe mostrar la sección de Fechas con selector de período', () => {
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarFechasEcaes*', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
+      cy.intercept('GET', '**/api/solicitudes-ecaes/fechas', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
       visitarComoEstudiante();
       cy.iniciarMedicion();
       cy.contains('Fechas', { timeout: 10000 }).should('be.visible');
@@ -97,7 +99,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
     });
 
     it('E2E-EC-002: Debe cargar y mostrar fechas cuando hay datos', () => {
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarFechasEcaes*', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
+      cy.intercept('GET', '**/api/solicitudes-ecaes/fechas', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
       visitarComoEstudiante();
       cy.wait('@fechasEcaes');
       cy.wait(800);
@@ -164,7 +166,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
 
     it('E2E-EC-008: Debe enviar la solicitud exitosamente', () => {
       cy.intercept('POST', '**/api/archivos', { statusCode: 200, body: { nombre: 'cedula.pdf', ruta_documento: '/uploads/cedula.pdf' } }).as('subirArchivo');
-      cy.intercept('POST', '**/api/solicitudes-ecaes/crearSolicitud-Ecaes', {
+      cy.intercept({ method: 'POST', pathname: '/api/solicitudes-ecaes' }, {
         statusCode: 201,
         body: { id_solicitud: 1, nombre_solicitud: 'Solicitud ECAES', mensaje: 'Solicitud creada' }
       }).as('crearEcaes');
@@ -194,8 +196,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
 
     it('E2E-EC-010: Debe mostrar solicitudes existentes con estado', () => {
       const mockSolicitudes = [{ id_solicitud: 1, nombre_solicitud: 'Solicitud ECAES - Luis', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [] }];
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitudes-Ecaes*', { statusCode: 200, body: mockSolicitudes }).as('listarEcaesEst');
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol*', { statusCode: 200, body: mockSolicitudes });
+      cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes' }, { statusCode: 200, body: mockSolicitudes }).as('listarEcaesEst');
       visitarComoEstudiante();
       cy.wait(1000);
       cy.get('body').then(($body) => {
@@ -254,7 +255,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
           objUsuario: { nombre_completo: 'Luis' }
         }
       ];
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario*', { statusCode: 200, body: mockSolicitudes }).as('listarFuncEcaes');
+      cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes', query: { bandeja: 'pendientes' } }, { statusCode: 200, body: mockSolicitudes }).as('listarFuncEcaes');
       visitarComoFuncionario();
       cy.wait('@listarFuncEcaes');
       cy.wait(800);
@@ -279,7 +280,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
       const mockSolicitudes = [
         { id_solicitud: 1, nombre_solicitud: 'ECAES Test', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [], tipoDocumento: 'CC', numero_documento: '123', fecha_expedicion: '2020-01-01', fecha_nacimiento: '1998-01-01', objUsuario: {} }
       ];
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario*', { statusCode: 200, body: mockSolicitudes });
+      cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes', query: { bandeja: 'pendientes' } }, { statusCode: 200, body: mockSolicitudes });
       visitarComoFuncionario();
       cy.wait(1000);
       cy.get('app-request-status-table table tbody tr, app-request-status-table .mat-row').first().click({ force: true });

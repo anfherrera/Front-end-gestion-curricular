@@ -87,19 +87,20 @@ export class PruebasEcaesService extends SolicitudesBaseService {
   // ---------- Fechas ----------
 
   listarFechasEcaes(): Observable<FechaEcaes[]> {
-    return this.http.get<FechaEcaes[]>(`${this.apiUrl}/listarFechasEcaes`);
+    return this.http.get<FechaEcaes[]>(`${this.apiUrl}/fechas`);
   }
 
   buscarFechasPorPeriodo(periodoAcademico: string): Observable<FechaEcaes> {
-    return this.http.get<FechaEcaes>(`${this.apiUrl}/buscarFechasPorPeriodo/${encodeURIComponent(periodoAcademico)}`);
+    return this.http.get<FechaEcaes>(`${this.apiUrl}/fechas/${encodeURIComponent(periodoAcademico)}`);
   }
 
   publicarFechasEcaes(fechas: Omit<FechaEcaes, 'idFechaEcaes'>): Observable<FechaEcaes> {
-    return this.http.post<FechaEcaes>(`${this.apiUrl}/publicarFechasEcaes`, fechas);
+    return this.http.post<FechaEcaes>(`${this.apiUrl}/fechas`, fechas);
   }
 
+  /** Actualiza (o crea) las fechas de su período: el backend toma el período de la ruta. */
   actualizarFechasEcaes(fechas: FechaEcaes): Observable<FechaEcaes> {
-    return this.http.put<FechaEcaes>(`${this.apiUrl}/actualizarFechasEcaes`, fechas);
+    return this.http.put<FechaEcaes>(`${this.apiUrl}/fechas/${encodeURIComponent(fechas.periodoAcademico)}`, fechas);
   }
 
   /** Tipos de documento de identidad registrados (lista vacía si el backend no responde bien). */
@@ -112,7 +113,7 @@ export class PruebasEcaesService extends SolicitudesBaseService {
   // ---------- Solicitudes ----------
 
   crearSolicitudEcaes(solicitud: SolicitudEcaesRequest): Observable<SolicitudEcaesResponse> {
-    return this.http.post<SolicitudEcaesResponse>(`${this.apiUrl}/crearSolicitud-Ecaes`, solicitud);
+    return this.http.post<SolicitudEcaesResponse>(this.apiUrl, solicitud);
   }
 
   listarSolicitudesPorRol(
@@ -123,11 +124,21 @@ export class PruebasEcaesService extends SolicitudesBaseService {
     let params = new HttpParams().set('rol', rol);
     if (idUsuario) params = params.set('idUsuario', idUsuario.toString());
     if (periodoAcademico) params = params.set('periodoAcademico', periodoAcademico);
-    return this.http.get<SolicitudEcaesResponse[]>(`${this.apiUrl}/listarSolicitud-ecaes/porRol`, { params });
+    return this.http.get<SolicitudEcaesResponse[]>(this.apiUrl, { params });
   }
 
+  /** Pendientes del funcionario; sin período, el backend usa el actual. */
   listarSolicitudesFuncionario(periodoAcademico?: string): Observable<SolicitudEcaesResponse[]> {
-    return this.listar<SolicitudEcaesResponse>('listarSolicitudes-Ecaes/Funcionario', periodoAcademico);
+    let params = new HttpParams().set('rol', 'funcionario').set('bandeja', 'pendientes');
+    if (periodoAcademico) params = params.set('periodoAcademico', periodoAcademico);
+    return this.http.get<SolicitudEcaesResponse[]>(this.apiUrl, { params });
+  }
+
+  /** ECAES usa PUT /{id}/estado (EST-7, paso 6): el id va en la ruta y no en el cuerpo. */
+  protected override cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<unknown> {
+    const body: { nuevoEstado: string; comentario?: string } = { nuevoEstado };
+    if (comentario !== undefined) body.comentario = comentario;
+    return this.http.put(`${this.apiUrl}/${idSolicitud}/estado`, body);
   }
 
   /** El funcionario aprueba: la solicitud pasa directamente a PRE_REGISTRADO. */
