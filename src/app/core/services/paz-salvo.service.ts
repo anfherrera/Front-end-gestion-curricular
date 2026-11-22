@@ -95,19 +95,19 @@ export class PazSalvoService extends SolicitudesBaseService {
     return this.bandeja('Secretaria', periodoAcademico);
   }
 
-  /** Historial del funcionario (APROBADA_FUNCIONARIO). Si falla, lista vacía. */
+  /** Historial del funcionario (pasaron por APROBADA_FUNCIONARIO). Si falla, lista vacía. */
   getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Solicitudes {
-    return this.historial('Funcionario', periodoAcademico);
+    return this.historial('funcionario', periodoAcademico);
   }
 
-  /** Historial del coordinador (APROBADA_COORDINADOR). Si falla, lista vacía. */
+  /** Historial del coordinador (pasaron por APROBADA_COORDINADOR). Si falla, lista vacía. */
   getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Solicitudes {
-    return this.historial('Coordinador', periodoAcademico);
+    return this.historial('coordinador', periodoAcademico);
   }
 
   /** Historial de secretaría (APROBADA, ya enviadas al estudiante). Si falla, lista vacía. */
   getSolicitudesProcesadasSecretaria(periodoAcademico?: string): Solicitudes {
-    return this.historial('Secretaria', periodoAcademico);
+    return this.historial('secretaria', periodoAcademico);
   }
 
   /** Bandejas literales del backend: listarSolicitud-PazYSalvo/Funcionario, /Coordinador o /Secretaria. */
@@ -115,10 +115,14 @@ export class PazSalvoService extends SolicitudesBaseService {
     return this.listar<SolicitudHomologacionDTORespuesta>(`listarSolicitud-PazYSalvo/${rol}`, periodoAcademico);
   }
 
+  /** Procesadas por el rol: GET /solicitudes-pazysalvo?rol=…&bandeja=procesadas (convención de rutas EST-7). */
   private historial(rol: string, periodoAcademico?: string): Solicitudes {
-    return this.listarOVacio<SolicitudHomologacionDTORespuesta>(
-      `listarSolicitud-PazYSalvo/${rol}/Aprobadas`,
-      periodoAcademico
+    const params = this.paramsPeriodo(periodoAcademico).set('rol', rol).set('bandeja', 'procesadas');
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(this.apiUrl, { params }).pipe(
+      catchError((error) => {
+        this.logger.error(`Error obteniendo las procesadas de ${rol}`, error);
+        return of([] as SolicitudHomologacionDTORespuesta[]);
+      })
     );
   }
 

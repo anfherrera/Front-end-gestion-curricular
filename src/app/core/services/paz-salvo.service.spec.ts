@@ -187,6 +187,38 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
       expect(req.request.method).toBe('GET');
       req.flush([]);
     });
+
+    const procesadas = [
+      ['funcionario', () => service.getSolicitudesProcesadasFuncionario('2025-2')],
+      ['coordinador', () => service.getSolicitudesProcesadasCoordinador('2025-2')],
+      ['secretaria', () => service.getSolicitudesProcesadasSecretaria('2025-2')],
+    ] as const;
+    procesadas.forEach(([rol, llamar]) => {
+      it(`PZS-040: las procesadas de ${rol} usan ?rol=${rol}&bandeja=procesadas`, (done) => {
+        llamar().subscribe((solicitudes) => {
+          expect(solicitudes).toEqual([]);
+          done();
+        });
+
+        const req = httpMock.expectOne((r) => r.url === apiUrl);
+        expect(req.request.method).toBe('GET');
+        expect(req.request.params.get('rol')).toBe(rol);
+        expect(req.request.params.get('bandeja')).toBe('procesadas');
+        expect(req.request.params.get('periodoAcademico')).toBe('2025-2');
+        req.flush([]);
+      });
+    });
+
+    it('PZS-041: si las procesadas fallan, devuelve una lista vacía', (done) => {
+      service.getSolicitudesProcesadasSecretaria().subscribe((solicitudes) => {
+        expect(solicitudes).toEqual([]);
+        done();
+      });
+
+      const req = httpMock.expectOne((r) => r.url === apiUrl);
+      expect(req.request.params.has('periodoAcademico')).toBe(false);
+      req.flush('error', { status: 500, statusText: 'Server Error' });
+    });
   });
 
   describe('4. Crear y Enviar Solicitud', () => {
