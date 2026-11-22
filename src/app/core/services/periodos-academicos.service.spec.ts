@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { PeriodoAcademico, PeriodoActivoConfig, PeriodosAcademicosService } from './periodos-academicos.service';
+import { PeriodoAcademico, PeriodosAcademicosService } from './periodos-academicos.service';
 import { ApiEndpoints } from '../utils/api-endpoints';
 
 describe('PeriodosAcademicosService', () => {
@@ -134,52 +134,5 @@ describe('PeriodosAcademicosService', () => {
     service.getPeriodosRecientes().subscribe((p) => (periodos = p));
     httpMock.expectOne(ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES).flush({ success: false, data: null });
     expect(periodos).toEqual([]);
-  });
-
-  describe('período activo (admin)', () => {
-    const url = ApiEndpoints.PERIODOS_ACADEMICOS.ADMIN.PERIODO_ACTIVO;
-    const config: PeriodoActivoConfig = { periodoAcademico: '2026-1', modo: 'manual', descripcion: 'Manual' };
-
-    it('lee la configuración, o null si falla o no hay éxito', () => {
-      let leida: PeriodoActivoConfig | null | undefined;
-      service.getPeriodoActivoConfig().subscribe((c) => (leida = c));
-      httpMock.expectOne(url).flush({ success: true, data: config, message: '' });
-      expect(leida).toEqual(config);
-
-      service.getPeriodoActivoConfig().subscribe((c) => (leida = c));
-      httpMock.expectOne(url).flush({ success: false, data: config, message: '' });
-      expect(leida).toBeNull();
-
-      service.getPeriodoActivoConfig().subscribe((c) => (leida = c));
-      httpMock.expectOne(url).flush('No encontrado', { status: 404, statusText: 'Not Found' });
-      expect(leida).toBeNull();
-    });
-
-    it('al fijar el período (o volver a automático) recarga el período actual', () => {
-      for (const valor of ['2026-1', null]) {
-        let guardada: PeriodoActivoConfig | null | undefined;
-        service.setPeriodoActivo(valor).subscribe((c) => (guardada = c));
-        const put = httpMock.expectOne(url);
-        expect(put.request.method).toBe('PUT');
-        expect(put.request.body).toEqual({ periodoAcademico: valor });
-        put.flush({ success: true, data: config, message: '' });
-        expect(guardada).toEqual(config);
-        httpMock
-          .expectOne(ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL)
-          .flush({ success: true, data: '2026-1', message: '' });
-      }
-    });
-
-    it('si el backend no lo acepta devuelve null sin recargar', () => {
-      let guardada: PeriodoActivoConfig | null | undefined;
-      service.setPeriodoActivo('2026-1').subscribe((c) => (guardada = c));
-      httpMock.expectOne(url).flush({ success: false, data: null, message: 'Error' });
-      expect(guardada).toBeNull();
-
-      service.setPeriodoActivo('2026-1').subscribe((c) => (guardada = c));
-      httpMock.expectOne(url).flush('Error', { status: 500, statusText: 'Error' });
-      expect(guardada).toBeNull();
-      httpMock.expectNone(ApiEndpoints.PERIODOS_ACADEMICOS.ACTUAL);
-    });
   });
 });

@@ -78,7 +78,7 @@ const casos = [
     // Las de editar no: sin backend vuelven a la lista
     rutas: ['/admin/dashboard', '/admin/manage-users', '/admin/manage-users/crear', '/admin/manage-roles',
       '/admin/docentes', '/admin/docentes/crear', '/admin/programas', '/admin/programas/crear',
-      '/admin/configurar-periodo', '/admin/formatos-institucionales'],
+      '/admin/formatos-institucionales'],
     negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/paz-salvo',
       '/estudiante/cursos-intersemestrales/cursos-ofertados'],
   },

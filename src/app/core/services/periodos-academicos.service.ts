@@ -46,18 +46,6 @@ export interface PeriodoActualResponse {
   message: string;
 }
 
-export interface PeriodoActivoConfig {
-  periodoAcademico: string | null;
-  modo: 'automatico' | 'manual';
-  descripcion: string;
-}
-
-export interface PeriodoActivoResponse {
-  success: boolean;
-  data: PeriodoActivoConfig;
-  message: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -189,47 +177,6 @@ export class PeriodosAcademicosService {
       map((response) => (response.success && response.data ? aPeriodos(response.data) : [])),
       catchError(() => {
         return of([]);
-      })
-    );
-  }
-
-  /**
-   * Obtiene la configuración del período activo (solo admin)
-   */
-  getPeriodoActivoConfig(): Observable<PeriodoActivoConfig | null> {
-    const url = ApiEndpoints.PERIODOS_ACADEMICOS.ADMIN.PERIODO_ACTIVO;
-
-    return this.http.get<PeriodoActivoResponse>(url).pipe(
-      map((response) => (response.success ? response.data : null)),
-      catchError(() => {
-        return of(null);
-      })
-    );
-  }
-
-  /**
-   * Establece el período activo (solo admin)
-   * @param periodoAcademico Período a establecer o null para modo automático
-   */
-  setPeriodoActivo(periodoAcademico: string | null): Observable<PeriodoActivoConfig | null> {
-    const url = ApiEndpoints.PERIODOS_ACADEMICOS.ADMIN.PERIODO_ACTIVO;
-
-    return this.http.put<PeriodoActivoResponse>(url, { periodoAcademico }).pipe(
-      map((response) => {
-        if (response.success && response.data) {
-          // Si se cambió el período, actualizar el período actual
-          if (periodoAcademico) {
-            this.getPeriodoActual().subscribe();
-          } else {
-            // Modo automático, obtener el período actual
-            this.getPeriodoActual().subscribe();
-          }
-          return response.data;
-        }
-        return null;
-      }),
-      catchError(() => {
-        return of(null);
       })
     );
   }

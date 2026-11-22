@@ -22,9 +22,6 @@ export class ApiEndpoints {
       return `${environment.apiUrl}/periodos-academicos?desde=${Math.max(2020, new Date().getFullYear() - 4)}`;
     },
     ACTUAL: `${this.BASE_URL}/periodos-academicos/actual`,
-    ADMIN: {
-      PERIODO_ACTIVO: `${this.BASE_URL}/periodos-academicos/admin/periodo-activo`,
-    },
   };
 
   // ===== CURSOS INTERSEMESTRALES =====

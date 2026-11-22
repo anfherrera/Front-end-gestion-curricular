@@ -89,7 +89,6 @@ export class BreadcrumbComponent {
     programas: 'Programas',
     docentes: 'Docentes',
     'manage-roles': 'Roles',
-    'configurar-periodo': 'Configurar Período',
     welcome: 'Inicio',
     home: 'Inicio',
     perfil: 'Mi Perfil',
