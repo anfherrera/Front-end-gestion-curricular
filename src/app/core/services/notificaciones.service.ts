@@ -21,24 +21,24 @@ export class NotificacionesService {
 
   obtenerNoLeidas(idUsuario: number): Observable<Notificacion[]> {
     return this.http
-      .get<Notificacion[]>(`${this.apiUrl}/usuario/${idUsuario}/no-leidas`)
+      .get<Notificacion[]>(`${this.apiUrl}?usuario=${idUsuario}&leida=false`)
       .pipe(timeout(5000), map(conFechas));
   }
 
   contarNoLeidas(idUsuario: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/usuario/${idUsuario}/contar-no-leidas`).pipe(timeout(3000));
+    return this.http.get<number>(`${this.apiUrl}/conteo?usuario=${idUsuario}&leida=false`).pipe(timeout(3000));
   }
 
   obtenerTodas(idUsuario: number): Observable<Notificacion[]> {
-    return this.http.get<Notificacion[]>(`${this.apiUrl}/usuario/${idUsuario}`).pipe(map(conFechas));
+    return this.http.get<Notificacion[]>(`${this.apiUrl}?usuario=${idUsuario}`).pipe(map(conFechas));
   }
 
   marcarComoLeida(idNotificacion: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${idNotificacion}/marcar-leida`, {});
+    return this.http.put<void>(`${this.apiUrl}/${idNotificacion}/leida`, {});
   }
 
   marcarTodasComoLeidas(idUsuario: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/usuario/${idUsuario}/marcar-todas-leidas`, {});
+    return this.http.put<void>(`${this.apiUrl}/leidas?usuario=${idUsuario}`, {});
   }
 
   /** Avisa al contador del header para que se actualice sin esperar al siguiente sondeo. */
