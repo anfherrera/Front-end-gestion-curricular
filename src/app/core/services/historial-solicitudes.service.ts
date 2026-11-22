@@ -198,11 +198,12 @@ export class HistorialSolicitudesService {
    * @returns Observable con el blob del PDF y el nombre del archivo extraído del header Content-Disposition
    */
   exportarHistorialPDF(filtros?: FiltrosHistorial): Observable<{ blob: Blob; filename: string }> {
-    const url = ApiEndpoints.SOLICITUDES.EXPORTAR_PDF;
+    // El mismo recurso que el historial, con formato=pdf (EST-7, paso 5)
+    const url = ApiEndpoints.SOLICITUDES.HISTORIAL;
 
     // Construir parámetros solo con los que tienen valor
     // Si no se envían parámetros, el backend incluirá todas las solicitudes
-    let params = new HttpParams();
+    let params = new HttpParams().set('formato', 'pdf');
 
     if (filtros?.periodoAcademico) {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
