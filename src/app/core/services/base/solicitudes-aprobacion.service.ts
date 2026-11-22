@@ -106,7 +106,7 @@ export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseSer
   /** Sube un PDF al endpoint genérico de archivos, asociado a la solicitud si se indica. */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<unknown> {
     return this.subirPdf(
-      `${this.api}/archivos/subir/pdf`,
+      `${this.api}/archivos`,
       archivo,
       idSolicitud ? { idSolicitud: String(idSolicitud) } : {}
     );

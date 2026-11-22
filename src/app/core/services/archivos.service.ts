@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiEndpoints } from '../utils/api-endpoints';
 import { environment } from '@env/environment';
 
-/** Respuesta de POST /archivos/subir/pdf (`PdfSubidoDTORespuesta` del backend). */
+/** Respuesta de POST /archivos (`PdfSubidoDTORespuesta` del backend). */
 export interface PdfSubido {
   id: number;
   nombre: string;

@@ -252,25 +252,33 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         expect(blob instanceof Blob).toBe(true);
         done();
       });
-      const req = httpMock.expectOne((r) => r.url.includes('archivos/descargar/pdf') && r.url.includes(nombre));
+      const req = httpMock.expectOne(`${environment.apiUrl}/archivos?nombre=${nombre}`);
+      expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(mockBlob);
     });
 
     it('EC-014: Debe descargar archivo por ID documento', (done) => {
       service.descargarArchivoPorId(5).subscribe(() => done());
-      const req = httpMock.expectOne((r) => r.url.includes('/documentos/5/descargar'));
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/5/archivo`);
+      expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(new Blob([]));
     });
 
     it('EC-015: Debe agregar comentario a documento', (done) => {
       service.agregarComentario(1, 'Comentario test').subscribe(() => done());
-      const req = httpMock.expectOne((r) => r.url.includes('documentos/agregarComentario'));
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/1/comentarios`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body.idDocumento).toBe(1);
-      expect(req.request.body.comentario).toBe('Comentario test');
+      expect(req.request.body).toEqual({ comentario: 'Comentario test' });
       req.flush({});
+    });
+
+    it('EC-016: Debe consultar un documento por su id', (done) => {
+      service.buscarDocumentoPorId(5).subscribe(() => done());
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/5`);
+      expect(req.request.method).toBe('GET');
+      req.flush({ id_documento: 5, comentario: null });
     });
   });
 });

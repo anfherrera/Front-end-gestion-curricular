@@ -235,7 +235,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       });
 
       // El endpoint cambió a usar ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION
-      const req = httpMock.expectOne((request) => request.url.includes('/archivos/descargar/pdf/inscripcion/30'));
+      const req = httpMock.expectOne(`${environment.apiUrl}/archivos/inscripciones/30`);
       expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(mockBlob);

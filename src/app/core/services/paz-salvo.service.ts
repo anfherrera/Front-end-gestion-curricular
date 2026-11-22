@@ -268,7 +268,7 @@ export class PazSalvoService extends SolicitudesBaseService {
 
   /** Por id de documento: más confiable que por nombre. */
   override descargarArchivoPorId(idDocumento: number): Observable<BlobConNombre> {
-    return this.descargarConNombre(`${this.api}/documentos/${idDocumento}/descargar`, 'documento.pdf');
+    return this.descargarConNombre(`${this.api}/documentos/${idDocumento}/archivo`, 'documento.pdf');
   }
 
   /** Por la ruta guardada en la base de datos. */

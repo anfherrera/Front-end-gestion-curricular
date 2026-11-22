@@ -150,7 +150,7 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
 
   describe('3. Estudiante – Envío de solicitud', () => {
     it('E2E-HA-009: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/archivos/**', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
+      cy.intercept('POST', '**/api/archivos', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
       cy.intercept('POST', '**/api/solicitudes-homologacion/crearSolicitud-Homologacion', {
         statusCode: 201,
         body: { id_solicitud: 1, mensaje: 'Solicitud creada' }

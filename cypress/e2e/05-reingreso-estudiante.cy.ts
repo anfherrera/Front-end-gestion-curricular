@@ -141,7 +141,7 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
 
   describe('3. Estudiante – Envío de solicitud', () => {
     it('E2E-RE-008: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/archivos/**', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
+      cy.intercept('POST', '**/api/archivos', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
       cy.intercept('POST', '**/api/solicitudes-reingreso/crearSolicitud-Reingreso', {
         statusCode: 201,
         body: { id_solicitud: 1, mensaje: 'Solicitud creada' }

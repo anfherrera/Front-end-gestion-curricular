@@ -262,7 +262,7 @@ export class DocumentationViewerComponent {
 
   /**
    * Agregar comentario usando endpoint genérico.
-   * Carga el documento actual (GET buscarPorId) para mostrar comentarios previos; al guardar envía solo el texto nuevo.
+   * Carga el documento actual (GET /documentos/{id}) para mostrar comentarios previos; al guardar envía solo el texto nuevo.
    */
   agregarComentario(documento: Documento): void {
     if (!documento.id_documento) {

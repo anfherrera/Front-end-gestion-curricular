@@ -410,10 +410,9 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
 
       service.agregarComentario(1, comentario).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/agregarComentario`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/1/comentarios`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body.idDocumento).toBe(1);
-      expect(req.request.body.comentario).toBe(comentario);
+      expect(req.request.body).toEqual({ comentario });
 
       req.flush({ success: true });
     });

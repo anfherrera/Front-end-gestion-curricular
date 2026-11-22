@@ -5,7 +5,7 @@ import { environment } from '@env/environment';
 import { tamanoEnMb } from '../../utils/texto.util';
 import { LoggerService } from '../logger.service';
 
-/** Documento como lo devuelve /documentos/buscarPorId (el visor solo usa el comentario). */
+/** Documento como lo devuelve /documentos/{id} (el visor solo usa el comentario). */
 export interface DocumentoConComentario {
   comentario?: string | null;
 }
@@ -66,14 +66,14 @@ export abstract class SolicitudesBaseService {
   // ---------- Documentos (los usa documentation-viewer a través de [servicio]) ----------
 
   descargarArchivo(nombreArchivo: string): Observable<Blob> {
-    return this.http.get(`${this.api}/archivos/descargar/pdf?filename=${encodeURIComponent(nombreArchivo)}`, {
+    return this.http.get(`${this.api}/archivos?nombre=${encodeURIComponent(nombreArchivo)}`, {
       responseType: 'blob',
     });
   }
 
   /** Por id de documento: más confiable que por nombre. */
   descargarArchivoPorId(idDocumento: number): Observable<Blob> {
-    return this.http.get(`${this.api}/documentos/${idDocumento}/descargar`, { responseType: 'blob' });
+    return this.http.get(`${this.api}/documentos/${idDocumento}/archivo`, { responseType: 'blob' });
   }
 
   /** Por la ruta guardada en la base de datos (se descarga por el nombre del archivo). */
@@ -83,11 +83,11 @@ export abstract class SolicitudesBaseService {
 
   /** Comentario actual del documento, antes de añadir otro. */
   buscarDocumentoPorId(idDocumento: number): Observable<DocumentoConComentario> {
-    return this.http.get<DocumentoConComentario>(`${this.api}/documentos/buscarPorId/${idDocumento}`);
+    return this.http.get<DocumentoConComentario>(`${this.api}/documentos/${idDocumento}`);
   }
 
   agregarComentario(idDocumento: number, comentario: string): Observable<unknown> {
-    return this.http.put(`${this.api}/documentos/agregarComentario`, { idDocumento, comentario });
+    return this.http.put(`${this.api}/documentos/${idDocumento}/comentarios`, { comentario });
   }
 
   // ---------- Ayudas para las subclases ----------

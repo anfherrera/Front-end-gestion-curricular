@@ -220,11 +220,11 @@ export class ApiEndpoints {
   // ===== ARCHIVOS =====
   static readonly ARCHIVOS = {
     BASE: `${this.BASE_URL}/archivos`,
-    SUBIR_PDF: `${this.BASE_URL}/archivos/subir/pdf`,
+    SUBIR_PDF: `${this.BASE_URL}/archivos`,
     DESCARGAR_PDF: (filename: string) =>
-      `${this.BASE_URL}/archivos/descargar/pdf?filename=${encodeURIComponent(filename)}`,
+      `${this.BASE_URL}/archivos?nombre=${encodeURIComponent(filename)}`,
     DESCARGAR_PDF_POR_INSCRIPCION: (inscripcionId: number) =>
-      `${this.BASE_URL}/archivos/descargar/pdf/inscripcion/${inscripcionId}`,
+      `${this.BASE_URL}/archivos/inscripciones/${inscripcionId}`,
   };
 
   // ===== ROLES =====

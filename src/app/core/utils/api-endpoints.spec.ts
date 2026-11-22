@@ -63,7 +63,7 @@ describe('ApiEndpoints', () => {
 
   it('codifica el nombre del archivo al descargar un PDF', () => {
     expect(ApiEndpoints.ARCHIVOS.DESCARGAR_PDF('oficio reingreso&1.pdf')).toBe(
-      `${environment.apiUrl}/archivos/descargar/pdf?filename=oficio%20reingreso%261.pdf`
+      `${environment.apiUrl}/archivos?nombre=oficio%20reingreso%261.pdf`
     );
   });
 });

@@ -34,10 +34,10 @@ describe('DocumentGeneratorService', () => {
     req.flush(new Blob());
   });
 
-  it('homologación y reingreso van a /documentos/generar con la petición tal cual', () => {
+  it('homologación y reingreso van a /documentos-generados con la petición tal cual', () => {
     for (const tipo of ['OFICIO_HOMOLOGACION', 'RESOLUCION_REINGRESO']) {
       service.generarDocumento(request(tipo)).subscribe();
-      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/generar`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos-generados`);
       expect(req.request.body.tipoDocumento).toBe(tipo);
       req.flush(new Blob());
     }

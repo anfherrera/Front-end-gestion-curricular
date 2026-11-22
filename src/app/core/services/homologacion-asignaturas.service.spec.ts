@@ -137,17 +137,27 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
         expect(blob instanceof Blob).toBe(true);
         done();
       });
-      const req = httpMock.expectOne((r) => r.url.includes('archivos/descargar/pdf'));
+      const req = httpMock.expectOne(`${environment.apiUrl}/archivos?nombre=doc.pdf`);
+      expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(new Blob([]));
     });
 
-    it('HA-014: agregarComentario debe enviar PUT con idDocumento y comentario', (done) => {
+    it('HA-014: agregarComentario debe enviar PUT al documento con el comentario', (done) => {
       service.agregarComentario(1, 'Comentario').subscribe(() => done());
-      const req = httpMock.expectOne((r) => r.url.includes('documentos/agregarComentario'));
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/1/comentarios`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body.idDocumento).toBe(1);
-      expect(req.request.body.comentario).toBe('Comentario');
+      expect(req.request.body).toEqual({ comentario: 'Comentario' });
+      req.flush({});
+    });
+
+    it('HA-015: subirArchivoPDF debe enviar POST al recurso de archivos con el id de la solicitud', (done) => {
+      service.subirArchivoPDF(new File(['%PDF'], 'oficio.pdf'), 7).subscribe(() => done());
+      const req = httpMock.expectOne(`${environment.apiUrl}/archivos`);
+      expect(req.request.method).toBe('POST');
+      const datos = req.request.body as FormData;
+      expect((datos.get('file') as File).name).toBe('oficio.pdf');
+      expect(datos.get('idSolicitud')).toBe('7');
       req.flush({});
     });
   });

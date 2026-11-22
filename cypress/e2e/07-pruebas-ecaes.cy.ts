@@ -163,7 +163,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
     });
 
     it('E2E-EC-008: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/archivos/**', { statusCode: 200, body: { nombre: 'cedula.pdf', ruta_documento: '/uploads/cedula.pdf' } }).as('subirArchivo');
+      cy.intercept('POST', '**/api/archivos', { statusCode: 200, body: { nombre: 'cedula.pdf', ruta_documento: '/uploads/cedula.pdf' } }).as('subirArchivo');
       cy.intercept('POST', '**/api/solicitudes-ecaes/crearSolicitud-Ecaes', {
         statusCode: 201,
         body: { id_solicitud: 1, nombre_solicitud: 'Solicitud ECAES', mensaje: 'Solicitud creada' }
