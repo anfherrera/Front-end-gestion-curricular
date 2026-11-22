@@ -16,7 +16,6 @@ export interface ComentariosPazSalvo {
   mensaje?: string;
 }
 
-/** Bandejas por rol del endpoint listarSolicitud-PazYSalvo/{rol}. */
 /** Documento como lo devuelven obtenerOficios y obtenerDocumentos/coordinador. */
 export interface DocumentoPazSalvoRespuesta {
   /** En obtenerOficios el backend envía aquí el id de la solicitud, no el del documento. */
@@ -111,6 +110,7 @@ export class PazSalvoService extends SolicitudesBaseService {
     return this.historial('Secretaria', periodoAcademico);
   }
 
+  /** Bandejas literales del backend: listarSolicitud-PazYSalvo/Funcionario, /Coordinador o /Secretaria. */
   private bandeja(rol: string, periodoAcademico?: string): Solicitudes {
     return this.listar<SolicitudHomologacionDTORespuesta>(`listarSolicitud-PazYSalvo/${rol}`, periodoAcademico);
   }
