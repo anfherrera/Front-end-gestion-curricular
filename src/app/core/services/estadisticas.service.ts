@@ -36,7 +36,7 @@ export class EstadisticasService {
   }
 
   /**
-   * Mapa nombre de programa (normalizado) → id_programa real, desde /api/programas/listarProgramas.
+   * Mapa nombre de programa (normalizado) → id_programa real, desde GET /api/programas.
    * Los endpoints de estadísticas devuelven `porPrograma` como { nombre: cantidad } sin el id,
    * así que el id real se resuelve con este catálogo.
    * Si falla, devuelve un mapa vacío (y no lo deja en caché para reintentar después).
@@ -417,7 +417,7 @@ export class EstadisticasService {
   }
 
   /**
-   * Programas para los filtros, desde el catálogo real (/api/programas/listarProgramas).
+   * Programas para los filtros, desde el catálogo real (GET /api/programas).
    * Si el backend falla, devuelve una lista vacía (el filtro queda en "Todos los programas").
    */
   getProgramasDisponibles(): Observable<{ id: number; nombre: string }[]> {

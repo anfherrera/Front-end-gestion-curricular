@@ -286,7 +286,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       { id_programa: 1, codigo: 'PIET', nombre_programa: 'Ingeniería Electrónica y Telecomunicaciones' },
       { id_programa: 4, codigo: 'TT', nombre_programa: 'Tecnología en Telemática' },
     ];
-    const listar = () => httpMock.expectOne((request) => request.url.endsWith('/programas/listarProgramas'));
+    const listar = () => httpMock.expectOne((request) => request.url.endsWith('/programas'));
 
     it('normaliza los nombres de programa: sin tildes, en minúsculas y con espacios simples', () => {
       expect(EstadisticasService.normalizarNombrePrograma('  Ingeniería   de Sistemas ')).toBe(
@@ -306,7 +306,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       // La segunda llamada usa la caché: no hay otra petición.
       let otra: Map<string, number> | undefined;
       service.getIdsProgramaPorNombre().subscribe((m) => (otra = m));
-      httpMock.expectNone((request) => request.url.endsWith('/programas/listarProgramas'));
+      httpMock.expectNone((request) => request.url.endsWith('/programas'));
       expect(otra).toBe(ids);
     });
 
