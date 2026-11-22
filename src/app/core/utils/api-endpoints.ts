@@ -161,10 +161,6 @@ export class ApiEndpoints {
 
     // ===== ENDPOINTS DE ESTADÍSTICAS =====
     ESTADISTICAS_GLOBALES: `${this.BASE_URL}/estadisticas/globales`,
-    ESTADISTICAS_PERIODO: `${this.BASE_URL}/estadisticas/periodo`,
-    ESTADISTICAS_PROCESO: (nombreProceso: string) => `${this.BASE_URL}/estadisticas/proceso/${nombreProceso}`,
-    ESTADISTICAS_PROGRAMA: (idPrograma: number) => `${this.BASE_URL}/estadisticas/programa/${idPrograma}`,
-    ESTADISTICAS_ESTADO: (estado: string) => `${this.BASE_URL}/estadisticas/estado/${estado}`,
     ESTADISTICAS_FILTRADAS: `${this.BASE_URL}/estadisticas/filtradas`,
     RESUMEN_COMPLETO: `${this.BASE_URL}/estadisticas/resumen-completo`,
 
