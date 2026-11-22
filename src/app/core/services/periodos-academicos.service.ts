@@ -174,7 +174,7 @@ export class PeriodosAcademicosService {
   /**
    * Obtiene períodos recientes (últimos 5 años)
    *
-   * Endpoint: GET /api/periodos-academicos/recientes
+   * Endpoint: GET /api/periodos-academicos?desde=AAAA (últimos 5 años)
    *
    * NOTA: El endpoint puede retornar:
    * - Array de strings: ["2025-2", "2025-1", "2024-2", ...]

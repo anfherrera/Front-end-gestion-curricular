@@ -105,7 +105,7 @@ export class PruebasEcaesService extends SolicitudesBaseService {
   /** Tipos de documento de identidad registrados (lista vacía si el backend no responde bien). */
   listarTiposDocumento(): Observable<TipoDocumento[]> {
     return this.http
-      .get<TiposDocumentoRespuesta>(`${this.api}/tipos-documento/todos`)
+      .get<TiposDocumentoRespuesta>(`${this.api}/tipos-documento`)
       .pipe(map((respuesta) => (respuesta.success && respuesta.data ? respuesta.data : [])));
   }
 

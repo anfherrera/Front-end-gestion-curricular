@@ -313,7 +313,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/todos`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos`);
       expect(req.request.method).toBe('GET');
       req.flush(periodos);
     });
@@ -326,7 +326,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/futuros`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos?desde=${new Date().getFullYear()}`);
       expect(req.request.method).toBe('GET');
       req.flush(periodosFuturos);
     });
@@ -339,7 +339,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos/recientes`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos?desde=${Math.max(2020, new Date().getFullYear() - 4)}`);
       expect(req.request.method).toBe('GET');
       req.flush(periodosRecientes);
     });

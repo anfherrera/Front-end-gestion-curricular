@@ -54,13 +54,13 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
   });
 
   describe('Tipos de documento', () => {
-    it('EC-035: devuelve los tipos de /tipos-documento/todos', (done) => {
+    it('EC-035: devuelve los tipos de /tipos-documento', (done) => {
       service.listarTiposDocumento().subscribe((tipos) => {
         expect(tipos).toEqual([{ codigo: 'CC', descripcion: 'Cédula' }]);
         done();
       });
       httpMock
-        .expectOne(`${environment.apiUrl}/tipos-documento/todos`)
+        .expectOne(`${environment.apiUrl}/tipos-documento`)
         .flush({ success: true, data: [{ codigo: 'CC', descripcion: 'Cédula' }] });
     });
 
@@ -69,7 +69,7 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
         expect(tipos).toEqual([]);
         done();
       });
-      httpMock.expectOne(`${environment.apiUrl}/tipos-documento/todos`).flush({ success: false });
+      httpMock.expectOne(`${environment.apiUrl}/tipos-documento`).flush({ success: false });
     });
   });
 

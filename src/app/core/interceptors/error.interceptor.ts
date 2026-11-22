@@ -84,7 +84,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         // Usuario autenticado pero sin permisos para el recurso
         if (error.status === 403) {
           // No mostrar error 403 para endpoints de períodos académicos (puede ocurrir si el usuario no está autenticado)
-          const isPeriodosEndpoint = error.url?.includes('/periodos-academicos/');
+          // Con /periodos-academicos, /periodos-academicos?desde=… y /periodos-academicos/actual (EST-7)
+          const isPeriodosEndpoint = /\/periodos-academicos(\/|\?|$)/.test(error.url ?? '');
           if (!isPeriodosEndpoint) {
             logger.warn(' Error 403: Acceso denegado - Usuario sin permisos');
 
