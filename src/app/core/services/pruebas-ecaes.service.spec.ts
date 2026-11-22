@@ -266,7 +266,7 @@ describe('PruebasEcaesService - Pruebas Unitarias', () => {
 
     it('EC-015: Debe agregar comentario a documento', (done) => {
       service.agregarComentario(1, 'Comentario test').subscribe(() => done());
-      const req = httpMock.expectOne((r) => r.url.includes('documentos/añadirComentario'));
+      const req = httpMock.expectOne((r) => r.url.includes('documentos/agregarComentario'));
       expect(req.request.method).toBe('PUT');
       expect(req.request.body.idDocumento).toBe(1);
       expect(req.request.body.comentario).toBe('Comentario test');

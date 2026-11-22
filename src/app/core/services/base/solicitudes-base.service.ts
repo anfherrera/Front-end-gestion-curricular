@@ -87,7 +87,7 @@ export abstract class SolicitudesBaseService {
   }
 
   agregarComentario(idDocumento: number, comentario: string): Observable<unknown> {
-    return this.http.put(`${this.api}/documentos/añadirComentario`, { idDocumento, comentario });
+    return this.http.put(`${this.api}/documentos/agregarComentario`, { idDocumento, comentario });
   }
 
   // ---------- Ayudas para las subclases ----------
