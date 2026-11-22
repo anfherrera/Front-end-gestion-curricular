@@ -141,7 +141,7 @@ export class ApiEndpoints {
   static readonly SOLICITUDES = {
     BASE: `${this.BASE_URL}/solicitudes`,
     HISTORIAL: `${this.BASE_URL}/solicitudes/historial`, // Historial completo de todas las solicitudes
-    HISTORIAL_BY_ID: (id: number) => `${this.BASE_URL}/solicitudes/${id}/historial`, // Historial de una solicitud específica
+    BY_ID: (id: number) => `${this.BASE_URL}/solicitudes/${id}`, // Una solicitud con sus estados y documentos
   };
 
   // ===== PRUEBAS ECAES =====

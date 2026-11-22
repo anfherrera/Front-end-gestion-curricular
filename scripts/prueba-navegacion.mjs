@@ -38,7 +38,8 @@ const casos = [
   {
     correo: 'juanp@unicauca.edu.co', rol: 'funcionario',
     rutas: ['/funcionario/paz-salvo', '/funcionario/pruebas-ecaes', '/funcionario/reingreso-estudiante',
-      '/funcionario/homologacion-asignaturas', '/funcionario/modulo-estadistico', '/funcionario/historial-completo'],
+      '/funcionario/homologacion-asignaturas', '/funcionario/modulo-estadistico', '/funcionario/historial-completo',
+      '/funcionario/historial-completo/detalle/1'],
     cursos: true,
     pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Funcionario',
     negadas: ['/coordinador/paz-salvo', '/secretaria/paz-salvo', '/admin/dashboard', '/estudiante/paz-salvo',
@@ -47,7 +48,7 @@ const casos = [
   {
     correo: 'josefina@unicauca.edu.co', rol: 'coordinador',
     rutas: ['/coordinador/paz-salvo', '/coordinador/reingreso-estudiante', '/coordinador/homologacion-asignaturas',
-      '/coordinador/modulo-estadistico', '/coordinador/historial-completo'],
+      '/coordinador/modulo-estadistico', '/coordinador/historial-completo', '/coordinador/historial-completo/detalle/1'],
     cursos: true,
     pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Coordinador',
     negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/homologacion-asignaturas',

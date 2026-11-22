@@ -35,48 +35,112 @@ export interface HistorialSolicitud {
   documentos?: unknown[];
 }
 
-/** Detalle de una solicitud (GET del historial por id). */
+/** Detalle de una solicitud, armado con `GET /api/solicitudes/{id}` (BUG-49). */
 export interface EstadoDetalle {
-  id_estado: number;
+  id_estado: number | null;
   estado_actual: string;
-  fecha_registro_estado: string;
+  fecha_registro_estado: string | null;
   comentario?: string | null;
 }
 
 export interface DocumentoDetalle {
   id_documento: number;
   nombre_documento: string;
-  ruta_documento: string;
-  tipo_documento: string;
-}
-
-export interface InformacionAdicional {
-  titulo_trabajo_grado?: string;
-  director_trabajo_grado?: string;
+  ruta_documento: string | null;
 }
 
 export interface DetalleSolicitud {
   id_solicitud: number;
   nombre_solicitud: string;
-  periodo_academico: string;
-  fecha_registro_solicitud: string;
+  periodo_academico: string | null;
+  fecha_registro_solicitud: string | null;
   fecha_ceremonia?: string | null;
-  tipo_solicitud: string;
+  /** Categoría deducida del nombre, como la columna Tipo del historial. */
   tipo_solicitud_display: string;
   estado_actual: string;
-  fecha_ultimo_estado: string;
+  fecha_ultimo_estado: string | null;
   usuario: {
     id_usuario: number;
     nombre_completo: string;
-    codigo: string;
-    correo?: string;
-    cedula?: string;
-  };
+    codigo: string | null;
+    correo?: string | null;
+    cedula?: string | null;
+  } | null;
   historial_estados: EstadoDetalle[];
   total_estados: number;
   documentos: DocumentoDetalle[];
   total_documentos: number;
-  informacion_adicional?: InformacionAdicional;
+}
+
+/** Cuerpo de `GET /api/solicitudes/{id}` (`SolicitudDTORespuesta` del backend), con los campos que usa el detalle. */
+interface SolicitudPorIdRespuesta {
+  id_solicitud: number;
+  nombre_solicitud: string | null;
+  periodo_academico: string | null;
+  fecha_registro_solicitud: string | null;
+  fecha_ceremonia?: string | null;
+  estadosSolicitud?: EstadoDetalle[] | null;
+  objUsuario?: {
+    id_usuario: number;
+    nombre_completo: string;
+    codigo: string | null;
+    correo?: string | null;
+    cedula?: string | null;
+  } | null;
+  documentos?: { id_documento: number; nombre: string; ruta_documento: string | null }[] | null;
+}
+
+/** Categoría de una solicitud a partir de su nombre ("Otro" si no se reconoce; "N/A" sin nombre). */
+export function categoriaPorNombre(nombreSolicitud: string | null | undefined): string {
+  if (!nombreSolicitud) return 'N/A';
+  if (nombreSolicitud.includes('Reingreso')) return 'Reingreso';
+  if (nombreSolicitud.includes('Homologacion') || nombreSolicitud.includes('Homologación')) return 'Homologación';
+  if (nombreSolicitud.includes('Paz y Salvo')) return 'Paz y Salvo';
+  if (nombreSolicitud.includes('ECAES')) return 'ECAES';
+  if (nombreSolicitud.includes('Curso Verano') || nombreSolicitud.includes('Curso Intersemestral'))
+    return 'Cursos de Verano';
+  return 'Otro';
+}
+
+/** Estados en orden cronológico; los que no tienen fecha van al principio, como hacía el backend. */
+function ordenarEstados(estados: EstadoDetalle[]): EstadoDetalle[] {
+  const instante = (e: EstadoDetalle) =>
+    e.fecha_registro_estado ? new Date(e.fecha_registro_estado).getTime() : -Infinity;
+  return [...estados].sort((a, b) => instante(a) - instante(b));
+}
+
+function aDetalle(s: SolicitudPorIdRespuesta): DetalleSolicitud {
+  const estados = ordenarEstados(s.estadosSolicitud ?? []);
+  const ultimo = estados.length > 0 ? estados[estados.length - 1] : null;
+  const documentos = (s.documentos ?? []).map((d) => ({
+    id_documento: d.id_documento,
+    nombre_documento: d.nombre,
+    ruta_documento: d.ruta_documento,
+  }));
+  const u = s.objUsuario;
+  return {
+    id_solicitud: s.id_solicitud,
+    nombre_solicitud: s.nombre_solicitud ?? '',
+    periodo_academico: s.periodo_academico,
+    fecha_registro_solicitud: s.fecha_registro_solicitud,
+    fecha_ceremonia: s.fecha_ceremonia ?? null,
+    tipo_solicitud_display: categoriaPorNombre(s.nombre_solicitud),
+    estado_actual: ultimo?.estado_actual ?? 'Sin estado',
+    fecha_ultimo_estado: ultimo?.fecha_registro_estado ?? null,
+    usuario: u
+      ? {
+          id_usuario: u.id_usuario,
+          nombre_completo: u.nombre_completo,
+          codigo: u.codigo,
+          correo: u.correo,
+          cedula: u.cedula,
+        }
+      : null,
+    historial_estados: estados,
+    total_estados: estados.length,
+    documentos,
+    total_documentos: documentos.length,
+  };
 }
 
 export interface HistorialResponse {
@@ -170,16 +234,12 @@ export class HistorialSolicitudesService {
   }
 
   /**
-   * Obtener historial completo de una solicitud específica
+   * Detalle de una solicitud con sus estados y documentos, a partir de `GET /api/solicitudes/{id}`
+   * (BUG-49: la ruta `/{id}/historial` que pedía antes no existe). Los errores se propagan.
    * @param id ID de la solicitud
    */
-  obtenerHistorialSolicitud(id: number): Observable<DetalleSolicitud> {
-    const url = ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(id);
-    return this.http.get<DetalleSolicitud>(url).pipe(
-      catchError((error) => {
-        throw error;
-      })
-    );
+  obtenerDetalleSolicitud(id: number): Observable<DetalleSolicitud> {
+    return this.http.get<SolicitudPorIdRespuesta>(ApiEndpoints.SOLICITUDES.BY_ID(id)).pipe(map(aDetalle));
   }
 
   /**

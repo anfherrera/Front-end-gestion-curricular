@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,6 +19,7 @@ import {
   HistorialResponse,
   HistorialSolicitud,
   FiltrosHistorial,
+  categoriaPorNombre,
 } from '@core/services/historial-solicitudes.service';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
@@ -32,6 +34,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   selector: 'app-historial-completo',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     MatCardModule,
     MatTableModule,
     MatFormFieldModule,
@@ -72,6 +75,7 @@ export class HistorialCompletoComponent implements OnInit {
     'periodo_academico',
     'estado_actual',
     'fecha_registro',
+    'acciones',
   ];
 
   tiposSolicitud: { codigo: string; display: string }[] = [];
@@ -146,17 +150,10 @@ export class HistorialCompletoComponent implements OnInit {
   }
 
   /**
-   * Detecta el tipo de solicitud desde el nombre
+   * Detecta el tipo de solicitud desde el nombre (la misma regla que el detalle)
    */
   detectarTipoSolicitud(nombreSolicitud: string): string {
-    if (!nombreSolicitud) return 'N/A';
-    if (nombreSolicitud.includes('Reingreso')) return 'Reingreso';
-    if (nombreSolicitud.includes('Homologacion') || nombreSolicitud.includes('Homologación')) return 'Homologación';
-    if (nombreSolicitud.includes('Paz y Salvo')) return 'Paz y Salvo';
-    if (nombreSolicitud.includes('ECAES')) return 'ECAES';
-    if (nombreSolicitud.includes('Curso Verano') || nombreSolicitud.includes('Curso Intersemestral'))
-      return 'Cursos de Verano';
-    return 'Otro';
+    return categoriaPorNombre(nombreSolicitud);
   }
 
   /**

@@ -19,6 +19,13 @@ const historialCompleto: Route = {
     import('./historial-completo/historial-completo.component').then((m) => m.HistorialCompletoComponent),
 };
 
+/** Detalle de una solicitud, enlazado desde el historial completo (BUG-49). */
+const detalleSolicitud: Route = {
+  path: 'historial-completo/detalle/:id',
+  loadComponent: () =>
+    import('./detalle-solicitud/detalle-solicitud.component').then((m) => m.DetalleSolicitudComponent),
+};
+
 const cursosIntersemestrales: Route = {
   path: 'cursos-intersemestrales',
   loadChildren: () =>
@@ -61,6 +68,7 @@ export const FuncionarioRoutes: Routes = [
   cursosIntersemestrales,
   moduloEstadistico,
   historialCompleto,
+  detalleSolicitud,
 ];
 
 export const CoordinadorRoutes: Routes = [
@@ -68,15 +76,8 @@ export const CoordinadorRoutes: Routes = [
   cursosIntersemestrales,
   moduloEstadistico,
   historialCompleto,
+  detalleSolicitud,
 ];
 
 /** El decano solo consulta: historial (con el detalle de una solicitud) y estadísticas. */
-export const DecanoRoutes: Routes = [
-  historialCompleto,
-  {
-    path: 'historial-completo/detalle/:id',
-    loadComponent: () =>
-      import('./detalle-solicitud/detalle-solicitud.component').then((m) => m.DetalleSolicitudComponent),
-  },
-  moduloEstadistico,
-];
+export const DecanoRoutes: Routes = [historialCompleto, detalleSolicitud, moduloEstadistico];

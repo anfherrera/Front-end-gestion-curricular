@@ -67,7 +67,7 @@ export class DetalleSolicitudComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.historialService.obtenerHistorialSolicitud(id).subscribe({
+    this.historialService.obtenerDetalleSolicitud(id).subscribe({
       next: (data) => {
         this.solicitud.set(data);
         this.loading.set(false);

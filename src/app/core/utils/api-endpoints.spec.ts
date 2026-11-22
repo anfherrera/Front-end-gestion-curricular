@@ -58,7 +58,7 @@ describe('ApiEndpoints', () => {
     expect(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO('Preinscripcion', 'FUNCIONARIO')).toBe(
       `${base}/cursos-intersemestrales/permisos-estado/Preinscripcion/FUNCIONARIO`
     );
-    expect(ApiEndpoints.SOLICITUDES.HISTORIAL_BY_ID(45)).toBe(`${base}/solicitudes/45/historial`);
+    expect(ApiEndpoints.SOLICITUDES.BY_ID(45)).toBe(`${base}/solicitudes/45`);
   });
 
   it('codifica el nombre del archivo al descargar un PDF', () => {

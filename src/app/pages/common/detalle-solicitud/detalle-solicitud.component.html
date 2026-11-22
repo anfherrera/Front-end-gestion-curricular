@@ -163,7 +163,6 @@
                   <mat-list-item>
                     <mat-icon matListItemIcon>description</mat-icon>
                     <div matListItemTitle>{{ documento.nombre_documento }}</div>
-                    <div matListItemLine>Tipo: {{ documento.tipo_documento }}</div>
                     <button
                       mat-icon-button
                       matListItemMeta
@@ -175,33 +174,6 @@
                   </mat-list-item>
                 }
               </mat-list>
-            </mat-card-content>
-          </mat-card>
-        }
-        <!-- Información Adicional (solo para Paz y Salvo) -->
-        @if (detalle.informacion_adicional && detalle.tipo_solicitud === 'PAZ_SALVO') {
-          <mat-card class="info-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>school</mat-icon>
-                Información Adicional
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="info-grid">
-                @if (detalle.informacion_adicional.titulo_trabajo_grado) {
-                  <div class="info-item">
-                    <span class="info-label">Título del Trabajo de Grado:</span>
-                    <span class="info-value">{{ detalle.informacion_adicional.titulo_trabajo_grado }}</span>
-                  </div>
-                }
-                @if (detalle.informacion_adicional.director_trabajo_grado) {
-                  <div class="info-item">
-                    <span class="info-label">Director:</span>
-                    <span class="info-value">{{ detalle.informacion_adicional.director_trabajo_grado }}</span>
-                  </div>
-                }
-              </div>
             </mat-card-content>
           </mat-card>
         }
