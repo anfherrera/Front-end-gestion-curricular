@@ -1,5 +1,16 @@
 <ng-template #pendientesTpl>
   <app-card-container title="Solicitudes Pendientes de Procesar">
+    @if (filtrarPendientesPorPeriodo()) {
+      <div class="filtro-periodo">
+        <app-periodo-filtro-selector
+          label="Filtrar por período académico"
+          [mostrarTodos]="false"
+          [mostrarInfo]="false"
+          (periodoChange)="periodoPendientesChange.emit($event)"
+        />
+      </div>
+    }
+
     <app-request-status-table
       #tablaPendientes
       [solicitudes]="filasPendientes()"

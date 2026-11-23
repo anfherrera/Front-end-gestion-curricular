@@ -12,7 +12,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ActivatedRoute } from '@angular/router';
-import { Observable, filter, switchMap } from 'rxjs';
+import { Observable, Subscription, filter, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -103,6 +103,8 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   readonly procesadas = signal<S[]>([]);
   readonly seleccionada = signal<S | null>(null);
   private periodo: string | null = null;
+  private periodoPendientes = '';
+  private cargaPendientes?: Subscription;
 
   ngOnInit(): void {
     this.cargarPendientes();
@@ -110,6 +112,9 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   }
 
   readonly esCoordinador = computed(() => this.config().rol === 'coordinador');
+  readonly filtrarPendientesPorPeriodo = computed(
+    () => this.config().proceso === 'homologacion' && !this.esCoordinador()
+  );
 
   readonly textoAprobar = computed(() =>
     this.esCoordinador() ? 'Aprobar Definitivamente' : `Aprobar ${this.config().nombreProceso}`
@@ -143,8 +148,11 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
 
   cargarPendientes(): void {
     const servicio = this.config().servicio;
-    const pendientes$ = this.esCoordinador() ? servicio.getCoordinadorRequests() : servicio.getPendingRequests();
-    pendientes$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.cargaPendientes?.unsubscribe();
+    const pendientes$ = this.esCoordinador()
+      ? servicio.getCoordinadorRequests()
+      : servicio.getPendingRequests(this.periodoPendientes || undefined);
+    this.cargaPendientes = pendientes$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (sols) => {
         this.pendientes.set(sols);
         this.refrescarSeleccion(sols);
@@ -168,6 +176,15 @@ export class RevisionAprobacionComponent<S extends SolicitudAprobable> implement
   onPeriodoChange(periodo: string | null): void {
     this.periodo = periodo;
     this.cargarProcesadas();
+  }
+
+  onPeriodoPendientesChange(periodo: string): void {
+    if (periodo === this.periodoPendientes) return;
+    this.periodoPendientes = periodo;
+    this.bandeja?.resetSelection();
+    this.seleccionar(null);
+    this.pendientes.set([]);
+    this.cargarPendientes();
   }
 
   onSolicitudSeleccionada(solicitud: S | null): void {

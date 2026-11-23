@@ -147,6 +147,23 @@ describe('RevisionAprobacionComponent', () => {
       expect(servicio.getSolicitudesProcesadasFuncionario).toHaveBeenCalledWith('2025-2');
     });
 
+    it('filtra las homologaciones pendientes por período sin cambiar el historial', () => {
+      expect(component.filtrarPendientesPorPeriodo()).toBeTrue();
+      component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
+      servicio.getPendingRequests.and.returnValue(of([solicitud(2, 'ENVIADA')]));
+
+      component.onPeriodoPendientesChange('2025-2');
+
+      expect(servicio.getPendingRequests).toHaveBeenCalledWith('2025-2');
+      expect(servicio.getSolicitudesProcesadasFuncionario).toHaveBeenCalledTimes(1);
+      expect(component.seleccionada()).toBeNull();
+      expect(component.pendientes().map((pendiente) => pendiente.id_solicitud)).toEqual([2]);
+
+      component.onPeriodoPendientesChange('');
+
+      expect(servicio.getPendingRequests.calls.mostRecent().args).toEqual([undefined]);
+    });
+
     it('tras añadir un comentario la selección pasa a la solicitud recargada', () => {
       component.onSolicitudSeleccionada(solicitud(1, 'ENVIADA'));
       servicio.agregarComentario.and.returnValue(of({}));
