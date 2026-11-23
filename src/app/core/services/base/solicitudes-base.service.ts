@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { LOCALE_ID, inject } from '@angular/core';
-import { Observable, catchError, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 import { tamanoEnMb } from '../../utils/texto.util';
 import { LoggerService } from '../logger.service';
@@ -10,7 +10,7 @@ export interface DocumentoConComentario {
   comentario?: string | null;
 }
 
-/** Oficio como lo devuelve /obtenerOficios/{idSolicitud}. */
+/** Oficio como lo devuelve /{idSolicitud}/oficios. */
 export interface OficioRespuesta {
   /** El backend envía aquí el id de la solicitud, no el del documento. */
   id: number;
@@ -54,14 +54,8 @@ export abstract class SolicitudesBaseService {
   protected readonly locale = inject(LOCALE_ID);
   protected readonly api = environment.apiUrl;
 
-  /**
-   * @param apiUrl     URL del recurso, p. ej. `${environment.apiUrl}/solicitudes-homologacion`
-   * @param rutaEstado endpoint (bajo apiUrl) que cambia el estado de una solicitud
-   */
-  protected constructor(
-    protected readonly apiUrl: string,
-    private readonly rutaEstado = 'actualizarEstadoSolicitud'
-  ) {}
+  /** @param apiUrl URL del recurso, p. ej. `${environment.apiUrl}/solicitudes-homologacion` */
+  protected constructor(protected readonly apiUrl: string) {}
 
   // ---------- Documentos (los usa documentation-viewer a través de [servicio]) ----------
 
@@ -92,26 +86,11 @@ export abstract class SolicitudesBaseService {
 
   // ---------- Ayudas para las subclases ----------
 
+  /** PUT /{id}/estado (convención de rutas EST-7): el id va en la ruta y no en el cuerpo. */
   protected cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<unknown> {
-    const body: { idSolicitud: number; nuevoEstado: string; comentario?: string } = { idSolicitud, nuevoEstado };
+    const body: { nuevoEstado: string; comentario?: string } = { nuevoEstado };
     if (comentario !== undefined) body.comentario = comentario;
-    return this.http.put(`${this.apiUrl}/${this.rutaEstado}`, body);
-  }
-
-  /** GET a una bandeja; el período solo se envía si viene (si no, el backend usa el actual). */
-  protected listar<T>(ruta: string, periodoAcademico?: string): Observable<T[]> {
-    const params = this.paramsPeriodo(periodoAcademico);
-    return this.http.get<T[]>(`${this.apiUrl}/${ruta}`, params.keys().length ? { params } : {});
-  }
-
-  /** Como listar, pero si falla devuelve una lista vacía (los historiales son secundarios). */
-  protected listarOVacio<T>(ruta: string, periodoAcademico?: string): Observable<T[]> {
-    return this.listar<T>(ruta, periodoAcademico).pipe(
-      catchError((error) => {
-        this.logger.error(`Error obteniendo ${ruta}`, error);
-        return of([] as T[]);
-      })
-    );
+    return this.http.put(`${this.apiUrl}/${idSolicitud}/estado`, body);
   }
 
   protected paramsPeriodo(periodoAcademico?: string): HttpParams {

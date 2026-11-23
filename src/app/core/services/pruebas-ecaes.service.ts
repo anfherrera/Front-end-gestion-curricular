@@ -134,13 +134,6 @@ export class PruebasEcaesService extends SolicitudesBaseService {
     return this.http.get<SolicitudEcaesResponse[]>(this.apiUrl, { params });
   }
 
-  /** ECAES usa PUT /{id}/estado (EST-7, paso 6): el id va en la ruta y no en el cuerpo. */
-  protected override cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<unknown> {
-    const body: { nuevoEstado: string; comentario?: string } = { nuevoEstado };
-    if (comentario !== undefined) body.comentario = comentario;
-    return this.http.put(`${this.apiUrl}/${idSolicitud}/estado`, body);
-  }
-
   /** El funcionario aprueba: la solicitud pasa directamente a PRE_REGISTRADO. */
   approveRequest(idSolicitud: number): Observable<unknown> {
     return this.cambiarEstado(idSolicitud, 'PRE_REGISTRADO');

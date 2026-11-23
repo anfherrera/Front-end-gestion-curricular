@@ -1,58 +1,68 @@
 import { HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { environment } from '@env/environment';
 import { OficioRespuesta, SolicitudesBaseService } from './solicitudes-base.service';
 
-/** Rutas propias de cada proceso; lo demás es igual en homologación y reingreso. */
-export interface RutasProceso {
-  /** Recurso bajo /api, p. ej. 'solicitudes-homologacion'. */
-  recurso: string;
-  /** Prefijo de las bandejas, p. ej. 'listarSolicitud-Homologacion'. */
-  listar: string;
-  /** Endpoint que cambia el estado. */
-  estado: string;
-  /** Tipo con que se genera el oficio, p. ej. 'OFICIO_HOMOLOGACION'. */
-  tipoOficio: string;
-}
+/** Rol que revisa una bandeja, como lo espera el parámetro `rol` del backend. */
+export type RolBandeja = 'funcionario' | 'coordinador' | 'secretaria';
 
 /**
  * Flujo de aprobación funcionario → coordinador → secretaría que comparten
  * homologación y reingreso: bandejas por rol, cambios de estado y oficios.
+ * Las rutas siguen la convención de EST-7: `GET /?rol=…&bandeja=pendientes|procesadas`,
+ * `PUT /{id}/estado` y `/{id}/oficios`.
  * @typeParam S tipo de solicitud que devuelve el backend
  */
 export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseService {
-  protected constructor(protected readonly rutas: RutasProceso) {
-    super(`${environment.apiUrl}/${rutas.recurso}`, rutas.estado);
+  /** @param recurso recurso bajo /api, p. ej. 'solicitudes-homologacion' */
+  protected constructor(recurso: string) {
+    super(`${environment.apiUrl}/${recurso}`);
   }
 
   // ---------- Bandejas ----------
 
   /** Pendientes del funcionario (último estado ENVIADA). */
   getPendingRequests(periodoAcademico?: string): Observable<S[]> {
-    return this.listar<S>(`${this.rutas.listar}/Funcionario`, periodoAcademico);
+    return this.bandeja('funcionario', 'pendientes', periodoAcademico);
   }
 
   getCoordinadorRequests(periodoAcademico?: string): Observable<S[]> {
-    return this.listar<S>(`${this.rutas.listar}/Coordinador`, periodoAcademico);
+    return this.bandeja('coordinador', 'pendientes', periodoAcademico);
   }
 
   /** Pendientes de secretaría (aprobadas por el coordinador). */
   getSecretariaRequests(periodoAcademico?: string): Observable<S[]> {
-    return this.listar<S>(`${this.rutas.listar}/Secretaria`, periodoAcademico);
+    return this.bandeja('secretaria', 'pendientes', periodoAcademico);
   }
 
+  /** Las que la secretaría ya aprobó (APROBADA). */
   getSecretariaApprovedRequests(periodoAcademico?: string): Observable<S[]> {
-    return this.listar<S>(`${this.rutas.listar}/Secretaria/Aprobadas`, periodoAcademico);
+    return this.bandeja('secretaria', 'procesadas', periodoAcademico);
   }
 
   /** Historial del funcionario (APROBADA_FUNCIONARIO). Si falla, lista vacía. */
   getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Observable<S[]> {
-    return this.listarOVacio<S>(`${this.rutas.listar}/Funcionario/Aprobadas`, periodoAcademico);
+    return this.oVacio(this.bandeja('funcionario', 'procesadas', periodoAcademico), 'funcionario');
   }
 
   /** Historial del coordinador (APROBADA_COORDINADOR). Si falla, lista vacía. */
   getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Observable<S[]> {
-    return this.listarOVacio<S>(`${this.rutas.listar}/Coordinador/Aprobadas`, periodoAcademico);
+    return this.oVacio(this.bandeja('coordinador', 'procesadas', periodoAcademico), 'coordinador');
+  }
+
+  /** GET /?rol=…&bandeja=…; el período solo se envía si viene (si no, el backend usa el actual o todos). */
+  protected bandeja(rol: RolBandeja, bandeja: 'pendientes' | 'procesadas', periodoAcademico?: string): Observable<S[]> {
+    const params = this.paramsPeriodo(periodoAcademico).set('rol', rol).set('bandeja', bandeja);
+    return this.http.get<S[]>(this.apiUrl, { params });
+  }
+
+  private oVacio(listado: Observable<S[]>, rol: RolBandeja): Observable<S[]> {
+    return listado.pipe(
+      catchError((error) => {
+        this.logger.error(`Error obteniendo las procesadas de ${rol}`, error);
+        return of([] as S[]);
+      })
+    );
   }
 
   // ---------- Cambios de estado ----------
@@ -84,20 +94,16 @@ export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseSer
   // ---------- Oficios ----------
 
   obtenerOficios(idSolicitud: number): Observable<OficioRespuesta[]> {
-    return this.http.get<OficioRespuesta[]>(`${this.apiUrl}/obtenerOficios/${idSolicitud}`);
-  }
-
-  generarOficio(idSolicitud: number, contenido: string): Observable<unknown> {
-    return this.http.post(`${this.apiUrl}/generarOficio`, { idSolicitud, contenido, tipo: this.rutas.tipoOficio });
+    return this.http.get<OficioRespuesta[]>(`${this.apiUrl}/${idSolicitud}/oficios`);
   }
 
   descargarOficio(idSolicitud: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob' });
+    return this.http.get(`${this.apiUrl}/${idSolicitud}/oficios/archivo`, { responseType: 'blob' });
   }
 
   /** Como descargarOficio, pero con la respuesta entera para leer el nombre en Content-Disposition. */
   descargarOficioConNombre(idSolicitud: number): Observable<HttpResponse<Blob>> {
-    return this.http.get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, {
+    return this.http.get(`${this.apiUrl}/${idSolicitud}/oficios/archivo`, {
       responseType: 'blob',
       observe: 'response',
     });
@@ -105,10 +111,6 @@ export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseSer
 
   /** Sube un PDF al endpoint genérico de archivos, asociado a la solicitud si se indica. */
   subirArchivoPDF(archivo: File, idSolicitud?: number): Observable<unknown> {
-    return this.subirPdf(
-      `${this.api}/archivos`,
-      archivo,
-      idSolicitud ? { idSolicitud: String(idSolicitud) } : {}
-    );
+    return this.subirPdf(`${this.api}/archivos`, archivo, idSolicitud ? { idSolicitud: String(idSolicitud) } : {});
   }
 }

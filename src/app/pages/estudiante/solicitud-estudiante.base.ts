@@ -111,7 +111,7 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
   }
 
   /**
-   * Homologación y reingreso: baja el oficio por /descargarOficio/{id}. Antes pide la lista de
+   * Homologación y reingreso: baja el oficio por /{id}/oficios/archivo. Antes pide la lista de
    * oficios y, si está vacía, avisa. El nombre sale de Content-Disposition o, si no viene, del
    * primer oficio o del respaldo. Sin la lista (error) se intenta igual la descarga.
    */

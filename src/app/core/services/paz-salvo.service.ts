@@ -175,13 +175,6 @@ export class PazSalvoService extends SolicitudesBaseService {
     return this.http.post<Solicitud>(this.apiUrl, body);
   }
 
-  /** Paz y salvo usa PUT /{id}/estado (EST-7, paso 7a): el id va en la ruta y no en el cuerpo. */
-  protected override cambiarEstado(idSolicitud: number, nuevoEstado: string, comentario?: string): Observable<unknown> {
-    const body: { nuevoEstado: string; comentario?: string } = { nuevoEstado };
-    if (comentario !== undefined) body.comentario = comentario;
-    return this.http.put(`${this.apiUrl}/${idSolicitud}/estado`, body);
-  }
-
   /** Funcionario aprueba. */
   approveRequest(requestId: number): Observable<unknown> {
     return this.cambiarEstado(requestId, 'APROBADA_FUNCIONARIO');
