@@ -78,7 +78,10 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       pazSalvoService.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe();
       tick();
 
-      const reqPazSalvo = httpMock.expectOne((req) => req.url.includes('/listarSolicitud-PazYSalvo/porRol'));
+      const reqPazSalvo = httpMock.expectOne(
+        (req) =>
+          req.url.endsWith('/solicitudes-pazysalvo') && req.method === 'GET' && req.params.get('rol') === 'ESTUDIANTE'
+      );
       reqPazSalvo.flush([
         {
           id_solicitud: 1,
@@ -116,7 +119,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // VERIFICACIÓN: Ambos servicios completaron sus operaciones
-      expect(reqPazSalvo.request.url).toContain('listarSolicitud-PazYSalvo');
+      expect(reqPazSalvo.request.url).toContain('solicitudes-pazysalvo');
       expect(reqEstadisticas.request.url).toContain('estadisticas-por-proceso');
     }));
 
@@ -132,7 +135,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
         .subscribe();
       tick();
 
-      const reqCrear = httpMock.expectOne((req) => req.url.includes('/crearSolicitud-PazYSalvo'));
+      const reqCrear = httpMock.expectOne((req) => req.url.endsWith('/solicitudes-pazysalvo') && req.method === 'POST');
       reqCrear.flush({ id_solicitud: 1, mensaje: 'Creada' });
       tick();
 
@@ -290,7 +293,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
 
       // Verificar que TODAS tienen el token
       const reqs = [
-        httpMock.expectOne((req) => req.url.includes('PazYSalvo')),
+        httpMock.expectOne((req) => req.url.endsWith('/solicitudes-pazysalvo')),
         httpMock.expectOne((req) => req.url.includes('cursos')),
         httpMock.expectOne((req) => req.url.includes('estadisticas')),
       ];
@@ -319,7 +322,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       });
       tick();
 
-      const reqPazSalvo = httpMock.expectOne((req) => req.url.includes('PazYSalvo'));
+      const reqPazSalvo = httpMock.expectOne((req) => req.url.endsWith('/solicitudes-pazysalvo'));
       reqPazSalvo.flush('Error', { status: 500, statusText: 'Error' });
       tick();
 
@@ -336,7 +339,7 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       tick();
 
       // VERIFICACIÓN: Un error no afecta otros servicios
-      expect(reqPazSalvo.request.url).toContain('PazYSalvo');
+      expect(reqPazSalvo.request.url).toContain('solicitudes-pazysalvo');
       expect(reqCursos.request.url).toContain('cursos');
     }));
   });

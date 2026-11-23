@@ -27,7 +27,7 @@ export class DocumentGeneratorService {
       if (request.datosDocumento.observaciones) {
         formData.append('observaciones', request.datosDocumento.observaciones);
       }
-      return this.http.post(`${this.api}/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`, formData, {
+      return this.http.post(`${this.api}/solicitudes-pazysalvo/${request.idSolicitud}/documento-generado`, formData, {
         responseType: 'blob',
       });
     }

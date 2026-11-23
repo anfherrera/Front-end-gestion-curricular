@@ -79,7 +79,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
         });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/crearSolicitud-PazYSalvo'));
+      const req = httpMock.expectOne((r) => r.url.endsWith('/solicitudes-pazysalvo') && r.method === 'POST');
       expect(req.request.method).toBe('POST');
       expect(req.request.body.idUsuario).toBe(idUsuario);
       req.flush({ id_solicitud: 1, mensaje: 'Solicitud creada' });
@@ -119,7 +119,9 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/listarSolicitud-PazYSalvo/porRol'));
+      const req = httpMock.expectOne(
+        (r) => r.url.endsWith('/solicitudes-pazysalvo') && r.params.get('rol') === 'ESTUDIANTE'
+      );
       req.flush(mockSolicitudes);
       tick();
     }));
@@ -151,7 +153,12 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.endsWith('/listarSolicitud-PazYSalvo/Funcionario'));
+      const req = httpMock.expectOne(
+        (r) =>
+          r.url.endsWith('/solicitudes-pazysalvo') &&
+          r.params.get('rol') === 'funcionario' &&
+          r.params.get('bandeja') === 'pendientes'
+      );
       req.flush(mockSolicitudes);
       tick();
     }));
@@ -177,7 +184,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/descargar-documento'));
+      const req = httpMock.expectOne((r) => r.url.includes('/solicitudes-pazysalvo/documentos?nombre='));
       expect(req.request.responseType).toBe('blob');
       req.flush(mockPDF);
       tick();
@@ -204,7 +211,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/descargarOficio/'));
+      const req = httpMock.expectOne((r) => r.url.endsWith('/oficios/archivo'));
       req.flush(mockPDF, { headers: { 'Content-Disposition': 'attachment; filename="OFICIO_PAZ_SALVO.pdf"' } });
       tick();
     }));
@@ -228,7 +235,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/actualizarEstadoSolicitud'));
+      const req = httpMock.expectOne((r) => r.url.endsWith('/solicitudes-pazysalvo/1/estado'));
       expect(req.request.method).toBe('PUT');
       expect(req.request.body.nuevoEstado).toBe('APROBADA_COORDINADOR');
       req.flush({ mensaje: 'Aprobación exitosa', oficioGenerado: true });
@@ -263,7 +270,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
 
       const req = httpMock.expectOne(
         (r) =>
-          r.url.includes('/listarSolicitud-PazYSalvo/porRol') &&
+          r.url.endsWith('/solicitudes-pazysalvo') &&
           r.params.get('rol') === 'ESTUDIANTE' &&
           r.params.get('idUsuario') === String(mockEstudiante.id_usuario)
       );
@@ -278,7 +285,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Paz y Salvo', () => {
       });
       tick();
 
-      const req = httpMock.expectOne((r) => r.url.includes('/descargarOficio/1'));
+      const req = httpMock.expectOne((r) => r.url.endsWith('/solicitudes-pazysalvo/1/oficios/archivo'));
       req.flush(new Blob(['%PDF']), {
         headers: { 'Content-Disposition': 'attachment; filename="OFICIO_PAZ_SALVO_1.pdf"' },
       });
