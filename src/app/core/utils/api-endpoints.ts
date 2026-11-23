@@ -21,14 +21,8 @@ export class ApiEndpoints {
 
   // ===== CURSOS INTERSEMESTRALES =====
   static readonly CURSOS_INTERSEMESTRALES = {
+    // Solo la usa /periodos-registrados, que no existe en el backend (BUG-51, abierto)
     BASE: `${this.BASE_URL}/cursos-intersemestrales`,
-    BY_ID: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}`,
-    BY_ESTUDIANTE: (estudianteId: string) => `${this.BASE_URL}/cursos-intersemestrales/estudiante/${estudianteId}`,
-    BY_ESTADO: (estado: string) => `${this.BASE_URL}/cursos-intersemestrales/estado/${estado}`,
-    APROBAR: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/aprobar`,
-    RECHAZAR: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/rechazar`,
-    DOCUMENTOS: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos/upload`,
 
     // ===== CURSOS DE VERANO =====
     CURSOS_VERANO: {
@@ -46,22 +40,16 @@ export class ApiEndpoints {
       INSCRIPCIONES: `${this.BASE_URL}/cursos-verano/inscripciones`,
       SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-verano/solicitudes-curso-nuevo`,
 
-      // Catálogos
-      CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/materias-disponibles`,
-      CONDICIONES: `${this.BASE_URL}/cursos-intersemestrales/condiciones-solicitud`,
+      // Catálogos (EST-7, paso 8c): materias, materias-disponibles, materias-filtro, docentes, salones y condiciones
+      CATALOGOS: `${this.BASE_URL}/cursos-verano/catalogos`,
+      CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-verano/catalogos/materias-disponibles`,
+      CONDICIONES: `${this.BASE_URL}/cursos-verano/catalogos/condiciones`,
+      SALONES: `${this.BASE_URL}/cursos-verano/catalogos/salones`,
 
-      // Nuevos endpoints de permisos
-      PERMISOS_ESTADO: (estado: string, rol: string) =>
-        `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,
-
-      // Endpoint de exportación a Excel
-      EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`,
-
-      // Endpoint de salones
-      SALONES: `${this.BASE_URL}/cursos-intersemestrales/salones`,
-
-      // Endpoint de estadísticas del dashboard
-      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-intersemestrales/dashboard/estadisticas`,
+      // Reportes (EST-7, paso 8c): solicitudes (?formato=excel), dashboard y seguimiento (?usuario=)
+      REPORTES_SOLICITUDES: `${this.BASE_URL}/cursos-verano/reportes/solicitudes`,
+      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-verano/reportes/dashboard`,
+      SEGUIMIENTO: `${this.BASE_URL}/cursos-verano/reportes/seguimiento`,
     },
   };
 

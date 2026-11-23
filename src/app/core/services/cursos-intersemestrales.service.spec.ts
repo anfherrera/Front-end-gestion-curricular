@@ -12,7 +12,6 @@ import {
   Materia,
 } from '../models/cursos-intersemestrales.model';
 import { AuthService } from './auth.service';
-import { ApiEndpoints } from '../utils/api-endpoints';
 import { environment } from '@env/environment';
 
 describe('CursosIntersemestralesService - Cursos de Verano', () => {
@@ -24,6 +23,8 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
   const CURSOS = `${environment.apiUrl}/cursos-verano/cursos`;
   const PREINSCRIPCIONES = `${environment.apiUrl}/cursos-verano/preinscripciones`;
   const INSCRIPCIONES = `${environment.apiUrl}/cursos-verano/inscripciones`;
+  const CATALOGOS = `${environment.apiUrl}/cursos-verano/catalogos`;
+  const REPORTES = `${environment.apiUrl}/cursos-verano/reportes`;
 
   const mockUsuario = {
     id_usuario: 1,
@@ -477,7 +478,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS_DISPONIBLES);
+      const req = httpMock.expectOne(`${CATALOGOS}/materias-disponibles`);
       expect(req.request.method).toBe('GET');
       req.flush(materias);
     });
@@ -490,7 +491,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CONDICIONES);
+      const req = httpMock.expectOne(`${CATALOGOS}/condiciones`);
       expect(req.request.method).toBe('GET');
       req.flush(condiciones);
     });
@@ -512,9 +513,33 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/solicitudes`);
+      const req = httpMock.expectOne(`${REPORTES}/solicitudes`);
       expect(req.request.method).toBe('GET');
       req.flush(solicitudes);
+    });
+
+    it('debe pedir el seguimiento del estudiante con ?usuario=', () => {
+      service.getSeguimientoActividades(5).subscribe();
+
+      const req = httpMock.expectOne(`${REPORTES}/seguimiento?usuario=5`);
+      expect(req.request.method).toBe('GET');
+      req.flush({ preinscripciones: [], inscripciones: [] });
+    });
+
+    it('debe pedir el dashboard de cursos de verano', () => {
+      service.getDashboardEstadisticas().subscribe();
+
+      const req = httpMock.expectOne(`${REPORTES}/dashboard`);
+      expect(req.request.method).toBe('GET');
+      req.flush({});
+    });
+
+    it('debe pedir los salones del catálogo', () => {
+      service.getSalones().subscribe();
+
+      const req = httpMock.expectOne(`${CATALOGOS}/salones`);
+      expect(req.request.method).toBe('GET');
+      req.flush([]);
     });
 
     it('debe obtener materias para filtro', (done) => {
@@ -525,7 +550,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/materias-filtro`);
+      const req = httpMock.expectOne(`${CATALOGOS}/materias-filtro`);
       expect(req.request.method).toBe('GET');
       req.flush(materias);
     });
@@ -595,7 +620,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         },
       });
       httpMock
-        .expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_SOLICITUDES_EXCEL)
+        .expectOne({ method: 'GET', url: `${REPORTES}/solicitudes?formato=excel` })
         .flush(new Blob(['x']), { headers: { 'Content-Type': 'text/html' } });
     });
   });
@@ -609,7 +634,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/materias`);
+      const req = httpMock.expectOne(`${CATALOGOS}/materias`);
       expect(req.request.method).toBe('GET');
       req.flush(materias);
     });
@@ -622,7 +647,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/docentes`);
+      const req = httpMock.expectOne(`${CATALOGOS}/docentes`);
       expect(req.request.method).toBe('GET');
       req.flush(docentes);
     });

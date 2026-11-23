@@ -234,7 +234,7 @@ export class CursosIntersemestralesService {
   }
 
   getTodasLasMaterias(): Observable<Materia[]> {
-    return this.http.get<Materia[]>(`${BASE}/materias`);
+    return this.http.get<Materia[]>(`${VERANO.CATALOGOS}/materias`);
   }
 
   /** Materias que el estudiante puede pedir como curso nuevo. */
@@ -244,11 +244,11 @@ export class CursosIntersemestralesService {
 
   /** Materias para el filtro de solicitudes (incluye "Todas las materias" con id 0). */
   getMateriasFiltro(): Observable<MateriaFiltro[]> {
-    return this.http.get<MateriaFiltro[]>(`${BASE}/materias-filtro`);
+    return this.http.get<MateriaFiltro[]>(`${VERANO.CATALOGOS}/materias-filtro`);
   }
 
   getTodosLosDocentes(): Observable<Docente[]> {
-    return this.http.get<Docente[]>(`${BASE}/docentes`);
+    return this.http.get<Docente[]>(`${VERANO.CATALOGOS}/docentes`);
   }
 
   getCondicionesSolicitud(): Observable<CondicionSolicitudVerano[]> {
@@ -282,7 +282,7 @@ export class CursosIntersemestralesService {
 
   /** Preinscripciones e inscripciones del estudiante. */
   getSeguimientoActividades(idUsuario: number): Observable<SeguimientoActividades> {
-    return this.http.get<SeguimientoActividades>(`${BASE}/seguimiento/${idUsuario}`);
+    return this.http.get<SeguimientoActividades>(VERANO.SEGUIMIENTO, { params: { usuario: String(idUsuario) } });
   }
 
   getPreinscripcionesUsuario(idUsuario: number): Observable<PreinscripcionUsuario[]> {
@@ -390,7 +390,7 @@ export class CursosIntersemestralesService {
       fechaInicio,
       fechaFin,
     });
-    return this.http.get<SolicitudVisualizar[]>(`${BASE}/solicitudes`, conParametros(params));
+    return this.http.get<SolicitudVisualizar[]>(VERANO.REPORTES_SOLICITUDES, conParametros(params));
   }
 
   exportarCursosPDF(periodoAcademico?: string | null, idPrograma?: number): Observable<ArchivoDescargado> {
@@ -417,6 +417,7 @@ export class CursosIntersemestralesService {
     fechaFin?: string
   ): Observable<ArchivoDescargado> {
     const params = parametros({
+      formato: 'excel',
       periodoAcademico: periodoFiltrado(periodoAcademico),
       idCurso,
       estado,
@@ -424,7 +425,7 @@ export class CursosIntersemestralesService {
       fechaFin,
     });
     return this.http
-      .get(VERANO.EXPORTAR_SOLICITUDES_EXCEL, { ...conParametros(params), responseType: 'blob', observe: 'response' })
+      .get(VERANO.REPORTES_SOLICITUDES, { ...conParametros(params), responseType: 'blob', observe: 'response' })
       .pipe(
         map((respuesta) => {
           const tipo = respuesta.headers.get('Content-Type') || '';

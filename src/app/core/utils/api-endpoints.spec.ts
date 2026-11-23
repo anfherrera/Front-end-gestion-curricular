@@ -56,8 +56,8 @@ describe('ApiEndpoints', () => {
     expect(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_ELEGIBLES(3)).toBe(
       `${base}/cursos-verano/cursos/3/estudiantes-elegibles`
     );
-    expect(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO('Preinscripcion', 'FUNCIONARIO')).toBe(
-      `${base}/cursos-intersemestrales/permisos-estado/Preinscripcion/FUNCIONARIO`
+    expect(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_CURSO(3)).toBe(
+      `${base}/cursos-verano/cursos/3/estudiantes`
     );
     expect(ApiEndpoints.SOLICITUDES.BY_ID(45)).toBe(`${base}/solicitudes/45`);
   });

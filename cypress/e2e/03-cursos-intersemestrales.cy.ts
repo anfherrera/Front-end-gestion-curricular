@@ -213,7 +213,7 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
     });
 
     it('E2E-CI-010: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/cursos-intersemestrales/**', {
+      cy.intercept('POST', /\/api\/cursos-verano\//, {
         statusCode: 201,
         body: {
           id: 1,
@@ -258,14 +258,10 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/solicitudes*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/reportes\/solicitudes/, {
         statusCode: 200,
         body: mockSolicitudes
       }).as('getSolicitudes');
-      cy.intercept('GET', '**/api/cursos-intersemestrales/solicitudes*', {
-        statusCode: 200,
-        body: mockSolicitudes
-      });
       
       cy.visit('/estudiante/cursos-intersemestrales/ver-solicitud');
       cy.wait(500);
@@ -288,10 +284,7 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         { id: 3, curso_nombre: 'Curso 3', estado: 'PENDIENTE' }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/solicitudes*', {
-        body: mockSolicitudes
-      });
-      cy.intercept('GET', '**/api/cursos-intersemestrales/solicitudes*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/reportes\/solicitudes/, {
         body: mockSolicitudes
       });
       
