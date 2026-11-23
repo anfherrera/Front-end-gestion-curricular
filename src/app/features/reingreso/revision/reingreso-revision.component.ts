@@ -7,7 +7,7 @@ import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,
   rolRevisionDeRuta,
-} from '../revision-aprobacion/revision-aprobacion.component';
+} from '../../../pages/common/revision-aprobacion/revision-aprobacion.component';
 
 /**
  * Revisión de reingreso de estudiantes para funcionario y coordinador.

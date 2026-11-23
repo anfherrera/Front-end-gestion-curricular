@@ -29,7 +29,7 @@ const detalleSolicitud: Route = {
 const cursosIntersemestrales: Route = {
   path: 'cursos-intersemestrales',
   loadChildren: () =>
-    import('./cursos-intersemestrales/cursos-intersemestrales.routes').then(
+    import('../../features/cursos-intersemestrales/revision/cursos-intersemestrales.routes').then(
       (m) => m.CursosIntersemestralesGestionRoutes
     ),
 };
@@ -41,19 +41,25 @@ function rutasDeRevision(rolRevision: RolRevision): Routes {
       path: 'paz-salvo',
       data: { rolRevision },
       loadComponent: () =>
-        import('./paz-salvo-revision/paz-salvo-revision.component').then((m) => m.PazSalvoRevisionComponent),
+        import('../../features/paz-salvo/revision/paz-salvo-revision.component').then(
+          (m) => m.PazSalvoRevisionComponent
+        ),
     },
     {
       path: 'reingreso-estudiante',
       data: { rolRevision },
       loadComponent: () =>
-        import('./reingreso-revision/reingreso-revision.component').then((m) => m.ReingresoRevisionComponent),
+        import('../../features/reingreso/revision/reingreso-revision.component').then(
+          (m) => m.ReingresoRevisionComponent
+        ),
     },
     {
       path: 'homologacion-asignaturas',
       data: { rolRevision },
       loadComponent: () =>
-        import('./homologacion-revision/homologacion-revision.component').then((m) => m.HomologacionRevisionComponent),
+        import('../../features/homologacion/revision/homologacion-revision.component').then(
+          (m) => m.HomologacionRevisionComponent
+        ),
     },
   ];
 }
@@ -63,7 +69,9 @@ export const FuncionarioRoutes: Routes = [
   {
     path: 'pruebas-ecaes',
     loadComponent: () =>
-      import('../funcionario/pruebas-ecaes/pruebas-ecaes.component').then((m) => m.PruebasEcaesFuncionarioComponent),
+      import('../../features/pruebas-ecaes/revision/pruebas-ecaes.component').then(
+        (m) => m.PruebasEcaesFuncionarioComponent
+      ),
   },
   cursosIntersemestrales,
   moduloEstadistico,

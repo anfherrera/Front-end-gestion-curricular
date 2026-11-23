@@ -19,7 +19,7 @@ import { PeriodosAcademicosService } from '@core/services/periodos-academicos.se
 import { getPeriodoActual } from '@core/utils/periodo.utils';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
-import { SolicitudEstudianteBase } from '../solicitud-estudiante.base';
+import { SolicitudEstudianteBase } from '../../../pages/estudiante/solicitud-estudiante.base';
 import { documentoDeResolucion, nombreDesdeRuta } from './resolucion-reingreso';
 
 @Component({
@@ -34,7 +34,7 @@ import { documentoDeResolucion, nombreDesdeRuta } from './resolucion-reingreso';
     RequestStatusTableComponent,
   ],
   templateUrl: './reingreso-estudiante.component.html',
-  styleUrls: ['../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css'],
+  styleUrls: ['../../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReingresoEstudianteComponent extends SolicitudEstudianteBase<SolicitudReingresoDTORespuesta> {

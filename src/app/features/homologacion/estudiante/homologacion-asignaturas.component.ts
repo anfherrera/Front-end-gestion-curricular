@@ -23,7 +23,7 @@ import { HomologacionAsignaturasService } from '@core/services/homologacion-asig
 import { FormatosInstitucionalesService } from '@core/services/formatos-institucionales.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
-import { SolicitudEstudianteBase } from '../solicitud-estudiante.base';
+import { SolicitudEstudianteBase } from '../../../pages/estudiante/solicitud-estudiante.base';
 
 @Component({
   selector: 'app-solicitud-homologacion',
@@ -40,7 +40,7 @@ import { SolicitudEstudianteBase } from '../solicitud-estudiante.base';
     RequestStatusTableComponent,
   ],
   templateUrl: './homologacion-asignaturas.component.html',
-  styleUrls: ['../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css'],
+  styleUrls: ['../../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomologacionAsignaturasComponent extends SolicitudEstudianteBase<SolicitudHomologacionDTORespuesta> {

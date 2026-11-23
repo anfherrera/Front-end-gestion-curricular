@@ -7,7 +7,7 @@ import { RouterModule, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { AuthService } from '@core/services/auth.service';
-import { PazSalvoDialogComponent } from '../../estudiante/paz-salvo/paz-salvo-dialog.component';
+import { PazSalvoDialogComponent } from '../../../features/paz-salvo/estudiante/paz-salvo-dialog.component';
 
 /** Tarjeta de proceso del inicio; las `adminOnly` llevan a `/admin/<route>`. */
 interface OpcionProceso {

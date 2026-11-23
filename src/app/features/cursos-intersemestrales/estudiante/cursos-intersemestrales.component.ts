@@ -12,7 +12,7 @@ import { filter } from 'rxjs';
   selector: 'app-cursos-intersemestrales',
   imports: [RouterModule, MatIconModule, MatBadgeModule, MatButtonModule, MatTooltipModule],
   templateUrl: './cursos-intersemestrales.component.html',
-  styleUrls: ['../../common/cursos-intersemestrales/menu-cursos-comun.css', './cursos-intersemestrales.component.css'],
+  styleUrls: ['../menu-cursos-comun.css', './cursos-intersemestrales.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CursosIntersemestralesComponent implements OnInit {

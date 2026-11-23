@@ -35,16 +35,17 @@ src/app/
 ├── core/           Servicios HTTP, guards, interceptores (JWT, errores, límite de login), modelos, enums y utilidades
 ├── shared/         Componentes reutilizables (solicitudes-bandeja, confirm-dialog, periodo-filtro-selector…)
 ├── layout/         Header, sidebar (menú por rol en sidebar.config.ts) y footer
+├── features/       Procesos académicos, con vistas de estudiante y revisión
 └── pages/
-    ├── common/     Pantallas compartidas por varios roles (revisión de cada proceso, módulo estadístico, perfil…)
-    ├── estudiante/ funcionario/ secretaria/ admin/   Pantallas propias de cada rol
+    ├── common/     Rutas de gestión y pantallas compartidas (módulo estadístico, perfil…)
+    ├── estudiante/ secretaria/ admin/   Rutas por rol y pantallas transversales
     └── login/ welcome/
 src/styles/         Tokens de color y tipografía, y clases comunes (componentes.css)
 ```
 
 ### Revisión por rol
 
-Las bandejas de revisión de paz y salvo, reingreso y homologación están en `pages/common/<proceso>-revision` y se apoyan en `RevisionAprobacionComponent` (`pages/common/revision-aprobacion`): el mismo componente sirve al funcionario, al coordinador y a secretaría, y lo que cambia por rol (endpoints, acciones, documentos) se pasa como configuración. Las rutas de cada rol y sus guards están en `app.routes.ts` y `pages/common/*.routes.ts`.
+Los cinco procesos académicos se organizan en `features/<proceso>/estudiante` y `features/<proceso>/revision`. Las pantallas de secretaría de paz y salvo, reingreso y homologación están en `revision/secretaria`. Funcionario y coordinador comparten `RevisionAprobacionComponent` en `pages/common/revision-aprobacion`. Las rutas y sus guards se declaran en `app.routes.ts` y en los archivos `*.routes.ts` de cada rol o proceso.
 
 La app usa el formato colombiano (`LOCALE_ID` = `es-CO` en `app.config.ts`) para fechas y números.
 
@@ -68,6 +69,8 @@ La app usa el formato colombiano (`LOCALE_ID` = `es-CO` en `app.config.ts`) para
 Cobertura: `coverage/front-end-gestion-curricular/index.html`. Con `--code-coverage` la ejecución falla si la cobertura baja de los mínimos de `karma.conf.js` (`coverageReporter.check`).
 
 Antes de subir cambios: `npx tsc -p tsconfig.app.json --noEmit`, `npx tsc -p tsconfig.spec.json --noEmit`, `npm run lint`, `npx ng build` y `npx ng test --watch=false`.
+
+`npm install` configura el gancho de pre-commit con Husky. Al hacer commit, lint-staged ejecuta ESLint sobre los archivos TypeScript y HTML de `src/` preparados en Git.
 
 ## Configuración
 

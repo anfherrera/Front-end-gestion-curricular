@@ -12,7 +12,7 @@ import { RequestStatusTableComponent } from '@shared/components/request-status/r
 import { InfoPreregistroDialogComponent } from './info-preregistro-dialog/info-preregistro-dialog.component';
 import { FechasEcaesComponent } from './fechas-ecaes/fechas-ecaes.component';
 import { PreregistroEcaesComponent } from './preregistro-ecaes/preregistro-ecaes.component';
-import { SeguimientoSolicitudesBase } from '../seguimiento-solicitudes.base';
+import { SeguimientoSolicitudesBase } from '../../../pages/estudiante/seguimiento-solicitudes.base';
 
 /**
  * Pruebas ECAES del estudiante: el calendario (`app-fechas-ecaes`), el preregistro

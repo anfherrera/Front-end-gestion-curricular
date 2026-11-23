@@ -19,7 +19,7 @@ import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-
 import { Documento, RequiredDocsComponent } from '@shared/components/required-docs/required-docs.component';
 import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { normalizarNombreArchivo } from '@core/utils/texto.util';
-import { SolicitudEstudianteBase } from '../solicitud-estudiante.base';
+import { SolicitudEstudianteBase } from '../../../pages/estudiante/solicitud-estudiante.base';
 
 /** Programas cuyo paz y salvo exige trabajo de grado y el formato PPH o TIH. */
 const PROGRAMAS_CON_TRABAJO_DE_GRADO = ['sistemas', 'electronica', 'automatica', 'automatizacion'];
@@ -52,7 +52,7 @@ interface DatosSolicitudPazSalvo {
     RequiredDocsComponent,
   ],
   templateUrl: './paz-salvo.component.html',
-  styleUrls: ['../solicitud-estudiante-comun.css', './paz-salvo.component.css'],
+  styleUrls: ['../../solicitud-estudiante-comun.css', './paz-salvo.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologacionDTORespuesta> {

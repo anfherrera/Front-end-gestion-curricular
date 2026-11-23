@@ -2,7 +2,10 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { PazSalvoService } from '@core/services/paz-salvo.service';
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
-import { ConfigOficioSecretaria, OficioSecretariaComponent } from '../oficio-secretaria/oficio-secretaria.component';
+import {
+  ConfigOficioSecretaria,
+  OficioSecretariaComponent,
+} from '../../../../pages/secretaria/oficio-secretaria/oficio-secretaria.component';
 
 /** Secretaría: oficio de paz y salvo. */
 @Component({
