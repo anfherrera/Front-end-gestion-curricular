@@ -20,7 +20,8 @@ describe('ApiEndpoints', () => {
 
   it('usa la URL del entorno como base', () => {
     expect(ApiEndpoints.BASE_URL).toBe(environment.apiUrl);
-    expect(todos.length).toBeGreaterThan(100);
+    // Solo comprueba que el recorrido encuentra los endpoints (100 tras el paso 8b de EST-7)
+    expect(todos.length).toBeGreaterThan(80);
   });
 
   it('todas las URLs fijas cuelgan de la base y no llevan barra final ni dobles barras', () => {
@@ -36,7 +37,7 @@ describe('ApiEndpoints', () => {
 
   it('todas las URLs con parámetro cuelgan de la base e incluyen el valor recibido', () => {
     const funciones = todos.filter(([, v]) => typeof v === 'function');
-    expect(funciones.length).toBeGreaterThan(50);
+    expect(funciones.length).toBeGreaterThan(40);
     for (const [ruta, valor] of funciones) {
       const fn = valor as (...args: unknown[]) => string;
       const args = Array.from({ length: fn.length }, (_, i) => `p${i}x`);
@@ -52,8 +53,8 @@ describe('ApiEndpoints', () => {
 
   it('arma las rutas con parámetros como las espera el backend', () => {
     const base = environment.apiUrl;
-    expect(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES_CURSO(3)).toBe(
-      `${base}/cursos-intersemestrales/cursos-verano/preinscripciones/curso/3`
+    expect(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_ELEGIBLES(3)).toBe(
+      `${base}/cursos-verano/cursos/3/estudiantes-elegibles`
     );
     expect(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PERMISOS_ESTADO('Preinscripcion', 'FUNCIONARIO')).toBe(
       `${base}/cursos-intersemestrales/permisos-estado/Preinscripcion/FUNCIONARIO`

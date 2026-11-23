@@ -37,33 +37,18 @@ export class ApiEndpoints {
       CURSOS: `${this.BASE_URL}/cursos-verano/cursos`,
       ESTUDIANTES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-verano/cursos/${idCurso}/estudiantes`,
 
-      // Endpoints de gestión
-      PREINSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones`,
-      INSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones`,
-      SOLICITUDES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/solicitudes`,
+      ESTUDIANTES_ELEGIBLES: (idCurso: number) =>
+        `${this.BASE_URL}/cursos-verano/cursos/${idCurso}/estudiantes-elegibles`,
+
+      // Preinscripciones e inscripciones (EST-7, paso 8b): POST; GET ?usuario= o ?curso=;
+      // PUT /{id}/estado con nuevoEstado y, en preinscripciones, PUT /{id}/observaciones
+      PREINSCRIPCIONES: `${this.BASE_URL}/cursos-verano/preinscripciones`,
+      INSCRIPCIONES: `${this.BASE_URL}/cursos-verano/inscripciones`,
+      SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-verano/solicitudes-curso-nuevo`,
+
+      // Catálogos
       CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/materias-disponibles`,
       CONDICIONES: `${this.BASE_URL}/cursos-intersemestrales/condiciones-solicitud`,
-      SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo`,
-      SOLICITUDES_CURSO_NUEVO_USUARIO: (idUsuario: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo/usuario/${idUsuario}`,
-      PREINSCRIPCIONES_CURSO: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/curso/${idCurso}`,
-      INSCRIPCIONES_CURSO: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/curso/${idCurso}`,
-      ESTUDIANTES_ELEGIBLES: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/estudiantes-elegibles/${idCurso}`,
-      APROBAR_PREINSCRIPCION: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/aprobar`,
-      RECHAZAR_PREINSCRIPCION: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/rechazar`,
-      VALIDAR_PAGO: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/validar-pago`,
-      COMPLETAR_INSCRIPCION: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/completar`,
-      ACEPTAR_INSCRIPCION: (idPreinscripcion: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/aceptar`,
-      RECHAZAR_INSCRIPCION: (idPreinscripcion: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/rechazar`,
 
       // Nuevos endpoints de permisos
       PERMISOS_ESTADO: (estado: string, rol: string) =>

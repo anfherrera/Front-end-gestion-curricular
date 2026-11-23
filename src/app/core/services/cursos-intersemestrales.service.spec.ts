@@ -5,6 +5,7 @@ import {
   CursoOfertadoVerano,
   CreatePreinscripcionDTO,
   CreateInscripcionDTO,
+  CreateSolicitudCursoNuevoDTO,
   SolicitudCursoVerano,
   CondicionSolicitudVerano,
   EstudianteElegible,
@@ -21,6 +22,8 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
 
   const BASE_URL = `${environment.apiUrl}/cursos-intersemestrales`;
   const CURSOS = `${environment.apiUrl}/cursos-verano/cursos`;
+  const PREINSCRIPCIONES = `${environment.apiUrl}/cursos-verano/preinscripciones`;
+  const INSCRIPCIONES = `${environment.apiUrl}/cursos-verano/inscripciones`;
 
   const mockUsuario = {
     id_usuario: 1,
@@ -157,10 +160,37 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         expect(resp.id_solicitud).toBe(501);
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES);
+      const req = httpMock.expectOne(PREINSCRIPCIONES);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(payload);
       req.flush(respuesta);
+    });
+
+    it('debe obtener las preinscripciones de un usuario con ?usuario=', () => {
+      service.getPreinscripcionesUsuario(7).subscribe((resp) => {
+        expect(resp).toEqual([]);
+      });
+
+      const req = httpMock.expectOne(`${PREINSCRIPCIONES}?usuario=7`);
+      expect(req.request.method).toBe('GET');
+      req.flush([]);
+    });
+
+    it('debe crear una solicitud de curso nuevo', () => {
+      const payload: CreateSolicitudCursoNuevoDTO = {
+        idUsuario: 1,
+        nombreCompleto: 'Ana',
+        codigo: '1046',
+        curso: 'Redes',
+        condicion: CondicionSolicitudVerano.Primera_Vez,
+      };
+
+      service.crearSolicitudCursoNuevo(payload).subscribe();
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/cursos-verano/solicitudes-curso-nuevo`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(payload);
+      req.flush({});
     });
 
     it('debe crear una inscripción', () => {
@@ -176,7 +206,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         expect(resp.id_solicitud).toBe(701);
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.INSCRIPCIONES);
+      const req = httpMock.expectOne(INSCRIPCIONES);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(payload);
       req.flush(respuesta);
@@ -189,9 +219,18 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         expect(resp).toEqual({ success: true });
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/preinscripciones/10/aprobar`);
+      const req = httpMock.expectOne(`${PREINSCRIPCIONES}/10/estado`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual({ comentarios: 'Aprobada por cumplimiento' });
+      expect(req.request.body).toEqual({ nuevoEstado: 'aprobada', comentarios: 'Aprobada por cumplimiento' });
+      req.flush({ success: true });
+    });
+
+    it('debe aprobar una preinscripción sin comentarios', () => {
+      service.aprobarPreinscripcion(13).subscribe();
+
+      const req = httpMock.expectOne(`${PREINSCRIPCIONES}/13/estado`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ nuevoEstado: 'aprobada' });
       req.flush({ success: true });
     });
 
@@ -200,16 +239,16 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         expect(resp).toEqual({ success: false });
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/preinscripciones/11/rechazar`);
+      const req = httpMock.expectOne(`${PREINSCRIPCIONES}/11/estado`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual({ motivo: 'No cumple requisitos' });
+      expect(req.request.body).toEqual({ nuevoEstado: 'rechazada', motivo: 'No cumple requisitos' });
       req.flush({ success: false });
     });
 
     it('debe actualizar observaciones de una preinscripción', () => {
       service.actualizarObservacionesPreinscripcion(12, 'Agregar soporte').subscribe();
 
-      const req = httpMock.expectOne(`${BASE_URL}/preinscripciones/12/observaciones`);
+      const req = httpMock.expectOne(`${PREINSCRIPCIONES}/12/observaciones`);
       expect(req.request.method).toBe('PUT');
       expect(req.request.body).toEqual({ observaciones: 'Agregar soporte' });
       req.flush({});
@@ -220,18 +259,18 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     it('debe aceptar una inscripción con observaciones', () => {
       service.aceptarInscripcion(20, 'Documentos completos').subscribe();
 
-      const req = httpMock.expectOne(`${BASE_URL}/inscripciones/20/aceptar`);
+      const req = httpMock.expectOne(`${INSCRIPCIONES}/20/estado`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual({ observaciones: 'Documentos completos' });
+      expect(req.request.body).toEqual({ nuevoEstado: 'aceptada', observaciones: 'Documentos completos' });
       req.flush({});
     });
 
     it('debe rechazar una inscripción con motivo', () => {
       service.rechazarInscripcion(21, 'Pago no recibido').subscribe();
 
-      const req = httpMock.expectOne(`${BASE_URL}/inscripciones/21/rechazar`);
+      const req = httpMock.expectOne(`${INSCRIPCIONES}/21/estado`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual({ motivo: 'Pago no recibido' });
+      expect(req.request.body).toEqual({ nuevoEstado: 'rechazada', motivo: 'Pago no recibido' });
       req.flush({});
     });
 
@@ -400,7 +439,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/preinscripciones/curso/5`);
+      const req = httpMock.expectOne(`${PREINSCRIPCIONES}?curso=5`);
       expect(req.request.method).toBe('GET');
       req.flush(respuestaBackend);
     });
@@ -423,7 +462,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.ESTUDIANTES_ELEGIBLES(10));
+      const req = httpMock.expectOne(`${CURSOS}/10/estudiantes-elegibles`);
       expect(req.request.method).toBe('GET');
       req.flush(estudiantesElegibles);
     });

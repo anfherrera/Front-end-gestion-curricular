@@ -215,7 +215,9 @@ describe('PRUEBAS DE INTEGRACIÓN - Múltiples Servicios', () => {
       cursosService.getPreinscripcionesUsuario(1).subscribe();
       tick();
 
-      const reqMis = httpMock.expectOne((req) => req.url.includes('/preinscripciones/usuario/1'));
+      const reqMis = httpMock.expectOne(
+        (req) => req.url.endsWith('/cursos-verano/preinscripciones') && req.params.get('usuario') === '1'
+      );
       reqMis.flush([
         {
           id: 1,

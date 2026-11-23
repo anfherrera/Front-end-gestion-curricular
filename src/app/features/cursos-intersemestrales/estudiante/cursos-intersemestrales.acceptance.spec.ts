@@ -155,7 +155,7 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       tick();
 
       const req = httpMock.expectOne(
-        `${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/${mockEstudiante.id_usuario}`
+        `${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES}?usuario=${mockEstudiante.id_usuario}`
       );
       req.flush(mockPreinscripciones);
       tick();
@@ -268,7 +268,9 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE}/preinscripciones/usuario/1`);
+      const req = httpMock.expectOne(
+        `${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCIONES}?usuario=1`
+      );
       expect(req.request.method).toBe('GET');
       req.flush(mockPreinscripciones);
       tick();

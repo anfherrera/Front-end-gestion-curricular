@@ -286,13 +286,16 @@ export class CursosIntersemestralesService {
   }
 
   getPreinscripcionesUsuario(idUsuario: number): Observable<PreinscripcionUsuario[]> {
-    return this.http.get<PreinscripcionUsuario[]>(`${BASE}/preinscripciones/usuario/${idUsuario}`);
+    return this.http.get<PreinscripcionUsuario[]>(VERANO.PREINSCRIPCIONES, {
+      params: { usuario: String(idUsuario) },
+    });
   }
 
   // ====== PREINSCRIPCIONES (FUNCIONARIO) ======
 
   getPreinscripcionesPorCurso(idCurso: number): Observable<SolicitudCursoVerano[]> {
-    return this.http.get<PreinscripcionCurso[]>(`${BASE}/preinscripciones/curso/${idCurso}`).pipe(
+    const params = { curso: String(idCurso) };
+    return this.http.get<PreinscripcionCurso[]>(VERANO.PREINSCRIPCIONES, { params }).pipe(
       map((preinscripciones) =>
         preinscripciones.map((p) => ({
           id_solicitud: p.id_solicitud,
@@ -318,15 +321,19 @@ export class CursosIntersemestralesService {
   }
 
   aprobarPreinscripcion(id: number, comentarios?: string): Observable<RespuestaAccion> {
-    return this.http.put<RespuestaAccion>(`${BASE}/preinscripciones/${id}/aprobar`, comentarios ? { comentarios } : {});
+    const cuerpo = comentarios ? { nuevoEstado: 'aprobada', comentarios } : { nuevoEstado: 'aprobada' };
+    return this.http.put<RespuestaAccion>(`${VERANO.PREINSCRIPCIONES}/${id}/estado`, cuerpo);
   }
 
   rechazarPreinscripcion(id: number, motivo: string): Observable<RespuestaAccion> {
-    return this.http.put<RespuestaAccion>(`${BASE}/preinscripciones/${id}/rechazar`, { motivo });
+    return this.http.put<RespuestaAccion>(`${VERANO.PREINSCRIPCIONES}/${id}/estado`, {
+      nuevoEstado: 'rechazada',
+      motivo,
+    });
   }
 
   actualizarObservacionesPreinscripcion(id: number, observaciones: string): Observable<RespuestaAccion> {
-    return this.http.put<RespuestaAccion>(`${BASE}/preinscripciones/${id}/observaciones`, { observaciones });
+    return this.http.put<RespuestaAccion>(`${VERANO.PREINSCRIPCIONES}/${id}/observaciones`, { observaciones });
   }
 
   // ====== INSCRIPCIONES (FUNCIONARIO) ======
@@ -339,11 +346,17 @@ export class CursosIntersemestralesService {
   }
 
   aceptarInscripcion(idInscripcion: number, observaciones = 'Inscripción aceptada'): Observable<RespuestaAccion> {
-    return this.http.put<RespuestaAccion>(`${BASE}/inscripciones/${idInscripcion}/aceptar`, { observaciones });
+    return this.http.put<RespuestaAccion>(`${VERANO.INSCRIPCIONES}/${idInscripcion}/estado`, {
+      nuevoEstado: 'aceptada',
+      observaciones,
+    });
   }
 
   rechazarInscripcion(idInscripcion: number, motivo: string): Observable<RespuestaAccion> {
-    return this.http.put<RespuestaAccion>(`${BASE}/inscripciones/${idInscripcion}/rechazar`, { motivo });
+    return this.http.put<RespuestaAccion>(`${VERANO.INSCRIPCIONES}/${idInscripcion}/estado`, {
+      nuevoEstado: 'rechazada',
+      motivo,
+    });
   }
 
   descargarComprobantePago(idInscripcion: number): Observable<Blob> {

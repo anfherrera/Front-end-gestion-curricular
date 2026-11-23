@@ -339,7 +339,7 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/preinscripciones*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/preinscripciones\?(.*&)?usuario=/, {
         statusCode: 200,
         body: mockCursos
       });
