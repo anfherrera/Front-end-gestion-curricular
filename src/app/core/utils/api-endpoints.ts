@@ -11,12 +11,7 @@ export class ApiEndpoints {
   // ===== PERÍODOS ACADÉMICOS =====
   // Rutas de la convención del backend (EST-7): GET /, GET /?desde=AAAA, GET /actual y GET /{periodo}.
   static readonly PERIODOS_ACADEMICOS = {
-    BASE: `${this.BASE_URL}/periodos-academicos`,
     TODOS: `${this.BASE_URL}/periodos-academicos`,
-    /** Desde el año actual (antes /futuros). Se calcula al leerlo, para que no se quede en el año de carga. */
-    get FUTUROS(): string {
-      return `${environment.apiUrl}/periodos-academicos?desde=${new Date().getFullYear()}`;
-    },
     /** Últimos 5 años, sin bajar de 2020 (antes /recientes). */
     get RECIENTES(): string {
       return `${environment.apiUrl}/periodos-academicos?desde=${Math.max(2020, new Date().getFullYear() - 4)}`;

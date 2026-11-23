@@ -99,11 +99,6 @@ export class CursosIntersemestralesService {
     return this.periodos(ApiEndpoints.PERIODOS_ACADEMICOS.TODOS);
   }
 
-  /** Solo períodos futuros. Si falla, lista vacía. */
-  getPeriodosFuturos(): Observable<string[]> {
-    return this.periodos(ApiEndpoints.PERIODOS_ACADEMICOS.FUTUROS);
-  }
-
   /** Períodos de los últimos 5 años. Si falla, lista vacía. */
   getPeriodosRecientes(): Observable<string[]> {
     return this.periodos(ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES);

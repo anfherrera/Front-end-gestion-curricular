@@ -327,19 +327,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
       req.flush(periodos);
     });
 
-    it('debe obtener períodos futuros', (done) => {
-      const periodosFuturos = ['2025-2', '2026-1', '2026-2'];
-
-      service.getPeriodosFuturos().subscribe((result) => {
-        expect(result).toEqual(periodosFuturos);
-        done();
-      });
-
-      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos?desde=${new Date().getFullYear()}`);
-      expect(req.request.method).toBe('GET');
-      req.flush(periodosFuturos);
-    });
-
     it('debe obtener períodos recientes', (done) => {
       const periodosRecientes = ['2024-1', '2024-2', '2025-1'];
 
