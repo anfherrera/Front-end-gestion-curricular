@@ -81,6 +81,8 @@ Cypress.Commands.add('esperarCargaCompleta', () => {
 });
 
 // Declaración de tipos para TypeScript
+export {};
+
 declare global {
   namespace Cypress {
     interface Chainable {

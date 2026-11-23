@@ -251,7 +251,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       visitarPazSalvo();
       cy.wait('@listarSolicitudesAprobadas');
-      cy.contains('APROBADA', { timeout: 5000 }).should('be.visible');
+      cy.contains('tr', 'Solicitud 1').should('contain.text', 'Aprobada');
       cy.registrarInteraccionExitosa();
     });
 
@@ -278,12 +278,19 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
         statusCode: 200,
         body: mockSolicitudes
       }).as('listarSolicitudesRechazadas');
+      cy.intercept('GET', '**/api/solicitudes-pazysalvo/1/comentarios', {
+        body: { comentarioRechazo: 'Documentos incompletos', documentosConComentarios: [] }
+      }).as('comentariosRechazo');
       
       visitarPazSalvo();
       cy.wait('@listarSolicitudesRechazadas');
       
-      // Buscar indicador de solicitud rechazada
-      cy.contains('RECHAZADA', { timeout: 5000 }).should('be.visible');
+      cy.contains('tr', 'Solicitud Rechazada').within(() => {
+        cy.contains('td', 'Rechazada').should('be.visible');
+        cy.contains('button', 'comment').click();
+      });
+      cy.wait('@comentariosRechazo');
+      cy.get('mat-dialog-container').should('contain.text', 'Documentos incompletos');
       
       cy.registrarInteraccionExitosa();
     });
@@ -308,7 +315,8 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       cy.intercept('GET', '**/api/solicitudes-pazysalvo/*/oficios/archivo', {
         statusCode: 200,
-        body: 'PDF Content'
+        headers: { 'content-type': 'application/pdf' },
+        body: '%PDF-1.4'
       }).as('descargarOficio');
       
       cy.intercept('GET', '**/api/solicitudes-pazysalvo?rol=ESTUDIANTE*', {
@@ -318,7 +326,11 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       visitarPazSalvo();
       cy.wait('@listarSolicitudesParaDescarga');
-      cy.contains('APROBADA', { timeout: 5000 }).should('be.visible');
+      cy.contains('tr', 'Solicitud Aprobada').within(() => {
+        cy.contains('td', 'Aprobada').should('be.visible');
+        cy.contains('button', 'download').click();
+      });
+      cy.wait('@descargarOficio').its('response.statusCode').should('eq', 200);
       
       cy.registrarInteraccionExitosa();
     });

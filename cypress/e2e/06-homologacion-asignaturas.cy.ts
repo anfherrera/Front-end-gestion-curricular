@@ -215,12 +215,46 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
       }).as('listarAprobada');
       visitarComoEstudiante();
       cy.wait('@listarAprobada');
-      cy.contains('APROBADA', { timeout: 8000 }).should('be.visible');
+      cy.contains('tr', 'Homologación Test').should('contain.text', 'Aprobada');
       cy.registrarInteraccionExitosa();
     });
   });
 
   describe('5. Funcionario – Revisión de solicitudes', () => {
+    it('filtra las homologaciones pendientes por un período anterior y vuelve al actual', () => {
+      const ruta = '/api/solicitudes-homologacion';
+      const solicitudActual = { id_solicitud: 1, nombre_solicitud: 'Homologación del período actual' };
+      const solicitudAnterior = { id_solicitud: 2, nombre_solicitud: 'Homologación de 2025-2' };
+      cy.intercept('GET', /\/api\/periodos-academicos\?desde=\d+$/, {
+        body: { success: true, data: [{ valor: '2025-2', nombrePeriodo: '2025-2' }] }
+      }).as('periodosRecientes');
+      cy.intercept({ method: 'GET', pathname: ruta, query: { rol: 'funcionario', bandeja: 'pendientes' } }, (req) => {
+        if (req.query.periodoAcademico === '2025-2') {
+          req.alias = 'pendientesAnteriores';
+          req.reply([solicitudAnterior]);
+        } else {
+          expect(req.query).not.to.have.property('periodoAcademico');
+          req.alias = 'pendientesActuales';
+          req.reply([solicitudActual]);
+        }
+      });
+
+      visitarComoFuncionario();
+      cy.wait(['@periodosRecientes', '@pendientesActuales']);
+      cy.contains('app-request-status-table', solicitudActual.nombre_solicitud).should('be.visible');
+
+      cy.get('app-solicitudes-bandeja app-periodo-filtro-selector mat-select').filter(':visible').click();
+      cy.contains('mat-option', /^2025-2$/).click();
+      cy.wait('@pendientesAnteriores');
+      cy.contains('app-request-status-table', solicitudAnterior.nombre_solicitud).should('be.visible');
+      cy.contains('app-request-status-table', solicitudActual.nombre_solicitud).should('not.exist');
+
+      cy.get('app-solicitudes-bandeja app-periodo-filtro-selector mat-select').filter(':visible').click();
+      cy.contains('mat-option', 'Período actual').click();
+      cy.wait('@pendientesActuales');
+      cy.contains('app-request-status-table', solicitudActual.nombre_solicitud).should('be.visible');
+    });
+
     it('E2E-HA-013: Debe mostrar solicitudes pendientes de homologación', () => {
       const mockSolicitudes = [
         { id_solicitud: 1, nombre_solicitud: 'Homologación - Ana', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [{ nombre_documento: 'doc1.pdf' }], objUsuario: { nombre_completo: 'Ana' } }

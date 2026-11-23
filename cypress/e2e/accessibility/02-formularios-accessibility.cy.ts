@@ -52,7 +52,7 @@ describe('Accesibilidad - formularios', () => {
     });
 
     it('ACC-F01-A: NO debe tener violaciones de accesibilidad', () => {
-      cy.checkA11y(null, {
+      cy.checkA11y(undefined, {
         includedImpacts: ['critical']
       }, undefined, true);
     });
@@ -98,7 +98,7 @@ describe('Accesibilidad - formularios', () => {
     });
 
     it('ACC-F02-A: NO debe tener violaciones críticas', () => {
-      cy.checkA11y(null, {
+      cy.checkA11y(undefined, {
         includedImpacts: ['critical']
       }, undefined, true);
     });
@@ -147,7 +147,7 @@ describe('Accesibilidad - formularios', () => {
     });
 
     it('ACC-F03-A: Dashboard debe ser accesible', () => {
-      cy.checkA11y(null, {
+      cy.checkA11y(undefined, {
         includedImpacts: ['critical']
       }, undefined, true);
     });
@@ -174,7 +174,7 @@ describe('Accesibilidad - formularios', () => {
     });
 
     it('ACC-F03-E: Números y estadísticas deben ser legibles', () => {
-      cy.checkA11y(null, { includedImpacts: ['critical'] }, undefined, true);
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] }, undefined, true);
     });
   });
 
@@ -233,17 +233,17 @@ describe('Accesibilidad - formularios', () => {
 
     it('ACC-F05-A: Debe ser accesible en pantalla móvil (375px)', () => {
       cy.viewport(375, 667);
-      cy.checkA11y(null, { includedImpacts: ['critical'] });
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] });
     });
 
     it('ACC-F05-B: Debe ser accesible en tablet (768px)', () => {
       cy.viewport(768, 1024);
-      cy.checkA11y(null, { includedImpacts: ['critical'] });
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] });
     });
 
     it('ACC-F05-C: Debe ser accesible en desktop (1920px)', () => {
       cy.viewport(1920, 1080);
-      cy.checkA11y(null, { includedImpacts: ['critical'] });
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] });
     });
 
     it('ACC-F05-D: Botones deben ser táctiles en móvil (min 44x44px)', () => {

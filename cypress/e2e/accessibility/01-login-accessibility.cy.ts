@@ -15,15 +15,15 @@ describe('Accesibilidad - login', () => {
   describe('ACC-A01: Análisis Automático con axe-core', () => {
 
     it('ACC-A01-A: NO debe tener violaciones de accesibilidad WCAG 2.1 Level A', () => {
-      cy.checkA11y(null, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag21a'] } });
+      cy.checkA11y(undefined, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag21a'] } });
     });
 
     it('ACC-A01-B: NO debe tener violaciones críticas ni serias', () => {
-      cy.checkA11y(null, { includedImpacts: ['critical'] });
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] });
     });
 
     it('ACC-A01-C: NO debe tener violaciones críticas', () => {
-      cy.checkA11y(null, { includedImpacts: ['critical'] });
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] });
     });
   });
 
@@ -145,7 +145,7 @@ describe('Accesibilidad - login', () => {
   describe('ACC-A05: Contraste de Colores (WCAG AA)', () => {
 
     it('ACC-A05-A: Texto debe tener contraste suficiente (4.5:1)', () => {
-      cy.checkA11y(null, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag21a'] } });
+      cy.checkA11y(undefined, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag21a'] } });
     });
 
     it('ACC-A05-B: Labels deben ser legibles', () => {
@@ -240,7 +240,7 @@ describe('Accesibilidad - login', () => {
     });
 
     it('ACC-A09-C: Roles ARIA deben ser válidos', () => {
-      cy.checkA11y(null, { includedImpacts: ['critical'] });
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] });
     });
   });
 
@@ -250,7 +250,7 @@ describe('Accesibilidad - login', () => {
   describe('ACC-A10: Reporte Completo de Accesibilidad', () => {
 
     it('ACC-A10-A: Generar reporte completo de violaciones', () => {
-      cy.checkA11y(null, { includedImpacts: ['critical'] }, (violations) => {
+      cy.checkA11y(undefined, { includedImpacts: ['critical'] }, (violations) => {
         if (violations.length > 0) {
           cy.task('log', '\nReporte violaciones criticas: ' + violations.length);
         }

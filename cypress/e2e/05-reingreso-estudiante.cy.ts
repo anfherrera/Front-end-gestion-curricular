@@ -202,7 +202,7 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
       }).as('listarAprobada');
       visitarComoEstudiante();
       cy.wait('@listarAprobada');
-      cy.contains('APROBADA', { timeout: 8000 }).should('be.visible');
+      cy.contains('tr', 'Reingreso Test').should('contain.text', 'Aprobada');
       cy.registrarInteraccionExitosa();
     });
   });

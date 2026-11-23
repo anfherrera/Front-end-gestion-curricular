@@ -212,7 +212,7 @@ describe('E2E-04: Módulo Estadístico', () => {
       // Intentar aplicar un filtro (puede variar según implementación)
       cy.get('button, a').then($buttons => {
         const tieneBotonFiltro = Array.from($buttons).some(btn => 
-          btn.textContent.toLowerCase().includes('filtrar')
+          (btn.textContent ?? '').toLowerCase().includes('filtrar')
         );
         if (tieneBotonFiltro) {
           cy.get('button').contains(/Filtrar/i).click();
@@ -241,7 +241,7 @@ describe('E2E-04: Módulo Estadístico', () => {
       // Buscar botones de exportar/descargar
       cy.get('button, a').then($elements => {
         const tieneExportar = Array.from($elements).some(el => 
-          /exportar|descargar|excel|pdf/i.test(el.textContent)
+          /exportar|descargar|excel|pdf/i.test(el.textContent ?? '')
         );
         // Si existe, mejor; si no, simplemente continuamos
         cy.log(tieneExportar ? '✓ Opción de exportar encontrada' : '⚠ Sin opción de exportar visible');
@@ -253,7 +253,7 @@ describe('E2E-04: Módulo Estadístico', () => {
       // Buscar botón de imprimir o generar reporte
       cy.get('button, a').then($elements => {
         const tieneReporte = Array.from($elements).some(el => 
-          /imprimir|reporte|pdf/i.test(el.textContent)
+          /imprimir|reporte|pdf/i.test(el.textContent ?? '')
         );
         // Si existe, mejor; si no, simplemente continuamos
         cy.log(tieneReporte ? '✓ Opción de reporte encontrada' : '⚠ Sin opción de reporte visible');

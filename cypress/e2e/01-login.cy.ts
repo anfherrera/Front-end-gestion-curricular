@@ -6,6 +6,8 @@
  */
 
 describe('E2E-01: Flujo de Login y Autenticación', () => {
+  const expiracion = Math.floor(Date.now() / 1000) + 3600;
+  const tokenSesion = `eyJhbGciOiJIUzI1NiJ9.${btoa(JSON.stringify({ exp: expiracion }))}.firma`;
   const credenciales = {
     estudiante: {
       correo: 'estudiante@unicauca.edu.co',
@@ -85,14 +87,15 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
 
   describe('3. Proceso de Login', () => {
     it('E2E-L-007: Debe mostrar error con credenciales incorrectas', () => {
+      cy.intercept('POST', '**/api/usuarios/login', { statusCode: 401 }).as('loginRechazado');
       cy.iniciarMedicion();
       
       cy.get('input[formControlName="correo"]').type('incorrecto@unicauca.edu.co');
       cy.get('input[formControlName="password"]').type('wrongpassword');
       cy.get('button[type="submit"]').click();
       
-      // Esperar mensaje de error (puede ser del backend)
-      cy.wait(2000);
+      cy.wait('@loginRechazado');
+      cy.get('.error-message').should('contain.text', 'Credenciales incorrectas');
       
       cy.finalizarMedicion('Login con credenciales incorrectas');
       cy.registrarInteraccionExitosa();
@@ -102,7 +105,7 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
       cy.intercept('POST', '**/api/usuarios/login', {
         statusCode: 200,
         body: {
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQwNzA5MDg4MDB9.signature',
+          token: tokenSesion,
           usuario: {
             id_usuario: 1,
             nombre_completo: 'Test Estudiante',
@@ -122,22 +125,8 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
       cy.wait('@loginRequest');
       cy.finalizarMedicion('Login exitoso');
 
-      // Asegurar sesión simulada y navegar a /welcome
-      const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQwNzA5MDg4MDB9.signature';
-      const mockUsuario = {
-        id_usuario: 1,
-        nombre_completo: 'Test Estudiante',
-        correo: credenciales.estudiante.correo,
-        rol: { nombre: 'ESTUDIANTE' },
-        codigo: '123456'
-      };
-      cy.window().then((win) => {
-        win.localStorage.setItem('token', mockToken);
-        win.localStorage.setItem('usuario', JSON.stringify(mockUsuario));
-      });
-      cy.visit('/welcome');
-      cy.url().should('include', '/welcome', { timeout: 10000 });
-      
+      cy.location('pathname').should('eq', '/welcome');
+
       cy.registrarInteraccionExitosa();
     });
 
@@ -145,7 +134,7 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
       cy.intercept('POST', '**/api/usuarios/login', {
         statusCode: 200,
         body: {
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQwNzA5MDg4MDB9.signature',
+          token: tokenSesion,
           usuario: {
             id_usuario: 1,
             nombre_completo: 'Test Estudiante',
@@ -153,23 +142,15 @@ describe('E2E-01: Flujo de Login y Autenticación', () => {
             rol: { nombre: 'ESTUDIANTE' }
           }
         }
-      });
+      }).as('loginConToken');
       
       cy.get('input[formControlName="correo"]').type(credenciales.estudiante.correo);
       cy.get('input[formControlName="password"]').type(credenciales.estudiante.password);
       cy.get('button[type="submit"]').click();
       
-      cy.wait(500);
-      // Forzar guardado simulado si el flujo no lo hizo automáticamente
-      const mockToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQwNzA5MDg4MDB9.signature';
-      cy.window().then((win) => {
-        if (!win.localStorage.getItem('token')) {
-          win.localStorage.setItem('token', mockToken2);
-        }
-      });
-      // Verificar que se guardó algo en localStorage
-      cy.window().its('localStorage').should((ls) => {
-        expect(ls.getItem('token')).to.exist;
+      cy.wait('@loginConToken');
+      cy.window().its('localStorage').should((storage) => {
+        expect(storage.getItem('token')).to.equal(tokenSesion);
       });
       cy.registrarInteraccionExitosa();
     });

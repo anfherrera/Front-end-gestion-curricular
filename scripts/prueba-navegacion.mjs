@@ -41,7 +41,6 @@ const casos = [
       '/funcionario/homologacion-asignaturas', '/funcionario/modulo-estadistico', '/funcionario/historial-completo',
       '/funcionario/historial-completo/detalle/1'],
     cursos: true,
-    pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Funcionario',
     negadas: ['/coordinador/paz-salvo', '/secretaria/paz-salvo', '/admin/dashboard', '/estudiante/paz-salvo',
       '/decano/historial-completo', '/coordinador/modulo-estadistico'],
   },
@@ -50,7 +49,6 @@ const casos = [
     rutas: ['/coordinador/paz-salvo', '/coordinador/reingreso-estudiante', '/coordinador/homologacion-asignaturas',
       '/coordinador/modulo-estadistico', '/coordinador/historial-completo', '/coordinador/historial-completo/detalle/1'],
     cursos: true,
-    pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Coordinador',
     negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/homologacion-asignaturas',
       '/funcionario/historial-completo', '/decano/modulo-estadistico'],
   },
@@ -289,16 +287,20 @@ try {
       await espera(800);
     }
 
-    if (caso.pazSalvoEndpoint) {
+    if (['funcionario', 'coordinador', 'secretaria'].includes(caso.rol)) {
       c.peticiones.length = 0;
       await ir('/welcome');
       await esperarUrl(u => u === '/welcome');
       await ir(`/${caso.rol}/paz-salvo`);
       await espera(2500);
-      const llamadas = c.peticiones.filter(u => /pazysalvo/i.test(u));
-      const propio = llamadas.some(u => u.includes(caso.pazSalvoEndpoint));
-      console.log(`       paz y salvo llama a ${caso.pazSalvoEndpoint}: ${propio ? 'sí' : 'NO'}`);
-      if (!propio) falla(`paz y salvo no llama a ${caso.pazSalvoEndpoint}`);
+      const llamadas = c.peticiones.map(u => new URL(u)).filter(u => u.pathname === '/api/solicitudes-pazysalvo');
+      for (const bandeja of ['pendientes', 'procesadas']) {
+        const propia = llamadas.some(u =>
+          u.searchParams.get('rol') === caso.rol && u.searchParams.get('bandeja') === bandeja
+        );
+        console.log(`       paz y salvo (${caso.rol}, ${bandeja}): ${propia ? 'sí' : 'NO'}`);
+        if (!propia) falla(`paz y salvo no consulta ${bandeja} para ${caso.rol}`);
+      }
     }
 
     for (const r of caso.negadas) {
