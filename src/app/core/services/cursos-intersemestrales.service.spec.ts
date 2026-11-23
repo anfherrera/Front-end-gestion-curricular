@@ -20,6 +20,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
   let authService: jasmine.SpyObj<AuthService>;
 
   const BASE_URL = `${environment.apiUrl}/cursos-intersemestrales`;
+  const CURSOS = `${environment.apiUrl}/cursos-verano/cursos`;
 
   const mockUsuario = {
     id_usuario: 1,
@@ -84,7 +85,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+      const req = httpMock.expectOne(`${CURSOS}?disponibles=true`);
       expect(req.request.method).toBe('GET');
       req.flush(respuesta);
     });
@@ -100,9 +101,17 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.PREINSCRIPCION);
+      const req = httpMock.expectOne(`${CURSOS}?estado=preinscripcion`);
       expect(req.request.method).toBe('GET');
       req.flush(respuesta);
+    });
+
+    it('pide ?estado=inscripcion con el período al pedir estado Inscripción', () => {
+      service.getCursosPorEstado('Inscripción', '2025-1').subscribe();
+
+      const req = httpMock.expectOne(`${CURSOS}?estado=inscripcion&periodoAcademico=2025-1`);
+      expect(req.request.method).toBe('GET');
+      req.flush([]);
     });
 
     it('debe filtrar cursos por estado cuando requiere obtener todos', (done) => {
@@ -115,7 +124,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      const req = httpMock.expectOne(CURSOS);
       expect(req.request.method).toBe('GET');
       req.flush([publicado, borrador]);
     });
@@ -128,7 +137,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION}/42`);
+      const req = httpMock.expectOne(`${CURSOS}/42`);
       expect(req.request.method).toBe('GET');
       req.flush(curso);
     });
@@ -265,7 +274,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         expect(resp.id_curso).toBe(99);
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION);
+      const req = httpMock.expectOne(CURSOS);
       expect(req.request.method).toBe('POST');
       expect(req.request.body.estado).toBe('Preinscripcion');
       req.flush(respuesta);
@@ -274,7 +283,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     it('debe actualizar un curso existente', () => {
       service.actualizarCurso(15, { estado: 'Publicado' }).subscribe();
 
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION}/15`);
+      const req = httpMock.expectOne(`${CURSOS}/15`);
       expect(req.request.method).toBe('PUT');
       expect(req.request.body.estado).toBe('Publicado');
       req.flush({});
@@ -283,7 +292,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
     it('debe eliminar un curso', () => {
       service.eliminarCurso(16).subscribe();
 
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION}/16`);
+      const req = httpMock.expectOne(`${CURSOS}/16`);
       expect(req.request.method).toBe('DELETE');
       req.flush({});
     });
@@ -299,7 +308,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         },
       });
 
-      const req = httpMock.expectOne(`${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION}/999`);
+      const req = httpMock.expectOne(`${CURSOS}/999`);
       req.flush({ message: 'No encontrado' }, { status: 404, statusText: 'Not Found' });
     });
   });
@@ -339,7 +348,9 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/periodos-academicos?desde=${Math.max(2020, new Date().getFullYear() - 4)}`);
+      const req = httpMock.expectOne(
+        `${environment.apiUrl}/periodos-academicos?desde=${Math.max(2020, new Date().getFullYear() - 4)}`
+      );
       expect(req.request.method).toBe('GET');
       req.flush(periodosRecientes);
     });
@@ -370,7 +381,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      const req = httpMock.expectOne(CURSOS);
       expect(req.request.method).toBe('GET');
       req.flush(cursos);
     });
@@ -497,14 +508,14 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
   describe('Filtros y exportaciones', () => {
     it('no envía el período cuando es "todos"', () => {
       service.getTodosLosCursosParaFuncionarios('todos').subscribe();
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      const req = httpMock.expectOne((r) => r.url === CURSOS);
       expect(req.request.params.has('periodoAcademico')).toBeFalse();
       req.flush([]);
     });
 
     it('envía el período y el programa cuando se indican', () => {
       service.getTodosLosCursosParaFuncionarios(' 2025-2 ', 3).subscribe();
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.TODOS);
+      const req = httpMock.expectOne((r) => r.url === CURSOS);
       expect(req.request.params.get('periodoAcademico')).toBe('2025-2');
       expect(req.request.params.get('idPrograma')).toBe('3');
       req.flush([]);
@@ -512,7 +523,9 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
 
     it('pide todos los períodos a los cursos disponibles con "todos"', () => {
       service.getCursosDisponibles('todos').subscribe();
-      const req = httpMock.expectOne((r) => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+      const req = httpMock.expectOne((r) => r.url === CURSOS);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.params.get('disponibles')).toBe('true');
       expect(req.request.params.get('todosLosPeriodos')).toBe('true');
       expect(req.request.params.has('periodoAcademico')).toBeFalse();
       req.flush([]);
@@ -525,7 +538,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
       httpMock
-        .expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES)
+        .expectOne(`${CURSOS}?disponibles=true`)
         .flush([{ ...buildCurso(), periodo: '2025-2', periodoAcademico: undefined, grupo: undefined }]);
     });
 
@@ -535,7 +548,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
       httpMock
-        .expectOne((r) => r.url === ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_CURSOS_PDF)
+        .expectOne({ method: 'GET', url: `${CURSOS}?formato=pdf&periodoAcademico=2025-1` })
         .flush(new Blob(['pdf']), { headers: { 'Content-Disposition': 'attachment; filename="cursos 2025-1.pdf"' } });
     });
 
@@ -544,9 +557,7 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         expect(archivo.filename).toMatch(/^estudiantes_curso_8_\d{4}-\d{2}-\d{2}\.pdf$/);
         done();
       });
-      httpMock
-        .expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.EXPORTAR_ESTUDIANTES_PDF(8))
-        .flush(new Blob(['pdf']));
+      httpMock.expectOne({ method: 'GET', url: `${CURSOS}/8/estudiantes?formato=pdf` }).flush(new Blob(['pdf']));
     });
 
     it('falla si el Excel de solicitudes no es un Excel', (done) => {

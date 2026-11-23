@@ -90,7 +90,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.DISPONIBLES);
+      const req = httpMock.expectOne({
+        method: 'GET',
+        url: `${ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS}?disponibles=true`,
+      });
       req.flush(mockCursos);
       tick();
     }));
@@ -215,7 +218,10 @@ describe('PRUEBAS DE ACEPTACIÓN - Cursos Intersemestrales', () => {
       });
       tick();
 
-      const req = httpMock.expectOne(ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.GESTION);
+      const req = httpMock.expectOne({
+        method: 'POST',
+        url: ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO.CURSOS,
+      });
       // El backend recibe id_materia e id_docente; el nombre lo toma de la materia
       expect(req.request.body.id_materia).toBe(3);
       expect(req.request.body.id_docente).toBe(10);

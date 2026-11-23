@@ -37,16 +37,10 @@ export class ApiEndpoints {
 
     // ===== CURSOS DE VERANO =====
     CURSOS_VERANO: {
-      // Endpoints principales
-      DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/disponibles`, // Para estudiantes
-      TODOS: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos`, // Para funcionarios
-
-      // Endpoints de gestión (CRUD)
-      GESTION: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano`, // Para crear, actualizar, eliminar
-
-      // Endpoints específicos por estado
-      PREINSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/preinscripcion`,
-      INSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/inscripcion`,
+      // Cursos (EST-7, paso 8a): GET sin filtros (staff), ?disponibles=true (estudiantes),
+      // ?estado=preinscripcion|inscripcion y ?formato=pdf; POST; GET, PUT y DELETE /{id}
+      CURSOS: `${this.BASE_URL}/cursos-verano/cursos`,
+      ESTUDIANTES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-verano/cursos/${idCurso}/estudiantes`,
 
       // Endpoints de gestión
       PREINSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones`,
@@ -63,8 +57,6 @@ export class ApiEndpoints {
         `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/curso/${idCurso}`,
       ESTUDIANTES_ELEGIBLES: (idCurso: number) =>
         `${this.BASE_URL}/cursos-intersemestrales/inscripciones/estudiantes-elegibles/${idCurso}`,
-      ESTUDIANTES_CURSO: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes`,
       APROBAR_PREINSCRIPCION: (id: number) =>
         `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/aprobar`,
       RECHAZAR_PREINSCRIPCION: (id: number) =>
@@ -84,11 +76,6 @@ export class ApiEndpoints {
 
       // Endpoint de exportación a Excel
       EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`,
-
-      // Endpoints de exportación a PDF
-      EXPORTAR_CURSOS_PDF: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos/export/pdf`,
-      EXPORTAR_ESTUDIANTES_PDF: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes/export/pdf`,
 
       // Endpoint de salones
       SALONES: `${this.BASE_URL}/cursos-intersemestrales/salones`,

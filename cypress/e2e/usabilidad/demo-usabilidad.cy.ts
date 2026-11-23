@@ -153,7 +153,7 @@ describe('Usabilidad - metricas', () => {
         win.localStorage.setItem('tokenExp', String(exp));
         win.localStorage.setItem('userRole', 'estudiante');
       });
-      cy.intercept('GET', '**/api/**cursos-intersemestrales/**', { statusCode: 200, body: [] }).as('cursosApi');
+      cy.intercept('GET', /\/api\/(cursos-intersemestrales|cursos-verano)\//, { statusCode: 200, body: [] }).as('cursosApi');
       cy.visit('/estudiante/cursos-intersemestrales');
       cy.esperarCargaCompleta();
     });
