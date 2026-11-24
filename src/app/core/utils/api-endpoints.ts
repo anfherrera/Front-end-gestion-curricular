@@ -21,14 +21,13 @@ export class ApiEndpoints {
 
   // ===== CURSOS INTERSEMESTRALES =====
   static readonly CURSOS_INTERSEMESTRALES = {
-    // Solo la usa /periodos-registrados, que no existe en el backend (BUG-51, abierto)
-    BASE: `${this.BASE_URL}/cursos-intersemestrales`,
-
     // ===== CURSOS DE VERANO =====
     CURSOS_VERANO: {
       // Cursos (EST-7, paso 8a): GET sin filtros (staff), ?disponibles=true (estudiantes),
       // ?estado=preinscripcion|inscripcion y ?formato=pdf; POST; GET, PUT y DELETE /{id}
       CURSOS: `${this.BASE_URL}/cursos-verano/cursos`,
+      // Períodos con cursos visibles para los estudiantes, del más reciente al más antiguo (BUG-51)
+      PERIODOS: `${this.BASE_URL}/cursos-verano/cursos/periodos`,
       ESTUDIANTES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-verano/cursos/${idCurso}/estudiantes`,
 
       ESTUDIANTES_ELEGIBLES: (idCurso: number) =>

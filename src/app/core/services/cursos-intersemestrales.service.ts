@@ -29,7 +29,6 @@ import {
   UpdateCursoDTO,
 } from '../models/cursos-intersemestrales.model';
 
-const BASE = ApiEndpoints.CURSOS_INTERSEMESTRALES.BASE;
 const VERANO = ApiEndpoints.CURSOS_INTERSEMESTRALES.CURSOS_VERANO;
 const GRUPOS = ['A', 'B', 'C', 'D'];
 
@@ -104,9 +103,9 @@ export class CursosIntersemestralesService {
     return this.periodos(ApiEndpoints.PERIODOS_ACADEMICOS.RECIENTES);
   }
 
-  /** Períodos que tienen cursos registrados. */
+  /** Períodos con cursos visibles para los estudiantes, del más reciente al más antiguo. */
   getPeriodosRegistrados(): Observable<string[]> {
-    return this.http.get<string[]>(`${BASE}/periodos-registrados`);
+    return this.http.get<string[]>(VERANO.PERIODOS);
   }
 
   private periodos(url: string): Observable<string[]> {

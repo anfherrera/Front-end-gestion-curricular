@@ -19,7 +19,6 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
   let httpMock: HttpTestingController;
   let authService: jasmine.SpyObj<AuthService>;
 
-  const BASE_URL = `${environment.apiUrl}/cursos-intersemestrales`;
   const CURSOS = `${environment.apiUrl}/cursos-verano/cursos`;
   const PREINSCRIPCIONES = `${environment.apiUrl}/cursos-verano/preinscripciones`;
   const INSCRIPCIONES = `${environment.apiUrl}/cursos-verano/inscripciones`;
@@ -390,8 +389,8 @@ describe('CursosIntersemestralesService - Cursos de Verano', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${BASE_URL}/periodos-registrados`);
-      expect(req.request.method).toBe('GET');
+      // BUG-51: la ruta existe en el backend desde que se corrigió
+      const req = httpMock.expectOne({ method: 'GET', url: `${environment.apiUrl}/cursos-verano/cursos/periodos` });
       req.flush(periodosRegistrados);
     });
   });
