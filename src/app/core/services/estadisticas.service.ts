@@ -432,11 +432,11 @@ export class EstadisticasService {
   }
 
   /**
-   * Exporta estadísticas a PDF usando el endpoint del backend
+   * Exporta estadísticas a PDF: GET /api/estadisticas/reportes?formato=pdf
    * @param filtros Filtros a aplicar en la exportación
    */
   exportarPDF(filtros: FiltroEstadisticas = {}): Observable<Blob> {
-    let params = new HttpParams();
+    let params = new HttpParams().set('formato', 'pdf');
 
     if (filtros.proceso) {
       params = params.set('proceso', filtros.proceso);
@@ -453,7 +453,7 @@ export class EstadisticasService {
     // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     // Código simplificado - el backend ahora funciona correctamente
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF, {
+    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.REPORTES, {
       params,
       responseType: 'blob',
       headers: {
@@ -463,11 +463,11 @@ export class EstadisticasService {
   }
 
   /**
-   * Exporta estadísticas a Excel usando el endpoint del backend
+   * Exporta estadísticas a Excel: GET /api/estadisticas/reportes?formato=excel
    * @param filtros Filtros a aplicar en la exportación
    */
   exportarExcel(filtros: FiltroEstadisticas = {}): Observable<Blob> {
-    let params = new HttpParams();
+    let params = new HttpParams().set('formato', 'excel');
 
     if (filtros.proceso) {
       params = params.set('proceso', filtros.proceso);
@@ -484,7 +484,7 @@ export class EstadisticasService {
     // fechaInicio y fechaFin eliminados - usar periodoAcademico en su lugar
 
     // Código simplificado - el backend ahora funciona correctamente
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL, {
+    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.REPORTES, {
       params,
       responseType: 'blob',
       headers: {
@@ -497,7 +497,7 @@ export class EstadisticasService {
 
   /**
    * Exporta reporte PDF de Cursos de Verano con filtros opcionales
-   * GET /api/estadisticas/export/pdf/cursos-verano
+   * GET /api/estadisticas/cursos-verano/reportes?formato=pdf
    *
    * Parámetros opcionales:
    * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
@@ -511,7 +511,7 @@ export class EstadisticasService {
    * @returns Observable con el blob del PDF
    */
   exportarReporteCursosVerano(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<Blob> {
-    let params = new HttpParams();
+    let params = new HttpParams().set('formato', 'pdf');
 
     if (filtros.periodoAcademico) {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
@@ -521,7 +521,7 @@ export class EstadisticasService {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
 
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_PDF_CURSOS_VERANO, {
+    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_REPORTES, {
       params,
       responseType: 'blob',
       headers: {
@@ -532,7 +532,7 @@ export class EstadisticasService {
 
   /**
    * Exporta reporte Excel de Cursos de Verano con filtros opcionales
-   * GET /api/estadisticas/export/excel/cursos-verano
+   * GET /api/estadisticas/cursos-verano/reportes?formato=excel
    *
    * Parámetros opcionales:
    * - periodoAcademico: formato "YYYY-P" (ej: "2025-2")
@@ -546,7 +546,7 @@ export class EstadisticasService {
    * @returns Observable con el blob del Excel
    */
   exportarExcelCursosVerano(filtros: { periodoAcademico?: string; idPrograma?: number } = {}): Observable<Blob> {
-    let params = new HttpParams();
+    let params = new HttpParams().set('formato', 'excel');
 
     if (filtros.periodoAcademico) {
       params = params.set('periodoAcademico', filtros.periodoAcademico);
@@ -556,7 +556,7 @@ export class EstadisticasService {
       params = params.set('idPrograma', filtros.idPrograma.toString());
     }
 
-    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.EXPORTAR_EXCEL_CURSOS_VERANO, {
+    return this.http.get(ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_REPORTES, {
       params,
       responseType: 'blob',
       headers: {

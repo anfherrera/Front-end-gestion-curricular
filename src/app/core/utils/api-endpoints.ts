@@ -110,21 +110,7 @@ export class ApiEndpoints {
 
   // ===== MÓDULO ESTADÍSTICO =====
   static readonly MODULO_ESTADISTICO = {
-    BASE: `${this.BASE_URL}/modulo-estadistico`,
-    DASHBOARD: `${this.BASE_URL}/modulo-estadistico/dashboard`,
-    REPORTES: `${this.BASE_URL}/modulo-estadistico/reportes`,
-    ESTADISTICAS: `${this.BASE_URL}/modulo-estadistico/estadisticas`,
-    EXPORTAR: (formato: string) => `${this.BASE_URL}/modulo-estadistico/exportar/${formato}`,
-
-    // ===== ENDPOINTS DE ESTADÍSTICAS =====
-    ESTADISTICAS_GLOBALES: `${this.BASE_URL}/estadisticas/globales`,
-    ESTADISTICAS_FILTRADAS: `${this.BASE_URL}/estadisticas/filtradas`,
     RESUMEN_COMPLETO: `${this.BASE_URL}/estadisticas/resumen-completo`,
-
-    // ===== Endpoints del backend =====
-    POR_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porPeriodoEstadoPrograma`,
-    POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
-    POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`,
 
     // ===== ENDPOINTS DE ESTUDIANTES =====
     TOTAL_ESTUDIANTES: `${this.BASE_URL}/estadisticas/total-estudiantes`,
@@ -145,18 +131,9 @@ export class ApiEndpoints {
     // ===== ENDPOINTS OPTIMIZADOS - CURSOS DE VERANO =====
     CURSOS_VERANO_TENDENCIAS_TEMPORALES: `${this.BASE_URL}/estadisticas/cursos-verano/tendencias-temporales`,
 
-    // ===== ENDPOINTS DE EXPORTACIÓN =====
-    EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
-    EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`,
-
-    // ===== ENDPOINTS DE EXPORTACIÓN ESPECÍFICOS =====
-    // Dashboard General
-    EXPORTAR_PDF_GENERAL: `${this.BASE_URL}/estadisticas/export/pdf/general`,
-    EXPORTAR_EXCEL_GENERAL: `${this.BASE_URL}/estadisticas/export/excel/general`,
-
-    // Cursos de Verano
-    EXPORTAR_PDF_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/pdf/cursos-verano`,
-    EXPORTAR_EXCEL_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/excel/cursos-verano`,
+    // ===== Reportes (EST-7, paso 9): ?formato=pdf|excel =====
+    REPORTES: `${this.BASE_URL}/estadisticas/reportes`,
+    CURSOS_VERANO_REPORTES: `${this.BASE_URL}/estadisticas/cursos-verano/reportes`,
   };
 
   // ===== DOCUMENTOS =====

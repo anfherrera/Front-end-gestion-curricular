@@ -20,8 +20,8 @@ describe('ApiEndpoints', () => {
 
   it('usa la URL del entorno como base', () => {
     expect(ApiEndpoints.BASE_URL).toBe(environment.apiUrl);
-    // Solo comprueba que el recorrido encuentra los endpoints (100 tras el paso 8b de EST-7)
-    expect(todos.length).toBeGreaterThan(80);
+    // Solo comprueba que el recorrido encuentra los endpoints (80 tras el paso 9 de EST-7)
+    expect(todos.length).toBeGreaterThan(60);
   });
 
   it('todas las URLs fijas cuelgan de la base y no llevan barra final ni dobles barras', () => {
