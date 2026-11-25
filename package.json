@@ -25,7 +25,8 @@
     "prepare": "husky",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
-    "lint:estilos": "node scripts/comprobar-estilos.mjs"
+    "lint:estilos": "node scripts/comprobar-estilos.mjs",
+    "capturas": "node scripts/capturas-pantallas.mjs"
   },
   "lint-staged": {
     "src/**/*.{ts,html}": "eslint --max-warnings=0",
