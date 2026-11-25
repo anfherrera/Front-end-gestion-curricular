@@ -75,6 +75,3 @@ export const COLORS_BY_STATE: Record<string, string> = {
   PENDIENTE: COLORS.error,
   EN_PROCESO: COLORS.tertiary,
 };
-
-/** Nombre del sistema para header */
-export const SYSTEM_NAME = 'Sistema de Gestión Curricular';

@@ -4,11 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 import { tamanoEnMb } from '../../utils/texto.util';
 import { LoggerService } from '../logger.service';
-
-/** Documento como lo devuelve /documentos/{id} (el visor solo usa el comentario). */
-export interface DocumentoConComentario {
-  comentario?: string | null;
-}
+import { DocumentosDTORespuesta } from '../../models/procesos.model';
 
 /** Oficio como lo devuelve /{idSolicitud}/oficios. */
 export interface OficioRespuesta {
@@ -76,8 +72,8 @@ export abstract class SolicitudesBaseService {
   }
 
   /** Comentario actual del documento, antes de añadir otro. */
-  buscarDocumentoPorId(idDocumento: number): Observable<DocumentoConComentario> {
-    return this.http.get<DocumentoConComentario>(`${this.api}/documentos/${idDocumento}`);
+  buscarDocumentoPorId(idDocumento: number): Observable<DocumentosDTORespuesta> {
+    return this.http.get<DocumentosDTORespuesta>(`${this.api}/documentos/${idDocumento}`);
   }
 
   agregarComentario(idDocumento: number, comentario: string): Observable<unknown> {

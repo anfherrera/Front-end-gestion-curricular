@@ -1,5 +1,7 @@
 import { UserRole } from '../enums/roles.enum';
-import { UsuarioDTOPeticion } from './usuario.interface';
+import { ProgramaDTORespuesta } from './programa.interface';
+import { RolDTORespuesta } from './rol.interface';
+import { UsuarioDTOPeticion, UsuarioDTORespuesta } from './usuario.interface';
 
 export type ArchivoEstado = 'pendiente' | 'aprobado' | 'rechazado' | 'error';
 
@@ -41,15 +43,6 @@ export interface Solicitud {
   comentarios?: string;
 }
 
-export interface SolicitudList {
-  id: number;
-  nombre: string;
-  fecha: string;
-  estado: string;
-  rutaArchivo: string;
-  comentarios?: string;
-}
-
 // Modelo para la respuesta del endpoint de homologación por rol
 export interface EstadoSolicitud {
   id_estado: number;
@@ -59,25 +52,14 @@ export interface EstadoSolicitud {
   objSolicitud?: unknown;
 }
 
-export interface Rol {
-  id_rol: number;
-  nombre: string;
-}
-
-export interface Programa {
-  id_programa: number;
-  codigo: string;
-  nombre_programa: string;
-}
-
 export interface UsuarioHomologacion {
   id_usuario: number;
   nombre_completo: string;
-  rol: Rol;
+  rol: RolDTORespuesta;
   codigo: string;
   correo: string;
   estado_usuario: boolean;
-  objPrograma: Programa;
+  objPrograma: ProgramaDTORespuesta;
 }
 
 export interface DocumentoHomologacion {
@@ -143,11 +125,6 @@ export interface SolicitudReingresoDTORespuesta {
   documentos: DocumentosDTORespuesta[];
 }
 
-export interface CambioEstadoSolicitudDTOPeticion {
-  idSolicitud: number;
-  nuevoEstado: string;
-}
-
 export interface EstadoSolicitudDTOPeticion {
   id_estado?: number;
   estado_actual: string;
@@ -160,17 +137,6 @@ export interface EstadoSolicitudDTORespuesta {
   estado_actual: string;
   fecha_registro_estado: string;
   comentario?: string;
-}
-
-export interface UsuarioDTORespuesta {
-  id_usuario: number;
-  nombre_completo: string;
-  rol: Rol;
-  codigo: string;
-  cedula: string; // Obligatorio
-  correo: string;
-  estado_usuario: boolean;
-  objPrograma: Programa;
 }
 
 export interface DocumentosDTOPeticion {

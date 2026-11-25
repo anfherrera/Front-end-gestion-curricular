@@ -744,4 +744,18 @@ Tampoco son tareas de código, y siguen abiertos:
 - La decisión de diseño de la Fase 5: fundir colores casi iguales (tres rojos de error, dos verdes). Cambia el aspecto, así que hay que decidirlo con el Sistema de Diseño TIC
 - Las líneas "Probar a mano" de cada punto. Todos esos puntos se verificaron con pruebas automáticas, y la mayoría también en el navegador con backend. Lo que no se ha revisado a ojo es el diálogo de confirmación de admin y de gestionar-cursos, y el de texto en rechazos y comentarios (Fase 2, "Diálogos"). También el rechazo de paz y salvo del coordinador (Fase 3)
 
+### Comprobación final con herramientas (2026-11-25)
+
+- [x] Código muerto con [knip](https://knip.dev) 5.61.3, instalado aparte y no en el proyecto. Al principio no encontró **ningún archivo sin usar**, pero sí lo siguiente, que la revisión a mano no había visto:
+  - 5 tipos y constantes sin ningún uso, que se borran: `SYSTEM_NAME` (`design-tokens.ts`), `SolicitudList` y `CambioEstadoSolicitudDTOPeticion` (`procesos.model.ts`), y `NotificacionDTOPeticion` y `NotificacionesResponse` (`notificaciones.model.ts`). Con el último sobra también `TipoNotificacion`, que solo usaba él
+  - Tipos repetidos con el mismo nombre en dos sitios:
+    - `UsuarioDTORespuesta`, `Rol` y `Programa` de [procesos.model.ts](src/app/core/models/procesos.model.ts) eran copias de los de `usuario.interface.ts`, `rol.interface.ts` y `programa.interface.ts`. Ahora se importan de allí. La única diferencia es que en el de `usuario.interface.ts` `rol` y `objPrograma` pueden ser `null`, y `tsc` no encontró ningún uso que dependa de eso
+    - `DocumentoConComentario` estaba en `solicitudes-base.service.ts` (solo `comentario`) y en el diálogo de comentarios (con `nombre`). El servicio devuelve ahora `DocumentosDTORespuesta`, que es lo que responde el backend en `GET /documentos/{id}`, y queda el del diálogo
+    - `Archivo` de `required-docs` era un subconjunto del de `procesos.model.ts`; ahora usa ese
+    - `TipoSolicitud` tenía dos enums con valores distintos: `PAZ_SALVO` en el historial y `PAZ_Y_SALVO` en las notificaciones. No es un duplicado, son dos vocabularios del backend. El del historial pasa a llamarse `TipoSolicitudHistorial` y deja de exportarse, para que no se importe uno por el otro
+  - Dependencias: `@angular-eslint/builder` y `@eslint/js` se usaban (`angular.json` y `eslint.config.js`) pero llegaban solo como dependencias de `angular-eslint`. Se añaden a `devDependencies` con las versiones ya instaladas (19.8.1 y 9.39.5). `knip` marca `@angular/platform-browser-dynamic` como no usada, pero el builder de Karma la importa al preparar el TestBed (`init_test_bed.js`), así que se queda
+  - Lo que queda en `knip`: la dependencia anterior y 48 tipos o constantes con un `export` de sobra (se usan solo en su archivo). Eso es normal en los modelos y no se toca
+- [x] Tamaño del build: la carga inicial es de 687 kB (178 kB transferidos). Hay unos 90 chunks con carga diferida; el más grande es el módulo estadístico (355 kB, por los gráficos). `ng build` no da avisos de presupuesto
+- Verificación: tsc de app y de specs, lint 0/0, `format:check` de los archivos tocados, `ng build` sin avisos y 785/785 pruebas con cobertura 66,2 % sentencias, 54,3 % ramas, 65,5 % funciones y 66,5 % líneas. Sin cambios visibles esperados (solo tipos y dependencias de desarrollo)
+
 El orden que se siguió fue: Fase 1, Fase 2, Fase 7 (ESLint y CI), Fase 3 y luego las Fases 4, 5 y 6 por partes

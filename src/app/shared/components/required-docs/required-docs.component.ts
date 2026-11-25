@@ -3,10 +3,7 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
-export interface Archivo {
-  nombre: string;
-  fecha: string;
-}
+import { Archivo } from '@core/models/procesos.model';
 
 export interface Documento {
   label: string;

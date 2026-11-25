@@ -158,7 +158,8 @@ export interface FiltrosHistorial {
   idUsuario?: number;
 }
 
-export enum TipoSolicitud {
+/** Códigos de tipo del historial (`PAZ_SALVO`); las notificaciones usan otros (`TipoSolicitud`, con `PAZ_Y_SALVO`). */
+enum TipoSolicitudHistorial {
   PAZ_SALVO = 'PAZ_SALVO',
   ECAES = 'ECAES',
   REINGRESO = 'REINGRESO',
@@ -217,12 +218,12 @@ export class HistorialSolicitudesService {
    */
   getTiposSolicitud(): { codigo: string; display: string }[] {
     return [
-      { codigo: TipoSolicitud.PAZ_SALVO, display: 'Paz y Salvo Académico' },
-      { codigo: TipoSolicitud.ECAES, display: 'ECAES' },
-      { codigo: TipoSolicitud.REINGRESO, display: 'Reingreso' },
-      { codigo: TipoSolicitud.HOMOLOGACION, display: 'Homologación' },
-      { codigo: TipoSolicitud.CURSO_VERANO_PREINSCRIPCION, display: 'Curso Intersemestral - Preinscripción' },
-      { codigo: TipoSolicitud.CURSO_VERANO_INSCRIPCION, display: 'Curso Intersemestral - Inscripción' },
+      { codigo: TipoSolicitudHistorial.PAZ_SALVO, display: 'Paz y Salvo Académico' },
+      { codigo: TipoSolicitudHistorial.ECAES, display: 'ECAES' },
+      { codigo: TipoSolicitudHistorial.REINGRESO, display: 'Reingreso' },
+      { codigo: TipoSolicitudHistorial.HOMOLOGACION, display: 'Homologación' },
+      { codigo: TipoSolicitudHistorial.CURSO_VERANO_PREINSCRIPCION, display: 'Curso Intersemestral - Preinscripción' },
+      { codigo: TipoSolicitudHistorial.CURSO_VERANO_INSCRIPCION, display: 'Curso Intersemestral - Inscripción' },
     ];
   }
 

@@ -7,30 +7,6 @@ export enum TipoSolicitud {
   CURSO_VERANO_INSCRIPCION = 'CURSO_VERANO_INSCRIPCION',
 }
 
-export enum TipoNotificacion {
-  NUEVA_SOLICITUD = 'NUEVA_SOLICITUD',
-  CAMBIO_ESTADO = 'CAMBIO_ESTADO',
-  APROBADA = 'APROBADA',
-  RECHAZADA = 'RECHAZADA',
-  ENVIADA = 'ENVIADA',
-}
-
-export interface NotificacionDTOPeticion {
-  id_notificacion?: number;
-  tipoSolicitud: TipoSolicitud | string;
-  tipoNotificacion: TipoNotificacion | string;
-  titulo: string;
-  mensaje: string;
-  fechaCreacion?: Date | string;
-  leida?: boolean;
-  esUrgente?: boolean;
-  accion?: string;
-  urlAccion?: string;
-  idUsuario: number;
-  idSolicitud?: number;
-  idCurso?: number;
-}
-
 export interface NotificacionDTORespuesta {
   id_notificacion: number;
   tipoSolicitud: string;
@@ -67,17 +43,4 @@ export interface Notificacion extends NotificacionDTORespuesta {
   categoria?: string;
   icono?: string;
   color?: string;
-}
-
-export interface NotificacionesResponse {
-  totalNoLeidas: number;
-  cursosVeranoNoLeidas: number;
-  notificaciones: Notificacion[];
-  categorias: {
-    CURSO_VERANO: number;
-    ECAES: number;
-    REINGRESO: number;
-    HOMOLOGACION: number;
-    PAZ_SALVO: number;
-  };
 }
