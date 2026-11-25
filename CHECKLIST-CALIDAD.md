@@ -5,6 +5,8 @@ Marca cada punto con `[x]` cuando lo termines. Al terminar un bloque, corre `ng 
 
 Revisión del 2026-11-13 (commit `9b46f87`). Las cifras son de esa fecha; vuelve a medirlas cuando cierres un bloque.
 
+**Cerrado el 2026-11-25**: ver "Cierre" al final.
+
 ---
 
 ## Fase 1 — Código muerto ✅ (terminada el 2026-11-13)
@@ -127,7 +129,7 @@ Cada bloque se verificó con `ng build`, `ng test` (530/530 al terminar; 499 al 
 
 ---
 
-## Fase 3 — Reutilizar vistas entre roles (el cambio más grande)
+## Fase 3 — Reutilizar vistas entre roles (el cambio más grande) ✅
 
 Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/paz-salvo/revision/) es un solo componente para funcionario y coordinador (con `data: { rolRevision }` en la ruta) y comparte la bandeja con secretaría. Hay que llevar ese patrón a los demás procesos.
 
@@ -262,7 +264,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
 
 ---
 
-## Fase 4 — Arquitectura y organización
+## Fase 4 — Arquitectura y organización ✅
 
 - [x] **Sin `HttpClient` en componentes** (2026-11-13). Ya ningún componente lo inyecta
   - Estudiante, homologación y reingreso: la descarga del oficio usa `descargarOficioConNombre()` de [SolicitudesAprobacionService](src/app/core/services/base/solicitudes-aprobacion.service.ts) (respuesta entera, para leer `Content-Disposition` con `nombreDeContentDisposition`) y `descargarBlob`. Ya no arman la cabecera `Authorization` a mano: la pone `JwtInterceptor`. Se borra el `descargarBlob` privado de reingreso
@@ -312,7 +314,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
 
 ---
 
-## Fase 5 — Estilos
+## Fase 5 — Estilos ✅
 
 - [x] **Colores a tokens** (2026-11-13): de 1156 hexadecimales en los `.css` de componentes quedan 245 (sin contar comentarios), y los `var(--…)` pasan de 778 a 1645. Por script y solo con valores idénticos, así que no cambia ningún color:
   - 92 coincidían con un token institucional (`--color-primario`, `--color-error`, `--primario-NN`, `--notif-*`…)
@@ -377,7 +379,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
 
 ---
 
-## Fase 6 — Angular moderno y tipado
+## Fase 6 — Angular moderno y tipado ✅
 
 - [x] **Tipado** (2026-11-17): ya no queda ningún `any` (eran 183 en 46 archivos) y `@typescript-eslint/no-explicit-any` pasa a `error` en [eslint.config.js](eslint.config.js). Lint: 0 errores y 0 avisos
   - [x] `core` (2026-11-17): 64 `any` menos (183 → 119); ya no queda ninguno en `core`
@@ -556,7 +558,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
 
 ---
 
-## Fase 7 — Herramientas y documentación
+## Fase 7 — Herramientas y documentación ✅
 
 - [x] ESLint con `ng add @angular-eslint/schematics` (angular-eslint 19.8.1, ESLint 9): [eslint.config.js](eslint.config.js) con los presets recomendados de TypeScript y Angular (también plantillas y accesibilidad), más `no-explicit-any` (aviso; `error` desde 2026-11-17), `no-unused-vars` (error; se permite un `_` delante y los `catch` sin usar) y `@angular-eslint/prefer-inject` (aviso). Script `npm run lint` (`ng lint`)
   - Errores corregidos: 0 errores al cerrar (había 489, la mayoría de estilo y arreglados con `--fix`). A mano: 84 variables, imports y parámetros sin usar; 9 `if`/`else` vacíos (restos de `console.error` borrados en `periodos-academicos.service` y `cursos-verano-dashboard`); constructores y `ngOnInit` vacíos; el `@Output() toggle` del sidebar, que nadie escuchaba; un `eslint-disable` de una regla que no existe
@@ -635,10 +637,18 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
   - Cambio visible esperado: al aprobar o rechazar, el funcionario ve "Solicitud aprobada" / "Solicitud rechazada" en verde (homologación) y "Solicitud aprobada" / "Paz y Salvo rechazado" (paz y salvo), en lugar de "…, pero error al actualizar documentos" o "Solicitud aprobada (Documentos se actualizarán automáticamente)". La validez de los documentos (`esValido`) no se marcaba antes y sigue sin marcarse; si se quiere, hace falta el endpoint en el backend
   - Probar a mano con backend: como funcionario, aprobar y rechazar en homologación y en paz y salvo; sale el aviso verde, la solicitud sale de pendientes y no hay errores en consola
   - **Probado a mano con backend (2026-11-18)**, ya con paz-salvo-revision sobre `RevisionAprobacionComponent`: como juanp@, homologación 110 aprobada ("Solicitud aprobada") y 111 rechazada ("Solicitud rechazada"); paz y salvo 109 aprobada ("Solicitud aprobada") y 45 rechazada ("Paz y Salvo rechazado"). Todos en verde, cada una sale de pendientes, y `actualizarEstadoSolicitud` responde 204. Sin errores de consola salvo el log del 404 del historial de paz y salvo (pendiente de backend, abajo)
-- [ ] Backend: homologación, reingreso y ECAES reciben `comentario` en `CambioEstadoSolicitudDTOPeticion` pero lo descartan (`cambiarEstadoSolicitud(id, nuevoEstado)`); solo paz y salvo lo guarda. Por eso el aviso "Solicitud rechazada" del estudiante y el comentario de rechazo del diálogo quedan vacíos en esos tres procesos
-- [ ] Verificar con datos reales la pestaña "Historial - Ya Procesadas" de Paz y Salvo para funcionario, coordinador y secretaría. La ruta antigua `listarSolicitud-PazYSalvo/<rol>/Aprobadas` devolvía 404.
+- Backend (no es del front; ver "Cierre", al final): homologación, reingreso y ECAES reciben `comentario` en `CambioEstadoSolicitudDTOPeticion` pero lo descartan (`cambiarEstadoSolicitud(id, nuevoEstado)`); solo paz y salvo lo guarda. Por eso el aviso "Solicitud rechazada" del estudiante y el comentario de rechazo del diálogo quedan vacíos en esos tres procesos
+  - Revisado el 2026-11-25 en `main` del backend (`16af8e0`, revisión cerrada): sigue igual. `SolicitudHomologacionRestController`, `SolicitudReingresoRestController` y `SolicitudEcaesRestController` solo pasan `getNuevoEstado()` al caso de uso. El front ya envía el comentario, así que cuando el backend lo guarde se verá sin cambiar nada aquí
+- [x] Verificar con datos reales la pestaña "Historial - Ya Procesadas" de Paz y Salvo para funcionario, coordinador y secretaría. La ruta antigua `listarSolicitud-PazYSalvo/<rol>/Aprobadas` devolvía 404.
   - La verificación con datos reales quedó pendiente el 2026-11-23 porque la API local no estaba escuchando en el puerto 5000. Esto también impidió comprobar las homologaciones pendientes de 2025-2 con el servidor.
   - Verificado en el frontend (2026-11-23): los tres roles envían `GET /api/solicitudes-pazysalvo?rol=…&bandeja=procesadas`. Los specs de `PazSalvoService` cubren la ruta y los parámetros. `SIN_BACKEND=1 npm run test:navegacion` pasó para los seis roles y observó las consultas de pendientes y procesadas de los tres roles de Paz y Salvo.
+  - **Verificado con backend (2026-11-25)**, con el backend en `16af8e0` y `ng serve`, en Edge headless, iniciando sesión por la interfaz y pulsando la pestaña. Las peticiones de pendientes y procesadas responden 200 en los tres roles, el filtro dice "Todos los Períodos" y no hay errores en consola:
+    - Funcionario (juanp@): 0 pendientes y 6 en el historial (Fernando Diaz, Valeria Rojas, Gabriel Morales y Adriana Vega de 2025-2 "Aprobada por Funcionario"; las 106 "Aprobada" y 109 "Aprobada por Coordinador" de Daniel Cisneros)
+    - Coordinador (josefina@): 0 pendientes y 2 en el historial (106 y 109)
+    - Secretaría (maria@): 1 pendiente (109) y 4 en el historial (Roberto Silva, Patricia Ramirez y Miguel Castro de 2025-2, más la 106)
+    - El historial solo trae aprobadas: la 45, que rechazó el funcionario el 2026-11-18, no sale en el suyo. Es lo que devuelve `bandeja=procesadas` del backend
+    - Cada bandeja aparece dos veces en `Network.responseReceived`: es el preflight de CORS (`OPTIONS`) más el `GET`, como se vio el 2026-11-20 con `periodos-academicos/actual`
+  - Las homologaciones pendientes de 2025-2 del selector nuevo del funcionario se comprobaron el mismo día (ver más abajo)
 - [x] `ErrorHandlerService.extraerMensajeError` no trata el status 0 (backend caído o reiniciándose): con `withFetch` devuelve el `message` del `TypeError` y el aviso dice "Failed to fetch" (visto en la secretaría y en la descarga del oficio). Añadir un mensaje de conexión, como el del login
   - Resuelto el 2026-11-18: con status 0 devuelve `MENSAJE_SIN_CONEXION` ("No se puede conectar al servidor. Verifica tu conexión."), el mismo texto del login, que ahora usa la constante. Spec nuevo [error-handler.service.spec.ts](src/app/core/services/error-handler.service.spec.ts) (8 pruebas: status 0 con fetch y con XHR, 400 con regla de negocio y por campos, 404, 500, otro estado y código GC-)
   - Cambio visible esperado: si el backend no responde, los avisos de error que usan este servicio dicen "No se puede conectar al servidor. Verifica tu conexión." en lugar de "Failed to fetch"
@@ -650,8 +660,9 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
 - [x] La bandeja de homologación del funcionario solo mostraba pendientes del período actual. Se añade un selector para consultar períodos anteriores (2026-11-23).
   - «Período actual» conserva la consulta sin filtro. Al elegir un período, el frontend envía `periodoAcademico` al listado de pendientes. El historial conserva su propio selector y las demás bandejas mantienen su comportamiento.
   - El spec de `RevisionAprobacionComponent` comprueba el cambio a 2025-2, la limpieza de la selección y la vuelta al período actual. Queda pendiente comprobar los datos de 2025-2 con el servidor.
+  - **Verificado con backend (2026-11-25)**, con juanp@ en Edge headless y `/funcionario/homologacion-asignaturas`. Al entrar, el selector dice "Período actual (2026 - Segundo Semestre)" y la tabla está vacía (`bandeja=pendientes` sin período). Al elegir "2025 - Segundo Semestre" sale `periodoAcademico=2025-2` y aparecen las 16 (Gabriel Morales) y 17 (Adriana Vega), en estado "Enviada". Al volver a "Período actual", la petición sale otra vez sin período y la tabla vuelve a quedar vacía. Todas las respuestas son 200 y no hay errores en consola. Por la API, 2026-2 y 2025-1 dan 0
   - Verificación del frontend: 780/780 pruebas de Angular en Edge, compilación de producción, lint, TypeScript de los specs y formato de los archivos modificados.
-- [ ] Backend (visto el 2026-11-19): `GET /api/solicitudes-reingreso/descargarOficio/105` devuelve "Oficio de reingreso.pdf", que subió el estudiante, y no la resolución de secretaría. `esOficioReingreso` acepta cualquier PDF con "oficio", "resolucion", "reingreso" o "aprobacion" salvo la carta ("carta" + "solicitud" + "reingreso"), y el endpoint devuelve el primero en orden de documentos. El front no se ve afectado porque elige antes la resolución más reciente entre los documentos de la solicitud; solo usa este endpoint si no encuentra ninguna. Arreglo posible: preferir el documento más reciente, o marcar en la base cuál subió secretaría
+- Backend (no es del front; ver "Cierre", al final; visto el 2026-11-19 y sin cambios en `16af8e0` el 2026-11-25): `GET /api/solicitudes-reingreso/descargarOficio/105` devuelve "Oficio de reingreso.pdf", que subió el estudiante, y no la resolución de secretaría. `esOficioReingreso` acepta cualquier PDF con "oficio", "resolucion", "reingreso" o "aprobacion" salvo la carta ("carta" + "solicitud" + "reingreso"), y el endpoint devuelve el primero en orden de documentos. El front no se ve afectado porque elige antes la resolución más reciente entre los documentos de la solicitud; solo usa este endpoint si no encuentra ninguna. Arreglo posible: preferir el documento más reciente, o marcar en la base cuál subió secretaría
 - Datos que quedan en la base local de estas pruebas (de dcisneros@): homologación 104 (rechazada) y 108 (aprobada por el coordinador, sin enviar), reingreso 105 y paz y salvo 106 (aprobadas, con oficio), ECAES 107 (pre-registrada) y las fechas ECAES de 2026-2
   - Del 2026-11-18, creadas por la API: paz y salvo 109 (aprobada por el coordinador, pendiente de secretaría; mientras esté así dcisneros@ no puede crear otra), homologación 110 (aprobada por el funcionario) y 111 (rechazada). Además se rechazó la 45 de `datos_demo.sql` (Nicolas Perez, paz y salvo)
   - Del 2026-11-19, desde la pantalla: ECAES 112 (enviada, 2026-2, con Cedula.pdf)
@@ -719,10 +730,18 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
 
 ---
 
-## Orden sugerido
+## Cierre (2026-11-25)
 
-1. Fase 1 (una tarde, sin riesgo)
-2. Fase 2 (deja listas las piezas que reutiliza la Fase 3)
-3. Fase 7, solo ESLint y CI (así la limpieza no se pierde)
-4. Fase 3 (la que más código elimina)
-5. Fases 4, 5 y 6 por partes, una carpeta a la vez
+Todos los puntos del front están cerrados. Los últimos se verificaron con datos reales y el backend en `16af8e0` (su revisión ya está cerrada).
+
+Quedan dos fallos del **backend**, anotados arriba, que el front no puede arreglar y que no bloquean el cierre:
+
+- Homologación, reingreso y ECAES descartan el `comentario` del cambio de estado. Por eso el comentario de rechazo les llega vacío al estudiante. Cuando el backend lo guarde, el front lo mostrará sin cambios
+- `descargarOficio` de reingreso puede devolver un PDF del estudiante en lugar de la resolución. El front no se ve afectado porque antes elige la resolución más reciente entre los documentos
+
+Tampoco son tareas de código, y siguen abiertos:
+
+- La decisión de diseño de la Fase 5: fundir colores casi iguales (tres rojos de error, dos verdes). Cambia el aspecto, así que hay que decidirlo con el Sistema de Diseño TIC
+- Las líneas "Probar a mano" de cada punto. Todos esos puntos se verificaron con pruebas automáticas, y la mayoría también en el navegador con backend. Lo que no se ha revisado a ojo es el diálogo de confirmación de admin y de gestionar-cursos, y el de texto en rechazos y comentarios (Fase 2, "Diálogos"). También el rechazo de paz y salvo del coordinador (Fase 3)
+
+El orden que se siguió fue: Fase 1, Fase 2, Fase 7 (ESLint y CI), Fase 3 y luego las Fases 4, 5 y 6 por partes
