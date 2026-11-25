@@ -5,7 +5,7 @@
   gap: 24px;
   padding: 24px;
   background-color: var(--color-fondo);
-  font-family: 'Open Sans', 'Titillium Web', sans-serif;
+  font-family: var(--font-body);
 }
 
 /* Títulos de tarjetas - Color primario TIC */
@@ -17,7 +17,7 @@
   padding: 14px 16px;
   display: block;
   border-bottom: 3px solid var(--color-primario-dark);
-  font-family: 'Titillium Web', sans-serif;
+  font-family: var(--font-display);
   margin-bottom: 0.5rem;
 }
 
@@ -29,14 +29,14 @@
   border-radius: 100px;
   padding: 12px 24px;
   font-weight: 600;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
   transition: all 0.2s ease-in-out;
   box-shadow: var(--sombra-1);
 }
 
 .btn-enviar:disabled {
-  background-color: #c8c5d0 !important;
-  color: #46464f !important;
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-800) !important;
   cursor: not-allowed;
   opacity: 0.5;
   transform: none;
@@ -51,10 +51,10 @@
   gap: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  background-color: #fff3cd;
-  border-left: 4px solid var(--estado-advertencia);
+  background-color: var(--notif-error-fondo);
+  border-left: 4px solid var(--color-error);
   border-radius: 8px;
-  color: var(--estado-advertencia-texto);
+  color: var(--notif-error-titulo);
 }
 
 .validacion-mensaje mat-icon {
@@ -64,7 +64,7 @@
 .validacion-mensaje strong {
   display: block;
   margin-bottom: 8px;
-  color: var(--estado-advertencia-texto);
+  color: var(--notif-error-titulo);
 }
 
 /* Estilos del formulario */

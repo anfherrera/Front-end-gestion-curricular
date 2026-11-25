@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
   border-radius: 8px;
   width: 100%;
   overflow: visible;
@@ -104,7 +104,7 @@ button {
 }
 
 .preinscribir-icon:hover {
-  color: #0024cc !important;
+  color: var(--color-primario) !important;
 }
 
 .inscribir-icon {
@@ -113,25 +113,25 @@ button {
 }
 
 .inscribir-icon:hover {
-  color: #66bb6a !important;
+  color: var(--notif-exito-borde) !important;
 }
 
 .ver-icon {
-  color: var(--azul-500) !important;
+  color: var(--color-terciario) !important;
   font-size: 24px;
 }
 
 .ver-icon:hover {
-  color: #42a5f5 !important;
+  color: var(--color-terciario) !important;
 }
 
 .default-icon {
-  color: var(--gris-700) !important;
+  color: var(--neutro-600) !important;
   font-size: 24px;
 }
 
 .default-icon:hover {
-  color: var(--gris-500) !important;
+  color: var(--neutro-600) !important;
 }
 
 /* Responsive Design */

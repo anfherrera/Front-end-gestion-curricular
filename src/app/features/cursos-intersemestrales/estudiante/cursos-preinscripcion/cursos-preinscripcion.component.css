@@ -1,14 +1,14 @@
 .cargando {
   text-align: center;
   font-size: 16px;
-  color: var(--gris-750);
+  color: var(--neutro-800);
   padding: 16px 0;
 }
 
 .sin-datos {
   text-align: center;
   font-size: 14px;
-  color: var(--gris-500);
+  color: var(--neutro-600);
   padding: 16px 0;
 }
 
@@ -20,24 +20,24 @@
 
 /* Estilos para los estados de los cursos */
 :host ::ng-deep app-curso-list span.disponible {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: var(--notif-exito-fondo);
+  color: var(--notif-exito-texto);
   padding: 4px 8px;
   border-radius: 8px;
   font-weight: 500;
 }
 
 :host ::ng-deep app-curso-list span.inscrito {
-  background-color: #cce5ff;
-  color: #004085;
+  background-color: var(--primario-90);
+  color: var(--color-primario);
   padding: 4px 8px;
   border-radius: 8px;
   font-weight: 500;
 }
 
 :host ::ng-deep app-curso-list span.cerrado {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--notif-error-fondo);
+  color: var(--notif-error-texto);
   padding: 4px 8px;
   border-radius: 8px;
   font-weight: 500;

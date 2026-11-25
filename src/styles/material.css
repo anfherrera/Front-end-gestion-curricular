@@ -38,13 +38,54 @@ html {
   --mat-sys-label-small-font: var(--font-body);
 }
 
+/*
+ * Colores de Material 3. El tema prebuilt usa su azul (#005cbb) y su rojo (#ba1a1a)
+ * en pestañas, casillas, barras de progreso, campos activos, botones de texto…
+ * Aquí se cambian por la paleta institucional (tokens.css, iguales a los de unicauca.edu.co).
+ * El error usa el naranja oscuro de las notificaciones de la guía: el var(--color-error) no llega
+ * al contraste mínimo como texto sobre blanco (2,9:1).
+ */
+html {
+  --mat-sys-primary: var(--color-primario);
+  --mat-sys-on-primary: var(--blanco);
+  --mat-sys-primary-container: var(--primario-90);
+  --mat-sys-on-primary-container: var(--color-primario);
+  --mat-sys-primary-fixed: var(--primario-90);
+  --mat-sys-primary-fixed-dim: var(--primario-80);
+  --mat-sys-on-primary-fixed: var(--color-primario-dark);
+  --mat-sys-on-primary-fixed-variant: var(--primario-30);
+  --mat-sys-inverse-primary: var(--primario-80);
+  --mat-sys-surface-tint: var(--color-primario);
+
+  --mat-sys-secondary: var(--color-primario-light);
+  --mat-sys-on-secondary: var(--blanco);
+  --mat-sys-secondary-container: var(--primario-90);
+  --mat-sys-on-secondary-container: var(--primario-20);
+  --mat-sys-secondary-fixed: var(--primario-90);
+  --mat-sys-secondary-fixed-dim: var(--primario-80);
+  --mat-sys-on-secondary-fixed: var(--color-primario-dark);
+  --mat-sys-on-secondary-fixed-variant: var(--primario-30);
+
+  --mat-sys-tertiary: var(--color-terciario);
+  --mat-sys-on-tertiary: var(--blanco);
+  --mat-sys-tertiary-container: var(--notif-info-fondo);
+  --mat-sys-on-tertiary-container: var(--notif-info-texto);
+
+  --mat-sys-error: var(--notif-error-titulo);
+  --mat-sys-on-error: var(--blanco);
+  --mat-sys-error-container: var(--notif-error-fondo);
+  --mat-sys-on-error-container: var(--notif-error-texto);
+
+  --mat-sys-background: var(--color-fondo);
+}
+
 /* Botón principal */
 .mat-mdc-raised-button.mat-primary {
   background-color: var(--color-primario) !important;
   color: white !important;
   border-radius: 100px !important;
   font-weight: 600 !important;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: var(--font-body) !important;
   font-size: 14px !important;
   box-shadow: var(--sombra-1) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -57,8 +98,8 @@ html {
 }
 
 .mat-mdc-raised-button.mat-primary:disabled {
-  background-color: #c8c5d0 !important;
-  color: #46464f !important;
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-800) !important;
 }
 
 /* Botón secundario */
@@ -68,14 +109,14 @@ html {
   color: var(--color-primario) !important;
   border-radius: 100px !important;
   font-weight: 600 !important;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: var(--font-body) !important;
 }
 
 /* Botón terciario (texto) */
 .mat-mdc-button.mat-primary {
   color: var(--color-primario) !important;
   font-weight: 600 !important;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: var(--font-body) !important;
 }
 
 .mat-mdc-outlined-button.mat-primary:hover,
@@ -108,7 +149,7 @@ html {
 
 .mat-mdc-form-field-label,
 .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-  font-family: 'Titillium Web', sans-serif !important;
+  font-family: var(--font-display) !important;
   color: var(--color-primario) !important;
 }
 
@@ -132,7 +173,7 @@ html {
   font-weight: 600 !important;
   color: var(--color-primario) !important;
   font-size: 14px !important;
-  font-family: 'Titillium Web', sans-serif !important;
+  font-family: var(--font-display) !important;
 }
 
 /* Diálogos, chips y tooltips */
@@ -147,7 +188,7 @@ html {
 
 .mat-mdc-tooltip {
   background-color: var(--color-primario-dark) !important;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: var(--font-body) !important;
   font-size: 12px !important;
   border-radius: 8px !important;
 }

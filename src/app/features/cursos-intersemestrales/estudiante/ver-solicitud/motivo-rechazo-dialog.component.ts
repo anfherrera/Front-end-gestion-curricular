@@ -49,15 +49,15 @@ export interface MotivoRechazoDialogData {
         gap: 12px;
         padding: 12px 16px;
         border-radius: 12px;
-        background: #e3f2fd;
-        color: #0d47a1;
-        border-left: 4px solid #2196f3;
+        background: var(--primario-90);
+        color: var(--color-primario);
+        border-left: 4px solid var(--color-terciario);
       }
 
       .motivo-dialog__encabezado--rechazo {
-        background: #ffebee;
-        color: #b71c1c;
-        border-left-color: #ff6d0a;
+        background: var(--notif-error-fondo);
+        color: var(--notif-error-titulo);
+        border-left-color: var(--color-error);
       }
 
       .motivo-dialog__encabezado mat-icon {
@@ -89,7 +89,7 @@ export interface MotivoRechazoDialogData {
         margin: 0;
         font-size: 14px;
         line-height: 1.6;
-        color: #424242;
+        color: var(--neutro-800);
         word-break: break-word;
         white-space: pre-wrap;
       }

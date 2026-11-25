@@ -20,13 +20,13 @@
 }
 
 .toggle-btn {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background-color: var(--gris-150);
+  background-color: var(--neutro-200);
   transform: scale(1.05);
 }
 
@@ -45,12 +45,12 @@
   font-size: 1.8rem;
   margin: 0;
   font-weight: 700;
-  font-family: 'Titillium Web', sans-serif;
+  font-family: var(--font-display);
 }
 
 .header-title span {
   display: block;
-  color: var(--gris-750);
+  color: var(--neutro-800);
   font-size: 0.9rem;
   margin-top: 4px;
 }
@@ -90,7 +90,7 @@
   font-weight: 600;
   color: var(--color-primario);
   white-space: nowrap;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
 }
 
 @media (max-width: 1024px) {
@@ -120,7 +120,7 @@
 }
 
 .user-profile-btn:hover {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
 }
 
 .user-avatar {
@@ -149,11 +149,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
 }
 
 .dropdown-icon {
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 18px;
   transition: transform 0.3s ease;
 }
@@ -164,7 +164,7 @@
 
 .user-menu-header {
   padding: 16px;
-  background-color: var(--gris-50);
+  background-color: var(--neutro-50);
   border-radius: 8px 8px 0 0;
 }
 
@@ -173,20 +173,20 @@
   font-weight: 600;
   font-size: 1rem;
   margin-bottom: 4px;
-  font-family: 'Titillium Web', sans-serif;
+  font-family: var(--font-display);
 }
 
 .user-menu-header .user-email {
-  color: var(--gris-750);
+  color: var(--neutro-800);
   font-size: 0.85rem;
 }
 
 .logout-item {
-  color: var(--rojo-700) !important;
+  color: var(--notif-error-titulo) !important;
 }
 
 .logout-item mat-icon {
-  color: var(--rojo-700) !important;
+  color: var(--notif-error-titulo) !important;
 }
 
 /* Responsive */

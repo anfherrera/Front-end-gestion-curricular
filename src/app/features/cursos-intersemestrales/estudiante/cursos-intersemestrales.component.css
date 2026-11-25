@@ -3,8 +3,8 @@
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
-  background-color: var(--gris-azulado-50);
-  font-family: 'Roboto', sans-serif;
+  background-color: var(--neutro-50);
+  font-family: var(--font-body);
 }
 
 .menu {
@@ -107,7 +107,7 @@
 }
 
 .info-content > p {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 1.1rem;
   margin-bottom: 2rem;
   line-height: 1.6;
@@ -165,7 +165,7 @@
 }
 
 .option-text p {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 1rem;
   line-height: 1.6;
   margin: 0;

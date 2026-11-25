@@ -2,23 +2,27 @@ import { formatNumber } from '@angular/common';
 import type { ChartConfiguration, TooltipItem } from 'chart.js';
 import { EstadisticasPorPeriodoMejoradasResponse } from '@core/models/estadisticas/mejoradas.model';
 import { ProcesoDetallado } from '@core/models/estadisticas/generales.model';
+import { COLOR_POR_PROCESO, COLORS, PALETA_CATEGORIAS, conAlfa } from '@core/design-system/design-tokens';
 
 /** Configuraciones de Chart.js del dashboard estadístico. Sin animaciones, por rendimiento. */
 
-const COLOR_POR_PROCESO: Record<string, string> = {
-  'Cursos de Verano': '#2196F3',
-  'Paz y Salvo': '#FF9800',
-  Reingreso: '#4CAF50',
-  ECAES: '#F44336',
-  Homologación: '#9C27B0',
+/** Nombre del proceso (sin tildes ni mayúsculas) → color institucional del proceso. */
+const COLOR_POR_NOMBRE: Record<string, string> = {
+  'cursos de verano': COLOR_POR_PROCESO.cursosVerano,
+  'paz y salvo': COLOR_POR_PROCESO.pazSalvo,
+  reingreso: COLOR_POR_PROCESO.reingreso,
+  ecaes: COLOR_POR_PROCESO.ecaes,
+  homologacion: COLOR_POR_PROCESO.homologacion,
 };
-const COLOR_PROCESO_DESCONOCIDO = '#607D8B';
 
-/** Colores del gráfico de procesos cuando se arma con el resumen (sin nombres del backend). */
-const COLORES_PROCESOS_RESUMEN = ['#ff9800', '#8e24aa', '#249337', '#2196f3'];
-
-const COLORES_PROGRAMAS = ['#2196f3', '#ff9800', '#249337', '#9c27b0'];
-const BORDES_PROGRAMAS = ['#1976d2', '#f57c00', '#388e3c', '#7b1fa2'];
+/** Tooltip con el azul oscuro institucional, como `mat-tooltip`. */
+const TOOLTIP = {
+  backgroundColor: COLORS.primaryDark,
+  titleColor: COLORS.white,
+  bodyColor: COLORS.white,
+  borderColor: COLORS.white,
+  borderWidth: 1,
+};
 
 /** Parte de `valor` sobre la suma de `datos`, con un decimal y el separador del locale ("39,3" en es-CO). */
 function porcentaje(valor: number, datos: number[], locale: string): string {
@@ -27,9 +31,9 @@ function porcentaje(valor: number, datos: number[], locale: string): string {
 }
 
 function colorDeProceso(nombre: string): string {
-  if (COLOR_POR_PROCESO[nombre]) return COLOR_POR_PROCESO[nombre];
-  const parecido = Object.keys(COLOR_POR_PROCESO).find((proceso) => nombre.includes(proceso));
-  return parecido ? COLOR_POR_PROCESO[parecido] : COLOR_PROCESO_DESCONOCIDO;
+  const clave = nombre.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const proceso = Object.keys(COLOR_POR_NOMBRE).find((p) => clave.includes(p));
+  return proceso ? COLOR_POR_NOMBRE[proceso] : COLORS.neutralSecondary;
 }
 
 function dona(
@@ -48,7 +52,7 @@ function dona(
           data: valores,
           backgroundColor: colores,
           borderWidth: 3,
-          borderColor: '#fff',
+          borderColor: COLORS.white,
           hoverBorderWidth: 4,
         },
       ],
@@ -91,7 +95,7 @@ export function graficoProcesosDesdeResumen(
   valores: number[],
   locale: string
 ): ChartConfiguration<'doughnut'> {
-  return dona(etiquetas, valores, COLORES_PROCESOS_RESUMEN, locale);
+  return dona(etiquetas, valores, etiquetas.map(colorDeProceso), locale);
 }
 
 /** Solicitudes y aprobadas por mes. */
@@ -110,15 +114,15 @@ export function graficoTendencia(datos: EstadisticasPorPeriodoMejoradasResponse)
     aprobadas = meses.map((mes) => datos.porMes[mes]?.aprobadas || 0);
   }
 
-  const serie = (label: string, data: number[], color: string, relleno: string) => ({
+  const serie = (label: string, data: number[], color: string) => ({
     label,
     data,
     borderColor: color,
-    backgroundColor: relleno,
+    backgroundColor: conAlfa(color, 0.1),
     tension: 0.4,
     fill: true,
     pointBackgroundColor: color,
-    pointBorderColor: '#fff',
+    pointBorderColor: COLORS.white,
     pointBorderWidth: 2,
     pointRadius: 6,
   });
@@ -127,25 +131,14 @@ export function graficoTendencia(datos: EstadisticasPorPeriodoMejoradasResponse)
     type: 'line',
     data: {
       labels: meses,
-      datasets: [
-        serie('Solicitudes', solicitudes, '#2196f3', 'rgba(33, 150, 243, 0.1)'),
-        serie('Aprobadas', aprobadas, '#249337', 'rgba(76, 175, 80, 0.1)'),
-      ],
+      datasets: [serie('Solicitudes', solicitudes, COLORS.tertiary), serie('Aprobadas', aprobadas, COLORS.success)],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'top', labels: { usePointStyle: true, padding: 20 } },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#fff',
-          bodyColor: '#fff',
-          borderColor: '#fff',
-          borderWidth: 1,
-        },
+        tooltip: { mode: 'index', intersect: false, ...TOOLTIP },
       },
       scales: {
         x: { grid: { display: false } },
@@ -167,8 +160,8 @@ export function graficoProgramas(programas: string[], valores: number[], locale:
         {
           label: 'Solicitudes',
           data: valores,
-          backgroundColor: COLORES_PROGRAMAS,
-          borderColor: BORDES_PROGRAMAS,
+          backgroundColor: PALETA_CATEGORIAS,
+          borderColor: PALETA_CATEGORIAS,
           borderWidth: 2,
           borderRadius: 8,
           borderSkipped: false,
@@ -181,11 +174,7 @@ export function graficoProgramas(programas: string[], valores: number[], locale:
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#fff',
-          bodyColor: '#fff',
-          borderColor: '#fff',
-          borderWidth: 1,
+          ...TOOLTIP,
           callbacks: {
             label: (context: TooltipItem<'bar'>) => {
               const valor = context.parsed?.y || 0;

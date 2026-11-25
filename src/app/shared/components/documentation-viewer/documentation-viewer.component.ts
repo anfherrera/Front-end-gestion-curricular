@@ -12,6 +12,7 @@ import { DocumentosDTORespuesta, DocumentoHomologacion } from '@core/models/proc
 import { FechaPipe } from '../../pipes/fecha.pipe';
 import { TextoDialogComponent, TextoDialogData } from '../texto-dialog/texto-dialog.component';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { COLORS, FONTS } from '@core/design-system/design-tokens';
 
 type Documento = DocumentosDTORespuesta | DocumentoHomologacion;
 
@@ -191,10 +192,11 @@ export class DocumentationViewerComponent {
         <html>
           <head>
             <title>${nombreDocumento}</title>
+            <link rel="stylesheet" href="${FONTS.hojaGoogleFonts}" />
             <style>
-              body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+              body { margin: 0; padding: 20px; font-family: ${FONTS.body}; color: ${COLORS.neutralText}; }
               .header { margin-bottom: 20px; }
-              .filename { font-size: 18px; font-weight: bold; color: #333; }
+              .filename { font-family: ${FONTS.display}; font-size: 18px; font-weight: bold; color: ${COLORS.primary}; }
             </style>
           </head>
           <body>

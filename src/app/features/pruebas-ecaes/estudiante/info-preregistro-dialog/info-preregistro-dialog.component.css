@@ -8,7 +8,7 @@
   align-items: center;
   gap: 12px;
   padding: 24px 24px 16px 24px;
-  background: var(--azul-700);
+  background: var(--color-terciario);
   color: white;
   margin: -24px -24px 0 -24px;
 }
@@ -38,30 +38,30 @@
 .greeting {
   font-size: 16px;
   margin-bottom: 16px;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .main-message {
   font-size: 15px;
   margin-bottom: 16px;
-  color: #444;
-  background-color: var(--azul-50);
+  color: var(--neutro-800);
+  background-color: var(--primario-90);
   padding: 12px;
   border-radius: 8px;
-  border-left: 4px solid var(--azul-700);
+  border-left: 4px solid var(--color-terciario);
 }
 
 .email-info {
   font-size: 15px;
   margin-bottom: 20px;
-  color: var(--gris-750);
+  color: var(--neutro-800);
 }
 
 .guidelines {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid var(--gris-150);
+  border: 1px solid var(--neutro-200);
 }
 
 .guidelines ol {
@@ -72,7 +72,7 @@
 .guidelines li {
   font-size: 15px;
   margin-bottom: 8px;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .guidelines li:last-child {
@@ -83,7 +83,7 @@
   padding: 16px 24px 24px 24px;
   justify-content: center;
   margin: 0 -24px -24px -24px;
-  background-color: var(--gris-25);
+  background-color: var(--neutro-50);
 }
 
 .dialog-actions button {

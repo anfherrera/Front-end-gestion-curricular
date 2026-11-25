@@ -31,7 +31,7 @@
 
 .accion-aprobar,
 .accion-aprobar .mat-icon {
-  color: #4caf50 !important;
+  color: var(--notif-exito-borde) !important;
 }
 
 .accion-rechazar,

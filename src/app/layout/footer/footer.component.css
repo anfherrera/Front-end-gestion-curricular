@@ -9,7 +9,7 @@
   padding: 16px 24px;
   font-size: 0.85rem;
   font-weight: 400;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
   margin-top: auto;
 }
 

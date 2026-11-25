@@ -19,11 +19,11 @@
 
 /* Información del curso */
 .curso-info {
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
-  border: 1px solid var(--gris-200);
+  border: 1px solid var(--neutro-200);
 }
 
 .curso-info h3 {
@@ -42,7 +42,7 @@
 .curso-details p {
   margin: 0;
   font-size: 14px;
-  color: var(--gris-800);
+  color: var(--neutro-800);
 }
 
 .curso-details strong {

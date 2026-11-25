@@ -4,8 +4,8 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  background-color: var(--gris-azulado-50);
-  font-family: 'Roboto', sans-serif;
+  background-color: var(--neutro-50);
+  font-family: var(--font-body);
   min-height: 100vh;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .dashboard-subtitle {
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 1.1rem;
   margin: 0;
   font-weight: 500;

@@ -1,6 +1,6 @@
 .historial-completo-container {
   padding: 24px;
-  background-color: var(--gris-azulado-50);
+  background-color: var(--neutro-50);
   min-height: 100vh;
 }
 
@@ -19,10 +19,10 @@
 .filtros-section {
   margin-bottom: 24px;
   padding: 24px;
-  background: var(--mat-on-primary);
+  background: var(--blanco);
   border-radius: 12px;
   box-shadow: var(--sombra-2);
-  border: 1px solid var(--gris-150);
+  border: 1px solid var(--neutro-200);
 }
 
 .filtros-form {
@@ -161,9 +161,9 @@
 .info-filtros {
   margin-bottom: 20px;
   padding: 16px;
-  background-color: var(--azul-50);
+  background-color: var(--primario-90);
   border-radius: 8px;
-  border-left: 4px solid var(--azul-500);
+  border-left: 4px solid var(--color-terciario);
 }
 
 .chips-container {
@@ -198,19 +198,19 @@
 }
 
 .historial-table th {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
   font-weight: 600;
-  color: var(--gris-900);
+  color: var(--neutro-800);
   padding: 16px;
 }
 
 .historial-table td {
   padding: 16px;
-  border-bottom: 1px solid var(--gris-150);
+  border-bottom: 1px solid var(--neutro-200);
 }
 
 .historial-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--neutro-50);
 }
 
 /* Solicitud Nombre */
@@ -221,7 +221,7 @@
 }
 
 .icon-solicitud {
-  color: var(--azul-500);
+  color: var(--color-terciario);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -236,23 +236,23 @@
 
 .usuario-nombre {
   font-weight: 500;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .usuario-codigo {
   font-size: 0.85rem;
-  color: var(--gris-700);
+  color: var(--neutro-600);
 }
 
 /* Categoría y Tipo */
 .categoria-texto {
-  color: var(--gris-900);
+  color: var(--neutro-800);
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .tipo-texto {
-  color: var(--gris-900);
+  color: var(--neutro-800);
   font-size: 0.9rem;
 }
 
@@ -263,7 +263,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: var(--gris-500);
+  color: var(--neutro-600);
   text-align: center;
 }
 

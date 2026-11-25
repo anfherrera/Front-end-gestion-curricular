@@ -23,14 +23,14 @@
 }
 
 :host ::ng-deep .dialog-content .mat-mdc-text-field-wrapper {
-  background-color: var(--gris-25);
+  background-color: var(--neutro-50);
 }
 
 :host ::ng-deep .dialog-content .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
 }
 
 /* Estados de error */
 :host ::ng-deep .dialog-content .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
-  background-color: var(--rojo-50);
+  background-color: var(--notif-error-fondo);
 }

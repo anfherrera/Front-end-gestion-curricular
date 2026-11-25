@@ -16,31 +16,31 @@
 }
 
 .loading-container p {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 1rem;
 }
 
 .estado-aprobada {
-  background-color: #c8e6c9 !important;
-  color: #2e7d32 !important;
+  background-color: var(--notif-exito-fondo) !important;
+  color: var(--notif-exito-borde) !important;
 }
 
 .estado-rechazada {
-  background-color: #ffcdd2 !important;
-  color: var(--rojo-800) !important;
+  background-color: var(--notif-error-fondo) !important;
+  color: var(--notif-error-titulo) !important;
 }
 
 .estado-enviada {
-  background-color: #fff9c4 !important;
-  color: #f57f17 !important;
+  background-color: var(--notif-error-fondo) !important;
+  color: var(--notif-error-titulo) !important;
 }
 
 .estado-proceso {
-  background-color: #bbdefb !important;
-  color: #1565c0 !important;
+  background-color: var(--primario-90) !important;
+  color: var(--color-terciario) !important;
 }
 
 .estado-default {
-  background-color: var(--gris-150) !important;
-  color: #424242 !important;
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-800) !important;
 }

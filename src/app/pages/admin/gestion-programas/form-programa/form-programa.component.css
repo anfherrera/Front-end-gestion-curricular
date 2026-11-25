@@ -2,7 +2,7 @@
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  background: var(--gris-azulado-50);
+  background: var(--neutro-50);
   min-height: 100vh;
 }
 
@@ -68,11 +68,11 @@ mat-card {
 }
 
 :host ::ng-deep .form-container .mat-mdc-text-field-wrapper {
-  background-color: var(--gris-25);
+  background-color: var(--neutro-50);
 }
 
 :host ::ng-deep .form-container .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
 }
 
 /* Iconos con colores distintivos */
@@ -98,7 +98,7 @@ mat-card {
 /* Hints más visibles */
 :host ::ng-deep .form-container mat-hint {
   font-size: 12px;
-  color: var(--gris-600);
+  color: var(--neutro-600);
   font-style: italic;
 }
 
@@ -108,7 +108,7 @@ mat-card {
   gap: 16px;
   margin-top: 32px;
   padding-top: 32px;
-  border-top: 2px solid var(--indigo-50);
+  border-top: 2px solid var(--primario-90);
 }
 
 .form-actions button {
@@ -135,7 +135,7 @@ mat-card {
 }
 
 .form-actions button:not([color]):hover {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
 }
 
 .form-actions button[color='primary'] mat-icon {
@@ -144,7 +144,7 @@ mat-card {
 }
 
 .form-actions button:not([color]) mat-icon {
-  color: var(--gris-600);
+  color: var(--neutro-600);
 }
 
 .form-actions button:hover mat-icon {
@@ -158,14 +158,14 @@ mat-card {
 
 /* Estados de error más claros */
 :host ::ng-deep .form-container .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
-  background-color: var(--rojo-50);
+  background-color: var(--notif-error-fondo);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .container-admin {
     padding: 16px;
-    background: var(--gris-azulado-50);
+    background: var(--neutro-50);
   }
 
   .header-section {

@@ -4,7 +4,7 @@
   justify-content: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   margin-top: 8px;
 }
 
@@ -22,10 +22,10 @@
   justify-content: center;
   gap: 12px;
   padding: 20px;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 8px;
   margin: 20px 0;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 0.9rem;
 }
 
@@ -40,17 +40,17 @@
   border-radius: 12px;
   box-shadow: var(--sombra-2);
   margin: 20px 0;
-  border-left: 4px solid var(--estado-peligro);
+  border-left: 4px solid var(--notif-error-titulo);
 }
 
 .error-icon {
   font-size: 3rem;
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
   margin-bottom: 1rem;
 }
 
 .error-container h3 {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
   margin-bottom: 0.5rem;
 }
 
@@ -191,15 +191,15 @@
 }
 
 .kpi-card.materias-unicas {
-  border-left-color: var(--estado-exito);
+  border-left-color: var(--notif-exito-borde);
 }
 
 .kpi-card.programas-participantes {
-  border-left-color: var(--estado-info);
+  border-left-color: var(--notif-info-borde);
 }
 
 .kpi-card.tasa-aprobacion {
-  border-left-color: var(--estado-advertencia);
+  border-left-color: var(--color-error);
 }
 
 .kpi-card mat-card-header,
@@ -226,7 +226,7 @@
 }
 
 .kpi-description {
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 0.9rem;
 }
 
@@ -235,7 +235,7 @@
 }
 
 .predicciones-content {
-  background: var(--gris-50);
+  background: var(--neutro-50);
   margin: -2rem;
   padding: 2rem;
 }
@@ -299,19 +299,19 @@
 }
 
 .estado-card.aprobada {
-  border-left-color: var(--estado-exito);
+  border-left-color: var(--notif-exito-borde);
 }
 
 .estado-card.enviada {
-  border-left-color: var(--estado-advertencia);
+  border-left-color: var(--color-error);
 }
 
 .estado-card.en-proceso {
-  border-left-color: var(--estado-info);
+  border-left-color: var(--notif-info-borde);
 }
 
 .estado-card.rechazada {
-  border-left-color: var(--estado-peligro);
+  border-left-color: var(--notif-error-titulo);
 }
 
 .estado-header {
@@ -327,42 +327,42 @@
 
 /* Colores para los iconos de cada estado */
 .estado-card.aprobada mat-icon {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
 }
 
 .estado-card.enviada mat-icon {
-  color: var(--estado-advertencia);
+  color: var(--color-error);
 }
 
 .estado-card.en-proceso mat-icon {
-  color: var(--estado-info);
+  color: var(--notif-info-borde);
 }
 
 .estado-card.rechazada mat-icon {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
 }
 
 .estado-nombre {
   font-weight: 600;
   font-size: 1rem;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 /* Colores específicos para cada estado */
 .estado-card.aprobada .estado-nombre {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
 }
 
 .estado-card.enviada .estado-nombre {
-  color: var(--estado-advertencia);
+  color: var(--color-error);
 }
 
 .estado-card.en-proceso .estado-nombre {
-  color: var(--estado-info);
+  color: var(--notif-info-borde);
 }
 
 .estado-card.rechazada .estado-nombre {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
 }
 
 .estado-valor {
@@ -405,13 +405,13 @@
 .resumen-item {
   text-align: center;
   padding: 1rem;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 8px;
 }
 
 .resumen-label {
   font-size: 0.9rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
@@ -431,19 +431,19 @@
 
 .confiabilidad-alta {
   background: rgba(40, 167, 69, 0.1);
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
   border: 1px solid rgba(40, 167, 69, 0.3);
 }
 
 .confiabilidad-media {
   background: rgba(255, 193, 7, 0.1);
-  color: var(--estado-advertencia);
+  color: var(--color-error);
   border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
 .confiabilidad-baja {
   background: rgba(220, 53, 69, 0.1);
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
   border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
@@ -460,8 +460,8 @@
 }
 
 .tendencia-card {
-  background: var(--gris-50);
-  border: 1px solid var(--gris-100);
+  background: var(--neutro-50);
+  border: 1px solid var(--neutro-100);
   border-radius: 8px;
   box-shadow: var(--sombra-2);
   padding: 15px;
@@ -473,21 +473,21 @@
 }
 
 .tendencia-card:hover {
-  background: var(--gris-100);
+  background: var(--neutro-100);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
 
 .tendencia-card.creciente {
-  border-left-color: var(--estado-exito);
+  border-left-color: var(--notif-exito-borde);
 }
 
 .tendencia-card.decreciente {
-  border-left-color: var(--estado-peligro);
+  border-left-color: var(--notif-error-titulo);
 }
 
 .tendencia-card.estable {
-  border-left-color: var(--estado-advertencia);
+  border-left-color: var(--color-error);
 }
 
 .tendencia-header {
@@ -518,7 +518,7 @@
 
 .dato-label {
   font-size: 0.9rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
 }
 
 .dato-valor {
@@ -528,7 +528,7 @@
 
 /* Iconos de Tendencia */
 .tendencia-creciente {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
   font-weight: bold;
   background: rgba(40, 167, 69, 0.1);
   padding: 0.25rem 0.5rem;
@@ -538,7 +538,7 @@
 }
 
 .tendencia-decreciente {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
   font-weight: bold;
   background: rgba(220, 53, 69, 0.1);
   padding: 0.25rem 0.5rem;
@@ -548,7 +548,7 @@
 }
 
 .tendencia-estable {
-  color: var(--estado-advertencia);
+  color: var(--color-error);
   font-weight: bold;
   background: rgba(255, 193, 7, 0.1);
   padding: 0.25rem 0.5rem;
@@ -642,12 +642,12 @@
 }
 
 .mat-expansion-panel-header {
-  background: var(--gris-50) !important;
+  background: var(--neutro-50) !important;
   border-radius: 12px 12px 0 0 !important;
 }
 
 .mat-expansion-panel-header:hover {
-  background: var(--gris-100) !important;
+  background: var(--neutro-100) !important;
 }
 
 /* ===== ESTILOS PARA DATOS CONECTADOS ===== */
@@ -656,7 +656,7 @@
 .chart-data {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--gris-150);
+  border-top: 1px solid var(--neutro-200);
 }
 
 /* Materia Items */
@@ -664,15 +664,15 @@
 .programa-item {
   padding: 10px;
   margin: 5px 0;
-  border: 1px solid var(--gris-150);
+  border: 1px solid var(--neutro-200);
   border-radius: 5px;
-  background: #f9f9f9;
+  background: var(--neutro-50);
   transition: all 0.3s ease;
 }
 
 .materia-item:hover,
 .programa-item:hover {
-  background: #f0f0f0;
+  background: var(--neutro-50);
   transform: translateX(4px);
 }
 
@@ -687,7 +687,7 @@
 .materia-solicitudes,
 .programa-solicitudes,
 .tendencia-solicitudes {
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
 }
@@ -695,7 +695,7 @@
 .materia-porcentaje,
 .programa-porcentaje,
 .tendencia-porcentaje {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -720,12 +720,12 @@
 }
 
 .demanda-estimada {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
   font-weight: 500;
 }
 
 .variacion {
-  color: var(--estado-advertencia);
+  color: var(--color-error);
   font-weight: 600;
 }
 
@@ -739,18 +739,18 @@
 .meses-recomendados {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
 }
 
 /* No Data */
 .no-data {
   text-align: center;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-style: italic;
   padding: 40px;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 8px;
-  border: 2px dashed var(--gris-200);
+  border: 2px dashed var(--neutro-200);
   width: 100%;
 }
 
@@ -774,8 +774,8 @@
 .prediccion-materia-card,
 .prediccion-programa-card,
 .prediccion-temporal-card {
-  background: #f0f8ff;
-  border: 1px solid var(--gris-150);
+  background: var(--primario-98);
+  border: 1px solid var(--neutro-200);
   border-radius: 8px;
   padding: 15px;
   display: flex;
@@ -799,7 +799,7 @@
 .prediccion-materia-card:hover,
 .prediccion-programa-card:hover,
 .prediccion-temporal-card:hover {
-  background: #e6f3ff;
+  background: var(--primario-98);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
@@ -809,7 +809,7 @@
 .dashboard-tabs {
   display: flex;
   margin-bottom: 0;
-  border-bottom: 2px solid var(--gris-100);
+  border-bottom: 2px solid var(--neutro-100);
   background: white;
   border-radius: 8px 8px 0 0;
   padding: 0;
@@ -824,7 +824,7 @@
   transition: all 0.3s ease;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   flex: 1;
   text-align: center;
 }
@@ -833,11 +833,11 @@
   border-bottom-color: var(--color-primario);
   color: var(--color-primario);
   font-weight: bold;
-  background: var(--gris-50);
+  background: var(--neutro-50);
 }
 
 .tab-button:hover {
-  background-color: var(--gris-50);
+  background-color: var(--neutro-50);
   color: var(--color-primario);
 }
 
@@ -856,11 +856,11 @@
   align-items: center;
   justify-content: center;
   height: 200px;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 1.1em;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 8px;
-  border: 2px dashed var(--gris-200);
+  border: 2px dashed var(--neutro-200);
 }
 
 .chart-loading i {
@@ -883,7 +883,7 @@ canvas {
   }
 
   .tab-button {
-    border-bottom: 1px solid var(--gris-100);
+    border-bottom: 1px solid var(--neutro-100);
     border-radius: 0;
   }
 
@@ -934,7 +934,7 @@ canvas {
 }
 
 .prediccion-temporal-card .demanda-estimada {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
   font-weight: 500;
   font-size: 1rem;
 }
@@ -942,7 +942,7 @@ canvas {
 .prediccion-temporal-card .meses-recomendados {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
 }
 
 /* Responsive para datos */

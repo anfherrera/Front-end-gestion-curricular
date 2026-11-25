@@ -2,6 +2,7 @@
  * Utilidades para el sistema de notificaciones
  */
 
+import { COLOR_POR_PROCESO, COLORS } from '../design-system/design-tokens';
 import { Notificacion, NotificacionDTORespuesta } from '../models/notificaciones.model';
 import { fechaRelativa } from './fecha.util';
 
@@ -38,16 +39,15 @@ export function getIconByTipoSolicitud(tipoSolicitud: string): string {
  * Obtiene el color por tipo de solicitud
  */
 export function getColorByTipoSolicitud(tipoSolicitud: string): string {
-  // Colores institucionales - Sistema de Diseño TIC Universidad del Cauca
   const colores: Record<string, string> = {
-    CURSO_VERANO_PREINSCRIPCION: '#1D72D3',
-    CURSO_VERANO_INSCRIPCION: '#000066',
-    ECAES: '#FF6D0A',
-    REINGRESO: '#249337',
-    HOMOLOGACION: '#9D0311',
-    PAZ_Y_SALVO: '#1D72D3',
+    CURSO_VERANO_PREINSCRIPCION: COLOR_POR_PROCESO.cursosVerano,
+    CURSO_VERANO_INSCRIPCION: COLOR_POR_PROCESO.cursosVerano,
+    ECAES: COLOR_POR_PROCESO.ecaes,
+    REINGRESO: COLOR_POR_PROCESO.reingreso,
+    HOMOLOGACION: COLOR_POR_PROCESO.homologacion,
+    PAZ_Y_SALVO: COLOR_POR_PROCESO.pazSalvo,
   };
-  return colores[tipoSolicitud] || '#454444';
+  return colores[tipoSolicitud] || COLORS.neutralText;
 }
 
 /**

@@ -24,10 +24,12 @@
     "lint": "ng lint",
     "prepare": "husky",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\""
+    "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
+    "lint:estilos": "node scripts/comprobar-estilos.mjs"
   },
   "lint-staged": {
-    "src/**/*.{ts,html}": "eslint --max-warnings=0"
+    "src/**/*.{ts,html}": "eslint --max-warnings=0",
+    "src/**/*.{ts,html,css}": "node scripts/comprobar-estilos.mjs"
   },
   "private": true,
   "dependencies": {

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
+import { COLORS } from '@core/design-system/design-tokens';
 import { EstadisticasService } from '@core/services/estadisticas.service';
 import { EstadoInfo, EstadoSolicitudesResponse } from '@core/models/estadisticas/generales.model';
 import { EstadisticasPorEstadoComponent } from './estadisticas-por-estado.component';
@@ -52,22 +53,23 @@ describe('EstadisticasPorEstadoComponent', () => {
       ['EN_PROCESO', 0],
       ['RECHAZADA', 1],
     ]);
-    // Lo que manda el backend tiene prioridad.
+    // Icono y descripción del backend tienen prioridad; el color es siempre el institucional del estado.
     expect(estados[0]).toEqual(
-      jasmine.objectContaining({ color: '#00aa00', icono: 'fas fa-check-circle', descripcion: 'Aprobadas' })
+      jasmine.objectContaining({ color: COLORS.success, icono: 'fas fa-check-circle', descripcion: 'Aprobadas' })
     );
     // Lo que falta se completa por estado.
     expect(estados[1]).toEqual(
       jasmine.objectContaining({
         icono: 'send',
-        color: '#1D72D3',
+        color: COLORS.tertiary,
         descripcion: 'Solicitudes enviadas pendientes de revisión',
       })
     );
     expect(estados[2]).toEqual(
       jasmine.objectContaining({ porcentaje: 0, icono: 'schedule', descripcion: 'Solicitudes en proceso de revisión' })
     );
-    expect(estados[3]).toEqual(jasmine.objectContaining({ icono: 'cancel', color: '#FF6D0A' }));
+    expect(estados[2]).toEqual(jasmine.objectContaining({ color: COLORS.primary }));
+    expect(estados[3]).toEqual(jasmine.objectContaining({ icono: 'cancel', color: COLORS.error }));
     expect(component.totalSolicitudes()).toBe(10);
     expect(component.data()?.analisis).toEqual(respuesta.analisis);
     expect(component.loading()).toBeFalse();

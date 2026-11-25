@@ -8,7 +8,7 @@
   align-items: center;
   margin-bottom: 16px;
   padding: 12px 0;
-  border-bottom: 2px solid var(--gris-150);
+  border-bottom: 2px solid var(--neutro-200);
 }
 
 .header h3 {
@@ -16,18 +16,18 @@
   align-items: center;
   gap: 8px;
   margin: 0;
-  color: var(--gris-900);
+  color: var(--neutro-800);
   font-size: 18px;
   font-weight: 500;
 }
 
 .header mat-icon {
-  color: var(--azul-700);
+  color: var(--color-terciario);
 }
 
 .document-count {
-  background-color: var(--azul-50);
-  color: var(--azul-700);
+  background-color: var(--primario-90);
+  color: var(--color-terciario);
   padding: 4px 12px;
   border-radius: 16px;
   font-size: 12px;
@@ -37,14 +37,14 @@
 .no-documents {
   text-align: center;
   padding: 40px 20px;
-  color: var(--gris-700);
+  color: var(--neutro-600);
 }
 
 .no-documents mat-icon {
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: var(--gris-300);
+  color: var(--neutro-400);
   margin-bottom: 16px;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .file-icon {
-  color: var(--azul-700);
+  color: var(--color-terciario);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -78,12 +78,12 @@
 
 .file-name {
   font-weight: 500;
-  color: var(--gris-900);
+  color: var(--neutro-800);
   word-break: break-word;
 }
 
 .file-date {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 14px;
 }
 
@@ -96,7 +96,7 @@
 
 .comments-button {
   position: relative;
-  background-color: var(--azul-50);
+  background-color: var(--primario-90);
   border-radius: 50%;
   transition: all 0.2s ease;
   border: none !important;
@@ -104,30 +104,30 @@
 }
 
 .comments-button:hover {
-  background-color: #bbdefb;
+  background-color: var(--primario-90);
   transform: scale(1.1);
 }
 
 .comments-button:active {
-  background-color: var(--azul-50) !important;
+  background-color: var(--primario-90) !important;
   transform: scale(0.95);
 }
 
 .comments-button:focus {
-  background-color: var(--azul-50) !important;
+  background-color: var(--primario-90) !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
 /* Forzar estado normal después de cualquier interacción */
 .comments-button:not(:hover):not(:active):not(:focus) {
-  background-color: var(--azul-50) !important;
+  background-color: var(--primario-90) !important;
   transform: none !important;
   box-shadow: none !important;
 }
 
 .comments-button mat-icon {
-  color: var(--azul-700);
+  color: var(--color-terciario);
   pointer-events: none;
 }
 
@@ -148,7 +148,7 @@
 }
 
 .no-comments {
-  color: var(--gris-500);
+  color: var(--neutro-600);
   font-style: italic;
   font-size: 14px;
 }
@@ -163,7 +163,7 @@
 }
 
 .action-button {
-  background-color: var(--gris-75) !important;
+  background-color: var(--neutro-50) !important;
   border-radius: 50%;
   transition: all 0.2s ease;
   border: none !important;
@@ -173,36 +173,36 @@
 }
 
 .action-button:hover {
-  background-color: var(--gris-150) !important;
+  background-color: var(--neutro-200) !important;
   transform: scale(1.1);
 }
 
 .action-button:active {
-  background-color: var(--gris-75) !important;
+  background-color: var(--neutro-50) !important;
   transform: scale(0.95);
 }
 
 .action-button:focus {
-  background-color: var(--gris-75) !important;
+  background-color: var(--neutro-50) !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
 .action-button:focus-visible {
-  background-color: var(--gris-75) !important;
-  outline: 2px solid var(--azul-700) !important;
+  background-color: var(--neutro-50) !important;
+  outline: 2px solid var(--color-terciario) !important;
   outline-offset: 2px !important;
 }
 
 /* Forzar estado normal después de cualquier interacción */
 .action-button:not(:hover):not(:active):not(:focus) {
-  background-color: var(--gris-75) !important;
+  background-color: var(--neutro-50) !important;
   transform: none !important;
   box-shadow: none !important;
 }
 
 .action-button mat-icon {
-  color: var(--azul-700);
+  color: var(--color-terciario);
   pointer-events: none;
 }
 

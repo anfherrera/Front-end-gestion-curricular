@@ -28,14 +28,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
       .breadcrumb {
         display: flex;
         flex-wrap: wrap;
-        font-family: var(--breadcrumb-font, 'Open Sans'), sans-serif;
+        font-family: var(--breadcrumb-font);
         font-size: var(--breadcrumb-size, 14px);
         font-weight: var(--breadcrumb-weight, 300);
-        color: var(--breadcrumb-color, #a7a6b0);
+        color: var(--breadcrumb-color);
         margin-bottom: 8px;
       }
       .breadcrumb a {
-        color: var(--breadcrumb-color, #a7a6b0);
+        color: var(--breadcrumb-color);
         text-decoration: none;
       }
       .breadcrumb a:hover {
@@ -44,7 +44,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       }
       .breadcrumb-separator {
         margin: 0 8px;
-        color: var(--breadcrumb-color, #a7a6b0);
+        color: var(--breadcrumb-color);
       }
       .breadcrumb-current {
         color: var(--color-neutro-texto);

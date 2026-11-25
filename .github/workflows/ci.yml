@@ -34,6 +34,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Estilos del Sistema de Diseño TIC
+        run: npm run lint:estilos
+
       - name: Build
         run: npx ng build
 

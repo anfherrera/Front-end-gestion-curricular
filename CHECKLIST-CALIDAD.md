@@ -320,7 +320,7 @@ Paz y salvo ya sigue el patrón correcto: [paz-salvo-revision](src/app/features/
   - 92 coincidían con un token institucional (`--color-primario`, `--color-error`, `--primario-NN`, `--notif-*`…)
   - Para los demás colores que se repetían 8 veces o más se añaden a [tokens.css](src/app/core/design-system/tokens.css) **colores de apoyo** con el mismo valor: escala `--gris-25` a `--gris-900`, `--blanco`, `--primario-98`, `--azul-50/500/700`, `--indigo-50`, `--estado-exito/peligro/advertencia/info` y `--rojo-50/700/800` (775 usos)
   - Se quitan 40 valores de reserva redundantes (`var(--color-primario, #000066)` → `var(--color-primario)`): los tokens siempre están definidos
-  - Pendiente de diseño, no de código: fundir colores casi iguales (hay tres rojos de error: `--estado-peligro`, `--rojo-700` y `--color-error`; y verdes `#4CAF50`/`--estado-exito`). Eso sí cambia el aspecto y conviene decidirlo con el Sistema de Diseño TIC
+  - Pendiente de diseño, no de código: fundir colores casi iguales (hay tres rojos de error: `--estado-peligro`, `--rojo-700` y `--color-error`; y verdes `#4CAF50`/`--estado-exito`). Eso sí cambia el aspecto y conviene decidirlo con el Sistema de Diseño TIC. Resuelto el 2026-11-25 (ver "Estilo institucional aplicado en todo el front", al final)
 - [x] **`style="…"` a clases**: los 18 se quitan. Globales en [componentes.css](src/styles/componentes.css): `.accion-ver`, `.accion-aprobar` y `.accion-rechazar` (botones de icono de inscribir y preinscribir), `.insignia-plana` (estado y condición en visualizar-solicitudes) y `.spinner-en-boton` (historial). Locales: `.estado-etiqueta` (preinscribir), `.btn-exportar-excel` (visualizar-solicitudes) y `.boton-descargar` (detalles de inscripción)
   - Sin cambios visibles esperados (mismas propiedades; los colores ya eran `!important`)
 - [x] **Bloques CSS repetidos**: llevarlos a `componentes.css` (global) les quitaba el atributo de encapsulación y bajaba su especificidad, lo que podía cambiar la cascada. En su lugar, las reglas idénticas en todo un grupo de páginas pasan a un CSS compartido que esas páginas cargan primero en `styleUrls` (igual que ya hacía `dashboard-comun.css`), sin cambiar la especificidad:
@@ -739,9 +739,8 @@ Quedan dos fallos del **backend**, anotados arriba, que el front no puede arregl
 - Homologación, reingreso y ECAES descartan el `comentario` del cambio de estado. Por eso el comentario de rechazo les llega vacío al estudiante. Cuando el backend lo guarde, el front lo mostrará sin cambios
 - `descargarOficio` de reingreso puede devolver un PDF del estudiante en lugar de la resolución. El front no se ve afectado porque antes elige la resolución más reciente entre los documentos
 
-Tampoco son tareas de código, y siguen abiertos:
+Tampoco es tarea de código, y sigue abierto:
 
-- La decisión de diseño de la Fase 5: fundir colores casi iguales (tres rojos de error, dos verdes). Cambia el aspecto, así que hay que decidirlo con el Sistema de Diseño TIC
 - Las líneas "Probar a mano" de cada punto. Todos esos puntos se verificaron con pruebas automáticas, y la mayoría también en el navegador con backend. Lo que no se ha revisado a ojo es el diálogo de confirmación de admin y de gestionar-cursos, y el de texto en rechazos y comentarios (Fase 2, "Diálogos"). También el rechazo de paz y salvo del coordinador (Fase 3)
 
 ### Comprobación final con herramientas (2026-11-25)
@@ -757,5 +756,51 @@ Tampoco son tareas de código, y siguen abiertos:
   - Lo que queda en `knip`: la dependencia anterior y 48 tipos o constantes con un `export` de sobra (se usan solo en su archivo). Eso es normal en los modelos y no se toca
 - [x] Tamaño del build: la carga inicial es de 687 kB (178 kB transferidos). Hay unos 90 chunks con carga diferida; el más grande es el módulo estadístico (355 kB, por los gráficos). `ng build` no da avisos de presupuesto
 - Verificación: tsc de app y de specs, lint 0/0, `format:check` de los archivos tocados, `ng build` sin avisos y 785/785 pruebas con cobertura 66,2 % sentencias, 54,3 % ramas, 65,5 % funciones y 66,5 % líneas. Sin cambios visibles esperados (solo tipos y dependencias de desarrollo)
+
+### Estilo institucional aplicado en todo el front (2026-11-25)
+
+Resuelve la decisión de diseño que quedaba de la Fase 5 (fundir colores casi iguales). La guía ya existía en [design-system](src/app/core/design-system/README.md), basada en el Sistema de Diseño UX-UI de la División TIC (2024), y sus valores coinciden con las variables globales de unicauca.edu.co (primario #000066, secundario #5056AC, acento #9D0311, Titillium Web y Open Sans). Lo que fallaba era el código, que no la cumplía.
+
+- [x] **Angular Material** usaba los colores del tema prebuilt `azure-blue`: azul #005cbb en pestañas, casillas, barras de progreso, campos activos y botones de texto, y rojo #ba1a1a en los errores. Las variables `--mat-primary…` de `tokens.css` no las lee Material 3, así que se borran. [material.css](src/styles/material.css) define ahora `--mat-sys-*` con la paleta institucional: primario #000066, secundario #5056AC, terciario #1D72D3 y error #8D3800. El error es el naranja oscuro de las notificaciones de la guía, porque #FF6D0A no llega a 4,5:1 como texto
+- [x] **Colores escritos a mano**: había 290 en 56 archivos, con 133 valores distintos de Bootstrap, Material y Tailwind. Se cambian todos por tokens, por familias:
+  - Azules: primario, índigo o terciario
+  - Verdes: éxito
+  - Rojos y naranjas: #FF6D0A en fondos, bordes e iconos, y #8D3800 en texto, como pide la guía ("error, no rojo")
+  - Amarillos: naranja de error
+  - Fondos claros: los de las notificaciones de la guía
+  - Grises: escala neutra
+- [x] **Grises**: los 18 tokens `--gris-*` (y los de estado heredados de Bootstrap: `--estado-*`, `--rojo-*`, `--azul-*`, `--indigo-50`) se sustituyen por 6 neutros, `--neutro-50/100/200/400/600/800`, con los valores de la guía (#454444, #F6F6F6) y del portal (#DEDBDB, #A3A3A3, #757474). El texto secundario pasa de #999 o #888 a #757474 para llegar a 4,5:1
+- [x] **Fuentes**: unas 30 reglas pedían `Roboto`, que la app no carga, así que caían en Arial; otras escribían 'Open Sans' o 'Titillium Web' a mano. Ahora todas usan `var(--font-body)` o `var(--font-display)`. La ventana emergente del visor de documentos (HTML aparte) carga las fuentes con `FONTS` de `design-tokens.ts`
+- [x] **Gráficos y TypeScript**: `PALETA_CATEGORIAS` (6 colores institucionales), `COLOR_POR_PROCESO` y `conAlfa()` nuevos en [design-tokens.ts](src/app/core/design-system/design-tokens.ts). Cada proceso tiene el mismo color en gráficos, tarjetas de "Estadísticas por proceso" y notificaciones:
+  - Cursos de verano: primario
+  - Paz y Salvo: terciario
+  - Reingreso: éxito
+  - ECAES: naranja
+  - Homologación: rojo institucional
+
+  Los tooltips de Chart.js usan #07184A, como `mat-tooltip`
+
+- [x] "Estado de Solicitudes" pintaba los colores que manda el backend (`PresentacionEstadisticas.java`, en estilo Tailwind). Ahora usa siempre los institucionales del estado
+- [x] Roles en Gestión de Usuarios, con un color distinto cada uno:
+  - Administrador: rojo institucional (antes rojo; el naranja queda para errores)
+  - Coordinador: índigo
+  - Funcionario: primario
+  - Secretaría: naranja
+  - Estudiante: verde
+  - Docente: terciario
+- [x] **Para que no vuelva**: [scripts/comprobar-estilos.mjs](scripts/comprobar-estilos.mjs) (`npm run lint:estilos`) falla si un archivo de `src/`, salvo `design-system` y los specs, tiene un color hex o un `font-family` que no sea un token. Corre en el CI (paso "Estilos del Sistema de Diseño TIC") y en lint-staged antes de cada commit. Probado con un archivo de prueba: detecta un color en CSS, otro en TS y una fuente, y no confunde un selector `#ab12cd`
+- [x] README del sistema de diseño reescrito: reglas, tabla de colores con su token CSS y su constante TS, neutros, gráficos, tipografía y uso. Ya no cita `snackbarConfig()`, que se borró en la Fase 2
+- Verificación:
+  - tsc de app y de specs, lint 0/0 y `lint:estilos` correcto (334 archivos)
+  - `ng build` sin avisos (178 kB transferidos al inicio)
+  - 785/785 pruebas, con cobertura de 66,3 % en sentencias, 54,3 % en ramas, 65,6 % en funciones y 66,5 % en líneas. Se actualizan 3 specs que comprobaban colores viejos; ahora comparan con `COLORS`
+  - `test:navegacion` con backend: "Todo correcto"
+  - Capturas antes y después de 18 pantallas de los 5 roles con backend (Edge, 1366 px), sin errores de JS
+- Cambios visibles esperados:
+  - Pestañas, casillas, barras de progreso, campos activos y botones de texto pasan del azul de Material al #000066
+  - Los avisos de error y los estados rechazados salen en naranja en lugar de rojo
+  - Los grises cambian poco; el texto secundario queda algo más oscuro
+  - Las tarjetas, etiquetas y gráficos usan solo colores de la paleta
+  - Los títulos que caían en Arial salen en Open Sans
 
 El orden que se siguió fue: Fase 1, Fase 2, Fase 7 (ESLint y CI), Fase 3 y luego las Fases 4, 5 y 6 por partes

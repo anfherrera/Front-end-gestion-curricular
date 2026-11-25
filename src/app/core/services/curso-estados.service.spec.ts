@@ -20,7 +20,7 @@ describe('CursoEstadosService', () => {
   it('da el color y el icono de cada estado, con valores por defecto si no lo conoce', () => {
     expect(service.getColorEstado('Preinscripción')).toBe(COLORS.success);
     expect(service.getColorEstado('Cerrado')).toBe(COLORS.error);
-    expect(service.getColorEstado('Otro')).toBe('#6c757d');
+    expect(service.getColorEstado('Otro')).toBe(COLORS.neutralSecondary);
     expect(service.getIconoEstado('Inscripción')).toBe('person_add');
     expect(service.getIconoEstado('Otro')).toBe('help_outline');
   });

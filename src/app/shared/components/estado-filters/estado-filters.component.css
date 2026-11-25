@@ -1,10 +1,10 @@
 .filters-container {
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 24px;
   box-shadow: var(--sombra-2);
-  border: 1px solid var(--azul-50);
+  border: 1px solid var(--primario-90);
 }
 
 .filters-header {
@@ -20,7 +20,7 @@
 }
 
 .filters-header p {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -187,7 +187,7 @@
 
 .info-card p {
   margin: 0 0 16px 0;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   line-height: 1.5;
 }
 
@@ -200,7 +200,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .stat strong {

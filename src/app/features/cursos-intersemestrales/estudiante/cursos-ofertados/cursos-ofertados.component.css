@@ -2,7 +2,7 @@
 .sin-datos {
   text-align: center;
   font-size: 1rem;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   padding: 16px 0;
 }
 
@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: center;
   padding: 48px 24px;
-  background: var(--gris-75);
+  background: var(--neutro-50);
   border-radius: 8px;
   margin: 24px 0;
 }
@@ -21,20 +21,20 @@
   font-size: 64px;
   width: 64px;
   height: 64px;
-  color: #9e9e9e;
+  color: var(--neutro-600);
   margin-bottom: 16px;
 }
 
 .mensaje-vacio h3 {
   margin: 0 0 12px 0;
-  color: #424242;
+  color: var(--neutro-800);
   font-size: 20px;
   font-weight: 500;
 }
 
 .mensaje-vacio p {
   margin: 8px 0;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   line-height: 1.6;
   text-align: center;
   max-width: 600px;
@@ -44,7 +44,7 @@
   display: block;
   margin-top: 12px;
   font-size: 0.9em;
-  color: var(--gris-600);
+  color: var(--neutro-600);
   font-style: italic;
 }
 

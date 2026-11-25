@@ -36,6 +36,7 @@ import {
 } from '@core/models/estadisticas/cursos-verano.model';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { RecomendacionesCursosVeranoComponent } from './recomendaciones-cursos-verano/recomendaciones-cursos-verano.component';
+import { COLORS, PALETA_CATEGORIAS, conAlfa } from '@core/design-system/design-tokens';
 
 interface FiltrosCursosVerano {
   periodoAcademico?: string;
@@ -323,8 +324,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           {
             label: 'Solicitudes',
             data: this.tendenciasTemporalesData().map((t) => t.solicitudes),
-            borderColor: '#36A2EB',
-            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+            borderColor: COLORS.tertiary,
+            backgroundColor: conAlfa(COLORS.tertiary, 0.1),
             fill: true,
             tension: 0.1,
           },
@@ -364,7 +365,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         datasets: [
           {
             data: this.topMateriasData().map((m) => m.solicitudes),
-            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+            backgroundColor: [...PALETA_CATEGORIAS],
           },
         ],
       },
@@ -398,7 +399,7 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
           {
             label: 'Solicitudes por Programa',
             data: this.analisisProgramaData().map((p) => p.solicitudes),
-            backgroundColor: '#FF6384',
+            backgroundColor: COLORS.primary,
           },
         ],
       },
@@ -442,13 +443,13 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   getTendenciaColor(tendencia: string): string {
     switch (tendencia) {
       case 'CRECIENTE':
-        return '#28a745';
+        return COLORS.success;
       case 'DECRECIENTE':
-        return '#dc3545';
+        return COLORS.errorText;
       case 'ESTABLE':
-        return '#ffc107';
+        return COLORS.tertiary;
       default:
-        return '#6c757d';
+        return COLORS.neutralSecondary;
     }
   }
 

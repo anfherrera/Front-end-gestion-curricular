@@ -19,7 +19,7 @@
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
-  border: 2px solid var(--azul-50);
+  border: 2px solid var(--primario-90);
   box-shadow: var(--sombra-2);
   background: white;
   transition: box-shadow 0.3s ease;
@@ -47,7 +47,7 @@
 }
 
 .data-row {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--neutro-50);
   transition: all 0.3s ease;
   background: white;
 }
@@ -63,18 +63,18 @@
 }
 
 .data-row:nth-child(even) {
-  background-color: #fafbff;
+  background-color: var(--primario-98);
 }
 
 .data-row:nth-child(even):hover {
-  background: #f0f4ff;
+  background: var(--primario-98);
 }
 
 .concepto-cell {
   padding: 18px 24px !important;
   font-weight: 600;
-  color: #2c3e50;
-  border-right: 1px solid #e8f4fd;
+  color: var(--neutro-800);
+  border-right: 1px solid var(--primario-98);
   width: 65%;
   font-size: 0.95rem;
   line-height: 1.4;
@@ -96,12 +96,12 @@
 
 .mensaje-vacio {
   text-align: center;
-  color: var(--gris-550);
+  color: var(--neutro-600);
   font-style: italic;
   padding: 40px 20px;
-  background-color: var(--gris-50);
+  background-color: var(--neutro-50);
   border-radius: 8px;
-  border: 2px dashed var(--gris-150);
+  border: 2px dashed var(--neutro-200);
 }
 
 .mensaje-vacio p {

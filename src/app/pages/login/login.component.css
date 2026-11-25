@@ -3,7 +3,7 @@
   display: flex;
   height: 100vh;
   width: 100%;
-  font-family: 'Open Sans', 'Titillium Web', sans-serif;
+  font-family: var(--font-body);
   overflow: hidden;
   position: relative;
 }
@@ -50,13 +50,13 @@
   margin-bottom: 1rem;
 }
 
-/* Título - Color primario TIC #000066 */
+/* Título - Color primario TIC var(--color-primario) */
 .login-title {
   font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 2rem;
   color: var(--color-primario);
-  font-family: 'Titillium Web', sans-serif;
+  font-family: var(--font-display);
   line-height: 1.4;
 }
 
@@ -75,7 +75,7 @@ mat-form-field mat-icon {
   color: var(--color-primario);
 }
 
-/* Estilos para asteriscos requeridos - Color error TIC #FF6D0A */
+/* Estilos para asteriscos requeridos - Color error TIC var(--color-error) */
 .required-asterisk {
   color: var(--color-error);
   margin-left: 2px;
@@ -132,7 +132,7 @@ mat-form-field mat-icon {
   border-radius: 100px;
   padding: 0.9rem;
   font-weight: 600;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
   transition: all 0.3s ease;
 }
 
@@ -148,7 +148,7 @@ mat-form-field mat-icon {
   color: var(--color-primario);
   text-decoration: none;
   font-weight: 600;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
   transition: color 0.3s;
 }
 
@@ -272,7 +272,7 @@ mat-form-field mat-icon {
   }
 }
 
-/* Estados de error - Color error TIC #FF6D0A (naranja) */
+/* Estados de error - Color error TIC var(--color-error) (naranja) */
 .error-message {
   background-color: var(--notif-error-fondo);
   color: var(--notif-error-texto);

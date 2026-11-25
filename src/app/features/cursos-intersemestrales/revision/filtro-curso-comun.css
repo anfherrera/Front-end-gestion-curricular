@@ -3,9 +3,9 @@
 .filtro-section {
   margin-bottom: 24px;
   padding: 20px;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 12px;
-  border: 1px solid var(--azul-50);
+  border: 1px solid var(--primario-90);
 }
 
 .filtro-section h3 {
@@ -26,7 +26,7 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
-  color: var(--gris-700);
+  color: var(--neutro-600);
 }
 
 .loading-container p {
@@ -40,10 +40,10 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
-  color: var(--gris-700);
-  background: var(--gris-50);
+  color: var(--neutro-600);
+  background: var(--neutro-50);
   border-radius: 8px;
-  border: 2px dashed var(--gris-250);
+  border: 2px dashed var(--neutro-200);
 }
 
 .no-data mat-icon {
@@ -67,21 +67,21 @@
 }
 
 .estudiante-info strong {
-  color: var(--gris-900) !important;
+  color: var(--neutro-800) !important;
   font-size: 14px;
 }
 
 .estudiante-info small {
-  color: var(--gris-700) !important;
+  color: var(--neutro-600) !important;
   font-size: 12px;
 }
 
 .curso-info {
   margin-top: 24px;
   padding: 20px;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 12px;
-  border: 1px solid var(--azul-50);
+  border: 1px solid var(--primario-90);
 }
 
 .curso-info h4 {
@@ -118,7 +118,7 @@
 }
 
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
-  color: var(--azul-50);
+  color: var(--primario-90);
 }
 
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
@@ -126,7 +126,7 @@
 }
 
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
-  color: var(--gris-650);
+  color: var(--neutro-600);
 }
 
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {

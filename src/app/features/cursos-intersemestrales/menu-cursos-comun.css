@@ -71,7 +71,7 @@
 }
 
 .badge {
-  background: #ff4757;
+  background: var(--color-error);
   color: white;
   border-radius: 50%;
   width: 20px;

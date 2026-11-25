@@ -2,7 +2,7 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  background: var(--gris-azulado-50);
+  background: var(--neutro-50);
   min-height: 100vh;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .subtitle {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 16px;
   margin: 0;
   font-weight: 400;
@@ -55,7 +55,7 @@
 }
 
 .loading-container p {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 18px;
   font-weight: 500;
   margin: 0;
@@ -93,7 +93,7 @@
 }
 
 .stat-card mat-card-subtitle {
-  color: var(--gris-700) !important;
+  color: var(--neutro-600) !important;
 }
 
 .card-icon {
@@ -117,7 +117,7 @@
 }
 
 .stat-label {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 14px;
   margin: 0;
   font-weight: 500;
@@ -127,7 +127,7 @@ mat-card-actions {
   display: flex;
   gap: 8px;
   padding: 16px;
-  border-top: 2px solid var(--indigo-50);
+  border-top: 2px solid var(--primario-90);
 }
 
 mat-card-actions button {
@@ -177,7 +177,7 @@ mat-card-actions button mat-icon {
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 16px;
-    background: var(--gris-azulado-50);
+    background: var(--neutro-50);
   }
 
   .header-section {

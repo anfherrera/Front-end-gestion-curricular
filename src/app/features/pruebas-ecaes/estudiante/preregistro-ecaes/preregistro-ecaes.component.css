@@ -18,8 +18,8 @@
 }
 
 .documento-especifico {
-  background: #fff3e0;
-  border: 2px solid #ff9800;
+  background: var(--notif-error-fondo);
+  border: 2px solid var(--color-error);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 20px;
@@ -28,14 +28,14 @@
 
 .texto-documento {
   margin: 0;
-  color: #e65100;
+  color: var(--notif-error-titulo);
   font-size: 0.95rem;
   line-height: 1.5;
   font-weight: 500;
 }
 
 .texto-documento strong {
-  color: #bf360c;
+  color: var(--notif-error-titulo);
   font-weight: 700;
 }
 
@@ -44,7 +44,7 @@
   padding: 24px;
   background: var(--primario-98);
   border-radius: 12px;
-  border: 2px solid var(--azul-50);
+  border: 2px solid var(--primario-90);
 }
 
 /* ================================
@@ -75,8 +75,8 @@
 }
 
 .btn-enviar:disabled {
-  background: var(--gris-300) !important;
-  color: var(--gris-700) !important;
+  background: var(--neutro-400) !important;
+  color: var(--neutro-600) !important;
   cursor: not-allowed !important;
   transform: none !important;
   box-shadow: none !important;

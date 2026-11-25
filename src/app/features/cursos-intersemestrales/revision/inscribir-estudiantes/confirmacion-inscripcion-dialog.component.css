@@ -28,7 +28,7 @@
 
 .dialog-content {
   padding: 24px;
-  background: var(--gris-50);
+  background: var(--neutro-50);
 }
 
 .estudiante-info {
@@ -70,13 +70,13 @@
 }
 
 .info-text span {
-  color: var(--gris-900);
+  color: var(--neutro-800);
   font-size: 16px;
 }
 
 .confirmacion-mensaje {
-  background: var(--azul-50);
-  border: 1px solid var(--azul-500);
+  background: var(--primario-90);
+  border: 1px solid var(--color-terciario);
   border-radius: 8px;
   padding: 16px;
   text-align: center;
@@ -84,7 +84,7 @@
 
 .confirmacion-mensaje p {
   margin: 0;
-  color: var(--azul-700);
+  color: var(--color-terciario);
   font-size: 14px;
   font-weight: 500;
 }
@@ -92,19 +92,19 @@
 .dialog-actions {
   padding: 20px 24px;
   background: white;
-  border-top: 1px solid var(--gris-150);
+  border-top: 1px solid var(--neutro-200);
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
 .btn-cancelar {
-  color: var(--gris-700);
-  border: 1px solid var(--gris-250);
+  color: var(--neutro-600);
+  border: 1px solid var(--neutro-200);
 }
 
 .btn-cancelar:hover {
-  background: var(--gris-75);
+  background: var(--neutro-50);
 }
 
 .btn-confirmar {

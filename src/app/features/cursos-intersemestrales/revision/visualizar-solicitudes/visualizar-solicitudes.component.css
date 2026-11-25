@@ -11,9 +11,9 @@ app-card-container {
 .filtros-container {
   margin-bottom: 24px;
   padding: 20px;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 12px;
-  border: 1px solid var(--azul-50);
+  border: 1px solid var(--primario-90);
   display: flex;
   gap: 16px;
   align-items: start;
@@ -60,7 +60,7 @@ app-card-container {
 }
 
 .loading-container p {
-  color: var(--gris-650);
+  color: var(--neutro-600);
   margin: 0;
 }
 
@@ -84,10 +84,10 @@ app-card-container {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  color: var(--gris-700);
-  background: var(--gris-50);
+  color: var(--neutro-600);
+  background: var(--neutro-50);
   border-radius: 8px;
-  border: 2px dashed var(--gris-250);
+  border: 2px dashed var(--neutro-200);
 }
 
 .no-data mat-icon {
@@ -107,7 +107,7 @@ app-card-container {
 .solicitudes-table {
   width: 100%;
   background: white;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
 }
 
 .solicitudes-table th {
@@ -123,15 +123,15 @@ app-card-container {
 }
 
 .solicitudes-table td {
-  border-bottom: 1px solid var(--gris-150);
-  color: var(--gris-900) !important;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  border-bottom: 1px solid var(--neutro-200);
+  color: var(--neutro-800) !important;
+  font-family: var(--font-body);
   font-weight: 400 !important;
 }
 
 .solicitudes-table td * {
-  color: var(--gris-900) !important;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--neutro-800) !important;
+  font-family: var(--font-body);
   font-weight: 400 !important;
 }
 
@@ -140,20 +140,20 @@ app-card-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
 }
 
 .estudiante-info strong {
-  color: var(--gris-900) !important;
+  color: var(--neutro-800) !important;
   font-size: 14px;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   font-weight: 400 !important;
 }
 
 .estudiante-info small {
-  color: var(--gris-700) !important;
+  color: var(--neutro-600) !important;
   font-size: 12px;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   font-weight: 400 !important;
 }
 
@@ -162,28 +162,28 @@ app-card-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
 }
 
 .curso-info strong {
-  color: var(--gris-900) !important;
+  color: var(--neutro-800) !important;
   font-size: 14px;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   font-weight: 400 !important;
 }
 
 .curso-info small {
-  color: var(--gris-700) !important;
+  color: var(--neutro-600) !important;
   font-size: 12px;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   font-weight: 400 !important;
 }
 
 /* Código de estudiante */
 .codigo-text {
-  color: var(--gris-900) !important;
+  color: var(--neutro-800) !important;
   font-weight: 400 !important;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   font-size: 13px;
 }
 
@@ -195,7 +195,7 @@ app-card-container {
   font-weight: 400 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
-  font-family: Roboto, 'Helvetica Neue', sans-serif !important;
+  font-family: var(--font-body) !important;
   border: 0 !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -217,41 +217,41 @@ app-card-container {
 
 /* Colores específicos para condiciones */
 .condicion-primera-vez {
-  background-color: var(--azul-50) !important;
-  color: var(--azul-700) !important;
+  background-color: var(--primario-90) !important;
+  color: var(--color-terciario) !important;
 }
 
 .condicion-habilitacion {
-  background-color: #f3e5f5 !important;
-  color: #7b1fa2 !important;
+  background-color: var(--primario-90) !important;
+  color: var(--color-primario-light) !important;
 }
 
 .condicion-repitencia {
-  background-color: #fff3e0 !important;
-  color: #f57c00 !important;
+  background-color: var(--notif-error-fondo) !important;
+  color: var(--notif-error-titulo) !important;
 }
 
 .condicion-traslado {
-  background-color: #e8f5e8 !important;
-  color: #2e7d32 !important;
+  background-color: var(--notif-exito-fondo) !important;
+  color: var(--notif-exito-borde) !important;
 }
 
 .condicion-preinscripcion {
-  background-color: var(--gris-75) !important;
-  color: var(--gris-700) !important;
+  background-color: var(--neutro-50) !important;
+  color: var(--neutro-600) !important;
 }
 
 .condicion-default {
-  background-color: var(--gris-75) !important;
-  color: var(--gris-700) !important;
+  background-color: var(--neutro-50) !important;
+  color: var(--neutro-600) !important;
 }
 
 /* Estilo para el texto del motivo de la solicitud */
 .motivo-text {
-  font-family: Roboto, 'Helvetica Neue', sans-serif !important;
+  font-family: var(--font-body) !important;
   font-weight: 400 !important;
   font-size: 13px !important;
-  color: var(--gris-900) !important;
+  color: var(--neutro-800) !important;
   max-width: 250px !important;
   word-wrap: break-word !important;
   line-height: 1.4 !important;
@@ -270,13 +270,13 @@ app-card-container {
   border: none;
   outline: none;
   box-shadow: none;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
 }
 
 /* Estados específicos */
 .estado-enviada {
-  background-color: #fff3cd !important;
-  color: var(--estado-advertencia-texto) !important;
+  background-color: var(--notif-error-fondo) !important;
+  color: var(--notif-error-titulo) !important;
   border: 0 !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -297,8 +297,8 @@ app-card-container {
 }
 
 .estado-aprobada {
-  background-color: #d4edda !important;
-  color: #155724 !important;
+  background-color: var(--notif-exito-fondo) !important;
+  color: var(--notif-exito-texto) !important;
   border: 0 !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -319,8 +319,8 @@ app-card-container {
 }
 
 .estado-rechazada {
-  background-color: #f8d7da !important;
-  color: #721c24 !important;
+  background-color: var(--notif-error-fondo) !important;
+  color: var(--notif-error-texto) !important;
   border: 0 !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -341,8 +341,8 @@ app-card-container {
 }
 
 .estado-default {
-  background-color: #e2e3e5 !important;
-  color: #383d41 !important;
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-800) !important;
   border: 0 !important;
   border-width: 0 !important;
   border-style: none !important;
@@ -445,7 +445,7 @@ app-card-container {
 }
 
 :host ::ng-deep .solicitudes-table td {
-  border-bottom: 1px solid var(--gris-150) !important;
+  border-bottom: 1px solid var(--neutro-200) !important;
   border-left: none !important;
   border-right: none !important;
   border-top: none !important;
@@ -464,7 +464,7 @@ app-card-container {
 }
 
 .btn-exportar-excel {
-  background-color: var(--estado-exito);
+  background-color: var(--notif-exito-borde);
   color: var(--blanco);
   margin-left: 8px;
 }

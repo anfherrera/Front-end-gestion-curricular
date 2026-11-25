@@ -32,7 +32,7 @@
 /* Tarjetas con borde azul a la izquierda */
 .info-card,
 .form-section {
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-left: 4px solid var(--color-primario);
   border-radius: 8px;
   box-shadow: var(--sombra-1);
@@ -57,7 +57,7 @@
   align-items: center;
   margin-bottom: 24px;
   padding: 16px 0;
-  border-bottom: 2px solid var(--azul-50);
+  border-bottom: 2px solid var(--primario-90);
 }
 
 .modal-header h2 {
@@ -100,7 +100,7 @@
 .info-card p {
   margin: 10px 0;
   font-size: 14px;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .estado-aprobado,
@@ -114,12 +114,12 @@
 }
 
 .estado-aprobado {
-  background-color: #e8f5e8;
-  color: #2e7d32;
+  background-color: var(--notif-exito-fondo);
+  color: var(--notif-exito-borde);
 }
 
 .estado-inscripcion {
-  background-color: var(--azul-50);
+  background-color: var(--primario-90);
   color: var(--color-primario);
 }
 
@@ -138,7 +138,7 @@
   color: var(--color-primario);
   font-size: 16px;
   font-weight: 600;
-  border-bottom: 2px solid var(--azul-50);
+  border-bottom: 2px solid var(--primario-90);
   padding-bottom: 8px;
   display: flex;
   align-items: center;
@@ -162,7 +162,7 @@
 }
 
 .file-upload-error {
-  background-color: var(--rojo-50);
+  background-color: var(--notif-error-fondo);
   border: 1px solid var(--color-error);
   border-radius: 8px;
   padding: 16px;
@@ -172,7 +172,7 @@
 
 .file-upload-error p {
   margin: 0;
-  color: var(--rojo-700);
+  color: var(--notif-error-titulo);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -210,7 +210,7 @@
 }
 
 .file-input-label:hover {
-  background: var(--azul-50);
+  background: var(--primario-90);
   border-color: var(--color-primario-light);
 }
 
@@ -224,7 +224,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: #e8f5e8;
+  background: var(--notif-exito-fondo);
   border-radius: 8px;
   border-left: 4px solid var(--notif-exito-borde);
   box-shadow: var(--sombra-1);
@@ -244,7 +244,7 @@
   flex: 1;
   font-size: 14px;
   font-weight: 500;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .success-icon {
@@ -253,8 +253,8 @@
 }
 
 .file-requirements {
-  background: #fff3e0;
-  border: 1px solid #ffb74d;
+  background: var(--notif-error-fondo);
+  border: 1px solid var(--color-error);
   border-radius: 8px;
   padding: 16px;
   box-shadow: var(--sombra-1);
@@ -263,7 +263,7 @@
 .file-requirements p {
   margin: 0 0 12px 0;
   font-weight: 600;
-  color: #f57c00;
+  color: var(--notif-error-titulo);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -272,13 +272,13 @@
 
 .file-requirements p mat-icon {
   --tam-icono: 18px;
-  color: #f57c00;
+  color: var(--notif-error-titulo);
 }
 
 .file-requirements ul {
   margin: 0;
   padding-left: 20px;
-  color: #e65100;
+  color: var(--notif-error-titulo);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -294,7 +294,7 @@
   justify-content: flex-end;
   gap: 12px;
   padding: 24px 0.75rem 0.75rem;
-  border-top: 2px solid var(--azul-50);
+  border-top: 2px solid var(--primario-90);
   flex-shrink: 0;
   background: var(--blanco);
 }
@@ -334,8 +334,8 @@
 }
 
 .submit-button:disabled {
-  background-color: #d3d3d3 !important;
-  color: var(--gris-550) !important;
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-600) !important;
   cursor: not-allowed !important;
   opacity: 0.6 !important;
   transform: none !important;
@@ -348,11 +348,11 @@
 }
 
 .modal-footer button[mat-button] {
-  background-color: var(--estado-peligro) !important;
+  background-color: var(--notif-error-titulo) !important;
 }
 
 .modal-footer button[mat-button]:hover {
-  background-color: #c82333 !important;
+  background-color: var(--color-error) !important;
 }
 
 /* Iconos de los campos (están en esta plantilla: no hace falta ::ng-deep) */
@@ -370,7 +370,7 @@
 }
 
 .modal-body::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--neutro-50);
   border-radius: 3px;
 }
 

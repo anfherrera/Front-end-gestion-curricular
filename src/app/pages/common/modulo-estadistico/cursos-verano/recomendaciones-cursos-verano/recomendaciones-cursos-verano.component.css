@@ -1,12 +1,12 @@
 /* No Data */
 .no-data {
   text-align: center;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-style: italic;
   padding: 40px;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 8px;
-  border: 2px dashed var(--gris-200);
+  border: 2px dashed var(--neutro-200);
   width: 100%;
 }
 
@@ -55,7 +55,7 @@
   border-radius: 12px;
   padding: 2rem 1.5rem;
   text-align: center;
-  border: 2px solid var(--gris-100);
+  border: 2px solid var(--neutro-100);
   transition: all 0.3s ease;
   box-shadow: var(--sombra-1);
 }
@@ -81,56 +81,56 @@
 
 /* Colores por prioridad */
 .stat.alta {
-  border-color: var(--estado-peligro);
-  background: #fff5f5;
+  border-color: var(--notif-error-titulo);
+  background: var(--notif-error-fondo);
 }
 
 .stat.alta .numero {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
 }
 
 .stat.alta .label {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
 }
 
 .stat.media {
-  border-color: var(--estado-advertencia);
-  background: #fffbf0;
+  border-color: var(--color-error);
+  background: var(--notif-error-fondo);
 }
 
 .stat.media .numero {
-  color: var(--estado-advertencia);
+  color: var(--color-error);
 }
 
 .stat.media .label {
-  color: var(--estado-advertencia-texto);
+  color: var(--notif-error-titulo);
 }
 
 .stat.baja {
-  border-color: var(--estado-exito);
-  background: #f0f8f5;
+  border-color: var(--notif-exito-borde);
+  background: var(--notif-exito-fondo);
 }
 
 .stat.baja .numero {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
 }
 
 .stat.baja .label {
-  color: var(--estado-exito);
+  color: var(--notif-exito-borde);
 }
 
 .stat.critica {
-  border-color: #ff6b6b;
-  background: #ffefef;
+  border-color: var(--color-error);
+  background: var(--notif-error-fondo);
   animation: pulse-glow 2s infinite;
 }
 
 .stat.critica .numero {
-  color: #ff6b6b;
+  color: var(--notif-error-titulo);
 }
 
 .stat.critica .label {
-  color: #ff6b6b;
+  color: var(--notif-error-titulo);
 }
 
 @keyframes pulse-glow {
@@ -148,7 +148,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: var(--sombra-2);
-  border-left: 5px solid var(--estado-peligro);
+  border-left: 5px solid var(--notif-error-titulo);
   margin: 0 0 2rem 0;
   overflow: hidden;
   animation: pulse-border-alert 2s infinite;
@@ -157,11 +157,11 @@
 @keyframes pulse-border-alert {
   0%,
   100% {
-    border-left-color: var(--estado-peligro);
+    border-left-color: var(--notif-error-titulo);
     box-shadow: var(--sombra-2);
   }
   50% {
-    border-left-color: #ff6b7a;
+    border-left-color: var(--color-error);
     box-shadow: var(--sombra-2);
   }
 }
@@ -171,7 +171,7 @@
 }
 
 .alerta-critica-card h3 {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0 0 1rem 0;
@@ -181,15 +181,15 @@
 }
 
 .alerta-critica-card p {
-  color: var(--gris-800);
+  color: var(--neutro-800);
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 1.25rem;
 }
 
 .alerta-critica-card .acciones-urgentes {
-  background: #fff3cd;
-  border: 2px solid var(--estado-advertencia);
+  background: var(--notif-error-fondo);
+  border: 2px solid var(--color-error);
   border-radius: 10px;
   padding: 1.25rem;
   margin-top: 1rem;
@@ -197,7 +197,7 @@
 
 .alerta-critica-card .acciones-urgentes strong {
   display: block;
-  color: var(--estado-advertencia-texto);
+  color: var(--notif-error-titulo);
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
@@ -211,7 +211,7 @@
 
 .alerta-critica-card .acciones-urgentes ul li {
   margin-bottom: 0.6rem;
-  color: var(--estado-advertencia-texto);
+  color: var(--notif-error-titulo);
   font-size: 0.95rem;
   line-height: 1.5;
   position: relative;
@@ -293,7 +293,7 @@
   top: -0.5rem;
   right: -0.75rem;
   background: white;
-  border: 2px solid var(--gris-100);
+  border: 2px solid var(--neutro-100);
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -305,18 +305,18 @@
 }
 
 .rec-card .btn-expandir:hover {
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-color: var(--color-primario);
   transform: scale(1.1);
 }
 
 .rec-card .btn-expandir mat-icon {
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 20px;
 }
 
 .rec-card .descripcion {
-  color: var(--gris-800);
+  color: var(--neutro-800);
   font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
@@ -326,7 +326,7 @@
 .rec-card .seccion {
   margin-bottom: 1.5rem;
   padding: 1.25rem;
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 10px;
   border-left: 4px solid var(--color-primario);
   box-shadow: var(--sombra-1);
@@ -342,7 +342,7 @@
 
 .rec-card .seccion p {
   margin: 0;
-  color: var(--gris-800);
+  color: var(--neutro-800);
   font-size: 0.95rem;
   line-height: 1.6;
 }
@@ -355,7 +355,7 @@
 
 .rec-card .seccion ul li {
   margin-bottom: 0.6rem;
-  color: var(--gris-800);
+  color: var(--neutro-800);
   font-size: 0.95rem;
   line-height: 1.5;
   position: relative;
@@ -376,7 +376,7 @@
 .rec-card .detalles-expandidos {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 2px dashed var(--gris-100);
+  border-top: 2px dashed var(--neutro-100);
   animation: slideDown 0.3s ease-out;
 }
 
@@ -392,12 +392,12 @@
 }
 
 .rec-card .seccion.justificacion {
-  background: #e8f4fd;
-  border-left-color: var(--estado-info);
+  background: var(--primario-98);
+  border-left-color: var(--notif-info-borde);
 }
 
 .rec-card .seccion.justificacion strong {
-  color: var(--estado-info);
+  color: var(--notif-info-borde);
 }
 
 /* Mensaje sin datos */
@@ -407,7 +407,7 @@
   box-shadow: var(--sombra-2);
   padding: 3rem;
   text-align: center;
-  border: 2px dashed var(--gris-200);
+  border: 2px dashed var(--neutro-200);
   margin: 0 0 1.5rem 0;
 }
 
@@ -415,12 +415,12 @@
   font-size: 4rem;
   width: 4rem;
   height: 4rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
   margin-bottom: 1rem;
 }
 
 .no-data-card p {
-  color: var(--gris-650);
+  color: var(--neutro-600);
   font-size: 1.1rem;
   margin: 0;
 }

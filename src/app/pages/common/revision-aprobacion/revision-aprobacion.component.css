@@ -3,8 +3,8 @@
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: var(--gris-azulado-50);
-  font-family: 'Roboto', sans-serif;
+  background-color: var(--neutro-50);
+  font-family: var(--font-body);
 }
 
 /* Motivo del rechazo (solo si la solicitud elegida está rechazada) */
@@ -13,14 +13,14 @@
   gap: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  background-color: var(--rojo-50);
-  border-left: 4px solid var(--rojo-800);
+  background-color: var(--notif-error-fondo);
+  border-left: 4px solid var(--notif-error-titulo);
   border-radius: 4px;
   align-items: flex-start;
 }
 
 .comentario-rechazo mat-icon {
-  color: var(--rojo-800);
+  color: var(--notif-error-titulo);
   font-size: 24px;
   width: 24px;
   height: 24px;
@@ -34,13 +34,13 @@
 .comentario-rechazo-content strong {
   display: block;
   margin-bottom: 8px;
-  color: var(--rojo-800);
+  color: var(--notif-error-titulo);
   font-size: 0.95rem;
 }
 
 .comentario-rechazo-content p {
   margin: 0;
-  color: var(--gris-900);
+  color: var(--neutro-800);
   font-size: 0.9rem;
   line-height: 1.5;
   white-space: pre-wrap;
@@ -77,11 +77,11 @@
 }
 
 .botones-acciones button[color='warn'] {
-  background-color: var(--rojo-700) !important;
+  background-color: var(--notif-error-titulo) !important;
 }
 
 .botones-acciones button[color='warn']:hover {
-  background-color: var(--rojo-800) !important;
+  background-color: var(--notif-error-titulo) !important;
 }
 
 .botones-acciones button[disabled] {

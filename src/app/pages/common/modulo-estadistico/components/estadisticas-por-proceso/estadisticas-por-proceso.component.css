@@ -1,6 +1,6 @@
 .estadisticas-por-proceso-card {
   background-color: var(--blanco);
-  color: var(--gris-900);
+  color: var(--neutro-800);
   border-radius: 12px;
   box-shadow: var(--sombra-2);
   position: relative;
@@ -78,7 +78,7 @@
 }
 
 .proceso-card {
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-radius: 8px;
   padding: 12px;
   transition: all 0.3s ease;
@@ -90,25 +90,26 @@
 }
 
 .proceso-card:hover {
-  background: var(--gris-100);
+  background: var(--neutro-100);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
 
+/* Mismo color por proceso que los gráficos y las notificaciones (COLOR_POR_PROCESO en design-tokens.ts) */
 .proceso-reingreso {
-  border-left-color: #8e24aa;
-}
-.proceso-homologacion {
   border-left-color: var(--notif-exito-borde);
 }
+.proceso-homologacion {
+  border-left-color: var(--color-secundario);
+}
 .proceso-cursos {
-  border-left-color: var(--azul-500);
+  border-left-color: var(--color-primario);
 }
 .proceso-ecaes {
-  border-left-color: #00bcd4;
+  border-left-color: var(--color-error);
 }
 .proceso-paz {
-  border-left-color: #ff9800;
+  border-left-color: var(--color-terciario);
 }
 
 .proceso-header {
@@ -142,7 +143,7 @@
   font-weight: 600;
   margin: 0 0 4px 0;
   line-height: 1.2;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .proceso-total {
@@ -159,7 +160,7 @@
 
 .label {
   font-size: 0.8rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
 }
 
 .proceso-stats {
@@ -184,7 +185,7 @@
   border-radius: 6px;
   font-size: 0.75rem;
   min-width: 70px;
-  border: 1px solid var(--gris-100);
+  border: 1px solid var(--neutro-100);
 }
 
 .stat-item mat-icon {
@@ -194,12 +195,12 @@
 .stat-value {
   font-weight: bold;
   font-size: 0.8rem;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .stat-label {
   font-size: 0.7rem;
-  color: var(--gris-650);
+  color: var(--neutro-600);
 }
 
 .stat-item.aprobadas mat-icon {
@@ -209,13 +210,13 @@
   color: var(--color-error);
 }
 .stat-item.en-proceso mat-icon {
-  color: #ff9800;
+  color: var(--notif-error-titulo);
 }
 .stat-item.enviadas mat-icon {
-  color: var(--estado-advertencia);
+  color: var(--color-error);
 }
 .stat-item.porcentaje mat-icon {
-  color: var(--azul-500);
+  color: var(--color-terciario);
 }
 
 .proceso-datos-raw {

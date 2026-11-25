@@ -130,7 +130,7 @@ export class CursoEstadosService {
    */
   getColorEstado(estado: string): string {
     const estadoInfo = this.getEstadoPorValor(estado);
-    return estadoInfo?.color || '#6c757d';
+    return estadoInfo?.color || COLORS.neutralSecondary;
   }
 
   /**

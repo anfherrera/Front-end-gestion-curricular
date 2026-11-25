@@ -1,6 +1,6 @@
 .detalle-solicitud-container {
   padding: 24px;
-  background-color: var(--gris-azulado-50);
+  background-color: var(--neutro-50);
   min-height: 100vh;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .error-container p {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 1.1rem;
   text-align: center;
 }
@@ -45,7 +45,7 @@
 }
 
 .info-card mat-card-header {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
   padding: 16px;
   border-radius: 8px 8px 0 0;
 }
@@ -56,7 +56,7 @@
   gap: 8px;
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .info-card mat-card-title mat-icon {
@@ -81,12 +81,12 @@
 
 .info-label {
   font-weight: 600;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 0.9rem;
 }
 
 .info-value {
-  color: var(--gris-900);
+  color: var(--neutro-800);
   font-size: 1rem;
 }
 
@@ -103,7 +103,7 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--gris-150);
+  background-color: var(--neutro-200);
 }
 
 .timeline-item {
@@ -153,7 +153,7 @@
 }
 
 .timeline-date {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   font-size: 0.9rem;
 }
 
@@ -161,25 +161,25 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  color: var(--gris-750);
+  color: var(--neutro-800);
   font-style: italic;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid var(--gris-150);
+  border-top: 1px solid var(--neutro-200);
 }
 
 .timeline-comentario mat-icon {
   font-size: 18px;
   width: 18px;
   height: 18px;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   margin-top: 2px;
 }
 
 /* Chips */
 .tipo-chip {
-  background-color: var(--azul-50);
-  color: var(--azul-700);
+  background-color: var(--primario-90);
+  color: var(--color-terciario);
   font-size: 0.9rem;
 }
 
@@ -189,7 +189,7 @@ mat-list {
 }
 
 mat-list-item {
-  border-bottom: 1px solid var(--gris-150);
+  border-bottom: 1px solid var(--neutro-200);
 }
 
 mat-list-item:last-child {

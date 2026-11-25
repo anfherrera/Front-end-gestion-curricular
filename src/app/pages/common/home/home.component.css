@@ -7,18 +7,18 @@
 .welcome-container h2 {
   margin: 0;
   font-size: 28px;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .welcome-container p {
   margin: 4px 0;
   font-size: 16px;
-  color: var(--gris-750);
+  color: var(--neutro-800);
 }
 
 .welcome-container .description {
   font-style: italic;
-  color: #222;
+  color: var(--neutro-800);
   font-weight: 500;
 }
 
@@ -31,7 +31,7 @@
   justify-content: center;
   position: relative;
   margin-top: 40px; /* separa las tarjetas de la bienvenida */
-  background-color: var(--gris-75); /* fondo minimalista sólido */
+  background-color: var(--neutro-50); /* fondo minimalista sólido */
   border-radius: 12px;
 }
 
@@ -93,25 +93,25 @@
 
 /* Sombra degradada en iconos (puedes mantenerla o simplificar) */
 .dashboard-icon.bg-blue {
-  background: var(--azul-500);
+  background: var(--color-terciario);
 }
 .dashboard-icon.bg-green {
   background: var(--notif-exito-borde);
 }
 .dashboard-icon.bg-orange {
-  background: #ff9800;
+  background: var(--color-error);
 }
 .dashboard-icon.bg-purple {
-  background: #9c27b0;
+  background: var(--color-primario-light);
 }
 .dashboard-icon.bg-red {
   background: var(--color-error);
 }
 .dashboard-icon.bg-teal {
-  background: #009688;
+  background: var(--color-terciario);
 }
 .dashboard-icon.bg-indigo {
-  background: #3f51b5;
+  background: var(--color-primario-light);
 }
 
 /* Animación leve en iconos al pasar el mouse */
@@ -123,13 +123,13 @@
 .dashboard-card span {
   font-weight: 600;
   font-size: 14px;
-  color: var(--gris-900);
+  color: var(--neutro-800);
   transition:
     color 0.3s ease,
     transform 0.3s ease;
 }
 
 .dashboard-card:hover span {
-  color: #000;
+  color: var(--neutro-800);
   transform: translateY(-2px);
 }

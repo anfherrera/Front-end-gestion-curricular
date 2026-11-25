@@ -16,7 +16,7 @@
   justify-content: flex-end;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid var(--gris-150);
+  border-top: 1px solid var(--neutro-200);
 }
 
 .action-button {
@@ -33,7 +33,7 @@
   align-items: center;
   text-align: center;
   padding: 32px;
-  background: #e8f5e8;
+  background: var(--notif-exito-fondo);
   border-radius: 12px;
   border: 2px solid var(--notif-exito-borde);
   margin-top: 20px;
@@ -52,7 +52,7 @@
 
 .success-message p {
   margin: 8px 0;
-  color: #2e7d32;
+  color: var(--notif-exito-borde);
 }
 
 .success-message p:first-of-type {
@@ -112,7 +112,7 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
 
 /* Outline del form field con color azul */
 mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
-  color: var(--gris-200);
+  color: var(--neutro-200);
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
