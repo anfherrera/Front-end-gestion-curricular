@@ -4,6 +4,8 @@ Tokens y constantes basados en el documento **Sistema de Diseño UX-UI** de la D
 
 Los colores y las fuentes coinciden con los del portal [unicauca.edu.co](https://www.unicauca.edu.co/) (variables globales del sitio, revisadas el 2026-11-25): primario `#000066`, secundario `#5056AC`, acento `#9D0311`, `#DB141C`, `#690007`, texto `#07184A`, `#E0E0FF`; Titillium Web y Open Sans.
 
+Este archivo dice **qué** valores hay. Cuándo usar cada uno (color de estado frente a color de categoría, botones, acciones en tablas, redondeos, textos) está en [GUIA-UI.md](../../../../GUIA-UI.md).
+
 ## Estructura
 
 ```

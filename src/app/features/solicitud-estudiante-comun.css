@@ -6,36 +6,10 @@
   margin-top: 10px;
 }
 
-/* Botón Enviar Solicitud: el mismo en todas las solicitudes */
+/* Botón Enviar Solicitud: es un botón primario (mat-raised-button color="primary"), así que el color, la forma
+   de píldora, el hover y el estado deshabilitado vienen de src/styles/material.css. Aquí solo el tamaño. */
 .btn-enviar {
-  background-color: var(--color-primario) !important;
-  color: var(--blanco) !important;
-  border: none;
-  border-radius: 4px;
   padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: var(--sombra-1);
-}
-
-.btn-enviar:disabled {
-  background-color: var(--neutro-200) !important;
-  color: var(--neutro-600) !important;
-  cursor: not-allowed;
-  opacity: 0.5;
-  transform: none;
-  box-shadow: none;
-}
-
-.btn-enviar:hover:not(:disabled) {
-  background-color: var(--color-primario-light) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
-
-.btn-enviar:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--sombra-1);
 }
 
 .documentos-faltantes {
