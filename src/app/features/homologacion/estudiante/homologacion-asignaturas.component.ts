@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -29,7 +29,7 @@ import { SolicitudEstudianteBase } from '../../../pages/estudiante/solicitud-est
   selector: 'app-solicitud-homologacion',
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
+    CardContainerComponent,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,

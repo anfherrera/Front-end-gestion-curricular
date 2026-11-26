@@ -1,8 +1,13 @@
+/* Tarjeta de sección de todas las páginas: cabecera azul institucional con título y, si se pasa, icono */
+:host {
+  display: block;
+}
+
 .card-container {
   margin-bottom: 20px;
   border-radius: 8px;
   background-color: var(--blanco);
-  overflow: visible; /* Cambiado de hidden a visible para permitir scroll horizontal */
+  overflow: visible; /* Permite el scroll horizontal de las tablas */
   box-shadow: var(--sombra-1);
   transition: box-shadow 0.2s ease;
 }
@@ -13,24 +18,40 @@
 
 mat-card-header {
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background-color: var(--color-primario);
   color: var(--blanco);
-  padding: 10px 16px;
+  padding: 14px 16px;
   margin: 0;
   border-bottom: 2px solid var(--color-primario-light);
-  border-radius: 6px 6px 0 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.icono-cabecera {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  margin: 0;
+  border-radius: 0;
+  color: var(--blanco);
 }
 
 mat-card-title {
-  font-weight: 500;
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-h3-size);
+  line-height: var(--text-h3-line);
+  font-weight: 700;
   color: var(--blanco);
   margin: 0;
+}
+
+mat-card-subtitle {
+  color: var(--primario-90);
+  margin: 2px 0 0;
 }
 
 mat-card-content {
   padding: 20px;
-  overflow-x: auto; /* Permitir scroll horizontal si es necesario */
+  overflow-x: auto; /* Permite el scroll horizontal si es necesario */
   overflow-y: visible;
 }

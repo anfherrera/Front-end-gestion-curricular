@@ -110,7 +110,7 @@ describe('PazSalvoComponent', () => {
   it('debe renderizar secciones principales', () => {
     expect(compiled.querySelector('app-required-docs')).toBeTruthy();
     expect(compiled.querySelector('app-file-upload')).toBeTruthy();
-    expect(compiled.querySelectorAll('.card-title').length).toBeGreaterThan(0);
+    expect(compiled.querySelectorAll('app-card-container').length).toBeGreaterThan(0);
   });
 
   /** Completa el formulario obligatorio (fecha de terminación y, si aplica, trabajo de grado). */

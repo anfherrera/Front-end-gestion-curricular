@@ -8,69 +8,63 @@
   </app-required-docs>
 
   <!-- Subir Archivos -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Subir Archivos</mat-card-title>
-    <mat-card-content>
-      <app-file-upload
-        [archivos]="archivosActuales()"
-        (archivosChange)="onArchivosChange($event)"
-        [reset]="resetFileUpload()"
+  <app-card-container title="Subir Archivos" icon="upload_file">
+    <app-file-upload
+      [archivos]="archivosActuales()"
+      (archivosChange)="onArchivosChange($event)"
+      [reset]="resetFileUpload()"
+    >
+    </app-file-upload>
+
+    <div class="enviar-solicitud mt-4">
+      <!-- Mensaje informativo de documentos faltantes (NO bloquea el envío) -->
+      @if (obtenerDocumentosFaltantes().length > 0 && archivosActuales().length > 0) {
+        <div class="validacion-mensaje-informativo">
+          <mat-icon color="primary">info</mat-icon>
+          <span>
+            <strong>Documentos sugeridos (no obligatorios):</strong>
+            <p class="mensaje-guia">
+              Los siguientes documentos aún no se han detectado en los archivos subidos. Puedes enviar la solicitud de
+              todas formas, pero asegúrate de haber subido todos los documentos requeridos.
+              <strong>Nota:</strong> Si los archivos tienen nombres ligeramente diferentes, el sistema puede no
+              detectarlos automáticamente.
+            </p>
+            <ul class="documentos-faltantes">
+              @for (doc of obtenerDocumentosFaltantes(); track doc) {
+                <li>{{ doc }}</li>
+              }
+            </ul>
+          </span>
+        </div>
+      }
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="btn-enviar"
+        [disabled]="!puedeEnviar()"
+        (click)="onSolicitudEnviada()"
       >
-      </app-file-upload>
-
-      <div class="enviar-solicitud mt-4">
-        <!-- Mensaje informativo de documentos faltantes (NO bloquea el envío) -->
-        @if (obtenerDocumentosFaltantes().length > 0 && archivosActuales().length > 0) {
-          <div class="validacion-mensaje-informativo">
-            <mat-icon color="primary">info</mat-icon>
-            <span>
-              <strong>Documentos sugeridos (no obligatorios):</strong>
-              <p class="mensaje-guia">
-                Los siguientes documentos aún no se han detectado en los archivos subidos. Puedes enviar la solicitud de
-                todas formas, pero asegúrate de haber subido todos los documentos requeridos.
-                <strong>Nota:</strong> Si los archivos tienen nombres ligeramente diferentes, el sistema puede no
-                detectarlos automáticamente.
-              </p>
-              <ul class="documentos-faltantes">
-                @for (doc of obtenerDocumentosFaltantes(); track doc) {
-                  <li>{{ doc }}</li>
-                }
-              </ul>
-            </span>
-          </div>
-        }
-
-        <button
-          mat-raised-button
-          color="primary"
-          class="btn-enviar"
-          [disabled]="!puedeEnviar()"
-          (click)="onSolicitudEnviada()"
-        >
-          Enviar Solicitud
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
+        Enviar Solicitud
+      </button>
+    </div>
+  </app-card-container>
 
   <!-- Seguimiento de solicitud -->
-  <mat-card class="card-section">
-    <mat-card-title class="card-title">Seguimiento de solicitud</mat-card-title>
-    <mat-card-content>
-      @if (solicitudes().length === 0) {
-        <p class="sin-solicitudes">No se ha enviado ninguna solicitud aún.</p>
-      }
+  <app-card-container title="Seguimiento de solicitud" icon="track_changes">
+    @if (solicitudes().length === 0) {
+      <p class="sin-solicitudes">No se ha enviado ninguna solicitud aún.</p>
+    }
 
-      @if (solicitudes().length > 0) {
-        <app-request-status-table
-          [solicitudes]="solicitudes()"
-          [showOficio]="true"
-          [showComentarios]="true"
-          (verComentarios)="verComentarios($event)"
-          (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)"
-        >
-        </app-request-status-table>
-      }
-    </mat-card-content>
-  </mat-card>
+    @if (solicitudes().length > 0) {
+      <app-request-status-table
+        [solicitudes]="solicitudes()"
+        [showOficio]="true"
+        [showComentarios]="true"
+        (verComentarios)="verComentarios($event)"
+        (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)"
+      >
+      </app-request-status-table>
+    }
+  </app-card-container>
 </div>

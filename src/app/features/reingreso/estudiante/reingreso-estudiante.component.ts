@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { MatCardModule } from '@angular/material/card';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -25,7 +25,7 @@ import { documentoDeResolucion, nombreDesdeRuta } from './resolucion-reingreso';
 @Component({
   selector: 'app-reingreso-estudiante',
   imports: [
-    MatCardModule,
+    CardContainerComponent,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,

@@ -1,28 +1,30 @@
-/* Estilos que compartían igual las páginas de solicitud del estudiante (paz y salvo, homologación y reingreso) */
-
-.card-section {
-  border-radius: 12px;
-  background-color: var(--blanco);
-  overflow: hidden;
-  box-shadow: var(--sombra-2);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.card-section:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
-}
-
-mat-card-content {
-  padding: 16px;
-}
+/* Estilos que comparten las páginas de solicitud del estudiante (paz y salvo, homologación, reingreso y preregistro ECAES) */
 
 .sin-solicitudes {
   color: var(--neutro-800);
   font-style: italic;
   margin-top: 10px;
+}
+
+/* Botón Enviar Solicitud: el mismo en todas las solicitudes */
+.btn-enviar {
+  background-color: var(--color-primario) !important;
+  color: var(--blanco) !important;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: var(--sombra-1);
+}
+
+.btn-enviar:disabled {
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-600) !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-enviar:hover:not(:disabled) {

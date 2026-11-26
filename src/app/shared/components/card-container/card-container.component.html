@@ -1,7 +1,8 @@
 <mat-card class="card-container card-animated animate-fade-in-up">
   <mat-card-header>
     @if (icon(); as icono) {
-      <mat-icon class="icon-bounce">{{ icono }}</mat-icon>
+      <!-- mat-card-avatar: el icono va antes del título (sin él, Material lo pone detrás) -->
+      <mat-icon mat-card-avatar class="icono-cabecera" aria-hidden="true">{{ icono }}</mat-icon>
     }
     <mat-card-title>{{ title() }}</mat-card-title>
     @if (subtitle(); as subtitulo) {

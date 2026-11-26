@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -39,7 +39,7 @@ interface DatosSolicitudPazSalvo {
   selector: 'app-paz-salvo',
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
+    CardContainerComponent,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,

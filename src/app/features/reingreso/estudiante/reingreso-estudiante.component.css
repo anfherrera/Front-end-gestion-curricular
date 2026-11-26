@@ -8,44 +8,12 @@
   font-family: var(--font-body);
 }
 
-/* Títulos de tarjetas */
-.card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  background-color: var(--color-primario);
-  color: var(--blanco);
-  padding: 14px 16px;
-  display: block;
-  border-bottom: 3px solid var(--color-primario);
-  margin-bottom: 0.5rem;
-}
-
 /* Botón Enviar Solicitud */
 .enviar-solicitud {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-top: 16px;
-}
-
-.btn-enviar {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: var(--sombra-1);
-}
-
-.btn-enviar:disabled {
-  background-color: var(--neutro-200) !important;
-  color: var(--neutro-600) !important;
-  cursor: not-allowed;
-  opacity: 0.5;
-  transform: none;
-  box-shadow: none;
 }
 
 /* Mensaje informativo de documentos faltantes (solo guía, no bloquea) */

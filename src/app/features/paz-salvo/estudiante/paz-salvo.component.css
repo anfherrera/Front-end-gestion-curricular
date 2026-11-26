@@ -4,43 +4,8 @@
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: var(--color-fondo);
+  background-color: var(--neutro-50);
   font-family: var(--font-body);
-}
-
-/* Títulos de tarjetas - Color primario TIC */
-.card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  background-color: var(--color-primario);
-  color: var(--blanco);
-  padding: 14px 16px;
-  display: block;
-  border-bottom: 3px solid var(--color-primario-dark);
-  font-family: var(--font-display);
-  margin-bottom: 0.5rem;
-}
-
-/* Botón Enviar Solicitud - Color primario TIC */
-.btn-enviar {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  border: none;
-  border-radius: 100px;
-  padding: 12px 24px;
-  font-weight: 600;
-  font-family: var(--font-body);
-  transition: all 0.2s ease-in-out;
-  box-shadow: var(--sombra-1);
-}
-
-.btn-enviar:disabled {
-  background-color: var(--neutro-200) !important;
-  color: var(--neutro-800) !important;
-  cursor: not-allowed;
-  opacity: 0.5;
-  transform: none;
-  box-shadow: none;
 }
 
 /* Iconos de checklist - Colores TIC */
