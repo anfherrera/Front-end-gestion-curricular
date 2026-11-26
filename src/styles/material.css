@@ -102,6 +102,22 @@ html {
   color: var(--neutro-800) !important;
 }
 
+/* Botón de acción que destruye (Rechazar, Eliminar): mat-raised-button color="warn".
+   Naranja oscuro de error de la guía, nunca rojo (el rojo es institucional) */
+.mat-mdc-raised-button.mat-warn {
+  background-color: var(--notif-error-titulo) !important;
+  color: var(--blanco) !important;
+  border-radius: 100px !important;
+  font-weight: 600 !important;
+  font-family: var(--font-body) !important;
+  font-size: 14px !important;
+}
+
+.mat-mdc-raised-button.mat-warn:disabled {
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-800) !important;
+}
+
 /* Botón secundario */
 .mat-mdc-outlined-button.mat-primary,
 .mat-mdc-stroked-button.mat-primary {

@@ -61,13 +61,3 @@ textarea {
 mat-hint.casi-lleno {
   color: var(--color-error);
 }
-
-.btn-confirmar {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-}
-
-.btn-confirmar:disabled {
-  background-color: var(--neutro-400) !important;
-  color: var(--neutro-600) !important;
-}

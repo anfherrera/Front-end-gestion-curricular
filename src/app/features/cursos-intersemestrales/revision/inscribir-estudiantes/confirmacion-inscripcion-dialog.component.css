@@ -107,15 +107,6 @@
   background: var(--neutro-50);
 }
 
-.btn-confirmar {
-  background: var(--color-primario);
-  color: white;
-}
-
-.btn-confirmar:hover {
-  background: var(--color-primario-light);
-}
-
 .btn-cancelar mat-icon,
 .btn-confirmar mat-icon {
   margin-right: 8px;

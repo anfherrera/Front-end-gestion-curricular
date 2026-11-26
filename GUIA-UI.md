@@ -32,11 +32,12 @@ Reglas:
 
 Tipos (guía, págs. 30-31). Los estilos ya están en [src/styles/material.css](src/styles/material.css), así que basta con usar el botón de Material correcto:
 
-| Tipo       | Material                             | Cuándo                                            |
-| ---------- | ------------------------------------ | ------------------------------------------------- |
-| Primario   | `mat-raised-button color="primary"`  | La acción principal de la pantalla (una por zona) |
-| Secundario | `mat-stroked-button color="primary"` | Alternativas: Cancelar, Recargar, Volver          |
-| Terciario  | `mat-button color="primary"`         | Acciones de poco peso, enlaces                    |
+| Tipo        | Material                             | Cuándo                                                                                        |
+| ----------- | ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Primario    | `mat-raised-button color="primary"`  | La acción principal de la pantalla (una por zona)                                             |
+| Secundario  | `mat-stroked-button color="primary"` | Alternativas: Cancelar, Recargar, Volver                                                      |
+| Terciario   | `mat-button color="primary"`         | Acciones de poco peso, enlaces                                                                |
+| Destructivo | `mat-raised-button color="warn"`     | Rechazar o eliminar como acción principal de un diálogo (naranja oscuro de error, nunca rojo) |
 
 - Forma: píldora (guía, pág. 29). No cambiar el `border-radius` de un botón en el CSS del componente.
 - Texto: un verbo que diga lo que pasa ("Enviar solicitud", "Guardar cambios"), no "Aceptar" ni "Click aquí".
