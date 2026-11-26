@@ -119,7 +119,7 @@
         {{ loading() ? 'Generando...' : 'Generar ' + template().nombre }}
       </button>
 
-      <button mat-raised-button color="accent" type="button" (click)="onTengoDocumento()" [disabled]="loading()">
+      <button mat-stroked-button color="primary" type="button" (click)="onTengoDocumento()" [disabled]="loading()">
         <mat-icon>upload_file</mat-icon>
         Tengo un documento
       </button>
