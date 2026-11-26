@@ -162,6 +162,9 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
       this.snackbar.advertencia(
         this.errorHandler.extraerMensajeError(err) || 'Error de validación: revisa los datos de la solicitud'
       );
+    } else if ((err as { status?: number })?.status === 409) {
+      // Regla de negocio (p. ej. ya hay una solicitud en trámite): se muestra el motivo del backend
+      this.snackbar.advertencia(this.errorHandler.extraerMensajeError(err));
     } else if ((err as { status?: number })?.status === 401) {
       this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
     } else {
