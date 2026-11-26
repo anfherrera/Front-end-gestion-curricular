@@ -51,7 +51,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-family: var(--font-body);
   font-weight: 500;
   width: 100%;
@@ -155,7 +155,7 @@
 
   .sidebar-link {
     padding: 12px 20px;
-    font-size: 14px;
+    font-size: var(--text-body-size);
   }
 
   .sidebar mat-icon {

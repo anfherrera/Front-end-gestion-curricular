@@ -73,6 +73,8 @@ Medición: `Get-ChildItem -Recurse src -Include *.css | Select-String "border-ra
 
 ## Fase 5: tamaños de letra (guía, pág. 26)
 
+Primer paso hecho, sin cambio visual: 159 `font-size` que ya valían 12, 14, 18, 22 o 32px (o su rem) usan ahora `--text-*`. Ojo: algunos `32px`/`2rem` eran iconos y quedaron con `--text-h1-size`; al crear `--tam-icono-*` hay que moverlos. Quedan por decidir (cambian el aspecto): 0.9rem ×49, 16px ×41, 13px ×41, 1rem ×37, 1.1rem ×31, 20px ×26, 1.2rem ×19, 0.95rem ×18, 24px ×17, 1.5rem ×16…
+
 - [ ] 57 valores distintos; ninguno usa `--text-*`. Ir carpeta por carpeta (un commit por carpeta), comparando capturas. Los que más tienen: `cursos-verano-dashboard` (35), `inscripcion-modal` (33), `tendencias-comparativas` (26), `ver-solicitud` (25), `recomendaciones-cursos-verano` y `gestionar-cursos` (23)
 - [ ] Pasos intermedios con nombre si hacen falta (`--text-subtitulo-size`, `--text-cifra-size`); iconos grandes con escala aparte (`--tam-icono-*`)
 - [ ] Regla en `comprobar-estilos.mjs`
@@ -96,4 +98,4 @@ Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, err
 
 ## Notas de la última sesión
 
-- 2026-11-26: la fase 1 está en el commit `d97e7bd`. Lo siguiente es la casilla "Comprobar con capturas tras reiniciar `ng serve`" y luego los botones fuera de los tres tipos. El `ng serve` quedó detenido: hay que arrancarlo de nuevo.
+- 2026-11-26 (tarde): hechas las fases 3, 4 y 6 y el primer paso de la 5, todo sin capturas porque los servidores estaban apagados. Lo primero en la próxima sesión: arrancar backend y front, sacar capturas de los 5 roles y revisar redondeos (fase 4) y botones (fase 1). Luego seguir la fase 5 carpeta por carpeta y la fase 2 (títulos de página).

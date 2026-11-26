@@ -313,7 +313,7 @@
 }
 
 .metric-valor {
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   color: var(--color-primario);
   margin-bottom: 4px;

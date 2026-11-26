@@ -34,7 +34,7 @@
 
 .user-initials-large {
   color: white;
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   letter-spacing: 1px;
 }
@@ -96,7 +96,7 @@
 
 .info-label {
   color: var(--neutro-600);
-  font-size: 0.75rem;
+  font-size: var(--text-body2-size);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;

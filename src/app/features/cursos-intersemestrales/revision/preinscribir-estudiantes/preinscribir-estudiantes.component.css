@@ -7,7 +7,7 @@
 .preinscripciones-section h3 {
   color: var(--color-primario);
   margin-bottom: 20px;
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   border-bottom: 2px solid var(--color-primario);
   padding-bottom: 8px;
@@ -24,7 +24,7 @@
   color: white !important;
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   letter-spacing: 0.5px;
 }
 
@@ -62,7 +62,7 @@
 .sin-observaciones {
   color: var(--neutro-600) !important;
   font-style: italic;
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   background: var(--neutro-50);
   padding: 4px 8px;
   border-radius: var(--radio-xs);
@@ -95,7 +95,7 @@
   }
 
   .table-container {
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 
   .preinscripciones-table th,
@@ -151,7 +151,7 @@
   color: var(--blanco) !important;
   padding: 4px 8px;
   border-radius: var(--radio-xs);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   border: none !important;
   display: inline-block;
 }

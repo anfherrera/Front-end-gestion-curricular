@@ -130,7 +130,7 @@
 }
 
 .loading-icon {
-  font-size: 32px;
+  font-size: var(--text-h1-size);
   width: 32px;
   height: 32px;
   margin-bottom: 12px;
@@ -138,7 +138,7 @@
 }
 
 .loading-text {
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
 }
 
@@ -245,7 +245,7 @@
 }
 
 .notification-title {
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
   color: var(--neutro-800);
   margin: 0;
@@ -329,7 +329,7 @@
 }
 
 .empty-message {
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   margin: 0;
   line-height: 1.4;
@@ -408,7 +408,7 @@
   }
 
   .notification-message {
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 
   .menu-header {

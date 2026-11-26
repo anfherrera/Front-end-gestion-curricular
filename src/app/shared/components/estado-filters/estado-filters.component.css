@@ -85,7 +85,7 @@
 }
 
 .estado-chip .count {
-  font-size: 0.75rem;
+  font-size: var(--text-body2-size);
   opacity: 0.9;
   margin-left: 4px;
   font-weight: 600;

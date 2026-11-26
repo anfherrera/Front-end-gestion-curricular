@@ -122,7 +122,7 @@
 /* Texto debajo de los iconos */
 .dashboard-card span {
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-800);
   transition:
     color 0.3s ease,

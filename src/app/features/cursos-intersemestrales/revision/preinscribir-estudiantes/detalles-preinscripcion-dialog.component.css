@@ -135,7 +135,7 @@
 }
 
 .timeline-fecha {
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
 }
 

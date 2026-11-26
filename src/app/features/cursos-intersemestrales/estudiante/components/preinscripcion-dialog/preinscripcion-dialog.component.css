@@ -41,7 +41,7 @@
 
 .curso-details p {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-800);
 }
 

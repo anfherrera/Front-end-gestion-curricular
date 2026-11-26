@@ -26,7 +26,7 @@
 .sin-datos p {
   margin: 8px 0;
   color: var(--neutro-600);
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 /* Resumen de actividades */
@@ -56,7 +56,7 @@
 }
 
 .resumen-icon {
-  font-size: 32px;
+  font-size: var(--text-h1-size);
   width: 32px;
   height: 32px;
   color: var(--color-primario);
@@ -79,7 +79,7 @@
 
 .resumen-content p {
   margin: 4px 0 0 0;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -129,7 +129,7 @@ td.mat-cell {
   vertical-align: top;
   padding: 16px 12px;
   border-bottom: 1px solid var(--neutro-50);
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 /* Celda de comentario */
@@ -182,7 +182,7 @@ td.mat-cell:last-child {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   padding: 6px 12px;
   border-radius: var(--radio-lg);
   text-transform: none;
@@ -289,7 +289,7 @@ td.mat-cell:last-child {
   }
 
   .section h3 {
-    font-size: 14px;
+    font-size: var(--text-body-size);
   }
 
   .sin-datos {
@@ -303,7 +303,7 @@ td.mat-cell:last-child {
   }
 
   th.mat-header-cell {
-    font-size: 12px;
+    font-size: var(--text-body2-size);
     padding: 12px 8px;
   }
 
@@ -333,7 +333,7 @@ td.mat-cell:last-child {
   }
 
   .motivo-icon {
-    font-size: 18px;
+    font-size: var(--text-h3-size);
     width: 18px;
     height: 18px;
   }
@@ -347,7 +347,7 @@ td.mat-cell:last-child {
   }
 
   .motivo-mensaje {
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 }
 

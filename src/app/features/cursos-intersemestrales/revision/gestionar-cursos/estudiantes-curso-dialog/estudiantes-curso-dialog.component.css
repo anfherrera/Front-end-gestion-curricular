@@ -18,7 +18,7 @@
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 22px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
   color: var(--color-primario);
 }
@@ -170,7 +170,7 @@
 .tabla-estudiantes td {
   padding: 14px 12px;
   border-bottom: 1px solid var(--neutro-100);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-800);
 }
 
@@ -185,7 +185,7 @@
 
 .estado-texto {
   color: var(--neutro-800);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 400;
   font-family: inherit;
 }
@@ -193,7 +193,7 @@
 .sin-estado {
   color: var(--neutro-600);
   font-style: italic;
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .correo-link {
@@ -324,7 +324,7 @@ mat-dialog-actions button[mat-raised-button][disabled] {
   }
 
   .stat .valor {
-    font-size: 22px;
+    font-size: var(--text-h2-size);
   }
 
   .tabla-container {
@@ -336,7 +336,7 @@ mat-dialog-actions button[mat-raised-button][disabled] {
   }
 
   .dialog-header h2 {
-    font-size: 18px;
+    font-size: var(--text-h3-size);
   }
 
   .resumen-curso {
@@ -344,6 +344,6 @@ mat-dialog-actions button[mat-raised-button][disabled] {
   }
 
   .resumen-curso h3 {
-    font-size: 18px;
+    font-size: var(--text-h3-size);
   }
 }

@@ -98,7 +98,7 @@
 
 .info-card mat-icon {
   color: white;
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   width: 2rem;
   height: 2rem;
 }

@@ -24,7 +24,7 @@
 }
 
 .header-icon {
-  font-size: 32px;
+  font-size: var(--text-h1-size);
   width: 32px;
   height: 32px;
   color: var(--color-primario);
@@ -100,7 +100,7 @@ h1 {
   color: white;
   border-radius: var(--radio-md);
   padding: 2px 8px;
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   font-weight: 600;
 }
 
@@ -124,7 +124,7 @@ h1 {
 
 .loading-container p {
   color: var(--neutro-600);
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 /* Lista de notificaciones */
@@ -183,7 +183,7 @@ h1 {
 }
 
 .tipo-icon {
-  font-size: 32px;
+  font-size: var(--text-h1-size);
   width: 32px;
   height: 32px;
 }
@@ -205,7 +205,7 @@ h1 {
 }
 
 mat-card-title {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   margin-bottom: 8px;
   color: var(--neutro-800);
@@ -222,7 +222,7 @@ mat-card-subtitle {
   display: inline-block;
   padding: 4px 12px;
   border-radius: var(--radio-md);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   font-weight: 500;
 }
 
@@ -257,7 +257,7 @@ mat-card-subtitle {
 /* Contenido del card */
 .mensaje {
   color: var(--neutro-600);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   line-height: 1.6;
   margin: 16px 0;
 }
@@ -281,7 +281,7 @@ mat-card-subtitle {
 }
 
 .metadata-item mat-icon {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   width: 18px;
   height: 18px;
   color: var(--color-primario);

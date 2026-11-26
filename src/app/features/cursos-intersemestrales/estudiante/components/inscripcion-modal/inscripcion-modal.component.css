@@ -99,7 +99,7 @@
 
 .info-card p {
   margin: 10px 0;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-800);
 }
 
@@ -107,7 +107,7 @@
 .estado-inscripcion {
   padding: 4px 12px;
   border-radius: var(--radio-lg);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -148,7 +148,7 @@
 /* Vacío, pero cuenta como elemento del flex: deja el hueco de 8px (gap) antes del título */
 .form-section h3::before {
   content: '';
-  font-size: 18px;
+  font-size: var(--text-h3-size);
 }
 
 .full-width {
@@ -177,7 +177,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .file-upload-error mat-icon {
@@ -203,7 +203,7 @@
   border-radius: var(--radio-sm);
   background: var(--primario-98);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--color-primario);
   font-weight: 500;
   min-height: 80px;
@@ -242,7 +242,7 @@
 
 .file-name {
   flex: 1;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 500;
   color: var(--neutro-800);
 }
@@ -267,7 +267,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .file-requirements p mat-icon {
@@ -391,7 +391,7 @@
   }
 
   .modal-header h2 {
-    font-size: 18px;
+    font-size: var(--text-h3-size);
     gap: 8px;
   }
 
@@ -456,7 +456,7 @@
   }
 
   .file-requirements ul {
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 
   .modal-footer {
@@ -472,7 +472,7 @@
   .modal-footer button[mat-button] {
     width: 100%;
     height: 44px;
-    font-size: 14px;
+    font-size: var(--text-body-size);
   }
 
   .submit-button {
@@ -530,7 +530,7 @@
   }
 
   .form-section h3 {
-    font-size: 14px;
+    font-size: var(--text-body-size);
     margin-bottom: 10px;
     padding-bottom: 4px;
   }
@@ -545,7 +545,7 @@
 
   .file-input-label {
     padding: 12px;
-    font-size: 12px;
+    font-size: var(--text-body2-size);
     min-height: 50px;
     gap: 6px;
   }
@@ -568,7 +568,7 @@
   }
 
   .file-requirements p {
-    font-size: 12px;
+    font-size: var(--text-body2-size);
     margin-bottom: 6px;
   }
 
@@ -607,7 +607,7 @@
 /* Ajustes adicionales para pantallas muy pequeñas */
 @media (max-width: 360px) {
   .modal-header h2 {
-    font-size: 14px;
+    font-size: var(--text-body-size);
   }
 
   .form-section h3 {
@@ -622,6 +622,6 @@
   .submit-button,
   .modal-footer button[mat-button] {
     height: 36px;
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 }

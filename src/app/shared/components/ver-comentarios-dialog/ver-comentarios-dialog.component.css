@@ -59,7 +59,7 @@ mat-dialog-content {
 
 .rechazo-titulo mat-icon {
   color: var(--notif-error-titulo);
-  font-size: 22px;
+  font-size: var(--text-h2-size);
   width: 22px;
   height: 22px;
 }
@@ -95,7 +95,7 @@ mat-dialog-content {
 
 .seccion-titulo mat-icon {
   color: var(--color-primario);
-  font-size: 22px;
+  font-size: var(--text-h2-size);
   width: 22px;
   height: 22px;
 }

@@ -56,12 +56,12 @@
 }
 
 .success-message p:first-of-type {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 600;
 }
 
 .success-message p:last-of-type {
-  font-size: 14px;
+  font-size: var(--text-body-size);
   opacity: 0.8;
 }
 

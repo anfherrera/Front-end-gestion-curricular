@@ -366,7 +366,7 @@
 }
 
 .estado-valor {
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   font-weight: bold;
   text-align: center;
   color: var(--color-primario);

@@ -31,7 +31,7 @@ app-card-container {
 .filtro-periodo-section h3 {
   color: var(--color-primario);
   margin-bottom: 16px;
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 600;
 }
 
@@ -72,13 +72,13 @@ table {
 
 .curso-info strong {
   color: var(--color-primario);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
 }
 
 .curso-info small {
   color: var(--neutro-600);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   line-height: 1.3;
 }
 
@@ -88,7 +88,7 @@ table {
   color: var(--color-terciario);
   padding: 4px 8px;
   border-radius: var(--radio-xs);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   font-weight: 600;
   font-family: 'Courier New', monospace;
 }
@@ -102,13 +102,13 @@ table {
 
 .materia-info strong {
   color: var(--neutro-800);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
 }
 
 .materia-info small {
   color: var(--neutro-600);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
 }
 
 /* Información de período */
@@ -133,7 +133,7 @@ table {
 
 .periodo-descripcion {
   color: var(--neutro-600);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
 }
 
 /* Badge de grupo */
@@ -167,13 +167,13 @@ table {
 
 .docente-info strong {
   color: var(--neutro-800);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
 }
 
 .docente-info small {
   color: var(--neutro-600);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
 }
 
 /* Información de cupos */
@@ -186,25 +186,25 @@ table {
 
 .cupo-info strong {
   color: var(--color-primario);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
 }
 
 .cupo-info small {
   color: var(--neutro-600);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
 }
 
 /* Información de salón */
 .salon-asignado {
   color: var(--color-primario);
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .salon-simple {
   color: var(--neutro-800);
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .sin-salon {
@@ -216,7 +216,7 @@ table {
 /* Chips de estado */
 .estado-chip {
   font-weight: 600 !important;
-  font-size: 0.75rem !important;
+  font-size: var(--text-body2-size) !important;
   padding: 8px 12px !important;
   border-radius: var(--radio-lg) !important;
   text-transform: uppercase !important;
@@ -308,7 +308,7 @@ table {
 }
 
 .sin-datos p:last-child {
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
 }
 

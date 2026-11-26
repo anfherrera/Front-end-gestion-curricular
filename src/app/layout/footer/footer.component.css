@@ -42,7 +42,7 @@
 }
 
 .footer-right mat-icon {
-  font-size: 22px;
+  font-size: var(--text-h2-size);
   color: var(--color-primario);
   cursor: pointer;
 }

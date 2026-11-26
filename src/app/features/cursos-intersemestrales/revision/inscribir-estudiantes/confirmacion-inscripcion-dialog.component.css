@@ -65,7 +65,7 @@
 
 .info-text strong {
   color: var(--color-primario);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
 }
 
@@ -85,7 +85,7 @@
 .confirmacion-mensaje p {
   margin: 0;
   color: var(--color-terciario);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 500;
 }
 

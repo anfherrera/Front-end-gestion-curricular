@@ -14,7 +14,7 @@
   background-color: var(--color-primario);
   color: var(--blanco);
   padding: 6px 14px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
   border-radius: var(--radio-xl);
   cursor: pointer;
@@ -71,7 +71,7 @@
   background-color: var(--blanco);
   padding: 10px 14px;
   border-radius: var(--radio-xs);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   border: 1px solid var(--neutro-100);
   box-shadow: var(--sombra-1);
   transition:

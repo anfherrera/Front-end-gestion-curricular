@@ -80,12 +80,12 @@
   font-weight: 600;
   color: var(--color-primario);
   min-width: 80px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .info-value {
   color: var(--neutro-800);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   flex: 1;
 }
 

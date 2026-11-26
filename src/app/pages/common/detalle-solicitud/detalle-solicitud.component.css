@@ -169,7 +169,7 @@
 }
 
 .timeline-comentario mat-icon {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   width: 18px;
   height: 18px;
   color: var(--neutro-600);

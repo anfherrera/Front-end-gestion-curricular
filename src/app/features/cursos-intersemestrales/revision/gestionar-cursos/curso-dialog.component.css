@@ -21,7 +21,7 @@
 
 .form-section h3 {
   color: var(--color-primario);
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 700;
   margin-bottom: 20px;
   border-bottom: 3px solid var(--color-primario);
@@ -347,7 +347,7 @@
   align-items: center;
   padding: 12px 0;
   border-bottom: 1px solid var(--primario-90);
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .info-item:last-child {
@@ -383,7 +383,7 @@
 
 .duracion-info span {
   color: var(--color-primario);
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .duracion-info strong {

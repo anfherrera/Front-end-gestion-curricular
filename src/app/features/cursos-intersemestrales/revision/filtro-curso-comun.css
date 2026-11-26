@@ -11,7 +11,7 @@
 .filtro-section h3 {
   color: var(--color-primario);
   margin-bottom: 16px;
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 600;
 }
 
@@ -31,7 +31,7 @@
 
 .loading-container p {
   margin-top: 16px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .no-data {
@@ -68,12 +68,12 @@
 
 .estudiante-info strong {
   color: var(--neutro-800) !important;
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .estudiante-info small {
   color: var(--neutro-600) !important;
-  font-size: 12px;
+  font-size: var(--text-body2-size);
 }
 
 .curso-info {

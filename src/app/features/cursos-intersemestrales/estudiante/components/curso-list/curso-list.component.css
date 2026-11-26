@@ -181,6 +181,6 @@ button {
   .inscribir-icon,
   .ver-icon,
   .default-icon {
-    font-size: 18px;
+    font-size: var(--text-h3-size);
   }
 }

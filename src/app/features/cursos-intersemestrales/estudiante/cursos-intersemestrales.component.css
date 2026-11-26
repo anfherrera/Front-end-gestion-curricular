@@ -139,7 +139,7 @@
 
 .option-icon {
   color: var(--color-primario);
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   width: 2.5rem;
   height: 2.5rem;
   display: flex;

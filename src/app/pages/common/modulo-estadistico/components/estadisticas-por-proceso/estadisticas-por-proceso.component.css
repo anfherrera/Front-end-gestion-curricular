@@ -183,7 +183,7 @@
   padding: 6px 8px;
   background: var(--blanco);
   border-radius: var(--radio-xs);
-  font-size: 0.75rem;
+  font-size: var(--text-body2-size);
   min-width: 70px;
   border: 1px solid var(--neutro-100);
 }
@@ -228,7 +228,7 @@
 .proceso-datos-raw mat-chip {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  font-size: 0.75rem;
+  font-size: var(--text-body2-size);
 }
 
 .fecha-actualizacion {

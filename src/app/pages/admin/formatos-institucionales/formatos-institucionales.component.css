@@ -84,7 +84,7 @@ mat-card-content {
 }
 
 .formato-proceso mat-icon {
-  font-size: 22px;
+  font-size: var(--text-h2-size);
   width: 22px;
   height: 22px;
 }

@@ -135,7 +135,7 @@
 }
 
 .mat-mdc-form-field {
-  font-size: 14px;
+  font-size: var(--text-body-size);
 }
 
 .mat-mdc-select-panel {

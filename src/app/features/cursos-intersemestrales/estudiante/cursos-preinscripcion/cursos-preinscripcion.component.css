@@ -7,7 +7,7 @@
 
 .sin-datos {
   text-align: center;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   padding: 16px 0;
 }

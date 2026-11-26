@@ -79,7 +79,7 @@
 }
 
 .periodo-icon {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   width: 18px;
   height: 18px;
   color: var(--color-primario);
@@ -154,7 +154,7 @@
 
 .dropdown-icon {
   color: var(--neutro-600);
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   transition: transform 0.3s ease;
 }
 
@@ -223,7 +223,7 @@
 
   .user-name-horizontal {
     max-width: 80px;
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 
   .user-avatar {

@@ -178,7 +178,7 @@
 }
 
 .info-filtros mat-icon {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   width: 18px;
   height: 18px;
   margin-right: 4px;

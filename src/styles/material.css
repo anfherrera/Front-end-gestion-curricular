@@ -86,7 +86,7 @@ html {
   border-radius: var(--radio-pill) !important;
   font-weight: 600 !important;
   font-family: var(--font-body) !important;
-  font-size: 14px !important;
+  font-size: var(--text-body-size) !important;
   box-shadow: var(--sombra-1) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
@@ -110,7 +110,7 @@ html {
   border-radius: var(--radio-pill) !important;
   font-weight: 600 !important;
   font-family: var(--font-body) !important;
-  font-size: 14px !important;
+  font-size: var(--text-body-size) !important;
 }
 
 .mat-mdc-raised-button.mat-warn:disabled {
@@ -157,7 +157,7 @@ html {
 
 /* Campos de formulario */
 .mat-mdc-form-field {
-  font-size: 14px !important;
+  font-size: var(--text-body-size) !important;
 }
 .mat-mdc-form-field .mat-mdc-text-field-wrapper {
   border-radius: var(--radio-xs) !important;
@@ -188,7 +188,7 @@ html {
 .mat-mdc-header-cell {
   font-weight: 600 !important;
   color: var(--color-primario) !important;
-  font-size: 14px !important;
+  font-size: var(--text-body-size) !important;
   font-family: var(--font-display) !important;
 }
 
@@ -205,6 +205,6 @@ html {
 .mat-mdc-tooltip {
   background-color: var(--color-primario-dark) !important;
   font-family: var(--font-body) !important;
-  font-size: 12px !important;
+  font-size: var(--text-body2-size) !important;
   border-radius: var(--radio-sm) !important;
 }

@@ -1,6 +1,6 @@
 .info-intro {
   margin: 12px 16px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-800);
   line-height: 1.6;
   padding: 12px;
@@ -89,7 +89,7 @@
   padding: 10px 12px;
   border-radius: var(--radio-sm);
   margin-bottom: 8px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: var(--neutro-800);
   transition: background 0.2s ease;
 }
@@ -114,14 +114,14 @@
 
 .nota {
   color: var(--neutro-600);
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   margin-left: 4px;
 }
 
 .asterisco-obligatorio {
   color: var(--notif-error-titulo);
   font-weight: bold;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   margin-left: 4px;
 }
 
@@ -187,7 +187,7 @@
 }
 
 .formato-disponible-icon {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   width: 18px;
   height: 18px;
 }

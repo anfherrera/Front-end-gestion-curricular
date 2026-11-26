@@ -19,7 +19,7 @@
   align-items: center;
   gap: 12px;
   margin: 0 0 8px 0;
-  font-size: 32px;
+  font-size: var(--text-h1-size);
   font-weight: 600;
   color: var(--color-primario);
 }
@@ -56,7 +56,7 @@
 
 .loading-container p {
   color: var(--neutro-600);
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 500;
   margin: 0;
 }
@@ -118,7 +118,7 @@
 
 .stat-label {
   color: var(--neutro-600);
-  font-size: 14px;
+  font-size: var(--text-body-size);
   margin: 0;
   font-weight: 500;
 }

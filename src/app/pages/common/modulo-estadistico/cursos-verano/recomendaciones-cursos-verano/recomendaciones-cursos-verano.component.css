@@ -460,7 +460,7 @@
   }
 
   .rec-card .badge {
-    font-size: 0.75rem;
+    font-size: var(--text-body2-size);
     padding: 0.35rem 0.85rem;
   }
 

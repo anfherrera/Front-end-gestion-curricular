@@ -16,7 +16,7 @@
 
 .welcome-header h1 {
   margin: 0 0 10px 0;
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   color: var(--color-primario);
 }
@@ -54,7 +54,7 @@
 }
 
 .stat-icon {
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   width: 2rem;
   height: 2rem;
   color: var(--color-primario);
@@ -170,7 +170,7 @@
 /* Estilos mejorados para los chips de estado */
 mat-chip {
   font-weight: 600 !important;
-  font-size: 0.75rem !important;
+  font-size: var(--text-body2-size) !important;
   padding: 8px 12px !important;
   border-radius: var(--radio-lg) !important;
   text-transform: uppercase !important;

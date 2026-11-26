@@ -199,7 +199,7 @@
 }
 
 .estado-cantidad {
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   font-weight: bold;
   line-height: 1;
 }

@@ -29,7 +29,7 @@
 
 .header-section h2 mat-icon {
   color: var(--color-primario);
-  font-size: 32px;
+  font-size: var(--text-h1-size);
   width: 32px;
   height: 32px;
 }
@@ -64,7 +64,7 @@
 .loading-overlay p {
   color: var(--neutro-600);
   margin: 0;
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 500;
 }
 
@@ -163,7 +163,7 @@ mat-card {
 
 /* Hints más visibles */
 :host ::ng-deep .form-container mat-hint {
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
   font-style: italic;
 }
@@ -248,7 +248,7 @@ mat-spinner {
   }
 
   .header-section h2 {
-    font-size: 22px;
+    font-size: var(--text-h2-size);
   }
 
   mat-card {
