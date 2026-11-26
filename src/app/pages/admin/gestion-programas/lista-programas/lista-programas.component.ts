@@ -34,7 +34,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule,
   ],
   templateUrl: './lista-programas.component.html',
-  styleUrls: ['./lista-programas.component.css'],
+  styleUrl: '../../admin-lista-comun.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaProgramasComponent implements OnInit {

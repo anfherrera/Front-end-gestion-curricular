@@ -34,7 +34,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatDialogModule,
   ],
   templateUrl: './manage-roles.component.html',
-  styleUrls: ['./manage-roles.component.css'],
+  styleUrl: '../admin-lista-comun.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageRolesComponent implements OnInit {

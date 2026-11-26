@@ -1,0 +1,95 @@
+# Checklist: interfaz uniforme según GUIA-UI.md
+
+Objetivo: que todas las vistas de todos los roles sigan [GUIA-UI.md](GUIA-UI.md). Este archivo dice qué está hecho y qué falta, para retomar en cualquier sesión.
+
+## Cómo retomar en una sesión nueva
+
+Primer mensaje sugerido:
+
+> Continúa `CHECKLIST-UI.md` desde la primera casilla sin marcar. Lee antes `GUIA-UI.md` y `src/app/core/design-system/README.md`.
+
+Reglas de trabajo:
+
+- Una fase por commit, en español y local. **Preguntar antes de cada push** (PR #2, rama `revision-25-backend`).
+- Marcar aquí cada casilla al terminarla, en el mismo commit.
+- Si la sesión se va a cortar, hacer commit de lo que compile y anotar en "Notas de la última sesión" dónde se quedó.
+- Medir con los comandos de cada fase antes y después, y actualizar los números.
+
+Arranque del entorno:
+
+- Backend: `cd ../Back-end-gestion-curricular/gestion_curricular && JAVA_HOME="C:/Program Files/Java/jdk-17" SPRING_DATASOURCE_USERNAME=root SPRING_DATASOURCE_PASSWORD=root ./mvnw -q spring-boot:run` (puerto 5000)
+- Front: `npx ng serve` (puerto 4200). Usuarios de prueba con contraseña `password123`: admin@, juanp@ (funcionario), josefina@ (coordinador), maria@ (secretaría), dcisneros@ (estudiante).
+- Si se borran o mueven hojas de estilo, **reiniciar `ng serve`**: con SSR puede seguir sirviendo las antiguas.
+
+Verificación de cada commit:
+
+- `npx tsc -p tsconfig.app.json --noEmit`
+- `npm run lint` y `npm run lint:estilos`
+- `npx prettier --check` de los archivos tocados
+- `npx ng build`
+- `npx ng test --watch=false` (785 pruebas)
+- Capturas antes y después: `npm run capturas -- <carpeta>` (26 pantallas de 5 roles; `ALTO=3200` para páginas largas). Mirar las imágenes y comparar.
+
+## Fase 1: acciones, etiquetas y botones (GUIA-UI.md, secciones 1 a 3)
+
+- [x] Clases globales en `src/styles/componentes.css`: `.acciones-tabla`, `.accion-peligro`, `.etiqueta-categoria`, `.etiqueta-estado` y colores `.estado-*` (un solo sitio)
+- [x] "Enviada" ya no sale en el color de error (`estados-solicitud-comun.css`); "PENDIENTE" ya no es color de error (`design-tokens.ts`)
+- [x] Admin, Usuarios: roles en etiqueta neutra; estado con icono; acciones con botones de icono y `aria-label`
+- [x] Admin, Roles, Docentes y Programas: acciones con botones de icono; eliminar en color de error
+- [x] Las cuatro listas de admin comparten `src/app/pages/admin/admin-lista-comun.css` (se borraron sus 4 hojas)
+- [x] Recargar y Buscar de las listas de admin como botón secundario (`mat-stroked-button color="primary"`)
+- [x] Seguimiento de solicitudes (`request-status`): acciones sin el cuadrado relleno
+- [x] Gestión de cursos: sin mayúsculas en "Crear Nuevo Curso", Exportar ya no es naranja, acciones con `.acciones-tabla`
+- [ ] **Comprobar con capturas tras reiniciar `ng serve`**: en la última captura el buscador de Roles aún salía sin tarjeta y el icono de Recargar casi invisible (probable caché del SSR; si sigue, revisar `admin-lista-comun.css` y `material.css`)
+- [ ] Commit de la fase 1
+- [ ] Botones fuera de los tres tipos de la guía. Medición con `node <scratchpad>/botones.mjs src/app` (script de una sesión: recorre cada `<button>` y da tipo y color; volver a escribirlo si no está): 4 `mat-raised-button color="accent"`, 3 `color="warn"`, 1 `mat-stroked-button color="warn"`, 1 `mat-icon-button color="accent"`, 12 `mat-stroked-button` sin color, 18 `mat-button` sin color. Pasar cada uno a primario, secundario o terciario. Para Rechazar (acción que destruye) definir una sola variante en `material.css` y anotarla en GUIA-UI.md
+  - `visualizar-solicitudes.component.html:32-33` (Actualizar en primario y Exportar Excel en accent)
+  - `historial-completo.component.html:64` (Limpiar filtros en accent)
+  - `notificaciones.component.html:15-16`, `document-generator.component.html:122`, `documentation-viewer.component.html:76` (accent)
+  - `pruebas-ecaes/revision/pruebas-ecaes.component.html:53`, `revision-aprobacion.component.html:43`, `rechazo-preinscripcion-dialog.component.html:63` (warn)
+  - `cursos-intersemestrales/estudiante/solicitudes/solicitudes.component.html:59` (Limpiar en stroked warn)
+  - Botones con clases propias que redefinen el botón: `.btn-confirmar` (texto-dialog, confirmacion-inscripcion-dialog), `.btn-exportar-excel`
+- [ ] Otras tablas con acciones de colores o `mat-chip` de categoría: `historial-completo` (marca azul junto a "Solicitud"; chips de resumen), `detalle-solicitud`, `estadisticas-por-proceso`, `cursos-verano-dashboard`, `gestionar-cursos` (chips con texto blanco, `.mat-chip … color: white`), `recomendaciones-cursos-verano`, `estado-filters`
+- [ ] Quitar las copias locales de colores de estado y usar las globales: `visualizar-solicitudes.component.css:277-385`, `document-generator.component.css:61-73`, `inscripcion-modal.component.css:106-116 y 517`
+
+## Fase 2: títulos de página (guía, pág. 48)
+
+- [ ] Hoy hay al menos tres estilos: tarjeta blanca con icono (admin), título con línea azul inferior (cursos intersemestrales) y páginas sin título (estudiante, funcionario). Elegir uno (la guía pide título H1 con una franja roja de 4px bajo la primera palabra), hacerlo componente compartido y usarlo en todas las páginas
+
+## Fase 3: colores con transparencia
+
+- [ ] 41 `rgba()` con colores no institucionales en 15 archivos (`rgba(0, 19, 140, …)` ×20, Bootstrap y Material). Pasar a tokens o `color-mix(in srgb, var(--token) X%, transparent)`. Los peores: `cursos-verano-dashboard.component.css` (9), `cursos-intersemestrales.component.css` del estudiante (5), `curso-dialog.component.css` (5). Además, `color: green` en `curso-list.component.css:66`
+- [ ] Ampliar `scripts/comprobar-estilos.mjs` para que rechace `rgb()`/`rgba()` con color (se permiten negro y blanco para sombras) y colores por nombre salvo `white`, `transparent` e `inherit`
+
+## Fase 4: redondeos (guía, pág. 29)
+
+Medición: `Get-ChildItem -Recurse src -Include *.css | Select-String "border-radius:\s*([^;]+);"` agrupado por valor. A 2026-11-26 hay 24 valores (8px ×112, 12px ×78, 50% ×23, 6px ×19, 4px ×18, 16px ×15, 20px ×8, 10px ×5…).
+
+- [ ] Tokens en `tokens.css`: `--radio-xs` 4px (campos, snackbars), `--radio-sm` 8px (tooltips), `--radio-md` 12px (tarjetas), `--radio-lg` 16px, `--radio-xl` 28px (diálogos), `--radio-pill` 100px (botones, chips), `--radio-circulo` 50% (avatares)
+- [ ] Pasar cada valor al token de su tipo de componente (no solo al más cercano). `app-card-container` pasa de 8px a 12px
+- [ ] Regla en `comprobar-estilos.mjs`
+
+## Fase 5: tamaños de letra (guía, pág. 26)
+
+- [ ] 57 valores distintos; ninguno usa `--text-*`. Ir carpeta por carpeta (un commit por carpeta), comparando capturas. Los que más tienen: `cursos-verano-dashboard` (35), `inscripcion-modal` (33), `tendencias-comparativas` (26), `ver-solicitud` (25), `recomendaciones-cursos-verano` y `gestionar-cursos` (23)
+- [ ] Pasos intermedios con nombre si hacen falta (`--text-subtitulo-size`, `--text-cifra-size`); iconos grandes con escala aparte (`--tam-icono-*`)
+- [ ] Regla en `comprobar-estilos.mjs`
+
+## Fase 6: trato de usted (guía, pág. 9)
+
+- [ ] Cambiar el tuteo por usted en los textos visibles ("Debes subir" → "Debe subir", "tu solicitud" → "su solicitud", "Selecciona" → "Seleccione"). Empezar por `required-docs.component.html`, las pantallas del estudiante y los mensajes de `SnackbarService`. Medición: buscar `Debes|Puedes|Tienes|Asegúrate|Selecciona|Ingresa|Revisa|Intenta|\btu\b|\btus\b` en `*.html` y `*.ts` (sin specs); revisar a mano, porque hay falsos positivos
+- [ ] Actualizar las pruebas que comprueben esos textos
+
+## Fase 7: `!important` (sin cambios visibles)
+
+- [ ] 832 en total. Los peores: `visualizar-solicitudes.component.css` (182), `revision/dashboard` (51), `material.css` (46), `gestionar-cursos` (42), `curso-dialog` (42), `cursos-verano-dashboard` (30). Quitarlos donde no hagan falta; los de `material.css` sobre MDC pueden quedarse
+
+## Al terminar
+
+- [ ] Vaciar la sección "Pendiente" de GUIA-UI.md
+- [ ] Capturas finales de los 5 roles y comparación con las primeras
+- [ ] Preguntar si se sube al PR #2
+
+## Notas de la última sesión
+
+- 2026-11-26: fase 1 casi terminada, sin commit. Se paró al ir a reiniciar `ng serve` para comprobar el buscador de Roles. Las capturas "antes" de esta tanda están en la carpeta temporal de la sesión y se pierden; sacar unas nuevas como referencia.

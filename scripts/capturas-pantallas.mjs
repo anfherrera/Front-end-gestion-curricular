@@ -59,7 +59,18 @@ const CASOS = [
       '/estudiante/cursos-intersemestrales',
     ],
   ],
-  ['admin@unicauca.edu.co', ['/admin/dashboard', '/admin/manage-users']],
+  [
+    'admin@unicauca.edu.co',
+    [
+      '/admin/dashboard',
+      '/admin/manage-users',
+      '/admin/manage-users/crear',
+      '/admin/manage-roles',
+      '/admin/docentes',
+      '/admin/programas',
+      '/admin/formatos-institucionales',
+    ],
+  ],
 ];
 
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));

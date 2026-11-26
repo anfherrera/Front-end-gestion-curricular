@@ -114,6 +114,6 @@ export const COLORS_BY_STATE: Record<string, string> = {
   PRE_REGISTRADO: COLORS.tertiary,
   'PRE-REGISTRADO': COLORS.tertiary,
   PREREGISTRADO: COLORS.tertiary,
-  PENDIENTE: COLORS.error,
+  PENDIENTE: COLORS.primary, // en espera, como EN_REVISION: no es un error
   EN_PROCESO: COLORS.tertiary,
 };

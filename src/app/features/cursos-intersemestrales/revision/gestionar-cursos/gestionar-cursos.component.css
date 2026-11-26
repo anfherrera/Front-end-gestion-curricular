@@ -35,55 +35,7 @@ app-card-container {
   font-weight: 600;
 }
 
-.btn-crear {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: var(--sombra-1);
-  transition: all 0.2s ease;
-}
-
-.btn-crear:hover {
-  background-color: var(--color-primario-light) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
-
-.btn-crear mat-icon {
-  margin-right: 8px;
-}
-
-.btn-actualizar {
-  border-color: var(--color-primario) !important;
-  color: var(--color-primario) !important;
-  font-weight: 500;
-}
-
-.btn-actualizar:hover {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-}
-
-.btn-exportar {
-  border-color: var(--notif-error-titulo) !important;
-  color: var(--notif-error-titulo) !important;
-  font-weight: 500;
-}
-
-.btn-exportar:hover:not([disabled]) {
-  background-color: var(--notif-error-titulo) !important;
-  color: white !important;
-}
-
-.btn-exportar mat-icon {
-  margin-right: 8px;
-}
-
-.btn-actualizar mat-icon {
-  margin-right: 8px;
-}
+/* Crear es el botón primario; Actualizar y Exportar son secundarios. Los estilos vienen de material.css */
 
 /* Loading */
 .loading-container {
@@ -331,36 +283,6 @@ table {
   align-items: center;
 }
 
-.btn-estudiantes {
-  color: var(--color-terciario) !important;
-  transition: all 0.2s ease;
-}
-
-.btn-estudiantes:hover {
-  background-color: rgba(25, 118, 210, 0.1) !important;
-  transform: scale(1.1);
-}
-
-.btn-editar {
-  color: var(--color-primario) !important;
-  transition: all 0.2s ease;
-}
-
-.btn-editar:hover {
-  background-color: rgba(0, 19, 140, 0.1) !important;
-  transform: scale(1.1);
-}
-
-.btn-eliminar {
-  color: var(--notif-error-titulo) !important;
-  transition: all 0.2s ease;
-}
-
-.btn-eliminar:hover {
-  background-color: rgba(220, 53, 69, 0.1) !important;
-  transform: scale(1.1);
-}
-
 /* Sin datos */
 .sin-datos {
   display: flex;
@@ -399,16 +321,6 @@ table {
 
   .btn-crear,
   .btn-actualizar {
-    width: 100%;
-  }
-
-  .acciones-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .btn-editar,
-  .btn-eliminar {
     width: 100%;
   }
 }

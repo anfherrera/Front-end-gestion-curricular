@@ -1,3 +1,6 @@
+/* Estilos comunes de las listas del administrador (usuarios, roles, docentes y programas):
+   cabecera de página, buscador y tabla. Las acciones de fila usan .acciones-tabla (src/styles/componentes.css). */
+
 .container-admin {
   padding: 24px;
   max-width: 1400px;
@@ -11,7 +14,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
-  background: white;
+  background: var(--blanco);
   padding: 20px 24px;
   border-radius: 12px;
   box-shadow: var(--sombra-1);
@@ -46,13 +49,32 @@
   color: var(--color-primario);
 }
 
+.header-section .actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Buscador: campo y botón Buscar en la misma línea, dentro de una tarjeta */
 .search-section {
-  background: white;
-  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--blanco);
+  padding: 16px 20px;
   border-radius: 12px;
   margin-bottom: 24px;
   box-shadow: var(--sombra-1);
   animation: fadeIn 0.4s ease 0.1s both;
+}
+
+.search-section .search-field {
+  flex: 1;
+  max-width: 560px;
+}
+
+:host ::ng-deep .search-section .search-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
 
 @keyframes fadeIn {
@@ -74,12 +96,11 @@
 }
 
 .table-container {
-  background: white;
+  background: var(--blanco);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: var(--sombra-2);
+  box-shadow: var(--sombra-1);
   animation: fadeInUp 0.4s ease 0.2s both;
-  border: 1px solid var(--primario-90);
 }
 
 @keyframes fadeInUp {
@@ -103,7 +124,7 @@ mat-table {
 }
 
 :host ::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
-  color: white !important;
+  color: var(--blanco) !important;
   font-weight: 600 !important;
   background-color: var(--color-primario) !important;
   border-bottom: 2px solid var(--color-primario-light) !important;
@@ -123,36 +144,36 @@ mat-table {
 }
 
 .actions-column {
-  width: 180px;
+  width: 160px;
   white-space: nowrap;
   text-align: center;
 }
 
-:host ::ng-deep .actions-column .mat-mdc-mini-fab {
-  width: 36px !important;
-  height: 36px !important;
-  background-color: var(--color-primario) !important;
-  transition: background-color 0.2s ease !important;
-  margin: 0 4px !important;
+/* Fila de tabla vacía */
+.no-data {
+  text-align: center;
+  padding: 48px !important;
 }
 
-:host ::ng-deep .actions-column .mat-mdc-mini-fab mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: white !important;
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--neutro-600);
 }
 
-:host ::ng-deep .actions-column .mat-mdc-mini-fab:hover {
-  background-color: var(--color-primario) !important;
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: var(--neutro-600);
 }
 
-:host ::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn {
-  background-color: var(--color-error) !important;
-}
-
-:host ::ng-deep .actions-column .mat-mdc-mini-fab.mat-warn:hover {
-  background-color: var(--notif-error-titulo) !important;
+.empty-state p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .loading-container {
@@ -175,29 +196,18 @@ mat-table {
   margin: 0;
 }
 
-/* Botón nuevo con estilo */
-button[color='primary'] {
-  box-shadow: var(--sombra-1);
-  transition: all 0.3s ease;
-  font-weight: 500;
-}
-
-button[color='primary']:hover {
-  box-shadow: var(--sombra-2);
-  transform: translateY(-2px);
-}
-
-button[color='primary'] mat-icon {
-  margin-right: 8px;
-  color: white;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .container-admin {
     padding: 16px;
-    background: var(--neutro-50);
+  }
+
+  .search-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-section .search-field {
+    max-width: none;
   }
 
   .header-section {
@@ -218,9 +228,5 @@ button[color='primary'] mat-icon {
 
   .actions-column {
     width: auto;
-  }
-
-  .actions-column button {
-    margin: 4px 2px;
   }
 }

@@ -34,7 +34,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatInputModule,
   ],
   templateUrl: './lista-docentes.component.html',
-  styleUrls: ['./lista-docentes.component.css'],
+  styleUrl: '../../admin-lista-comun.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaDocentesComponent implements OnInit {

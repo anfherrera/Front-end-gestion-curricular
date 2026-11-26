@@ -39,6 +39,95 @@
   color: var(--color-error) !important;
 }
 
+/* Acciones de una fila de tabla (GUIA-UI.md, sección 3): botones de icono sin fondo, en el color primario.
+   Uso: <div class="acciones-tabla"><button mat-icon-button …>…</button></div> */
+.acciones-tabla {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.acciones-tabla .mat-mdc-icon-button:not(:disabled) {
+  color: var(--color-primario);
+}
+
+/* Solo la acción que destruye (eliminar) va en el color de error; el texto oscuro del error por contraste */
+.acciones-tabla .mat-mdc-icon-button.accion-peligro:not(:disabled) {
+  color: var(--notif-error-titulo);
+}
+
+/* Etiquetas (GUIA-UI.md, sección 2): píldora, sin sombra ni hover.
+   .etiqueta-categoria para roles, programas, tipos…; .etiqueta-estado + .estado-* para estados. */
+.etiqueta-categoria,
+.etiqueta-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-family: var(--font-body);
+  font-size: var(--text-body2-size);
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.etiqueta-categoria {
+  background-color: var(--primario-90);
+  color: var(--color-primario);
+}
+
+.etiqueta-categoria .mat-icon,
+.etiqueta-estado .mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+/* Colores de estado (clases del pipe estadoClase): fondo claro y texto oscuro del mismo tipo, como los avisos.
+   Sirven en .etiqueta-estado y en mat-chip. */
+.estado-aprobada {
+  background-color: var(--notif-exito-fondo) !important;
+  color: var(--notif-exito-texto) !important;
+}
+
+.estado-rechazada {
+  background-color: var(--notif-error-fondo) !important;
+  color: var(--notif-error-texto) !important;
+}
+
+.estado-enviada {
+  background-color: var(--notif-info-fondo) !important;
+  color: var(--notif-info-texto) !important;
+}
+
+.estado-proceso {
+  background-color: var(--primario-90) !important;
+  color: var(--notif-seguridad-texto) !important;
+}
+
+.estado-default {
+  background-color: var(--neutro-100) !important;
+  color: var(--neutro-800) !important;
+}
+
+.mat-mdc-chip.estado-aprobada .mdc-evolution-chip__text-label {
+  color: var(--notif-exito-texto) !important;
+}
+
+.mat-mdc-chip.estado-rechazada .mdc-evolution-chip__text-label {
+  color: var(--notif-error-texto) !important;
+}
+
+.mat-mdc-chip.estado-enviada .mdc-evolution-chip__text-label {
+  color: var(--notif-info-texto) !important;
+}
+
+.mat-mdc-chip.estado-proceso .mdc-evolution-chip__text-label {
+  color: var(--notif-seguridad-texto) !important;
+}
+
 /* Insignia sin borde ni sombra, con peso normal (estados y condiciones en tablas) */
 .insignia-plana {
   border: none !important;
