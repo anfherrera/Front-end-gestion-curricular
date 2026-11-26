@@ -14,7 +14,7 @@
 
 :host ::ng-deep app-curso-list .mat-elevation-z8 {
   box-shadow: var(--sombra-2);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
 }
 
@@ -23,7 +23,7 @@
   background-color: var(--notif-exito-fondo);
   color: var(--notif-exito-texto);
   padding: 4px 8px;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   font-weight: 500;
 }
 
@@ -31,7 +31,7 @@
   background-color: var(--primario-90);
   color: var(--color-primario);
   padding: 4px 8px;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   font-weight: 500;
 }
 
@@ -39,7 +39,7 @@
   background-color: var(--notif-error-fondo);
   color: var(--notif-error-texto);
   padding: 4px 8px;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   font-weight: 500;
 }
 

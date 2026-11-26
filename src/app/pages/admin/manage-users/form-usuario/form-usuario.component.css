@@ -13,7 +13,7 @@
   margin-bottom: 32px;
   background: white;
   padding: 20px 24px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-1);
 }
 
@@ -40,7 +40,7 @@
   color: var(--color-primario);
   background: var(--primario-90);
   padding: 6px 16px;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   border: 1px solid var(--primario-90);
 }
 
@@ -52,7 +52,7 @@
   padding: 80px;
   gap: 24px;
   background: white;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   margin: 20px 0;
   box-shadow: var(--sombra-2);
 }
@@ -79,7 +79,7 @@
 
 mat-card {
   padding: 32px;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   box-shadow: var(--sombra-2);
   background: white;
   animation: fadeInUp 0.4s ease;
@@ -182,7 +182,7 @@ mat-card {
   height: 44px;
   font-size: 16px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   transition: all 0.3s ease;
 }
 
@@ -253,7 +253,7 @@ mat-spinner {
 
   mat-card {
     padding: 20px;
-    border-radius: 12px;
+    border-radius: var(--radio-md);
   }
 
   .form-actions {

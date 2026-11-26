@@ -28,7 +28,7 @@
 
 .sidebar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
+  border-radius: var(--radio-xs);
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
@@ -59,7 +59,7 @@
   background: transparent;
   color: white;
   text-align: left;
-  border-radius: 0 20px 20px 0;
+  border-radius: 0 var(--radio-lg) var(--radio-lg) 0;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;

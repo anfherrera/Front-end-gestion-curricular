@@ -27,7 +27,7 @@
   text-align: center;
   background: rgba(255, 255, 255, 0.95);
   padding: 2rem;
-  border-radius: 20px;
+  border-radius: var(--radio-lg);
   backdrop-filter: blur(6px);
   box-shadow: var(--sombra-2);
   animation: fadeInScale 0.6s ease;
@@ -129,7 +129,7 @@ mat-form-field mat-icon {
 .login-button {
   background: var(--color-primario) !important;
   color: white !important;
-  border-radius: 100px;
+  border-radius: var(--radio-pill);
   padding: 0.9rem;
   font-weight: 600;
   font-family: var(--font-body);
@@ -277,7 +277,7 @@ mat-form-field mat-icon {
   background-color: var(--notif-error-fondo);
   color: var(--notif-error-texto);
   padding: 0.75rem;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-error);
   margin: 1rem 0;
   font-size: 0.9rem;

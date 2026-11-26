@@ -14,7 +14,7 @@
   padding: 12px;
   background: var(--notif-error-fondo);
   border: 1px solid var(--notif-error-fondo);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   color: var(--notif-error-titulo);
   display: flex;
   align-items: center;
@@ -54,7 +54,7 @@
   margin-bottom: 16px;
   background-color: var(--primario-90);
   border-left: 4px solid var(--color-terciario);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   color: var(--color-terciario);
 }
 

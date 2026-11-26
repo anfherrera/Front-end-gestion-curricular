@@ -1,7 +1,7 @@
 table {
   width: 100%;
   margin-top: 8px;
-  border-radius: 6px;
+  border-radius: var(--radio-xs);
   overflow: hidden;
   border: 1px solid var(--neutro-100);
   box-shadow: var(--sombra-1);

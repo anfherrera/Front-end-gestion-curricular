@@ -10,7 +10,7 @@
   padding: 20px 24px;
   background: var(--neutro-50);
   border-bottom: 2px solid var(--color-primario);
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .dialog-header h2 {
@@ -48,7 +48,7 @@
   padding: 60px 48px;
   gap: 20px;
   background: var(--neutro-50);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   margin: 24px 0;
 }
 
@@ -90,7 +90,7 @@
 .resumen-curso {
   background: var(--neutro-50);
   padding: 24px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   margin-bottom: 24px;
   border: 1px solid var(--neutro-100);
   box-shadow: var(--sombra-1);
@@ -117,7 +117,7 @@
   gap: 6px;
   padding: 12px 16px;
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border: 1px solid var(--neutro-100);
   min-width: 140px;
   box-shadow: var(--sombra-1);
@@ -142,7 +142,7 @@
   overflow-x: auto;
   max-height: 500px;
   overflow-y: auto;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-1);
   border: 1px solid var(--neutro-100);
 }
@@ -217,7 +217,7 @@
   gap: 20px;
   color: var(--neutro-600);
   background: var(--neutro-50);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   border: 2px dashed var(--neutro-100);
   margin: 24px 0;
 }
@@ -241,7 +241,7 @@ mat-dialog-actions {
   padding: 20px 24px;
   border-top: 1px solid var(--neutro-100);
   background: var(--neutro-50);
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 var(--radio-sm) var(--radio-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;

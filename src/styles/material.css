@@ -83,7 +83,7 @@ html {
 .mat-mdc-raised-button.mat-primary {
   background-color: var(--color-primario) !important;
   color: white !important;
-  border-radius: 100px !important;
+  border-radius: var(--radio-pill) !important;
   font-weight: 600 !important;
   font-family: var(--font-body) !important;
   font-size: 14px !important;
@@ -107,7 +107,7 @@ html {
 .mat-mdc-raised-button.mat-warn {
   background-color: var(--notif-error-titulo) !important;
   color: var(--blanco) !important;
-  border-radius: 100px !important;
+  border-radius: var(--radio-pill) !important;
   font-weight: 600 !important;
   font-family: var(--font-body) !important;
   font-size: 14px !important;
@@ -123,7 +123,7 @@ html {
 .mat-mdc-stroked-button.mat-primary {
   border: 1px solid var(--color-primario) !important;
   color: var(--color-primario) !important;
-  border-radius: 100px !important;
+  border-radius: var(--radio-pill) !important;
   font-weight: 600 !important;
   font-family: var(--font-body) !important;
 }
@@ -142,7 +142,7 @@ html {
 }
 
 .mat-mdc-button {
-  border-radius: 6px !important;
+  border-radius: var(--radio-xs) !important;
   font-weight: 500 !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
@@ -160,7 +160,7 @@ html {
   font-size: 14px !important;
 }
 .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-  border-radius: 6px !important;
+  border-radius: var(--radio-xs) !important;
 }
 
 .mat-mdc-form-field-label,
@@ -177,7 +177,7 @@ html {
 
 /* Tablas */
 .mat-mdc-table {
-  border-radius: 8px !important;
+  border-radius: var(--radio-sm) !important;
   overflow: hidden !important;
 }
 
@@ -194,7 +194,7 @@ html {
 
 /* Diálogos, chips y tooltips */
 .mat-mdc-dialog-container .mdc-dialog__surface {
-  border-radius: 28px !important;
+  border-radius: var(--radio-xl) !important;
 }
 
 .mat-mdc-chip.mat-primary {
@@ -206,5 +206,5 @@ html {
   background-color: var(--color-primario-dark) !important;
   font-family: var(--font-body) !important;
   font-size: 12px !important;
-  border-radius: 8px !important;
+  border-radius: var(--radio-sm) !important;
 }

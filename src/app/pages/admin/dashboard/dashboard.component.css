@@ -10,7 +10,7 @@
   margin-bottom: 32px;
   background: white;
   padding: 24px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-1);
 }
 
@@ -46,7 +46,7 @@
   padding: 80px;
   gap: 24px;
   background: white;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   box-shadow: var(--sombra-2);
 }
 
@@ -70,7 +70,7 @@
 
 .stat-card {
   transition: box-shadow 0.2s ease;
-  border-radius: 16px !important;
+  border-radius: var(--radio-lg) !important;
   overflow: hidden;
   box-shadow: var(--sombra-2) !important;
   background-color: var(--blanco) !important;
@@ -100,7 +100,7 @@
   font-size: 40px;
   width: 56px;
   height: 56px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 8px;
   display: flex;
   align-items: center;
@@ -161,7 +161,7 @@ mat-card-actions button mat-icon {
   height: auto;
   font-size: 16px;
   font-weight: 500;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   transition: background-color 0.2s ease;
 }
 

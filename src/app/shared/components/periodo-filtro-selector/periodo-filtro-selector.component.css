@@ -24,7 +24,7 @@
   gap: 8px;
   padding: 12px;
   background-color: var(--primario-90);
-  border-radius: 4px;
+  border-radius: var(--radio-xs);
   color: var(--color-terciario);
   font-size: 0.9em;
 }

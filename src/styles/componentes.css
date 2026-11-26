@@ -65,7 +65,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 12px;
-  border-radius: 100px;
+  border-radius: var(--radio-pill);
   font-family: var(--font-body);
   font-size: var(--text-body2-size);
   font-weight: 600;

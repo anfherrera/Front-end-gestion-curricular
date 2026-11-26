@@ -4,7 +4,7 @@
   gap: 16px;
   padding: 16px;
   background-color: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   width: 100%;
   overflow: visible;
 }
@@ -73,7 +73,7 @@ span.disponible {
   align-items: center;
   justify-content: center;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   background-color: var(--color-primario);
   color: white;
   font-weight: 600;

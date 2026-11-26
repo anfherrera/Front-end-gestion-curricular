@@ -34,7 +34,7 @@
   text-align: center;
   padding: 32px;
   background: var(--notif-exito-fondo);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   border: 2px solid var(--notif-exito-borde);
   margin-top: 20px;
 }

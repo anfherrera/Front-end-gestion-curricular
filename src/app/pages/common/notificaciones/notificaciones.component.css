@@ -47,7 +47,7 @@ h1 {
   margin-bottom: 24px;
   padding: 16px;
   background: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
 }
 
 /* Tabs */
@@ -98,7 +98,7 @@ h1 {
   margin-left: 8px;
   background: var(--color-primario);
   color: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 2px 8px;
   font-size: 12px;
   font-weight: 600;
@@ -195,7 +195,7 @@ h1 {
   width: 12px;
   height: 12px;
   background: var(--color-primario);
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   border: 2px solid white;
 }
 
@@ -221,7 +221,7 @@ mat-card-subtitle {
 .categoria-chip {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   font-size: 12px;
   font-weight: 500;
 }
@@ -269,7 +269,7 @@ mat-card-subtitle {
   margin: 16px 0;
   padding: 12px;
   background: var(--neutro-50);
-  border-radius: 6px;
+  border-radius: var(--radio-xs);
 }
 
 .metadata-item {

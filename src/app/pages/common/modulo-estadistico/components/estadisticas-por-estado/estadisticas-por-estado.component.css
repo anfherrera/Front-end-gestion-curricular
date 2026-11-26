@@ -1,7 +1,7 @@
 .estadisticas-por-estado-card {
   background-color: var(--blanco);
   color: var(--neutro-800);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   position: relative;
   overflow: hidden;
@@ -23,7 +23,7 @@
   background: var(--color-primario);
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .estadisticas-por-estado-card mat-card-title {
@@ -109,7 +109,7 @@
   margin-bottom: 20px;
   padding: 12px 16px;
   background: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-primario);
 }
 
@@ -138,7 +138,7 @@
 
 .estado-card {
   background: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 16px;
   transition: all 0.3s ease;
   border-left: 4px solid;
@@ -162,7 +162,7 @@
 .estado-icon {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,7 +243,7 @@
 .analisis-item {
   background: var(--neutro-50);
   padding: 16px;
-  border-radius: 10px;
+  border-radius: var(--radio-md);
   border-left: 4px solid var(--color-primario);
   text-align: center;
 }

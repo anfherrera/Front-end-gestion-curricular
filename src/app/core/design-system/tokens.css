@@ -37,6 +37,15 @@
   --sombra-1: 0 1px 3px rgba(0, 0, 0, 0.12); /* tarjetas, tablas, campos */
   --sombra-2: 0 4px 12px rgba(0, 0, 0, 0.14); /* hover, menús, diálogos */
 
+  /* Redondeos (guía, pág. 29): solo estos pasos */
+  --radio-xs: 4px; /* campos de texto, selects, snackbars, avisos */
+  --radio-sm: 8px; /* tooltips, bloques internos */
+  --radio-md: 12px; /* tarjetas, barra de búsqueda */
+  --radio-lg: 16px; /* FAB, cajones */
+  --radio-xl: 28px; /* diálogos, hojas */
+  --radio-pill: 100px; /* botones, chips, insignias */
+  --radio-circulo: 50%; /* avatares e iconos redondos */
+
   /* Paleta tonal primario */
   --primario-90: #e0e0ff;
   --primario-80: #bec2ff;

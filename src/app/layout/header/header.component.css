@@ -21,7 +21,7 @@
 
 .toggle-btn {
   background-color: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   transition: all 0.3s ease;
 }
 
@@ -67,7 +67,7 @@
   gap: 8px;
   padding: 6px 12px;
   background: var(--primario-90);
-  border-radius: 20px;
+  border-radius: var(--radio-lg);
   border: 1px solid var(--color-primario);
   transition: all 0.3s ease;
 }
@@ -114,7 +114,7 @@
   padding: 6px 12px;
   background-color: transparent;
   border: none;
-  border-radius: 20px;
+  border-radius: var(--radio-lg);
   transition: all 0.3s ease;
   min-width: auto;
 }
@@ -126,7 +126,7 @@
 .user-avatar {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   background: var(--color-primario);
   display: flex;
   align-items: center;
@@ -165,7 +165,7 @@
 .user-menu-header {
   padding: 16px;
   background-color: var(--neutro-50);
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .user-menu-header .user-name {

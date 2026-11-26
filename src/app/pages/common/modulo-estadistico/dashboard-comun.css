@@ -13,7 +13,7 @@
   margin-bottom: 30px;
   background: white;
   padding: 30px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
 }
@@ -62,7 +62,7 @@
 
 .filters-card {
   margin-bottom: 30px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
   box-shadow: var(--sombra-2);
   background-color: var(--blanco);
@@ -73,7 +73,7 @@
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .kpi-card:hover {

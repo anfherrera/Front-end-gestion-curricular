@@ -20,7 +20,7 @@
 .documento-especifico {
   background: var(--notif-error-fondo);
   border: 2px solid var(--color-error);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 16px;
   margin-bottom: 20px;
   box-shadow: var(--sombra-1);
@@ -43,7 +43,7 @@
   margin-bottom: 32px;
   padding: 24px;
   background: var(--primario-98);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   border: 2px solid var(--primario-90);
 }
 

@@ -29,7 +29,7 @@
   margin-bottom: 40px;
   padding: 30px;
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
 }
 
@@ -70,7 +70,7 @@
 
 .info-card {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   transition: all 0.3s ease;
   border-left: 4px solid var(--color-primario);
@@ -86,7 +86,7 @@
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .info-card mat-card-title {
@@ -134,7 +134,7 @@
   text-align: center;
   padding: 30px;
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
 }
 
@@ -144,7 +144,7 @@
   font-size: 1.1rem !important;
   font-weight: 600 !important;
   padding: 12px 32px !important;
-  border-radius: 8px !important;
+  border-radius: var(--radio-sm) !important;
   box-shadow: var(--sombra-2) !important;
   transition: all 0.3s ease !important;
 }

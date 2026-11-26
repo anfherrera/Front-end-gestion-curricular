@@ -18,7 +18,7 @@
   margin-bottom: 16px;
   background-color: var(--notif-error-fondo);
   border-left: 4px solid var(--color-error);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   color: var(--notif-error-titulo);
 }
 
@@ -54,7 +54,7 @@
   margin-top: 24px;
   padding: 20px;
   background-color: var(--primario-90);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-primario);
 }
 
@@ -64,7 +64,7 @@
   gap: 12px;
   padding: 16px;
   background-color: var(--notif-info-fondo);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-primario);
   color: var(--notif-info-texto);
   margin-top: 16px;

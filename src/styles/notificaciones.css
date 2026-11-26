@@ -50,7 +50,7 @@
   font-family: var(--font-body) !important;
   font-size: 14px !important;
   border-left: 4px solid var(--aviso-borde) !important;
-  border-radius: 4px !important;
+  border-radius: var(--radio-xs) !important;
   box-shadow: var(--sombra-2) !important;
   /* El contenedor MDC no debe pintar su propio fondo encima */
   --mdc-snackbar-container-color: transparent !important;

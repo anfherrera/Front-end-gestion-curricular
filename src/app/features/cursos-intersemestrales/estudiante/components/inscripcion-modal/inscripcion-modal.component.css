@@ -34,7 +34,7 @@
 .form-section {
   background: var(--neutro-50);
   border-left: 4px solid var(--color-primario);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-1);
 }
 
@@ -106,7 +106,7 @@
 .estado-aprobado,
 .estado-inscripcion {
   padding: 4px 12px;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -164,7 +164,7 @@
 .file-upload-error {
   background-color: var(--notif-error-fondo);
   border: 1px solid var(--color-error);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 16px;
   margin-top: 12px;
   box-shadow: var(--sombra-1);
@@ -200,7 +200,7 @@
   gap: 12px;
   padding: 24px;
   border: 2px dashed var(--color-primario);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   background: var(--primario-98);
   cursor: pointer;
   font-size: 14px;
@@ -225,7 +225,7 @@
   gap: 12px;
   padding: 12px 16px;
   background: var(--notif-exito-fondo);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--notif-exito-borde);
   box-shadow: var(--sombra-1);
 }
@@ -255,7 +255,7 @@
 .file-requirements {
   background: var(--notif-error-fondo);
   border: 1px solid var(--color-error);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 16px;
   box-shadow: var(--sombra-1);
 }
@@ -308,7 +308,7 @@
 .modal-footer button[mat-button] {
   color: var(--blanco) !important;
   border: none !important;
-  border-radius: 6px !important;
+  border-radius: var(--radio-xs) !important;
   font-weight: 500 !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   box-shadow: var(--sombra-1) !important;
@@ -371,12 +371,12 @@
 
 .modal-body::-webkit-scrollbar-track {
   background: var(--neutro-50);
-  border-radius: 3px;
+  border-radius: var(--radio-xs);
 }
 
 .modal-body::-webkit-scrollbar-thumb {
   background: var(--color-primario);
-  border-radius: 3px;
+  border-radius: var(--radio-xs);
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover {

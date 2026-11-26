@@ -32,7 +32,7 @@
   position: relative;
   margin-top: 40px; /* separa las tarjetas de la bienvenida */
   background-color: var(--neutro-50); /* fondo minimalista sólido */
-  border-radius: 12px;
+  border-radius: var(--radio-md);
 }
 
 /* Tarjetas del dashboard */
@@ -45,7 +45,7 @@
   justify-content: center;
   text-align: center;
   cursor: pointer;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   background-color: var(--blanco); /* color sólido de tarjeta */
   box-shadow: var(--sombra-2); /* sombra suave */
   transition:
@@ -80,7 +80,7 @@
   font-size: 48px;
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   display: flex;
   align-items: center;
   justify-content: center;

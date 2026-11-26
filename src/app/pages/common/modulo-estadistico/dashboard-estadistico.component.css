@@ -66,7 +66,7 @@
   margin-bottom: 20px;
   padding: 16px;
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-primario);
   box-shadow: var(--sombra-1);
 }
@@ -81,7 +81,7 @@
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
   box-shadow: var(--sombra-2);
   background-color: var(--blanco);
@@ -124,7 +124,7 @@
   justify-content: center;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   background: var(--neutro-50);
 }
 
@@ -222,7 +222,7 @@
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
   box-shadow: var(--sombra-2);
   background-color: var(--blanco);
@@ -238,7 +238,7 @@
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .chart-card mat-card-title {
@@ -278,7 +278,7 @@
   gap: 8px;
   padding: 15px;
   background: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   color: var(--neutro-600);
   font-size: 0.9rem;
 }
@@ -337,7 +337,7 @@
 
 /* Material Design Overrides */
 .mat-mdc-card {
-  border-radius: 12px;
+  border-radius: var(--radio-md);
 }
 
 .mat-mdc-form-field {
@@ -345,7 +345,7 @@
 }
 
 .mat-mdc-raised-button {
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
 }
 
 /* ===== ESTILOS PARA TENDENCIAS Y COMPARATIVAS ===== */

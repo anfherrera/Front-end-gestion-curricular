@@ -7,7 +7,7 @@
   margin-bottom: 30px;
   padding: 20px;
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-2);
   border-bottom: 4px solid var(--color-primario);
 }
@@ -31,7 +31,7 @@
   align-items: center;
   padding: 20px;
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-2);
   border: 2px solid transparent;
   position: relative;
@@ -73,7 +73,7 @@
 .badge {
   background: var(--color-error);
   color: white;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   width: 20px;
   height: 20px;
   display: flex;

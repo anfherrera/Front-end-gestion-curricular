@@ -5,7 +5,7 @@
 
 .card-container {
   margin-bottom: 20px;
-  border-radius: 8px;
+  border-radius: var(--radio-md);
   background-color: var(--blanco);
   overflow: visible; /* Permite el scroll horizontal de las tablas */
   box-shadow: var(--sombra-1);
@@ -24,7 +24,7 @@ mat-card-header {
   padding: 14px 16px;
   margin: 0;
   border-bottom: 2px solid var(--color-primario-light);
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-md) var(--radio-md) 0 0;
 }
 
 .icono-cabecera {

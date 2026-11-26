@@ -20,7 +20,7 @@
 /* Información del curso */
 .curso-info {
   background: var(--neutro-50);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 20px;
   margin-bottom: 24px;
   border: 1px solid var(--neutro-200);

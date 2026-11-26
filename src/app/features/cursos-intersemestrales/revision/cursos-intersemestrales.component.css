@@ -28,7 +28,7 @@
 
 .content {
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 30px;
   box-shadow: var(--sombra-2);
   min-height: 600px;

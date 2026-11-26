@@ -63,11 +63,13 @@ Verificación de cada commit:
 
 ## Fase 4: redondeos (guía, pág. 29)
 
+**Hecha sin capturas** (servidores apagados): 308 declaraciones en `--radio-*` (6px→4, 10px→12, 20px→16, 24/30px→28, 999px→100) y la tarjeta `app-card-container` a 12px. Comprobar con capturas al arrancar.
+
 Medición: `Get-ChildItem -Recurse src -Include *.css | Select-String "border-radius:\s*([^;]+);"` agrupado por valor. A 2026-11-26 hay 24 valores (8px ×112, 12px ×78, 50% ×23, 6px ×19, 4px ×18, 16px ×15, 20px ×8, 10px ×5…).
 
-- [ ] Tokens en `tokens.css`: `--radio-xs` 4px (campos, snackbars), `--radio-sm` 8px (tooltips), `--radio-md` 12px (tarjetas), `--radio-lg` 16px, `--radio-xl` 28px (diálogos), `--radio-pill` 100px (botones, chips), `--radio-circulo` 50% (avatares)
-- [ ] Pasar cada valor al token de su tipo de componente (no solo al más cercano). `app-card-container` pasa de 8px a 12px
-- [ ] Regla en `comprobar-estilos.mjs`
+- [x] Tokens en `tokens.css`: `--radio-xs` 4px (campos, snackbars), `--radio-sm` 8px (tooltips), `--radio-md` 12px (tarjetas), `--radio-lg` 16px, `--radio-xl` 28px (diálogos), `--radio-pill` 100px (botones, chips), `--radio-circulo` 50% (avatares)
+- [x] Pasar cada valor al token de su tipo de componente (no solo al más cercano). `app-card-container` pasa de 8px a 12px
+- [x] Regla en `comprobar-estilos.mjs`
 
 ## Fase 5: tamaños de letra (guía, pág. 26)
 

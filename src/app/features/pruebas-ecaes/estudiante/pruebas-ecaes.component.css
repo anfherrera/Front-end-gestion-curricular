@@ -16,7 +16,7 @@
   padding: 40px 20px;
   color: var(--neutro-600);
   background: var(--primario-98);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   border: 2px dashed var(--primario-90);
   margin: 20px 0;
 }

@@ -54,6 +54,11 @@ for (const archivo of archivos) {
         }
       }
       if (/\.(css|scss)$/.test(archivo)) {
+        // Redondeos: solo los tokens --radio-* (guía, pág. 29), 0 o inherit
+        const radio = sinComentario.match(/border(?:-[a-z]+)*-radius\s*:\s*([^;}]+)/);
+        if (radio && /\d+(\.\d+)?(px|%|rem|em)/.test(radio[1].replace(/var\([^)]*\)/g, ''))) {
+          problemas.push(`${archivo}:${i + 1}  ${radio[0].trim()}: usar var(--radio-*)`);
+        }
         const nombre = sinComentario.match(COLOR_NOMBRE);
         if (nombre) problemas.push(`${archivo}:${i + 1}  color "${nombre[1]}": usar var(--token)`);
       }

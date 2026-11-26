@@ -5,7 +5,7 @@
   font-style: italic;
   padding: 40px;
   background: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border: 2px dashed var(--neutro-200);
   width: 100%;
 }
@@ -15,7 +15,7 @@
 /* Resumen de Recomendaciones */
 .resumen-recomendaciones-card {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   border-left: 4px solid var(--color-primario);
   margin: 0 0 2rem 0;
@@ -52,7 +52,7 @@
 
 .stat {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 2rem 1.5rem;
   text-align: center;
   border: 2px solid var(--neutro-100);
@@ -146,7 +146,7 @@
 /* Alertas Críticas - Estilos mejorados */
 .alerta-critica-card {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   border-left: 5px solid var(--notif-error-titulo);
   margin: 0 0 2rem 0;
@@ -190,7 +190,7 @@
 .alerta-critica-card .acciones-urgentes {
   background: var(--notif-error-fondo);
   border: 2px solid var(--color-error);
-  border-radius: 10px;
+  border-radius: var(--radio-md);
   padding: 1.25rem;
   margin-top: 1rem;
 }
@@ -236,7 +236,7 @@
 
 .rec-card {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   border-left: 5px solid var(--color-primario);
   overflow: hidden;
@@ -267,7 +267,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.4rem 1rem;
-  border-radius: 6px;
+  border-radius: var(--radio-xs);
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1;
@@ -294,7 +294,7 @@
   right: -0.75rem;
   background: white;
   border: 2px solid var(--neutro-100);
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   width: 36px;
   height: 36px;
   display: flex;
@@ -327,7 +327,7 @@
   margin-bottom: 1.5rem;
   padding: 1.25rem;
   background: var(--neutro-50);
-  border-radius: 10px;
+  border-radius: var(--radio-md);
   border-left: 4px solid var(--color-primario);
   box-shadow: var(--sombra-1);
 }
@@ -403,7 +403,7 @@
 /* Mensaje sin datos */
 .no-data-card {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   padding: 3rem;
   text-align: center;

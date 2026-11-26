@@ -16,7 +16,7 @@
   margin-bottom: 32px;
   background: var(--blanco);
   padding: 20px 24px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-1);
   animation: fadeInDown 0.4s ease;
 }
@@ -62,7 +62,7 @@
   gap: 12px;
   background: var(--blanco);
   padding: 16px 20px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   margin-bottom: 24px;
   box-shadow: var(--sombra-1);
   animation: fadeIn 0.4s ease 0.1s both;
@@ -97,7 +97,7 @@
 
 .table-container {
   background: var(--blanco);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 24px;
   box-shadow: var(--sombra-1);
   animation: fadeInUp 0.4s ease 0.2s both;

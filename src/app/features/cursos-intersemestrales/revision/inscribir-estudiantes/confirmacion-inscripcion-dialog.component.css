@@ -1,6 +1,6 @@
 .confirmacion-dialog {
   padding: 0;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
 }
 
@@ -33,7 +33,7 @@
 
 .estudiante-info {
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: var(--sombra-1);
@@ -77,7 +77,7 @@
 .confirmacion-mensaje {
   background: var(--primario-90);
   border: 1px solid var(--color-terciario);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 16px;
   text-align: center;
 }

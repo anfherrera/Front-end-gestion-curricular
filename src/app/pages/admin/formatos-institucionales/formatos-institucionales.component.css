@@ -15,7 +15,7 @@ mat-card-header {
   padding: 16px;
   background: var(--color-primario);
   color: white;
-  border-radius: 4px 4px 0 0;
+  border-radius: var(--radio-xs) var(--radio-xs) 0 0;
 }
 
 mat-card-header mat-icon {
@@ -40,7 +40,7 @@ mat-card-content {
   margin-bottom: 32px;
   padding: 20px;
   background-color: var(--neutro-50);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-primario);
 }
 
@@ -70,7 +70,7 @@ mat-card-content {
 .formato-block {
   padding: 20px;
   border: 1px solid var(--neutro-200);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   background: var(--neutro-50);
 }
 

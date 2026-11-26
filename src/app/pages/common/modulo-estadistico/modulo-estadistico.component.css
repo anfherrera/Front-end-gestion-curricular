@@ -4,7 +4,7 @@
 
 .main-tabs {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   overflow: hidden;
 }
