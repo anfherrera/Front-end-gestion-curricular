@@ -41,7 +41,7 @@ Verificación de cada commit:
 - [x] Seguimiento de solicitudes (`request-status`): acciones sin el cuadrado relleno
 - [x] Gestión de cursos: sin mayúsculas en "Crear Nuevo Curso", Exportar ya no es naranja, acciones con `.acciones-tabla`
 - [ ] **Comprobar con capturas tras reiniciar `ng serve`**: en la última captura el buscador de Roles aún salía sin tarjeta y el icono de Recargar casi invisible (probable caché del SSR; si sigue, revisar `admin-lista-comun.css` y `material.css`)
-- [ ] Commit de la fase 1
+- [x] Commit de lo anterior (`d97e7bd`)
 - [ ] Botones fuera de los tres tipos de la guía. Medición con `node <scratchpad>/botones.mjs src/app` (script de una sesión: recorre cada `<button>` y da tipo y color; volver a escribirlo si no está): 4 `mat-raised-button color="accent"`, 3 `color="warn"`, 1 `mat-stroked-button color="warn"`, 1 `mat-icon-button color="accent"`, 12 `mat-stroked-button` sin color, 18 `mat-button` sin color. Pasar cada uno a primario, secundario o terciario. Para Rechazar (acción que destruye) definir una sola variante en `material.css` y anotarla en GUIA-UI.md
   - `visualizar-solicitudes.component.html:32-33` (Actualizar en primario y Exportar Excel en accent)
   - `historial-completo.component.html:64` (Limpiar filtros en accent)
@@ -92,4 +92,4 @@ Medición: `Get-ChildItem -Recurse src -Include *.css | Select-String "border-ra
 
 ## Notas de la última sesión
 
-- 2026-11-26: fase 1 casi terminada, sin commit. Se paró al ir a reiniciar `ng serve` para comprobar el buscador de Roles. Las capturas "antes" de esta tanda están en la carpeta temporal de la sesión y se pierden; sacar unas nuevas como referencia.
+- 2026-11-26: la fase 1 está en el commit `d97e7bd`. Lo siguiente es la casilla "Comprobar con capturas tras reiniciar `ng serve`" y luego los botones fuera de los tres tipos. El `ng serve` quedó detenido: hay que arrancarlo de nuevo.
