@@ -25,7 +25,7 @@
       <!-- Nombre Completo -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nombre Completo</mat-label>
-        <input matInput formControlName="nombreCompleto" placeholder="Ingresa tu nombre completo" />
+        <input matInput formControlName="nombreCompleto" placeholder="Ingrese su nombre completo" />
         <mat-icon matSuffix>person</mat-icon>
         @if (preinscripcionForm.get('nombreCompleto')?.hasError('required')) {
           <mat-error> El nombre completo es requerido </mat-error>
@@ -35,7 +35,7 @@
       <!-- Código del Estudiante -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Código</mat-label>
-        <input matInput formControlName="codigo" placeholder="Ingresa tu código de estudiante" />
+        <input matInput formControlName="codigo" placeholder="Ingrese su código de estudiante" />
         <mat-icon matSuffix>badge</mat-icon>
         @if (preinscripcionForm.get('codigo')?.hasError('required')) {
           <mat-error> El código es requerido </mat-error>
@@ -45,7 +45,7 @@
       <!-- Condición -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Condición</mat-label>
-        <mat-select formControlName="condicion" placeholder="Selecciona la condición de tu preinscripción">
+        <mat-select formControlName="condicion" placeholder="Seleccione la condición de su preinscripción">
           @for (condicion of condiciones(); track condicion) {
             <mat-option [value]="condicion">
               {{ getCondicionDisplayName(condicion) }}
@@ -54,7 +54,7 @@
         </mat-select>
         <mat-icon matSuffix>assignment</mat-icon>
         @if (preinscripcionForm.get('condicion')?.hasError('required')) {
-          <mat-error> Debes seleccionar una condición </mat-error>
+          <mat-error> Debe seleccionar una condición </mat-error>
         }
       </mat-form-field>
     </form>

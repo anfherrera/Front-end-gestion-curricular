@@ -23,7 +23,7 @@ export interface PreinscripcionDialogData {
 
 /** Mensajes según el código de error que envía el backend. */
 const ERRORES_POR_CODIGO: Record<string, string> = {
-  DUPLICATE_PREINSCRIPTION: 'Ya tienes una preinscripción activa para este curso.',
+  DUPLICATE_PREINSCRIPTION: 'Ya tiene una preinscripción activa para este curso.',
   COURSE_NOT_AVAILABLE: 'Este curso no está disponible para preinscripción.',
   NO_CUPOS_AVAILABLE: 'No hay cupos disponibles para este curso.',
 };
@@ -104,7 +104,7 @@ export class PreinscripcionDialogComponent implements OnInit {
           const mensaje =
             ERRORES_POR_CODIGO[error.error?.codigo] ??
             (error.status === 400
-              ? 'Datos inválidos. Verifica la información e inténtalo de nuevo.'
+              ? 'Datos inválidos. Verifique la información e inténtelo de nuevo.'
               : error.status === 500
                 ? 'Error del servidor. Inténtalo más tarde.'
                 : 'Error al enviar la preinscripción. Inténtalo de nuevo.');

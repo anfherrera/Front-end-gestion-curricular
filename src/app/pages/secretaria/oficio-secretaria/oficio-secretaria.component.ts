@@ -135,7 +135,7 @@ export class OficioSecretariaComponent<S extends SolicitudAprobable> implements 
 
   onTengoDocumento(): void {
     this.documentoHabilitado.set(true);
-    this.snackbar.info('Sección de carga de PDF habilitada. Ahora puedes subir tu documento.');
+    this.snackbar.info('Sección de carga de PDF habilitada. Ahora puede subir su documento.');
   }
 
   /** Genera y descarga el oficio en Word; el estado de la solicitud no cambia. */
@@ -153,7 +153,7 @@ export class OficioSecretariaComponent<S extends SolicitudAprobable> implements 
           descargarBlob(blob, `${request.tipoDocumento}_${nombreEstudiante}_${new Date().getFullYear()}.docx`);
           this.documentoGenerado.set(true);
           this.generando.set(false);
-          this.snackbar.exito('Documento Word generado y descargado. Ahora sube el PDF para enviar al estudiante.');
+          this.snackbar.exito('Documento Word generado y descargado. Ahora suba el PDF para enviar al estudiante.');
         },
         error: (err) => {
           this.generando.set(false);
@@ -174,7 +174,7 @@ export class OficioSecretariaComponent<S extends SolicitudAprobable> implements 
       this.archivoPDF.set(archivo);
       this.snackbar.info(`Archivo PDF seleccionado: ${archivo.name}`);
     } else {
-      this.snackbar.advertencia('Por favor selecciona un archivo PDF válido');
+      this.snackbar.advertencia('Por favor, seleccione un archivo PDF válido');
     }
   }
 
@@ -183,7 +183,7 @@ export class OficioSecretariaComponent<S extends SolicitudAprobable> implements 
     const archivoPDF = this.archivoPDF();
     const seleccionada = this.seleccionada();
     if (!archivoPDF || !seleccionada) {
-      this.snackbar.advertencia('Por favor selecciona un archivo PDF');
+      this.snackbar.advertencia('Por favor, seleccione un archivo PDF');
       return;
     }
     const id = seleccionada.id_solicitud;

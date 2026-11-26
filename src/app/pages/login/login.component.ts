@@ -164,20 +164,20 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           // 429 Too Many Requests (rate limit de login)
           if (esErrorLimiteLogin(err) && err.retryAfterSeconds) {
-            errorMessage = err.message || 'Demasiados intentos. Intenta más tarde.';
+            errorMessage = err.message || 'Demasiados intentos. Intente más tarde.';
             this.tickRate(); // actualizar contador
           } else if (err.status === 401) {
             // 401: Credenciales incorrectas
-            errorMessage = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+            errorMessage = 'Credenciales incorrectas. Verifique su correo y contraseña.';
           } else if (err.status === 403) {
             // 403: Cuenta deshabilitada o sin permisos
-            errorMessage = 'Tu cuenta está deshabilitada. Contacta al administrador.';
+            errorMessage = 'Su cuenta está deshabilitada. Contacte al administrador.';
           } else if (err.status === 0) {
             // Error de conexión
             errorMessage = MENSAJE_SIN_CONEXION;
           } else if (err.status >= 500) {
             // Error del servidor
-            errorMessage = 'Error interno del servidor. Intenta más tarde.';
+            errorMessage = 'Error interno del servidor. Intente más tarde.';
           }
 
           this.errorMensaje.set(errorMessage);
@@ -192,7 +192,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.loginForm.get(key)?.markAsTouched();
       });
 
-      this.snackbar.advertencia('Por favor, completa todos los campos correctamente');
+      this.snackbar.advertencia('Por favor, complete todos los campos correctamente');
     }
   }
 
@@ -208,7 +208,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return 'El correo es requerido';
     }
     if (emailControl?.hasError('email')) {
-      return 'Ingresa un correo válido';
+      return 'Ingrese un correo válido';
     }
     if (emailControl?.hasError('unicaucaEmail')) {
       return 'Debe ser un correo de @unicauca.edu.co';

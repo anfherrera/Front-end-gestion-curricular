@@ -18,10 +18,10 @@ import { CONDICIONES_POR_DEFECTO, nombreCondicion } from '@core/utils/cursos-ver
 import { SnackbarService } from '@core/services/snackbar.service';
 
 const ERRORES_ENVIO: Record<number, string> = {
-  400: 'Datos inválidos. Verifica la información e inténtalo de nuevo.',
-  401: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
-  403: 'No tienes permisos para realizar esta acción.',
-  500: 'Error del servidor. Por favor, verifica los datos e inténtalo de nuevo.',
+  400: 'Datos inválidos. Verifique la información e inténtelo de nuevo.',
+  401: 'Sesión expirada. Por favor, inicie sesión nuevamente.',
+  403: 'No tiene permisos para realizar esta acción.',
+  500: 'Error del servidor. Por favor, verifique los datos e inténtelo de nuevo.',
 };
 
 /** Solicitud de apertura de un curso intersemestral nuevo. */

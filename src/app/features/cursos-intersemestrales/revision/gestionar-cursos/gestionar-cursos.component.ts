@@ -134,7 +134,7 @@ export class GestionarCursosComponent implements OnInit {
           this.cargando.set(false);
         },
         error: () => {
-          this.snackbar.advertencia('No se pudieron cargar los cursos - Intenta recargar la página');
+          this.snackbar.advertencia('No se pudieron cargar los cursos - Intente recargar la página');
           this.cargando.set(false);
           // Mostrar mensaje de error sin datos de prueba
           this.cursos.set([]);
@@ -155,7 +155,7 @@ export class GestionarCursosComponent implements OnInit {
         },
         error: () => {
           this.materias = []; // Array vacío en lugar de datos de prueba
-          this.snackbar.error('No se pudieron cargar las materias. Verifica la conexión con el backend.');
+          this.snackbar.error('No se pudieron cargar las materias. Verifique la conexión con el backend.');
         },
       });
 
@@ -169,7 +169,7 @@ export class GestionarCursosComponent implements OnInit {
         },
         error: () => {
           this.docentes = []; // Array vacío en lugar de datos de prueba
-          this.snackbar.error('No se pudieron cargar los docentes. Verifica la conexión con el backend.');
+          this.snackbar.error('No se pudieron cargar los docentes. Verifique la conexión con el backend.');
         },
       });
   }
@@ -264,7 +264,7 @@ export class GestionarCursosComponent implements OnInit {
     confirmar(this.dialog, {
       titulo: 'Eliminar curso',
       mensaje:
-        `¿Estás seguro de que quieres eliminar el curso "${curso.nombre_curso}"?\n\n` +
+        `¿Está seguro de que desea eliminar el curso "${curso.nombre_curso}"?\n\n` +
         `Esta acción no se puede deshacer. Si hay estudiantes inscritos, la eliminación fallará.`,
       textoConfirmar: 'Eliminar',
       peligro: true,
@@ -377,9 +377,9 @@ export class GestionarCursosComponent implements OnInit {
           let mensajeError = 'Error al exportar el PDF';
 
           if (err.status === 401) {
-            mensajeError = 'Sesión expirada. Por favor, inicia sesión nuevamente';
+            mensajeError = 'Sesión expirada. Por favor, inicie sesión nuevamente';
           } else if (err.status === 403) {
-            mensajeError = 'No tienes permisos para exportar cursos';
+            mensajeError = 'No tiene permisos para exportar cursos';
           } else if (err.status === 404) {
             mensajeError = 'No se encontraron cursos para exportar';
           } else if (err.status === 500) {

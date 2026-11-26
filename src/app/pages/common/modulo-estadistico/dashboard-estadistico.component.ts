@@ -249,7 +249,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         if (errores.length === 4) {
           this.loading.set(false);
           this.error.set(true);
-          this.mostrarError('No se pudieron cargar las estadísticas. Por favor, inténtalo de nuevo.');
+          this.mostrarError('No se pudieron cargar las estadísticas. Por favor, inténtelo de nuevo.');
           return;
         }
 
@@ -271,7 +271,7 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
         } catch {
           this.loading.set(false);
           this.error.set(true);
-          this.mostrarError('Error al procesar los datos. Por favor, contacta al administrador.');
+          this.mostrarError('Error al procesar los datos. Por favor, contacte al administrador.');
         }
       });
   }

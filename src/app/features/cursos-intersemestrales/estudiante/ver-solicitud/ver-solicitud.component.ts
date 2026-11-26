@@ -128,11 +128,11 @@ export class VerSolicitudComponent implements OnInit {
 
     const estado = (inscripcion.estado || '').toUpperCase();
     if (estado.includes('PAGO') && estado.includes('VALIDADO')) return 'Pago validado - Inscripción confirmada';
-    if (estado.includes('INSCRITO')) return 'Ya estás inscrito en este curso';
+    if (estado.includes('INSCRITO')) return 'Ya está inscrito en este curso';
     if (estado.includes('ENVIADA') || estado.includes('ENVIADO'))
       return 'Inscripción enviada - Esperando validación de pago';
     if (estado.includes('EN') && estado.includes('PROCESO')) return 'Inscripción en proceso';
-    return 'Ya tienes una inscripción para este curso';
+    return 'Ya tiene una inscripción para este curso';
   }
 
   private inscripcionDelCurso(cursoId: number): InscripcionSeguimiento | undefined {

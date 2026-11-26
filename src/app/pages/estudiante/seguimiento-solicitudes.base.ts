@@ -77,7 +77,7 @@ export abstract class SeguimientoSolicitudesBase<S extends SolicitudDelEstudiant
         error: (err) =>
           this.snackbar.error(
             this.errorHandler.extraerMensajeError(err) ||
-              'Error al cargar las solicitudes. Por favor, inténtalo de nuevo.'
+              'Error al cargar las solicitudes. Por favor, inténtelo de nuevo.'
           ),
       });
   }

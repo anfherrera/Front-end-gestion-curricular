@@ -102,7 +102,7 @@ export class ManageUsersComponent implements OnInit {
       titulo: !usuario.estado_usuario ? 'Activar usuario' : 'Desactivar usuario',
       textoConfirmar: !usuario.estado_usuario ? 'Activar' : 'Desactivar',
       peligro: !!usuario.estado_usuario,
-      mensaje: `¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`,
+      mensaje: `¿Está seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`,
     })
       .pipe(filter(Boolean))
       .subscribe(() => {

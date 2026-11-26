@@ -154,7 +154,7 @@ export class CursoDialogComponent implements OnInit {
 
   guardarCurso(): void {
     if (!this.data.form.valid) {
-      this.snackbar.advertencia('Por favor completa todos los campos requeridos');
+      this.snackbar.advertencia('Por favor, complete todos los campos requeridos');
       return;
     }
 
@@ -203,7 +203,7 @@ export class CursoDialogComponent implements OnInit {
     const periodoAcademico = formValue.periodoAcademico || '';
     if (!validarPeriodo(periodoAcademico)) {
       this.snackbar.error(
-        'El período académico seleccionado no tiene un formato válido. Por favor, selecciona un período del listado.'
+        'El período académico seleccionado no tiene un formato válido. Por favor, seleccione un período del listado.'
       );
       return;
     }
@@ -247,7 +247,7 @@ export class CursoDialogComponent implements OnInit {
   private mensajeErrorCreacion(err: HttpErrorResponse): string {
     if (err.status !== 400) return 'Error al crear el curso';
     const cuerpo = err.error;
-    if (!cuerpo) return 'Datos inválidos enviados al servidor. Verifica que todos los campos sean correctos.';
+    if (!cuerpo) return 'Datos inválidos enviados al servidor. Verifique que todos los campos sean correctos.';
     if (typeof cuerpo === 'string') return cuerpo;
 
     const mensaje: string | undefined = cuerpo.message;

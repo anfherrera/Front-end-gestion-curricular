@@ -304,10 +304,10 @@ describe('PazSalvoComponent', () => {
       };
       component.archivosActuales.set([archivo('Formato PM-FO-4-FOR-27 (Hoja de vida académica).pdf')]);
 
-      expect(component.obtenerDocumentosFaltantes()).toContain('Formato PPH o TIH (requerido para tu programa)');
+      expect(component.obtenerDocumentosFaltantes()).toContain('Formato PPH o TIH (requerido para su programa)');
 
       component.archivosActuales.update((archivos) => [...archivos, archivo('Formato TIH.pdf')]);
-      expect(component.obtenerDocumentosFaltantes()).not.toContain('Formato PPH o TIH (requerido para tu programa)');
+      expect(component.obtenerDocumentosFaltantes()).not.toContain('Formato PPH o TIH (requerido para su programa)');
     });
 
     it('PS-013: Telemática rechaza los formatos de trabajo de grado', () => {
@@ -318,7 +318,7 @@ describe('PazSalvoComponent', () => {
       component.archivosActuales.set([archivo('cedula.pdf'), archivo('Formato TI-G.pdf')]);
 
       expect(component.obtenerDocumentosFaltantes()).toEqual([
-        'Los formatos TI-G/TI-H no aplican para tu programa (Telemática)',
+        'Los formatos TI-G/TI-H no aplican para su programa (Telemática)',
       ]);
       expect(component.puedeEnviar()).toBeFalse();
     });

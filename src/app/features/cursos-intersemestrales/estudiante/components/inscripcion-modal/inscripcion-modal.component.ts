@@ -22,10 +22,10 @@ const TAMANO_MAXIMO = 15 * 1024 * 1024; // 15 MB
 
 /** Mensajes por código HTTP al crear la inscripción (400 usa el mensaje del backend). */
 const ERRORES_INSCRIPCION: Record<number, string> = {
-  0: 'Error de conexión: No se puede conectar al servidor. Verifica que el backend esté ejecutándose en el puerto 5000.',
-  401: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
-  403: 'No tienes permisos para realizar esta acción.',
-  500: 'Error interno del servidor. Por favor, contacta al administrador.',
+  0: 'Error de conexión: No se puede conectar al servidor. Verifique que el backend esté ejecutándose en el puerto 5000.',
+  401: 'Sesión expirada. Por favor, inicie sesión nuevamente.',
+  403: 'No tiene permisos para realizar esta acción.',
+  500: 'Error interno del servidor. Por favor, contacte al administrador.',
 };
 
 /**
@@ -96,11 +96,11 @@ export class InscripcionModalComponent implements OnInit {
 
   onSubmit(): void {
     if (this.inscripcionForm.invalid) {
-      this.snackbar.advertencia('Por favor completa todos los campos requeridos');
+      this.snackbar.advertencia('Por favor, complete todos los campos requeridos');
       return;
     }
     if (!this.archivoSeleccionado) {
-      this.snackbar.advertencia('Debes subir el comprobante de pago (PDF)');
+      this.snackbar.advertencia('Debe subir el comprobante de pago (PDF)');
       return;
     }
     if (!this.usuario) return;
@@ -124,14 +124,14 @@ export class InscripcionModalComponent implements OnInit {
           this.cargando.set(false);
           this.snackbar.advertencia(
             delCurso.length > 0
-              ? 'Tu preinscripción aún no ha sido aprobada. Podrás inscribirte cuando un funcionario la apruebe.'
-              : 'No tienes una preinscripción para este curso. Preinscríbete primero desde "Cursos para preinscripción".'
+              ? 'Su preinscripción aún no ha sido aprobada. Podrá inscribirse cuando un funcionario la apruebe.'
+              : 'No tiene una preinscripción para este curso. Preinscríbase primero desde "Cursos para preinscripción".'
           );
         },
         error: (error) => {
           this.cargando.set(false);
           this.snackbar.error(
-            mensajeDeError(error, 'No se pudo verificar tu preinscripción. Por favor, inténtalo de nuevo.')
+            mensajeDeError(error, 'No se pudo verificar su preinscripción. Por favor, inténtelo de nuevo.')
           );
         },
       });
@@ -155,7 +155,7 @@ export class InscripcionModalComponent implements OnInit {
           const mensaje =
             error.status === 400
               ? `Error del servidor: ${error.error?.message || error.error?.error || 'Datos inválidos'}`
-              : (ERRORES_INSCRIPCION[error.status] ?? 'Error al crear la inscripción. Por favor, inténtalo de nuevo.');
+              : (ERRORES_INSCRIPCION[error.status] ?? 'Error al crear la inscripción. Por favor, inténtelo de nuevo.');
           this.snackbar.error(mensaje);
         },
       });
@@ -176,7 +176,7 @@ export class InscripcionModalComponent implements OnInit {
           ),
         error: () =>
           this.terminar(
-            'Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacta al administrador para subirlo manualmente.',
+            'Inscripción creada exitosamente. Hubo un problema técnico al subir el comprobante de pago. Contacte al administrador para subirlo manualmente.',
             'advertencia'
           ),
       });

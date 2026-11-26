@@ -234,13 +234,13 @@ export class HistorialCompletoComponent implements OnInit {
 
           let mensaje = 'Error al exportar PDF';
           if (err.status === 401) {
-            mensaje = 'No autorizado. Por favor, inicia sesión nuevamente';
+            mensaje = 'No autorizado. Por favor, inicie sesión nuevamente';
           } else if (err.status === 403) {
-            mensaje = 'No tienes permisos para exportar el historial';
+            mensaje = 'No tiene permisos para exportar el historial';
           } else if (err.status === 500) {
             mensaje = 'Error del servidor al generar el PDF';
           } else if (err.status === 0) {
-            mensaje = 'Error de conexión. Verifica tu conexión a internet';
+            mensaje = 'Error de conexión. Verifique su conexión a internet';
           } else {
             const mensajeError = this.errorHandler.extraerMensajeError(err);
             if (mensajeError && mensajeError !== 'Ocurrió un error inesperado') {

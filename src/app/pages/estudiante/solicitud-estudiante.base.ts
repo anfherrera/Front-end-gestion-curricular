@@ -69,7 +69,7 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
   onSolicitudEnviada(): void {
     const usuario = this.usuario;
     if (!usuario) {
-      this.snackbar.error('Error: Usuario no encontrado. Por favor, inicia sesión nuevamente.');
+      this.snackbar.error('Error: Usuario no encontrado. Por favor, inicie sesión nuevamente.');
       return;
     }
     const fileUpload = this.fileUploadComponent;
@@ -93,7 +93,7 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
           this.snackbar.error(
             this.esErrorDeValidacion(err)
               ? this.errorHandler.extraerMensajeError(err)
-              : 'Error al subir documentos. Por favor, inténtalo de nuevo.'
+              : 'Error al subir documentos. Por favor, inténtelo de nuevo.'
           );
           fileUpload.resetearEstadoCarga();
         },
@@ -152,7 +152,7 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
         },
         error: (err) =>
           this.snackbar.error(
-            this.errorHandler.extraerMensajeError(err) || 'Error al descargar archivo. Por favor, inténtalo de nuevo.'
+            this.errorHandler.extraerMensajeError(err) || 'Error al descargar archivo. Por favor, inténtelo de nuevo.'
           ),
       });
   }
@@ -160,15 +160,15 @@ export abstract class SolicitudEstudianteBase<S extends SolicitudDelEstudiante> 
   private avisarErrorAlCrear(err: unknown): void {
     if (this.esErrorDeValidacion(err)) {
       this.snackbar.advertencia(
-        this.errorHandler.extraerMensajeError(err) || 'Error de validación: revisa los datos de la solicitud'
+        this.errorHandler.extraerMensajeError(err) || 'Error de validación: revise los datos de la solicitud'
       );
     } else if ((err as { status?: number })?.status === 409) {
       // Regla de negocio (p. ej. ya hay una solicitud en trámite): se muestra el motivo del backend
       this.snackbar.advertencia(this.errorHandler.extraerMensajeError(err));
     } else if ((err as { status?: number })?.status === 401) {
-      this.snackbar.advertencia('Sesión expirada. Por favor, inicia sesión de nuevo.');
+      this.snackbar.advertencia('Sesión expirada. Por favor, inicie sesión de nuevo.');
     } else {
-      this.snackbar.error('No se pudo enviar la solicitud. Por favor, inténtalo de nuevo.');
+      this.snackbar.error('No se pudo enviar la solicitud. Por favor, inténtelo de nuevo.');
     }
   }
 

@@ -141,13 +141,13 @@ export class HomeComponent implements OnInit {
       case 'admin':
         return 'Accede al panel de administración para gestionar docentes, programas, roles y usuarios del sistema.';
       case 'coordinador':
-        return 'Puedes administrar los procesos y supervisar estudiantes.';
+        return 'Puede administrar los procesos y supervisar estudiantes.';
       case 'funcionario':
         return 'Accede a los procesos que gestionas.';
       case 'decano':
         return 'Accede al historial completo y estadísticas del sistema.';
       case 'estudiante':
-        return 'Solicita tus procesos y revisa el estado de tus solicitudes.';
+        return 'Solicite sus procesos y revise el estado de sus solicitudes.';
       case 'secretaria':
         return 'Gestiona los oficios y resoluciones según lo indicado.';
       default:

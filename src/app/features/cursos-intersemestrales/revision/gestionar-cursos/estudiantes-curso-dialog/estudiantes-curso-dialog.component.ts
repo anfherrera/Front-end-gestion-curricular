@@ -14,13 +14,13 @@ import { descargarBlob } from '@core/utils/download.util';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 const ERRORES_CARGA: Record<number, string> = {
-  403: 'No tienes permisos para ver esta información',
+  403: 'No tiene permisos para ver esta información',
   404: 'Curso no encontrado',
 };
 
 const ERRORES_EXPORTAR: Record<number, string> = {
-  401: 'Sesión expirada. Por favor, inicia sesión nuevamente',
-  403: 'No tienes permisos para exportar estudiantes',
+  401: 'Sesión expirada. Por favor, inicie sesión nuevamente',
+  403: 'No tiene permisos para exportar estudiantes',
   404: 'Curso no encontrado',
   500: 'Error interno del servidor al generar el PDF',
 };

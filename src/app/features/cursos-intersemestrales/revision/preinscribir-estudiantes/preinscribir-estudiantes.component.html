@@ -4,8 +4,8 @@
     <h3>Seleccionar Curso</h3>
     <form [formGroup]="filtroForm">
       <mat-form-field appearance="outline" class="curso-selector">
-        <mat-label>Selecciona un curso</mat-label>
-        <mat-select formControlName="curso" placeholder="Elige un curso para ver las preinscripciones">
+        <mat-label>Seleccione un curso</mat-label>
+        <mat-select formControlName="curso" placeholder="Elija un curso para ver las preinscripciones">
           @for (curso of cursos(); track curso) {
             <mat-option [value]="curso.id_curso">
               {{ curso.nombre_curso || 'Sin nombre' }} ({{ curso.codigo_curso || 'Sin código' }}) -

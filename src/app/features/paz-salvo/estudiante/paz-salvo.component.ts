@@ -165,7 +165,7 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
       .map((a) => normalizarNombreArchivo(a.nombre))
       .some((n) => n.includes('pph') || n.includes('tih'));
     if (this.programaConTrabajoDeGrado() && !tienePphOTih) {
-      faltantes.push('Formato PPH o TIH (requerido para tu programa)');
+      faltantes.push('Formato PPH o TIH (requerido para su programa)');
     }
 
     return faltantes;
@@ -177,14 +177,14 @@ export class PazSalvoComponent extends SolicitudEstudianteBase<SolicitudHomologa
     const nombres = this.archivosActuales().map((a) => normalizarNombreArchivo(a.nombre));
 
     if (nombres.some((n) => n.includes('tig') || n.includes('tih'))) {
-      errores.push('Los formatos TI-G/TI-H no aplican para tu programa (Telemática)');
+      errores.push('Los formatos TI-G/TI-H no aplican para su programa (Telemática)');
     }
     if (nombres.some((n) => n.includes('ppg') || n.includes('pph'))) {
-      errores.push('Los formatos PP-G/PP-H no aplican para tu programa (Telemática)');
+      errores.push('Los formatos PP-G/PP-H no aplican para su programa (Telemática)');
     }
     if (nombres.some((n) => DOCUMENTOS_NO_TELEMATICA.some((d) => n.includes(d)))) {
       errores.push(
-        'Los documentos obligatorios (PM-FO-4-FOR-27, Autorización, Comprobante, Trabajo de grado) no aplican para tu programa (Telemática)'
+        'Los documentos obligatorios (PM-FO-4-FOR-27, Autorización, Comprobante, Trabajo de grado) no aplican para su programa (Telemática)'
       );
     }
 

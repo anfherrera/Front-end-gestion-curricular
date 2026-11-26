@@ -79,8 +79,10 @@ Medición: `Get-ChildItem -Recurse src -Include *.css | Select-String "border-ra
 
 ## Fase 6: trato de usted (guía, pág. 9)
 
-- [ ] Cambiar el tuteo por usted en los textos visibles ("Debes subir" → "Debe subir", "tu solicitud" → "su solicitud", "Selecciona" → "Seleccione"). Empezar por `required-docs.component.html`, las pantallas del estudiante y los mensajes de `SnackbarService`. Medición: buscar `Debes|Puedes|Tienes|Asegúrate|Selecciona|Ingresa|Revisa|Intenta|\btu\b|\btus\b` en `*.html` y `*.ts` (sin specs); revisar a mano, porque hay falsos positivos
-- [ ] Actualizar las pruebas que comprueben esos textos
+Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, errores y specs). Pendiente menor: revisar a mano textos que no estaban en la lista y los mensajes que llegan del backend.
+
+- [x] Cambiar el tuteo por usted en los textos visibles ("Debes subir" → "Debe subir", "tu solicitud" → "su solicitud", "Selecciona" → "Seleccione"). Empezar por `required-docs.component.html`, las pantallas del estudiante y los mensajes de `SnackbarService`. Medición: buscar `Debes|Puedes|Tienes|Asegúrate|Selecciona|Ingresa|Revisa|Intenta|\btu\b|\btus\b` en `*.html` y `*.ts` (sin specs); revisar a mano, porque hay falsos positivos
+- [x] Actualizar las pruebas que comprueben esos textos
 
 ## Fase 7: `!important` (sin cambios visibles)
 

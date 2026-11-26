@@ -75,7 +75,7 @@
           @if (data.form.get('periodoAcademico')?.hasError('required')) {
             <mat-error> El período académico es requerido </mat-error>
           }
-          <mat-hint>Selecciona un período académico válido del listado</mat-hint>
+          <mat-hint>Seleccione un período académico válido del listado</mat-hint>
         </mat-form-field>
         <!-- Grupo -->
         <mat-form-field appearance="outline" class="form-field">
@@ -87,7 +87,7 @@
             <mat-option value="D">Grupo D</mat-option>
           </mat-select>
           <mat-hint
-            >Opcional. Puedes crear múltiples grupos (A, B, C, D) de la misma materia. Si no se selecciona, se asignará
+            >Opcional. Puede crear múltiples grupos (A, B, C, D) de la misma materia. Si no se selecciona, se asignará
             "A" por defecto.</mat-hint
           >
         </mat-form-field>
@@ -97,7 +97,7 @@
             matInput
             [matDatepicker]="pickerInicio"
             formControlName="fecha_inicio"
-            placeholder="Selecciona la fecha de inicio"
+            placeholder="Seleccione la fecha de inicio"
             (dateChange)="onFechaChange()"
           />
           <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
@@ -112,7 +112,7 @@
             matInput
             [matDatepicker]="pickerFin"
             formControlName="fecha_fin"
-            placeholder="Selecciona la fecha de fin"
+            placeholder="Seleccione la fecha de fin"
             (dateChange)="onFechaChange()"
           />
           <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>

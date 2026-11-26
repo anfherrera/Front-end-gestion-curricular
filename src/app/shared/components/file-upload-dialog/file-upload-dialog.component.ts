@@ -90,7 +90,7 @@ export class FileUploadComponent implements OnChanges {
         );
         if (archivoExclusivoExistente) {
           this.snackbar.advertencia(
-            `Ya has seleccionado "${archivoExclusivoExistente.nombre}". Solo puedes subir uno de los siguientes archivos: ${exclusivos.join(' o ')}`
+            `Ya seleccionó "${archivoExclusivoExistente.nombre}". Solo puede subir uno de los siguientes archivos: ${exclusivos.join(' o ')}`
           );
           return;
         }

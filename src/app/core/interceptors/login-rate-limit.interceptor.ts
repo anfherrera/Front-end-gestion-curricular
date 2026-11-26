@@ -49,7 +49,7 @@ export const loginRateLimitInterceptor: HttpInterceptorFn = (
           ...error,
           rateLimited: true,
           retryAfterSeconds: retryAfter,
-          message: `Demasiados intentos. Intenta de nuevo en ${retryAfter} segundos.`,
+          message: `Demasiados intentos. Intente de nuevo en ${retryAfter} segundos.`,
         };
         return throwError(() => limite);
       }

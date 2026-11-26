@@ -228,7 +228,7 @@ export class AuthService {
    */
   logout(showMessage = false): void {
     if (showMessage) {
-      this.snackbar?.advertencia('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      this.snackbar?.advertencia('Su sesión ha expirado. Por favor, inicie sesión nuevamente.');
     }
     const storage = this.safeLocalStorage();
     if (storage) {
