@@ -87,7 +87,7 @@
 }
 
 .mat-datepicker-toggle:hover {
-  background-color: rgba(0, 19, 140, 0.04) !important;
+  background-color: color-mix(in srgb, var(--color-primario) 4%, transparent) !important;
 }
 
 .boton-publicacion {

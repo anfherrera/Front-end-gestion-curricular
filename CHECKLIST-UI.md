@@ -56,10 +56,10 @@ Verificación de cada commit:
 
 - [ ] Hoy hay al menos tres estilos: tarjeta blanca con icono (admin), título con línea azul inferior (cursos intersemestrales) y páginas sin título (estudiante, funcionario). Elegir uno (la guía pide título H1 con una franja roja de 4px bajo la primera palabra), hacerlo componente compartido y usarlo en todas las páginas
 
-## Fase 3: colores con transparencia
+## Fase 3: colores con transparencia (hecha: 37 usos en 17 archivos pasados a tokens con `color-mix`; el amarillo de advertencia pasó al color de error porque la guía no tiene amarillo)
 
-- [ ] 41 `rgba()` con colores no institucionales en 15 archivos (`rgba(0, 19, 140, …)` ×20, Bootstrap y Material). Pasar a tokens o `color-mix(in srgb, var(--token) X%, transparent)`. Los peores: `cursos-verano-dashboard.component.css` (9), `cursos-intersemestrales.component.css` del estudiante (5), `curso-dialog.component.css` (5). Además, `color: green` en `curso-list.component.css:66`
-- [ ] Ampliar `scripts/comprobar-estilos.mjs` para que rechace `rgb()`/`rgba()` con color (se permiten negro y blanco para sombras) y colores por nombre salvo `white`, `transparent` e `inherit`
+- [x] 41 `rgba()` con colores no institucionales en 15 archivos (`rgba(0, 19, 140, …)` ×20, Bootstrap y Material). Pasar a tokens o `color-mix(in srgb, var(--token) X%, transparent)`. Los peores: `cursos-verano-dashboard.component.css` (9), `cursos-intersemestrales.component.css` del estudiante (5), `curso-dialog.component.css` (5). Además, `color: green` en `curso-list.component.css:66`
+- [x] Ampliar `scripts/comprobar-estilos.mjs` para que rechace `rgb()`/`rgba()` con color (se permiten negro y blanco para sombras) y colores por nombre salvo `white`, `transparent` e `inherit`
 
 ## Fase 4: redondeos (guía, pág. 29)
 

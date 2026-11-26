@@ -36,7 +36,7 @@
 }
 
 .btn-cerrar:hover {
-  background-color: rgba(0, 19, 140, 0.1) !important;
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent) !important;
 }
 
 .loading-container,
@@ -262,7 +262,7 @@ mat-dialog-actions button[mat-button] {
 }
 
 mat-dialog-actions button[mat-button]:hover {
-  background-color: rgba(0, 19, 140, 0.1);
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent);
 }
 
 mat-dialog-actions button[mat-raised-button] {

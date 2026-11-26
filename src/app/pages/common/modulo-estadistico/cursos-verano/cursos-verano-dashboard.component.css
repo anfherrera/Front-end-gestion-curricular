@@ -430,21 +430,21 @@
 }
 
 .confiabilidad-alta {
-  background: rgba(40, 167, 69, 0.1);
+  background: color-mix(in srgb, var(--notif-exito-borde) 10%, transparent);
   color: var(--notif-exito-borde);
-  border: 1px solid rgba(40, 167, 69, 0.3);
+  border: 1px solid color-mix(in srgb, var(--notif-exito-borde) 30%, transparent);
 }
 
 .confiabilidad-media {
-  background: rgba(255, 193, 7, 0.1);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
   color: var(--color-error);
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
 }
 
 .confiabilidad-baja {
-  background: rgba(220, 53, 69, 0.1);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
   color: var(--notif-error-titulo);
-  border: 1px solid rgba(220, 53, 69, 0.3);
+  border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
 }
 
 /* Tendencias */
@@ -530,7 +530,7 @@
 .tendencia-creciente {
   color: var(--notif-exito-borde);
   font-weight: bold;
-  background: rgba(40, 167, 69, 0.1);
+  background: color-mix(in srgb, var(--notif-exito-borde) 10%, transparent);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   display: inline-block;
@@ -540,7 +540,7 @@
 .tendencia-decreciente {
   color: var(--notif-error-titulo);
   font-weight: bold;
-  background: rgba(220, 53, 69, 0.1);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   display: inline-block;
@@ -550,7 +550,7 @@
 .tendencia-estable {
   color: var(--color-error);
   font-weight: bold;
-  background: rgba(255, 193, 7, 0.1);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   display: inline-block;

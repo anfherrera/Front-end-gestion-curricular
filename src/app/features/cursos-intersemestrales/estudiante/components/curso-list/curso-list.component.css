@@ -63,7 +63,7 @@ table {
 }
 
 span.disponible {
-  color: green;
+  color: var(--notif-exito-borde);
   font-weight: bold;
 }
 

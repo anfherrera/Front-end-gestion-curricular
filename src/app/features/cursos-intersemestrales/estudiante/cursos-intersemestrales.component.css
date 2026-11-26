@@ -79,7 +79,7 @@
   border-radius: 16px;
   padding: 2.5rem;
   box-shadow: var(--sombra-2);
-  border: 1px solid rgba(0, 19, 140, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-primario) 10%, transparent);
   max-width: 800px;
   width: 100%;
   text-align: center;
@@ -94,7 +94,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 19, 140, 0.1);
+  background: color-mix(in srgb, var(--color-primario) 10%, transparent);
   border-radius: 50%;
   margin: 0 auto 1.5rem auto;
 }
@@ -127,7 +127,7 @@
   padding: 1.8rem;
   background: var(--primario-98);
   border-radius: 12px;
-  border: 1px solid rgba(0, 19, 140, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-primario) 10%, transparent);
   transition: all 0.3s ease;
   min-height: 120px;
 }
@@ -145,7 +145,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 19, 140, 0.1);
+  background: color-mix(in srgb, var(--color-primario) 10%, transparent);
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 0.1rem;
@@ -177,7 +177,7 @@
   font-size: 1rem;
   margin: 0;
   padding-top: 1rem;
-  border-top: 1px solid rgba(0, 19, 140, 0.1);
+  border-top: 1px solid color-mix(in srgb, var(--color-primario) 10%, transparent);
 }
 
 /* Responsive para info */

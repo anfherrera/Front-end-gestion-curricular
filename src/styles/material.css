@@ -138,7 +138,7 @@ html {
 .mat-mdc-outlined-button.mat-primary:hover,
 .mat-mdc-stroked-button.mat-primary:hover,
 .mat-mdc-button.mat-primary:hover {
-  background-color: rgba(80, 86, 172, 0.2) !important;
+  background-color: color-mix(in srgb, var(--color-primario-light) 20%, transparent) !important;
 }
 
 .mat-mdc-button {

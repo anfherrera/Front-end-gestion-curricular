@@ -13,6 +13,11 @@ const FUENTES_PERMITIDAS =
   /font-family:\s*(var\(--[a-z-]+\)|\$\{FONTS\.(body|display)\}|inherit|'Courier New', monospace)\s*(!important)?\s*;?/;
 // Un color después de ":", espacio, "(", "," o comillas (no un selector #id al principio de la línea)
 const COLOR_HEX = /[:\s(,'"`]#[0-9a-fA-F]{3,8}\b(?![\w-])/;
+// rgb()/rgba() con un color que no sea negro ni blanco (esos se permiten para sombras y velos)
+const COLOR_RGB = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/g;
+// Colores por nombre en propiedades de color de CSS (white, transparent, inherit y currentColor se permiten)
+const COLOR_NOMBRE =
+  /(?:^|[\s;{])(?:color|background(?:-color)?|border(?:-[a-z]+)?-color|fill|stroke|outline-color)\s*:\s*(red|green|blue|orange|yellow|purple|pink|gray|grey|black|brown|cyan|magenta)\b/;
 
 function archivosDe(dir) {
   return readdirSync(dir).flatMap((nombre) => {
@@ -39,6 +44,18 @@ for (const archivo of archivos) {
         problemas.push(
           `${archivo}:${i + 1}  color ${hex[0].trim().replace(/^['"`:]/, '')}: usar var(--token) o COLORS`
         );
+      }
+      for (const [texto, r, g, b] of sinComentario.matchAll(COLOR_RGB)) {
+        const rgb = `${r},${g},${b}`;
+        if (rgb !== '0,0,0' && rgb !== '255,255,255') {
+          problemas.push(
+            `${archivo}:${i + 1}  ${texto}…): usar var(--token) o color-mix(in srgb, var(--token) X%, transparent)`
+          );
+        }
+      }
+      if (/\.(css|scss)$/.test(archivo)) {
+        const nombre = sinComentario.match(COLOR_NOMBRE);
+        if (nombre) problemas.push(`${archivo}:${i + 1}  color "${nombre[1]}": usar var(--token)`);
       }
       const fuente = sinComentario.match(/font-family:[^;]*;?/);
       if (fuente && !FUENTES_PERMITIDAS.test(fuente[0])) {

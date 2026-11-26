@@ -102,7 +102,7 @@
 
 /* Botones de acción al pasar el ratón (en reposo, el color de los iconos lo fijan .accion-ver/-aprobar/-rechazar de componentes.css) */
 :host ::ng-deep .inscripciones-table .mat-mdc-icon-button:hover {
-  background-color: rgba(0, 19, 140, 0.1) !important;
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent) !important;
 }
 
 :host ::ng-deep .inscripciones-table .mat-mdc-icon-button:hover .mat-icon {
