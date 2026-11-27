@@ -2,7 +2,7 @@
 
 Cómo se construyen las pantallas de este proyecto. Resume las decisiones que tomamos a partir del **Sistema de Diseño UX-UI de la División TIC** de la Universidad del Cauca (2024). Ese documento es confidencial: aquí no se copia, solo se citan sus páginas para quien tenga acceso.
 
-Los valores concretos (colores, fuentes y tamaños) están en [src/app/core/design-system/README.md](src/app/core/design-system/README.md). Este archivo explica **cuándo usar cada uno**.
+Los valores concretos (colores, fuentes y tamaños) están en [README.md](README.md). Este archivo explica **cuándo usar cada uno**.
 
 ## 1. El color comunica significado
 
@@ -30,7 +30,7 @@ Reglas:
 
 ## 3. Botones
 
-Tipos (guía, págs. 30-31). Los estilos ya están en [src/styles/material.css](src/styles/material.css), así que basta con usar el botón de Material correcto:
+Tipos (guía, págs. 30-31). Los estilos ya están en [src/styles/material.css](../../../styles/material.css), así que basta con usar el botón de Material correcto:
 
 | Tipo        | Material                             | Cuándo                                                                                        |
 | ----------- | ------------------------------------ | --------------------------------------------------------------------------------------------- |
@@ -94,6 +94,6 @@ Guía, pág. 29. Usar solo estos valores:
 
 ## Pendiente
 
-Nada pendiente (unificación terminada el 2026-11-27; el detalle está en `CHECKLIST-UI.md`).
+Nada pendiente (unificación terminada el 2026-11-27).
 
 Los `!important` que quedan tienen motivo: pisan estilos de Angular Material (`material.css`, `notificaciones.css`, `.accion-*`), respetan el movimiento reducido (`animaciones.css`) o están en reglas de `:hover`/`:focus`/`:disabled`. No añada otros: si un estilo no se aplica, suba la especificidad del selector o use el tipo de botón o etiqueta de la guía.

@@ -98,7 +98,7 @@ Funcionario y coordinador comparten `RevisionAprobacionComponent` (`pages/common
 
 Las pantallas siguen el Sistema de Diseño UX-UI de la División TIC de la Universidad:
 
-- [GUIA-UI.md](GUIA-UI.md): cuándo usar cada color, botón, etiqueta, título, redondeo y tamaño de letra, y el trato de usted en los textos.
+- [GUIA-UI.md](src/app/core/design-system/GUIA-UI.md): cuándo usar cada color, botón, etiqueta, título, redondeo y tamaño de letra, y el trato de usted en los textos.
 - [src/app/core/design-system/README.md](src/app/core/design-system/README.md): los valores de los tokens.
 
 El título de cada página sale del `title` de su ruta. `npm run lint:estilos` rechaza colores, fuentes, redondeos y tamaños de letra escritos a mano fuera de los tokens.
