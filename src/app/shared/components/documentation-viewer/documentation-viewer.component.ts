@@ -278,7 +278,7 @@ export class DocumentationViewerComponent {
         data: {
           titulo: 'Agregar comentario',
           descripcion:
-            'Escribe las observaciones para el documento seleccionado. Los comentarios anteriores se muestran arriba.',
+            'Escriba las observaciones para el documento seleccionado. Los comentarios anteriores se muestran arriba.',
           etiqueta: 'Comentario',
           nombreDocumento: documento.nombre,
           historial: comentarioActual || undefined,
