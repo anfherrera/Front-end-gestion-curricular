@@ -47,22 +47,19 @@
   transition: all 0.3s ease;
   font-weight: 500;
   padding: 8px 14px;
-  border-radius: var(--radio-xs);
+  border-radius: var(--radio-pill);
   display: flex;
   align-items: center;
   gap: 8px;
   min-height: 36px;
-  background: var(--blanco);
-  box-shadow: var(--sombra-1);
   font-size: 13px;
   position: relative;
   overflow: hidden;
-  border: 2px solid transparent;
   white-space: nowrap;
   flex-shrink: 0;
   /* Eliminar cualquier borde interno de Material Design */
   --mdc-chip-outline-width: 0;
-  --mdc-chip-container-shape: 6px;
+  --mdc-chip-container-shape: var(--radio-pill);
 }
 
 /* Eliminar pseudo-elementos y bordes internos */
@@ -89,7 +86,7 @@
   opacity: 0.9;
   margin-left: 4px;
   font-weight: 600;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--neutro-100);
   padding: 1px 4px;
   border-radius: var(--radio-sm);
   min-width: 16px;
@@ -105,52 +102,33 @@
   pointer-events: none;
 }
 
-.estado-chip.selected {
-  box-shadow: var(--sombra-2);
-  transform: translateY(-1px);
-  border-color: currentColor;
-  font-weight: 600;
+/* Todos los filtros iguales (GUIA-UI.md, sección 2): son una elección, no un estado,
+   así que no llevan el color de cada fase. Sin seleccionar: borde primario; seleccionado: relleno primario. */
+.estado-chip.mat-mdc-standard-chip {
+  border: 2px solid var(--color-primario);
+  background-color: transparent;
+  color: var(--color-primario);
+  --mdc-chip-elevated-container-color: transparent;
+  --mdc-chip-label-text-color: var(--color-primario);
 }
 
-.estado-chip.selected .count {
-  background: rgba(255, 255, 255, 0.2);
+.estado-chip.selected.mat-mdc-standard-chip {
+  /* Material pinta el fondo del chip por encima; sin !important no se ve el relleno */
+  background-color: var(--color-primario) !important;
+  color: var(--blanco);
+  font-weight: 600;
+  --mdc-chip-elevated-container-color: var(--color-primario);
+  --mdc-chip-label-text-color: var(--blanco);
+}
+
+.estado-chip mat-icon,
+.estado-chip span {
   color: inherit;
 }
 
-/* Estilos específicos para el botón TODOS */
-.todos-chip {
-  border: 2px solid var(--color-primario) !important;
-}
-
-.todos-chip:not(.todos-selected) {
-  background: transparent !important;
-  color: var(--color-primario) !important;
-}
-
-.todos-chip:not(.todos-selected) mat-icon {
-  color: var(--color-primario) !important;
-}
-
-.todos-chip:not(.todos-selected) .count {
-  color: var(--color-primario) !important;
-}
-
-.todos-chip.todos-selected {
-  background: var(--color-primario) !important;
-  color: white !important;
-}
-
-.todos-chip.todos-selected mat-icon {
-  color: white !important;
-}
-
-.todos-chip.todos-selected span {
-  color: white !important;
-}
-
-.todos-chip.todos-selected .count {
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
+.estado-chip.selected .count {
+  background: color-mix(in srgb, var(--blanco) 20%, transparent);
+  color: inherit;
 }
 
 .estado-info {

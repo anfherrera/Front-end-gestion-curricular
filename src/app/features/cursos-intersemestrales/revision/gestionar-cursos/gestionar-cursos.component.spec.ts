@@ -33,7 +33,7 @@ describe('GestionarCursosComponent', () => {
       'getEstadosDisponibles',
       'getEstadosPermitidos',
       'getEstadosParaRol',
-      'getColorEstado',
+      'getClaseEstado',
       'getIconoEstado',
       'validarTransicionEstado',
     ]);

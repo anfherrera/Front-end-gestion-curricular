@@ -213,69 +213,6 @@ table {
   font-size: 0.9em;
 }
 
-/* Chips de estado */
-.estado-chip {
-  font-weight: 600 !important;
-  font-size: var(--text-body2-size) !important;
-  padding: 8px 12px !important;
-  border-radius: var(--radio-lg) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  box-shadow: var(--sombra-1) !important;
-  transition: all 0.2s ease !important;
-  border: none !important;
-  outline: none !important;
-  color: white !important;
-  background-color: var(--color-primario) !important;
-}
-
-.estado-chip:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: var(--sombra-1) !important;
-  background-color: var(--color-primario-light) !important;
-  color: white !important;
-}
-
-.estado-chip mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
-  color: white !important;
-}
-
-/* Forzar color blanco en el texto del chip */
-.estado-chip .mat-chip-text {
-  color: white !important;
-}
-
-.estado-chip .mat-chip-text-wrapper {
-  color: white !important;
-}
-
-/* Asegurar que todo el contenido del chip sea blanco */
-.estado-chip * {
-  color: white !important;
-}
-
-/* Estilos adicionales para forzar el color blanco */
-.mat-chip.mat-standard-chip {
-  color: white !important;
-  background-color: var(--color-primario) !important;
-}
-
-.mat-chip.mat-standard-chip .mat-chip-text {
-  color: white !important;
-}
-
-.mat-chip.mat-standard-chip .mat-chip-remove {
-  color: white !important;
-}
-
-.mat-chip.mat-standard-chip .mat-chip-avatar {
-  color: white !important;
-}
-
 /* Acciones */
 .acciones-container {
   display: flex;

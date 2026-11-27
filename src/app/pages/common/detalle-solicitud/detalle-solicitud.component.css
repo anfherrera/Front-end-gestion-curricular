@@ -177,12 +177,6 @@
 }
 
 /* Chips */
-.tipo-chip {
-  background-color: var(--primario-90);
-  color: var(--color-terciario);
-  font-size: 0.9rem;
-}
-
 /* Lista de documentos */
 mat-list {
   padding: 0;

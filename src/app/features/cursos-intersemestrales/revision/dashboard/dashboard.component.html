@@ -78,19 +78,10 @@
                   }
                 </div>
                 <div class="curso-status">
-                  <mat-chip
-                    [style.background-color]="getEstadoColor(obtenerEstadoActual(curso))"
-                    [style.color]="'white'"
-                    [style.border]="'none'"
-                    [style.outline]="'none'"
-                    [style.--mdc-chip-label-text-color]="'white'"
-                    [style.--mdc-chip-container-color]="getEstadoColor(obtenerEstadoActual(curso))"
-                    [style.--mdc-chip-outline-color]="'transparent'"
-                    [style.--mdc-chip-outline-width]="'0'"
-                    class="custom-chip"
-                  >
-                    <span [style.color]="'white'">{{ obtenerEstadoActual(curso) }}</span>
-                  </mat-chip>
+                  <span class="etiqueta-estado {{ getEstadoClase(obtenerEstadoActual(curso)) }}">
+                    <mat-icon aria-hidden="true">{{ getEstadoIcono(obtenerEstadoActual(curso)) }}</mat-icon>
+                    {{ obtenerEstadoActual(curso) }}
+                  </span>
                   <div class="cupos-info">
                     <small
                       >{{ curso.cupo_disponible || curso.cupo_estimado || 0 }} /

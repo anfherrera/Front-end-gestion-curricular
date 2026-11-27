@@ -3,7 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatChipsModule } from '@angular/material/chips';
 import { filter, switchMap } from 'rxjs';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
@@ -25,7 +24,6 @@ import { confirmar } from '@shared/components/confirm-dialog/confirm-dialog.comp
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
-    MatChipsModule,
     CardContainerComponent,
     EstadoFiltersComponent,
     PeriodoFiltroSelectorComponent,
@@ -322,8 +320,12 @@ export class GestionarCursosComponent implements OnInit {
   }
 
   // Obtener color del estado
-  getEstadoColor(estado: string): string {
-    return this.cursoEstadosService.getColorEstado(estado);
+  getEstadoClase(estado: string): string {
+    return this.cursoEstadosService.getClaseEstado(estado);
+  }
+
+  getEstadoIcono(estado: string): string {
+    return this.cursoEstadosService.getIconoEstado(estado);
   }
 
   // Validar si se puede editar un curso

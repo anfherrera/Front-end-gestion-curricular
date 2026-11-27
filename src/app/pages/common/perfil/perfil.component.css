@@ -108,19 +108,6 @@
   font-weight: 500;
 }
 
-.status-active {
-  background-color: white !important;
-  color: var(--notif-exito-borde) !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-.status-inactive {
-  background-color: var(--notif-error-titulo) !important;
-  color: white !important;
-}
-
 .profile-card mat-card-header,
 .additional-info-card mat-card-header {
   padding: 0;

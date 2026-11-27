@@ -4,7 +4,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
@@ -18,15 +17,7 @@ import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 
 @Component({
   selector: 'app-dashboard-cursos-intersemestrales',
-  imports: [
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatChipsModule,
-    MatDividerModule,
-    RouterModule,
-    NombreDocentePipe,
-  ],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, MatDividerModule, RouterModule, NombreDocentePipe],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -138,8 +129,12 @@ export class DashboardCursosIntersemestralesComponent implements OnInit {
     return curso.periodo || curso.periodoAcademico || 'N/A';
   }
 
-  getEstadoColor(estado: string | undefined): string {
-    return this.cursoEstadosService.getColorEstado(estado || 'Borrador');
+  getEstadoClase(estado: string | undefined): string {
+    return this.cursoEstadosService.getClaseEstado(estado || 'Borrador');
+  }
+
+  getEstadoIcono(estado: string | undefined): string {
+    return this.cursoEstadosService.getIconoEstado(estado || 'Borrador');
   }
 
   // TrackBy functions para optimizar ngFor

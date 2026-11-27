@@ -9,6 +9,8 @@ export interface EstadoCurso {
   descripcion: string;
 }
 
+const sinTildes = (texto: string | undefined): string => (texto ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+
 export type PermisosEstado = Record<string, Record<string, string[]>>;
 
 export interface TransicionEstado {
@@ -60,7 +62,7 @@ export class CursoEstadosService {
     {
       value: 'Cerrado',
       label: 'Cerrado',
-      color: COLORS.error,
+      color: COLORS.neutralSecondary,
       icon: 'lock',
       descripcion: 'Curso finalizado, solo consulta',
     },
@@ -122,7 +124,9 @@ export class CursoEstadosService {
    * Obtiene un estado específico por su valor
    */
   getEstadoPorValor(valor: string): EstadoCurso | undefined {
-    return this.estadosDisponibles.find((estado) => estado.value === valor);
+    // El backend a veces manda los estados sin tilde ("Preinscripcion")
+    const buscado = sinTildes(valor);
+    return this.estadosDisponibles.find((estado) => sinTildes(estado.value) === buscado);
   }
 
   /**
@@ -131,6 +135,25 @@ export class CursoEstadosService {
   getColorEstado(estado: string): string {
     const estadoInfo = this.getEstadoPorValor(estado);
     return estadoInfo?.color || COLORS.neutralSecondary;
+  }
+
+  /**
+   * Clase global de etiqueta (src/styles/componentes.css) para un estado de curso.
+   * Son fases, no resultados: solo los periodos abiertos a estudiantes van en verde (activo)
+   * y ninguno usa el color de error.
+   */
+  getClaseEstado(estado: string | undefined): string {
+    switch (estado && this.getEstadoPorValor(estado)?.value) {
+      case 'Abierto':
+        return 'estado-proceso';
+      case 'Publicado':
+        return 'estado-enviada';
+      case 'Preinscripción':
+      case 'Inscripción':
+        return 'estado-aprobada';
+      default:
+        return 'estado-default';
+    }
   }
 
   /**

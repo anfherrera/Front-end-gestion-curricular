@@ -172,19 +172,10 @@
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let curso">
-            <mat-chip
-              [style.background-color]="getEstadoColor(curso.estado)"
-              [style.color]="'white'"
-              [style.border]="'none'"
-              [style.outline]="'none'"
-              [style.--mdc-chip-label-text-color]="'white'"
-              [style.--mdc-chip-container-color]="getEstadoColor(curso.estado)"
-              [style.--mdc-chip-outline-color]="'transparent'"
-              [style.--mdc-chip-outline-width]="'0'"
-              class="estado-chip"
-            >
-              <span [style.color]="'white'">{{ curso.estado }}</span>
-            </mat-chip>
+            <span class="etiqueta-estado {{ getEstadoClase(curso.estado) }}">
+              <mat-icon aria-hidden="true">{{ getEstadoIcono(curso.estado) }}</mat-icon>
+              {{ curso.estado }}
+            </span>
           </td>
         </ng-container>
         <!-- Acciones -->
