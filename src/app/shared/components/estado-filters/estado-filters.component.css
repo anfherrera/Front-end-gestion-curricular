@@ -15,14 +15,14 @@
 .filters-header h3 {
   color: var(--color-primario);
   margin: 0 0 8px 0;
-  font-size: 1.3rem;
+  font-size: var(--text-h2-size);
   font-weight: 600;
 }
 
 .filters-header p {
   color: var(--neutro-600);
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .filters-content {
@@ -52,7 +52,7 @@
   align-items: center;
   gap: 8px;
   min-height: 36px;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   position: relative;
   overflow: hidden;
   white-space: nowrap;
@@ -75,9 +75,9 @@
 }
 
 .estado-chip mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: var(--tam-icono-xs);
+  width: var(--tam-icono-xs);
+  height: var(--tam-icono-xs);
   flex-shrink: 0;
 }
 
@@ -151,15 +151,15 @@
 }
 
 .info-header mat-icon {
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
 }
 
 .info-header h4 {
   margin: 0;
   color: var(--color-primario);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
 }
 
@@ -197,7 +197,7 @@
   }
 
   .estado-chip {
-    font-size: 0.8rem;
+    font-size: var(--text-body2-size);
     padding: 6px 12px;
   }
 

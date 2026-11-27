@@ -23,7 +23,7 @@ mat-row:hover {
 mat-header-cell {
   font-weight: 600;
   color: var(--color-primario);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
 }
 
 mat-cell,

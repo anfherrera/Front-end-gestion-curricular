@@ -28,9 +28,9 @@ mat-card-header {
 }
 
 .icono-cabecera {
-  width: 24px;
-  height: 24px;
-  font-size: 24px;
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
+  font-size: var(--tam-icono-md);
   margin: 0;
   border-radius: 0;
   color: var(--blanco);

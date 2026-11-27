@@ -45,7 +45,7 @@
   grid-template-columns: 1fr 90px;
   width: 100%;
   font-weight: 600;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   color: var(--neutro-800);
   padding: 8px 12px;
   background: var(--neutro-50);
@@ -93,7 +93,7 @@
 }
 
 .col-nombre mat-icon {
-  font-size: 20px;
+  font-size: var(--tam-icono-sm);
   color: var(--color-terciario); /* Azul elegante para el ícono del archivo */
 }
 

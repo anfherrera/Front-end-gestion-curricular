@@ -45,7 +45,7 @@
 
 .detail-row .value {
   color: var(--neutro-800);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 /* Colores del estado: .etiqueta-estado y .estado-* globales (src/styles/componentes.css) */
@@ -68,13 +68,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 1.5rem;
+  font-size: var(--text-h2-size);
   font-weight: 600;
 }
 
 .document-form-card mat-card-subtitle {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin-top: 8px;
 }
 
@@ -200,9 +200,9 @@ mat-icon {
 }
 
 mat-card-title mat-icon {
-  font-size: 1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
 }
 
 /* Iconos de los campos de formulario */
