@@ -1,0 +1,102 @@
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+export interface MotivoRechazoDialogData {
+  titulo: string;
+  motivo: string;
+  estado?: string;
+  fecha?: string;
+  esRechazo?: boolean;
+}
+
+/** Muestra el motivo (o las observaciones) del estado actual de una solicitud. */
+@Component({
+  selector: 'app-motivo-rechazo-dialog',
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
+  template: `
+    <h2 mat-dialog-title>{{ data.titulo }}</h2>
+    <div mat-dialog-content class="motivo-dialog">
+      <div class="motivo-dialog__encabezado" [ngClass]="{ 'motivo-dialog__encabezado--rechazo': data.esRechazo }">
+        <mat-icon>{{ data.esRechazo ? 'error_outline' : 'info' }}</mat-icon>
+        <div class="motivo-dialog__estado">
+          <span class="motivo-dialog__estado-texto">{{ data.estado }}</span>
+          @if (data.fecha) {
+            <span class="motivo-dialog__fecha">{{ data.fecha }}</span>
+          }
+        </div>
+      </div>
+      <p class="motivo-dialog__mensaje">{{ data.motivo }}</p>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button mat-dialog-close>Cerrar</button>
+    </div>
+  `,
+  styles: [
+    `
+      .motivo-dialog {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
+      }
+
+      .motivo-dialog__encabezado {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: var(--primario-90);
+        color: var(--color-primario);
+        border-left: 4px solid var(--color-terciario);
+      }
+
+      .motivo-dialog__encabezado--rechazo {
+        background: var(--notif-error-fondo);
+        color: var(--notif-error-titulo);
+        border-left-color: var(--color-error);
+      }
+
+      .motivo-dialog__encabezado mat-icon {
+        font-size: var(--tam-icono-lg);
+        width: var(--tam-icono-lg);
+        height: var(--tam-icono-lg);
+      }
+
+      .motivo-dialog__estado {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .motivo-dialog__estado-texto {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: var(--text-body2-size);
+      }
+
+      .motivo-dialog__fecha {
+        font-size: var(--text-body2-size);
+        color: inherit;
+        opacity: 0.8;
+      }
+
+      .motivo-dialog__mensaje {
+        margin: 0;
+        font-size: var(--text-body-size);
+        line-height: 1.6;
+        color: var(--neutro-800);
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+    `,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MotivoRechazoDialogComponent {
+  data = inject<MotivoRechazoDialogData>(MAT_DIALOG_DATA);
+}

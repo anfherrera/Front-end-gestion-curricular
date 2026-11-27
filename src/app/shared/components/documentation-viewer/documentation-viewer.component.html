@@ -66,6 +66,7 @@
                 color="primary"
                 (click)="verDocumento(documento)"
                 matTooltip="Visualizar documento"
+                aria-label="Visualizar documento"
                 class="action-button"
               >
                 <mat-icon>visibility</mat-icon>
@@ -73,9 +74,10 @@
               @if (puedeAgregarComentarios()) {
                 <button
                   mat-icon-button
-                  color="accent"
+                  color="primary"
                   (click)="agregarComentario(documento)"
                   matTooltip="Agregar comentario"
+                  aria-label="Agregar comentario"
                   class="action-button"
                 >
                   <mat-icon>add_comment</mat-icon>

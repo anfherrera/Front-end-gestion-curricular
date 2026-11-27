@@ -62,7 +62,7 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
-    cy.intercept('GET', '**/api/solicitudes-reingreso/**', { statusCode: 200, body: [] }).as('listarReingreso');
+    cy.intercept('GET', /\/api\/solicitudes-reingreso(\/|\?|$)/, { statusCode: 200, body: [] }).as('listarReingreso');
   });
 
   describe('1. Estudiante – Visualización de Interfaz', () => {
@@ -141,8 +141,8 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
 
   describe('3. Estudiante – Envío de solicitud', () => {
     it('E2E-RE-008: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/archivos/**', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
-      cy.intercept('POST', '**/api/solicitudes-reingreso/crearSolicitud-Reingreso', {
+      cy.intercept('POST', '**/api/archivos', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
+      cy.intercept('POST', '**/api/solicitudes-reingreso', {
         statusCode: 201,
         body: { id_solicitud: 1, mensaje: 'Solicitud creada' }
       }).as('crearReingreso');
@@ -166,7 +166,7 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
     });
 
     it('E2E-RE-009: Debe mostrar error si falla el envío', () => {
-      cy.intercept('POST', '**/api/solicitudes-reingreso/crearSolicitud-Reingreso', { statusCode: 500, body: { message: 'Error servidor' } });
+      cy.intercept('POST', '**/api/solicitudes-reingreso', { statusCode: 500, body: { message: 'Error servidor' } });
       visitarComoEstudiante();
       cy.get('input[type="file"]').first().selectFile({
         contents: Cypress.Buffer.from('PDF'),
@@ -182,8 +182,7 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
 
   describe('4. Estudiante – Seguimiento de solicitud', () => {
     it('E2E-RE-010: Debe mostrar solicitudes existentes en la tabla de seguimiento', () => {
-      cy.intercept('GET', '**/api/solicitudes-reingreso/**porRol*', { statusCode: 200, body: [{ id_solicitud: 1, nombre_solicitud: 'Solicitud Reingreso - Pedro', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [] }] }).as('listar');
-      cy.intercept('GET', '**/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser*', { statusCode: 200, body: [{ id_solicitud: 1, nombre_solicitud: 'Solicitud Reingreso - Pedro', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [] }] });
+      cy.intercept('GET', /\/api\/solicitudes-reingreso\?.*rol=/, { statusCode: 200, body: [{ id_solicitud: 1, nombre_solicitud: 'Solicitud Reingreso - Pedro', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [] }] });
       visitarComoEstudiante();
       cy.wait(1000);
       cy.get('body').then(($body) => {
@@ -197,13 +196,13 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
     });
 
     it('E2E-RE-011: Debe mostrar estado de cada solicitud', () => {
-      cy.intercept('GET', '**/api/solicitudes-reingreso/**', {
+      cy.intercept('GET', /\/api\/solicitudes-reingreso(\/|\?|$)/, {
         statusCode: 200,
         body: [{ id_solicitud: 1, nombre_solicitud: 'Reingreso Test', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'APROBADA' }], documentos: [] }]
       }).as('listarAprobada');
       visitarComoEstudiante();
       cy.wait('@listarAprobada');
-      cy.contains('APROBADA', { timeout: 8000 }).should('be.visible');
+      cy.contains('tr', 'Reingreso Test').should('contain.text', 'Aprobada');
       cy.registrarInteraccionExitosa();
     });
   });
@@ -213,7 +212,7 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
       const mockSolicitudes = [
         { id_solicitud: 1, nombre_solicitud: 'Reingreso - Pedro', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [{ nombre_documento: 'doc1.pdf' }], objUsuario: { nombre_completo: 'Pedro' } }
       ];
-      cy.intercept('GET', '**/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario*', { statusCode: 200, body: mockSolicitudes }).as('listarFuncionario');
+      cy.intercept('GET', /\/api\/solicitudes-reingreso\?.*rol=funcionario&bandeja=pendientes/, { statusCode: 200, body: mockSolicitudes }).as('listarFuncionario');
       visitarComoFuncionario();
       cy.wait('@listarFuncionario');
       cy.get('body').then(($body) => {
@@ -228,7 +227,7 @@ describe('E2E-05: Flujo Completo de Reingreso de Estudiante', () => {
       const mockSolicitudes = [
         { id_solicitud: 1, nombre_solicitud: 'Reingreso - Pedro', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [{ id_documento: 1, nombre_documento: 'doc1.pdf' }], objUsuario: { nombre_completo: 'Pedro' } }
       ];
-      cy.intercept('GET', '**/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario*', { statusCode: 200, body: mockSolicitudes });
+      cy.intercept('GET', /\/api\/solicitudes-reingreso\?.*rol=funcionario&bandeja=pendientes/, { statusCode: 200, body: mockSolicitudes });
       visitarComoFuncionario();
       cy.wait(1000);
       cy.get('app-request-status-table').within(() => {

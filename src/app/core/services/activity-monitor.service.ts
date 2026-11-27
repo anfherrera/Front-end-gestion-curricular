@@ -98,7 +98,7 @@ export class ActivityMonitorService implements OnDestroy {
       disableClose: true,
       data: {
         titulo: 'Sesión por expirar',
-        mensaje: 'Tu sesión expirará en 1 minuto por inactividad.\n\n¿Deseas continuar con la sesión?',
+        mensaje: 'Su sesión expirará en 1 minuto por inactividad.\n\n¿Desea continuar con la sesión?',
         textoConfirmar: 'Continuar sesión',
         textoCancelar: 'Cerrar sesión',
       },

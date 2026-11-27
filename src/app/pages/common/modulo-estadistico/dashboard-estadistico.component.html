@@ -3,10 +3,10 @@
   <div class="dashboard-header">
     <div class="header-content">
       <div class="header-text">
-        <h1 class="dashboard-title">
+        <h2 class="dashboard-title">
           <mat-icon>dashboard</mat-icon>
           Panel estadístico
-        </h1>
+        </h2>
         <p class="dashboard-subtitle">Estadísticas consolidadas de los procesos académicos</p>
       </div>
       <div class="header-actions">
@@ -14,12 +14,18 @@
           <mat-icon>refresh</mat-icon>
           Actualizar datos
         </button>
-        <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading() || exportando() || !resumenCompleto()">
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="exportarPDF()"
+          [disabled]="loading() || exportando() || !resumenCompleto()"
+        >
           <mat-icon>picture_as_pdf</mat-icon>
           Exportar PDF
         </button>
         <button
           mat-stroked-button
+          color="primary"
           (click)="exportarExcel()"
           [disabled]="loading() || exportando() || !resumenCompleto()"
         >
@@ -91,7 +97,7 @@
               <mat-icon>search</mat-icon>
               Aplicar Filtros
             </button>
-            <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading()">
+            <button mat-stroked-button color="primary" type="button" (click)="limpiarFiltros()" [disabled]="loading()">
               <mat-icon>clear</mat-icon>
               Limpiar
             </button>
@@ -114,7 +120,7 @@
     <div class="error-container">
       <mat-icon class="error-icon">error</mat-icon>
       <h3>Error al cargar las estadísticas</h3>
-      <p>{{ errorMensaje() || 'No se pudieron cargar los datos del dashboard. Por favor, inténtalo de nuevo.' }}</p>
+      <p>{{ errorMensaje() || 'No se pudieron cargar los datos del dashboard. Por favor, inténtelo de nuevo.' }}</p>
       <button mat-raised-button color="primary" (click)="cargarDatos()">
         <mat-icon>refresh</mat-icon>
         Reintentar

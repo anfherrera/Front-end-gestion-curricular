@@ -57,10 +57,11 @@
           }
         </mat-form-field>
 
-        <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
+        <mat-checkbox formControlName="remember">Recordarme</mat-checkbox>
 
         <button
           mat-raised-button
+          color="primary"
           type="submit"
           class="login-button"
           [disabled]="loginForm.invalid || cargando() || loginDisabled()"
@@ -72,7 +73,7 @@
             <span>Ingresar</span>
           }
           @if (!cargando() && loginDisabled()) {
-            <span>Espera {{ rateRemaining() }}s</span>
+            <span>Espere {{ rateRemaining() }}s</span>
           }
           @if (cargando()) {
             <span>Ingresando...</span>

@@ -68,9 +68,10 @@
                 <div class="info-content">
                   <span class="info-label">Estado</span>
                   <span class="info-value">
-                    <mat-chip [class]="usuario?.estado_usuario ? 'status-active' : 'status-inactive'">
+                    <span class="etiqueta-estado {{ usuario?.estado_usuario ? 'estado-aprobada' : 'estado-default' }}">
+                      <mat-icon aria-hidden="true">{{ usuario?.estado_usuario ? 'check_circle' : 'block' }}</mat-icon>
                       {{ usuario?.estado_usuario ? 'Activo' : 'Inactivo' }}
-                    </mat-chip>
+                    </span>
                   </span>
                 </div>
               </div>

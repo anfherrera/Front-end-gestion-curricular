@@ -32,11 +32,13 @@ export class SolicitudesBandejaComponent<S extends SolicitudRevisable = Solicitu
   readonly procesadas = input<S[] | null | undefined>([]);
   /** Sin historial (procesos cuyo backend no lo ofrece) solo se muestra la tabla de pendientes, sin pestañas. */
   readonly conHistorial = input(true);
+  readonly filtrarPendientesPorPeriodo = input(false);
 
   /** Solicitud pendiente elegida, o null al quitar la selección. */
   readonly solicitudSeleccionada = output<S | null>();
   /** Período del historial; null significa todos los períodos. */
   readonly periodoChange = output<string | null>();
+  readonly periodoPendientesChange = output<string>();
 
   private readonly tablaPendientes = viewChild<RequestStatusTableComponent>('tablaPendientes');
 

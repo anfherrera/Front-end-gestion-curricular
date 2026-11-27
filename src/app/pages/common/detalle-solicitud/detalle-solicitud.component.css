@@ -1,6 +1,6 @@
 .detalle-solicitud-container {
   padding: 24px;
-  background-color: var(--gris-azulado-50);
+  background-color: var(--neutro-50);
   min-height: 100vh;
 }
 
@@ -16,20 +16,20 @@
   padding: 60px 20px;
   gap: 16px;
   background-color: var(--blanco);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-1);
 }
 
 .error-container mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   color: var(--color-error);
 }
 
 .error-container p {
-  color: var(--gris-700);
-  font-size: 1.1rem;
+  color: var(--neutro-600);
+  font-size: var(--text-h3-size);
   text-align: center;
 }
 
@@ -41,22 +41,22 @@
 
 .info-card {
   box-shadow: var(--sombra-1);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
 }
 
 .info-card mat-card-header {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .info-card mat-card-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .info-card mat-card-title mat-icon {
@@ -81,13 +81,13 @@
 
 .info-label {
   font-weight: 600;
-  color: var(--gris-700);
-  font-size: 0.9rem;
+  color: var(--neutro-600);
+  font-size: var(--text-body-size);
 }
 
 .info-value {
-  color: var(--gris-900);
-  font-size: 1rem;
+  color: var(--neutro-800);
+  font-size: var(--text-subtitulo-size);
 }
 
 /* Timeline */
@@ -103,7 +103,7 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--gris-150);
+  background-color: var(--neutro-200);
 }
 
 .timeline-item {
@@ -124,7 +124,7 @@
   width: 30px;
   height: 30px;
   background-color: var(--color-primario);
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,14 +134,14 @@
 .timeline-number {
   color: white;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .timeline-content {
   flex: 1;
   background-color: var(--blanco);
   padding: 16px;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-1);
 }
 
@@ -153,43 +153,37 @@
 }
 
 .timeline-date {
-  color: var(--gris-700);
-  font-size: 0.9rem;
+  color: var(--neutro-600);
+  font-size: var(--text-body-size);
 }
 
 .timeline-comentario {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  color: var(--gris-750);
+  color: var(--neutro-800);
   font-style: italic;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid var(--gris-150);
+  border-top: 1px solid var(--neutro-200);
 }
 
 .timeline-comentario mat-icon {
-  font-size: 18px;
+  font-size: var(--tam-icono-sm);
   width: 18px;
   height: 18px;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   margin-top: 2px;
 }
 
 /* Chips */
-.tipo-chip {
-  background-color: var(--azul-50);
-  color: var(--azul-700);
-  font-size: 0.9rem;
-}
-
 /* Lista de documentos */
 mat-list {
   padding: 0;
 }
 
 mat-list-item {
-  border-bottom: 1px solid var(--gris-150);
+  border-bottom: 1px solid var(--neutro-200);
 }
 
 mat-list-item:last-child {
@@ -217,6 +211,6 @@ mat-list-item:last-child {
   }
 
   .timeline-number {
-    font-size: 0.8rem;
+    font-size: var(--text-body2-size);
   }
 }

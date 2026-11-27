@@ -1,0 +1,24 @@
+/* Estilos que comparten las páginas de solicitud del estudiante (paz y salvo, homologación, reingreso y preregistro ECAES) */
+
+.sin-solicitudes {
+  color: var(--neutro-800);
+  font-style: italic;
+  margin-top: 10px;
+}
+
+/* Botón Enviar Solicitud: es un botón primario (mat-raised-button color="primary"), así que el color, la forma
+   de píldora, el hover y el estado deshabilitado vienen de src/styles/material.css. Aquí solo el tamaño. */
+.btn-enviar {
+  padding: 12px 24px;
+}
+
+.documentos-faltantes {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.documentos-faltantes li {
+  margin-bottom: 4px;
+  font-size: var(--text-body2-size);
+}

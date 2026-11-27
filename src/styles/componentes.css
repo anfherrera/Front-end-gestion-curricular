@@ -23,7 +23,8 @@
   color: var(--breadcrumb-color);
 }
 
-/* Botones de icono de las tablas de revisión (ver, aprobar, rechazar) */
+/* Botones de icono de las tablas de revisión (ver, aprobar, rechazar).
+   !important: el estilo de mat-icon-button se carga después y tiene la misma especificidad */
 .accion-ver,
 .accion-ver .mat-icon {
   color: var(--color-primario) !important;
@@ -31,7 +32,7 @@
 
 .accion-aprobar,
 .accion-aprobar .mat-icon {
-  color: #4caf50 !important;
+  color: var(--notif-exito-borde) !important;
 }
 
 .accion-rechazar,
@@ -39,12 +40,77 @@
   color: var(--color-error) !important;
 }
 
-/* Insignia sin borde ni sombra, con peso normal (estados y condiciones en tablas) */
-.insignia-plana {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  font-weight: 400 !important;
+/* Acciones de una fila de tabla (GUIA-UI.md, sección 3): botones de icono sin fondo, en el color primario.
+   Uso: <div class="acciones-tabla"><button mat-icon-button …>…</button></div> */
+.acciones-tabla {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.acciones-tabla .mat-mdc-icon-button:not(:disabled) {
+  color: var(--color-primario);
+}
+
+/* Solo la acción que destruye (eliminar) va en el color de error; el texto oscuro del error por contraste */
+.acciones-tabla .mat-mdc-icon-button.accion-peligro:not(:disabled) {
+  color: var(--notif-error-titulo);
+}
+
+/* Etiquetas (GUIA-UI.md, sección 2): píldora, sin sombra ni hover.
+   .etiqueta-categoria para roles, programas, tipos…; .etiqueta-estado + .estado-* para estados. */
+.etiqueta-categoria,
+.etiqueta-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radio-pill);
+  font-family: var(--font-body);
+  font-size: var(--text-body2-size);
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.etiqueta-categoria {
+  background-color: var(--primario-90);
+  color: var(--color-primario);
+}
+
+.etiqueta-categoria .mat-icon,
+.etiqueta-estado .mat-icon {
+  width: var(--tam-icono-xs);
+  height: var(--tam-icono-xs);
+  font-size: var(--tam-icono-xs);
+}
+
+/* Colores de estado (clases del pipe estadoClase): fondo claro y texto oscuro del mismo tipo, como los avisos.
+   Van con .etiqueta-estado. */
+.estado-aprobada {
+  background-color: var(--notif-exito-fondo);
+  color: var(--notif-exito-texto);
+}
+
+.estado-rechazada {
+  background-color: var(--notif-error-fondo);
+  color: var(--notif-error-texto);
+}
+
+.estado-enviada {
+  background-color: var(--notif-info-fondo);
+  color: var(--notif-info-texto);
+}
+
+.estado-proceso {
+  background-color: var(--primario-90);
+  color: var(--notif-seguridad-texto);
+}
+
+.estado-default {
+  background-color: var(--neutro-100);
+  color: var(--neutro-800);
 }
 
 /* Spinner pequeño dentro de un botón, antes del texto */

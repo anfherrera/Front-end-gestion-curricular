@@ -1,4 +1,4 @@
-/* Colores de estado del historial: iguales en detalle-solicitud e historial-completo */
+/* Estilos comunes de detalle-solicitud e historial-completo */
 
 .header-actions button {
   display: flex;
@@ -16,31 +16,8 @@
 }
 
 .loading-container p {
-  color: var(--gris-700);
-  font-size: 1rem;
+  color: var(--neutro-600);
+  font-size: var(--text-subtitulo-size);
 }
 
-.estado-aprobada {
-  background-color: #c8e6c9 !important;
-  color: #2e7d32 !important;
-}
-
-.estado-rechazada {
-  background-color: #ffcdd2 !important;
-  color: var(--rojo-800) !important;
-}
-
-.estado-enviada {
-  background-color: #fff9c4 !important;
-  color: #f57f17 !important;
-}
-
-.estado-proceso {
-  background-color: #bbdefb !important;
-  color: #1565c0 !important;
-}
-
-.estado-default {
-  background-color: var(--gris-150) !important;
-  color: #424242 !important;
-}
+/* Los colores de estado (.estado-aprobada, .estado-enviada…) son globales: src/styles/componentes.css */

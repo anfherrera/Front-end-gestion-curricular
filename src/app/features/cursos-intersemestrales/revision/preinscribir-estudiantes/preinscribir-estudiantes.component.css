@@ -1,0 +1,140 @@
+/* Estilos para el componente de preinscribir estudiantes */
+
+.preinscripciones-section {
+  margin-bottom: 24px;
+}
+
+.preinscripciones-section h3 {
+  color: var(--color-primario);
+  margin-bottom: 20px;
+  font-size: var(--text-h3-size);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-primario);
+  padding-bottom: 8px;
+}
+
+.preinscripciones-table {
+  width: 100%;
+  background: white;
+  color: var(--neutro-800);
+}
+
+/* La cabecera usa el estilo común de material.css (.mat-mdc-header-row / -cell) */
+.preinscripciones-table th {
+  letter-spacing: 0.5px;
+}
+
+.preinscripciones-table td {
+  border-bottom: 1px solid var(--neutro-200);
+  color: var(--neutro-800);
+}
+
+/* Sin los iconos de acción, la etiqueta de estado ni los datos secundarios del estudiante
+   (gris claro en filtro-curso-comun.css) */
+.preinscripciones-table
+  td
+  *:not([class*='accion-'], [class*='accion-'] *, .etiqueta-estado, .etiqueta-estado *, .estudiante-info small) {
+  color: var(--neutro-800);
+}
+
+.observaciones-cell {
+  max-width: 200px;
+  word-wrap: break-word;
+  padding: 8px 12px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-xs);
+  border-left: 3px solid var(--color-primario);
+  margin: 4px 0;
+}
+
+.observaciones-cell span {
+  color: var(--neutro-800);
+  font-size: var(--text-body2-size);
+  line-height: 1.4;
+}
+
+.sin-observaciones {
+  color: var(--neutro-600);
+  font-style: italic;
+  font-size: var(--text-body2-size);
+  background: var(--neutro-50);
+  padding: 4px 8px;
+  border-radius: var(--radio-xs);
+  border-left: 2px solid var(--neutro-200);
+}
+
+/* Contenedor de acciones */
+.acciones-container {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .info-item strong {
+    min-width: auto;
+  }
+
+  .table-container {
+    font-size: var(--text-body2-size);
+  }
+
+  .preinscripciones-table th,
+  .preinscripciones-table td {
+    padding: 8px 4px;
+  }
+}
+
+/* Botones de acción al pasar el ratón (en reposo, el color de los iconos lo fijan .accion-ver/-aprobar/-rechazar de componentes.css) */
+:host ::ng-deep .preinscripciones-table .mat-mdc-icon-button:hover .mat-icon {
+  color: var(--color-primario-light) !important;
+}
+
+/* Responsive para botones */
+@media (max-width: 768px) {
+  .acciones-container {
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .acciones-container {
+    gap: 2px;
+  }
+}
+
+/* Botones de iconos circulares - estilo consistente */
+.acciones-container button[mat-icon-button] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radio-circulo);
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+}
+
+.acciones-container button[mat-icon-button]:hover {
+  transform: scale(1.1) !important;
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.acciones-container button[mat-icon-button] mat-icon {
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
+  margin: 0;
+}

@@ -1,7 +1,7 @@
 <div class="filters-container">
   <div class="filters-header">
     <h3>Filtros por Estado</h3>
-    <p>Selecciona un estado para ver solo los cursos en esa fase</p>
+    <p>Seleccione un estado para ver solo los cursos en esa fase</p>
   </div>
 
   <div class="filters-content">
@@ -12,8 +12,6 @@
         (click)="onEstadoChange('')"
         [class.selected]="estadoSeleccionado() === ''"
         [class.loading]="cargandoFiltro()"
-        [class.todos-chip]="true"
-        [class.todos-selected]="estadoSeleccionado() === ''"
         class="estado-chip"
       >
         <mat-icon>list</mat-icon>
@@ -30,16 +28,11 @@
       @for (estado of estadosDisponibles(); track estado) {
         <mat-chip
           (click)="onEstadoChange(estado.value)"
-          [style.background-color]="estadoSeleccionado() === estado.value ? estado.color : 'transparent'"
-          [style.color]="estadoSeleccionado() === estado.value ? 'white' : estado.color"
-          [style.border]="'2px solid ' + estado.color"
           [class.selected]="estadoSeleccionado() === estado.value"
           [class.loading]="cargandoFiltro()"
           class="estado-chip"
         >
-          <mat-icon [style.color]="estadoSeleccionado() === estado.value ? 'white' : estado.color">{{
-            estado.icon
-          }}</mat-icon>
+          <mat-icon>{{ estado.icon }}</mat-icon>
           <span>{{ estado.label }}</span>
           @if (conteosEstados()[estado.value] > 0) {
             <span class="count"> ({{ conteosEstados()[estado.value] }}) </span>

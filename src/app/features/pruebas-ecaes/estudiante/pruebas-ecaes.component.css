@@ -1,0 +1,43 @@
+.pruebas-ecaes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: var(--neutro-50);
+  font-family: var(--font-body);
+}
+
+/* ================================
+   Seguimiento de solicitudes
+   ================================ */
+
+.sin-solicitudes {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--neutro-600);
+  background: var(--primario-98);
+  border-radius: var(--radio-md);
+  border: 2px dashed var(--primario-90);
+  margin: 20px 0;
+}
+
+.sin-solicitudes mat-icon {
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
+  color: var(--color-primario);
+  margin-bottom: 16px;
+}
+
+.sin-solicitudes p {
+  font-size: var(--text-h3-size);
+  margin: 0;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .pruebas-ecaes-container {
+    padding: 16px;
+    gap: 16px;
+  }
+}

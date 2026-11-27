@@ -72,32 +72,39 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
     cy.location('pathname', { timeout: 10000 }).should('include', 'pruebas-ecaes');
   };
 
+  const completarPreregistro = () => {
+    cy.get('input[formControlName="fecha_nacimiento"]').type('1998-05-10').blur();
+    cy.get('input[formControlName="fecha_expedicion"]').type('2020-01-15').blur();
+    cy.get('app-file-upload input[type="file"]').selectFile({
+      contents: Cypress.Buffer.from('%PDF-1.4'),
+      fileName: 'cedula.pdf',
+      mimeType: 'application/pdf'
+    }, { force: true });
+  };
+
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
     cy.intercept('GET', '**/api/solicitudes-ecaes/**', { statusCode: 200, body: [] }).as('listarEcaes');
+    // Los listados van a la raíz del recurso con ?rol=… (EST-7, paso 6), que el patrón anterior no cubre
+    cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes' }, { statusCode: 200, body: [] });
     cy.intercept('GET', '**/api/periodos-academicos/**', { statusCode: 200, body: ['2025-1', '2024-2'] }).as('periodos');
   });
 
   describe('1. Estudiante – Visualización de fechas publicadas', () => {
     it('E2E-EC-001: Debe mostrar la sección de Fechas con selector de período', () => {
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarFechasEcaes*', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
+      cy.intercept('GET', '**/api/solicitudes-ecaes/fechas', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
       visitarComoEstudiante();
       cy.iniciarMedicion();
       cy.contains('Fechas', { timeout: 10000 }).should('be.visible');
-      cy.get('mat-select').contains('Período Académico').should('exist');
-      cy.get('body').then(($body) => {
-        if ($body.find('.periodo-select mat-select, [formcontrolname="periodoAcademico"]').length) {
-          cy.get('mat-select').first().should('exist');
-        }
-      });
+      cy.get('app-fechas-ecaes mat-select').should('be.visible').and('contain.text', '2025-1');
       cy.registrarElementoVisible('seccion-fechas');
       cy.finalizarMedicion('Visualización fechas ECAES');
       cy.registrarInteraccionExitosa();
     });
 
     it('E2E-EC-002: Debe cargar y mostrar fechas cuando hay datos', () => {
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarFechasEcaes*', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
+      cy.intercept('GET', '**/api/solicitudes-ecaes/fechas', { statusCode: 200, body: mockFechasEcaes }).as('fechasEcaes');
       visitarComoEstudiante();
       cy.wait('@fechasEcaes');
       cy.wait(800);
@@ -130,7 +137,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
 
     it('E2E-EC-005: El botón Enviar Solicitud debe estar deshabilitado sin archivos', () => {
       visitarComoEstudiante();
-      cy.get('button').contains('Enviar Solicitud').should('be.disabled');
+      cy.contains('button', 'Enviar Solicitud').should('be.disabled');
       cy.registrarInteraccionExitosa();
     });
   });
@@ -149,35 +156,23 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
 
     it('E2E-EC-007: Con formulario válido y archivo debe habilitar Enviar Solicitud', () => {
       visitarComoEstudiante();
-      cy.get('input[type="file"]').first().selectFile({
-        contents: Cypress.Buffer.from('PDF'),
-        fileName: 'cedula.pdf',
-        mimeType: 'application/pdf'
-      }, { force: true });
-      cy.wait(600);
-      cy.get('body').then(($body) => {
-        const btn = $body.find('button').filter((i, el) => Cypress.$(el).text().includes('Enviar Solicitud'))[0];
-        if (btn) expect(Cypress.$(btn).prop('disabled')).to.be.false;
-      });
+      completarPreregistro();
+      cy.contains('button', 'Enviar Solicitud').should('be.enabled');
       cy.registrarInteraccionExitosa();
     });
 
     it('E2E-EC-008: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/archivos/**', { statusCode: 200, body: { nombre: 'cedula.pdf', ruta_documento: '/uploads/cedula.pdf' } }).as('subirArchivo');
-      cy.intercept('POST', '**/api/solicitudes-ecaes/crearSolicitud-Ecaes', {
+      cy.intercept('POST', '**/api/archivos', { statusCode: 200, body: { nombre: 'cedula.pdf', ruta: '/uploads/cedula.pdf' } }).as('subirArchivo');
+      cy.intercept({ method: 'POST', pathname: '/api/solicitudes-ecaes' }, {
         statusCode: 201,
         body: { id_solicitud: 1, nombre_solicitud: 'Solicitud ECAES', mensaje: 'Solicitud creada' }
       }).as('crearEcaes');
 
       visitarComoEstudiante();
-      cy.get('input[type="file"]').first().selectFile({
-        contents: Cypress.Buffer.from('PDF'),
-        fileName: 'cedula.pdf',
-        mimeType: 'application/pdf'
-      }, { force: true });
-      cy.wait(800);
-      cy.get('button').contains('Enviar Solicitud').click({ force: true });
-      cy.wait('@crearEcaes', { timeout: 15000 });
+      completarPreregistro();
+      cy.contains('button', 'Enviar Solicitud').click();
+      cy.wait('@subirArchivo');
+      cy.wait('@crearEcaes').its('request.body.documentos.0.ruta_documento').should('eq', '/uploads/cedula.pdf');
 
       cy.get('.mat-mdc-snack-bar-container, .mat-snack-bar-container', { timeout: 8000 }).should('be.visible');
       cy.registrarInteraccionExitosa();
@@ -194,8 +189,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
 
     it('E2E-EC-010: Debe mostrar solicitudes existentes con estado', () => {
       const mockSolicitudes = [{ id_solicitud: 1, nombre_solicitud: 'Solicitud ECAES - Luis', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [] }];
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitudes-Ecaes*', { statusCode: 200, body: mockSolicitudes }).as('listarEcaesEst');
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol*', { statusCode: 200, body: mockSolicitudes });
+      cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes' }, { statusCode: 200, body: mockSolicitudes }).as('listarEcaesEst');
       visitarComoEstudiante();
       cy.wait(1000);
       cy.get('body').then(($body) => {
@@ -234,7 +228,7 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
   describe('6. Funcionario – Pre-Registros Pendientes y Documentación', () => {
     it('E2E-EC-013: Debe mostrar Pre-Registros Pendientes', () => {
       visitarComoFuncionario();
-      cy.contains('Pre-Registros Pendientes', { timeout: 10000 }).should('be.visible');
+      cy.contains('Solicitudes Pendientes de Procesar').should('be.visible');
       cy.get('app-request-status-table, .sin-solicitudes').should('exist');
       cy.registrarInteraccionExitosa();
     });
@@ -254,24 +248,15 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
           objUsuario: { nombre_completo: 'Luis' }
         }
       ];
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario*', { statusCode: 200, body: mockSolicitudes }).as('listarFuncEcaes');
+      cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes', query: { bandeja: 'pendientes' } }, { statusCode: 200, body: mockSolicitudes }).as('listarFuncEcaes');
       visitarComoFuncionario();
       cy.wait('@listarFuncEcaes');
-      cy.wait(800);
-      cy.get('app-request-status-table').within(() => {
-        cy.get('table tbody tr, .mat-row, [role="row"]').first().click({ force: true });
+      cy.contains('tr', 'Solicitud ECAES - Luis').within(() => {
+        cy.contains('button', 'radio_button_unchecked').click();
       });
-      cy.wait(800);
-      cy.contains('Documentación Adjunta', { timeout: 8000 }).should('be.visible');
-      cy.get('body').then(($body) => {
-        if ($body.find('.info-card').length) {
-          cy.contains('Información de la Solicitud').should('be.visible');
-          cy.contains('Tipo de Documento').should('be.visible');
-        }
-        if ($body.find('app-documentation-viewer').length) {
-          cy.get('app-documentation-viewer').should('be.visible');
-        }
-      });
+      cy.contains('Documentación Adjunta').should('be.visible');
+      cy.get('.info-card').should('contain.text', 'Tipo de Documento');
+      cy.get('app-documentation-viewer').should('be.visible');
       cy.registrarInteraccionExitosa();
     });
 
@@ -279,11 +264,11 @@ describe('E2E-07: Flujo Completo de Pruebas ECAES', () => {
       const mockSolicitudes = [
         { id_solicitud: 1, nombre_solicitud: 'ECAES Test', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [], tipoDocumento: 'CC', numero_documento: '123', fecha_expedicion: '2020-01-01', fecha_nacimiento: '1998-01-01', objUsuario: {} }
       ];
-      cy.intercept('GET', '**/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario*', { statusCode: 200, body: mockSolicitudes });
+      cy.intercept({ method: 'GET', pathname: '/api/solicitudes-ecaes', query: { bandeja: 'pendientes' } }, { statusCode: 200, body: mockSolicitudes });
       visitarComoFuncionario();
-      cy.wait(1000);
-      cy.get('app-request-status-table table tbody tr, app-request-status-table .mat-row').first().click({ force: true });
-      cy.wait(800);
+      cy.contains('tr', 'ECAES Test').within(() => {
+        cy.contains('button', 'radio_button_unchecked').click();
+      });
       cy.contains('button', 'Marcar como Pre-registrada').should('be.visible');
       cy.contains('button', 'Rechazar Solicitud').should('be.visible');
       cy.registrarInteraccionExitosa();

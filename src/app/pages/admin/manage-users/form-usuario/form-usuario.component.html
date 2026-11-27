@@ -1,14 +1,4 @@
 <div class="container-admin">
-  <div class="header-section">
-    <h2>
-      <mat-icon>{{ isEditMode() ? 'edit' : 'person_add' }}</mat-icon>
-      {{ isEditMode() ? 'Editar' : 'Nuevo' }} Usuario
-      @if (isEditMode() && usuarioId()) {
-        <span class="usuario-id-badge">(ID: {{ usuarioId() }})</span>
-      }
-    </h2>
-  </div>
-
   <!-- Spinner mientras carga los datos del usuario -->
   @if (loading() && isEditMode()) {
     <div class="loading-overlay">
@@ -134,7 +124,7 @@
               </mat-form-field>
             </div>
             <div class="form-actions">
-              <button mat-button type="button" (click)="cancelar()" [disabled]="loading()">
+              <button mat-stroked-button color="primary" type="button" (click)="cancelar()" [disabled]="loading()">
                 <mat-icon>cancel</mat-icon>
                 Cancelar
               </button>

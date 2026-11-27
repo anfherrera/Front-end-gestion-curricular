@@ -4,22 +4,11 @@
  * Documento: Sistema de Diseño UX-UI, División TIC, 2024
  */
 
-/* ===== ANGULAR MATERIAL OVERRIDES ===== */
-:root {
-  --mat-primary: #000066;
-  --mat-primary-container: #e0e0ff;
-  --mat-on-primary: #ffffff;
-  --mat-on-primary-container: #000066;
-  --mat-secondary: #9d0311;
-  --mat-secondary-container: #ffdad6;
-  --mat-on-secondary: #ffffff;
-  --mat-on-secondary-container: #690007;
-  --mat-tertiary: #1d72d3;
-  --mat-error: #ff6d0a;
-  --mat-on-error: #ffffff;
-  --mat-error-container: #ffdbcc;
-  --mat-on-error-container: #361000;
-}
+/*
+ * Los colores de Angular Material (--mat-sys-*) se toman de estos tokens en src/styles/material.css.
+ * Verificado el 2026-11-25 contra las variables globales de https://www.unicauca.edu.co/:
+ * primary #000066, secondary #5056AC, accent #9D0311, #DB141C, #690007, texto #07184A, #E0E0FF.
+ */
 
 /* ===== COLORES INSTITUCIONALES ===== */
 :root {
@@ -47,6 +36,15 @@
   /* Elevación: solo dos niveles, en lugar de sombras y degradados decorativos */
   --sombra-1: 0 1px 3px rgba(0, 0, 0, 0.12); /* tarjetas, tablas, campos */
   --sombra-2: 0 4px 12px rgba(0, 0, 0, 0.14); /* hover, menús, diálogos */
+
+  /* Redondeos (guía, pág. 29): solo estos pasos */
+  --radio-xs: 4px; /* campos de texto, selects, snackbars, avisos */
+  --radio-sm: 8px; /* tooltips, bloques internos */
+  --radio-md: 12px; /* tarjetas, barra de búsqueda */
+  --radio-lg: 16px; /* FAB, cajones */
+  --radio-xl: 28px; /* diálogos, hojas */
+  --radio-pill: 100px; /* botones, chips, insignias */
+  --radio-circulo: 50%; /* avatares e iconos redondos */
 
   /* Paleta tonal primario */
   --primario-90: #e0e0ff;
@@ -89,48 +87,22 @@
 }
 
 /*
- * ===== COLORES DE APOYO (Fase 5) =====
- * Valores que los componentes ya usaban a mano (8 veces o más), con el mismo valor exacto,
- * para que el aspecto no cambie. Son candidatos a fundirse con los institucionales
- * (por ejemplo, los tres rojos de error en --color-error) cuando se revise el diseño.
+ * ===== NEUTROS =====
+ * Escala de grises de la guía (#454444 texto, #F6F6F6 hover) y del portal web
+ * (#DEDBDB, #A3A3A3, #757474). Sustituye a los 18 grises sueltos de antes (2026-11-25).
+ * El texto secundario usa --neutro-600 y no un gris más claro: #999 sobre blanco no llega a 4,5:1.
  */
 :root {
-  /* Grises, de claro a oscuro */
   --blanco: #ffffff;
-  --gris-25: #fafafa;
-  --gris-50: #f8f9fa;
-  --gris-75: #f5f5f5;
-  --gris-azulado-50: #f5f7fa;
-  --gris-100: #e9ecef;
-  --gris-150: #e0e0e0;
-  --gris-200: #dee2e6;
-  --gris-250: #dddddd;
-  --gris-300: #cccccc;
-  --gris-500: #999999;
-  --gris-550: #888888;
-  --gris-600: #757575;
-  --gris-650: #6c757d;
-  --gris-700: #666666;
-  --gris-750: #555555;
-  --gris-800: #495057;
-  --gris-900: #333333;
+  --neutro-50: #f6f6f6; /* fondos suaves, filas, hover */
+  --neutro-100: #f3f3f3; /* fondos de cabecera y secciones */
+  --neutro-200: #dedbdb; /* bordes y separadores */
+  --neutro-400: #a3a3a3; /* bordes fuertes, deshabilitado */
+  --neutro-600: #757474; /* texto secundario */
+  --neutro-800: #454444; /* texto (= --color-neutro-texto) */
 
-  /* Tintes y azules */
+  /* Tinte casi blanco del primario, para fondos destacados */
   --primario-98: #f8f9ff;
-  --azul-50: #e3f2fd;
-  --indigo-50: #e8eaf6;
-  --azul-500: #2196f3;
-  --azul-700: #1976d2;
-
-  /* Estados (heredados de Bootstrap y Material) */
-  --estado-exito: #28a745;
-  --estado-peligro: #dc3545;
-  --estado-advertencia: #ffc107;
-  --estado-advertencia-texto: #856404;
-  --estado-info: #17a2b8;
-  --rojo-50: #ffebee;
-  --rojo-700: #d32f2f;
-  --rojo-800: #c62828;
 }
 
 /* ===== TIPOGRAFÍA (Tabla Desarrollo - pág. 26) ===== */
@@ -150,6 +122,18 @@
   --text-body2-line: 21px;
   --text-button-size: 12px;
   --text-button-line: 19px;
+
+  /* Pasos propios del proyecto, fuera de la tabla de la guía */
+  --text-subtitulo-size: 16px; /* subtítulos y nombres destacados dentro de una tarjeta */
+  --text-cifra-size: 40px; /* cifras grandes de los indicadores (KPI) */
+
+  /* Iconos (Material Icons). Si el icono fija width/height, usar el mismo token */
+  --tam-icono-xs: 16px; /* dentro de etiquetas y texto pequeño */
+  --tam-icono-sm: 20px; /* junto a texto de cuerpo y en botones */
+  --tam-icono-md: 24px; /* tamaño normal de Material */
+  --tam-icono-lg: 32px; /* cabeceras de tarjeta e indicadores */
+  --tam-icono-xl: 48px; /* estados vacíos y avisos */
+  --tam-icono-xxl: 64px; /* ilustración principal de una página */
 }
 
 /* ===== MIGA DE PAN (pág. 49) ===== */

@@ -26,7 +26,7 @@ describe('DocumentGeneratorService', () => {
 
   it('paz y salvo va a su endpoint con FormData', () => {
     service.generarDocumento(request('OFICIO_PAZ_SALVO')).subscribe();
-    const req = httpMock.expectOne(`${environment.apiUrl}/solicitudes-pazysalvo/generar-documento/7`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/solicitudes-pazysalvo/7/documento-generado`);
     const body = req.request.body as FormData;
     expect(body.get('numeroDocumento')).toBe('001-2026');
     expect(body.get('fechaDocumento')).toBe('2026-01-05');
@@ -34,10 +34,10 @@ describe('DocumentGeneratorService', () => {
     req.flush(new Blob());
   });
 
-  it('homologación y reingreso van a /documentos/generar con la petición tal cual', () => {
+  it('homologación y reingreso van a /documentos-generados con la petición tal cual', () => {
     for (const tipo of ['OFICIO_HOMOLOGACION', 'RESOLUCION_REINGRESO']) {
       service.generarDocumento(request(tipo)).subscribe();
-      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/generar`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos-generados`);
       expect(req.request.body.tipoDocumento).toBe(tipo);
       req.flush(new Blob());
     }

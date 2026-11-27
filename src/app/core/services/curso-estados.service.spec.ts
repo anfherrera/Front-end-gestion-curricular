@@ -19,10 +19,23 @@ describe('CursoEstadosService', () => {
 
   it('da el color y el icono de cada estado, con valores por defecto si no lo conoce', () => {
     expect(service.getColorEstado('Preinscripción')).toBe(COLORS.success);
-    expect(service.getColorEstado('Cerrado')).toBe(COLORS.error);
-    expect(service.getColorEstado('Otro')).toBe('#6c757d');
+    expect(service.getColorEstado('Cerrado')).toBe(COLORS.neutralSecondary);
+    expect(service.getColorEstado('Otro')).toBe(COLORS.neutralSecondary);
     expect(service.getIconoEstado('Inscripción')).toBe('person_add');
     expect(service.getIconoEstado('Otro')).toBe('help_outline');
+  });
+
+  it('da la clase de etiqueta de cada estado; ninguno usa el color de error', () => {
+    expect(service.getClaseEstado('Borrador')).toBe('estado-default');
+    expect(service.getClaseEstado('Abierto')).toBe('estado-proceso');
+    expect(service.getClaseEstado('Publicado')).toBe('estado-enviada');
+    expect(service.getClaseEstado('Preinscripción')).toBe('estado-aprobada');
+    expect(service.getClaseEstado('Inscripción')).toBe('estado-aprobada');
+    expect(service.getClaseEstado('Cerrado')).toBe('estado-default');
+    expect(service.getClaseEstado(undefined)).toBe('estado-default');
+    // El backend manda algunos estados sin tilde
+    expect(service.getClaseEstado('Preinscripcion')).toBe('estado-aprobada');
+    expect(service.getIconoEstado('Inscripcion')).toBe('person_add');
   });
 
   it('valida las transiciones de estado', () => {

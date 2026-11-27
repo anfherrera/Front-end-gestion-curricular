@@ -1,17 +1,17 @@
 /* Contenedor principal de notificaciones */
 .notifications-container {
-  position: relative !important;
-  display: inline-block !important;
-  overflow: visible !important;
+  position: relative;
+  display: inline-block;
+  overflow: visible;
 }
 
 /* Botón del icono de notificaciones */
 .notifications-button {
-  position: relative !important;
-  color: var(--color-primario) !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 50% !important;
-  overflow: visible !important;
+  position: relative;
+  color: var(--color-primario);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radio-circulo);
+  overflow: visible;
 }
 
 .notifications-button:hover {
@@ -19,10 +19,10 @@
 }
 
 .notification-icon {
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
-  color: var(--color-primario) !important;
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
+  color: var(--color-primario);
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
 }
 
@@ -31,10 +31,10 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background: #dc2626;
+  background: var(--color-error);
   color: white;
-  border-radius: 50%;
-  font-size: 10px;
+  border-radius: var(--radio-circulo);
+  font-size: var(--text-body2-size);
   font-weight: bold;
   min-width: 20px;
   width: 20px;
@@ -53,7 +53,7 @@
 }
 
 .notification-badge.urgent {
-  background: #dc2626;
+  background: var(--color-error);
 }
 
 /* Menú de notificaciones */
@@ -61,7 +61,7 @@
   min-width: 420px;
   max-width: 480px;
   max-height: 600px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
   box-shadow: var(--sombra-2);
 }
@@ -84,13 +84,13 @@
 }
 
 .header-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
 }
 
 .header-text {
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
 }
 
@@ -101,7 +101,7 @@
 
 .mark-all-button,
 .refresh-button {
-  color: white !important;
+  color: white;
   width: 32px;
   height: 32px;
   line-height: 32px;
@@ -116,7 +116,7 @@
 .menu-content {
   max-height: 400px;
   overflow-y: auto;
-  background-color: var(--gris-50);
+  background-color: var(--neutro-50);
 }
 
 /* Estado de carga */
@@ -126,11 +126,11 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  color: var(--gris-700);
+  color: var(--neutro-600);
 }
 
 .loading-icon {
-  font-size: 32px;
+  font-size: var(--tam-icono-lg);
   width: 32px;
   height: 32px;
   margin-bottom: 12px;
@@ -138,14 +138,14 @@
 }
 
 .loading-text {
-  font-size: 14px;
-  color: var(--gris-700);
+  font-size: var(--text-body-size);
+  color: var(--neutro-600);
 }
 
 /* Lista de notificaciones */
 .notifications-list {
   padding: 12px 0;
-  background-color: var(--gris-50);
+  background-color: var(--neutro-50);
 }
 
 /* Item de notificación */
@@ -154,43 +154,43 @@
   align-items: flex-start;
   padding: 16px;
   cursor: pointer;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--neutro-200);
   position: relative;
   background-color: white;
   margin: 0 8px;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   margin-bottom: 8px;
   box-shadow: var(--sombra-1);
 }
 
 .notification-item:hover {
-  background-color: var(--gris-50);
+  background-color: var(--neutro-50);
 }
 
 .notification-item.unread {
-  background-color: #f0f4ff;
+  background-color: var(--primario-98);
   border-left: 4px solid var(--color-primario);
   box-shadow: var(--sombra-1);
 }
 
 .notification-item.urgent {
-  border-left: 4px solid #e5e7eb;
+  border-left: 4px solid var(--neutro-200);
   background-color: white;
   box-shadow: var(--sombra-1);
 }
 
 .notification-item.urgent.unread {
-  border-left: 4px solid #e5e7eb;
-  background-color: #f0f4ff;
+  border-left: 4px solid var(--neutro-200);
+  background-color: var(--primario-98);
   box-shadow: var(--sombra-1);
 }
 
 .notification-item.urgent:hover {
-  background-color: var(--gris-50);
+  background-color: var(--neutro-50);
 }
 
 .notification-item.unread:hover {
-  background-color: #e0e8ff;
+  background-color: var(--primario-90);
 }
 
 /* Contenedor del icono */
@@ -204,14 +204,14 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background-color: rgba(0, 19, 140, 0.08);
+  border-radius: var(--radio-circulo);
+  background-color: color-mix(in srgb, var(--color-primario) 8%, transparent);
 }
 
 .notification-type-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
 }
 
 .unread-dot {
@@ -221,7 +221,7 @@
   width: 12px;
   height: 12px;
   background: var(--color-primario);
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   border: 2px solid white;
   box-shadow: var(--sombra-1);
 }
@@ -245,25 +245,25 @@
 }
 
 .notification-title {
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
-  color: #1f2937;
+  color: var(--neutro-800);
   margin: 0;
   line-height: 1.4;
   flex: 1;
 }
 
 .notification-time {
-  font-size: 11px;
-  color: #6b7280;
+  font-size: var(--text-body2-size);
+  color: var(--neutro-600);
   white-space: nowrap;
   font-weight: 500;
   margin-top: 2px;
 }
 
 .notification-message {
-  font-size: 13px;
-  color: #4b5563;
+  font-size: var(--text-body2-size);
+  color: var(--neutro-600);
   margin: 0 0 10px 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -281,12 +281,12 @@
 }
 
 .category-chip {
-  font-size: 11px;
+  font-size: var(--text-body2-size);
   height: 24px;
   line-height: 24px;
   font-weight: 500;
   padding: 0 10px;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
 }
 
 /* Indicador de urgencia */
@@ -297,10 +297,10 @@
 }
 
 .urgency-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: #6b7280;
+  font-size: var(--tam-icono-xs);
+  width: var(--tam-icono-xs);
+  height: var(--tam-icono-xs);
+  color: var(--neutro-600);
 }
 
 /* Estado vacío */
@@ -314,23 +314,23 @@
 }
 
 .empty-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  color: var(--gris-300);
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
+  color: var(--neutro-400);
   margin-bottom: 16px;
 }
 
 .empty-title {
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   margin: 0 0 8px 0;
 }
 
 .empty-message {
-  font-size: 14px;
-  color: var(--gris-550);
+  font-size: var(--text-body-size);
+  color: var(--neutro-600);
   margin: 0;
   line-height: 1.4;
 }
@@ -339,7 +339,7 @@
 .menu-footer {
   padding: 12px 16px;
   background-color: white;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--neutro-200);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -347,17 +347,17 @@
 
 .view-all-button {
   width: 100%;
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
 }
 
 .view-all-button:hover {
-  background-color: rgba(0, 19, 140, 0.08) !important;
+  background-color: color-mix(in srgb, var(--color-primario) 8%, transparent) !important;
 }
 
 /* Animación mínima solo para el spinner de carga */
@@ -380,16 +380,16 @@
 }
 
 .menu-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--neutro-50);
 }
 
 .menu-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+  background: var(--neutro-200);
+  border-radius: var(--radio-xs);
 }
 
 .menu-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: var(--neutro-400);
 }
 
 /* Responsive */
@@ -404,11 +404,11 @@
   }
 
   .notification-title {
-    font-size: 13px;
+    font-size: var(--text-body2-size);
   }
 
   .notification-message {
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 
   .menu-header {

@@ -36,7 +36,7 @@ import { UsuarioDTORespuesta } from '@core/models/usuario.interface';
     MatChipsModule,
   ],
   templateUrl: './manage-users.component.html',
-  styleUrl: './manage-users.component.css',
+  styleUrl: '../admin-lista-comun.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageUsersComponent implements OnInit {
@@ -102,7 +102,7 @@ export class ManageUsersComponent implements OnInit {
       titulo: !usuario.estado_usuario ? 'Activar usuario' : 'Desactivar usuario',
       textoConfirmar: !usuario.estado_usuario ? 'Activar' : 'Desactivar',
       peligro: !!usuario.estado_usuario,
-      mensaje: `¿Estás seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`,
+      mensaje: `¿Está seguro de ${nuevoEstado} a ${usuario.nombre_completo}?`,
     })
       .pipe(filter(Boolean))
       .subscribe(() => {
@@ -168,24 +168,5 @@ export class ManageUsersComponent implements OnInit {
           },
         });
       });
-  }
-
-  getRolChipColor(rol: string): string {
-    const rolLower = rol?.toLowerCase() || '';
-    if (rolLower.includes('admin')) return 'warn';
-    if (rolLower.includes('coordinador')) return 'accent';
-    if (rolLower.includes('funcionario')) return 'primary';
-    return '';
-  }
-
-  getRolClass(rol: string): string {
-    const rolLower = rol?.toLowerCase() || '';
-    if (rolLower.includes('admin')) return 'rol-admin';
-    if (rolLower.includes('coordinador')) return 'rol-coordinador';
-    if (rolLower.includes('funcionario')) return 'rol-funcionario';
-    if (rolLower.includes('estudiante')) return 'rol-estudiante';
-    if (rolLower.includes('secretaria')) return 'rol-secretaria';
-    if (rolLower.includes('docente')) return 'rol-docente';
-    return 'rol-default';
   }
 }

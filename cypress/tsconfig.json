@@ -7,11 +7,7 @@
     "isolatedModules": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["cypress", "node"],
-    "typeRoots": [
-      "../node_modules/@types",
-      "../node_modules/cypress/types"
-    ]
+    "types": ["cypress", "node"]
   },
   "include": [
     "**/*.ts"

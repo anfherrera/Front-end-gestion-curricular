@@ -1,0 +1,115 @@
+<div class="homologacion-container">
+  <!-- Documentación requerida -->
+  <app-required-docs
+    [requiredFiles]="documentosRequeridos"
+    [archivos]="archivosActuales()"
+    [programaEstudiante]="usuario?.objPrograma?.nombre_programa || ''"
+  >
+  </app-required-docs>
+
+  <!-- Formulario de Solicitud -->
+  <app-card-container title="Información de la Solicitud" icon="assignment">
+    <form [formGroup]="solicitudForm" class="solicitud-form">
+      <!-- Campos de programas -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field-full">
+          <mat-label>Programa Académico de Origen</mat-label>
+          <input matInput formControlName="programa_origen" maxlength="200" placeholder="Ej: Ingeniería de Sistemas" />
+          <mat-hint>Programa académico donde el estudiante cursó las asignaturas que desea homologar</mat-hint>
+          <mat-hint align="end">{{ solicitudForm.get('programa_origen')?.value?.length || 0 }}/200</mat-hint>
+          @if (solicitudForm.get('programa_origen')?.hasError('maxlength')) {
+            <mat-error> El programa de origen no puede exceder 200 caracteres </mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field-full">
+          <mat-label>Programa Académico de Destino</mat-label>
+          <input
+            matInput
+            formControlName="programa_destino"
+            maxlength="200"
+            placeholder="Ej: Ingeniería en Automática Industrial"
+          />
+          <mat-hint>Programa académico donde se homologarán las asignaturas</mat-hint>
+          <mat-hint align="end">{{ solicitudForm.get('programa_destino')?.value?.length || 0 }}/200</mat-hint>
+          @if (solicitudForm.get('programa_destino')?.hasError('maxlength')) {
+            <mat-error> El programa de destino no puede exceder 200 caracteres </mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </form>
+  </app-card-container>
+
+  <!-- Subir Archivos -->
+  <app-card-container title="Subir Archivos" icon="upload_file">
+    <app-file-upload
+      [archivos]="archivosActuales()"
+      (archivosChange)="onArchivosChange($event)"
+      [reset]="resetFileUpload()"
+    >
+    </app-file-upload>
+
+    <div class="enviar-solicitud mt-4">
+      <!-- Mensaje informativo de documentos faltantes (NO bloquea el envío) -->
+      @if (obtenerDocumentosFaltantes().length > 0 && archivosActuales().length > 0) {
+        <div class="validacion-mensaje-informativo">
+          <mat-icon color="primary">info</mat-icon>
+          <span>
+            <strong>Documentos sugeridos (no obligatorios):</strong>
+            <p class="mensaje-guia">
+              Los siguientes documentos aún no se han detectado en los archivos subidos. Puede enviar la solicitud de
+              todas formas, pero asegúrese de haber subido todos los documentos requeridos.
+              <strong>Nota:</strong> Si los archivos tienen nombres ligeramente diferentes, el sistema puede no
+              detectarlos automáticamente.
+            </p>
+            <ul class="documentos-faltantes">
+              @for (doc of obtenerDocumentosFaltantes(); track doc) {
+                <li>{{ doc }}</li>
+              }
+            </ul>
+          </span>
+        </div>
+      }
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="btn-enviar"
+        [disabled]="!puedeEnviar()"
+        (click)="onSolicitudEnviada()"
+      >
+        Enviar Solicitud
+      </button>
+    </div>
+
+    @if (ultimaRechazada(); as rechazada) {
+      <div class="rechazo-box">
+        <mat-icon color="warn">error</mat-icon>
+        <span>
+          <strong>Solicitud rechazada:</strong>
+          {{ rechazada.comentarios || 'Debe revisar los documentos y volver a enviarlos.' }}
+        </span>
+      </div>
+    }
+  </app-card-container>
+
+  <!-- Seguimiento de solicitud -->
+  <app-card-container title="Seguimiento de solicitud" icon="track_changes">
+    @if (solicitudes().length === 0) {
+      <p class="sin-solicitudes">No se ha enviado ninguna solicitud aún.</p>
+    }
+
+    @if (solicitudes().length > 0) {
+      <app-request-status-table
+        [solicitudes]="solicitudes()"
+        [showOficio]="true"
+        [showComentarios]="true"
+        (verComentarios)="verComentarios($event)"
+        (descargarOficio)="descargarOficio($event.id, $event.nombreArchivo)"
+      >
+      </app-request-status-table>
+    }
+  </app-card-container>
+</div>

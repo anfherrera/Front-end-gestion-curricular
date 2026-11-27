@@ -9,13 +9,14 @@ import {
   PrioridadRecomendacion,
   Recomendacion,
 } from '@core/models/estadisticas/cursos-verano.model';
+import { COLORS } from '@core/design-system/design-tokens';
 
 const ORDEN_PRIORIDAD: Record<PrioridadRecomendacion, number> = { CRITICA: 0, ALTA: 1, MEDIA: 2, BAJA: 3 };
 const COLOR_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
-  CRITICA: '#DC2626',
-  ALTA: '#EF4444',
-  MEDIA: '#F59E0B',
-  BAJA: '#10B981',
+  CRITICA: COLORS.errorText,
+  ALTA: COLORS.primary,
+  MEDIA: COLORS.tertiary,
+  BAJA: COLORS.neutralSecondary,
 };
 const ETIQUETA_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
   CRITICA: 'Crítica',
@@ -55,7 +56,7 @@ export class RecomendacionesCursosVeranoComponent {
   }
 
   colorPrioridad(prioridad: string): string {
-    return COLOR_PRIORIDAD[prioridad as PrioridadRecomendacion] || '#6B7280';
+    return COLOR_PRIORIDAD[prioridad as PrioridadRecomendacion] || COLORS.neutralSecondary;
   }
 
   etiquetaPrioridad(prioridad: string): string {

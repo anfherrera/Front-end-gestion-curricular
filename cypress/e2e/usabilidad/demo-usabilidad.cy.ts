@@ -153,7 +153,7 @@ describe('Usabilidad - metricas', () => {
         win.localStorage.setItem('tokenExp', String(exp));
         win.localStorage.setItem('userRole', 'estudiante');
       });
-      cy.intercept('GET', '**/api/**cursos-intersemestrales/**', { statusCode: 200, body: [] }).as('cursosApi');
+      cy.intercept('GET', /\/api\/cursos-verano\//, { statusCode: 200, body: [] }).as('cursosApi');
       cy.visit('/estudiante/cursos-intersemestrales');
       cy.esperarCargaCompleta();
     });
@@ -245,12 +245,9 @@ describe('Usabilidad - metricas', () => {
       cy.registrarInteraccionExitosa();
     });
 
-    it('U-018: Etiquetas de pestañas claras (Dashboard General, Cursos de Verano)', () => {
-      cy.get('body').then($b => {
-        const t = $b.text();
-        expect(t).to.include('Dashboard');
-        expect(t.includes('Verano') || t.includes('Cursos')).to.be.true;
-      });
+    it('U-018: Etiquetas de pestañas claras (Resumen general, Cursos de Verano)', () => {
+      cy.contains('[role="tab"]', 'Resumen general').should('be.visible');
+      cy.contains('[role="tab"]', 'Cursos de Verano').should('be.visible');
       cy.registrarInteraccionExitosa();
     });
   });

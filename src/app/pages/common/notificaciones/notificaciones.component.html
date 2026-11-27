@@ -2,18 +2,14 @@
   <!-- Header -->
   <div class="page-header">
     <div class="header-content">
-      <div class="header-title-section">
-        <mat-icon class="header-icon">notifications</mat-icon>
-        <h1>Notificaciones</h1>
-      </div>
       <div class="header-actions">
         <button mat-raised-button color="primary" (click)="cargarNotificaciones()" [disabled]="isLoading()">
           <mat-icon>refresh</mat-icon>
           Actualizar
         </button>
         <button
-          mat-raised-button
-          color="accent"
+          mat-stroked-button
+          color="primary"
           (click)="marcarTodasComoLeidas()"
           [disabled]="isLoading() || notificacionesNoLeidas().length === 0"
         >
@@ -87,7 +83,7 @@
               <p>No hay notificaciones para el filtro seleccionado.</p>
             }
             @if (!filtroTipoSolicitud) {
-              <p>No tienes notificaciones en este momento.</p>
+              <p>No tiene notificaciones en este momento.</p>
             }
           </div>
         }

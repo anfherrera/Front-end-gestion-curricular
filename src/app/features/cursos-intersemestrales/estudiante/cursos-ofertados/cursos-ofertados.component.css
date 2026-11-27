@@ -1,0 +1,53 @@
+.cargando,
+.sin-datos {
+  text-align: center;
+  font-size: var(--text-subtitulo-size);
+  color: var(--neutro-600);
+  padding: 16px 0;
+}
+
+.mensaje-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-sm);
+  margin: 24px 0;
+}
+
+.mensaje-vacio .icono-vacio {
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
+  color: var(--neutro-600);
+  margin-bottom: 16px;
+}
+
+.mensaje-vacio h3 {
+  margin: 0 0 12px 0;
+  color: var(--neutro-800);
+  font-size: var(--text-h2-size);
+  font-weight: 500;
+}
+
+.mensaje-vacio p {
+  margin: 8px 0;
+  color: var(--neutro-600);
+  line-height: 1.6;
+  text-align: center;
+  max-width: 600px;
+}
+
+.mensaje-vacio .sugerencia {
+  display: block;
+  margin-top: 12px;
+  font-size: var(--text-body2-size);
+  color: var(--neutro-600);
+  font-style: italic;
+}
+
+app-curso-list {
+  margin-top: 16px;
+}

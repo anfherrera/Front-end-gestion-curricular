@@ -9,89 +9,46 @@ export class ApiEndpoints {
   };
 
   // ===== PERÍODOS ACADÉMICOS =====
+  // Rutas de la convención del backend (EST-7): GET /, GET /?desde=AAAA, GET /actual y GET /{periodo}.
   static readonly PERIODOS_ACADEMICOS = {
-    BASE: `${this.BASE_URL}/periodos-academicos`,
-    TODOS: `${this.BASE_URL}/periodos-academicos/todos`,
-    FUTUROS: `${this.BASE_URL}/periodos-academicos/futuros`,
-    RECIENTES: `${this.BASE_URL}/periodos-academicos/recientes`,
-    ACTUAL: `${this.BASE_URL}/periodos-academicos/actual`,
-    VALIDAR: (periodo: string) => `${this.BASE_URL}/periodos-academicos/validar/${periodo}`,
-    ADMIN: {
-      PERIODO_ACTIVO: `${this.BASE_URL}/periodos-academicos/admin/periodo-activo`,
+    TODOS: `${this.BASE_URL}/periodos-academicos`,
+    /** Últimos 5 años, sin bajar de 2020 (antes /recientes). */
+    get RECIENTES(): string {
+      return `${environment.apiUrl}/periodos-academicos?desde=${Math.max(2020, new Date().getFullYear() - 4)}`;
     },
+    ACTUAL: `${this.BASE_URL}/periodos-academicos/actual`,
   };
 
   // ===== CURSOS INTERSEMESTRALES =====
   static readonly CURSOS_INTERSEMESTRALES = {
-    BASE: `${this.BASE_URL}/cursos-intersemestrales`,
-    BY_ID: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}`,
-    BY_ESTUDIANTE: (estudianteId: string) => `${this.BASE_URL}/cursos-intersemestrales/estudiante/${estudianteId}`,
-    BY_ESTADO: (estado: string) => `${this.BASE_URL}/cursos-intersemestrales/estado/${estado}`,
-    APROBAR: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/aprobar`,
-    RECHAZAR: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/rechazar`,
-    DOCUMENTOS: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/cursos-intersemestrales/${id}/documentos/upload`,
-
     // ===== CURSOS DE VERANO =====
     CURSOS_VERANO: {
-      // Endpoints principales
-      DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/disponibles`, // Para estudiantes
-      TODOS: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos`, // Para funcionarios
+      // Cursos (EST-7, paso 8a): GET sin filtros (staff), ?disponibles=true (estudiantes),
+      // ?estado=preinscripcion|inscripcion y ?formato=pdf; POST; GET, PUT y DELETE /{id}
+      CURSOS: `${this.BASE_URL}/cursos-verano/cursos`,
+      // Períodos con cursos visibles para los estudiantes, del más reciente al más antiguo (BUG-51)
+      PERIODOS: `${this.BASE_URL}/cursos-verano/cursos/periodos`,
+      ESTUDIANTES_CURSO: (idCurso: number) => `${this.BASE_URL}/cursos-verano/cursos/${idCurso}/estudiantes`,
 
-      // Endpoints de gestión (CRUD)
-      GESTION: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano`, // Para crear, actualizar, eliminar
-
-      // Endpoints específicos por estado
-      PREINSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/preinscripcion`,
-      INSCRIPCION: `${this.BASE_URL}/cursos-intersemestrales/cursos/inscripcion`,
-
-      // Endpoints de gestión
-      PREINSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones`,
-      INSCRIPCIONES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones`,
-      SOLICITUDES: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/solicitudes`,
-      CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-intersemestrales/materias-disponibles`,
-      CONDICIONES: `${this.BASE_URL}/cursos-intersemestrales/condiciones-solicitud`,
-      SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo`,
-      SOLICITUDES_CURSO_NUEVO_USUARIO: (idUsuario: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/solicitudes-curso-nuevo/usuario/${idUsuario}`,
-      PREINSCRIPCIONES_CURSO: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/curso/${idCurso}`,
-      INSCRIPCIONES_CURSO: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/curso/${idCurso}`,
       ESTUDIANTES_ELEGIBLES: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/estudiantes-elegibles/${idCurso}`,
-      ESTUDIANTES_CURSO: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes`,
-      APROBAR_PREINSCRIPCION: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/aprobar`,
-      RECHAZAR_PREINSCRIPCION: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/preinscripciones/${id}/rechazar`,
-      VALIDAR_PAGO: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/validar-pago`,
-      COMPLETAR_INSCRIPCION: (id: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/inscripciones/${id}/completar`,
-      ACEPTAR_INSCRIPCION: (idPreinscripcion: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/aceptar`,
-      RECHAZAR_INSCRIPCION: (idPreinscripcion: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/inscripciones/${idPreinscripcion}/rechazar`,
+        `${this.BASE_URL}/cursos-verano/cursos/${idCurso}/estudiantes-elegibles`,
 
-      // Nuevos endpoints de permisos
-      PERMISOS_ESTADO: (estado: string, rol: string) =>
-        `${this.BASE_URL}/cursos-intersemestrales/permisos-estado/${estado}/${rol}`,
+      // Preinscripciones e inscripciones (EST-7, paso 8b): POST; GET ?usuario= o ?curso=;
+      // PUT /{id}/estado con nuevoEstado y, en preinscripciones, PUT /{id}/observaciones
+      PREINSCRIPCIONES: `${this.BASE_URL}/cursos-verano/preinscripciones`,
+      INSCRIPCIONES: `${this.BASE_URL}/cursos-verano/inscripciones`,
+      SOLICITUDES_CURSO_NUEVO: `${this.BASE_URL}/cursos-verano/solicitudes-curso-nuevo`,
 
-      // Endpoint de exportación a Excel
-      EXPORTAR_SOLICITUDES_EXCEL: `${this.BASE_URL}/cursos-intersemestrales/solicitudes/export/excel`,
+      // Catálogos (EST-7, paso 8c): materias, materias-disponibles, materias-filtro, docentes, salones y condiciones
+      CATALOGOS: `${this.BASE_URL}/cursos-verano/catalogos`,
+      CURSOS_DISPONIBLES: `${this.BASE_URL}/cursos-verano/catalogos/materias-disponibles`,
+      CONDICIONES: `${this.BASE_URL}/cursos-verano/catalogos/condiciones`,
+      SALONES: `${this.BASE_URL}/cursos-verano/catalogos/salones`,
 
-      // Endpoints de exportación a PDF
-      EXPORTAR_CURSOS_PDF: `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/todos/export/pdf`,
-      EXPORTAR_ESTUDIANTES_PDF: (idCurso: number) =>
-        `${this.BASE_URL}/cursos-intersemestrales/cursos-verano/${idCurso}/estudiantes/export/pdf`,
-
-      // Endpoint de salones
-      SALONES: `${this.BASE_URL}/cursos-intersemestrales/salones`,
-
-      // Endpoint de estadísticas del dashboard
-      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-intersemestrales/dashboard/estadisticas`,
+      // Reportes (EST-7, paso 8c): solicitudes (?formato=excel), dashboard y seguimiento (?usuario=)
+      REPORTES_SOLICITUDES: `${this.BASE_URL}/cursos-verano/reportes/solicitudes`,
+      DASHBOARD_ESTADISTICAS: `${this.BASE_URL}/cursos-verano/reportes/dashboard`,
+      SEGUIMIENTO: `${this.BASE_URL}/cursos-verano/reportes/seguimiento`,
     },
   };
 
@@ -135,8 +92,7 @@ export class ApiEndpoints {
   static readonly SOLICITUDES = {
     BASE: `${this.BASE_URL}/solicitudes`,
     HISTORIAL: `${this.BASE_URL}/solicitudes/historial`, // Historial completo de todas las solicitudes
-    HISTORIAL_BY_ID: (id: number) => `${this.BASE_URL}/solicitudes/${id}/historial`, // Historial de una solicitud específica
-    EXPORTAR_PDF: `${this.BASE_URL}/solicitudes/historial/export/pdf`, // Exportar historial a PDF
+    BY_ID: (id: number) => `${this.BASE_URL}/solicitudes/${id}`, // Una solicitud con sus estados y documentos
   };
 
   // ===== PRUEBAS ECAES =====
@@ -153,25 +109,7 @@ export class ApiEndpoints {
 
   // ===== MÓDULO ESTADÍSTICO =====
   static readonly MODULO_ESTADISTICO = {
-    BASE: `${this.BASE_URL}/modulo-estadistico`,
-    DASHBOARD: `${this.BASE_URL}/modulo-estadistico/dashboard`,
-    REPORTES: `${this.BASE_URL}/modulo-estadistico/reportes`,
-    ESTADISTICAS: `${this.BASE_URL}/modulo-estadistico/estadisticas`,
-    EXPORTAR: (formato: string) => `${this.BASE_URL}/modulo-estadistico/exportar/${formato}`,
-
-    // ===== ENDPOINTS DE ESTADÍSTICAS =====
-    ESTADISTICAS_GLOBALES: `${this.BASE_URL}/estadisticas/globales`,
-    ESTADISTICAS_PERIODO: `${this.BASE_URL}/estadisticas/periodo`,
-    ESTADISTICAS_PROCESO: (nombreProceso: string) => `${this.BASE_URL}/estadisticas/proceso/${nombreProceso}`,
-    ESTADISTICAS_PROGRAMA: (idPrograma: number) => `${this.BASE_URL}/estadisticas/programa/${idPrograma}`,
-    ESTADISTICAS_ESTADO: (estado: string) => `${this.BASE_URL}/estadisticas/estado/${estado}`,
-    ESTADISTICAS_FILTRADAS: `${this.BASE_URL}/estadisticas/filtradas`,
     RESUMEN_COMPLETO: `${this.BASE_URL}/estadisticas/resumen-completo`,
-
-    // ===== Endpoints del backend =====
-    POR_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porPeriodoEstadoPrograma`,
-    POR_SOLICITUD_PERIODO_ESTADO_PROGRAMA: `${this.BASE_URL}/estadisticas/porSolicitudPeriodoEstadoPrograma`,
-    POR_PROCESO: `${this.BASE_URL}/estadisticas/porProceso`,
 
     // ===== ENDPOINTS DE ESTUDIANTES =====
     TOTAL_ESTUDIANTES: `${this.BASE_URL}/estadisticas/total-estudiantes`,
@@ -192,18 +130,9 @@ export class ApiEndpoints {
     // ===== ENDPOINTS OPTIMIZADOS - CURSOS DE VERANO =====
     CURSOS_VERANO_TENDENCIAS_TEMPORALES: `${this.BASE_URL}/estadisticas/cursos-verano/tendencias-temporales`,
 
-    // ===== ENDPOINTS DE EXPORTACIÓN =====
-    EXPORTAR_PDF: `${this.BASE_URL}/estadisticas/export/pdf`,
-    EXPORTAR_EXCEL: `${this.BASE_URL}/estadisticas/export/excel`,
-
-    // ===== ENDPOINTS DE EXPORTACIÓN ESPECÍFICOS =====
-    // Dashboard General
-    EXPORTAR_PDF_GENERAL: `${this.BASE_URL}/estadisticas/export/pdf/general`,
-    EXPORTAR_EXCEL_GENERAL: `${this.BASE_URL}/estadisticas/export/excel/general`,
-
-    // Cursos de Verano
-    EXPORTAR_PDF_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/pdf/cursos-verano`,
-    EXPORTAR_EXCEL_CURSOS_VERANO: `${this.BASE_URL}/estadisticas/export/excel/cursos-verano`,
+    // ===== Reportes (EST-7, paso 9): ?formato=pdf|excel =====
+    REPORTES: `${this.BASE_URL}/estadisticas/reportes`,
+    CURSOS_VERANO_REPORTES: `${this.BASE_URL}/estadisticas/cursos-verano/reportes`,
   };
 
   // ===== DOCUMENTOS =====
@@ -218,11 +147,11 @@ export class ApiEndpoints {
   // ===== ARCHIVOS =====
   static readonly ARCHIVOS = {
     BASE: `${this.BASE_URL}/archivos`,
-    SUBIR_PDF: `${this.BASE_URL}/archivos/subir/pdf`,
+    SUBIR_PDF: `${this.BASE_URL}/archivos`,
     DESCARGAR_PDF: (filename: string) =>
-      `${this.BASE_URL}/archivos/descargar/pdf?filename=${encodeURIComponent(filename)}`,
+      `${this.BASE_URL}/archivos?nombre=${encodeURIComponent(filename)}`,
     DESCARGAR_PDF_POR_INSCRIPCION: (inscripcionId: number) =>
-      `${this.BASE_URL}/archivos/descargar/pdf/inscripcion/${inscripcionId}`,
+      `${this.BASE_URL}/archivos/inscripciones/${inscripcionId}`,
   };
 
   // ===== ROLES =====

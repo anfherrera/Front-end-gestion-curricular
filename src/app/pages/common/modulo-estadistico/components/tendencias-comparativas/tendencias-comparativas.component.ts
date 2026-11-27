@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs';
 import { EstadisticasService } from '@core/services/estadisticas.service';
 import { TendenciasComparativasResponse } from '@core/models/estadisticas/tendencias.model';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { COLORS } from '@core/design-system/design-tokens';
 
 @Component({
   selector: 'app-tendencias-comparativas',
@@ -96,13 +97,13 @@ export class TendenciasComparativasComponent implements OnInit, OnDestroy, OnCha
   getTendenciaColor(tendencia: string): string {
     switch (tendencia.toLowerCase()) {
       case 'creciente':
-        return '#10b981'; // Verde
+        return COLORS.success;
       case 'decreciente':
-        return '#ef4444'; // Rojo
+        return COLORS.errorText;
       case 'estable':
-        return '#3b82f6'; // Azul
+        return COLORS.tertiary;
       default:
-        return '#6b7280'; // Gris
+        return COLORS.neutralSecondary;
     }
   }
 

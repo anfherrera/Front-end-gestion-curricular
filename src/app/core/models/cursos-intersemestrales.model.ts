@@ -1,6 +1,6 @@
 /**
  * Modelos de cursos intersemestrales (cursos de verano), con la forma en que
- * los devuelve el backend (/api/cursos-intersemestrales).
+ * los devuelve el backend (/api/cursos-verano).
  */
 
 // ================== CATÁLOGOS ==================

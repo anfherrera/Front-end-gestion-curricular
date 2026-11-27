@@ -16,11 +16,11 @@
         <mat-icon [class.fa-spin]="loading()">refresh</mat-icon>
         {{ loading() ? 'Actualizando...' : 'Actualizar' }}
       </button>
-      <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading() || !data()">
+      <button mat-stroked-button color="primary" (click)="exportarPDF()" [disabled]="loading() || !data()">
         <mat-icon>picture_as_pdf</mat-icon>
         Exportar PDF
       </button>
-      <button mat-stroked-button (click)="exportarExcel()" [disabled]="loading() || !data()">
+      <button mat-stroked-button color="primary" (click)="exportarExcel()" [disabled]="loading() || !data()">
         <mat-icon>table_chart</mat-icon>
         Exportar Excel
       </button>
@@ -92,7 +92,7 @@
             <mat-icon>search</mat-icon>
             Aplicar Filtros
           </button>
-          <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading()">
+          <button mat-stroked-button color="primary" type="button" (click)="limpiarFiltros()" [disabled]="loading()">
             <mat-icon>clear</mat-icon>
             Limpiar
           </button>
@@ -587,10 +587,10 @@
                         <mat-card-content>
                           <div class="tendencia-header">
                             <h4>{{ materia.nombre }}</h4>
-                            <mat-chip [color]="'primary'" selected>
-                              <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
+                            <span class="etiqueta-estado estado-aprobada">
+                              <mat-icon aria-hidden="true">{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
                               {{ materia.porcentajeVariacion | number: '1.0-2' }}%
-                            </mat-chip>
+                            </span>
                           </div>
                           <div class="tendencia-datos">
                             <div class="dato-item">
@@ -632,10 +632,10 @@
                         <mat-card-content>
                           <div class="tendencia-header">
                             <h4>{{ materia.nombre }}</h4>
-                            <mat-chip [color]="'warn'" selected>
-                              <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
+                            <span class="etiqueta-estado estado-rechazada">
+                              <mat-icon aria-hidden="true">{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
                               {{ materia.porcentajeVariacion | number: '1.0-2' }}%
-                            </mat-chip>
+                            </span>
                           </div>
                           <div class="tendencia-datos">
                             <div class="dato-item">
@@ -677,10 +677,10 @@
                         <mat-card-content>
                           <div class="tendencia-header">
                             <h4>{{ materia.nombre }}</h4>
-                            <mat-chip [color]="'accent'" selected>
-                              <mat-icon>{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
+                            <span class="etiqueta-estado estado-enviada">
+                              <mat-icon aria-hidden="true">{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
                               {{ materia.porcentajeVariacion | number: '1.0-2' }}%
-                            </mat-chip>
+                            </span>
                           </div>
                           <div class="tendencia-datos">
                             <div class="dato-item">

@@ -17,26 +17,6 @@
   gap: 16px;
 }
 
-.header-title-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-icon {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
-  color: var(--color-primario);
-}
-
-h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--color-primario);
-}
-
 .header-actions {
   display: flex;
   gap: 12px;
@@ -46,8 +26,8 @@ h1 {
 .filters-section {
   margin-bottom: 24px;
   padding: 16px;
-  background: var(--gris-50);
-  border-radius: 8px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-sm);
 }
 
 /* Tabs */
@@ -57,55 +37,55 @@ h1 {
 
 /* Íconos de las pestañas en azul */
 .mat-mdc-tab-group mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label-container .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Pestaña activa - íconos también en azul */
 .mat-mdc-tab-label-active mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label-active .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label-active .mat-mdc-tab-label-content .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Para todas las pestañas */
 .mat-mdc-tab-label-content mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .tab-badge {
   margin-left: 8px;
   background: var(--color-primario);
   color: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 2px 8px;
-  font-size: 12px;
+  font-size: var(--text-body2-size);
   font-weight: 600;
 }
 
 .tab-badge.urgent {
-  background: #dc2626;
+  background: var(--color-error);
 }
 
 /* Contenido */
@@ -123,8 +103,8 @@ h1 {
 }
 
 .loading-container p {
-  color: var(--gris-700);
-  font-size: 14px;
+  color: var(--neutro-600);
+  font-size: var(--text-body-size);
 }
 
 /* Lista de notificaciones */
@@ -143,11 +123,11 @@ h1 {
 
 /* Forzar color azul en todos los íconos de las notificaciones */
 .notificacion-card mat-icon:not(.tipo-icon) {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .notificacion-card .actions-section mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .notificacion-card:hover {
@@ -157,17 +137,17 @@ h1 {
 
 .notificacion-card.unread {
   border-left-color: var(--color-primario);
-  background-color: #f0f4ff;
+  background-color: var(--primario-98);
 }
 
 .notificacion-card.urgent {
-  border-left-color: #dc2626;
+  border-left-color: var(--color-error);
   background-color: white;
 }
 
 .notificacion-card.urgent.unread {
   border-left-color: var(--color-primario);
-  background-color: #f0f4ff;
+  background-color: var(--primario-98);
 }
 
 .card-header-content {
@@ -183,7 +163,7 @@ h1 {
 }
 
 .tipo-icon {
-  font-size: 32px;
+  font-size: var(--tam-icono-lg);
   width: 32px;
   height: 32px;
 }
@@ -195,7 +175,7 @@ h1 {
   width: 12px;
   height: 12px;
   background: var(--color-primario);
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   border: 2px solid white;
 }
 
@@ -205,10 +185,10 @@ h1 {
 }
 
 mat-card-title {
-  font-size: 18px;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   margin-bottom: 8px;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 mat-card-subtitle {
@@ -221,14 +201,14 @@ mat-card-subtitle {
 .categoria-chip {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: var(--radio-md);
+  font-size: var(--text-body2-size);
   font-weight: 500;
 }
 
 .fecha {
-  color: var(--gris-550);
-  font-size: 13px;
+  color: var(--neutro-600);
+  font-size: var(--text-body2-size);
 }
 
 .actions-section {
@@ -239,25 +219,25 @@ mat-card-subtitle {
 }
 
 .actions-section mat-icon-button {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .actions-section mat-icon-button .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .urgent-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .urgent-icon.mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Contenido del card */
 .mensaje {
-  color: var(--gris-700);
-  font-size: 14px;
+  color: var(--neutro-600);
+  font-size: var(--text-body-size);
   line-height: 1.6;
   margin: 16px 0;
 }
@@ -268,39 +248,39 @@ mat-card-subtitle {
   gap: 8px;
   margin: 16px 0;
   padding: 12px;
-  background: var(--gris-50);
-  border-radius: 6px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-xs);
 }
 
 .metadata-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--gris-750);
-  font-size: 13px;
+  color: var(--neutro-800);
+  font-size: var(--text-body2-size);
 }
 
 .metadata-item mat-icon {
-  font-size: 18px;
+  font-size: var(--tam-icono-sm);
   width: 18px;
   height: 18px;
   color: var(--color-primario);
 }
 
 .actions-section mat-icon-button mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .actions-section mat-icon-button .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .actions-section .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .notificacion-card .actions-section mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Estado vacío */
@@ -314,23 +294,23 @@ mat-card-subtitle {
 }
 
 .empty-icon {
-  font-size: 80px;
-  width: 80px;
-  height: 80px;
-  color: var(--gris-300);
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
+  color: var(--neutro-400);
   margin-bottom: 24px;
 }
 
 .empty-state h2 {
-  font-size: 24px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
-  color: var(--gris-700);
+  color: var(--neutro-600);
   margin: 0 0 12px 0;
 }
 
 .empty-state p {
-  font-size: 16px;
-  color: var(--gris-550);
+  font-size: var(--text-subtitulo-size);
+  color: var(--neutro-600);
   margin: 0;
 }
 

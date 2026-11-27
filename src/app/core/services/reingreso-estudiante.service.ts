@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SolicitudReingresoDTOPeticion, SolicitudReingresoDTORespuesta } from '../models/procesos.model';
-import { SolicitudesAprobacionService } from './base/solicitudes-aprobacion.service';
+import { RolBandeja, SolicitudesAprobacionService } from './base/solicitudes-aprobacion.service';
 
-const BANDEJA_POR_ROL: Record<string, string> = {
-  funcionario: 'Funcionario',
-  coordinador: 'Coordinador',
-  secretaria: 'Secretaria',
-};
+const BANDEJAS: readonly RolBandeja[] = ['funcionario', 'coordinador', 'secretaria'];
 
 /** Solicitudes de reingreso de estudiantes. */
 @Injectable({
@@ -15,34 +11,24 @@ const BANDEJA_POR_ROL: Record<string, string> = {
 })
 export class ReingresoEstudianteService extends SolicitudesAprobacionService<SolicitudReingresoDTORespuesta> {
   constructor() {
-    super({
-      recurso: 'solicitudes-reingreso',
-      listar: 'listarSolicitud-Reingreso',
-      estado: 'actualizarEstadoSolicitud-Reingreso',
-      tipoOficio: 'OFICIO_REINGRESO',
-    });
+    super('solicitudes-reingreso');
   }
 
   crearSolicitud(solicitud: SolicitudReingresoDTOPeticion): Observable<unknown> {
-    return this.http.post(`${this.apiUrl}/crearSolicitud-Reingreso`, solicitud);
+    return this.http.post(this.apiUrl, solicitud);
   }
 
-  listarSolicitudes(): Observable<SolicitudReingresoDTORespuesta[]> {
-    return this.http.get<SolicitudReingresoDTORespuesta[]>(`${this.apiUrl}/listarSolicitudes-Reingreso`);
-  }
-
-  /** Funcionario, coordinador y secretaría tienen su bandeja; el estudiante usa /porUser. */
+  /** Funcionario, coordinador y secretaría tienen su bandeja de pendientes; los demás, GET /?rol=…. */
   listarSolicitudesPorRol(
     rol: string,
     idUsuario?: number,
     periodoAcademico?: string
   ): Observable<SolicitudReingresoDTORespuesta[]> {
-    const bandeja = BANDEJA_POR_ROL[rol.toLowerCase()];
-    if (bandeja)
-      return this.listar<SolicitudReingresoDTORespuesta>(`${this.rutas.listar}/${bandeja}`, periodoAcademico);
+    const rolBandeja = rol.toLowerCase() as RolBandeja;
+    if (BANDEJAS.includes(rolBandeja)) return this.bandeja(rolBandeja, 'pendientes', periodoAcademico);
 
     let params = this.paramsPeriodo(periodoAcademico).set('rol', rol);
     if (idUsuario) params = params.set('idUsuario', idUsuario.toString());
-    return this.http.get<SolicitudReingresoDTORespuesta[]>(`${this.apiUrl}/${this.rutas.listar}/porUser`, { params });
+    return this.http.get<SolicitudReingresoDTORespuesta[]>(this.apiUrl, { params });
   }
 }

@@ -1,16 +1,11 @@
 <div class="container-admin">
   <div class="header-section">
-    <h2>
-      <mat-icon>school</mat-icon>
-      Gestión de Docentes
-    </h2>
-
     <div class="actions">
       <button mat-raised-button color="primary" (click)="crearDocente()">
         <mat-icon>add</mat-icon>
         Nuevo Docente
       </button>
-      <button mat-raised-button (click)="cargarDocentes()" [disabled]="loading()">
+      <button mat-stroked-button color="primary" (click)="cargarDocentes()" [disabled]="loading()">
         <mat-icon>refresh</mat-icon>
         Recargar
       </button>
@@ -23,12 +18,12 @@
       <input matInput [(ngModel)]="searchTerm" (keyup.enter)="buscarPorNombre()" placeholder="Ej: Juan Pérez" />
       <mat-icon matPrefix>search</mat-icon>
       @if (searchTerm) {
-        <button mat-icon-button matSuffix (click)="limpiarBusqueda()">
+        <button mat-icon-button matSuffix (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
           <mat-icon>close</mat-icon>
         </button>
       }
     </mat-form-field>
-    <button mat-raised-button color="accent" (click)="buscarPorNombre()" [disabled]="loading() || !searchTerm">
+    <button mat-stroked-button color="primary" (click)="buscarPorNombre()" [disabled]="loading() || !searchTerm">
       Buscar
     </button>
   </div>
@@ -57,18 +52,26 @@
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef class="actions-column">Acciones</th>
           <td mat-cell *matCellDef="let docente" class="actions-column">
-            <button mat-mini-fab color="primary" (click)="editarDocente(docente)" matTooltip="Editar docente">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button
-              mat-mini-fab
-              color="warn"
-              (click)="eliminarDocente(docente)"
-              matTooltip="Eliminar docente"
-              [disabled]="loading()"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
+            <div class="acciones-tabla">
+              <button
+                mat-icon-button
+                (click)="editarDocente(docente)"
+                matTooltip="Editar docente"
+                aria-label="Editar docente"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="accion-peligro"
+                (click)="eliminarDocente(docente)"
+                matTooltip="Eliminar docente"
+                aria-label="Eliminar docente"
+                [disabled]="loading()"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

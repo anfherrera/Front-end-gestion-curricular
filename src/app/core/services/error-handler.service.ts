@@ -18,7 +18,7 @@ interface ErrorLeido {
 }
 
 /** El mismo texto que muestra el login cuando no hay respuesta del servidor. */
-export const MENSAJE_SIN_CONEXION = 'No se puede conectar al servidor. Verifica tu conexión.';
+export const MENSAJE_SIN_CONEXION = 'No se puede conectar al servidor. Verifique su conexión.';
 
 function leerError(error: unknown): ErrorLeido {
   if (!error || typeof error !== 'object') {
@@ -83,7 +83,7 @@ export class ErrorHandlerService {
     // Error 500 Internal Server Error
     if (status === 500) {
       return (
-        cuerpo?.message || cuerpo?.mensaje || 'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.'
+        cuerpo?.message || cuerpo?.mensaje || 'Error interno del servidor. Por favor, inténtelo de nuevo más tarde.'
       );
     }
 

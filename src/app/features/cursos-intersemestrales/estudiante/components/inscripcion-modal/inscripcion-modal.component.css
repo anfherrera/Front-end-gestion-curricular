@@ -1,0 +1,555 @@
+/* El ancho lo fija el diálogo (700px, máx. 90vw); aquí solo el alto, para que los botones queden visibles. */
+.inscripcion-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tamaño de los iconos: cada icono fija --tam-icono y las media queries solo lo cambian */
+.modal-header h2 mat-icon,
+.file-upload-error mat-icon,
+.file-input-label mat-icon,
+.file-icon,
+.success-icon,
+.file-requirements p mat-icon {
+  font-size: var(--tam-icono);
+  width: var(--tam-icono);
+  height: var(--tam-icono);
+}
+
+/* Tarjetas con borde azul a la izquierda */
+.info-card,
+.form-section {
+  background: var(--neutro-50);
+  border-left: 4px solid var(--color-primario);
+  border-radius: var(--radio-sm);
+  box-shadow: var(--sombra-1);
+}
+
+/* Lo que se eleva al pasar el ratón */
+.info-card,
+.file-input-label,
+.file-info {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-card:hover,
+.file-input-label:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-2);
+}
+
+.modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px 0;
+  border-bottom: 2px solid var(--primario-90);
+}
+
+.modal-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--color-primario);
+  font-size: var(--text-h2-size);
+  font-weight: 600;
+}
+
+.modal-header h2 mat-icon {
+  --tam-icono: var(--tam-icono-md);
+  color: var(--color-primario);
+}
+
+.modal-body {
+  position: relative;
+  margin-bottom: 24px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 4px 1rem 1rem;
+}
+
+.curso-info {
+  margin-bottom: 28px;
+}
+
+.info-card mat-card-header {
+  padding-bottom: 12px;
+}
+
+.info-card mat-card-title {
+  color: var(--color-primario);
+  font-size: var(--text-subtitulo-size);
+  font-weight: 600;
+}
+
+.info-card p {
+  margin: 10px 0;
+  font-size: var(--text-body-size);
+  color: var(--neutro-800);
+}
+
+.inscripcion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section {
+  padding: 20px;
+}
+
+.form-section h3 {
+  margin: 0 0 16px 0;
+  color: var(--color-primario);
+  font-size: var(--text-subtitulo-size);
+  font-weight: 600;
+  border-bottom: 2px solid var(--primario-90);
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Vacío, pero cuenta como elemento del flex: deja el hueco de 8px (gap) antes del título */
+.form-section h3::before {
+  content: '';
+  font-size: var(--text-h3-size);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.file-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.file-upload-error {
+  background-color: var(--notif-error-fondo);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radio-sm);
+  padding: 16px;
+  margin-top: 12px;
+  box-shadow: var(--sombra-1);
+}
+
+.file-upload-error p {
+  margin: 0;
+  color: var(--notif-error-titulo);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-body-size);
+}
+
+.file-upload-error mat-icon {
+  --tam-icono: var(--tam-icono-sm);
+  color: var(--color-error);
+}
+
+.file-input-container {
+  position: relative;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  border: 2px dashed var(--color-primario);
+  border-radius: var(--radio-sm);
+  background: var(--primario-98);
+  cursor: pointer;
+  font-size: var(--text-body-size);
+  color: var(--color-primario);
+  font-weight: 500;
+  min-height: 80px;
+}
+
+.file-input-label:hover {
+  background: var(--primario-90);
+  border-color: var(--color-primario-light);
+}
+
+.file-input-label mat-icon {
+  --tam-icono: var(--tam-icono-lg);
+  color: var(--color-primario);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--notif-exito-fondo);
+  border-radius: var(--radio-sm);
+  border-left: 4px solid var(--notif-exito-borde);
+  box-shadow: var(--sombra-1);
+}
+
+.file-info:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-2);
+}
+
+.file-icon {
+  --tam-icono: var(--tam-icono-sm);
+  color: var(--color-primario);
+}
+
+.file-name {
+  flex: 1;
+  font-size: var(--text-body-size);
+  font-weight: 500;
+  color: var(--neutro-800);
+}
+
+.success-icon {
+  --tam-icono: var(--tam-icono-sm);
+  color: var(--notif-exito-borde);
+}
+
+.file-requirements {
+  background: var(--notif-error-fondo);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radio-sm);
+  padding: 16px;
+  box-shadow: var(--sombra-1);
+}
+
+.file-requirements p {
+  margin: 0 0 12px 0;
+  font-weight: 600;
+  color: var(--notif-error-titulo);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-body-size);
+}
+
+.file-requirements p mat-icon {
+  --tam-icono: var(--tam-icono-sm);
+  color: var(--notif-error-titulo);
+}
+
+.file-requirements ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--notif-error-titulo);
+  font-size: var(--text-body2-size);
+  line-height: 1.5;
+}
+
+.file-requirements li {
+  margin: 6px 0;
+}
+
+.modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px 0.75rem 0.75rem;
+  border-top: 2px solid var(--primario-90);
+  flex-shrink: 0;
+  background: var(--blanco);
+}
+
+.modal-footer > * {
+  margin: 0.25rem;
+}
+
+/* Botones del pie: los colores y la forma vienen de material.css */
+.submit-button {
+  min-width: 180px;
+}
+
+.submit-button mat-spinner {
+  margin-right: 8px;
+}
+
+/* Iconos de los campos (están en esta plantilla: no hace falta ::ng-deep) */
+.mat-mdc-form-field mat-icon[matSuffix] {
+  color: var(--color-primario);
+}
+
+.mat-mdc-form-field.mat-focused mat-icon[matSuffix] {
+  color: var(--color-primario-light);
+}
+
+/* Scroll personalizado para webkit */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: var(--neutro-50);
+  border-radius: var(--radio-xs);
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--color-primario);
+  border-radius: var(--radio-xs);
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primario-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-header {
+    margin-bottom: 16px;
+    padding: 12px 0;
+  }
+
+  .modal-header h2 {
+    font-size: var(--text-h3-size);
+    gap: 8px;
+  }
+
+  .modal-header h2 mat-icon {
+    --tam-icono: var(--tam-icono-sm);
+  }
+
+  .modal-body {
+    margin-bottom: 16px;
+  }
+
+  .curso-info {
+    margin-bottom: 20px;
+  }
+
+  .info-card {
+    padding: 12px;
+  }
+
+  .inscripcion-form {
+    gap: 16px;
+  }
+
+  .form-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-section h3 {
+    font-size: var(--text-body-size);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+  }
+
+  .file-upload-section {
+    gap: 12px;
+  }
+
+  .file-input-label {
+    padding: 16px;
+    min-height: 60px;
+    font-size: var(--text-body2-size);
+    gap: 8px;
+  }
+
+  .file-input-label mat-icon {
+    --tam-icono: var(--tam-icono-md);
+  }
+
+  .file-info {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .file-requirements {
+    padding: 12px;
+  }
+
+  .file-requirements p {
+    font-size: var(--text-body2-size);
+    margin-bottom: 8px;
+  }
+
+  .file-requirements ul {
+    font-size: var(--text-body2-size);
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 16px;
+    position: sticky;
+    bottom: 0;
+    margin-top: 16px;
+  }
+
+  .modal-footer button {
+    width: 100%;
+    height: 44px;
+    font-size: var(--text-body-size);
+  }
+
+  .submit-button {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 8px 0;
+    margin-bottom: 12px;
+  }
+
+  .modal-header h2 {
+    font-size: var(--text-subtitulo-size);
+    gap: 6px;
+  }
+
+  .modal-header h2 mat-icon,
+  .file-icon,
+  .success-icon {
+    --tam-icono: var(--tam-icono-sm);
+  }
+
+  .modal-body {
+    margin-bottom: 12px;
+  }
+
+  .curso-info {
+    margin-bottom: 16px;
+  }
+
+  .info-card {
+    padding: 10px;
+  }
+
+  .info-card p {
+    font-size: var(--text-body2-size);
+    margin: 6px 0;
+  }
+
+  .inscripcion-form {
+    gap: 12px;
+  }
+
+  .form-section {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .form-section h3 {
+    font-size: var(--text-body-size);
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+  }
+
+  .form-section h3::before {
+    font-size: var(--text-subtitulo-size);
+  }
+
+  .file-upload-section {
+    gap: 10px;
+  }
+
+  .file-input-label {
+    padding: 12px;
+    font-size: var(--text-body2-size);
+    min-height: 50px;
+    gap: 6px;
+  }
+
+  .file-input-label mat-icon {
+    --tam-icono: var(--tam-icono-sm);
+  }
+
+  .file-info {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .file-name {
+    font-size: var(--text-body2-size);
+  }
+
+  .file-requirements {
+    padding: 10px;
+  }
+
+  .file-requirements p {
+    font-size: var(--text-body2-size);
+    margin-bottom: 6px;
+  }
+
+  .file-requirements p mat-icon {
+    --tam-icono: var(--tam-icono-xs);
+  }
+
+  .file-requirements ul {
+    font-size: var(--text-body2-size);
+    padding-left: 16px;
+  }
+
+  .file-requirements li {
+    margin: 4px 0;
+  }
+
+  .modal-footer {
+    padding-top: 12px;
+    margin-top: 12px;
+    gap: 6px;
+  }
+
+  .modal-footer button {
+    height: 40px;
+    font-size: var(--text-body2-size);
+  }
+
+  .modal-footer button mat-icon {
+    font-size: var(--tam-icono-xs);
+    width: var(--tam-icono-xs);
+    height: var(--tam-icono-xs);
+  }
+}
+
+/* Ajustes adicionales para pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .modal-header h2 {
+    font-size: var(--text-body-size);
+  }
+
+  .form-section h3 {
+    font-size: var(--text-body2-size);
+  }
+
+  .file-input-label {
+    font-size: var(--text-body2-size);
+    padding: 10px;
+  }
+
+  .modal-footer button {
+    height: 36px;
+    font-size: var(--text-body2-size);
+  }
+}

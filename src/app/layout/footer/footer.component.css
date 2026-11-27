@@ -7,9 +7,9 @@
   color: var(--color-primario);
   border-top: 2px solid var(--primario-90);
   padding: 16px 24px;
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   font-weight: 400;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
   margin-top: auto;
 }
 
@@ -42,7 +42,7 @@
 }
 
 .footer-right mat-icon {
-  font-size: 22px;
+  font-size: var(--tam-icono-md);
   color: var(--color-primario);
   cursor: pointer;
 }

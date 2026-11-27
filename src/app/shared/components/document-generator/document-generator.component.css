@@ -9,9 +9,9 @@
 
 /* Información de la solicitud */
 .solicitud-info-card {
-  background: var(--gris-50);
+  background: var(--neutro-50);
   border-left: 4px solid var(--color-primario);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-1);
 }
 
@@ -20,7 +20,7 @@
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .solicitud-details {
@@ -37,48 +37,23 @@
 
 .detail-row .label {
   font-weight: 600;
-  color: var(--gris-800);
-  font-size: 0.875rem;
+  color: var(--neutro-800);
+  font-size: var(--text-body-size);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .detail-row .value {
-  color: #212529;
-  font-size: 1rem;
+  color: var(--neutro-800);
+  font-size: var(--text-subtitulo-size);
 }
 
-.estado-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.estado-aprobada,
-.estado-aprobada_coordinador {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.estado-pendiente,
-.estado-enviada {
-  background-color: #fff3cd;
-  color: var(--estado-advertencia-texto);
-}
-
-.estado-rechazada {
-  background-color: #f8d7da;
-  color: #721c24;
-}
+/* Colores del estado: .etiqueta-estado y .estado-* globales (src/styles/componentes.css) */
 
 /* Formulario de documento */
 .document-form-card {
   box-shadow: var(--sombra-2);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
 }
 
 .document-form-card mat-card-header {
@@ -86,20 +61,20 @@
   color: white;
   margin: -16px -16px 24px -16px;
   padding: 20px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .document-form-card mat-card-title {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 1.5rem;
+  font-size: var(--text-h2-size);
   font-weight: 600;
 }
 
 .document-form-card mat-card-subtitle {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin-top: 8px;
 }
 
@@ -120,7 +95,7 @@
   gap: 12px;
   padding: 16px 0 0 0;
   margin-top: 24px;
-  border-top: 1px solid var(--gris-100);
+  border-top: 1px solid var(--neutro-100);
 }
 
 .form-actions button {
@@ -132,10 +107,10 @@
 
 /* Estilo para botón principal */
 .form-actions button[mat-raised-button][color='primary'] {
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radio-xs);
   padding: 12px 24px;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
@@ -154,40 +129,17 @@
 }
 
 .form-actions button[mat-raised-button][color='primary']:disabled {
-  background-color: #d3d3d3 !important;
-  color: var(--gris-550) !important;
+  background-color: var(--neutro-200) !important;
+  color: var(--neutro-600) !important;
   cursor: not-allowed;
   opacity: 0.5;
   transform: none;
   box-shadow: none;
 }
 
-/* Estilo para botón de cancelar */
-.form-actions button[mat-button] {
-  background-color: var(--gris-650) !important;
-  color: white !important;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: var(--sombra-1);
-}
-
-.form-actions button[mat-button]:hover {
-  background-color: #5a6268 !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
-
-.form-actions button[mat-button]:active {
-  transform: translateY(0);
-  box-shadow: var(--sombra-1);
-}
-
 /* Estados de error */
 .error {
-  border-color: var(--estado-peligro) !important;
+  border-color: var(--notif-error-titulo);
 }
 
 /* Animación de carga */
@@ -231,7 +183,7 @@ mat-form-field {
 }
 
 mat-form-field.mat-form-field-appearance-outline .mat-form-field-outline {
-  color: var(--gris-200);
+  color: var(--neutro-200);
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
@@ -239,7 +191,7 @@ mat-form-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-out
 }
 
 mat-form-field.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline-thick {
-  color: var(--estado-peligro);
+  color: var(--notif-error-titulo);
 }
 
 /* Iconos específicos */
@@ -248,31 +200,31 @@ mat-icon {
 }
 
 mat-card-title mat-icon {
-  font-size: 1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
 }
 
 /* Iconos de los campos de formulario */
 mat-form-field mat-icon[matSuffix] {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 mat-form-field.mat-focused mat-icon[matSuffix] {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 /* Icono del calendario (datepicker toggle) - Usando ::ng-deep para penetrar la encapsulación */
 :host ::ng-deep mat-datepicker-toggle {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep mat-datepicker-toggle mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep mat-datepicker-toggle:hover {
@@ -288,32 +240,32 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
 }
 
 :host ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 :host ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle mat-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 :host ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 /* Asegurar que el icono del datepicker sea azul en todos los estados */
 :host ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep .document-generator-container mat-form-field.mat-focused mat-datepicker-toggle mat-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 :host
@@ -322,5 +274,5 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
   mat-form-field.mat-focused
   mat-datepicker-toggle
   .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }

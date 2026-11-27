@@ -1,0 +1,95 @@
+.info-dialog-container {
+  max-width: 600px;
+  padding: 0;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 16px 24px;
+  background: var(--color-terciario);
+  color: white;
+  margin: -24px -24px 0 -24px;
+}
+
+.info-icon {
+  font-size: var(--tam-icono-lg);
+  width: var(--tam-icono-lg);
+  height: var(--tam-icono-lg);
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: var(--text-h2-size);
+  font-weight: 500;
+}
+
+.dialog-content {
+  padding: 24px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.message-container {
+  line-height: 1.6;
+}
+
+.greeting {
+  font-size: var(--text-subtitulo-size);
+  margin-bottom: 16px;
+  color: var(--neutro-800);
+}
+
+.main-message {
+  font-size: var(--text-body-size);
+  margin-bottom: 16px;
+  color: var(--neutro-800);
+  background-color: var(--primario-90);
+  padding: 12px;
+  border-radius: var(--radio-sm);
+  border-left: 4px solid var(--color-terciario);
+}
+
+.email-info {
+  font-size: var(--text-body-size);
+  margin-bottom: 20px;
+  color: var(--neutro-800);
+}
+
+.guidelines {
+  background-color: var(--neutro-50);
+  padding: 16px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--neutro-200);
+}
+
+.guidelines ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.guidelines li {
+  font-size: var(--text-body-size);
+  margin-bottom: 8px;
+  color: var(--neutro-800);
+}
+
+.guidelines li:last-child {
+  margin-bottom: 0;
+}
+
+.dialog-actions {
+  padding: 16px 24px 24px 24px;
+  justify-content: center;
+  margin: 0 -24px -24px -24px;
+  background-color: var(--neutro-50);
+}
+
+.dialog-actions button {
+  min-width: 120px;
+}
+
+.dialog-actions button mat-icon {
+  margin-right: 8px;
+}

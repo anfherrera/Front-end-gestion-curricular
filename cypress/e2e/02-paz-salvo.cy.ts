@@ -48,7 +48,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
 
     // Mock de solicitudes existentes (configurable por test)
     Cypress.env('pazSalvoSolicitudes', []);
-    cy.intercept('GET', '**/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol*', (req) => {
+    cy.intercept('GET', '**/api/solicitudes-pazysalvo?rol=ESTUDIANTE*', (req) => {
       const respuesta = Cypress.env('pazSalvoSolicitudes') ?? [];
       req.reply({ statusCode: 200, body: respuesta });
     }).as('listarSolicitudes');
@@ -144,7 +144,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
   describe('3. Envío de Solicitud', () => {
     it('E2E-PS-008: Debe enviar la solicitud exitosamente', () => {
       visitarPazSalvo();
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/subir-documento*', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/documentos', {
         statusCode: 200,
         body: {
           id_documento: 101,
@@ -153,7 +153,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
         }
       }).as('subirDocumento');
 
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo', {
         statusCode: 201,
         body: { id_solicitud: 1, mensaje: 'Solicitud creada exitosamente' }
       }).as('crearSolicitud');
@@ -187,7 +187,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
 
     it('E2E-PS-009: Debe mostrar mensaje de error si falla el envío', () => {
       visitarPazSalvo();
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/subir-documento*', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/documentos', {
         statusCode: 500,
         body: { message: 'Error en el servidor' }
       });
@@ -220,7 +220,7 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol*', {
+      cy.intercept('GET', '**/api/solicitudes-pazysalvo?rol=ESTUDIANTE*', {
         statusCode: 200,
         body: mockSolicitudes
       }).as('listarSolicitudesExistente');
@@ -244,14 +244,14 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol*', {
+      cy.intercept('GET', '**/api/solicitudes-pazysalvo?rol=ESTUDIANTE*', {
         statusCode: 200,
         body: mockSolicitudes
       }).as('listarSolicitudesAprobadas');
       
       visitarPazSalvo();
       cy.wait('@listarSolicitudesAprobadas');
-      cy.contains('APROBADA', { timeout: 5000 }).should('be.visible');
+      cy.contains('tr', 'Solicitud 1').should('contain.text', 'Aprobada');
       cy.registrarInteraccionExitosa();
     });
 
@@ -274,16 +274,23 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol*', {
+      cy.intercept('GET', '**/api/solicitudes-pazysalvo?rol=ESTUDIANTE*', {
         statusCode: 200,
         body: mockSolicitudes
       }).as('listarSolicitudesRechazadas');
+      cy.intercept('GET', '**/api/solicitudes-pazysalvo/1/comentarios', {
+        body: { comentarioRechazo: 'Documentos incompletos', documentosConComentarios: [] }
+      }).as('comentariosRechazo');
       
       visitarPazSalvo();
       cy.wait('@listarSolicitudesRechazadas');
       
-      // Buscar indicador de solicitud rechazada
-      cy.contains('RECHAZADA', { timeout: 5000 }).should('be.visible');
+      cy.contains('tr', 'Solicitud Rechazada').within(() => {
+        cy.contains('td', 'Rechazada').should('be.visible');
+        cy.contains('button', 'comment').click();
+      });
+      cy.wait('@comentariosRechazo');
+      cy.get('mat-dialog-container').should('contain.text', 'Documentos incompletos');
       
       cy.registrarInteraccionExitosa();
     });
@@ -306,19 +313,24 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
       
       Cypress.env('pazSalvoSolicitudes', mockSolicitudes);
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/descargarOficio/**', {
+      cy.intercept('GET', '**/api/solicitudes-pazysalvo/*/oficios/archivo', {
         statusCode: 200,
-        body: 'PDF Content'
+        headers: { 'content-type': 'application/pdf' },
+        body: '%PDF-1.4'
       }).as('descargarOficio');
       
-      cy.intercept('GET', '**/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol*', {
+      cy.intercept('GET', '**/api/solicitudes-pazysalvo?rol=ESTUDIANTE*', {
         statusCode: 200,
         body: mockSolicitudes
       }).as('listarSolicitudesParaDescarga');
       
       visitarPazSalvo();
       cy.wait('@listarSolicitudesParaDescarga');
-      cy.contains('APROBADA', { timeout: 5000 }).should('be.visible');
+      cy.contains('tr', 'Solicitud Aprobada').within(() => {
+        cy.contains('td', 'Aprobada').should('be.visible');
+        cy.contains('button', 'download').click();
+      });
+      cy.wait('@descargarOficio').its('response.statusCode').should('eq', 200);
       
       cy.registrarInteraccionExitosa();
     });
@@ -348,13 +360,13 @@ describe('E2E-02: Flujo Completo de Paz y Salvo', () => {
 
     it('E2E-PS-015: El envío de solicitud debe completarse en tiempo razonable', () => {
       visitarPazSalvo();
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/subir-documento*', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo/documentos', {
         delay: 1000,
         statusCode: 200,
         body: [{ nombre: 'doc.pdf', ruta: 'path' }]
       });
       
-      cy.intercept('POST', '**/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo', {
+      cy.intercept('POST', '**/api/solicitudes-pazysalvo', {
         delay: 500,
         statusCode: 201,
         body: { id_solicitud: 1 }

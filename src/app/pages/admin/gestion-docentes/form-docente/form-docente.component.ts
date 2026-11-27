@@ -83,7 +83,7 @@ export class FormDocenteComponent implements OnInit {
   guardar(): void {
     if (this.docenteForm.invalid) {
       this.docenteForm.markAllAsTouched();
-      this.snackbar.advertencia('Por favor completa todos los campos correctamente');
+      this.snackbar.advertencia('Por favor, complete todos los campos correctamente');
       return;
     }
 

@@ -18,8 +18,50 @@ export const COLORS = {
   tertiary: '#1D72D3',
   success: '#249337',
   neutralText: '#454444',
+  /** Texto secundario (--neutro-600). */
+  neutralSecondary: '#757474',
+  /** Texto de error legible sobre blanco (--notif-error-titulo); #FF6D0A queda para fondos, bordes e iconos. */
+  errorText: '#8D3800',
+  white: '#FFFFFF',
   breadcrumb: '#A7A6B0',
 } as const;
+
+/**
+ * Fuentes para HTML que no hereda los estilos de la app (ventanas emergentes).
+ * En CSS usar var(--font-body) y var(--font-display).
+ */
+export const FONTS = {
+  body: "'Open Sans', sans-serif",
+  display: "'Titillium Web', sans-serif",
+  /** Hoja de Google Fonts con las dos fuentes, la misma que carga index.html. */
+  hojaGoogleFonts:
+    'https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap',
+} as const;
+
+/** Paleta para series de gráficos (categorías sin un color propio), solo con colores institucionales. */
+export const PALETA_CATEGORIAS: readonly string[] = [
+  COLORS.primary,
+  COLORS.tertiary,
+  COLORS.success,
+  COLORS.error,
+  COLORS.secondary,
+  COLORS.primaryLight,
+];
+
+/** Color de cada proceso, el mismo en gráficos, tarjetas y notificaciones. */
+export const COLOR_POR_PROCESO = {
+  cursosVerano: COLORS.primary,
+  pazSalvo: COLORS.tertiary,
+  reingreso: COLORS.success,
+  ecaes: COLORS.error,
+  homologacion: COLORS.secondary,
+} as const;
+
+/** Un color hex de la paleta con transparencia, para rellenos de gráficos. */
+export function conAlfa(hex: string, alfa: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alfa})`;
+}
 
 /** Configuración de snackbar según TIC: 5s, superior derecha. Se usa a través de SnackbarService. */
 export const SNACKBAR_CONFIG_TIC: MatSnackBarConfig = {
@@ -72,9 +114,6 @@ export const COLORS_BY_STATE: Record<string, string> = {
   PRE_REGISTRADO: COLORS.tertiary,
   'PRE-REGISTRADO': COLORS.tertiary,
   PREREGISTRADO: COLORS.tertiary,
-  PENDIENTE: COLORS.error,
+  PENDIENTE: COLORS.primary, // en espera, como EN_REVISION: no es un error
   EN_PROCESO: COLORS.tertiary,
 };
-
-/** Nombre del sistema para header */
-export const SYSTEM_NAME = 'Sistema de Gestión Curricular';

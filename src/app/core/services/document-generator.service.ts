@@ -6,7 +6,7 @@ import { DocumentData, DocumentRequest } from '../models/documento.model';
 
 /**
  * Pide al backend el oficio en Word que secretaría descarga, revisa y sube luego en PDF.
- * Paz y salvo tiene su propio endpoint; homologación y reingreso usan /documentos/generar.
+ * Paz y salvo tiene su propio endpoint; homologación y reingreso usan /documentos-generados.
  */
 @Injectable({
   providedIn: 'root',
@@ -27,12 +27,12 @@ export class DocumentGeneratorService {
       if (request.datosDocumento.observaciones) {
         formData.append('observaciones', request.datosDocumento.observaciones);
       }
-      return this.http.post(`${this.api}/solicitudes-pazysalvo/generar-documento/${request.idSolicitud}`, formData, {
+      return this.http.post(`${this.api}/solicitudes-pazysalvo/${request.idSolicitud}/documento-generado`, formData, {
         responseType: 'blob',
       });
     }
 
-    return this.http.post(`${this.api}/documentos/generar`, request, { responseType: 'blob' });
+    return this.http.post(`${this.api}/documentos-generados`, request, { responseType: 'blob' });
   }
 }
 

@@ -1,0 +1,125 @@
+.confirmacion-dialog {
+  padding: 0;
+  border-radius: var(--radio-md);
+  overflow: hidden;
+}
+
+.dialog-header {
+  background: var(--color-primario);
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  font-size: var(--tam-icono-lg);
+  width: var(--tam-icono-lg);
+  height: var(--tam-icono-lg);
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: var(--text-h2-size);
+  font-weight: 600;
+  color: white;
+}
+
+.dialog-content {
+  padding: 24px;
+  background: var(--neutro-50);
+}
+
+.estudiante-info {
+  background: white;
+  border-radius: var(--radio-sm);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--sombra-1);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-icon {
+  color: var(--color-primario);
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-text strong {
+  color: var(--color-primario);
+  font-size: var(--text-body-size);
+  font-weight: 600;
+}
+
+.info-text span {
+  color: var(--neutro-800);
+  font-size: var(--text-subtitulo-size);
+}
+
+.confirmacion-mensaje {
+  background: var(--primario-90);
+  border: 1px solid var(--color-terciario);
+  border-radius: var(--radio-sm);
+  padding: 16px;
+  text-align: center;
+}
+
+.confirmacion-mensaje p {
+  margin: 0;
+  color: var(--color-terciario);
+  font-size: var(--text-body-size);
+  font-weight: 500;
+}
+
+.dialog-actions {
+  padding: 20px 24px;
+  background: white;
+  border-top: 1px solid var(--neutro-200);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancelar {
+  color: var(--neutro-600);
+  border: 1px solid var(--neutro-200);
+}
+
+.btn-cancelar:hover {
+  background: var(--neutro-50);
+}
+
+.btn-cancelar mat-icon,
+.btn-confirmar mat-icon {
+  margin-right: 8px;
+}
+
+@media (max-width: 480px) {
+  .dialog-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancelar,
+  .btn-confirmar {
+    width: 100%;
+    justify-content: center;
+  }
+}

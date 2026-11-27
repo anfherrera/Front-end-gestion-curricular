@@ -3,7 +3,7 @@
   display: flex;
   height: 100vh;
   width: 100%;
-  font-family: 'Open Sans', 'Titillium Web', sans-serif;
+  font-family: var(--font-body);
   overflow: hidden;
   position: relative;
 }
@@ -27,7 +27,7 @@
   text-align: center;
   background: rgba(255, 255, 255, 0.95);
   padding: 2rem;
-  border-radius: 20px;
+  border-radius: var(--radio-lg);
   backdrop-filter: blur(6px);
   box-shadow: var(--sombra-2);
   animation: fadeInScale 0.6s ease;
@@ -50,13 +50,13 @@
   margin-bottom: 1rem;
 }
 
-/* Título - Color primario TIC #000066 */
+/* Título - Color primario TIC var(--color-primario) */
 .login-title {
-  font-size: 1.4rem;
+  font-size: var(--text-h2-size);
   font-weight: 700;
   margin-bottom: 2rem;
   color: var(--color-primario);
-  font-family: 'Titillium Web', sans-serif;
+  font-family: var(--font-display);
   line-height: 1.4;
 }
 
@@ -75,7 +75,7 @@ mat-form-field mat-icon {
   color: var(--color-primario);
 }
 
-/* Estilos para asteriscos requeridos - Color error TIC #FF6D0A */
+/* Estilos para asteriscos requeridos - Color error TIC var(--color-error) */
 .required-asterisk {
   color: var(--color-error);
   margin-left: 2px;
@@ -85,7 +85,7 @@ mat-form-field mat-icon {
 
 /* Desactivar asteriscos automáticos de Material Design */
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-required-marker {
-  display: none !important;
+  display: none;
 }
 
 /* Asegurar que los asteriscos no se superpongan */
@@ -105,7 +105,7 @@ mat-form-field mat-icon {
   .mat-mdc-text-field-wrapper
   .mat-mdc-form-field-flex
   .mat-mdc-floating-label {
-  left: 40px !important;
+  left: 40px;
 }
 
 :host ::ng-deep .login-input .mat-mdc-form-field-label-wrapper {
@@ -115,7 +115,7 @@ mat-form-field mat-icon {
 
 /* Asegurar espacio adecuado para el asterisco en el label */
 :host ::ng-deep .login-input .mat-mdc-form-field .mat-mdc-floating-label {
-  width: auto !important;
+  width: auto;
   max-width: calc(100% - 50px);
 }
 
@@ -127,18 +127,49 @@ mat-form-field mat-icon {
 
 /* Botón - Colores primarios TIC */
 .login-button {
-  background: var(--color-primario) !important;
-  color: white !important;
-  border-radius: 100px;
   padding: 0.9rem;
   font-weight: 600;
-  font-family: 'Open Sans', sans-serif;
-  transition: all 0.3s ease;
 }
 
-.login-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
+/* Inicio de sesión con la cuenta institucional de Google */
+.login-google {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-google[hidden] {
+  display: none;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  color: var(--neutro-600);
+  font-size: var(--text-body2-size);
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--neutro-200);
+}
+
+.login-google-boton {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+}
+
+.login-google-ayuda {
+  margin: 0;
+  color: var(--neutro-600);
+  font-size: var(--text-body2-size);
 }
 
 /* Link registrar - Color primario TIC */
@@ -148,7 +179,7 @@ mat-form-field mat-icon {
   color: var(--color-primario);
   text-decoration: none;
   font-weight: 600;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
   transition: color 0.3s;
 }
 
@@ -185,7 +216,7 @@ mat-form-field mat-icon {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 102, 0.4);
+  background: color-mix(in srgb, var(--color-primario) 40%, transparent);
   z-index: 1;
   pointer-events: none;
 }
@@ -248,7 +279,7 @@ mat-form-field mat-icon {
   }
 
   .login-title {
-    font-size: 1.2rem;
+    font-size: var(--text-h3-size);
   }
 
   .login-logo {
@@ -272,15 +303,15 @@ mat-form-field mat-icon {
   }
 }
 
-/* Estados de error - Color error TIC #FF6D0A (naranja) */
+/* Estados de error - Color error TIC var(--color-error) (naranja) */
 .error-message {
   background-color: var(--notif-error-fondo);
   color: var(--notif-error-texto);
   padding: 0.75rem;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-error);
   margin: 1rem 0;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   animation: slideInDown 0.3s ease;
 }
 

@@ -2,7 +2,7 @@
 
 .filters-card mat-card-title {
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   margin: 0;
 }
@@ -36,7 +36,7 @@
 }
 
 .error-icon {
-  font-size: 4rem;
+  font-size: var(--tam-icono-xxl);
   color: var(--color-error);
   margin-bottom: 20px;
 }
@@ -47,7 +47,7 @@
 }
 
 .error-container p {
-  color: var(--gris-700);
+  color: var(--neutro-600);
   margin-bottom: 20px;
 }
 
@@ -60,13 +60,13 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.5rem;
+  font-size: var(--text-h2-size);
   font-weight: 600;
   color: var(--color-primario);
   margin-bottom: 20px;
   padding: 16px;
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-primario);
   box-shadow: var(--sombra-1);
 }
@@ -81,7 +81,7 @@
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
   box-shadow: var(--sombra-2);
   background-color: var(--blanco);
@@ -93,23 +93,23 @@
 }
 
 .kpi-success {
-  border-left-color: var(--estado-exito);
+  border-left-color: var(--notif-exito-borde);
 }
 
 .kpi-warning {
-  border-left-color: var(--estado-advertencia);
+  border-left-color: var(--color-error);
 }
 
 .kpi-error {
-  border-left-color: var(--estado-peligro);
+  border-left-color: var(--notif-error-titulo);
 }
 
 .kpi-info {
-  border-left-color: var(--estado-info);
+  border-left-color: var(--notif-info-borde);
 }
 
 .kpi-secondary {
-  border-left-color: #6f42c1;
+  border-left-color: var(--color-primario-light);
 }
 
 .kpi-content {
@@ -124,8 +124,8 @@
   justify-content: center;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
-  background: var(--gris-75);
+  border-radius: var(--radio-circulo);
+  background: var(--neutro-50);
 }
 
 .kpi-primary .kpi-icon {
@@ -134,27 +134,27 @@
 }
 
 .kpi-success .kpi-icon {
-  background: var(--estado-exito);
+  background: var(--notif-exito-borde);
   color: white;
 }
 
 .kpi-warning .kpi-icon {
-  background: var(--estado-advertencia);
-  color: #3d2c00; /* blanco sobre amarillo no tiene contraste suficiente */
+  background: var(--color-error);
+  color: var(--notif-error-texto); /* blanco sobre amarillo no tiene contraste suficiente */
 }
 
 .kpi-error .kpi-icon {
-  background: var(--estado-peligro);
+  background: var(--notif-error-titulo);
   color: white;
 }
 
 .kpi-info .kpi-icon {
-  background: var(--estado-info);
+  background: var(--notif-info-borde);
   color: white;
 }
 
 .kpi-secondary .kpi-icon {
-  background: #6f42c1;
+  background: var(--color-primario-light);
   color: white;
 }
 
@@ -163,22 +163,22 @@
 }
 
 .kpi-value {
-  font-size: 2rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   margin: 0;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .kpi-title {
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   margin: 5px 0;
-  color: var(--gris-700);
+  color: var(--neutro-600);
 }
 
 .kpi-description {
-  font-size: 0.85rem;
-  color: var(--gris-500);
+  font-size: var(--text-body-size);
+  color: var(--neutro-600);
   margin: 0;
 }
 
@@ -222,7 +222,7 @@
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   overflow: hidden;
   box-shadow: var(--sombra-2);
   background-color: var(--blanco);
@@ -238,12 +238,12 @@
   color: white;
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .chart-card mat-card-title {
   color: white;
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   margin: 0;
 }
@@ -267,7 +267,7 @@
   margin: 20px 0;
   padding: 40px 16px;
   text-align: center;
-  color: var(--gris-700);
+  color: var(--neutro-600);
 }
 
 /* Update Info */
@@ -277,10 +277,10 @@
   justify-content: center;
   gap: 8px;
   padding: 15px;
-  background: var(--gris-75);
-  border-radius: 8px;
-  color: var(--gris-700);
-  font-size: 0.9rem;
+  background: var(--neutro-50);
+  border-radius: var(--radio-sm);
+  color: var(--neutro-600);
+  font-size: var(--text-body-size);
 }
 
 /* Responsive Design */
@@ -290,7 +290,7 @@
   }
 
   .dashboard-title {
-    font-size: 2rem;
+    font-size: var(--text-h1-size);
   }
 
   .filters-grid {
@@ -337,7 +337,7 @@
 
 /* Material Design Overrides */
 .mat-mdc-card {
-  border-radius: 12px;
+  border-radius: var(--radio-md);
 }
 
 .mat-mdc-form-field {
@@ -345,7 +345,7 @@
 }
 
 .mat-mdc-raised-button {
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
 }
 
 /* ===== ESTILOS PARA TENDENCIAS Y COMPARATIVAS ===== */

@@ -59,7 +59,7 @@ export class FormRolDialogComponent implements OnInit {
   guardar(): void {
     if (this.rolForm.invalid) {
       this.rolForm.markAllAsTouched();
-      this.snackbar.advertencia('Por favor completa todos los campos correctamente');
+      this.snackbar.advertencia('Por favor, complete todos los campos correctamente');
       return;
     }
 

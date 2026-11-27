@@ -9,17 +9,16 @@ import { SolicitudesBaseService, validarPdf } from './base/solicitudes-base.serv
 
 type Solicitudes = Observable<SolicitudHomologacionDTORespuesta[]>;
 
-/** Respuesta de /obtenerComentarios: solo trae los comentarios que existen. */
+/** Respuesta de /{id}/comentarios: solo trae los comentarios que existen. */
 export interface ComentariosPazSalvo {
   comentarioRechazo?: string;
   documentosConComentarios?: { id: number; nombre: string; comentario: string }[];
   mensaje?: string;
 }
 
-/** Bandejas por rol del endpoint listarSolicitud-PazYSalvo/{rol}. */
-/** Documento como lo devuelven obtenerOficios y obtenerDocumentos/coordinador. */
+/** Documento como lo devuelven /{id}/oficios y /{id}/documentos. */
 export interface DocumentoPazSalvoRespuesta {
-  /** En obtenerOficios el backend envía aquí el id de la solicitud, no el del documento. */
+  /** En /{id}/oficios el backend envía aquí el id de la solicitud, no el del documento. */
   id: number;
   nombre: string;
   nombreArchivo?: string;
@@ -29,7 +28,7 @@ export interface DocumentoPazSalvoRespuesta {
   comentario?: string | null;
 }
 
-/** Respuesta de /subir-documento (el documento queda sin asociar). */
+/** Respuesta de POST /documentos (el documento queda sin asociar). */
 export interface DocumentoSubidoPazSalvo {
   success: boolean;
   message: string;
@@ -42,10 +41,10 @@ export interface DocumentoSubidoPazSalvo {
 export type BlobConNombre = Blob & { filename?: string };
 
 const BANDEJA_POR_ROL: Record<string, string> = {
-  FUNCIONARIO: 'Funcionario',
-  COORDINADOR: 'Coordinador',
-  SECRETARIA: 'Secretaria',
-  SECRETARIO: 'Secretaria',
+  FUNCIONARIO: 'funcionario',
+  COORDINADOR: 'coordinador',
+  SECRETARIA: 'secretaria',
+  SECRETARIO: 'secretaria',
 };
 
 /**
@@ -66,7 +65,7 @@ export class PazSalvoService extends SolicitudesBaseService {
   // ================================
 
   /**
-   * Solicitudes según el rol. El estudiante usa /porRol con su id; los demás roles, su bandeja.
+   * Solicitudes según el rol. El estudiante usa GET /?rol=ESTUDIANTE con su id; los demás roles, su bandeja.
    * @param periodoAcademico formato "YYYY-P"; si no se envía, el backend usa el período actual.
    */
   listarSolicitudesPorRol(rol: string, idUsuario?: number, periodoAcademico?: string): Solicitudes {
@@ -75,50 +74,54 @@ export class PazSalvoService extends SolicitudesBaseService {
       const params = this.paramsPeriodo(periodoAcademico)
         .set('rol', 'ESTUDIANTE')
         .set('idUsuario', idUsuario?.toString() || '');
-      return this.http.get<SolicitudHomologacionDTORespuesta[]>(`${this.apiUrl}/listarSolicitud-PazYSalvo/porRol`, {
-        params,
-      });
+      return this.http.get<SolicitudHomologacionDTORespuesta[]>(this.apiUrl, { params });
     }
     return this.bandeja(BANDEJA_POR_ROL[rolUpper] ?? '', periodoAcademico);
   }
 
   /** Pendientes del funcionario (último estado ENVIADA). */
   getPendingRequests(periodoAcademico?: string): Solicitudes {
-    return this.bandeja('Funcionario', periodoAcademico);
+    return this.bandeja('funcionario', periodoAcademico);
   }
 
   getCoordinadorRequests(periodoAcademico?: string): Solicitudes {
-    return this.bandeja('Coordinador', periodoAcademico);
+    return this.bandeja('coordinador', periodoAcademico);
   }
 
   /** Pendientes de secretaría (APROBADA_COORDINADOR). */
   getSecretariaRequests(periodoAcademico?: string): Solicitudes {
-    return this.bandeja('Secretaria', periodoAcademico);
+    return this.bandeja('secretaria', periodoAcademico);
   }
 
-  /** Historial del funcionario (APROBADA_FUNCIONARIO). Si falla, lista vacía. */
+  /** Historial del funcionario (pasaron por APROBADA_FUNCIONARIO). Si falla, lista vacía. */
   getSolicitudesProcesadasFuncionario(periodoAcademico?: string): Solicitudes {
-    return this.historial('Funcionario', periodoAcademico);
+    return this.historial('funcionario', periodoAcademico);
   }
 
-  /** Historial del coordinador (APROBADA_COORDINADOR). Si falla, lista vacía. */
+  /** Historial del coordinador (pasaron por APROBADA_COORDINADOR). Si falla, lista vacía. */
   getSolicitudesProcesadasCoordinador(periodoAcademico?: string): Solicitudes {
-    return this.historial('Coordinador', periodoAcademico);
+    return this.historial('coordinador', periodoAcademico);
   }
 
   /** Historial de secretaría (APROBADA, ya enviadas al estudiante). Si falla, lista vacía. */
   getSolicitudesProcesadasSecretaria(periodoAcademico?: string): Solicitudes {
-    return this.historial('Secretaria', periodoAcademico);
+    return this.historial('secretaria', periodoAcademico);
   }
 
+  /** Pendientes del rol: GET /solicitudes-pazysalvo?rol=…&bandeja=pendientes (convención de rutas EST-7). */
   private bandeja(rol: string, periodoAcademico?: string): Solicitudes {
-    return this.listar<SolicitudHomologacionDTORespuesta>(`listarSolicitud-PazYSalvo/${rol}`, periodoAcademico);
+    const params = this.paramsPeriodo(periodoAcademico).set('rol', rol).set('bandeja', 'pendientes');
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(this.apiUrl, { params });
   }
 
+  /** Procesadas por el rol: GET /solicitudes-pazysalvo?rol=…&bandeja=procesadas (convención de rutas EST-7). */
   private historial(rol: string, periodoAcademico?: string): Solicitudes {
-    return this.listarOVacio<SolicitudHomologacionDTORespuesta>(
-      `listarSolicitud-PazYSalvo/${rol}/Aprobadas`,
-      periodoAcademico
+    const params = this.paramsPeriodo(periodoAcademico).set('rol', rol).set('bandeja', 'procesadas');
+    return this.http.get<SolicitudHomologacionDTORespuesta[]>(this.apiUrl, { params }).pipe(
+      catchError((error) => {
+        this.logger.error(`Error obteniendo las procesadas de ${rol}`, error);
+        return of([] as SolicitudHomologacionDTORespuesta[]);
+      })
     );
   }
 
@@ -169,7 +172,7 @@ export class PazSalvoService extends SolicitudesBaseService {
     const director = datosFormulario.director_trabajo_grado?.trim();
     if (director) body.director_trabajo_grado = director;
 
-    return this.http.post<Solicitud>(`${this.apiUrl}/crearSolicitud-PazYSalvo`, body);
+    return this.http.post<Solicitud>(this.apiUrl, body);
   }
 
   /** Funcionario aprueba. */
@@ -197,7 +200,7 @@ export class PazSalvoService extends SolicitudesBaseService {
 
   obtenerComentarios(idSolicitud: number): Observable<ComentariosPazSalvo> {
     return this.http
-      .get<ComentariosPazSalvo>(`${this.apiUrl}/obtenerComentarios/${idSolicitud}`)
+      .get<ComentariosPazSalvo>(`${this.apiUrl}/${idSolicitud}/comentarios`)
       .pipe(catchError(() => of({ mensaje: 'Error al obtener comentarios' })));
   }
 
@@ -212,24 +215,24 @@ export class PazSalvoService extends SolicitudesBaseService {
 
     const formData = new FormData();
     formData.append('file', archivo);
-    return this.http.post<DocumentoSubidoPazSalvo>(`${this.apiUrl}/subir-documento`, formData);
+    return this.http.post<DocumentoSubidoPazSalvo>(`${this.apiUrl}/documentos`, formData);
   }
 
   /** Secretaría sube el oficio firmado en PDF. */
   subirOficioPdf(idSolicitud: number, archivo: File): Observable<unknown> {
     const formData = new FormData();
     formData.append('file', archivo);
-    return this.http.post(`${this.apiUrl}/subir-oficio-pdf/${idSolicitud}`, formData);
+    return this.http.post(`${this.apiUrl}/${idSolicitud}/oficios`, formData);
   }
 
   /** Documentos de la solicitud que ve secretaría (oficios). */
   obtenerOficios(idSolicitud: number): Observable<DocumentoPazSalvoRespuesta[]> {
-    return this.http.get<DocumentoPazSalvoRespuesta[]>(`${this.apiUrl}/obtenerOficios/${idSolicitud}`);
+    return this.http.get<DocumentoPazSalvoRespuesta[]>(`${this.apiUrl}/${idSolicitud}/oficios`);
   }
 
   /** Documentos de la solicitud que revisa el coordinador. */
   obtenerDocumentosCoordinador(idSolicitud: number): Observable<DocumentoPazSalvoRespuesta[]> {
-    return this.http.get<DocumentoPazSalvoRespuesta[]>(`${this.apiUrl}/obtenerDocumentos/coordinador/${idSolicitud}`);
+    return this.http.get<DocumentoPazSalvoRespuesta[]>(`${this.apiUrl}/${idSolicitud}/documentos`);
   }
 
   /**
@@ -238,7 +241,7 @@ export class PazSalvoService extends SolicitudesBaseService {
    */
   descargarOficioPorSolicitud(idSolicitud: number): Observable<BlobConNombre> {
     return this.http
-      .get(`${this.apiUrl}/descargarOficio/${idSolicitud}`, { responseType: 'blob', observe: 'response' })
+      .get(`${this.apiUrl}/${idSolicitud}/oficios/archivo`, { responseType: 'blob', observe: 'response' })
       .pipe(
         switchMap((resp) => {
           const nombre = this.nombreDesdeCabeceras(resp);
@@ -264,7 +267,7 @@ export class PazSalvoService extends SolicitudesBaseService {
 
   /** Por id de documento: más confiable que por nombre. */
   override descargarArchivoPorId(idDocumento: number): Observable<BlobConNombre> {
-    return this.descargarConNombre(`${this.api}/documentos/${idDocumento}/descargar`, 'documento.pdf');
+    return this.descargarConNombre(`${this.api}/documentos/${idDocumento}/archivo`, 'documento.pdf');
   }
 
   /** Por la ruta guardada en la base de datos. */
@@ -274,7 +277,7 @@ export class PazSalvoService extends SolicitudesBaseService {
   }
 
   private urlDescargaPorNombre(nombreArchivo: string): string {
-    return `${this.apiUrl}/descargar-documento?filename=${encodeURIComponent(nombreArchivo)}`;
+    return `${this.apiUrl}/documentos?nombre=${encodeURIComponent(nombreArchivo)}`;
   }
 
   private descargarConNombre(url: string, nombrePorDefecto: string): Observable<BlobConNombre> {

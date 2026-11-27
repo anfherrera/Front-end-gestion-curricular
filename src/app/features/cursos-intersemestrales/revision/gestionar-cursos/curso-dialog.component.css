@@ -1,0 +1,392 @@
+/* Contenedor principal del formulario */
+.form-container {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px 0;
+  background: var(--neutro-50);
+  border-radius: var(--radio-sm);
+  margin: 0 -24px;
+  padding: 20px 24px;
+}
+
+/* Secciones del formulario */
+.form-section {
+  margin-bottom: 32px;
+  background: white;
+  padding: 24px;
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-1);
+  border: 1px solid var(--primario-90);
+}
+
+.form-section h3 {
+  color: var(--color-primario);
+  font-size: var(--text-h3-size);
+  font-weight: 700;
+  margin-bottom: 20px;
+  border-bottom: 3px solid var(--color-primario);
+  padding-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-section h3::before {
+  content: '';
+  font-size: var(--text-h2-size);
+  flex-shrink: 0;
+}
+
+.form-section:nth-child(3) h3::before {
+  content: '';
+}
+
+/* Campos del formulario */
+.form-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Estilos para mat-form-field */
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: var(--neutro-50);
+  border-radius: var(--radio-sm);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-focus-overlay {
+  background-color: color-mix(in srgb, var(--color-primario) 4%, transparent);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-overlay {
+  background-color: color-mix(in srgb, var(--color-primario) 8%, transparent);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+  color: var(--primario-90);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  color: var(--color-primario);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: var(--neutro-600);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: var(--color-primario);
+}
+
+/* Botón del calendario (en la plantilla) */
+:host ::ng-deep .mat-datepicker-toggle {
+  color: var(--color-primario);
+}
+
+:host ::ng-deep .mat-datepicker-toggle:hover {
+  color: var(--color-primario-light) !important;
+}
+
+/* Calendario: está en un overlay fuera del componente; panelClass="calendario-curso" cae en mat-calendar */
+::ng-deep .calendario-curso .mat-calendar-header {
+  background-color: var(--color-primario);
+  color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-arrow {
+  color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button {
+  color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper {
+  color: white;
+}
+
+/* Forzar color blanco en todo el header del calendario */
+::ng-deep .calendario-curso .mat-calendar-header * {
+  color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper * {
+  color: white;
+}
+
+/* Estilos para el selector de mes y año */
+::ng-deep .calendario-curso .mat-calendar-table {
+  background-color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-body-cell {
+  color: var(--neutro-800);
+}
+
+::ng-deep .calendario-curso .mat-calendar-body-cell:hover:not(.mat-calendar-body-disabled) {
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent) !important;
+  color: var(--color-primario) !important;
+}
+
+::ng-deep .calendario-curso .mat-calendar-body-selected {
+  background-color: var(--color-primario);
+  color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+/* Estilos para el panel de selección de mes/año */
+::ng-deep .calendario-curso .mat-calendar-table-header th {
+  background-color: var(--neutro-50);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+/* Estilos para los botones de navegación del calendario */
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-previous-button,
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-next-button {
+  color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-previous-button:hover,
+::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-next-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Estilos para el panel de selección de mes/año (cuando haces clic en el header) */
+::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-cell {
+  color: var(--neutro-800);
+}
+
+::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-cell:hover {
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent) !important;
+  color: var(--color-primario) !important;
+}
+
+::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-selected {
+  background-color: var(--color-primario);
+  color: white;
+}
+
+/* Estilos para el contenido del calendario cuando está en modo selección de mes/año */
+::ng-deep .calendario-curso .mat-calendar-content {
+  background-color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-cell {
+  color: var(--neutro-800);
+}
+
+::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-cell:hover {
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent) !important;
+  color: var(--color-primario) !important;
+}
+
+::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-selected {
+  background-color: var(--color-primario);
+  color: white;
+}
+
+::ng-deep .calendario-curso .mat-calendar-table-header {
+  background-color: var(--neutro-50);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+/* Botones del dialog */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px 0;
+  border-top: 2px solid var(--primario-90);
+  background: var(--neutro-50);
+  margin: 0 -24px;
+  padding: 24px;
+  border-radius: 0 0 var(--radio-sm) var(--radio-sm);
+}
+
+.dialog-actions button {
+  min-width: 120px;
+  padding: 12px 24px;
+  border-radius: var(--radio-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: var(--sombra-1);
+}
+
+.dialog-actions button[color='primary'] {
+  background: var(--color-primario);
+  color: white;
+  border: none;
+}
+
+.dialog-actions button[color='primary']:hover {
+  background: var(--color-primario-light) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-2);
+}
+
+.dialog-actions button:not([color='primary']) {
+  background: white;
+  color: var(--color-primario);
+  border: 2px solid var(--color-primario);
+}
+
+.dialog-actions button:not([color='primary']):hover {
+  background: var(--color-primario) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-2);
+}
+
+/* Título del dialog */
+:host ::ng-deep .mat-mdc-dialog-title {
+  background: var(--color-primario);
+  color: white;
+  padding: 20px 24px;
+  margin: -24px -24px 0 -24px;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Contenido del dialog */
+:host ::ng-deep .mat-mdc-dialog-content {
+  padding: 0;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-container {
+    max-height: 50vh;
+    padding: 16px;
+  }
+
+  .form-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .form-section h3 {
+    font-size: var(--text-subtitulo-size);
+    margin-bottom: 16px;
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .dialog-actions button {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* Animaciones */
+.form-section {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scroll personalizado */
+.form-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: var(--neutro-50);
+  border-radius: var(--radio-xs);
+}
+
+.form-container::-webkit-scrollbar-thumb {
+  background: var(--color-primario);
+  border-radius: var(--radio-xs);
+}
+
+.form-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primario-light);
+}
+
+/* Estilos para información de solo lectura */
+.info-display {
+  background: var(--neutro-50);
+  border: 2px solid var(--primario-90);
+  border-radius: var(--radio-sm);
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--primario-90);
+  font-size: var(--text-body-size);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item strong {
+  color: var(--color-primario);
+  min-width: 100px;
+  margin-right: 16px;
+  font-weight: 600;
+}
+
+/* Estilos para información de duración */
+.duracion-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--primario-90);
+  border-left: 4px solid var(--color-primario);
+  border-radius: var(--radio-sm);
+  margin: 16px 0;
+  box-shadow: var(--sombra-1);
+}
+
+.duracion-info mat-icon {
+  color: var(--color-primario);
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
+}
+
+.duracion-info span {
+  color: var(--color-primario);
+  font-size: var(--text-body-size);
+}
+
+.duracion-info strong {
+  font-size: var(--text-subtitulo-size);
+  font-weight: 700;
+}

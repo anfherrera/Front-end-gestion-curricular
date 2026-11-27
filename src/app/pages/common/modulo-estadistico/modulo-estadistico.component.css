@@ -4,7 +4,7 @@
 
 .main-tabs {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   overflow: hidden;
 }
@@ -15,13 +15,13 @@
 }
 
 .tab-content h2 {
-  color: var(--azul-700);
+  color: var(--color-terciario);
   margin-bottom: 20px;
 }
 
 .tab-content p {
-  color: var(--gris-700);
-  font-size: 1.1rem;
+  color: var(--neutro-600);
+  font-size: var(--text-h3-size);
 }
 
 /* Estilos para los tabs */
@@ -31,12 +31,12 @@
 
 :host ::ng-deep .mat-mdc-tab-label {
   font-weight: 500;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 :host ::ng-deep .mat-mdc-tab-header {
-  background: var(--gris-50);
-  border-bottom: 2px solid var(--gris-200);
+  background: var(--neutro-50);
+  border-bottom: 2px solid var(--neutro-200);
 }
 
 :host ::ng-deep .mat-mdc-tab-body-wrapper {

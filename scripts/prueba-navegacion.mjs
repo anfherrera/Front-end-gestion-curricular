@@ -38,18 +38,17 @@ const casos = [
   {
     correo: 'juanp@unicauca.edu.co', rol: 'funcionario',
     rutas: ['/funcionario/paz-salvo', '/funcionario/pruebas-ecaes', '/funcionario/reingreso-estudiante',
-      '/funcionario/homologacion-asignaturas', '/funcionario/modulo-estadistico', '/funcionario/historial-completo'],
+      '/funcionario/homologacion-asignaturas', '/funcionario/modulo-estadistico', '/funcionario/historial-completo',
+      '/funcionario/historial-completo/detalle/1'],
     cursos: true,
-    pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Funcionario',
     negadas: ['/coordinador/paz-salvo', '/secretaria/paz-salvo', '/admin/dashboard', '/estudiante/paz-salvo',
       '/decano/historial-completo', '/coordinador/modulo-estadistico'],
   },
   {
     correo: 'josefina@unicauca.edu.co', rol: 'coordinador',
     rutas: ['/coordinador/paz-salvo', '/coordinador/reingreso-estudiante', '/coordinador/homologacion-asignaturas',
-      '/coordinador/modulo-estadistico', '/coordinador/historial-completo'],
+      '/coordinador/modulo-estadistico', '/coordinador/historial-completo', '/coordinador/historial-completo/detalle/1'],
     cursos: true,
-    pazSalvoEndpoint: 'listarSolicitud-PazYSalvo/Coordinador',
     negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/homologacion-asignaturas',
       '/funcionario/historial-completo', '/decano/modulo-estadistico'],
   },
@@ -77,7 +76,7 @@ const casos = [
     // Las de editar no: sin backend vuelven a la lista
     rutas: ['/admin/dashboard', '/admin/manage-users', '/admin/manage-users/crear', '/admin/manage-roles',
       '/admin/docentes', '/admin/docentes/crear', '/admin/programas', '/admin/programas/crear',
-      '/admin/configurar-periodo', '/admin/formatos-institucionales'],
+      '/admin/formatos-institucionales'],
     negadas: ['/funcionario/paz-salvo', '/secretaria/paz-salvo', '/estudiante/paz-salvo',
       '/estudiante/cursos-intersemestrales/cursos-ofertados'],
   },
@@ -288,16 +287,20 @@ try {
       await espera(800);
     }
 
-    if (caso.pazSalvoEndpoint) {
+    if (['funcionario', 'coordinador', 'secretaria'].includes(caso.rol)) {
       c.peticiones.length = 0;
       await ir('/welcome');
       await esperarUrl(u => u === '/welcome');
       await ir(`/${caso.rol}/paz-salvo`);
       await espera(2500);
-      const llamadas = c.peticiones.filter(u => /pazysalvo/i.test(u));
-      const propio = llamadas.some(u => u.includes(caso.pazSalvoEndpoint));
-      console.log(`       paz y salvo llama a ${caso.pazSalvoEndpoint}: ${propio ? 'sí' : 'NO'}`);
-      if (!propio) falla(`paz y salvo no llama a ${caso.pazSalvoEndpoint}`);
+      const llamadas = c.peticiones.map(u => new URL(u)).filter(u => u.pathname === '/api/solicitudes-pazysalvo');
+      for (const bandeja of ['pendientes', 'procesadas']) {
+        const propia = llamadas.some(u =>
+          u.searchParams.get('rol') === caso.rol && u.searchParams.get('bandeja') === bandeja
+        );
+        console.log(`       paz y salvo (${caso.rol}, ${bandeja}): ${propia ? 'sí' : 'NO'}`);
+        if (!propia) falla(`paz y salvo no consulta ${bandeja} para ${caso.rol}`);
+      }
     }
 
     for (const r of caso.negadas) {

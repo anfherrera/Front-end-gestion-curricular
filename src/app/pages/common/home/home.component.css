@@ -6,19 +6,19 @@
 
 .welcome-container h2 {
   margin: 0;
-  font-size: 28px;
-  color: var(--gris-900);
+  font-size: var(--text-h1-size);
+  color: var(--neutro-800);
 }
 
 .welcome-container p {
   margin: 4px 0;
-  font-size: 16px;
-  color: var(--gris-750);
+  font-size: var(--text-subtitulo-size);
+  color: var(--neutro-800);
 }
 
 .welcome-container .description {
   font-style: italic;
-  color: #222;
+  color: var(--neutro-800);
   font-weight: 500;
 }
 
@@ -31,8 +31,8 @@
   justify-content: center;
   position: relative;
   margin-top: 40px; /* separa las tarjetas de la bienvenida */
-  background-color: var(--gris-75); /* fondo minimalista sólido */
-  border-radius: 12px;
+  background-color: var(--neutro-50); /* fondo minimalista sólido */
+  border-radius: var(--radio-md);
 }
 
 /* Tarjetas del dashboard */
@@ -45,7 +45,7 @@
   justify-content: center;
   text-align: center;
   cursor: pointer;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   background-color: var(--blanco); /* color sólido de tarjeta */
   box-shadow: var(--sombra-2); /* sombra suave */
   transition:
@@ -77,10 +77,10 @@
 
 /* Iconos dentro de las tarjetas */
 .dashboard-icon {
-  font-size: 48px;
+  font-size: var(--tam-icono-xl);
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,25 +93,25 @@
 
 /* Sombra degradada en iconos (puedes mantenerla o simplificar) */
 .dashboard-icon.bg-blue {
-  background: var(--azul-500);
+  background: var(--color-terciario);
 }
 .dashboard-icon.bg-green {
   background: var(--notif-exito-borde);
 }
 .dashboard-icon.bg-orange {
-  background: #ff9800;
+  background: var(--color-error);
 }
 .dashboard-icon.bg-purple {
-  background: #9c27b0;
+  background: var(--color-primario-light);
 }
 .dashboard-icon.bg-red {
   background: var(--color-error);
 }
 .dashboard-icon.bg-teal {
-  background: #009688;
+  background: var(--color-terciario);
 }
 .dashboard-icon.bg-indigo {
-  background: #3f51b5;
+  background: var(--color-primario-light);
 }
 
 /* Animación leve en iconos al pasar el mouse */
@@ -122,14 +122,14 @@
 /* Texto debajo de los iconos */
 .dashboard-card span {
   font-weight: 600;
-  font-size: 14px;
-  color: var(--gris-900);
+  font-size: var(--text-body-size);
+  color: var(--neutro-800);
   transition:
     color 0.3s ease,
     transform 0.3s ease;
 }
 
 .dashboard-card:hover span {
-  color: #000;
+  color: var(--neutro-800);
   transform: translateY(-2px);
 }

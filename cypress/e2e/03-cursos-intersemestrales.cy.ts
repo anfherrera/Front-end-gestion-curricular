@@ -107,15 +107,15 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/disponibles*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos\?(.*&)?disponibles=true/, {
         statusCode: 200,
         body: mockCursos
       }).as('getCursos');
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/todos*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos(\?(?!.*(disponibles|estado)=).*)?$/, {
         statusCode: 200,
         body: mockCursos
       });
-      cy.intercept('GET', '**/cursos-intersemestrales/cursos-verano/disponibles*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos\?(.*&)?disponibles=true/, {
         statusCode: 200,
         body: mockCursos
       });
@@ -153,10 +153,10 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         }
       ];
       
-      cy.intercept('GET', '**/cursos-intersemestrales/cursos-verano/disponibles*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos\?(.*&)?disponibles=true/, {
         body: mockCursos
       }).as('getCursosInfo');
-      cy.intercept('GET', '**/cursos-intersemestrales/cursos-verano/todos*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos(\?(?!.*(disponibles|estado)=).*)?$/, {
         body: mockCursos
       });
       
@@ -200,7 +200,7 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         { id: 1, nombre: 'Cálculo III', codigo: 'MAT-301', cupos_disponibles: 20 }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/disponibles*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos\?(.*&)?disponibles=true/, {
         body: mockCursos
       });
       
@@ -213,7 +213,7 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
     });
 
     it('E2E-CI-010: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/cursos-intersemestrales/**', {
+      cy.intercept('POST', /\/api\/cursos-verano\//, {
         statusCode: 201,
         body: {
           id: 1,
@@ -258,14 +258,10 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/solicitudes*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/reportes\/solicitudes/, {
         statusCode: 200,
         body: mockSolicitudes
       }).as('getSolicitudes');
-      cy.intercept('GET', '**/api/cursos-intersemestrales/solicitudes*', {
-        statusCode: 200,
-        body: mockSolicitudes
-      });
       
       cy.visit('/estudiante/cursos-intersemestrales/ver-solicitud');
       cy.wait(500);
@@ -288,10 +284,7 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         { id: 3, curso_nombre: 'Curso 3', estado: 'PENDIENTE' }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/solicitudes*', {
-        body: mockSolicitudes
-      });
-      cy.intercept('GET', '**/api/cursos-intersemestrales/solicitudes*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/reportes\/solicitudes/, {
         body: mockSolicitudes
       });
       
@@ -339,11 +332,11 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
         }
       ];
       
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/preinscripciones*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/preinscripciones\?(.*&)?usuario=/, {
         statusCode: 200,
         body: mockCursos
       });
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos/preinscripcion*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos\?(.*&)?estado=preinscripcion/, {
         statusCode: 200,
         body: mockCursos
       });
@@ -392,7 +385,7 @@ describe('E2E-03: Flujo Completo de Cursos Intersemestrales', () => {
     });
 
     it('E2E-CI-018: Debe manejar correctamente el estado "sin cursos disponibles"', () => {
-      cy.intercept('GET', '**/api/cursos-intersemestrales/cursos-verano/disponibles*', {
+      cy.intercept('GET', /\/api\/cursos-verano\/cursos\?(.*&)?disponibles=true/, {
         statusCode: 200,
         body: []
       });

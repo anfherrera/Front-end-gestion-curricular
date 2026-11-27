@@ -1,12 +1,9 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 
-import { MatCardModule } from '@angular/material/card';
+import { CardContainerComponent } from '../card-container/card-container.component';
 import { MatIconModule } from '@angular/material/icon';
 
-export interface Archivo {
-  nombre: string;
-  fecha: string;
-}
+import { Archivo } from '@core/models/procesos.model';
 
 export interface Documento {
   label: string;
@@ -22,7 +19,7 @@ export interface Documento {
  */
 @Component({
   selector: 'app-required-docs',
-  imports: [MatCardModule, MatIconModule],
+  imports: [CardContainerComponent, MatIconModule],
   templateUrl: './required-docs.component.html',
   styleUrls: ['./required-docs.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

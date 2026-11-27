@@ -1,0 +1,119 @@
+/* ================================
+   Selector de período
+   ================================ */
+
+.selector-periodo {
+  margin-bottom: 24px;
+}
+
+.periodo-select {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ================================
+   Tabla de fechas
+   ================================ */
+
+.tabla-fechas {
+  width: 100%;
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  border: 2px solid var(--primario-90);
+  box-shadow: var(--sombra-2);
+  background: white;
+  transition: box-shadow 0.3s ease;
+}
+
+.tabla-fechas:hover {
+  box-shadow: var(--sombra-2);
+}
+
+.fechas-table {
+  width: 100%;
+  background: white;
+}
+
+/* Fondo, color, peso y tamaño de la cabecera los pone material.css (.mat-mdc-header-cell) */
+.header-cell {
+  padding: 20px 24px;
+  border-bottom: none;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.data-row {
+  border-bottom: 1px solid var(--neutro-50);
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.data-row:hover {
+  background: var(--primario-98);
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-1);
+}
+
+.data-row:last-child {
+  border-bottom: none;
+}
+
+.data-row:nth-child(even) {
+  background-color: var(--primario-98);
+}
+
+.data-row:nth-child(even):hover {
+  background: var(--primario-98);
+}
+
+.concepto-cell {
+  padding: 18px 24px;
+  font-weight: 600;
+  color: var(--neutro-800);
+  border-right: 1px solid var(--primario-98);
+  width: 65%;
+  font-size: var(--text-body-size);
+  line-height: 1.4;
+}
+
+.fecha-cell {
+  padding: 18px 24px;
+  color: var(--color-primario);
+  font-weight: 700;
+  text-align: center;
+  width: 35%;
+  font-size: var(--text-subtitulo-size);
+  background: var(--primario-98);
+}
+
+/* ================================
+   Mensaje vacío
+   ================================ */
+
+.mensaje-vacio {
+  text-align: center;
+  color: var(--neutro-600);
+  font-style: italic;
+  padding: 40px 20px;
+  background-color: var(--neutro-50);
+  border-radius: var(--radio-sm);
+  border: 2px dashed var(--neutro-200);
+}
+
+.mensaje-vacio p {
+  margin: 0;
+  font-size: var(--text-subtitulo-size);
+}
+
+@media (max-width: 768px) {
+  .concepto-cell,
+  .fecha-cell,
+  .header-cell {
+    padding: 12px 16px;
+    font-size: var(--text-body-size);
+  }
+
+  .periodo-select {
+    max-width: 100%;
+  }
+}

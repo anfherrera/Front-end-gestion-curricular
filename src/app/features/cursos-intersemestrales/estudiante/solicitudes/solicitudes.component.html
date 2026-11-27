@@ -1,0 +1,85 @@
+<app-card-container title="Solicitud de Cursos Intersemestrales de Verano">
+  @if (loading()) {
+    <div>Cargando...</div>
+  }
+
+  <!-- Formulario para solicitar curso nuevo -->
+  @if (!loading()) {
+    <form [formGroup]="solicitudForm" (ngSubmit)="onSubmitSolicitud()" class="solicitud-form">
+      <!-- Nombre Completo -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre Completo</mat-label>
+        <input matInput formControlName="nombreCompleto" placeholder="Ingrese su nombre completo" />
+        <mat-icon matSuffix>person</mat-icon>
+        @if (solicitudForm.get('nombreCompleto')?.hasError('required')) {
+          <mat-error> El nombre completo es requerido </mat-error>
+        }
+      </mat-form-field>
+      <!-- Código del Estudiante -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Código</mat-label>
+        <input matInput formControlName="codigo" placeholder="Ingrese su código de estudiante" />
+        <mat-icon matSuffix>badge</mat-icon>
+        @if (solicitudForm.get('codigo')?.hasError('required')) {
+          <mat-error> El código es requerido </mat-error>
+        }
+      </mat-form-field>
+      <!-- Materia Solicitada -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Materia</mat-label>
+        <mat-select formControlName="curso" placeholder="Seleccione la materia que desea solicitar">
+          @for (materia of materiasDisponibles(); track materia) {
+            <mat-option [value]="materia.nombre">
+              {{ materia.nombre }} ({{ materia.codigo }}) - {{ materia.creditos }} créditos
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>school</mat-icon>
+        @if (solicitudForm.get('curso')?.hasError('required')) {
+          <mat-error> Debe seleccionar una materia </mat-error>
+        }
+      </mat-form-field>
+      <!-- Condición -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Condición</mat-label>
+        <mat-select formControlName="condicion" placeholder="Seleccione la condición de su solicitud">
+          @for (condicion of condiciones(); track condicion) {
+            <mat-option [value]="condicion">
+              {{ getCondicionDisplayName(condicion) }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>assignment</mat-icon>
+        @if (solicitudForm.get('condicion')?.hasError('required')) {
+          <mat-error> Debe seleccionar una condición </mat-error>
+        }
+      </mat-form-field>
+      <!-- Botones -->
+      <div class="form-actions">
+        <button type="button" mat-stroked-button color="primary" (click)="onClearForm()" class="action-button">
+          <mat-icon>clear</mat-icon>
+          Limpiar
+        </button>
+        <button
+          type="submit"
+          mat-raised-button
+          color="primary"
+          [disabled]="solicitudForm.invalid || loading()"
+          class="action-button"
+        >
+          <mat-icon>send</mat-icon>
+          Enviar Solicitud
+        </button>
+      </div>
+    </form>
+  }
+
+  <!-- Mensaje de éxito -->
+  @if (solicitudEnviada()) {
+    <div class="success-message">
+      <mat-icon class="success-icon">check_circle</mat-icon>
+      <p>¡Solicitud enviada exitosamente!</p>
+      <p>Su solicitud ha sido registrada y será revisada por el equipo académico.</p>
+    </div>
+  }
+</app-card-container>

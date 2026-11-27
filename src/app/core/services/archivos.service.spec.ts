@@ -23,7 +23,7 @@ describe('ArchivosService', () => {
     let subido: PdfSubido | undefined;
     service.subirPDF(archivo, 113, 'CURSO_VERANO').subscribe((r) => (subido = r));
 
-    const req = httpMock.expectOne(`${base}/subir/pdf`);
+    const req = httpMock.expectOne(base);
     expect(req.request.method).toBe('POST');
     const datos = req.request.body as FormData;
     expect((datos.get('file') as File).name).toBe('comprobante.pdf');
@@ -37,7 +37,7 @@ describe('ArchivosService', () => {
 
   it('sin inscripción ni tipo solo envía el archivo', () => {
     service.subirPDF(new File(['x'], 'a.pdf')).subscribe();
-    const req = httpMock.expectOne(`${base}/subir/pdf`);
+    const req = httpMock.expectOne(base);
     const datos = req.request.body as FormData;
     expect(datos.has('file')).toBeTrue();
     expect(datos.has('inscripcionId')).toBeFalse();
@@ -47,12 +47,12 @@ describe('ArchivosService', () => {
 
   it('descarga el PDF por nombre (codificado) y por inscripción como blob', () => {
     service.descargarPDF('oficio 1.pdf').subscribe();
-    const porNombre = httpMock.expectOne(`${base}/descargar/pdf?filename=oficio%201.pdf`);
+    const porNombre = httpMock.expectOne(`${base}?nombre=oficio%201.pdf`);
     expect(porNombre.request.responseType).toBe('blob');
     porNombre.flush(new Blob());
 
     service.descargarPDFPorInscripcion(113).subscribe();
-    const porInscripcion = httpMock.expectOne(`${base}/descargar/pdf/inscripcion/113`);
+    const porInscripcion = httpMock.expectOne(`${base}/inscripciones/113`);
     expect(porInscripcion.request.responseType).toBe('blob');
     porInscripcion.flush(new Blob());
   });

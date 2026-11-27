@@ -1,6 +1,6 @@
 .historial-completo-container {
   padding: 24px;
-  background-color: var(--gris-azulado-50);
+  background-color: var(--neutro-50);
   min-height: 100vh;
 }
 
@@ -19,10 +19,10 @@
 .filtros-section {
   margin-bottom: 24px;
   padding: 24px;
-  background: var(--mat-on-primary);
-  border-radius: 12px;
+  background: var(--blanco);
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
-  border: 1px solid var(--gris-150);
+  border: 1px solid var(--neutro-200);
 }
 
 .filtros-form {
@@ -57,45 +57,45 @@
 
 /* Asegurar que el periodo-filtro-selector tenga la misma altura y sin márgenes */
 .filtro-item app-periodo-filtro-selector ::ng-deep .periodo-filtro-container {
-  margin: 0 !important;
-  padding: 0 !important;
-  gap: 0 !important;
-  margin-bottom: 0 !important;
-  display: block !important;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  margin-bottom: 0;
+  display: block;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .periodo-selector {
-  width: 100% !important;
-  margin: 0 !important;
-  max-width: 100% !important;
-  margin-bottom: 0 !important;
+  width: 100%;
+  margin: 0;
+  max-width: 100%;
+  margin-bottom: 0;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .periodo-selector .mat-mdc-form-field {
-  width: 100% !important;
-  margin: 0 !important;
+  width: 100%;
+  margin: 0;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-wrapper {
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
+  margin-top: 0;
+  height: 0;
+  min-height: 0;
 }
 
 /* Asegurar que todos los mat-form-field tengan el mismo padding-bottom */
 .filtros-section ::ng-deep .mat-mdc-form-field-wrapper {
-  padding-bottom: 0 !important;
+  padding-bottom: 0;
 }
 
 .filtros-section ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
+  margin-top: 0;
+  height: 0;
+  min-height: 0;
 }
 
 .filtro-actions {
@@ -112,11 +112,11 @@
   width: 100%;
   height: 56px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
   margin: 0;
-  margin-top: 0 !important;
+  margin-top: 0;
 }
 
 .filtro-actions button:hover {
@@ -135,11 +135,11 @@
 
 .filtros-section ::ng-deep .mat-mdc-text-field-wrapper {
   background-color: var(--blanco);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
 }
 
 .filtros-section ::ng-deep .mat-mdc-form-field-focus-overlay {
-  background-color: rgba(33, 150, 243, 0.04);
+  background-color: color-mix(in srgb, var(--color-terciario) 4%, transparent);
 }
 
 /* Responsive */
@@ -161,9 +161,9 @@
 .info-filtros {
   margin-bottom: 20px;
   padding: 16px;
-  background-color: var(--azul-50);
-  border-radius: 8px;
-  border-left: 4px solid var(--azul-500);
+  background-color: var(--primario-90);
+  border-radius: var(--radio-sm);
+  border-left: 4px solid var(--color-terciario);
 }
 
 .chips-container {
@@ -172,23 +172,10 @@
   gap: 8px;
 }
 
-.info-filtros mat-chip {
-  margin-right: 8px;
-  margin-bottom: 8px;
-}
-
-.info-filtros mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
 /* Tabla */
 .tabla-container {
   background-color: var(--blanco);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   overflow: hidden;
   box-shadow: var(--sombra-1);
 }
@@ -198,19 +185,19 @@
 }
 
 .historial-table th {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
   font-weight: 600;
-  color: var(--gris-900);
+  color: var(--neutro-800);
   padding: 16px;
 }
 
 .historial-table td {
   padding: 16px;
-  border-bottom: 1px solid var(--gris-150);
+  border-bottom: 1px solid var(--neutro-200);
 }
 
 .historial-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--neutro-50);
 }
 
 /* Solicitud Nombre */
@@ -221,10 +208,11 @@
 }
 
 .icon-solicitud {
-  color: var(--azul-500);
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-primario);
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
 }
 
 /* Usuario Info */
@@ -236,24 +224,24 @@
 
 .usuario-nombre {
   font-weight: 500;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .usuario-codigo {
-  font-size: 0.85rem;
-  color: var(--gris-700);
+  font-size: var(--text-body-size);
+  color: var(--neutro-600);
 }
 
 /* Categoría y Tipo */
 .categoria-texto {
-  color: var(--gris-900);
-  font-size: 0.9rem;
+  color: var(--neutro-800);
+  font-size: var(--text-body-size);
   font-weight: 500;
 }
 
 .tipo-texto {
-  color: var(--gris-900);
-  font-size: 0.9rem;
+  color: var(--neutro-800);
+  font-size: var(--text-body-size);
 }
 
 /* No Solicitudes */
@@ -263,20 +251,20 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: var(--gris-500);
+  color: var(--neutro-600);
   text-align: center;
 }
 
 .no-solicitudes mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
   margin-bottom: 16px;
   opacity: 0.5;
 }
 
 .no-solicitudes p {
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin: 0;
 }
 
@@ -287,7 +275,7 @@
   }
 
   .historial-table {
-    font-size: 0.85rem;
+    font-size: var(--text-body-size);
   }
 
   .historial-table th,

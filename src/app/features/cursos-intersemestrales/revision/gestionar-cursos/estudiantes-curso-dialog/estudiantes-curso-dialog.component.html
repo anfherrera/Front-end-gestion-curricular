@@ -1,0 +1,155 @@
+<div class="estudiantes-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>people</mat-icon>
+      Estudiantes del Curso
+    </h2>
+    <button mat-icon-button (click)="cerrar()" class="btn-cerrar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    @if (cargando()) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Cargando estudiantes...</p>
+      </div>
+    }
+
+    @if (error(); as mensajeError) {
+      <div class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <p>{{ mensajeError }}</p>
+        <button mat-raised-button color="primary" (click)="cargarEstudiantes()">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+      </div>
+    }
+
+    @if (!cargando() && !error() && datos(); as datos) {
+      <div class="contenido">
+        <!-- Resumen del Curso -->
+        <div class="resumen-curso">
+          <h3>{{ datos.nombre_curso }} ({{ datos.codigo_curso }})</h3>
+          <div class="estadisticas">
+            <div class="stat">
+              <span class="label">Cupo Estimado</span>
+              <span class="valor">{{ datos.cupo_estimado }}</span>
+            </div>
+            <div class="stat">
+              <span class="label">Total Estudiantes</span>
+              <span class="valor">{{ datos.total_estudiantes }}</span>
+            </div>
+            <div class="stat">
+              <span class="label">Preinscritos</span>
+              <span class="valor">{{ datos.total_preinscritos }}</span>
+            </div>
+            <div class="stat">
+              <span class="label">Inscritos</span>
+              <span class="valor">{{ datos.total_inscritos }}</span>
+            </div>
+          </div>
+        </div>
+        <!-- Tabla de Estudiantes -->
+        @if (datos.estudiantes.length > 0) {
+          <div class="tabla-container">
+            <table mat-table [dataSource]="datos.estudiantes" class="tabla-estudiantes">
+              <!-- Número -->
+              <ng-container matColumnDef="numero">
+                <th mat-header-cell *matHeaderCellDef>#</th>
+                <td mat-cell *matCellDef="let estudiante; let i = index">{{ i + 1 }}</td>
+              </ng-container>
+              <!-- Nombre Completo -->
+              <ng-container matColumnDef="nombre_completo">
+                <th mat-header-cell *matHeaderCellDef>Nombre Completo</th>
+                <td mat-cell *matCellDef="let estudiante">
+                  <strong>{{ estudiante.nombre_completo }}</strong>
+                </td>
+              </ng-container>
+              <!-- Código -->
+              <ng-container matColumnDef="codigo">
+                <th mat-header-cell *matHeaderCellDef>Código</th>
+                <td mat-cell *matCellDef="let estudiante">{{ estudiante.codigo }}</td>
+              </ng-container>
+              <!-- Programa -->
+              <ng-container matColumnDef="programa">
+                <th mat-header-cell *matHeaderCellDef>Programa</th>
+                <td mat-cell *matCellDef="let estudiante">{{ estudiante.programa }}</td>
+              </ng-container>
+              <!-- Tipo -->
+              <ng-container matColumnDef="tipo">
+                <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                <td mat-cell *matCellDef="let estudiante">
+                  <span class="estado-texto">
+                    {{ estudiante.tipo }}
+                  </span>
+                </td>
+              </ng-container>
+              <!-- Estado Preinscripción -->
+              <ng-container matColumnDef="estado_preinscripcion">
+                <th mat-header-cell *matHeaderCellDef>Estado Preinscripción</th>
+                <td mat-cell *matCellDef="let estudiante">
+                  @if (estudiante.estado_preinscripcion) {
+                    <span class="estado-texto">
+                      {{ estudiante.estado_preinscripcion }}
+                    </span>
+                  }
+                  @if (!estudiante.estado_preinscripcion) {
+                    <span class="sin-estado">-</span>
+                  }
+                </td>
+              </ng-container>
+              <!-- Estado Inscripción -->
+              <ng-container matColumnDef="estado_inscripcion">
+                <th mat-header-cell *matHeaderCellDef>Estado Inscripción</th>
+                <td mat-cell *matCellDef="let estudiante">
+                  <span class="estado-texto">
+                    {{ estudiante.estado_inscripcion || 'Sin inscripción' }}
+                  </span>
+                </td>
+              </ng-container>
+              <!-- Correo -->
+              <ng-container matColumnDef="correo">
+                <th mat-header-cell *matHeaderCellDef>Correo</th>
+                <td mat-cell *matCellDef="let estudiante">
+                  <a [href]="'mailto:' + estudiante.correo" class="correo-link">
+                    {{ estudiante.correo }}
+                  </a>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+        <!-- Mensaje si no hay estudiantes -->
+        @if (datos.estudiantes.length === 0) {
+          <div class="sin-estudiantes">
+            <mat-icon>people_outline</mat-icon>
+            <p>No hay estudiantes registrados en este curso.</p>
+          </div>
+        }
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button color="primary" (click)="cerrar()">Cerrar</button>
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="exportarEstudiantesPDF()"
+      [disabled]="cargando() || !datos()?.estudiantes?.length"
+      class="btn-exportar"
+    >
+      <mat-icon>picture_as_pdf</mat-icon>
+      Exportar a PDF
+    </button>
+    <button mat-raised-button color="primary" (click)="cargarEstudiantes()" [disabled]="cargando()">
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+  </mat-dialog-actions>
+</div>

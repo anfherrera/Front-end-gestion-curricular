@@ -14,9 +14,9 @@
   background-color: var(--color-primario);
   color: var(--blanco);
   padding: 6px 14px;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   font-weight: 600;
-  border-radius: 24px;
+  border-radius: var(--radio-xl);
   cursor: pointer;
   width: auto;
   height: 36px;
@@ -29,12 +29,12 @@
 }
 
 .upload-btn:hover:enabled {
-  background-color: #001060;
+  background-color: var(--color-primario);
   transform: translateY(-1px);
 }
 
 .upload-btn:disabled {
-  background-color: #9ca3af;
+  background-color: var(--neutro-400);
   cursor: not-allowed;
   box-shadow: none;
 }
@@ -45,12 +45,12 @@
   grid-template-columns: 1fr 90px;
   width: 100%;
   font-weight: 600;
-  font-size: 13px;
-  color: var(--gris-800);
+  font-size: var(--text-body2-size);
+  color: var(--neutro-800);
   padding: 8px 12px;
-  background: #f1f3f5;
-  border-radius: 6px;
-  border: 1px solid var(--gris-200);
+  background: var(--neutro-50);
+  border-radius: var(--radio-xs);
+  border: 1px solid var(--neutro-200);
 }
 
 /* Lista */
@@ -70,9 +70,9 @@
   align-items: center;
   background-color: var(--blanco);
   padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 14px;
-  border: 1px solid var(--gris-100);
+  border-radius: var(--radio-xs);
+  font-size: var(--text-body-size);
+  border: 1px solid var(--neutro-100);
   box-shadow: var(--sombra-1);
   transition:
     background-color 0.2s ease,
@@ -80,7 +80,7 @@
 }
 
 .uploaded-list li:hover {
-  background-color: #f8faff;
+  background-color: var(--primario-98);
   transform: translateY(-1px);
 }
 
@@ -88,13 +88,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #212529;
+  color: var(--neutro-800);
   font-weight: 500;
 }
 
 .col-nombre mat-icon {
-  font-size: 20px;
-  color: #1e88e5; /* Azul elegante para el ícono del archivo */
+  font-size: var(--tam-icono-sm);
+  color: var(--color-terciario); /* Azul elegante para el ícono del archivo */
 }
 
 .col-accion {
@@ -104,14 +104,14 @@
 
 /* Botón eliminar */
 .delete-icon {
-  color: #e53935; /* Rojo fuerte */
+  color: var(--notif-error-titulo); /* Rojo fuerte */
   transition:
     transform 0.2s ease,
     color 0.2s ease;
 }
 
 .col-accion button:hover .delete-icon {
-  color: var(--rojo-800); /* Rojo más oscuro */
+  color: var(--notif-error-titulo); /* Rojo más oscuro */
   transform: scale(1.2);
 }
 
@@ -119,7 +119,7 @@
 .col-accion button:active,
 .col-accion button:focus {
   background-color: var(--color-primario) !important; /* Azul de fondo */
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
 }
 
 .col-accion button:active .delete-icon,

@@ -1,0 +1,109 @@
+/* Estilos para el estado del proceso */
+
+.inscripciones-section {
+  margin-bottom: 24px;
+}
+
+.inscripciones-section h3 {
+  color: var(--color-primario);
+  margin-bottom: 20px;
+  font-size: var(--text-h3-size);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-primario);
+  padding-bottom: 8px;
+}
+
+.inscripciones-table {
+  width: 100%;
+  background: white;
+  color: var(--neutro-800);
+}
+
+/* La cabecera usa el estilo común de material.css (.mat-mdc-header-row / -cell) */
+.inscripciones-table th {
+  letter-spacing: 0.5px;
+}
+
+.inscripciones-table td {
+  border-bottom: 1px solid var(--neutro-200);
+  color: var(--neutro-800);
+}
+
+/* Sin los iconos de acción ni los datos secundarios (gris claro en filtro-curso-comun.css y abajo) */
+.inscripciones-table
+  td
+  *:not(
+    [class*='accion-'],
+    [class*='accion-'] *,
+    .etiqueta-estado,
+    .etiqueta-estado *,
+    .estudiante-info small,
+    .info-estudiante small
+  ) {
+  color: var(--neutro-800);
+}
+
+/* Columna Información: "Condición" y "Formal" en dos líneas y con el estilo de .estudiante-info */
+.info-estudiante {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-estudiante small {
+  color: var(--neutro-600);
+  font-size: var(--text-body2-size);
+}
+
+/* Contenedor de acciones */
+.acciones-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para botones de acción */
+.acciones-container button {
+  transition: all 0.3s ease;
+}
+
+.acciones-container button:hover {
+  transform: scale(1.1);
+  box-shadow: var(--sombra-1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .info-item strong {
+    min-width: auto;
+  }
+
+  .table-container {
+    font-size: var(--text-body2-size);
+  }
+
+  .inscripciones-table th,
+  .inscripciones-table td {
+    padding: 8px 4px;
+  }
+}
+
+/* Botones de acción al pasar el ratón (en reposo, el color de los iconos lo fijan .accion-ver/-aprobar/-rechazar de componentes.css) */
+:host ::ng-deep .inscripciones-table .mat-mdc-icon-button:hover {
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent) !important;
+}
+
+:host ::ng-deep .inscripciones-table .mat-mdc-icon-button:hover .mat-icon {
+  color: var(--color-primario-light) !important;
+}

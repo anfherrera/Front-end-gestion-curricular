@@ -26,6 +26,7 @@ import {
   DocumentTemplate,
   SolicitudParaDocumento,
 } from '@core/models/documento.model';
+import { EstadoClasePipe, EstadoIconoPipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
 
 @Component({
   selector: 'app-document-generator',
@@ -40,6 +41,9 @@ import {
     MatIconModule,
     MatCardModule,
     MatDividerModule,
+    EstadoClasePipe,
+    EstadoIconoPipe,
+    EstadoLabelPipe,
   ],
   templateUrl: './document-generator.component.html',
   styleUrls: ['./document-generator.component.css'],

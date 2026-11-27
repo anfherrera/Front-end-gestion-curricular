@@ -1,0 +1,186 @@
+.tabla-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--neutro-50);
+  border-radius: var(--radio-sm);
+  width: 100%;
+  overflow: visible;
+}
+
+.filtro {
+  width: 300px;
+}
+
+/* Contenedor para la tabla con scroll horizontal */
+table {
+  width: 100%;
+  min-width: 100%;
+}
+
+/* Contenedor wrapper para la tabla con scroll horizontal */
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Asegurar que la tabla no se corte */
+.mat-elevation-z8 {
+  display: table;
+  width: 100%;
+  min-width: 1200px;
+}
+
+/* Asegurar que las celdas muestren todo el contenido */
+.mat-mdc-table {
+  width: 100%;
+  min-width: 1200px;
+}
+
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: ellipsis;
+  padding: 8px 16px;
+}
+
+/* Permitir que el texto largo se muestre en múltiples líneas si es necesario */
+.mat-mdc-cell {
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 200px;
+}
+
+/* Asegurar que el contenedor de la tabla tenga scroll horizontal */
+.tabla-container table {
+  display: table;
+  width: 100%;
+  min-width: 1200px;
+}
+
+span.disponible {
+  color: var(--notif-exito-borde);
+  font-weight: bold;
+}
+
+/* Estilos para badge de grupo */
+.grupo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: var(--radio-md);
+  background-color: var(--color-primario);
+  color: white;
+  font-weight: 600;
+  font-size: var(--text-body2-size);
+  min-width: 32px;
+  height: 24px;
+}
+
+button {
+  margin-right: 8px;
+  margin-bottom: 4px;
+}
+
+/* Estilos para botones de icono */
+.action-icon-button {
+  margin: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.action-icon-button:hover {
+  transform: scale(1.1);
+}
+
+/* Iconos específicos */
+.preinscribir-icon {
+  color: var(--color-primario);
+  font-size: var(--tam-icono-md);
+}
+
+.preinscribir-icon:hover {
+  color: var(--color-primario) !important;
+}
+
+.inscribir-icon {
+  color: var(--notif-exito-borde);
+  font-size: var(--tam-icono-md);
+}
+
+.inscribir-icon:hover {
+  color: var(--notif-exito-borde) !important;
+}
+
+.ver-icon {
+  color: var(--color-terciario);
+  font-size: var(--tam-icono-md);
+}
+
+.ver-icon:hover {
+  color: var(--color-terciario) !important;
+}
+
+.default-icon {
+  color: var(--neutro-600);
+  font-size: var(--tam-icono-md);
+}
+
+.default-icon:hover {
+  color: var(--neutro-600) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tabla-container {
+    padding: 8px;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .filtro {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .mat-elevation-z8 {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .mat-mdc-table {
+    min-width: 1200px;
+  }
+
+  table {
+    min-width: 1200px;
+  }
+
+  .action-icon-button {
+    margin: 0 2px;
+  }
+
+  .preinscribir-icon,
+  .inscribir-icon,
+  .ver-icon,
+  .default-icon {
+    font-size: var(--tam-icono-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .tabla-container {
+    padding: 4px;
+  }
+
+  .preinscribir-icon,
+  .inscribir-icon,
+  .ver-icon,
+  .default-icon {
+    font-size: var(--tam-icono-sm);
+  }
+}

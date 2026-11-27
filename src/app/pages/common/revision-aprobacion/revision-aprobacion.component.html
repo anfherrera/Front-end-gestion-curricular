@@ -3,8 +3,10 @@
     #bandeja
     [pendientes]="pendientes()"
     [procesadas]="procesadas()"
+    [filtrarPendientesPorPeriodo]="filtrarPendientesPorPeriodo()"
     (solicitudSeleccionada)="onSolicitudSeleccionada($event)"
     (periodoChange)="onPeriodoChange($event)"
+    (periodoPendientesChange)="onPeriodoPendientesChange($event)"
   >
   </app-solicitudes-bandeja>
 

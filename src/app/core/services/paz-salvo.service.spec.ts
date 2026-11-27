@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, TestRequest, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { PazSalvoService } from './paz-salvo.service';
 import { AuthService } from './auth.service';
@@ -23,6 +23,17 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     id_programa: 1,
     objRol: { id_rol: 1, nombre_rol: 'ESTUDIANTE' },
     objPrograma: { id_programa: 1, nombre_programa: 'Ingeniería Electrónica' },
+  };
+
+  /** GET a la raíz del recurso (EST-7): los filtros van como parámetros de consulta. */
+  const raiz = () => httpMock.expectOne((r) => r.url === apiUrl && r.method === 'GET');
+
+  /** Bandeja de pendientes de un rol: GET /?rol=…&bandeja=pendientes. */
+  const pendientes = (rol: string): TestRequest => {
+    const req = raiz();
+    expect(req.request.params.get('rol')).toBe(rol);
+    expect(req.request.params.get('bandeja')).toBe('pendientes');
+    return req;
   };
 
   beforeEach(() => {
@@ -63,7 +74,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) => request.url.includes('/listarSolicitud-PazYSalvo/porRol'));
+      const req = raiz();
 
       expect(req.request.headers.has('Authorization')).toBe(true);
       expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
@@ -91,13 +102,10 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(
-        (request) => request.url.includes('/porRol') && request.params.has('rol') && request.params.has('idUsuario')
-      );
-
-      expect(req.request.method).toBe('GET');
+      const req = raiz();
       expect(req.request.params.get('rol')).toBe('ESTUDIANTE');
       expect(req.request.params.get('idUsuario')).toBe('1');
+      expect(req.request.params.has('bandeja')).toBe(false);
 
       req.flush(mockSolicitudes);
     });
@@ -110,9 +118,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Funcionario`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mockSolicitudes);
+      pendientes('funcionario').flush(mockSolicitudes);
     });
 
     it('PZS-005: Debe listar solicitudes para COORDINADOR', (done) => {
@@ -123,9 +129,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Coordinador`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mockSolicitudes);
+      pendientes('coordinador').flush(mockSolicitudes);
     });
 
     it('PZS-006: Debe listar solicitudes para SECRETARIA', (done) => {
@@ -136,9 +140,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Secretaria`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mockSolicitudes);
+      pendientes('secretaria').flush(mockSolicitudes);
     });
 
     it('PZS-007: Debe convertir rol a mayúsculas automáticamente', (done) => {
@@ -146,7 +148,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) => request.url.includes('/porRol'));
+      const req = raiz();
 
       expect(req.request.params.get('rol')).toBe('ESTUDIANTE');
       req.flush([]);
@@ -162,18 +164,19 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Funcionario`);
+      const req = pendientes('funcionario');
+      expect(req.request.params.has('periodoAcademico')).toBe(false);
       req.flush(mockSolicitudes);
     });
 
     it('PZS-010: getCoordinadorRequests debe obtener solicitudes de coordinador', (done) => {
-      service.getCoordinadorRequests().subscribe((solicitudes) => {
+      service.getCoordinadorRequests('2025-1').subscribe((solicitudes) => {
         expect(solicitudes).toEqual([]);
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Coordinador`);
-      expect(req.request.method).toBe('GET');
+      const req = pendientes('coordinador');
+      expect(req.request.params.get('periodoAcademico')).toBe('2025-1');
       req.flush([]);
     });
 
@@ -183,9 +186,39 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/listarSolicitud-PazYSalvo/Secretaria`);
-      expect(req.request.method).toBe('GET');
-      req.flush([]);
+      pendientes('secretaria').flush([]);
+    });
+
+    const procesadas = [
+      ['funcionario', () => service.getSolicitudesProcesadasFuncionario('2025-2')],
+      ['coordinador', () => service.getSolicitudesProcesadasCoordinador('2025-2')],
+      ['secretaria', () => service.getSolicitudesProcesadasSecretaria('2025-2')],
+    ] as const;
+    procesadas.forEach(([rol, llamar]) => {
+      it(`PZS-040: las procesadas de ${rol} usan ?rol=${rol}&bandeja=procesadas`, (done) => {
+        llamar().subscribe((solicitudes) => {
+          expect(solicitudes).toEqual([]);
+          done();
+        });
+
+        const req = httpMock.expectOne((r) => r.url === apiUrl);
+        expect(req.request.method).toBe('GET');
+        expect(req.request.params.get('rol')).toBe(rol);
+        expect(req.request.params.get('bandeja')).toBe('procesadas');
+        expect(req.request.params.get('periodoAcademico')).toBe('2025-2');
+        req.flush([]);
+      });
+    });
+
+    it('PZS-041: si las procesadas fallan, devuelve una lista vacía', (done) => {
+      service.getSolicitudesProcesadasSecretaria().subscribe((solicitudes) => {
+        expect(solicitudes).toEqual([]);
+        done();
+      });
+
+      const req = httpMock.expectOne((r) => r.url === apiUrl);
+      expect(req.request.params.has('periodoAcademico')).toBe(false);
+      req.flush('error', { status: 500, statusText: 'Server Error' });
     });
   });
 
@@ -205,7 +238,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-PazYSalvo`);
+      const req = httpMock.expectOne(apiUrl);
       expect(req.request.method).toBe('POST');
       expect(req.request.body.idUsuario).toBe(1);
 
@@ -223,7 +256,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-014: No debe enviar datos del usuario (el backend los toma del token)', (done) => {
       service.crearSolicitudConFormulario(1, [], datosFormulario).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-PazYSalvo`);
+      const req = httpMock.expectOne(apiUrl);
       expect(req.request.body.objUsuario).toBeUndefined();
 
       req.flush({ id: 1 });
@@ -232,7 +265,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-015: Debe generar nombre de solicitud con el nombre del estudiante', (done) => {
       service.crearSolicitudConFormulario(1, [], datosFormulario).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-PazYSalvo`);
+      const req = httpMock.expectOne(apiUrl);
       expect(req.request.body.nombre_solicitud).toBe('Solicitud Paz y Salvo - Test User');
 
       req.flush({ id: 1 });
@@ -243,10 +276,9 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-016: Debe aprobar solicitud como funcionario', (done) => {
       service.approveRequest(1).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);
+      const req = httpMock.expectOne(`${apiUrl}/1/estado`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body.idSolicitud).toBe(1);
-      expect(req.request.body.nuevoEstado).toBe('APROBADA_FUNCIONARIO');
+      expect(req.request.body).toEqual({ nuevoEstado: 'APROBADA_FUNCIONARIO' });
 
       req.flush({ success: true });
     });
@@ -256,10 +288,9 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
 
       service.rejectRequest(1, motivo).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);
-      expect(req.request.body.idSolicitud).toBe(1);
-      expect(req.request.body.nuevoEstado).toBe('RECHAZADA');
-      expect(req.request.body.comentario).toBe(motivo);
+      const req = httpMock.expectOne(`${apiUrl}/1/estado`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ nuevoEstado: 'RECHAZADA', comentario: motivo });
 
       req.flush({ success: true });
     });
@@ -267,8 +298,9 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-019: Debe aprobar como coordinador', (done) => {
       service.approveAsCoordinador(1).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);
-      expect(req.request.body.nuevoEstado).toBe('APROBADA_COORDINADOR');
+      const req = httpMock.expectOne(`${apiUrl}/1/estado`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ nuevoEstado: 'APROBADA_COORDINADOR' });
 
       req.flush({ success: true });
     });
@@ -276,8 +308,9 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     it('PZS-020: Debe aprobar definitivamente (secretaría)', (done) => {
       service.approveDefinitively(1).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${apiUrl}/actualizarEstadoSolicitud`);
-      expect(req.request.body.nuevoEstado).toBe('APROBADA');
+      const req = httpMock.expectOne(`${apiUrl}/1/estado`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ nuevoEstado: 'APROBADA' });
 
       req.flush({ success: true });
     });
@@ -292,7 +325,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/subir-documento`);
+      const req = httpMock.expectOne(`${apiUrl}/documentos`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body instanceof FormData).toBe(true);
 
@@ -325,7 +358,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
     });
 
     it('PZS-025: Debe descargar archivo correctamente', (done) => {
-      const nombreArchivo = 'documento.pdf';
+      const nombreArchivo = 'documento final.pdf';
       const mockBlob = new Blob(['content'], { type: 'application/pdf' });
 
       service.descargarArchivo(nombreArchivo).subscribe((blob) => {
@@ -334,11 +367,8 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(
-        (request) =>
-          request.url.includes('descargar-documento') && request.url.includes(encodeURIComponent(nombreArchivo))
-      );
-
+      const req = httpMock.expectOne(`${apiUrl}/documentos?nombre=${encodeURIComponent(nombreArchivo)}`);
+      expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(mockBlob);
     });
@@ -353,7 +383,8 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/obtenerOficios/1`);
+      const req = httpMock.expectOne(`${apiUrl}/1/oficios`);
+      expect(req.request.method).toBe('GET');
       req.flush(mockOficios);
     });
 
@@ -366,9 +397,21 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/descargarOficio/1`);
+      const req = httpMock.expectOne(`${apiUrl}/1/oficios/archivo`);
+      expect(req.request.method).toBe('GET');
       expect(req.request.responseType).toBe('blob');
       req.flush(mockBlob, { headers: { 'Content-Disposition': 'attachment; filename="oficio.pdf"' } });
+    });
+
+    it('PZS-042: la secretaría sube el oficio en PDF con POST /{id}/oficios', (done) => {
+      const file = new File(['%PDF'], 'oficio.pdf', { type: 'application/pdf' });
+
+      service.subirOficioPdf(3, file).subscribe(() => done());
+
+      const req = httpMock.expectOne(`${apiUrl}/3/oficios`);
+      expect(req.request.method).toBe('POST');
+      expect((req.request.body as FormData).get('file')).toBe(file);
+      req.flush({});
     });
   });
 
@@ -378,12 +421,22 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
 
       service.agregarComentario(1, comentario).subscribe(() => done());
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/añadirComentario`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/1/comentarios`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body.idDocumento).toBe(1);
-      expect(req.request.body.comentario).toBe(comentario);
+      expect(req.request.body).toEqual({ comentario });
 
       req.flush({ success: true });
+    });
+
+    it('PZS-043: los comentarios de una solicitud vienen de GET /{id}/comentarios', (done) => {
+      service.obtenerComentarios(5).subscribe((comentarios) => {
+        expect(comentarios.comentarioRechazo).toBe('Falta la firma');
+        done();
+      });
+
+      const req = httpMock.expectOne(`${apiUrl}/5/comentarios`);
+      expect(req.request.method).toBe('GET');
+      req.flush({ comentarioRechazo: 'Falta la firma' });
     });
   });
 
@@ -396,8 +449,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         },
       });
 
-      const req = httpMock.expectOne((request) => request.url.includes('/porRol'));
-      req.flush({ message: 'No autorizado' }, { status: 401, statusText: 'Unauthorized' });
+      raiz().flush({ message: 'No autorizado' }, { status: 401, statusText: 'Unauthorized' });
     });
 
     it('PZS-034: Debe manejar error 500 del servidor', (done) => {
@@ -411,7 +463,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
           },
         });
 
-      const req = httpMock.expectOne(`${apiUrl}/crearSolicitud-PazYSalvo`);
+      const req = httpMock.expectOne(apiUrl);
       req.flush({ message: 'Error interno' }, { status: 500, statusText: 'Internal Server Error' });
     });
   });
@@ -423,7 +475,7 @@ describe('PazSalvoService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/obtenerDocumentos/coordinador/1`);
+      const req = httpMock.expectOne(`${apiUrl}/1/documentos`);
       expect(req.request.method).toBe('GET');
       req.flush([]);
     });

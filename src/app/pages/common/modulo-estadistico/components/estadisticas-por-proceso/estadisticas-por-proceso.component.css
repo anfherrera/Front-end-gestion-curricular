@@ -1,7 +1,7 @@
 .estadisticas-por-proceso-card {
   background-color: var(--blanco);
-  color: var(--gris-900);
-  border-radius: 12px;
+  color: var(--neutro-800);
+  border-radius: var(--radio-md);
   box-shadow: var(--sombra-2);
   position: relative;
   overflow: hidden;
@@ -23,12 +23,12 @@
   background: var(--color-primario);
   margin: -16px -16px 16px -16px;
   padding: 16px;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .estadisticas-por-proceso-card mat-card-title {
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -37,7 +37,7 @@
 
 .estadisticas-por-proceso-card mat-card-subtitle {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .loading-container,
@@ -52,13 +52,13 @@
 }
 
 .error-container .error-icon {
-  font-size: 3rem;
+  font-size: var(--tam-icono-xl);
   margin-bottom: 16px;
   opacity: 0.8;
 }
 
 .no-data mat-icon {
-  font-size: 3rem;
+  font-size: var(--tam-icono-xl);
   margin-bottom: 16px;
   opacity: 0.6;
 }
@@ -78,8 +78,8 @@
 }
 
 .proceso-card {
-  background: var(--gris-50);
-  border-radius: 8px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-sm);
   padding: 12px;
   transition: all 0.3s ease;
   border-left: 4px solid var(--color-primario);
@@ -90,25 +90,26 @@
 }
 
 .proceso-card:hover {
-  background: var(--gris-100);
+  background: var(--neutro-100);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
 }
 
+/* Mismo color por proceso que los gráficos y las notificaciones (COLOR_POR_PROCESO en design-tokens.ts) */
 .proceso-reingreso {
-  border-left-color: #8e24aa;
-}
-.proceso-homologacion {
   border-left-color: var(--notif-exito-borde);
 }
+.proceso-homologacion {
+  border-left-color: var(--color-secundario);
+}
 .proceso-cursos {
-  border-left-color: var(--azul-500);
+  border-left-color: var(--color-primario);
 }
 .proceso-ecaes {
-  border-left-color: #00bcd4;
+  border-left-color: var(--color-error);
 }
 .proceso-paz {
-  border-left-color: #ff9800;
+  border-left-color: var(--color-terciario);
 }
 
 .proceso-header {
@@ -121,7 +122,7 @@
 .proceso-icon {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
@@ -130,7 +131,7 @@
 }
 
 .proceso-icon mat-icon {
-  font-size: 1.1rem;
+  font-size: var(--tam-icono-xs);
 }
 
 .proceso-info {
@@ -138,11 +139,11 @@
 }
 
 .proceso-nombre {
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
   font-weight: 600;
   margin: 0 0 4px 0;
   line-height: 1.2;
-  color: var(--gris-900);
+  color: var(--neutro-800);
 }
 
 .proceso-total {
@@ -152,14 +153,14 @@
 }
 
 .total-solicitudes {
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: bold;
   color: var(--color-primario);
 }
 
 .label {
-  font-size: 0.8rem;
-  color: var(--gris-650);
+  font-size: var(--text-body2-size);
+  color: var(--neutro-600);
 }
 
 .proceso-stats {
@@ -181,25 +182,25 @@
   gap: 4px;
   padding: 6px 8px;
   background: var(--blanco);
-  border-radius: 6px;
-  font-size: 0.75rem;
+  border-radius: var(--radio-xs);
+  font-size: var(--text-body2-size);
   min-width: 70px;
-  border: 1px solid var(--gris-100);
+  border: 1px solid var(--neutro-100);
 }
 
 .stat-item mat-icon {
-  font-size: 0.9rem;
+  font-size: var(--tam-icono-xs);
 }
 
 .stat-value {
   font-weight: bold;
-  font-size: 0.8rem;
-  color: var(--gris-900);
+  font-size: var(--text-body2-size);
+  color: var(--neutro-800);
 }
 
 .stat-label {
-  font-size: 0.7rem;
-  color: var(--gris-650);
+  font-size: var(--text-body2-size);
+  color: var(--neutro-600);
 }
 
 .stat-item.aprobadas mat-icon {
@@ -209,13 +210,13 @@
   color: var(--color-error);
 }
 .stat-item.en-proceso mat-icon {
-  color: #ff9800;
+  color: var(--notif-error-titulo);
 }
 .stat-item.enviadas mat-icon {
-  color: var(--estado-advertencia);
+  color: var(--color-error);
 }
 .stat-item.porcentaje mat-icon {
-  color: var(--azul-500);
+  color: var(--color-terciario);
 }
 
 .proceso-datos-raw {
@@ -227,12 +228,12 @@
 .proceso-datos-raw mat-chip {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  font-size: 0.75rem;
+  font-size: var(--text-body2-size);
 }
 
 .fecha-actualizacion {
   opacity: 0.7;
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
 }
 
 .spacer {

@@ -29,14 +29,10 @@ export interface ConfirmDialogData {
       <p class="mensaje">{{ data.mensaje }}</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="false">{{ data.textoCancelar || 'Cancelar' }}</button>
-      <button
-        mat-raised-button
-        cdkFocusInitial
-        [class.btn-peligro]="data.peligro"
-        [class.btn-confirmar]="!data.peligro"
-        [mat-dialog-close]="true"
-      >
+      <button mat-stroked-button color="primary" [mat-dialog-close]="false">
+        {{ data.textoCancelar || 'Cancelar' }}
+      </button>
+      <button mat-raised-button cdkFocusInitial [color]="data.peligro ? 'warn' : 'primary'" [mat-dialog-close]="true">
         {{ data.textoConfirmar || 'Aceptar' }}
       </button>
     </mat-dialog-actions>
@@ -58,14 +54,6 @@ export interface ConfirmDialogData {
         white-space: pre-line;
         line-height: 1.5;
         margin: 0;
-      }
-      .btn-confirmar {
-        background-color: var(--color-primario) !important;
-        color: white !important;
-      }
-      .btn-peligro {
-        background-color: var(--color-error) !important;
-        color: white !important;
       }
     `,
   ],

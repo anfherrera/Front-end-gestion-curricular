@@ -1,0 +1,62 @@
+.cursos-intersemestrales-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--neutro-50);
+  font-family: var(--font-body);
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+@keyframes urgentPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.content {
+  background: white;
+  border-radius: var(--radio-sm);
+  padding: 30px;
+  box-shadow: var(--sombra-2);
+  min-height: 600px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .menu {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .menu {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-content {
+    padding: 15px;
+  }
+
+  .menu-icon {
+    font-size: var(--tam-icono-sm);
+    width: var(--tam-icono-sm);
+    height: var(--tam-icono-sm);
+  }
+
+  .menu-text {
+    font-size: var(--text-body-size);
+  }
+}

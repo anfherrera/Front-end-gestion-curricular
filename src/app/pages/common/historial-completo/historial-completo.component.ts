@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef, signal 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatChipsModule } from '@angular/material/chips';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 import {
@@ -18,13 +18,14 @@ import {
   HistorialResponse,
   HistorialSolicitud,
   FiltrosHistorial,
+  categoriaPorNombre,
 } from '@core/services/historial-solicitudes.service';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
 import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
 import { LoggerService } from '@core/services/logger.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
-import { EstadoClasePipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
+import { EstadoClasePipe, EstadoIconoPipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
 import { FechaPipe } from '@shared/pipes/fecha.pipe';
 import { SnackbarService } from '@core/services/snackbar.service';
 
@@ -32,6 +33,7 @@ import { SnackbarService } from '@core/services/snackbar.service';
   selector: 'app-historial-completo',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     MatCardModule,
     MatTableModule,
     MatFormFieldModule,
@@ -40,12 +42,12 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatChipsModule,
     PeriodoFiltroSelectorComponent,
     CardContainerComponent,
     UtfFixPipe,
     EstadoClasePipe,
     EstadoLabelPipe,
+    EstadoIconoPipe,
     FechaPipe,
   ],
   templateUrl: './historial-completo.component.html',
@@ -72,6 +74,7 @@ export class HistorialCompletoComponent implements OnInit {
     'periodo_academico',
     'estado_actual',
     'fecha_registro',
+    'acciones',
   ];
 
   tiposSolicitud: { codigo: string; display: string }[] = [];
@@ -146,17 +149,10 @@ export class HistorialCompletoComponent implements OnInit {
   }
 
   /**
-   * Detecta el tipo de solicitud desde el nombre
+   * Detecta el tipo de solicitud desde el nombre (la misma regla que el detalle)
    */
   detectarTipoSolicitud(nombreSolicitud: string): string {
-    if (!nombreSolicitud) return 'N/A';
-    if (nombreSolicitud.includes('Reingreso')) return 'Reingreso';
-    if (nombreSolicitud.includes('Homologacion') || nombreSolicitud.includes('Homologación')) return 'Homologación';
-    if (nombreSolicitud.includes('Paz y Salvo')) return 'Paz y Salvo';
-    if (nombreSolicitud.includes('ECAES')) return 'ECAES';
-    if (nombreSolicitud.includes('Curso Verano') || nombreSolicitud.includes('Curso Intersemestral'))
-      return 'Cursos de Verano';
-    return 'Otro';
+    return categoriaPorNombre(nombreSolicitud);
   }
 
   /**
@@ -237,13 +233,13 @@ export class HistorialCompletoComponent implements OnInit {
 
           let mensaje = 'Error al exportar PDF';
           if (err.status === 401) {
-            mensaje = 'No autorizado. Por favor, inicia sesión nuevamente';
+            mensaje = 'No autorizado. Por favor, inicie sesión nuevamente';
           } else if (err.status === 403) {
-            mensaje = 'No tienes permisos para exportar el historial';
+            mensaje = 'No tiene permisos para exportar el historial';
           } else if (err.status === 500) {
             mensaje = 'Error del servidor al generar el PDF';
           } else if (err.status === 0) {
-            mensaje = 'Error de conexión. Verifica tu conexión a internet';
+            mensaje = 'Error de conexión. Verifique su conexión a internet';
           } else {
             const mensajeError = this.errorHandler.extraerMensajeError(err);
             if (mensajeError && mensajeError !== 'Ocurrió un error inesperado') {

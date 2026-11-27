@@ -1,0 +1,150 @@
+.pruebas-ecaes-funcionario-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: var(--neutro-50);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+.sin-solicitudes {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--neutro-600);
+  background: var(--primario-98);
+  border-radius: var(--radio-md);
+  border: 2px dashed var(--primario-90);
+  margin: 20px 0;
+}
+
+.sin-solicitudes mat-icon {
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
+  color: var(--color-primario);
+  margin-bottom: 16px;
+}
+
+.sin-solicitudes p {
+  font-size: var(--text-h3-size);
+  margin: 0;
+  font-weight: 500;
+}
+
+.botones-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--primario-98);
+  border-radius: var(--radio-md);
+  border: 2px solid var(--primario-90);
+  box-shadow: var(--sombra-2);
+}
+
+.botones-acciones button {
+  min-width: 200px;
+  padding: 12px 24px;
+  font-size: var(--text-subtitulo-size);
+  font-weight: 600;
+  border-radius: var(--radio-sm);
+  transition: all 0.3s ease;
+}
+
+.botones-acciones button[color='primary'] {
+  background: var(--color-primario);
+  color: white;
+  box-shadow: var(--sombra-2);
+}
+
+.botones-acciones button[color='primary']:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--sombra-2) !important;
+}
+
+.botones-acciones button[color='warn'] {
+  background: var(--color-secundario-light);
+  color: white;
+  box-shadow: var(--sombra-2);
+}
+
+.botones-acciones button[color='warn']:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--sombra-2) !important;
+}
+
+.botones-acciones button:disabled {
+  background: var(--neutro-400) !important;
+  color: var(--neutro-600) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.info-card {
+  box-shadow: var(--sombra-1);
+  border-radius: var(--radio-sm);
+  margin-bottom: 24px;
+}
+
+.info-card mat-card-header {
+  background-color: var(--neutro-50);
+  padding: 16px;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
+}
+
+.info-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-h3-size);
+  font-weight: 600;
+  color: var(--neutro-800);
+  margin: 0;
+}
+
+.info-card mat-card-title mat-icon {
+  color: var(--color-primario);
+}
+
+.info-card mat-card-content {
+  padding: 24px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--neutro-600);
+  font-size: var(--text-body-size);
+}
+
+.info-value {
+  color: var(--neutro-800);
+  font-size: var(--text-subtitulo-size);
+}
+
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .pruebas-ecaes-funcionario-container {
+    padding: 16px;
+    gap: 16px;
+  }
+}

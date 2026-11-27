@@ -5,7 +5,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -19,7 +18,7 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 import { ArchivosService } from '@core/services/archivos.service';
 import { mensajeDeError } from '@core/utils/http-error.utils';
 import { descargarBlob } from '@core/utils/download.util';
-import { EstadoClasePipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
+import { EstadoClasePipe, EstadoIconoPipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
 import { FechaPipe } from '@shared/pipes/fecha.pipe';
 import { SnackbarService } from '@core/services/snackbar.service';
 
@@ -30,13 +29,13 @@ import { SnackbarService } from '@core/services/snackbar.service';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatChipsModule,
     MatDividerModule,
     MatListModule,
     MatTooltipModule,
     CardContainerComponent,
     EstadoClasePipe,
     EstadoLabelPipe,
+    EstadoIconoPipe,
     FechaPipe,
   ],
   templateUrl: './detalle-solicitud.component.html',
@@ -67,7 +66,7 @@ export class DetalleSolicitudComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.historialService.obtenerHistorialSolicitud(id).subscribe({
+    this.historialService.obtenerDetalleSolicitud(id).subscribe({
       next: (data) => {
         this.solicitud.set(data);
         this.loading.set(false);

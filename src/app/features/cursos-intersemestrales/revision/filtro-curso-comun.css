@@ -1,0 +1,134 @@
+/* Filtro por curso: igual en preinscribir e inscribir estudiantes */
+
+.filtro-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-md);
+  border: 1px solid var(--primario-90);
+}
+
+.filtro-section h3 {
+  color: var(--color-primario);
+  margin-bottom: 16px;
+  font-size: var(--text-h3-size);
+  font-weight: 600;
+}
+
+.curso-selector {
+  width: 100%;
+  max-width: 500px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--neutro-600);
+}
+
+.loading-container p {
+  margin-top: 16px;
+  font-size: var(--text-body-size);
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--neutro-600);
+  background: var(--neutro-50);
+  border-radius: var(--radio-sm);
+  border: 2px dashed var(--neutro-200);
+}
+
+.no-data mat-icon {
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
+  margin-bottom: 16px;
+  color: var(--color-primario);
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--radio-sm);
+  box-shadow: var(--sombra-1);
+}
+
+.estudiante-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.estudiante-info strong {
+  color: var(--neutro-800);
+  font-size: var(--text-body-size);
+}
+
+.estudiante-info small {
+  color: var(--neutro-600);
+  font-size: var(--text-body2-size);
+}
+
+.curso-info {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-md);
+  border: 1px solid var(--primario-90);
+}
+
+.curso-info h4 {
+  color: var(--color-primario);
+  margin-bottom: 16px;
+  font-size: var(--text-subtitulo-size);
+  font-weight: 600;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: var(--radio-xs);
+  border-left: 3px solid var(--color-primario);
+}
+
+.info-item strong {
+  color: var(--color-primario);
+  min-width: 120px;
+  font-size: var(--text-body2-size);
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+  color: var(--primario-90);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  color: var(--color-primario);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: var(--neutro-600);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: var(--color-primario);
+}

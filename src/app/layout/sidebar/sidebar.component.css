@@ -28,7 +28,7 @@
 
 .sidebar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
+  border-radius: var(--radio-xs);
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
@@ -51,15 +51,15 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  font-size: 14px;
-  font-family: 'Open Sans', sans-serif;
+  font-size: var(--text-body-size);
+  font-family: var(--font-body);
   font-weight: 500;
   width: 100%;
   border: none;
   background: transparent;
   color: white;
   text-align: left;
-  border-radius: 0 20px 20px 0;
+  border-radius: 0 var(--radio-lg) var(--radio-lg) 0;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -67,7 +67,7 @@
   text-decoration: none; /* Quitar subrayado de los enlaces */
 }
 
-/* Hover según Sistema de Diseño TIC: Contenedor #5056AC */
+/* Hover según Sistema de Diseño TIC: Contenedor var(--color-primario-light) */
 .sidebar-link:hover {
   background: var(--color-primario-light);
   padding-left: 20px;
@@ -86,7 +86,7 @@
 }
 
 .sidebar mat-icon {
-  font-size: 26px; /* iconos más grandes */
+  font-size: var(--tam-icono-md); /* iconos más grandes */
 }
 
 /* Ocultar texto al minimizar solo en items normales (no toggle ni logout) */
@@ -118,15 +118,15 @@
 
 /* Item de logout con estilo especial */
 .sidebar-link.logout-item {
-  color: #ffcdd2;
+  color: var(--notif-error-fondo);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 8px;
   padding-top: 20px;
 }
 
 .sidebar-link.logout-item:hover {
-  background: rgba(244, 67, 54, 0.1);
-  color: #ffcdd2;
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
+  color: var(--notif-error-fondo);
 }
 
 .sidebar-link.logout-item mat-icon {
@@ -155,10 +155,10 @@
 
   .sidebar-link {
     padding: 12px 20px;
-    font-size: 14px;
+    font-size: var(--text-body-size);
   }
 
   .sidebar mat-icon {
-    font-size: 20px;
+    font-size: var(--tam-icono-sm);
   }
 }

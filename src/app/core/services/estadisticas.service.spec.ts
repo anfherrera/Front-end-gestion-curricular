@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { EstadisticasService } from './estadisticas.service';
+import { ApiEndpoints } from '../utils/api-endpoints';
 import { EstadoSolicitudesResponse, TotalEstudiantesResponse } from '../models/estadisticas/generales.model';
 import { ProgramaDTORespuesta } from '../models/programa.interface';
 import { Observable } from 'rxjs';
@@ -147,7 +148,11 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
   });
 
   describe('12. Exportación de Datos', () => {
-    // No hay exportación a CSV: el backend exporta a PDF y a Excel.
+    // No hay exportación a CSV: el backend exporta a PDF y a Excel (EST-7, paso 9: ?formato=pdf|excel).
+    const REPORTES = ApiEndpoints.MODULO_ESTADISTICO.REPORTES;
+    const REPORTES_VERANO = ApiEndpoints.MODULO_ESTADISTICO.CURSOS_VERANO_REPORTES;
+    const EXCEL = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
     it('EST-024: Debe exportar estadísticas como PDF con los filtros elegidos', (done) => {
       const pdf = new Blob(['%PDF'], { type: 'application/pdf' });
       service.exportarPDF({ proceso: 'Reingreso', idPrograma: 2, periodoAcademico: '2026-1' }).subscribe((blob) => {
@@ -155,53 +160,54 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) => request.url.endsWith('/estadisticas/export/pdf'));
+      const req = httpMock.expectOne({
+        method: 'GET',
+        url: `${REPORTES}?formato=pdf&proceso=Reingreso&idPrograma=2&periodoAcademico=2026-1`,
+      });
       expect(req.request.responseType).toBe('blob');
       expect(req.request.headers.get('Accept')).toBe('application/pdf');
-      expect(req.request.params.get('proceso')).toBe('Reingreso');
-      expect(req.request.params.get('idPrograma')).toBe('2');
-      expect(req.request.params.get('periodoAcademico')).toBe('2026-1');
       req.flush(pdf);
     });
 
     it('EST-025: Debe exportar estadísticas como Excel', (done) => {
       service.exportarExcel().subscribe(() => done());
 
-      const req = httpMock.expectOne((request) => request.url.endsWith('/estadisticas/export/excel'));
+      const req = httpMock.expectOne({ method: 'GET', url: `${REPORTES}?formato=excel` });
       expect(req.request.responseType).toBe('blob');
-      expect(req.request.headers.get('Accept')).toBe(
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      );
-      expect(req.request.params.keys()).toEqual([]);
+      expect(req.request.headers.get('Accept')).toBe(EXCEL);
       req.flush(new Blob());
     });
 
     it('exporta el Excel con filtros y los reportes de cursos de verano', () => {
       service.exportarExcel({ proceso: 'ECAES', idPrograma: 1, periodoAcademico: '2025-2' }).subscribe();
-      const excel = httpMock.expectOne((request) => request.url.endsWith('/estadisticas/export/excel'));
-      expect(excel.request.params.keys().sort()).toEqual(['idPrograma', 'periodoAcademico', 'proceso']);
-      excel.flush(new Blob());
+      httpMock
+        .expectOne({
+          method: 'GET',
+          url: `${REPORTES}?formato=excel&proceso=ECAES&idPrograma=1&periodoAcademico=2025-2`,
+        })
+        .flush(new Blob());
 
       service.exportarReporteCursosVerano({ periodoAcademico: '2026-1', idPrograma: 3 }).subscribe();
-      const pdf = httpMock.expectOne((request) => request.url.endsWith('/estadisticas/export/pdf/cursos-verano'));
+      const pdf = httpMock.expectOne({
+        method: 'GET',
+        url: `${REPORTES_VERANO}?formato=pdf&periodoAcademico=2026-1&idPrograma=3`,
+      });
       expect(pdf.request.headers.get('Accept')).toBe('application/pdf');
-      expect(pdf.request.params.get('periodoAcademico')).toBe('2026-1');
-      expect(pdf.request.params.get('idPrograma')).toBe('3');
       pdf.flush(new Blob());
 
       service.exportarExcelCursosVerano().subscribe();
-      const xls = httpMock.expectOne((request) => request.url.endsWith('/estadisticas/export/excel/cursos-verano'));
+      const xls = httpMock.expectOne({ method: 'GET', url: `${REPORTES_VERANO}?formato=excel` });
       expect(xls.request.responseType).toBe('blob');
-      expect(xls.request.params.keys()).toEqual([]);
+      expect(xls.request.headers.get('Accept')).toBe(EXCEL);
       xls.flush(new Blob());
 
       service.exportarExcelCursosVerano({ periodoAcademico: '2026-2', idPrograma: 5 }).subscribe();
-      const xls2 = httpMock.expectOne((request) => request.url.endsWith('/estadisticas/export/excel/cursos-verano'));
-      expect(xls2.request.params.get('idPrograma')).toBe('5');
-      xls2.flush(new Blob());
+      httpMock
+        .expectOne({ method: 'GET', url: `${REPORTES_VERANO}?formato=excel&periodoAcademico=2026-2&idPrograma=5` })
+        .flush(new Blob());
 
       service.exportarReporteCursosVerano().subscribe();
-      httpMock.expectOne((request) => request.url.endsWith('/estadisticas/export/pdf/cursos-verano')).flush(new Blob());
+      httpMock.expectOne({ method: 'GET', url: `${REPORTES_VERANO}?formato=pdf` }).flush(new Blob());
     });
   });
 
@@ -286,7 +292,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       { id_programa: 1, codigo: 'PIET', nombre_programa: 'Ingeniería Electrónica y Telecomunicaciones' },
       { id_programa: 4, codigo: 'TT', nombre_programa: 'Tecnología en Telemática' },
     ];
-    const listar = () => httpMock.expectOne((request) => request.url.endsWith('/programas/listarProgramas'));
+    const listar = () => httpMock.expectOne((request) => request.url.endsWith('/programas'));
 
     it('normaliza los nombres de programa: sin tildes, en minúsculas y con espacios simples', () => {
       expect(EstadisticasService.normalizarNombrePrograma('  Ingeniería   de Sistemas ')).toBe(
@@ -306,7 +312,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
       // La segunda llamada usa la caché: no hay otra petición.
       let otra: Map<string, number> | undefined;
       service.getIdsProgramaPorNombre().subscribe((m) => (otra = m));
-      httpMock.expectNone((request) => request.url.endsWith('/programas/listarProgramas'));
+      httpMock.expectNone((request) => request.url.endsWith('/programas'));
       expect(otra).toBe(ids);
     });
 

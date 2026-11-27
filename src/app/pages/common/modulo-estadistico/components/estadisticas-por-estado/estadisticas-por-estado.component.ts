@@ -18,6 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { EstadisticasService } from '@core/services/estadisticas.service';
 import { EstadoSolicitudesResponse, EstadoInfo } from '@core/models/estadisticas/generales.model';
 import { Subscription } from 'rxjs';
+import { COLORS } from '@core/design-system/design-tokens';
 
 @Component({
   selector: 'app-estadisticas-por-estado',
@@ -90,7 +91,8 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
                 cantidad: estado.cantidad || 0,
                 porcentaje: estado.porcentaje || 0.0,
                 icono: estado.icono || this.getDefaultIcon(estadoKey),
-                color: estado.color || this.getDefaultColor(estadoKey),
+                // El backend manda su propio color; se usa siempre el institucional del estado
+                color: this.getDefaultColor(estadoKey),
                 descripcion: estado.descripcion || this.getDefaultDescription(estadoKey),
               };
             }
@@ -172,12 +174,12 @@ export class EstadisticasPorEstadoComponent implements OnInit, OnDestroy, OnChan
    */
   private getDefaultColor(estadoKey: string): string {
     const colorMap: Record<string, string> = {
-      APROBADA: '#249337',
-      ENVIADA: '#1D72D3',
-      EN_PROCESO: '#1D72D3',
-      RECHAZADA: '#FF6D0A',
+      APROBADA: COLORS.success,
+      ENVIADA: COLORS.tertiary,
+      EN_PROCESO: COLORS.primary,
+      RECHAZADA: COLORS.error,
     };
-    return colorMap[estadoKey] || '#454444';
+    return colorMap[estadoKey] || COLORS.neutralText;
   }
 
   /**

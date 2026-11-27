@@ -1,0 +1,211 @@
+/* Estilos comunes de las listas del administrador (usuarios, roles, docentes y programas):
+   cabecera de página, buscador y tabla. Las acciones de fila usan .acciones-tabla (src/styles/componentes.css). */
+
+.container-admin {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: var(--neutro-50);
+  min-height: 100vh;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  background: var(--blanco);
+  padding: 20px 24px;
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-1);
+  animation: fadeInDown 0.4s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-section .actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Buscador: campo y botón Buscar en la misma línea, dentro de una tarjeta */
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--blanco);
+  padding: 16px 20px;
+  border-radius: var(--radio-md);
+  margin-bottom: 24px;
+  box-shadow: var(--sombra-1);
+  animation: fadeIn 0.4s ease 0.1s both;
+}
+
+.search-section .search-field {
+  flex: 1;
+  max-width: 560px;
+}
+
+:host ::ng-deep .search-section .search-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:host ::ng-deep .search-section mat-icon[matprefix] {
+  color: var(--color-primario);
+  margin-right: 8px;
+}
+
+:host ::ng-deep .search-section .mat-mdc-text-field-wrapper {
+  background-color: var(--neutro-50);
+}
+
+.table-container {
+  background: var(--blanco);
+  border-radius: var(--radio-md);
+  padding: 24px;
+  box-shadow: var(--sombra-1);
+  animation: fadeInUp 0.4s ease 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+mat-table {
+  width: 100%;
+}
+
+:host ::ng-deep .table-container .mat-mdc-header-row {
+  background-color: var(--color-primario);
+  font-weight: 600;
+}
+
+:host ::ng-deep .table-container .mat-mdc-header-row .mat-mdc-header-cell {
+  color: var(--blanco);
+  font-weight: 600;
+  background-color: var(--color-primario);
+  border-bottom: 2px solid var(--color-primario-light);
+}
+
+:host ::ng-deep .table-container .mat-mdc-row {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--neutro-200);
+}
+
+:host ::ng-deep .table-container .mat-mdc-row .mat-mdc-cell {
+  border-bottom-color: var(--neutro-200);
+}
+
+:host ::ng-deep .table-container .mat-mdc-row:hover {
+  background-color: var(--primario-98) !important;
+}
+
+.actions-column {
+  width: 160px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Fila de tabla vacía */
+.no-data {
+  text-align: center;
+  padding: 48px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--neutro-600);
+}
+
+.empty-state mat-icon {
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
+  color: var(--neutro-600);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: var(--text-subtitulo-size);
+  font-weight: 500;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 20px;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 16px;
+}
+
+.loading-container p {
+  color: var(--neutro-600);
+  font-size: var(--text-h3-size);
+  font-weight: 500;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .container-admin {
+    padding: 16px;
+  }
+
+  .search-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-section .search-field {
+    max-width: none;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .table-container {
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  .actions-column {
+    width: auto;
+  }
+}

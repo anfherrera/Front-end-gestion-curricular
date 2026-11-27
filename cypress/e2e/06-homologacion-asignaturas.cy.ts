@@ -62,7 +62,7 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
-    cy.intercept('GET', '**/api/solicitudes-homologacion/**', { statusCode: 200, body: [] }).as('listarHomologacion');
+    cy.intercept('GET', /\/api\/solicitudes-homologacion(\/|\?|$)/, { statusCode: 200, body: [] }).as('listarHomologacion');
   });
 
   describe('1. Estudiante – Visualización de Interfaz', () => {
@@ -150,8 +150,8 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
 
   describe('3. Estudiante – Envío de solicitud', () => {
     it('E2E-HA-009: Debe enviar la solicitud exitosamente', () => {
-      cy.intercept('POST', '**/api/archivos/**', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
-      cy.intercept('POST', '**/api/solicitudes-homologacion/crearSolicitud-Homologacion', {
+      cy.intercept('POST', '**/api/archivos', { statusCode: 200, body: { nombre: 'doc.pdf', ruta_documento: '/uploads/doc.pdf' } }).as('subirArchivo');
+      cy.intercept('POST', '**/api/solicitudes-homologacion', {
         statusCode: 201,
         body: { id_solicitud: 1, mensaje: 'Solicitud creada' }
       }).as('crearHomologacion');
@@ -175,7 +175,7 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
     });
 
     it('E2E-HA-010: Debe mostrar error si falla el envío', () => {
-      cy.intercept('POST', '**/api/solicitudes-homologacion/crearSolicitud-Homologacion', { statusCode: 500, body: { message: 'Error servidor' } });
+      cy.intercept('POST', '**/api/solicitudes-homologacion', { statusCode: 500, body: { message: 'Error servidor' } });
       visitarComoEstudiante();
       cy.get('input[type="file"]').first().selectFile({
         contents: Cypress.Buffer.from('PDF'),
@@ -201,7 +201,7 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
           comentarios: ''
         }
       ];
-      cy.intercept('GET', '**/api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol*', { statusCode: 200, body: [{ id_solicitud: 1, nombre_solicitud: 'Solicitud Homologación - Ana', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [] }] }).as('listar');
+      cy.intercept('GET', /\/api\/solicitudes-homologacion\?.*rol=/, { statusCode: 200, body: [{ id_solicitud: 1, nombre_solicitud: 'Solicitud Homologación - Ana', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [] }] }).as('listar');
       visitarComoEstudiante();
       cy.wait('@listar');
       cy.contains('Solicitud Homologación', { timeout: 8000 }).should('be.visible');
@@ -209,23 +209,57 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
     });
 
     it('E2E-HA-012: Debe mostrar estado de cada solicitud', () => {
-      cy.intercept('GET', '**/api/solicitudes-homologacion/**', {
+      cy.intercept('GET', /\/api\/solicitudes-homologacion(\/|\?|$)/, {
         statusCode: 200,
         body: [{ id_solicitud: 1, nombre_solicitud: 'Homologación Test', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'APROBADA' }], documentos: [] }]
       }).as('listarAprobada');
       visitarComoEstudiante();
       cy.wait('@listarAprobada');
-      cy.contains('APROBADA', { timeout: 8000 }).should('be.visible');
+      cy.contains('tr', 'Homologación Test').should('contain.text', 'Aprobada');
       cy.registrarInteraccionExitosa();
     });
   });
 
   describe('5. Funcionario – Revisión de solicitudes', () => {
+    it('filtra las homologaciones pendientes por un período anterior y vuelve al actual', () => {
+      const ruta = '/api/solicitudes-homologacion';
+      const solicitudActual = { id_solicitud: 1, nombre_solicitud: 'Homologación del período actual' };
+      const solicitudAnterior = { id_solicitud: 2, nombre_solicitud: 'Homologación de 2025-2' };
+      cy.intercept('GET', /\/api\/periodos-academicos\?desde=\d+$/, {
+        body: { success: true, data: [{ valor: '2025-2', nombrePeriodo: '2025-2' }] }
+      }).as('periodosRecientes');
+      cy.intercept({ method: 'GET', pathname: ruta, query: { rol: 'funcionario', bandeja: 'pendientes' } }, (req) => {
+        if (req.query.periodoAcademico === '2025-2') {
+          req.alias = 'pendientesAnteriores';
+          req.reply([solicitudAnterior]);
+        } else {
+          expect(req.query).not.to.have.property('periodoAcademico');
+          req.alias = 'pendientesActuales';
+          req.reply([solicitudActual]);
+        }
+      });
+
+      visitarComoFuncionario();
+      cy.wait(['@periodosRecientes', '@pendientesActuales']);
+      cy.contains('app-request-status-table', solicitudActual.nombre_solicitud).should('be.visible');
+
+      cy.get('app-solicitudes-bandeja app-periodo-filtro-selector mat-select').filter(':visible').click();
+      cy.contains('mat-option', /^2025-2$/).click();
+      cy.wait('@pendientesAnteriores');
+      cy.contains('app-request-status-table', solicitudAnterior.nombre_solicitud).should('be.visible');
+      cy.contains('app-request-status-table', solicitudActual.nombre_solicitud).should('not.exist');
+
+      cy.get('app-solicitudes-bandeja app-periodo-filtro-selector mat-select').filter(':visible').click();
+      cy.contains('mat-option', 'Período actual').click();
+      cy.wait('@pendientesActuales');
+      cy.contains('app-request-status-table', solicitudActual.nombre_solicitud).should('be.visible');
+    });
+
     it('E2E-HA-013: Debe mostrar solicitudes pendientes de homologación', () => {
       const mockSolicitudes = [
         { id_solicitud: 1, nombre_solicitud: 'Homologación - Ana', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [{ nombre_documento: 'doc1.pdf' }], objUsuario: { nombre_completo: 'Ana' } }
       ];
-      cy.intercept('GET', '**/api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario*', { statusCode: 200, body: mockSolicitudes }).as('listarFuncionario');
+      cy.intercept('GET', /\/api\/solicitudes-homologacion\?.*rol=funcionario&bandeja=pendientes/, { statusCode: 200, body: mockSolicitudes }).as('listarFuncionario');
       visitarComoFuncionario();
       cy.wait('@listarFuncionario');
       cy.contains('Solicitudes Pendientes de Procesar', { timeout: 10000 }).should('be.visible');
@@ -237,7 +271,7 @@ describe('E2E-06: Flujo Completo de Homologación de Asignaturas', () => {
       const mockSolicitudes = [
         { id_solicitud: 1, nombre_solicitud: 'Homologación - Ana', fecha_registro_solicitud: new Date().toISOString(), estadosSolicitud: [{ estado_actual: 'PENDIENTE' }], documentos: [{ id_documento: 1, nombre_documento: 'doc1.pdf' }], objUsuario: { nombre_completo: 'Ana' } }
       ];
-      cy.intercept('GET', '**/api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario*', { statusCode: 200, body: mockSolicitudes });
+      cy.intercept('GET', /\/api\/solicitudes-homologacion\?.*rol=funcionario&bandeja=pendientes/, { statusCode: 200, body: mockSolicitudes });
       visitarComoFuncionario();
       cy.wait(1000);
       cy.get('app-request-status-table').within(() => {

@@ -4,6 +4,7 @@ import { of, throwError } from 'rxjs';
 import { EstadisticasService } from '@core/services/estadisticas.service';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { TendenciasComparativasResponse } from '@core/models/estadisticas/tendencias.model';
+import { COLORS } from '@core/design-system/design-tokens';
 import { TendenciasComparativasComponent } from './tendencias-comparativas.component';
 
 describe('TendenciasComparativasComponent', () => {
@@ -83,10 +84,10 @@ describe('TendenciasComparativasComponent', () => {
   });
 
   it('da color e icono por tendencia, sin importar mayúsculas', () => {
-    expect(component.getTendenciaColor('Creciente')).toBe('#10b981');
-    expect(component.getTendenciaColor('DECRECIENTE')).toBe('#ef4444');
-    expect(component.getTendenciaColor('estable')).toBe('#3b82f6');
-    expect(component.getTendenciaColor('otra')).toBe('#6b7280');
+    expect(component.getTendenciaColor('Creciente')).toBe(COLORS.success);
+    expect(component.getTendenciaColor('DECRECIENTE')).toBe(COLORS.errorText);
+    expect(component.getTendenciaColor('estable')).toBe(COLORS.tertiary);
+    expect(component.getTendenciaColor('otra')).toBe(COLORS.neutralSecondary);
     expect(component.getTendenciaIcon('creciente')).toBe('trending_up');
     expect(component.getTendenciaIcon('Decreciente')).toBe('trending_down');
     expect(component.getTendenciaIcon('Estable')).toBe('trending_flat');

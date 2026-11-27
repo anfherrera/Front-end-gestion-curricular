@@ -20,19 +20,19 @@
 }
 
 .toggle-btn {
-  background-color: var(--gris-75);
-  border-radius: 8px;
+  background-color: var(--neutro-50);
+  border-radius: var(--radio-sm);
   transition: all 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background-color: var(--gris-150);
+  background-color: var(--neutro-200);
   transform: scale(1.05);
 }
 
 .toggle-btn mat-icon {
   color: var(--color-primario);
-  font-size: 24px;
+  font-size: var(--tam-icono-md);
 }
 
 .logo {
@@ -42,16 +42,16 @@
 
 .header-title h1 {
   color: var(--color-primario);
-  font-size: 1.8rem;
+  font-size: var(--text-h1-size);
   margin: 0;
   font-weight: 700;
-  font-family: 'Titillium Web', sans-serif;
+  font-family: var(--font-display);
 }
 
 .header-title span {
   display: block;
-  color: var(--gris-750);
-  font-size: 0.9rem;
+  color: var(--neutro-800);
+  font-size: var(--text-body-size);
   margin-top: 4px;
 }
 
@@ -67,7 +67,7 @@
   gap: 8px;
   padding: 6px 12px;
   background: var(--primario-90);
-  border-radius: 20px;
+  border-radius: var(--radio-lg);
   border: 1px solid var(--color-primario);
   transition: all 0.3s ease;
 }
@@ -79,18 +79,18 @@
 }
 
 .periodo-icon {
-  font-size: 18px;
+  font-size: var(--tam-icono-sm);
   width: 18px;
   height: 18px;
   color: var(--color-primario);
 }
 
 .periodo-text {
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   font-weight: 600;
   color: var(--color-primario);
   white-space: nowrap;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
 }
 
 @media (max-width: 1024px) {
@@ -114,19 +114,19 @@
   padding: 6px 12px;
   background-color: transparent;
   border: none;
-  border-radius: 20px;
+  border-radius: var(--radio-lg);
   transition: all 0.3s ease;
   min-width: auto;
 }
 
 .user-profile-btn:hover {
-  background-color: var(--gris-75);
+  background-color: var(--neutro-50);
 }
 
 .user-avatar {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: var(--radio-circulo);
   background: var(--color-primario);
   display: flex;
   align-items: center;
@@ -137,24 +137,24 @@
 .user-initials {
   color: white;
   font-weight: 600;
-  font-size: 11px;
+  font-size: var(--text-body2-size);
   letter-spacing: 0.5px;
 }
 
 .user-name-horizontal {
   color: var(--color-primario);
   font-weight: 500;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
 }
 
 .dropdown-icon {
-  color: var(--gris-650);
-  font-size: 18px;
+  color: var(--neutro-600);
+  font-size: var(--tam-icono-sm);
   transition: transform 0.3s ease;
 }
 
@@ -164,29 +164,29 @@
 
 .user-menu-header {
   padding: 16px;
-  background-color: var(--gris-50);
-  border-radius: 8px 8px 0 0;
+  background-color: var(--neutro-50);
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
 }
 
 .user-menu-header .user-name {
   color: var(--color-primario);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin-bottom: 4px;
-  font-family: 'Titillium Web', sans-serif;
+  font-family: var(--font-display);
 }
 
 .user-menu-header .user-email {
-  color: var(--gris-750);
-  font-size: 0.85rem;
+  color: var(--neutro-800);
+  font-size: var(--text-body-size);
 }
 
 .logout-item {
-  color: var(--rojo-700) !important;
+  color: var(--notif-error-titulo);
 }
 
 .logout-item mat-icon {
-  color: var(--rojo-700) !important;
+  color: var(--notif-error-titulo);
 }
 
 /* Responsive */
@@ -204,11 +204,11 @@
   }
 
   .header-title h1 {
-    font-size: 1.4rem;
+    font-size: var(--text-h2-size);
   }
 
   .header-title span {
-    font-size: 0.8rem;
+    font-size: var(--text-body2-size);
   }
 
   .header-right {
@@ -223,7 +223,7 @@
 
   .user-name-horizontal {
     max-width: 80px;
-    font-size: 12px;
+    font-size: var(--text-body2-size);
   }
 
   .user-avatar {
@@ -232,10 +232,10 @@
   }
 
   .user-initials {
-    font-size: 10px;
+    font-size: var(--text-body2-size);
   }
 
   .dropdown-icon {
-    font-size: 16px;
+    font-size: var(--tam-icono-xs);
   }
 }

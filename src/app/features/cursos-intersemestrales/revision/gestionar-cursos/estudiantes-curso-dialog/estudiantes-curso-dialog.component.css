@@ -1,0 +1,331 @@
+.estudiantes-dialog {
+  min-width: 900px;
+  max-width: 1200px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--neutro-50);
+  border-bottom: 2px solid var(--color-primario);
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
+}
+
+.dialog-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: var(--text-h2-size);
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+.dialog-header mat-icon {
+  color: var(--color-primario);
+  font-size: var(--tam-icono-lg);
+  width: var(--tam-icono-lg);
+  height: var(--tam-icono-lg);
+}
+
+.btn-cerrar {
+  margin-left: auto;
+  color: var(--color-primario);
+}
+
+.btn-cerrar:hover {
+  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent) !important;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  gap: 20px;
+  background: var(--neutro-50);
+  border-radius: var(--radio-md);
+  margin: 24px 0;
+}
+
+.loading-container p {
+  color: var(--color-primario);
+  font-size: var(--text-subtitulo-size);
+  font-weight: 500;
+  margin: 0;
+}
+
+.error-container {
+  color: var(--color-error);
+}
+
+.error-icon {
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
+  color: var(--color-error);
+}
+
+.error-container p {
+  font-size: var(--text-subtitulo-size);
+  font-weight: 500;
+  margin: 0;
+}
+
+.error-container button {
+  margin-top: 8px;
+  background-color: var(--color-primario);
+  color: white;
+}
+
+.contenido {
+  padding: 24px;
+  background: var(--blanco);
+}
+
+.resumen-curso {
+  background: var(--neutro-50);
+  padding: 24px;
+  border-radius: var(--radio-md);
+  margin-bottom: 24px;
+  border: 1px solid var(--neutro-100);
+  box-shadow: var(--sombra-1);
+}
+
+.resumen-curso h3 {
+  margin: 0 0 20px 0;
+  font-size: var(--text-h2-size);
+  font-weight: 600;
+  color: var(--color-primario);
+  border-bottom: 2px solid var(--color-primario);
+  padding-bottom: 12px;
+}
+
+.estadisticas {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--neutro-100);
+  min-width: 140px;
+  box-shadow: var(--sombra-1);
+}
+
+.stat .label {
+  font-size: var(--text-body2-size);
+  color: var(--neutro-600);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.stat .valor {
+  font-size: var(--text-h1-size);
+  font-weight: 700;
+  color: var(--color-primario);
+  line-height: 1.2;
+}
+
+.tabla-container {
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: var(--radio-sm);
+  box-shadow: var(--sombra-1);
+  border: 1px solid var(--neutro-100);
+}
+
+.tabla-estudiantes {
+  width: 100%;
+  background: white;
+}
+
+.tabla-estudiantes th {
+  background: var(--color-primario);
+  color: white;
+  padding: 14px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: var(--text-body2-size);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 2px solid var(--color-primario-light);
+}
+
+.tabla-estudiantes td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--neutro-100);
+  font-size: var(--text-body-size);
+  color: var(--neutro-800);
+}
+
+.tabla-estudiantes tr:hover {
+  background: var(--neutro-50) !important;
+  transition: background-color 0.2s ease;
+}
+
+.tabla-estudiantes tr:last-child td {
+  border-bottom: none;
+}
+
+.estado-texto {
+  color: var(--neutro-800);
+  font-size: var(--text-body-size);
+  font-weight: 400;
+  font-family: inherit;
+}
+
+.sin-estado {
+  color: var(--neutro-600);
+  font-style: italic;
+  font-size: var(--text-body-size);
+}
+
+.correo-link {
+  color: var(--color-primario);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.correo-link:hover {
+  color: var(--color-primario-light);
+  text-decoration: underline;
+}
+
+.sin-estudiantes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  gap: 20px;
+  color: var(--neutro-600);
+  background: var(--neutro-50);
+  border-radius: var(--radio-md);
+  border: 2px dashed var(--neutro-100);
+  margin: 24px 0;
+}
+
+.sin-estudiantes mat-icon {
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
+  color: var(--color-primario);
+  opacity: 0.3;
+}
+
+.sin-estudiantes p {
+  font-size: var(--text-subtitulo-size);
+  font-weight: 500;
+  color: var(--neutro-600);
+  margin: 0;
+}
+
+mat-dialog-actions {
+  padding: 20px 24px;
+  border-top: 1px solid var(--neutro-100);
+  background: var(--neutro-50);
+  border-radius: 0 0 var(--radio-sm) var(--radio-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-dialog-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+mat-dialog-actions button[mat-raised-button]:hover:not([disabled]) {
+  background-color: var(--color-primario-light) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-1);
+}
+
+mat-dialog-actions button[mat-raised-button][disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-exportar {
+  border-color: var(--notif-error-titulo);
+  color: var(--notif-error-titulo);
+  font-weight: 500;
+}
+
+.btn-exportar:hover:not([disabled]) {
+  background-color: var(--notif-error-titulo) !important;
+  color: white !important;
+}
+
+.btn-exportar mat-icon {
+  margin-right: 8px;
+}
+
+/* Mejoras adicionales para consistencia */
+.tabla-estudiantes td strong {
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+.tabla-estudiantes td {
+  vertical-align: middle;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .estudiantes-dialog {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .estadisticas {
+    gap: 16px;
+  }
+
+  .stat {
+    min-width: 120px;
+  }
+
+  .stat .valor {
+    font-size: var(--text-h2-size);
+  }
+
+  .tabla-container {
+    max-height: 400px;
+  }
+
+  .dialog-header {
+    padding: 16px 20px;
+  }
+
+  .dialog-header h2 {
+    font-size: var(--text-h3-size);
+  }
+
+  .resumen-curso {
+    padding: 20px;
+  }
+
+  .resumen-curso h3 {
+    font-size: var(--text-h3-size);
+  }
+}

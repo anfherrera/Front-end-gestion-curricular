@@ -128,7 +128,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       correo?.markAsTouched();
 
       const mensaje = component.getEmailErrorMessage();
-      expect(mensaje).toBe('Ingresa un correo válido');
+      expect(mensaje).toBe('Ingrese un correo válido');
     });
 
     it('LOG-013: Debe mostrar mensaje de error para correo no institucional', () => {
@@ -400,7 +400,7 @@ describe('LoginComponent - Pruebas Unitarias', () => {
       fixture.detectChanges();
 
       expect(snackBar.open).toHaveBeenCalledWith(
-        'Por favor, completa todos los campos correctamente',
+        'Por favor, complete todos los campos correctamente',
         'Cerrar',
         jasmine.any(Object)
       );

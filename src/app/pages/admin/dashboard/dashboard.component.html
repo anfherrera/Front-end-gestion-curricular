@@ -1,12 +1,4 @@
 <div class="dashboard-container">
-  <div class="header-section">
-    <h1>
-      <mat-icon>dashboard</mat-icon>
-      Panel de Administración
-    </h1>
-    <p class="subtitle">Gestión centralizada del sistema académico</p>
-  </div>
-
   @if (loading()) {
     <div class="loading-container">
       <mat-spinner></mat-spinner>
@@ -34,7 +26,7 @@
             <mat-icon>list</mat-icon>
             Ver Docentes
           </button>
-          <button mat-stroked-button routerLink="/admin/docentes/crear">
+          <button mat-stroked-button color="primary" routerLink="/admin/docentes/crear">
             <mat-icon>add</mat-icon>
             Nuevo
           </button>
@@ -58,7 +50,7 @@
             <mat-icon>list</mat-icon>
             Ver Programas
           </button>
-          <button mat-stroked-button routerLink="/admin/programas/crear">
+          <button mat-stroked-button color="primary" routerLink="/admin/programas/crear">
             <mat-icon>add</mat-icon>
             Nuevo
           </button>

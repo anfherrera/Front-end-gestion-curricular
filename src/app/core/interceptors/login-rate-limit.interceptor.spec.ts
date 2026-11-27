@@ -39,7 +39,7 @@ describe('loginRateLimitInterceptor', () => {
         status: 429,
         rateLimited: true,
         retryAfterSeconds: 30,
-        message: 'Demasiados intentos. Intenta de nuevo en 30 segundos.',
+        message: 'Demasiados intentos. Intente de nuevo en 30 segundos.',
       })
     );
     const restante = getLoginCooldownRemainingSeconds();
