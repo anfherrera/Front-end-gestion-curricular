@@ -16,11 +16,17 @@
           <p><strong>Curso:</strong> {{ data.preinscripcion.curso }}</p>
           <p>
             <strong>Estado de Preinscripción:</strong>
-            <span class="estado-aprobado">{{ data.preinscripcion.estado }}</span>
+            <span class="etiqueta-estado {{ data.preinscripcion.estado | estadoClase }}">
+              <mat-icon aria-hidden="true">{{ data.preinscripcion.estado | estadoIcono }}</mat-icon>
+              {{ data.preinscripcion.estado }}
+            </span>
           </p>
           <p>
             <strong>Estado del Curso:</strong>
-            <span class="estado-inscripcion">{{ data.preinscripcion.estadoCurso }}</span>
+            <span class="etiqueta-estado {{ cursoEstados.getClaseEstado(data.preinscripcion.estadoCurso) }}">
+              <mat-icon aria-hidden="true">{{ cursoEstados.getIconoEstado(data.preinscripcion.estadoCurso) }}</mat-icon>
+              {{ data.preinscripcion.estadoCurso }}
+            </span>
           </p>
         </mat-card-content>
       </mat-card>

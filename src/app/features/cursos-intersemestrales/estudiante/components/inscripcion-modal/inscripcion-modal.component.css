@@ -103,26 +103,6 @@
   color: var(--neutro-800);
 }
 
-.estado-aprobado,
-.estado-inscripcion {
-  padding: 4px 12px;
-  border-radius: var(--radio-lg);
-  font-size: var(--text-body2-size);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.estado-aprobado {
-  background-color: var(--notif-exito-fondo);
-  color: var(--notif-exito-borde);
-}
-
-.estado-inscripcion {
-  background-color: var(--primario-90);
-  color: var(--color-primario);
-}
-
 .inscripcion-form {
   display: flex;
   flex-direction: column;
@@ -468,12 +448,6 @@
   .info-card p {
     font-size: 13px;
     margin: 6px 0;
-  }
-
-  .estado-aprobado,
-  .estado-inscripcion {
-    font-size: 11px;
-    padding: 3px 8px;
   }
 
   .inscripcion-form {

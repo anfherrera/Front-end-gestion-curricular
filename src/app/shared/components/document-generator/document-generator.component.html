@@ -26,8 +26,9 @@
         </div>
         <div class="detail-row">
           <span class="label">Estado:</span>
-          <span class="value estado-badge" [ngClass]="'estado-' + datos.estado.toLowerCase()">
-            {{ datos.estado }}
+          <span class="value etiqueta-estado {{ datos.estado | estadoClase }}">
+            <mat-icon aria-hidden="true">{{ datos.estado | estadoIcono }}</mat-icon>
+            {{ datos.estado | estadoLabel }}
           </span>
         </div>
       </div>

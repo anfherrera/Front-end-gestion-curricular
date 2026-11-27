@@ -13,6 +13,8 @@ import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
 import { mensajeDeError } from '@core/utils/http-error.utils';
 import { tamanoEnMb } from '@core/utils/texto.util';
 import { SnackbarService, TipoSnackbar } from '@core/services/snackbar.service';
+import { CursoEstadosService } from '@core/services/curso-estados.service';
+import { EstadoClasePipe, EstadoIconoPipe } from '@shared/pipes/estado.pipes';
 
 export interface InscripcionModalData {
   preinscripcion: Pick<PreinscripcionSeguimiento, 'cursoId' | 'curso' | 'estado' | 'estadoCurso'>;
@@ -34,7 +36,7 @@ const ERRORES_INSCRIPCION: Record<number, string> = {
  */
 @Component({
   selector: 'app-inscripcion-modal',
-  imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS],
+  imports: [ReactiveFormsModule, ...MATERIAL_IMPORTS, EstadoClasePipe, EstadoIconoPipe],
   templateUrl: './inscripcion-modal.component.html',
   styleUrls: ['./inscripcion-modal.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +50,7 @@ export class InscripcionModalComponent implements OnInit {
   private snackbar = inject(SnackbarService);
   private notificacionesService = inject(NotificacionesService);
   private locale = inject(LOCALE_ID);
+  readonly cursoEstados = inject(CursoEstadosService);
 
   inscripcionForm!: FormGroup;
   archivoSeleccionado: File | null = null;

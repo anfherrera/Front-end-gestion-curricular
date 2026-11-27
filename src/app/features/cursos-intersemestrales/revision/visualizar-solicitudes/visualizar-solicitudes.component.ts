@@ -7,7 +7,7 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { MATERIAL_IMPORTS } from '@shared/components/material.imports';
 import { UtfFixPipe } from '@shared/pipes/utf-fix.pipe';
-import { EstadoClasePipe } from '@shared/pipes/estado.pipes';
+import { EstadoClasePipe, EstadoIconoPipe } from '@shared/pipes/estado.pipes';
 import { CursosIntersemestralesService } from '@core/services/cursos-intersemestrales.service';
 import { MateriaFiltro, SolicitudVisualizar } from '@core/models/cursos-intersemestrales.model';
 import { descargarBlob } from '@core/utils/download.util';
@@ -48,6 +48,7 @@ const ESTADOS_TEXTO: Record<string, string> = {
     ...MATERIAL_IMPORTS,
     UtfFixPipe,
     EstadoClasePipe,
+    EstadoIconoPipe,
   ],
   templateUrl: './visualizar-solicitudes.component.html',
   styleUrls: ['./visualizar-solicitudes.component.css'],

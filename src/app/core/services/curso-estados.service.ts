@@ -123,7 +123,7 @@ export class CursoEstadosService {
   /**
    * Obtiene un estado específico por su valor
    */
-  getEstadoPorValor(valor: string): EstadoCurso | undefined {
+  getEstadoPorValor(valor: string | undefined): EstadoCurso | undefined {
     // El backend a veces manda los estados sin tilde ("Preinscripcion")
     const buscado = sinTildes(valor);
     return this.estadosDisponibles.find((estado) => sinTildes(estado.value) === buscado);
@@ -159,7 +159,7 @@ export class CursoEstadosService {
   /**
    * Obtiene el ícono de un estado
    */
-  getIconoEstado(estado: string): string {
+  getIconoEstado(estado: string | undefined): string {
     const estadoInfo = this.getEstadoPorValor(estado);
     return estadoInfo?.icon || 'help_outline';
   }
