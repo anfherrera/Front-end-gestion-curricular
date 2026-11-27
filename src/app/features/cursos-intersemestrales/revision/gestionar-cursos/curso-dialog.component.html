@@ -213,9 +213,9 @@
   <!-- Botones del dialog -->
   <div mat-dialog-actions class="dialog-actions">
     @if (!data.soloEdicion) {
-      <button mat-button type="button" (click)="limpiarFormulario()">Limpiar</button>
+      <button mat-stroked-button color="primary" type="button" (click)="limpiarFormulario()">Limpiar</button>
     }
-    <button mat-button type="button" (click)="cerrarDialog()">Cancelar</button>
+    <button mat-stroked-button color="primary" type="button" (click)="cerrarDialog()">Cancelar</button>
     <button mat-raised-button color="primary" type="submit" [disabled]="data.form.invalid">
       {{ data.editando ? 'Actualizar' : 'Crear' }} Curso
     </button>

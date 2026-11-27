@@ -57,10 +57,11 @@
           }
         </mat-form-field>
 
-        <mat-checkbox formControlName="remember">Recuérdame</mat-checkbox>
+        <mat-checkbox formControlName="remember">Recordarme</mat-checkbox>
 
         <button
           mat-raised-button
+          color="primary"
           type="submit"
           class="login-button"
           [disabled]="loginForm.invalid || cargando() || loginDisabled()"

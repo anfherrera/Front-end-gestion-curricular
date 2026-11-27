@@ -464,7 +464,5 @@ app-card-container {
 }
 
 .btn-exportar-excel {
-  background-color: var(--notif-exito-borde);
-  color: var(--blanco);
   margin-left: 8px;
 }

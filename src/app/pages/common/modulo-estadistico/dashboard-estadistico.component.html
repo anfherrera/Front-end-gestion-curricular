@@ -14,12 +14,18 @@
           <mat-icon>refresh</mat-icon>
           Actualizar datos
         </button>
-        <button mat-stroked-button (click)="exportarPDF()" [disabled]="loading() || exportando() || !resumenCompleto()">
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="exportarPDF()"
+          [disabled]="loading() || exportando() || !resumenCompleto()"
+        >
           <mat-icon>picture_as_pdf</mat-icon>
           Exportar PDF
         </button>
         <button
           mat-stroked-button
+          color="primary"
           (click)="exportarExcel()"
           [disabled]="loading() || exportando() || !resumenCompleto()"
         >
@@ -91,7 +97,7 @@
               <mat-icon>search</mat-icon>
               Aplicar Filtros
             </button>
-            <button mat-button type="button" (click)="limpiarFiltros()" [disabled]="loading()">
+            <button mat-stroked-button color="primary" type="button" (click)="limpiarFiltros()" [disabled]="loading()">
               <mat-icon>clear</mat-icon>
               Limpiar
             </button>

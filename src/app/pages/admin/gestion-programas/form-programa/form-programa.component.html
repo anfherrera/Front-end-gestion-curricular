@@ -4,7 +4,7 @@
       <mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>
       {{ isEditMode() ? 'Editar' : 'Nuevo' }} Programa
     </h2>
-    <button mat-stroked-button (click)="cancelar()">
+    <button mat-stroked-button color="primary" (click)="cancelar()">
       <mat-icon>arrow_back</mat-icon>
       Volver
     </button>
@@ -54,7 +54,7 @@
 
         <!-- Botones -->
         <div class="form-actions">
-          <button mat-stroked-button type="button" (click)="cancelar()" [disabled]="loading()">
+          <button mat-stroked-button color="primary" type="button" (click)="cancelar()" [disabled]="loading()">
             <mat-icon>cancel</mat-icon>
             Cancelar
           </button>

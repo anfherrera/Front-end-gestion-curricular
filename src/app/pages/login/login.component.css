@@ -127,18 +127,8 @@ mat-form-field mat-icon {
 
 /* Botón - Colores primarios TIC */
 .login-button {
-  background: var(--color-primario) !important;
-  color: white !important;
-  border-radius: var(--radio-pill);
   padding: 0.9rem;
   font-weight: 600;
-  font-family: var(--font-body);
-  transition: all 0.3s ease;
-}
-
-.login-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-2);
 }
 
 /* Link registrar - Color primario TIC */

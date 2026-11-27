@@ -252,24 +252,6 @@ mat-dialog-actions button {
   align-items: center;
   gap: 8px;
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-mat-dialog-actions button[mat-button] {
-  color: var(--color-primario);
-  border-color: var(--color-primario);
-}
-
-mat-dialog-actions button[mat-button]:hover {
-  background-color: color-mix(in srgb, var(--color-primario) 10%, transparent);
-}
-
-mat-dialog-actions button[mat-raised-button] {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  box-shadow: var(--sombra-1);
-  transition: all 0.2s ease;
 }
 
 mat-dialog-actions button[mat-raised-button]:hover:not([disabled]) {

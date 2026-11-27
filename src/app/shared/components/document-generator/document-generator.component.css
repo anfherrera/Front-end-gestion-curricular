@@ -162,29 +162,6 @@
   box-shadow: none;
 }
 
-/* Estilo para botón de cancelar */
-.form-actions button[mat-button] {
-  background-color: var(--neutro-600) !important;
-  color: white !important;
-  border: none;
-  border-radius: var(--radio-xs);
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  box-shadow: var(--sombra-1);
-}
-
-.form-actions button[mat-button]:hover {
-  background-color: var(--neutro-600) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-1);
-}
-
-.form-actions button[mat-button]:active {
-  transform: translateY(0);
-  box-shadow: var(--sombra-1);
-}
-
 /* Estados de error */
 .error {
   border-color: var(--notif-error-titulo) !important;

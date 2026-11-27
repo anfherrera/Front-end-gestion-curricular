@@ -136,9 +136,10 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="cerrar()">Cerrar</button>
+    <button mat-stroked-button color="primary" (click)="cerrar()">Cerrar</button>
     <button
       mat-stroked-button
+      color="primary"
       (click)="exportarEstudiantesPDF()"
       [disabled]="cargando() || !datos()?.estudiantes?.length"
       class="btn-exportar"

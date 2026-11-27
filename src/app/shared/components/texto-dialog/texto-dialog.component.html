@@ -45,7 +45,9 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="cancelar()">{{ data.soloLectura ? 'Cerrar' : 'Cancelar' }}</button>
+  <button mat-stroked-button color="primary" (click)="cancelar()">
+    {{ data.soloLectura ? 'Cerrar' : 'Cancelar' }}
+  </button>
   @if (!data.soloLectura) {
     <button mat-raised-button color="primary" class="btn-confirmar" [disabled]="!puedeConfirmar" (click)="confirmar()">
       {{ data.textoConfirmar || 'Aceptar' }}
