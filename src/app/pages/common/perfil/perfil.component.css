@@ -48,7 +48,7 @@
 .user-info-header h2 {
   margin: 0;
   color: var(--color-primario);
-  font-size: 1.8rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
 }
 
@@ -56,7 +56,7 @@
   background-color: white !important;
   color: var(--color-primario) !important;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
@@ -81,9 +81,9 @@
 
 .info-icon {
   color: var(--color-primario);
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
   margin-top: 2px;
 }
 
@@ -104,7 +104,7 @@
 
 .info-value {
   color: var(--neutro-800);
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
   font-weight: 500;
 }
 
@@ -129,15 +129,15 @@
   gap: 10px;
   color: var(--color-primario);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin: 0;
 }
 
 .additional-info-card mat-card-title mat-icon {
   color: var(--color-primario);
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
 }
 
 /* Responsive */
@@ -153,6 +153,6 @@
   }
 
   .user-info-header h2 {
-    font-size: 1.4rem;
+    font-size: var(--text-h2-size);
   }
 }

@@ -19,9 +19,9 @@ mat-card-header {
 }
 
 mat-card-header mat-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
+  font-size: var(--tam-icono-lg);
+  width: var(--tam-icono-lg);
+  height: var(--tam-icono-lg);
 }
 
 mat-card-title {
@@ -29,7 +29,7 @@ mat-card-title {
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--text-h2-size);
 }
 
 mat-card-content {
@@ -50,7 +50,7 @@ mat-card-content {
   gap: 8px;
   margin: 0;
   color: var(--neutro-800);
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
   font-weight: 500;
   line-height: 1.5;
 }
@@ -80,11 +80,11 @@ mat-card-content {
   gap: 8px;
   margin: 0 0 16px 0;
   color: var(--color-primario);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
 }
 
 .formato-proceso mat-icon {
-  font-size: var(--text-h2-size);
+  font-size: var(--tam-icono-md);
   width: 22px;
   height: 22px;
 }
@@ -103,20 +103,20 @@ mat-card-content {
 }
 
 .valor-fila .label {
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   min-width: 140px;
 }
 
 .valor-fila .valor {
   flex: 1;
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-800);
 }
 
 .link-preview {
   flex: 1;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--color-primario);
   word-break: break-all;
 }

@@ -47,7 +47,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 2.2rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   color: var(--color-primario);
   margin-bottom: 10px;
@@ -55,7 +55,7 @@
 
 .dashboard-subtitle {
   color: var(--neutro-600);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin: 0;
   font-weight: 500;
 }

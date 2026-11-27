@@ -3,15 +3,15 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   margin-top: 8px;
 }
 
 .last-update mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: var(--tam-icono-xs);
+  width: var(--tam-icono-xs);
+  height: var(--tam-icono-xs);
 }
 
 /* Loading y Error */
@@ -26,7 +26,7 @@
   border-radius: var(--radio-sm);
   margin: 20px 0;
   color: var(--neutro-600);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .error-container {
@@ -44,7 +44,7 @@
 }
 
 .error-icon {
-  font-size: 3rem;
+  font-size: var(--tam-icono-xl);
   color: var(--notif-error-titulo);
   margin-bottom: 1rem;
 }
@@ -58,7 +58,7 @@
 
 .filters-card mat-card-title {
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   margin: 0;
   display: flex;
@@ -153,7 +153,7 @@
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   color: var(--color-primario);
-  font-size: 1.5rem;
+  font-size: var(--text-h2-size);
   font-weight: 600;
 }
 
@@ -214,12 +214,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
 }
 
 .kpi-value {
-  font-size: 2.5rem;
+  font-size: var(--text-cifra-size);
   font-weight: bold;
   color: var(--color-primario);
   margin-bottom: 0.5rem;
@@ -227,7 +227,7 @@
 
 .kpi-description {
   color: var(--neutro-600);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .tab-content {
@@ -273,7 +273,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: 500;
 }
 
@@ -322,7 +322,7 @@
 }
 
 .estado-header mat-icon {
-  font-size: 1.5rem;
+  font-size: var(--tam-icono-md);
 }
 
 /* Colores para los iconos de cada estado */
@@ -344,7 +344,7 @@
 
 .estado-nombre {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   color: var(--neutro-800);
 }
 
@@ -392,7 +392,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 500;
 }
 
@@ -410,14 +410,14 @@
 }
 
 .resumen-label {
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
 
 .resumen-valor {
-  font-size: 1.5rem;
+  font-size: var(--text-h2-size);
   font-weight: bold;
   color: var(--color-primario);
 }
@@ -425,7 +425,7 @@
 .confiabilidad {
   padding: 0.25rem 0.5rem;
   border-radius: var(--radio-xs);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   font-weight: 500;
 }
 
@@ -499,7 +499,7 @@
 
 .tendencia-header h4 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: 500;
   color: var(--color-primario);
 }
@@ -517,7 +517,7 @@
 }
 
 .dato-label {
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
 }
 
@@ -606,7 +606,7 @@
   }
 
   .dashboard-title {
-    font-size: 1.5rem;
+    font-size: var(--text-h2-size);
   }
 
   .estados-grid,
@@ -680,7 +680,7 @@
 .programa-nombre {
   font-weight: 600;
   color: var(--color-primario);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin-bottom: 0.5rem;
 }
 
@@ -688,7 +688,7 @@
 .programa-solicitudes,
 .tendencia-solicitudes {
   color: var(--neutro-600);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   margin-bottom: 0.25rem;
 }
 
@@ -697,13 +697,13 @@
 .tendencia-porcentaje {
   color: var(--notif-exito-borde);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .tendencia-mes {
   font-weight: 600;
   color: var(--color-primario);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin-bottom: 0.5rem;
 }
 
@@ -711,7 +711,7 @@
 .demanda-estimada,
 .variacion {
   margin: 0.25rem 0;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .demanda-actual {
@@ -732,13 +732,13 @@
 .mes-pico {
   font-weight: 600;
   color: var(--color-primario);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin-bottom: 0.5rem;
 }
 
 .meses-recomendados {
   margin-top: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
 }
 
@@ -822,7 +822,7 @@
   cursor: pointer;
   border-bottom: 3px solid transparent;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   color: var(--neutro-600);
   flex: 1;
@@ -857,7 +857,7 @@
   justify-content: center;
   height: 200px;
   color: var(--neutro-600);
-  font-size: 1.1em;
+  font-size: var(--text-body-size);
   background: var(--neutro-50);
   border-radius: var(--radio-sm);
   border: 2px dashed var(--neutro-200);
@@ -865,7 +865,7 @@
 
 .chart-loading i {
   margin-right: 10px;
-  font-size: 1.5em;
+  font-size: var(--tam-icono-sm);
   color: var(--color-primario);
 }
 
@@ -923,25 +923,25 @@ canvas {
 .prediccion-temporal-card .mes-pico {
   font-weight: 600;
   color: var(--color-primario);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin-bottom: 0.5rem;
 }
 
 .prediccion-temporal-card .demanda-actual {
   color: var(--color-primario);
   font-weight: 500;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 .prediccion-temporal-card .demanda-estimada {
   color: var(--notif-exito-borde);
   font-weight: 500;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 .prediccion-temporal-card .meses-recomendados {
   margin-top: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
 }
 
@@ -957,6 +957,6 @@ canvas {
   .programa-nombre,
   .tendencia-mes,
   .mes-pico {
-    font-size: 0.9rem;
+    font-size: var(--text-body-size);
   }
 }

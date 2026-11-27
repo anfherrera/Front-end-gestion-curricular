@@ -52,7 +52,7 @@
 
 /* Título - Color primario TIC var(--color-primario) */
 .login-title {
-  font-size: 1.4rem;
+  font-size: var(--text-h2-size);
   font-weight: 700;
   margin-bottom: 2rem;
   color: var(--color-primario);
@@ -129,6 +129,47 @@ mat-form-field mat-icon {
 .login-button {
   padding: 0.9rem;
   font-weight: 600;
+}
+
+/* Inicio de sesión con la cuenta institucional de Google */
+.login-google {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-google[hidden] {
+  display: none;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  color: var(--neutro-600);
+  font-size: var(--text-body2-size);
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--neutro-200);
+}
+
+.login-google-boton {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+}
+
+.login-google-ayuda {
+  margin: 0;
+  color: var(--neutro-600);
+  font-size: var(--text-body2-size);
 }
 
 /* Link registrar - Color primario TIC */
@@ -238,7 +279,7 @@ mat-form-field mat-icon {
   }
 
   .login-title {
-    font-size: 1.2rem;
+    font-size: var(--text-h3-size);
   }
 
   .login-logo {
@@ -270,7 +311,7 @@ mat-form-field mat-icon {
   border-radius: var(--radio-sm);
   border-left: 4px solid var(--color-error);
   margin: 1rem 0;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   animation: slideInDown 0.3s ease;
 }
 

@@ -21,15 +21,15 @@
 }
 
 .error-container mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   color: var(--color-error);
 }
 
 .error-container p {
   color: var(--neutro-600);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   text-align: center;
 }
 
@@ -54,7 +54,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   color: var(--neutro-800);
 }
@@ -82,12 +82,12 @@
 .info-label {
   font-weight: 600;
   color: var(--neutro-600);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .info-value {
   color: var(--neutro-800);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 /* Timeline */
@@ -134,7 +134,7 @@
 .timeline-number {
   color: white;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .timeline-content {
@@ -154,7 +154,7 @@
 
 .timeline-date {
   color: var(--neutro-600);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .timeline-comentario {
@@ -169,7 +169,7 @@
 }
 
 .timeline-comentario mat-icon {
-  font-size: var(--text-h3-size);
+  font-size: var(--tam-icono-sm);
   width: 18px;
   height: 18px;
   color: var(--neutro-600);
@@ -211,6 +211,6 @@ mat-list-item:last-child {
   }
 
   .timeline-number {
-    font-size: 0.8rem;
+    font-size: var(--text-body2-size);
   }
 }

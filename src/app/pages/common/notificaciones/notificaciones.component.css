@@ -163,7 +163,7 @@
 }
 
 .tipo-icon {
-  font-size: var(--text-h1-size);
+  font-size: var(--tam-icono-lg);
   width: 32px;
   height: 32px;
 }
@@ -208,7 +208,7 @@ mat-card-subtitle {
 
 .fecha {
   color: var(--neutro-600);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
 }
 
 .actions-section {
@@ -257,11 +257,11 @@ mat-card-subtitle {
   align-items: center;
   gap: 8px;
   color: var(--neutro-800);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
 }
 
 .metadata-item mat-icon {
-  font-size: var(--text-h3-size);
+  font-size: var(--tam-icono-sm);
   width: 18px;
   height: 18px;
   color: var(--color-primario);
@@ -294,22 +294,22 @@ mat-card-subtitle {
 }
 
 .empty-icon {
-  font-size: 80px;
-  width: 80px;
-  height: 80px;
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
   color: var(--neutro-400);
   margin-bottom: 24px;
 }
 
 .empty-state h2 {
-  font-size: 24px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
   color: var(--neutro-600);
   margin: 0 0 12px 0;
 }
 
 .empty-state p {
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   color: var(--neutro-600);
   margin: 0;
 }

@@ -64,7 +64,7 @@ mat-card {
 
 /* Estilos mejorados para mat-form-field */
 :host ::ng-deep .form-container mat-form-field {
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
 }
 
 :host ::ng-deep .form-container .mat-mdc-form-field {
@@ -142,7 +142,7 @@ mat-card {
 .form-actions button {
   min-width: 140px;
   height: 44px;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   border-radius: var(--radio-sm);
   transition: all 0.3s ease;

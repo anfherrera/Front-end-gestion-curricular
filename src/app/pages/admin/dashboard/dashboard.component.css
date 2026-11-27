@@ -65,7 +65,7 @@
 }
 
 .card-icon {
-  font-size: 40px;
+  font-size: var(--tam-icono-xl);
   width: 56px;
   height: 56px;
   border-radius: var(--radio-md);
@@ -78,7 +78,7 @@
 }
 
 .stat-number {
-  font-size: 48px;
+  font-size: var(--text-cifra-size);
   font-weight: bold;
   color: var(--color-primario);
   margin-bottom: 8px;
@@ -114,7 +114,7 @@ mat-card-actions button mat-icon {
 .actions-section h2 {
   margin-bottom: 16px;
   color: var(--color-primario);
-  font-size: 24px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
 }
 
@@ -127,7 +127,7 @@ mat-card-actions button mat-icon {
 .actions-grid button {
   padding: 20px;
   height: auto;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   border-radius: var(--radio-md);
   transition: background-color 0.2s ease;
@@ -135,9 +135,9 @@ mat-card-actions button mat-icon {
 
 .actions-grid button mat-icon {
   margin-right: 8px;
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
   color: white;
 }
 

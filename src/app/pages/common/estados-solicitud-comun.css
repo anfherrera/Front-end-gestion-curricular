@@ -17,7 +17,7 @@
 
 .loading-container p {
   color: var(--neutro-600);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 /* Los colores de estado (.estado-aprobada, .estado-enviada…) son globales: src/styles/componentes.css */

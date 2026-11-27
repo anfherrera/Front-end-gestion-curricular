@@ -210,9 +210,9 @@
 .icon-solicitud {
   flex-shrink: 0;
   color: var(--color-primario);
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
 }
 
 /* Usuario Info */
@@ -228,20 +228,20 @@
 }
 
 .usuario-codigo {
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
 }
 
 /* Categoría y Tipo */
 .categoria-texto {
   color: var(--neutro-800);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   font-weight: 500;
 }
 
 .tipo-texto {
   color: var(--neutro-800);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 /* No Solicitudes */
@@ -256,15 +256,15 @@
 }
 
 .no-solicitudes mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
   margin-bottom: 16px;
   opacity: 0.5;
 }
 
 .no-solicitudes p {
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin: 0;
 }
 
@@ -275,7 +275,7 @@
   }
 
   .historial-table {
-    font-size: 0.85rem;
+    font-size: var(--text-body-size);
   }
 
   .historial-table th,

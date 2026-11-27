@@ -28,7 +28,7 @@
 
 .estadisticas-por-proceso-card mat-card-title {
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -37,7 +37,7 @@
 
 .estadisticas-por-proceso-card mat-card-subtitle {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .loading-container,
@@ -52,13 +52,13 @@
 }
 
 .error-container .error-icon {
-  font-size: 3rem;
+  font-size: var(--tam-icono-xl);
   margin-bottom: 16px;
   opacity: 0.8;
 }
 
 .no-data mat-icon {
-  font-size: 3rem;
+  font-size: var(--tam-icono-xl);
   margin-bottom: 16px;
   opacity: 0.6;
 }
@@ -131,7 +131,7 @@
 }
 
 .proceso-icon mat-icon {
-  font-size: 1.1rem;
+  font-size: var(--tam-icono-xs);
 }
 
 .proceso-info {
@@ -139,7 +139,7 @@
 }
 
 .proceso-nombre {
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
   font-weight: 600;
   margin: 0 0 4px 0;
   line-height: 1.2;
@@ -153,13 +153,13 @@
 }
 
 .total-solicitudes {
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: bold;
   color: var(--color-primario);
 }
 
 .label {
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
 }
 
@@ -189,17 +189,17 @@
 }
 
 .stat-item mat-icon {
-  font-size: 0.9rem;
+  font-size: var(--tam-icono-xs);
 }
 
 .stat-value {
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
   color: var(--neutro-800);
 }
 
 .stat-label {
-  font-size: 0.7rem;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
 }
 
@@ -233,7 +233,7 @@
 
 .fecha-actualizacion {
   opacity: 0.7;
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
 }
 
 .spacer {

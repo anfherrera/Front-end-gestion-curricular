@@ -26,14 +26,14 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 1.8rem;
+  font-size: var(--text-h1-size);
   font-weight: 600;
   margin: 0;
 }
 
 .main-card mat-card-subtitle {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin: 8px 0 0 0;
 }
 
@@ -51,12 +51,12 @@
 .loading-container p,
 .error-container p {
   margin-top: 20px;
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   color: var(--neutro-600);
 }
 
 .error-icon {
-  font-size: 3rem;
+  font-size: var(--tam-icono-xl);
   color: var(--notif-error-titulo);
   margin-bottom: 16px;
 }
@@ -103,7 +103,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   color: white;
   margin: 0;
@@ -127,7 +127,7 @@
 
 .tendencia-item h4 {
   margin: 0 0 12px 0;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
   color: var(--neutro-600);
 }
@@ -137,24 +137,24 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 1.4rem;
+  font-size: var(--text-h2-size);
   font-weight: 700;
   margin-bottom: 8px;
 }
 
 .tendencia-valor mat-icon {
-  font-size: 1.6rem;
+  font-size: var(--tam-icono-md);
 }
 
 .tendencia-porcentaje {
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   font-weight: 500;
 }
 
 .analisis-info {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   font-style: italic;
   padding: 12px;
@@ -201,13 +201,13 @@
 
 .highlight-item h4 {
   margin: 0 0 8px 0;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   font-weight: 600;
   color: var(--neutro-800);
 }
 
 .highlight-valor {
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: 700;
   margin-bottom: 4px;
   line-height: 1.2;
@@ -215,7 +215,7 @@
 }
 
 .highlight-descripcion {
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
   font-weight: 500;
 }
@@ -228,7 +228,7 @@
 .procesos-lista h5,
 .programas-lista h5 {
   margin: 0 0 12px 0;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
   color: var(--neutro-800);
 }
@@ -262,12 +262,12 @@
 .programa-nombre {
   font-weight: 500;
   color: var(--neutro-800);
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
   line-height: 1.3;
 }
 
 .proceso-cantidad {
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   font-weight: 500;
 }
@@ -281,7 +281,7 @@
 
 .programa-solicitudes,
 .programa-estudiantes {
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
   font-weight: 500;
 }
@@ -320,7 +320,7 @@
 }
 
 .metric-label {
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   font-weight: 500;
 }
@@ -335,7 +335,7 @@
 
 .recomendacion h4 {
   margin: 0 0 12px 0;
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   color: var(--color-primario);
 }
@@ -344,12 +344,12 @@
   margin: 0;
   line-height: 1.6;
   color: var(--neutro-800);
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
 }
 
 .periodo-info {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
   font-style: italic;
   padding: 12px;
@@ -385,11 +385,11 @@
   }
 
   .main-card mat-card-title {
-    font-size: 1.4rem;
+    font-size: var(--text-h2-size);
   }
 
   .section-card mat-card-title {
-    font-size: 1rem;
+    font-size: var(--text-subtitulo-size);
   }
 }
 
@@ -406,11 +406,11 @@
   }
 
   .tendencia-valor {
-    font-size: 1.2rem;
+    font-size: var(--text-h3-size);
   }
 
   .metric-valor {
-    font-size: 1.6rem;
+    font-size: var(--text-h2-size);
   }
 }
 

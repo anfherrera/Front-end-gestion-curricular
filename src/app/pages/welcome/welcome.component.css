@@ -41,7 +41,7 @@
 
 .welcome-title {
   color: var(--color-primario);
-  font-size: 2.2rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   margin: 0 0 10px 0;
   line-height: 1.2;
@@ -49,14 +49,14 @@
 
 .welcome-subtitle {
   color: var(--color-primario-light);
-  font-size: 1.4rem;
+  font-size: var(--text-h2-size);
   font-weight: 600;
   margin: 0 0 8px 0;
 }
 
 .welcome-location {
   color: var(--neutro-600);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   font-weight: 500;
   margin: 0;
 }
@@ -91,14 +91,14 @@
 
 .info-card mat-card-title {
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   margin: 0;
 }
 
 .info-card mat-icon {
   color: white;
-  font-size: var(--text-h1-size);
+  font-size: var(--tam-icono-lg);
   width: 2rem;
   height: 2rem;
 }
@@ -111,7 +111,7 @@
   color: var(--neutro-800);
   line-height: 1.6;
   margin: 0 0 12px 0;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 .info-card ul {
@@ -141,7 +141,7 @@
 .continue-btn {
   background-color: var(--color-primario) !important;
   color: white !important;
-  font-size: 1.1rem !important;
+  font-size: var(--text-h3-size) !important;
   font-weight: 600 !important;
   padding: 12px 32px !important;
   border-radius: var(--radio-sm) !important;
@@ -157,7 +157,7 @@
 
 .continue-btn mat-icon {
   margin-right: 8px;
-  font-size: 1.2rem;
+  font-size: var(--tam-icono-sm);
 }
 
 /* Responsive */
@@ -167,11 +167,11 @@
   }
 
   .welcome-title {
-    font-size: 1.8rem;
+    font-size: var(--text-h1-size);
   }
 
   .welcome-subtitle {
-    font-size: 1.2rem;
+    font-size: var(--text-h3-size);
   }
 
   .info-section {

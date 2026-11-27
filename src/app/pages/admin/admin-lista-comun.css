@@ -147,15 +147,15 @@ mat-table {
 }
 
 .empty-state mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
   color: var(--neutro-600);
 }
 
 .empty-state p {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
 }
 
