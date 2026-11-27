@@ -56,9 +56,10 @@
               </div>
               <div class="info-item">
                 <span class="info-label">Estado Actual:</span>
-                <mat-chip [class]="detalle.estado_actual | estadoClase">
+                <span class="etiqueta-estado {{ detalle.estado_actual | estadoClase }}">
+                  <mat-icon aria-hidden="true">{{ detalle.estado_actual | estadoIcono }}</mat-icon>
                   {{ detalle.estado_actual | estadoLabel }}
-                </mat-chip>
+                </span>
               </div>
               <div class="info-item">
                 <span class="info-label">Fecha Registro:</span>
@@ -131,9 +132,10 @@
                   </div>
                   <div class="timeline-content">
                     <div class="timeline-header">
-                      <mat-chip [class]="estado.estado_actual | estadoClase">
+                      <span class="etiqueta-estado {{ estado.estado_actual | estadoClase }}">
+                        <mat-icon aria-hidden="true">{{ estado.estado_actual | estadoIcono }}</mat-icon>
                         {{ estado.estado_actual | estadoLabel }}
-                      </mat-chip>
+                      </span>
                       <span class="timeline-date">{{ estado.fecha_registro_estado | fecha: 'larga-hora' : '-' }}</span>
                     </div>
                     @if (estado.comentario) {

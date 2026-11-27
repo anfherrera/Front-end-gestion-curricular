@@ -8,7 +8,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
@@ -58,7 +57,6 @@ Chart.register(...registerables);
     MatButtonModule,
     MatTooltipModule,
     MatTabsModule,
-    MatChipsModule,
     MatBadgeModule,
     MatDividerModule,
     MatListModule,
