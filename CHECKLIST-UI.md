@@ -98,5 +98,5 @@ Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, err
 
 ## Notas de la última sesión
 
-- 2026-11-27: capturas comprobadas con los servidores arrancados (redondeos y botones bien). Fase 1 terminada salvo nada pendiente; también corregidos los últimos textos en tuteo. Siguiente: fase 2 (títulos de página) y fase 5 carpeta por carpeta. Script útil: `scratchpad/botones.mjs` (cuenta botones por tipo y color; `--sin-color` lista los que no tienen).
+- 2026-11-27: capturas comprobadas con los servidores arrancados (redondeos y botones bien). Fase 1 terminada; también corregidos los últimos textos en tuteo. Siguiente: fase 2 (títulos de página) y fase 5 carpeta por carpeta. Para medir botones se reescribió el script de la fase 1 con la opción `--sin-color` (lista los `mat-button`/`mat-stroked-button` sin color).
 - 2026-11-26 (tarde): hechas las fases 3, 4 y 6 y el primer paso de la 5, todo sin capturas porque los servidores estaban apagados. Lo primero en la próxima sesión: arrancar backend y front, sacar capturas de los 5 roles y revisar redondeos (fase 4) y botones (fase 1). Luego seguir la fase 5 carpeta por carpeta y la fase 2 (títulos de página).
