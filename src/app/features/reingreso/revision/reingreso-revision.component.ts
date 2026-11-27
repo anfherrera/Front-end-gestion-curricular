@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { ReingresoEstudianteService } from '@features/reingreso/services/reingreso-estudiante.service';
 import { SolicitudReingresoDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,
   rolRevisionDeRuta,
-} from '../../../pages/common/revision-aprobacion/revision-aprobacion.component';
+} from '@features/solicitudes/revision-aprobacion/revision-aprobacion.component';
 
 /**
  * Revisión de reingreso de estudiantes para funcionario y coordinador.

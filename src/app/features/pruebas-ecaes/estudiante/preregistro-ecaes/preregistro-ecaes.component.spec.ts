@@ -10,7 +10,7 @@ import {
   PruebasEcaesService,
   SolicitudEcaesRequest,
   SolicitudEcaesResponse,
-} from '@core/services/pruebas-ecaes.service';
+} from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { ArchivosService, PdfSubido } from '@core/services/archivos.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';

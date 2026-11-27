@@ -1,0 +1,295 @@
+import { TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { JwtInterceptor } from '@core/interceptors/jwt.interceptor';
+import { AuthService } from '@core/services/auth.service';
+import {
+  PruebasEcaesService,
+  FechaEcaes,
+  SolicitudEcaesRequest,
+  SolicitudEcaesResponse,
+} from './pruebas-ecaes.service';
+import { LoggerService } from '@core/services/logger.service';
+import { environment } from '@env/environment';
+
+describe('PruebasEcaesService - Pruebas Unitarias', () => {
+  let service: PruebasEcaesService;
+  let httpMock: HttpTestingController;
+
+  const apiUrl = `${environment.apiUrl}/solicitudes-ecaes`;
+
+  beforeEach(() => {
+    const loggerSpyObj = jasmine.createSpyObj('LoggerService', ['log', 'warn', 'error', 'debug']);
+    TestBed.configureTestingModule({
+      // Con el JwtInterceptor real: es quien añade el token en la app
+      providers: [
+        provideHttpClient(withInterceptors([JwtInterceptor])),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', { getToken: 'mock-token' }) },
+        PruebasEcaesService,
+        { provide: LoggerService, useValue: loggerSpyObj },
+      ],
+    });
+    service = TestBed.inject(PruebasEcaesService);
+    httpMock = TestBed.inject(HttpTestingController);
+    spyOn(localStorage, 'getItem').and.returnValue('mock-token');
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  describe('1. Configuración y headers', () => {
+    it('EC-001: Debe crear el servicio correctamente', () => {
+      expect(service).toBeTruthy();
+    });
+
+    it('EC-002: Debe incluir token de autorización en listarFechasEcaes', (done) => {
+      service.listarFechasEcaes().subscribe(() => done());
+      const req = httpMock.expectOne(`${apiUrl}/fechas`);
+      expect(req.request.headers.has('Authorization')).toBe(true);
+      expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+      req.flush([]);
+    });
+  });
+
+  describe('Tipos de documento', () => {
+    it('EC-035: devuelve los tipos de /tipos-documento', (done) => {
+      service.listarTiposDocumento().subscribe((tipos) => {
+        expect(tipos).toEqual([{ codigo: 'CC', descripcion: 'Cédula' }]);
+        done();
+      });
+      httpMock
+        .expectOne(`${environment.apiUrl}/tipos-documento`)
+        .flush({ success: true, data: [{ codigo: 'CC', descripcion: 'Cédula' }] });
+    });
+
+    it('EC-036: lista vacía si la respuesta no es success', (done) => {
+      service.listarTiposDocumento().subscribe((tipos) => {
+        expect(tipos).toEqual([]);
+        done();
+      });
+      httpMock.expectOne(`${environment.apiUrl}/tipos-documento`).flush({ success: false });
+    });
+  });
+
+  describe('2. Fechas ECAES', () => {
+    it('EC-003: Debe listar fechas ECAES', (done) => {
+      const mockFechas: FechaEcaes[] = [
+        {
+          idFechaEcaes: 1,
+          periodoAcademico: '2025-1',
+          inscripcion_est_by_facultad: '2025-01-15',
+          registro_recaudo_ordinario: '2025-02-01',
+          registro_recaudo_extraordinario: '2025-02-15',
+          citacion: '2025-03-01',
+          aplicacion: '2025-03-15',
+          resultados_individuales: '2025-04-01',
+        },
+      ];
+      service.listarFechasEcaes().subscribe((fechas) => {
+        expect(fechas.length).toBe(1);
+        expect(fechas[0].periodoAcademico).toBe('2025-1');
+        done();
+      });
+      const req = httpMock.expectOne(`${apiUrl}/fechas`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockFechas);
+    });
+
+    it('EC-004: Debe buscar fechas por período', (done) => {
+      const periodo = '2025-1';
+      const mockFecha: FechaEcaes = {
+        idFechaEcaes: 1,
+        periodoAcademico: periodo,
+        inscripcion_est_by_facultad: '2025-01-15',
+        registro_recaudo_ordinario: '2025-02-01',
+        registro_recaudo_extraordinario: '2025-02-15',
+        citacion: '2025-03-01',
+        aplicacion: '2025-03-15',
+        resultados_individuales: '2025-04-01',
+      };
+      service.buscarFechasPorPeriodo(periodo).subscribe((fecha) => {
+        expect(fecha.periodoAcademico).toBe(periodo);
+        done();
+      });
+      const req = httpMock.expectOne(`${apiUrl}/fechas/2025-1`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockFecha);
+    });
+
+    it('EC-005: Debe publicar fechas ECAES', (done) => {
+      const fechasData = {
+        periodoAcademico: '2025-1',
+        inscripcion_est_by_facultad: '2025-01-15',
+        registro_recaudo_ordinario: '2025-02-01',
+        registro_recaudo_extraordinario: '2025-02-15',
+        citacion: '2025-03-01',
+        aplicacion: '2025-03-15',
+        resultados_individuales: '2025-05-01',
+      };
+      service.publicarFechasEcaes(fechasData).subscribe(() => done());
+      const req = httpMock.expectOne(`${apiUrl}/fechas`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(fechasData);
+      req.flush({ success: true });
+    });
+
+    it('EC-006: Debe actualizar fechas ECAES', (done) => {
+      const fechasData = {
+        idFechaEcaes: 1,
+        periodoAcademico: '2025-1',
+        inscripcion_est_by_facultad: '2025-01-15',
+        registro_recaudo_ordinario: '2025-02-01',
+        registro_recaudo_extraordinario: '2025-02-15',
+        citacion: '2025-03-01',
+        aplicacion: '2025-03-15',
+        resultados_individuales: '2025-05-01',
+      };
+      service.actualizarFechasEcaes(fechasData).subscribe(() => done());
+      // El período va en la ruta (EST-7, paso 6); el cuerpo no cambia
+      const req = httpMock.expectOne(`${apiUrl}/fechas/2025-1`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual(fechasData);
+      req.flush({ success: true });
+    });
+  });
+
+  describe('3. Solicitudes ECAES', () => {
+    it('EC-007: Debe crear solicitud ECAES', (done) => {
+      const solicitud: SolicitudEcaesRequest = {
+        nombre_solicitud: 'Solicitud ECAES - Test',
+        fecha_registro_solicitud: new Date().toISOString(),
+        periodo_academico: '2025-1',
+        objUsuario: {
+          id_usuario: 1,
+          nombre_completo: 'Test',
+          codigo: '123',
+          cedula: '123',
+          correo: 't@t.co',
+          estado_usuario: true,
+          id_rol: 2,
+          id_programa: 1,
+        },
+        tipoDocumento: 'CC',
+        numero_documento: '123',
+        fecha_expedicion: '2020-01-01',
+        fecha_nacimiento: '1999-01-01',
+        documentos: [],
+      };
+      const mockResponse: SolicitudEcaesResponse = {
+        id_solicitud: 10,
+        nombre_solicitud: solicitud.nombre_solicitud,
+        fecha_registro_solicitud: solicitud.fecha_registro_solicitud,
+        periodo_academico: '2025-1',
+        estadosSolicitud: [],
+        objUsuario: {
+          id_usuario: 1,
+          nombre_completo: 'Test',
+          rol: { id_rol: 1, nombre: 'ESTUDIANTE' },
+          codigo: '123',
+          cedula: '123',
+          correo: 't@t.co',
+          estado_usuario: true,
+          objPrograma: { id_programa: 1, codigo: 'IS', nombre_programa: 'Ingeniería de Sistemas' },
+        },
+        documentos: [],
+        tipoDocumento: 'CC',
+        numero_documento: '123',
+        fecha_expedicion: '2020-01-01',
+        fecha_nacimiento: '1999-01-01',
+      };
+      service.crearSolicitudEcaes(solicitud).subscribe((res) => {
+        expect(res.id_solicitud).toBe(10);
+        done();
+      });
+      const req = httpMock.expectOne(apiUrl);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body.nombre_solicitud).toContain('ECAES');
+      req.flush(mockResponse);
+    });
+
+    it('EC-008: Debe listar solicitudes por rol con idUsuario', (done) => {
+      const mockSolicitudes: SolicitudEcaesResponse[] = [];
+      service.listarSolicitudesPorRol('ESTUDIANTE', 1).subscribe((solicitudes) => {
+        expect(solicitudes).toEqual([]);
+        done();
+      });
+      const req = httpMock.expectOne((r) => r.url === apiUrl);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.urlWithParams).toBe(`${apiUrl}?rol=ESTUDIANTE&idUsuario=1`);
+      req.flush(mockSolicitudes);
+    });
+
+    it('EC-009: Debe listar solicitudes funcionario', (done) => {
+      service.listarSolicitudesFuncionario('2025-1').subscribe(() => done());
+      const req = httpMock.expectOne((r) => r.url === apiUrl);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.urlWithParams).toBe(`${apiUrl}?rol=funcionario&bandeja=pendientes&periodoAcademico=2025-1`);
+      req.flush([]);
+    });
+
+    it('EC-037: la bandeja del funcionario sin período no envía periodoAcademico', (done) => {
+      service.listarSolicitudesFuncionario().subscribe(() => done());
+      const req = httpMock.expectOne((r) => r.url === apiUrl);
+      expect(req.request.urlWithParams).toBe(`${apiUrl}?rol=funcionario&bandeja=pendientes`);
+      req.flush([]);
+    });
+  });
+
+  describe('4. Actualizar estado (PUT /{id}/estado, EST-7 paso 6)', () => {
+    it('EC-011: Debe aprobar solicitud (PRE_REGISTRADO)', (done) => {
+      service.approveRequest(1).subscribe(() => done());
+      const req = httpMock.expectOne(`${apiUrl}/1/estado`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ nuevoEstado: 'PRE_REGISTRADO' });
+      req.flush({});
+    });
+
+    it('EC-012: Debe rechazar solicitud con comentario', (done) => {
+      service.rejectRequest(1, 'Motivo').subscribe(() => done());
+      const req = httpMock.expectOne(`${apiUrl}/1/estado`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ nuevoEstado: 'Rechazada', comentario: 'Motivo' });
+      req.flush({});
+    });
+  });
+
+  describe('5. Archivos y comentarios', () => {
+    it('EC-013: Debe descargar archivo por nombre', (done) => {
+      const nombre = 'doc.pdf';
+      const mockBlob = new Blob(['content'], { type: 'application/pdf' });
+      service.descargarArchivo(nombre).subscribe((blob) => {
+        expect(blob instanceof Blob).toBe(true);
+        done();
+      });
+      const req = httpMock.expectOne(`${environment.apiUrl}/archivos?nombre=${nombre}`);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.responseType).toBe('blob');
+      req.flush(mockBlob);
+    });
+
+    it('EC-014: Debe descargar archivo por ID documento', (done) => {
+      service.descargarArchivoPorId(5).subscribe(() => done());
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/5/archivo`);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.responseType).toBe('blob');
+      req.flush(new Blob([]));
+    });
+
+    it('EC-015: Debe agregar comentario a documento', (done) => {
+      service.agregarComentario(1, 'Comentario test').subscribe(() => done());
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/1/comentarios`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ comentario: 'Comentario test' });
+      req.flush({});
+    });
+
+    it('EC-016: Debe consultar un documento por su id', (done) => {
+      service.buscarDocumentoPorId(5).subscribe(() => done());
+      const req = httpMock.expectOne(`${environment.apiUrl}/documentos/5`);
+      expect(req.request.method).toBe('GET');
+      req.flush({ id_documento: 5, comentario: null });
+    });
+  });
+});

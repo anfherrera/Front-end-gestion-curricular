@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
 import { PruebasEcaesFuncionarioComponent } from './pruebas-ecaes.component';
-import { PruebasEcaesService, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { PruebasEcaesService, SolicitudEcaesResponse } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { SnackbarService } from '@core/services/snackbar.service';
 

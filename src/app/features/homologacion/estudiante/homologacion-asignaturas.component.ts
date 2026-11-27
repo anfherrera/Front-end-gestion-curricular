@@ -19,11 +19,11 @@ import { RequestStatusTableComponent } from '@shared/components/request-status/r
 import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
 import { Documento, RequiredDocsComponent } from '@shared/components/required-docs/required-docs.component';
 
-import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { HomologacionAsignaturasService } from '@features/homologacion/services/homologacion-asignaturas.service';
 import { FormatosInstitucionalesService } from '@core/services/formatos-institucionales.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
-import { SolicitudEstudianteBase } from '../../../pages/estudiante/solicitud-estudiante.base';
+import { SolicitudEstudianteBase } from '@features/solicitudes/solicitud-estudiante.base';
 
 @Component({
   selector: 'app-solicitud-homologacion',
@@ -40,7 +40,7 @@ import { SolicitudEstudianteBase } from '../../../pages/estudiante/solicitud-est
     RequestStatusTableComponent,
   ],
   templateUrl: './homologacion-asignaturas.component.html',
-  styleUrls: ['../../solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css'],
+  styleUrls: ['../../solicitudes/solicitud-estudiante-comun.css', './homologacion-asignaturas.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomologacionAsignaturasComponent extends SolicitudEstudianteBase<SolicitudHomologacionDTORespuesta> {

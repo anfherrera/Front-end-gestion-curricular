@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 
 import { PublicarFechasEcaesComponent } from './publicar-fechas-ecaes.component';
-import { FechaEcaes, PruebasEcaesService } from '@core/services/pruebas-ecaes.service';
+import { FechaEcaes, PruebasEcaesService } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { SnackbarService } from '@core/services/snackbar.service';
 

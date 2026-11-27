@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 
 import { FechasEcaesComponent } from './fechas-ecaes.component';
-import { FechaEcaes, PruebasEcaesService } from '@core/services/pruebas-ecaes.service';
+import { FechaEcaes, PruebasEcaesService } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { LoggerService } from '@core/services/logger.service';
 

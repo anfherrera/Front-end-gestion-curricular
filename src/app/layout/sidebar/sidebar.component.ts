@@ -9,7 +9,7 @@ import { SIDEBAR_ITEMS, SidebarItem as ConfigSidebarItem } from './sidebar.confi
 import { UserRole } from '@core/enums/roles.enum';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PazSalvoDialogComponent } from '../../features/paz-salvo/estudiante/paz-salvo-dialog.component';
+import { PazSalvoDialogComponent } from '@features/paz-salvo/estudiante/paz-salvo-dialog.component';
 
 @Component({
   selector: 'app-sidebar',

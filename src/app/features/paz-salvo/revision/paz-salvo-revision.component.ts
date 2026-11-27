@@ -8,7 +8,7 @@ import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,
   rolRevisionDeRuta,
-} from '../../../pages/common/revision-aprobacion/revision-aprobacion.component';
+} from '@features/solicitudes/revision-aprobacion/revision-aprobacion.component';
 import { aDocumentos } from './paz-salvo-filas';
 
 /**

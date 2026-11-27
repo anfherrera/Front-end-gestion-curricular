@@ -6,7 +6,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
 import { PruebasEcaesComponent } from './pruebas-ecaes.component';
-import { FechaEcaes, PruebasEcaesService, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import {
+  FechaEcaes,
+  PruebasEcaesService,
+  SolicitudEcaesResponse,
+} from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { ArchivosService } from '@core/services/archivos.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';

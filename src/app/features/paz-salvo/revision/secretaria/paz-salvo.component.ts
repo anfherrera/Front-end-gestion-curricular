@@ -5,7 +5,7 @@ import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigOficioSecretaria,
   OficioSecretariaComponent,
-} from '../../../../pages/secretaria/oficio-secretaria/oficio-secretaria.component';
+} from '@features/solicitudes/oficio-secretaria/oficio-secretaria.component';
 
 /** Secretaría: oficio de paz y salvo. */
 @Component({

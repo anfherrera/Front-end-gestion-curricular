@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import { ReingresoRevisionComponent } from './reingreso-revision.component';
-import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { ReingresoEstudianteService } from '@features/reingreso/services/reingreso-estudiante.service';
 import { RolRevision } from '@core/models/solicitud-revision.model';
 
 describe('ReingresoRevisionComponent', () => {

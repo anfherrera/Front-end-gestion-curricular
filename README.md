@@ -80,19 +80,24 @@ Angular 19 (componentes standalone, señales y SSR), Angular Material, Chart.js,
 
 ```
 src/app/
-├── core/           Servicios HTTP, guards, interceptores (JWT, errores, límite de login), modelos, enums, utilidades
-│   └── design-system/   Tokens del Sistema de Diseño TIC (colores, tipografía, tamaños, redondeos)
+├── core/           Lo transversal: autenticación, guards, interceptores (JWT, errores, límite de login),
+│   │               modelos y servicios que usan varias funcionalidades o componentes compartidos, utilidades
+│   └── design-system/   Tokens del Sistema de Diseño TIC y GUIA-UI.md (cuándo usar cada uno)
 ├── shared/         Componentes reutilizables (bandeja de solicitudes, diálogos, filtros de periodo, título de página…)
 ├── layout/         Header, menú lateral (opciones por rol en sidebar.config.ts) y footer
-├── features/       Procesos académicos, cada uno con estudiante/ y revision/ (y revision/secretaria)
-└── pages/
-    ├── common/     Pantallas compartidas: revisión, módulo estadístico, historial, notificaciones, perfil
-    ├── estudiante/ secretaria/ admin/   Rutas por rol y pantallas transversales
-    └── login/ welcome/
+├── features/       Una carpeta por funcionalidad, con sus componentes, servicios y modelos propios
+│   ├── paz-salvo/ homologacion/ reingreso/ pruebas-ecaes/ cursos-intersemestrales/
+│   │               Procesos académicos, cada uno con estudiante/ y revision/ (y revision/secretaria)
+│   ├── solicitudes/        Lo común a los procesos: revisión, historial, detalle, oficio de secretaría
+│   ├── modulo-estadistico/ admin/ notificaciones/ perfil/
+│   └── login/ welcome/ home/
+├── routes/         Rutas de cada rol (estudiante, gestión, secretaría y comunes)
 src/styles/         Estilos globales: base, Angular Material, componentes comunes, avisos y animaciones
 ```
 
-Funcionario y coordinador comparten `RevisionAprobacionComponent` (`pages/common/revision-aprobacion`); el rol sale del `data` de la ruta. Las rutas y sus guards están en `app.routes.ts` y en los `*.routes.ts` de cada rol o proceso. Fechas y números usan el formato colombiano (`LOCALE_ID` = `es-CO`).
+Regla de dependencias: `features` puede usar `core` y `shared`; `core` y `shared` no dependen de ninguna funcionalidad. Entre zonas se importa con alias (`@core/…`, `@shared/…`, `@features/…`); dentro de una misma funcionalidad, con rutas relativas.
+
+Funcionario y coordinador comparten `RevisionAprobacionComponent` (`features/solicitudes/revision-aprobacion`); el rol sale del `data` de la ruta. Las rutas y sus guards están en `app.routes.ts`, en `routes/` (una por rol) y en los `*.routes.ts` de cursos intersemestrales y administración. Fechas y números usan el formato colombiano (`LOCALE_ID` = `es-CO`).
 
 ### Interfaz
 

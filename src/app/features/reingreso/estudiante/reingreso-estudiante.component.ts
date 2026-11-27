@@ -12,14 +12,14 @@ import { RequestStatusTableComponent } from '@shared/components/request-status/r
 import { FileUploadComponent } from '@shared/components/file-upload-dialog/file-upload-dialog.component';
 import { Documento, RequiredDocsComponent } from '@shared/components/required-docs/required-docs.component';
 
-import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { ReingresoEstudianteService } from '@features/reingreso/services/reingreso-estudiante.service';
 import { FormatosInstitucionalesService } from '@core/services/formatos-institucionales.service';
 import { LoggerService } from '@core/services/logger.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
-import { SolicitudEstudianteBase } from '../../../pages/estudiante/solicitud-estudiante.base';
+import { SolicitudEstudianteBase } from '@features/solicitudes/solicitud-estudiante.base';
 import { documentoDeResolucion, nombreDesdeRuta } from './resolucion-reingreso';
 
 @Component({
@@ -34,7 +34,7 @@ import { documentoDeResolucion, nombreDesdeRuta } from './resolucion-reingreso';
     RequestStatusTableComponent,
   ],
   templateUrl: './reingreso-estudiante.component.html',
-  styleUrls: ['../../solicitud-estudiante-comun.css', './reingreso-estudiante.component.css'],
+  styleUrls: ['../../solicitudes/solicitud-estudiante-comun.css', './reingreso-estudiante.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReingresoEstudianteComponent extends SolicitudEstudianteBase<SolicitudReingresoDTORespuesta> {

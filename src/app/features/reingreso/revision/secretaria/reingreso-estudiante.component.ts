@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
-import { ReingresoEstudianteService } from '@core/services/reingreso-estudiante.service';
+import { ReingresoEstudianteService } from '@features/reingreso/services/reingreso-estudiante.service';
 import { SolicitudReingresoDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigOficioSecretaria,
   OficioSecretariaComponent,
-} from '../../../../pages/secretaria/oficio-secretaria/oficio-secretaria.component';
+} from '@features/solicitudes/oficio-secretaria/oficio-secretaria.component';
 
 /** Secretaría: resolución de reingreso. */
 @Component({

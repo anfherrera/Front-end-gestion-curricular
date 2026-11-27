@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 
-import { FechaEcaes, PruebasEcaesService } from '@core/services/pruebas-ecaes.service';
+import { FechaEcaes, PruebasEcaesService } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { LoggerService } from '@core/services/logger.service';
 import { SnackbarService } from '@core/services/snackbar.service';

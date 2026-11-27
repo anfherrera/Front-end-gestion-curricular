@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { HomologacionAsignaturasService } from '@features/homologacion/services/homologacion-asignaturas.service';
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigRevisionAprobacion,
   RevisionAprobacionComponent,
   rolRevisionDeRuta,
-} from '../../../pages/common/revision-aprobacion/revision-aprobacion.component';
+} from '@features/solicitudes/revision-aprobacion/revision-aprobacion.component';
 
 /**
  * Revisión de homologación de asignaturas para funcionario y coordinador.

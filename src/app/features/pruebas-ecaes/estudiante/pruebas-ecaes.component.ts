@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 
-import { PruebasEcaesService, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { PruebasEcaesService, SolicitudEcaesResponse } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { UsuarioSesion } from '@core/models/usuario-sesion.model';
 import { Solicitud } from '@core/models/procesos.model';
 import { ESTADOS_SOLICITUD_LABELS, EstadosSolicitud } from '@core/enums/estados-solicitud.enum';
@@ -12,7 +12,7 @@ import { RequestStatusTableComponent } from '@shared/components/request-status/r
 import { InfoPreregistroDialogComponent } from './info-preregistro-dialog/info-preregistro-dialog.component';
 import { FechasEcaesComponent } from './fechas-ecaes/fechas-ecaes.component';
 import { PreregistroEcaesComponent } from './preregistro-ecaes/preregistro-ecaes.component';
-import { SeguimientoSolicitudesBase } from '../../../pages/estudiante/seguimiento-solicitudes.base';
+import { SeguimientoSolicitudesBase } from '@features/solicitudes/seguimiento-solicitudes.base';
 
 /**
  * Pruebas ECAES del estudiante: el calendario (`app-fechas-ecaes`), el preregistro

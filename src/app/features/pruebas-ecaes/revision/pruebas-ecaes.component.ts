@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
-import { PruebasEcaesService, SolicitudEcaesResponse } from '@core/services/pruebas-ecaes.service';
+import { PruebasEcaesService, SolicitudEcaesResponse } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { DocumentoHomologacion, DocumentosDTORespuesta } from '@core/models/procesos.model';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { SnackbarService } from '@core/services/snackbar.service';

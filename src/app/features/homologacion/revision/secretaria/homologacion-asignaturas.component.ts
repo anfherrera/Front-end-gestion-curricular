@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
-import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { HomologacionAsignaturasService } from '@features/homologacion/services/homologacion-asignaturas.service';
 import { SolicitudHomologacionDTORespuesta } from '@core/models/procesos.model';
 import {
   ConfigOficioSecretaria,
   OficioSecretariaComponent,
-} from '../../../../pages/secretaria/oficio-secretaria/oficio-secretaria.component';
+} from '@features/solicitudes/oficio-secretaria/oficio-secretaria.component';
 
 /** Secretaría: oficio de homologación de asignaturas. */
 @Component({

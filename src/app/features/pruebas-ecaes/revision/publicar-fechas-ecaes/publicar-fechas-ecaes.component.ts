@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { FechaEcaes, PruebasEcaesService } from '@core/services/pruebas-ecaes.service';
+import { FechaEcaes, PruebasEcaesService } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { SnackbarService } from '@core/services/snackbar.service';

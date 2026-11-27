@@ -4,7 +4,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { PazSalvoService } from './paz-salvo.service';
 import { CursosIntersemestralesService } from './cursos-intersemestrales.service';
-import { EstadisticasService } from './estadisticas.service';
+import { EstadisticasService } from '@features/modulo-estadistico/services/estadisticas.service';
 import { AuthService } from './auth.service';
 import { Archivo } from '../models/procesos.model';
 import { CreatePreinscripcionDTO } from '../models/cursos-intersemestrales.model';

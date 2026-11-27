@@ -5,7 +5,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import { HomologacionAsignaturasComponent } from './homologacion-asignaturas.component';
-import { HomologacionAsignaturasService } from '@core/services/homologacion-asignaturas.service';
+import { HomologacionAsignaturasService } from '@features/homologacion/services/homologacion-asignaturas.service';
 
 describe('HomologacionAsignaturasComponent (Secretaria)', () => {
   let servicio: jasmine.SpyObj<HomologacionAsignaturasService>;

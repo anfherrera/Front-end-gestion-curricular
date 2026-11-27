@@ -17,7 +17,7 @@ import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { LoggerService } from '@core/services/logger.service';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { PeriodosAcademicosService } from '@core/services/periodos-academicos.service';
-import { PruebasEcaesService, SolicitudEcaesRequest } from '@core/services/pruebas-ecaes.service';
+import { PruebasEcaesService, SolicitudEcaesRequest } from '@features/pruebas-ecaes/services/pruebas-ecaes.service';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { getPeriodoActual } from '@core/utils/periodo.utils';
 import { usuarioParaSolicitud } from '@core/utils/usuario-solicitud.util';
@@ -59,7 +59,7 @@ function tipoDocumentoValido(control: AbstractControl): ValidationErrors | null 
   ],
   templateUrl: './preregistro-ecaes.component.html',
   styleUrls: [
-    '../../../solicitud-estudiante-comun.css',
+    '../../../solicitudes/solicitud-estudiante-comun.css',
     '../ecaes-formularios.css',
     './preregistro-ecaes.component.css',
   ],
