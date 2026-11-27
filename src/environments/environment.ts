@@ -2,4 +2,6 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:5000/api',
+  /** Client ID de Google (el mismo GOOGLE_CLIENT_ID del backend). Vacío: no se muestra el botón de Google. */
+  googleClientId: '',
 };

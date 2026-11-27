@@ -80,6 +80,13 @@
           }
         </button>
 
+        <!-- Con [hidden] y no @if: el HTML prerenderizado (sin Google) y el del navegador son el mismo -->
+        <div class="login-google" [hidden]="!googleDisponible()">
+          <div class="login-divider" aria-hidden="true"><span>o</span></div>
+          <div #botonGoogle class="login-google-boton"></div>
+          <p class="login-google-ayuda">Con su cuenta institucional &#64;{{ dominioInstitucional }}</p>
+        </div>
+
         @if (errorMensaje()) {
           <p class="error-message">{{ errorMensaje() }}</p>
         }

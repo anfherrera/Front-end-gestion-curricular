@@ -205,6 +205,15 @@ export class AuthService {
   }
 
   /**
+   * Inicia sesión con la cuenta institucional de Google
+   * @param credencial ID token que entregó Google Identity Services
+   * @returns la misma respuesta que el login con contraseña
+   */
+  loginGoogle(credencial: string): Observable<LoginRespuesta> {
+    return this.http.post<LoginRespuesta>(ApiEndpoints.AUTH.LOGIN_GOOGLE, { credencial });
+  }
+
+  /**
    * Verifica si el usuario está autenticado
    * Comprueba la existencia y validez del token
    * @returns true si el usuario está autenticado y el token no ha expirado
