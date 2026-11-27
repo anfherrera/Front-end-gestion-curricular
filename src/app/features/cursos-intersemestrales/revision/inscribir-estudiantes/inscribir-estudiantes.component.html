@@ -68,7 +68,11 @@
             <ng-container matColumnDef="estado_inscripcion">
               <th mat-header-cell *matHeaderCellDef>Estado</th>
               <td mat-cell *matCellDef="let estudiante">
-                {{ estudiante.estado_inscripcion || estudiante.tipo_solicitud }}
+                @let estado = estudiante.estado_inscripcion || estudiante.tipo_solicitud;
+                <span class="etiqueta-estado {{ estado | estadoClase }}">
+                  <mat-icon aria-hidden="true">{{ estado | estadoIcono }}</mat-icon>
+                  {{ estado | estadoLabel }}
+                </span>
               </td>
             </ng-container>
             <!-- Columna Comprobante de Pago -->

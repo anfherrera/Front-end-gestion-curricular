@@ -95,8 +95,13 @@ describe('PreinscribirEstudiantesComponent', () => {
     component.cargarSolicitudesPorCurso(3);
     fixture.detectChanges();
 
-    const etiquetas = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.estado-etiqueta'), (el) =>
-      el.textContent?.trim()
+    // Solo el texto de la etiqueta, sin el nombre del icono
+    const etiquetas = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.etiqueta-estado'), (el) =>
+      Array.from(el.childNodes)
+        .filter((n) => n.nodeType === Node.TEXT_NODE)
+        .map((n) => n.textContent)
+        .join('')
+        .trim()
     );
     expect(etiquetas).toEqual(['Aprobada por Funcionario', 'Enviada', 'Aprobado']);
   });

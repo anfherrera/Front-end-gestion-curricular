@@ -97,8 +97,11 @@ Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, err
 - [x] Vaciar la sección "Pendiente" de GUIA-UI.md
 - [x] Capturas finales de los 5 roles y comparación con las primeras (2026-11-27, frente a las del 2026-11-26): todas las páginas tienen el título H1 con la franja roja; roles y estados en etiquetas claras; acciones de tabla como iconos sin fondo; botones sin mayúsculas ni naranja fuera de lo destructivo; trato de usted. Sin roturas.
 - [x] Preguntar si se sube al PR #2 (sí, 2026-11-27)
+- [x] Revisión a mano con el backend arrancado (2026-11-27): 23 capturas de 4 roles sin errores de JS. Se abrieron con datos los diálogos de estudiantes de un curso y de rechazo de preinscripción: se ven bien. Hover de acciones y botones, y foco con Tab dentro del diálogo, correctos. Se encontró y corrigió que las tablas de preinscripción e inscripción de cursos intersemestrales tenían la cabecera vacía (texto azul de `material.css` sobre fondo azul local, como pasaba en `visualizar-solicitudes`) y estados en bloques de color sólido o texto plano; ahora usan la cabecera común y `.etiqueta-estado`. El `18px` de la ventana de impresión de `documentation-viewer` coincide con H3 y usa `design-tokens.ts`. En el front no queda tuteo (la búsqueda solo encuentra comentarios). En el backend quedan dos mensajes con tuteo, fuera de este repositorio: `GestionarCursoOfertadoVeranoCUAdapter.java:83` ("Puedes crear grupos…") y `UsuarioRestController.java:266` ("Intenta nuevamente…").
 
 ## Notas de la última sesión
+
+- 2026-11-27 (cierre): revisión a mano hecha con el backend (ver la última casilla de "Al terminar"). Checklist cerrado; el PR #2 se fusiona a `main`.
 
 - 2026-11-27 (noche): fase 7 hecha. Lo que falta está en "Al terminar". Pendiente menor: abrir a mano los diálogos de estudiantes de un curso y de rechazo de preinscripción cuando haya datos. El backend se cayó a mitad de la sesión porque alguien estaba cambiando `pom.xml` y `SeguridadConfig.java`; reiniciado, volvió a funcionar.
 

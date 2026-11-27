@@ -23,6 +23,7 @@ import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/roles.enum';
 import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
+import { EstadoClasePipe, EstadoIconoPipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
 import {
   TextoDialogComponent,
   TextoDialogData,
@@ -49,6 +50,9 @@ import { ConfirmacionInscripcionDialogComponent } from './confirmacion-inscripci
     CardContainerComponent,
     UtfFixPipe,
     NombreDocentePipe,
+    EstadoClasePipe,
+    EstadoIconoPipe,
+    EstadoLabelPipe,
   ],
   templateUrl: './inscribir-estudiantes.component.html',
   styleUrls: ['../filtro-curso-comun.css', './inscribir-estudiantes.component.css'],

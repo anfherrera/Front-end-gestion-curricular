@@ -19,17 +19,9 @@
   color: var(--neutro-800);
 }
 
+/* La cabecera usa el estilo común de material.css (.mat-mdc-header-row / -cell) */
 .inscripciones-table th {
-  background: var(--color-primario);
-  color: white;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: var(--text-body2-size);
   letter-spacing: 0.5px;
-}
-
-.inscripciones-table th * {
-  color: white;
 }
 
 .inscripciones-table td {
@@ -40,7 +32,14 @@
 /* Sin los iconos de acción ni los datos secundarios (gris claro en filtro-curso-comun.css y abajo) */
 .inscripciones-table
   td
-  *:not([class*='accion-'], [class*='accion-'] *, .estudiante-info small, .info-estudiante small) {
+  *:not(
+    [class*='accion-'],
+    [class*='accion-'] *,
+    .etiqueta-estado,
+    .etiqueta-estado *,
+    .estudiante-info small,
+    .info-estudiante small
+  ) {
   color: var(--neutro-800);
 }
 

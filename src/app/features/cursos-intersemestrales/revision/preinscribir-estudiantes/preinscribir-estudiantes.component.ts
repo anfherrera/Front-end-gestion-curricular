@@ -18,7 +18,7 @@ import { CursoOfertadoVerano, SolicitudCursoVerano } from '@core/models/cursos-i
 import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/roles.enum';
 import { CardContainerComponent } from '@shared/components/card-container/card-container.component';
-import { EstadoColorPipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
+import { EstadoClasePipe, EstadoIconoPipe, EstadoLabelPipe } from '@shared/pipes/estado.pipes';
 import { NombreDocentePipe } from '@shared/pipes/nombre-docente.pipe';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { DetallesPreinscripcionDialogComponent } from './detalles-preinscripcion-dialog.component';
@@ -40,7 +40,8 @@ import { RechazoPreinscripcionDialogComponent } from './rechazo-preinscripcion-d
     MatChipsModule,
     MatProgressSpinnerModule,
     CardContainerComponent,
-    EstadoColorPipe,
+    EstadoClasePipe,
+    EstadoIconoPipe,
     EstadoLabelPipe,
     NombreDocentePipe,
   ],

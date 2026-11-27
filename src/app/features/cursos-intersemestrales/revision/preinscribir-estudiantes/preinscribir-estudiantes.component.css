@@ -19,17 +19,9 @@
   color: var(--neutro-800);
 }
 
+/* La cabecera usa el estilo común de material.css (.mat-mdc-header-row / -cell) */
 .preinscripciones-table th {
-  background: var(--color-primario);
-  color: white;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: var(--text-body2-size);
   letter-spacing: 0.5px;
-}
-
-.preinscripciones-table th * {
-  color: white;
 }
 
 .preinscripciones-table td {
@@ -37,9 +29,11 @@
   color: var(--neutro-800);
 }
 
-/* Sin los iconos de acción, la etiqueta de estado (texto blanco) ni los datos secundarios del estudiante
+/* Sin los iconos de acción, la etiqueta de estado ni los datos secundarios del estudiante
    (gris claro en filtro-curso-comun.css) */
-.preinscripciones-table td *:not([class*='accion-'], [class*='accion-'] *, .estado-etiqueta, .estudiante-info small) {
+.preinscripciones-table
+  td
+  *:not([class*='accion-'], [class*='accion-'] *, .etiqueta-estado, .etiqueta-estado *, .estudiante-info small) {
   color: var(--neutro-800);
 }
 
@@ -75,7 +69,6 @@
   gap: 4px;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
 }
 
 /* Responsive */
@@ -144,14 +137,4 @@
   width: var(--tam-icono-sm);
   height: var(--tam-icono-sm);
   margin: 0;
-}
-
-/* Etiqueta de estado en la tabla (el fondo lo pone el pipe estadoColor; la regla td * de arriba la excluye) */
-.estado-etiqueta {
-  color: var(--blanco);
-  padding: 4px 8px;
-  border-radius: var(--radio-xs);
-  font-size: var(--text-body2-size);
-  border: none;
-  display: inline-block;
 }
