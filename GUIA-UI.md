@@ -51,12 +51,18 @@ Tipos (guía, págs. 30-31). Los estilos ya están en [src/styles/material.css](
 - Eliminar o desactivar pide confirmación con `ConfirmDialogComponent` (`shared/components/confirm-dialog`).
 - Orden fijo: editar, cambiar estado, eliminar (lo destructivo al final).
 
-## 4. Tarjetas y secciones
+## 4. Títulos de página
+
+- Cada página tiene un solo H1, que pinta el layout con `app-titulo-pagina` (guía, pág. 48): Titillium, color primario y una franja roja de 4px bajo la primera palabra.
+- El texto sale del `title` de la ruta (por ejemplo `title: 'Gestión de roles'`), que también va a la pestaña del navegador. Una página nueva solo necesita ese `title`; no pinte otro título propio.
+- Dentro de la página, las secciones usan `app-card-container` o un `h2`.
+
+## 5. Tarjetas y secciones
 
 - Toda sección de página va en `<app-card-container title="…" icon="…">`: cabecera azul con icono y título. No crear `mat-card` con un título propio.
 - Un icono por sección, de Material Icons (https://fonts.google.com/icons).
 
-## 5. Redondeos
+## 6. Redondeos
 
 Guía, pág. 29. Usar solo estos valores:
 
@@ -69,18 +75,18 @@ Guía, pág. 29. Usar solo estos valores:
 | 28px  | Diálogos                                                   |
 | 100px | Botones, chips e insignias                                 |
 
-## 6. Tipografía
+## 7. Tipografía
 
 - Títulos con `var(--font-display)` (Titillium Web) y el resto con `var(--font-body)` (Open Sans).
 - Tamaños con los tokens `--text-*` (guía, pág. 26). Mínimo 12px.
 
-## 7. Textos
+## 8. Textos
 
 - **Trato de usted** (guía, pág. 9): "Suba los documentos", "Su solicitud fue enviada". No "Debes subir…".
 - Frases cortas, sin tecnicismos.
 - Cuando algo falla, diga qué hacer: "No se pudo enviar la solicitud. Revise su conexión e intente de nuevo."
 
-## 8. Avisos
+## 9. Avisos
 
 - Siempre con `SnackbarService` (`exito`, `error`, `advertencia`, `info`). Duran 5 segundos, aparecen arriba a la derecha, se cierran con la X y no se apilan (guía, pág. 34).
 - Las ventanas emergentes (diálogos) solo para confirmar acciones importantes.

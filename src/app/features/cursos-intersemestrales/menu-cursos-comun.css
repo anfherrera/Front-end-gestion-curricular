@@ -1,24 +1,5 @@
 /* Menú de cursos intersemestrales: igual para el estudiante y para funcionario/coordinador */
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 20px;
-  background: white;
-  border-radius: var(--radio-sm);
-  box-shadow: var(--sombra-2);
-  border-bottom: 4px solid var(--color-primario);
-}
-
-.header h1 {
-  color: var(--color-primario);
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-}
-
 .menu-item {
   display: block;
   text-decoration: none;

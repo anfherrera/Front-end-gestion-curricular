@@ -1,7 +1,8 @@
 import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom, LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeEsCO from '@angular/common/locales/es-CO';
-import { provideRouter } from '@angular/router';
+import { provideRouter, TitleStrategy } from '@angular/router';
+import { TituloPaginaStrategy } from '@core/services/titulo-pagina.strategy';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { routes } from './app.routes';
@@ -29,6 +30,8 @@ export const appConfig: ApplicationConfig = {
     },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    // Título de cada página (H1 del layout y pestaña del navegador) desde el `title` de la ruta
+    { provide: TitleStrategy, useExisting: TituloPaginaStrategy },
     provideClientHydration(withEventReplay()),
     // INTERCEPTORES: JWT primero (agrega token), luego Error (maneja 401/403)
     // El orden es importante: los interceptores se ejecutan en el orden especificado

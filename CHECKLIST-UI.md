@@ -54,7 +54,7 @@ Verificación de cada commit:
 
 ## Fase 2: títulos de página (guía, pág. 48)
 
-- [ ] Hoy hay al menos tres estilos: tarjeta blanca con icono (admin), título con línea azul inferior (cursos intersemestrales) y páginas sin título (estudiante, funcionario). Elegir uno (la guía pide título H1 con una franja roja de 4px bajo la primera palabra), hacerlo componente compartido y usarlo en todas las páginas
+- [x] (Hecho 2026-11-27: `TituloPaginaStrategy` toma el `title` de cada ruta y el layout lo pinta con `app-titulo-pagina`; se quitaron los títulos propios de admin, notificaciones y cursos intersemestrales, y los paneles internos pasaron a `h2`. El título va también a la pestaña del navegador.) Hoy hay al menos tres estilos: tarjeta blanca con icono (admin), título con línea azul inferior (cursos intersemestrales) y páginas sin título (estudiante, funcionario). Elegir uno (la guía pide título H1 con una franja roja de 4px bajo la primera palabra), hacerlo componente compartido y usarlo en todas las páginas
 
 ## Fase 3: colores con transparencia (hecha: 37 usos en 17 archivos pasados a tokens con `color-mix`; el amarillo de advertencia pasó al color de error porque la guía no tiene amarillo)
 

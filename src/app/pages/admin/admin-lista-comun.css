@@ -32,23 +32,6 @@
   }
 }
 
-.header-section h2 {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--color-primario);
-}
-
-.header-section h2 mat-icon {
-  font-size: var(--text-h1-size);
-  width: 32px;
-  height: 32px;
-  color: var(--color-primario);
-}
-
 .header-section .actions {
   display: flex;
   gap: 12px;
@@ -215,10 +198,6 @@ mat-table {
     align-items: flex-start;
     gap: 16px;
     padding: 16px;
-  }
-
-  .header-section h2 {
-    font-size: var(--text-h2-size);
   }
 
   .table-container {
