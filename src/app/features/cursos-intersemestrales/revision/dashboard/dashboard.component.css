@@ -23,7 +23,7 @@
 
 .welcome-header p {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   color: var(--neutro-600);
 }
 
@@ -54,7 +54,7 @@
 }
 
 .stat-icon {
-  font-size: var(--text-h1-size);
+  font-size: var(--tam-icono-lg);
   width: 2rem;
   height: 2rem;
   color: var(--color-primario);
@@ -67,7 +67,7 @@
 
 .stat-info h3 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   color: var(--color-primario);
 }
@@ -75,7 +75,7 @@
 .stat-info p {
   margin: 5px 0 0 0;
   color: var(--neutro-600);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .content-grid {
@@ -103,7 +103,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   color: var(--color-primario);
 }
@@ -126,19 +126,19 @@
 
 .curso-info h4 {
   margin: 0 0 5px 0;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   color: var(--neutro-800);
 }
 
 .curso-info p {
   margin: 0 0 5px 0;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   color: var(--neutro-600);
 }
 
 .curso-info small {
   color: var(--neutro-600);
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
   display: block;
   margin-top: 4px;
 }
@@ -173,7 +173,7 @@
 
 .cupos-info small {
   color: var(--neutro-600);
-  font-size: 0.8rem;
+  font-size: var(--text-body2-size);
   font-weight: 500;
 }
 
@@ -184,9 +184,9 @@
 }
 
 .empty-state mat-icon {
-  font-size: 3rem;
-  width: 3rem;
-  height: 3rem;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   margin-bottom: 15px;
   opacity: 0.5;
   color: var(--color-primario);
@@ -194,7 +194,7 @@
 
 .empty-state p {
   margin: 0 0 20px 0;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 /* Responsive */
@@ -214,7 +214,7 @@
   }
 
   .welcome-header h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-h2-size);
   }
 
   .curso-item {

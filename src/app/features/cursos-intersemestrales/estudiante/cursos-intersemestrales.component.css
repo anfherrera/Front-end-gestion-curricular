@@ -45,13 +45,13 @@
   }
 
   .menu-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: var(--tam-icono-sm);
+    width: var(--tam-icono-sm);
+    height: var(--tam-icono-sm);
   }
 
   .menu-text {
-    font-size: 0.9rem;
+    font-size: var(--text-body-size);
   }
 }
 
@@ -76,7 +76,7 @@
 }
 
 .info-icon {
-  font-size: 3.5rem;
+  font-size: var(--tam-icono-xxl);
   color: var(--color-primario);
   margin-bottom: 1.5rem;
   width: 4rem;
@@ -91,14 +91,14 @@
 
 .info-content h2 {
   color: var(--color-primario);
-  font-size: 1.8rem;
+  font-size: var(--text-h1-size);
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
 .info-content > p {
   color: var(--neutro-600);
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin-bottom: 2rem;
   line-height: 1.6;
 }
@@ -129,7 +129,7 @@
 
 .option-icon {
   color: var(--color-primario);
-  font-size: var(--text-h1-size);
+  font-size: var(--tam-icono-lg);
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
@@ -148,7 +148,7 @@
 
 .option-text h3 {
   color: var(--color-primario);
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   margin-bottom: 0.8rem;
   line-height: 1.3;
@@ -156,7 +156,7 @@
 
 .option-text p {
   color: var(--neutro-600);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   line-height: 1.6;
   margin: 0;
 }
@@ -164,7 +164,7 @@
 .info-footer {
   color: var(--color-primario);
   font-weight: 500;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin: 0;
   padding-top: 1rem;
   border-top: 1px solid color-mix(in srgb, var(--color-primario) 10%, transparent);
@@ -182,14 +182,14 @@
   }
 
   .info-icon {
-    font-size: 3rem;
+    font-size: var(--tam-icono-xl);
     width: 3.5rem;
     height: 3.5rem;
     margin-bottom: 1.2rem;
   }
 
   .info-content h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-h2-size);
   }
 
   .info-options {
@@ -204,17 +204,17 @@
   }
 
   .option-icon {
-    font-size: 1.8rem;
+    font-size: var(--tam-icono-lg);
     width: 2.2rem;
     height: 2.2rem;
   }
 
   .option-text h3 {
-    font-size: 1.1rem;
+    font-size: var(--text-h3-size);
     margin-bottom: 0.6rem;
   }
 
   .option-text p {
-    font-size: 0.95rem;
+    font-size: var(--text-body-size);
   }
 }

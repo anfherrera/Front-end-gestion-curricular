@@ -15,9 +15,9 @@
 }
 
 .sin-datos mat-icon {
-  font-size: 40px;
-  width: 40px;
-  height: 40px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   color: var(--color-primario);
   margin-bottom: 16px;
   opacity: 0.7;
@@ -56,7 +56,7 @@
 }
 
 .resumen-icon {
-  font-size: var(--text-h1-size);
+  font-size: var(--tam-icono-lg);
   width: 32px;
   height: 32px;
   color: var(--color-primario);
@@ -68,7 +68,7 @@
 
 .resumen-content h3 {
   margin: 0;
-  font-size: 24px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
   color: var(--color-primario);
 }
@@ -96,7 +96,7 @@
 .section h3 {
   color: var(--color-primario);
   margin-bottom: 20px;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -118,7 +118,7 @@ th.mat-header-cell {
   background: var(--color-primario);
   color: white;
   font-weight: 500;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 16px 12px;
@@ -143,7 +143,7 @@ td.mat-cell {
 .comentario-cell .text-muted {
   color: var(--neutro-600);
   font-style: italic;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   padding: 8px 0;
 }
 
@@ -154,7 +154,7 @@ td.mat-cell:last-child {
 /* Estados como texto simple */
 .estado-badge {
   color: var(--neutro-600);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -167,7 +167,7 @@ td.mat-cell:last-child {
 .text-muted {
   color: var(--neutro-600);
   font-style: italic;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
 }
 
 /* Contenedor de acciones */
@@ -197,9 +197,9 @@ td.mat-cell:last-child {
 }
 
 .accion-btn mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: var(--tam-icono-xs);
+  width: var(--tam-icono-xs);
+  height: var(--tam-icono-xs);
 }
 
 /* Mensaje de esperando apertura de inscripciones - Texto normal */
@@ -211,7 +211,7 @@ td.mat-cell:last-child {
   align-items: flex-start;
   padding: 12px 16px;
   border-radius: var(--radio-sm);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   line-height: 1.5;
   border: 1px solid transparent;
   box-shadow: var(--sombra-1);
@@ -247,9 +247,9 @@ td.mat-cell:last-child {
 }
 
 .motivo-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -264,14 +264,14 @@ td.mat-cell:last-child {
 
 .motivo-label {
   font-weight: 600;
-  font-size: 11px;
+  font-size: var(--text-body2-size);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   opacity: 0.9;
 }
 
 .motivo-mensaje {
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   color: inherit;
   line-height: 1.6;
   font-weight: 400;
@@ -297,9 +297,9 @@ td.mat-cell:last-child {
   }
 
   .sin-datos mat-icon {
-    font-size: 36px;
-    width: 36px;
-    height: 36px;
+    font-size: var(--tam-icono-lg);
+    width: var(--tam-icono-lg);
+    height: var(--tam-icono-lg);
   }
 
   th.mat-header-cell {
@@ -309,12 +309,12 @@ td.mat-cell:last-child {
 
   td.mat-cell {
     padding: 12px 8px;
-    font-size: 13px;
+    font-size: var(--text-body2-size);
   }
 
   /* Responsive para acciones */
   .accion-btn {
-    font-size: 11px;
+    font-size: var(--text-body2-size);
     padding: 4px 8px;
   }
 
@@ -333,7 +333,7 @@ td.mat-cell:last-child {
   }
 
   .motivo-icon {
-    font-size: var(--text-h3-size);
+    font-size: var(--tam-icono-sm);
     width: 18px;
     height: 18px;
   }
@@ -343,7 +343,7 @@ td.mat-cell:last-child {
   }
 
   .motivo-label {
-    font-size: 10px;
+    font-size: var(--text-body2-size);
   }
 
   .motivo-mensaje {

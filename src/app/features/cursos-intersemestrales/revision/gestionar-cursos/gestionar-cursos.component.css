@@ -50,7 +50,7 @@ app-card-container {
 .loading-container p {
   color: var(--neutro-600);
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
 }
 
 /* Tabla */
@@ -127,7 +127,7 @@ table {
   background: var(--primario-90);
   color: var(--color-primario);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   border: none;
 }
 
@@ -146,7 +146,7 @@ table {
   background: var(--color-primario);
   color: white;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   min-width: 32px;
   box-shadow: var(--sombra-1);
   border: none;
@@ -156,7 +156,7 @@ table {
 .texto-sin-asignar {
   color: var(--neutro-600);
   font-style: italic;
-  font-size: 0.9em;
+  font-size: var(--text-body2-size);
 }
 
 .docente-info {
@@ -210,7 +210,7 @@ table {
 .sin-salon {
   color: var(--neutro-600);
   font-style: italic;
-  font-size: 0.9em;
+  font-size: var(--text-body2-size);
 }
 
 /* Acciones */
@@ -233,15 +233,15 @@ table {
 }
 
 .sin-datos mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   color: var(--neutro-200);
 }
 
 .sin-datos p {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
 }
 
 .sin-datos p:last-child {

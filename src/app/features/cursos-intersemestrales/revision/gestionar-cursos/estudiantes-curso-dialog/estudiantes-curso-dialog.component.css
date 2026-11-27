@@ -25,9 +25,9 @@
 
 .dialog-header mat-icon {
   color: var(--color-primario);
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
+  font-size: var(--tam-icono-lg);
+  width: var(--tam-icono-lg);
+  height: var(--tam-icono-lg);
 }
 
 .btn-cerrar {
@@ -54,7 +54,7 @@
 
 .loading-container p {
   color: var(--color-primario);
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   margin: 0;
 }
@@ -64,14 +64,14 @@
 }
 
 .error-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
   color: var(--color-error);
 }
 
 .error-container p {
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   margin: 0;
 }
@@ -98,7 +98,7 @@
 
 .resumen-curso h3 {
   margin: 0 0 20px 0;
-  font-size: 20px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
   color: var(--color-primario);
   border-bottom: 2px solid var(--color-primario);
@@ -124,7 +124,7 @@
 }
 
 .stat .label {
-  font-size: 11px;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -132,7 +132,7 @@
 }
 
 .stat .valor {
-  font-size: 28px;
+  font-size: var(--text-h1-size);
   font-weight: 700;
   color: var(--color-primario);
   line-height: 1.2;
@@ -158,7 +158,7 @@
   padding: 14px 12px;
   text-align: left;
   font-weight: 600;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   position: sticky;
@@ -223,15 +223,15 @@
 }
 
 .sin-estudiantes mat-icon {
-  font-size: 72px;
-  width: 72px;
-  height: 72px;
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
   color: var(--color-primario);
   opacity: 0.3;
 }
 
 .sin-estudiantes p {
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 500;
   color: var(--neutro-600);
   margin: 0;

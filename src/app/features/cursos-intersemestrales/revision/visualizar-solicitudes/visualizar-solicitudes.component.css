@@ -91,9 +91,9 @@ app-card-container {
 }
 
 .no-data mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   margin-bottom: 16px;
   color: var(--color-primario);
 }
@@ -184,14 +184,14 @@ app-card-container {
   color: var(--neutro-800) !important;
   font-weight: 400 !important;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
 }
 
 /* Estilo para el texto del motivo de la solicitud */
 .motivo-text {
   font-family: var(--font-body) !important;
   font-weight: 400 !important;
-  font-size: 13px !important;
+  font-size: var(--text-body2-size) !important;
   color: var(--neutro-800) !important;
   max-width: 250px !important;
   word-wrap: break-word !important;

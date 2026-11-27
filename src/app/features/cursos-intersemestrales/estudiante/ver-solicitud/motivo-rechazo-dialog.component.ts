@@ -61,9 +61,9 @@ export interface MotivoRechazoDialogData {
       }
 
       .motivo-dialog__encabezado mat-icon {
-        font-size: 28px;
-        width: 28px;
-        height: 28px;
+        font-size: var(--tam-icono-lg);
+        width: var(--tam-icono-lg);
+        height: var(--tam-icono-lg);
       }
 
       .motivo-dialog__estado {
@@ -76,18 +76,18 @@ export interface MotivoRechazoDialogData {
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        font-size: 13px;
+        font-size: var(--text-body2-size);
       }
 
       .motivo-dialog__fecha {
-        font-size: 12px;
+        font-size: var(--text-body2-size);
         color: inherit;
         opacity: 0.8;
       }
 
       .motivo-dialog__mensaje {
         margin: 0;
-        font-size: 14px;
+        font-size: var(--text-body-size);
         line-height: 1.6;
         color: var(--neutro-800);
         word-break: break-word;

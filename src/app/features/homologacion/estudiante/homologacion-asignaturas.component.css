@@ -71,7 +71,7 @@
 
 .mensaje-guia {
   margin: 8px 0;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   line-height: 1.5;
 }
 

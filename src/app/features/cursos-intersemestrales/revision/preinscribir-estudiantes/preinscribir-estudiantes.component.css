@@ -55,7 +55,7 @@
 
 .observaciones-cell span {
   color: var(--neutro-800) !important;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   line-height: 1.4;
 }
 
@@ -140,9 +140,9 @@
 }
 
 .acciones-container button[mat-icon-button] mat-icon {
-  font-size: 20px !important;
-  width: 20px !important;
-  height: 20px !important;
+  font-size: var(--tam-icono-sm) !important;
+  width: var(--tam-icono-sm) !important;
+  height: var(--tam-icono-sm) !important;
   margin: 0 !important;
 }
 

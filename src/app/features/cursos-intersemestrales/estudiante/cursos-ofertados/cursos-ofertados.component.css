@@ -1,7 +1,7 @@
 .cargando,
 .sin-datos {
   text-align: center;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   color: var(--neutro-600);
   padding: 16px 0;
 }
@@ -18,9 +18,9 @@
 }
 
 .mensaje-vacio .icono-vacio {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
+  font-size: var(--tam-icono-xxl);
+  width: var(--tam-icono-xxl);
+  height: var(--tam-icono-xxl);
   color: var(--neutro-600);
   margin-bottom: 16px;
 }
@@ -28,7 +28,7 @@
 .mensaje-vacio h3 {
   margin: 0 0 12px 0;
   color: var(--neutro-800);
-  font-size: 20px;
+  font-size: var(--text-h2-size);
   font-weight: 500;
 }
 
@@ -43,7 +43,7 @@
 .mensaje-vacio .sugerencia {
   display: block;
   margin-top: 12px;
-  font-size: 0.9em;
+  font-size: var(--text-body2-size);
   color: var(--neutro-600);
   font-style: italic;
 }

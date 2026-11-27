@@ -19,15 +19,15 @@
 }
 
 .sin-solicitudes mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   color: var(--color-primario);
   margin-bottom: 16px;
 }
 
 .sin-solicitudes p {
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin: 0;
   font-weight: 500;
 }
@@ -47,7 +47,7 @@
 .botones-acciones button {
   min-width: 200px;
   padding: 12px 24px;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
   border-radius: var(--radio-sm);
   transition: all 0.3s ease;
@@ -99,7 +99,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1.2rem;
+  font-size: var(--text-h3-size);
   font-weight: 600;
   color: var(--neutro-800);
   margin: 0;
@@ -128,12 +128,12 @@
 .info-label {
   font-weight: 600;
   color: var(--neutro-600);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
 }
 
 .info-value {
   color: var(--neutro-800);
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 @media (max-width: 768px) {

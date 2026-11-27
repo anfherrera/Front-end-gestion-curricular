@@ -66,12 +66,12 @@
   gap: 12px;
   margin: 0;
   color: var(--color-primario);
-  font-size: 20px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
 }
 
 .modal-header h2 mat-icon {
-  --tam-icono: 24px;
+  --tam-icono: var(--tam-icono-md);
   color: var(--color-primario);
 }
 
@@ -93,7 +93,7 @@
 
 .info-card mat-card-title {
   color: var(--color-primario);
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
 }
 
@@ -116,7 +116,7 @@
 .form-section h3 {
   margin: 0 0 16px 0;
   color: var(--color-primario);
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
   border-bottom: 2px solid var(--primario-90);
   padding-bottom: 8px;
@@ -161,7 +161,7 @@
 }
 
 .file-upload-error mat-icon {
-  --tam-icono: 20px;
+  --tam-icono: var(--tam-icono-sm);
   color: var(--color-error);
 }
 
@@ -195,7 +195,7 @@
 }
 
 .file-input-label mat-icon {
-  --tam-icono: 28px;
+  --tam-icono: var(--tam-icono-lg);
   color: var(--color-primario);
 }
 
@@ -216,7 +216,7 @@
 }
 
 .file-icon {
-  --tam-icono: 20px;
+  --tam-icono: var(--tam-icono-sm);
   color: var(--color-primario);
 }
 
@@ -228,7 +228,7 @@
 }
 
 .success-icon {
-  --tam-icono: 20px;
+  --tam-icono: var(--tam-icono-sm);
   color: var(--notif-exito-borde);
 }
 
@@ -251,7 +251,7 @@
 }
 
 .file-requirements p mat-icon {
-  --tam-icono: 18px;
+  --tam-icono: var(--tam-icono-sm);
   color: var(--notif-error-titulo);
 }
 
@@ -259,7 +259,7 @@
   margin: 0;
   padding-left: 20px;
   color: var(--notif-error-titulo);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   line-height: 1.5;
 }
 
@@ -333,7 +333,7 @@
   }
 
   .modal-header h2 mat-icon {
-    --tam-icono: 20px;
+    --tam-icono: var(--tam-icono-sm);
   }
 
   .modal-body {
@@ -358,7 +358,7 @@
   }
 
   .form-section h3 {
-    font-size: 15px;
+    font-size: var(--text-body-size);
     margin-bottom: 12px;
     padding-bottom: 6px;
   }
@@ -370,12 +370,12 @@
   .file-input-label {
     padding: 16px;
     min-height: 60px;
-    font-size: 13px;
+    font-size: var(--text-body2-size);
     gap: 8px;
   }
 
   .file-input-label mat-icon {
-    --tam-icono: 24px;
+    --tam-icono: var(--tam-icono-md);
   }
 
   .file-info {
@@ -388,7 +388,7 @@
   }
 
   .file-requirements p {
-    font-size: 13px;
+    font-size: var(--text-body2-size);
     margin-bottom: 8px;
   }
 
@@ -423,14 +423,14 @@
   }
 
   .modal-header h2 {
-    font-size: 16px;
+    font-size: var(--text-subtitulo-size);
     gap: 6px;
   }
 
   .modal-header h2 mat-icon,
   .file-icon,
   .success-icon {
-    --tam-icono: 18px;
+    --tam-icono: var(--tam-icono-sm);
   }
 
   .modal-body {
@@ -446,7 +446,7 @@
   }
 
   .info-card p {
-    font-size: 13px;
+    font-size: var(--text-body2-size);
     margin: 6px 0;
   }
 
@@ -466,7 +466,7 @@
   }
 
   .form-section h3::before {
-    font-size: 16px;
+    font-size: var(--text-subtitulo-size);
   }
 
   .file-upload-section {
@@ -481,7 +481,7 @@
   }
 
   .file-input-label mat-icon {
-    --tam-icono: 20px;
+    --tam-icono: var(--tam-icono-sm);
   }
 
   .file-info {
@@ -490,7 +490,7 @@
   }
 
   .file-name {
-    font-size: 13px;
+    font-size: var(--text-body2-size);
   }
 
   .file-requirements {
@@ -503,11 +503,11 @@
   }
 
   .file-requirements p mat-icon {
-    --tam-icono: 16px;
+    --tam-icono: var(--tam-icono-xs);
   }
 
   .file-requirements ul {
-    font-size: 11px;
+    font-size: var(--text-body2-size);
     padding-left: 16px;
   }
 
@@ -523,13 +523,13 @@
 
   .modal-footer button {
     height: 40px;
-    font-size: 13px;
+    font-size: var(--text-body2-size);
   }
 
   .modal-footer button mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: var(--tam-icono-xs);
+    width: var(--tam-icono-xs);
+    height: var(--tam-icono-xs);
   }
 }
 
@@ -540,11 +540,11 @@
   }
 
   .form-section h3 {
-    font-size: 13px;
+    font-size: var(--text-body2-size);
   }
 
   .file-input-label {
-    font-size: 11px;
+    font-size: var(--text-body2-size);
     padding: 10px;
   }
 

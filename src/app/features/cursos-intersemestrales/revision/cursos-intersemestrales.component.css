@@ -51,12 +51,12 @@
   }
 
   .menu-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: var(--tam-icono-sm);
+    width: var(--tam-icono-sm);
+    height: var(--tam-icono-sm);
   }
 
   .menu-text {
-    font-size: 0.9rem;
+    font-size: var(--text-body-size);
   }
 }

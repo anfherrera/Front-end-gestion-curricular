@@ -77,7 +77,7 @@ span.disponible {
   background-color: var(--color-primario);
   color: white;
   font-weight: 600;
-  font-size: 0.85em;
+  font-size: var(--text-body2-size);
   min-width: 32px;
   height: 24px;
 }
@@ -100,7 +100,7 @@ button {
 /* Iconos específicos */
 .preinscribir-icon {
   color: var(--color-primario) !important;
-  font-size: 24px;
+  font-size: var(--tam-icono-md);
 }
 
 .preinscribir-icon:hover {
@@ -109,7 +109,7 @@ button {
 
 .inscribir-icon {
   color: var(--notif-exito-borde) !important;
-  font-size: 24px;
+  font-size: var(--tam-icono-md);
 }
 
 .inscribir-icon:hover {
@@ -118,7 +118,7 @@ button {
 
 .ver-icon {
   color: var(--color-terciario) !important;
-  font-size: 24px;
+  font-size: var(--tam-icono-md);
 }
 
 .ver-icon:hover {
@@ -127,7 +127,7 @@ button {
 
 .default-icon {
   color: var(--neutro-600) !important;
-  font-size: 24px;
+  font-size: var(--tam-icono-md);
 }
 
 .default-icon:hover {
@@ -168,7 +168,7 @@ button {
   .inscribir-icon,
   .ver-icon,
   .default-icon {
-    font-size: 20px;
+    font-size: var(--tam-icono-sm);
   }
 }
 
@@ -181,6 +181,6 @@ button {
   .inscribir-icon,
   .ver-icon,
   .default-icon {
-    font-size: var(--text-h3-size);
+    font-size: var(--tam-icono-sm);
   }
 }

@@ -35,7 +35,7 @@
 
 .form-section h3::before {
   content: '';
-  font-size: 20px;
+  font-size: var(--text-h2-size);
   flex-shrink: 0;
 }
 
@@ -282,7 +282,7 @@
   }
 
   .form-section h3 {
-    font-size: 16px;
+    font-size: var(--text-subtitulo-size);
     margin-bottom: 16px;
   }
 
@@ -376,9 +376,9 @@
 
 .duracion-info mat-icon {
   color: var(--color-primario);
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
+  font-size: var(--tam-icono-md);
+  width: var(--tam-icono-md);
+  height: var(--tam-icono-md);
 }
 
 .duracion-info span {
@@ -387,6 +387,6 @@
 }
 
 .duracion-info strong {
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 700;
 }

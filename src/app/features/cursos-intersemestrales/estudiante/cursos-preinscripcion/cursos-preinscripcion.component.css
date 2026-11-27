@@ -1,6 +1,6 @@
 .cargando {
   text-align: center;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   color: var(--neutro-800);
   padding: 16px 0;
 }

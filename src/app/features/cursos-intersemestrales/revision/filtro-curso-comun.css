@@ -47,9 +47,9 @@
 }
 
 .no-data mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   margin-bottom: 16px;
   color: var(--color-primario);
 }
@@ -87,7 +87,7 @@
 .curso-info h4 {
   color: var(--color-primario);
   margin-bottom: 16px;
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
 }
 
@@ -110,7 +110,7 @@
 .info-item strong {
   color: var(--color-primario);
   min-width: 120px;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
 }
 
 :host ::ng-deep .mat-mdc-form-field {

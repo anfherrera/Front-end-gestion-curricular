@@ -39,7 +39,7 @@
   background: transparent !important;
   color: var(--color-primario) !important;
   font-weight: 700 !important;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   padding: 20px 24px !important;
   border-bottom: none !important;
   text-align: center;
@@ -76,7 +76,7 @@
   color: var(--neutro-800);
   border-right: 1px solid var(--primario-98);
   width: 65%;
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
   line-height: 1.4;
 }
 
@@ -86,7 +86,7 @@
   font-weight: 700;
   text-align: center;
   width: 35%;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   background: var(--primario-98);
 }
 
@@ -106,7 +106,7 @@
 
 .mensaje-vacio p {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
 }
 
 @media (max-width: 768px) {
@@ -114,7 +114,7 @@
   .fecha-cell,
   .header-cell {
     padding: 12px 16px !important;
-    font-size: 0.9rem;
+    font-size: var(--text-body-size);
   }
 
   .periodo-select {

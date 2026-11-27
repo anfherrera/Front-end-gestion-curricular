@@ -12,9 +12,9 @@
 }
 
 .preinscripcion-dialog h2 mat-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
+  font-size: var(--tam-icono-lg);
+  width: var(--tam-icono-lg);
+  height: var(--tam-icono-lg);
 }
 
 /* Información del curso */
@@ -29,7 +29,7 @@
 .curso-info h3 {
   margin: 0 0 16px 0;
   color: var(--color-primario);
-  font-size: 20px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
 }
 

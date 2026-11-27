@@ -16,7 +16,7 @@
 .form-section h3 {
   margin: 0 0 16px 0;
   color: var(--color-primario);
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
   font-weight: 600;
 }
 
@@ -40,7 +40,7 @@
 
 .info-item strong {
   color: var(--neutro-800);
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }

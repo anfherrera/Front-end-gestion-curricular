@@ -14,14 +14,14 @@
 }
 
 .header-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
+  font-size: var(--tam-icono-lg);
+  width: var(--tam-icono-lg);
+  height: var(--tam-icono-lg);
 }
 
 .dialog-header h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--text-h2-size);
   font-weight: 600;
   color: white;
 }
@@ -52,9 +52,9 @@
 
 .info-icon {
   color: var(--color-primario);
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
 }
 
 .info-text {
@@ -71,7 +71,7 @@
 
 .info-text span {
   color: var(--neutro-800);
-  font-size: 16px;
+  font-size: var(--text-subtitulo-size);
 }
 
 .confirmacion-mensaje {

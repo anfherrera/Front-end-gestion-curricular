@@ -75,9 +75,11 @@ Medición: `Get-ChildItem -Recurse src -Include *.css | Select-String "border-ra
 
 Primer paso hecho, sin cambio visual: 159 `font-size` que ya valían 12, 14, 18, 22 o 32px (o su rem) usan ahora `--text-*`. Ojo: algunos `32px`/`2rem` eran iconos y quedaron con `--text-h1-size`; al crear `--tam-icono-*` hay que moverlos. Quedan por decidir (cambian el aspecto): 0.9rem ×49, 16px ×41, 13px ×41, 1rem ×37, 1.1rem ×31, 20px ×26, 1.2rem ×19, 0.95rem ×18, 24px ×17, 1.5rem ×16…
 
-- [ ] 57 valores distintos; ninguno usa `--text-*`. Ir carpeta por carpeta (un commit por carpeta), comparando capturas. Los que más tienen: `cursos-verano-dashboard` (35), `inscripcion-modal` (33), `tendencias-comparativas` (26), `ver-solicitud` (25), `recomendaciones-cursos-verano` y `gestionar-cursos` (23)
-- [ ] Pasos intermedios con nombre si hacen falta (`--text-subtitulo-size`, `--text-cifra-size`); iconos grandes con escala aparte (`--tam-icono-*`)
-- [ ] Regla en `comprobar-estilos.mjs`
+**Hecha (2026-11-27)**: 429 declaraciones convertidas con un script (en el scratchpad de la sesión, no en el repo) por tramos: texto <13,5px → body2, <15,5 → body, <17 → subtítulo, <20 → h3, <26 → h2, <36 → h1, resto → cifra; iconos (selector con `mat-icon`/`icon` o `width` igual al tamaño) <18 → xs, <22 → sm, <28 → md, <40 → lg, <56 → xl, resto → xxl, y su `width`/`height` con el mismo token. `base.css`: `body` a 14px (antes 16) y h1-h6 en la escala de la guía. Capturas comparadas: cambios pequeños (título del header de 28,8 a 32px, listas y textos sueltos de 16 a 14px).
+
+- [x] 57 valores distintos; ninguno usa `--text-*`. Ir carpeta por carpeta (un commit por carpeta), comparando capturas. Los que más tienen: `cursos-verano-dashboard` (35), `inscripcion-modal` (33), `tendencias-comparativas` (26), `ver-solicitud` (25), `recomendaciones-cursos-verano` y `gestionar-cursos` (23)
+- [x] Pasos intermedios con nombre si hacen falta (`--text-subtitulo-size`, `--text-cifra-size`); iconos grandes con escala aparte (`--tam-icono-*`)
+- [x] Regla en `comprobar-estilos.mjs` (solo CSS; queda a mano el `18px` de la ventana de impresión de `documentation-viewer.component.ts`, que no tiene acceso a los tokens)
 
 ## Fase 6: trato de usted (guía, pág. 9)
 
@@ -97,6 +99,8 @@ Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, err
 - [ ] Preguntar si se sube al PR #2
 
 ## Notas de la última sesión
+
+- 2026-11-27 (tarde): fase 5 hecha en 4 commits (base y layout, shared, pages, features). Hay 788 pruebas. Siguiente: fase 7 (`!important`). Ojo: en el árbol de trabajo hay cambios ajenos sin commit (inicio de sesión con Google: `login.component.*`, `auth.service.ts`, `api-endpoints.ts`, `environment*.ts`, `google-identity.service.ts`); no se incluyeron en los commits de la fase 5.
 
 - 2026-11-27: capturas comprobadas con los servidores arrancados (redondeos y botones bien). Fase 1 terminada; también corregidos los últimos textos en tuteo. Siguiente: fase 2 (títulos de página) y fase 5 carpeta por carpeta. Para medir botones se reescribió el script de la fase 1 con la opción `--sin-color` (lista los `mat-button`/`mat-stroked-button` sin color).
 - 2026-11-26 (tarde): hechas las fases 3, 4 y 6 y el primer paso de la 5, todo sin capturas porque los servidores estaban apagados. Lo primero en la próxima sesión: arrancar backend y front, sacar capturas de los 5 roles y revisar redondeos (fase 4) y botones (fase 1). Luego seguir la fase 5 carpeta por carpeta y la fase 2 (títulos de página).

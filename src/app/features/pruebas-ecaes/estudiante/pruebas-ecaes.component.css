@@ -22,15 +22,15 @@
 }
 
 .sin-solicitudes mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--tam-icono-xl);
+  width: var(--tam-icono-xl);
+  height: var(--tam-icono-xl);
   color: var(--color-primario);
   margin-bottom: 16px;
 }
 
 .sin-solicitudes p {
-  font-size: 1.1rem;
+  font-size: var(--text-h3-size);
   margin: 0;
   font-weight: 500;
 }
