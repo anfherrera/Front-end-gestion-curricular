@@ -267,7 +267,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.4rem 1rem;
-  border-radius: var(--radio-xs);
+  border-radius: var(--radio-pill);
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1;
@@ -275,9 +275,8 @@
   vertical-align: baseline;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: white;
+  color: var(--blanco);
   width: fit-content;
-  box-shadow: var(--sombra-1);
 }
 
 .rec-card h3 {

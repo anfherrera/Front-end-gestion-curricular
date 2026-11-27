@@ -13,10 +13,10 @@ import { COLORS } from '@core/design-system/design-tokens';
 
 const ORDEN_PRIORIDAD: Record<PrioridadRecomendacion, number> = { CRITICA: 0, ALTA: 1, MEDIA: 2, BAJA: 3 };
 const COLOR_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
-  CRITICA: COLORS.secondary,
-  ALTA: COLORS.error,
+  CRITICA: COLORS.errorText,
+  ALTA: COLORS.primary,
   MEDIA: COLORS.tertiary,
-  BAJA: COLORS.success,
+  BAJA: COLORS.neutralSecondary,
 };
 const ETIQUETA_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
   CRITICA: 'Crítica',
