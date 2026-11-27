@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -26,6 +36,8 @@ import {
   ErrorLimiteLogin,
 } from '@core/interceptors/login-rate-limit.interceptor';
 import { SnackbarService } from '@core/services/snackbar.service';
+import { DOMINIO_INSTITUCIONAL, GoogleIdentityService } from '@core/services/google-identity.service';
+import { LoginRespuesta } from '@core/models/usuario-sesion.model';
 
 @Component({
   selector: 'app-login',
@@ -42,17 +54,22 @@ import { SnackbarService } from '@core/services/snackbar.service';
   styleUrls: ['./login.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
   private snackbar = inject(SnackbarService);
   private logger = inject(LoggerService);
+  private googleIdentity = inject(GoogleIdentityService);
 
   loginForm: FormGroup;
   hide = true;
   readonly errorMensaje = signal('');
   readonly cargando = signal(false);
+  // Inicio de sesión con la cuenta institucional de Google
+  readonly dominioInstitucional = DOMINIO_INSTITUCIONAL;
+  readonly googleDisponible = signal(this.googleIdentity.disponible);
+  private readonly botonGoogle = viewChild<ElementRef<HTMLElement>>('botonGoogle');
   // Rate limit
   readonly rateRemaining = signal(0);
   readonly loginDisabled = signal(false);
@@ -85,6 +102,55 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  ngAfterViewInit(): void {
+    const contenedor = this.botonGoogle()?.nativeElement;
+    if (!contenedor) {
+      return;
+    }
+    this.googleIdentity
+      .mostrarBoton(contenedor, (credencial) => this.onLoginGoogle(credencial))
+      .then((mostrado) => this.googleDisponible.set(mostrado));
+  }
+
+  /** Google ya autenticó la cuenta; el backend verifica que sea institucional, registrada y activa. */
+  onLoginGoogle(credencial: string): void {
+    this.cargando.set(true);
+    this.errorMensaje.set('');
+    this.authService.loginGoogle(credencial).subscribe({
+      next: (response) => this.iniciarSesion(response),
+      error: (err: HttpErrorResponse) => {
+        this.logger.error('Error en el inicio de sesión con Google', err);
+        // El backend explica el motivo (cuenta sin registro, de otro dominio, desactivada...)
+        let errorMessage: string = err.error?.mensaje || 'No fue posible iniciar sesión con Google.';
+        if (err.status === 0) {
+          errorMessage = MENSAJE_SIN_CONEXION;
+        }
+        this.errorMensaje.set(errorMessage);
+        this.snackbar.error(errorMessage);
+        this.cargando.set(false);
+      },
+    });
+  }
+
+  /** Guarda la sesión y entra a la aplicación; igual para el login con contraseña y con Google. */
+  private iniciarSesion(response: LoginRespuesta): void {
+    if (response.token && response.usuario) {
+      // El token se guarda en localStorage y el JwtInterceptor lo agrega a cada petición
+      this.authService.setToken(response.token);
+      this.authService.setUsuario(response.usuario);
+      this.authService.setRole(response.usuario.rol?.nombre || 'Usuario');
+      this.authService.restoreSession();
+
+      this.snackbar.exito(`¡Bienvenido, ${response.usuario.nombre_completo}!`);
+      this.router.navigate(['/welcome']);
+    } else {
+      this.logger.error('Respuesta inválida del servidor:', response);
+      this.errorMensaje.set('Error: respuesta del servidor inválida.');
+      this.snackbar.error('Error en la respuesta del servidor');
+    }
+    this.cargando.set(false);
   }
 
   ngOnDestroy(): void {
@@ -133,29 +199,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.errorMensaje.set('');
 
       this.authService.login(correo, password).subscribe({
-        next: (response) => {
-          if (response.token && response.usuario) {
-            // Guardar token JWT después del login exitoso
-            // El token se guarda en localStorage y se usará automáticamente
-            // en todas las peticiones gracias al JwtInterceptor
-            this.authService.setToken(response.token);
-            this.authService.setUsuario(response.usuario);
-            this.authService.setRole(response.usuario.rol?.nombre || 'Usuario');
-            this.authService.restoreSession();
-
-            // Mostrar mensaje de éxito
-            this.snackbar.exito(`¡Bienvenido, ${response.usuario.nombre_completo}!`);
-
-            // Redirigir a la página de home
-            this.router.navigate(['/welcome']);
-          } else {
-            this.logger.error('Respuesta inválida del servidor:', response);
-            this.errorMensaje.set('Error: respuesta del servidor inválida.');
-            this.snackbar.error('Error en la respuesta del servidor');
-          }
-
-          this.cargando.set(false);
-        },
+        next: (response) => this.iniciarSesion(response),
         error: (err: HttpErrorResponse | ErrorLimiteLogin) => {
           this.logger.error('Error en la autenticación', err);
 
