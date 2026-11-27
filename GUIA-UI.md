@@ -78,7 +78,8 @@ Guía, pág. 29. Usar solo estos valores:
 ## 7. Tipografía
 
 - Títulos con `var(--font-display)` (Titillium Web) y el resto con `var(--font-body)` (Open Sans).
-- Tamaños con los tokens `--text-*` (guía, pág. 26). Mínimo 12px.
+- Tamaños con los tokens `--text-*` (guía, pág. 26). Mínimo 12px. Para subtítulos dentro de una tarjeta, `--text-subtitulo-size`; para cifras grandes de indicadores, `--text-cifra-size`.
+- Iconos con `--tam-icono-xs` a `--tam-icono-xxl`, nunca con un `--text-*`. `npm run lint:estilos` rechaza los `font-size` escritos a mano.
 
 ## 8. Textos
 

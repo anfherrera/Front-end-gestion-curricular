@@ -86,7 +86,7 @@
 }
 
 .sidebar mat-icon {
-  font-size: 26px; /* iconos más grandes */
+  font-size: var(--tam-icono-md); /* iconos más grandes */
 }
 
 /* Ocultar texto al minimizar solo en items normales (no toggle ni logout) */
@@ -159,6 +159,6 @@
   }
 
   .sidebar mat-icon {
-    font-size: 20px;
+    font-size: var(--tam-icono-sm);
   }
 }

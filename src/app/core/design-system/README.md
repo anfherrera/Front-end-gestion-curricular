@@ -65,7 +65,11 @@ Notificaciones (`--notif-{exito,info,error,seguridad}-{fondo,borde,titulo,texto}
 | `--font-display` | Titillium Web | Títulos (h1–h6, títulos de Material) |
 | `--font-body`    | Open Sans     | Texto, botones, etiquetas            |
 
-Tamaños de la guía (pág. 26): `--text-h1-size` 32px, `--text-h2-size` 22px, `--text-h3-size` 18px, `--text-body-size` 14px, `--text-body2-size` 12px y `--text-button-size` 12px.
+Tamaños de la guía (pág. 26): `--text-h1-size` 32px, `--text-h2-size` 22px, `--text-h3-size` 18px, `--text-body-size` 14px, `--text-body2-size` 12px y `--text-button-size` 12px. Dos pasos propios: `--text-subtitulo-size` 16px (subtítulos dentro de una tarjeta) y `--text-cifra-size` 40px (cifras grandes de indicadores).
+
+Iconos, con escala aparte (si el icono fija `width`/`height`, usar el mismo token): `--tam-icono-xs` 16px, `-sm` 20px, `-md` 24px, `-lg` 32px, `-xl` 48px y `-xxl` 64px.
+
+`npm run lint:estilos` rechaza cualquier `font-size` que no sea uno de estos tokens o `inherit`.
 
 ## Uso
 

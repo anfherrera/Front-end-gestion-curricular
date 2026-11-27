@@ -80,9 +80,9 @@
 
 .etiqueta-categoria .mat-icon,
 .etiqueta-estado .mat-icon {
-  width: 16px;
-  height: 16px;
-  font-size: 16px;
+  width: var(--tam-icono-xs);
+  height: var(--tam-icono-xs);
+  font-size: var(--tam-icono-xs);
 }
 
 /* Colores de estado (clases del pipe estadoClase): fondo claro y texto oscuro del mismo tipo, como los avisos.

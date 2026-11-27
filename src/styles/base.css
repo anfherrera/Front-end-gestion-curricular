@@ -24,7 +24,7 @@ body {
 body {
   margin: 0;
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: var(--text-body-size);
   font-weight: 400;
   line-height: 1.5;
   color: var(--neutro-800);
@@ -55,38 +55,22 @@ h6 {
   line-height: 1.2;
 }
 
+/* Escala de la guía (pág. 26); los componentes no deberían cambiarla */
 h1 {
-  font-size: calc(1.375rem + 1.5vw);
+  font-size: var(--text-h1-size);
 }
 h2 {
-  font-size: calc(1.325rem + 0.9vw);
+  font-size: var(--text-h2-size);
 }
 h3 {
-  font-size: calc(1.3rem + 0.6vw);
+  font-size: var(--text-h3-size);
 }
 h4 {
-  font-size: calc(1.275rem + 0.3vw);
+  font-size: var(--text-subtitulo-size);
 }
-h5 {
-  font-size: 1.25rem;
-}
+h5,
 h6 {
-  font-size: 1rem;
-}
-
-@media (min-width: 1200px) {
-  h1 {
-    font-size: 2.5rem;
-  }
-  h2 {
-    font-size: var(--text-h1-size);
-  }
-  h3 {
-    font-size: 1.75rem;
-  }
-  h4 {
-    font-size: 1.5rem;
-  }
+  font-size: var(--text-body-size);
 }
 
 p {
@@ -112,7 +96,7 @@ strong {
   font-weight: bolder;
 }
 small {
-  font-size: 0.875em;
+  font-size: var(--text-body2-size);
 }
 
 a {

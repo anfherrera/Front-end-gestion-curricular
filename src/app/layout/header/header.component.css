@@ -32,7 +32,7 @@
 
 .toggle-btn mat-icon {
   color: var(--color-primario);
-  font-size: 24px;
+  font-size: var(--tam-icono-md);
 }
 
 .logo {
@@ -42,7 +42,7 @@
 
 .header-title h1 {
   color: var(--color-primario);
-  font-size: 1.8rem;
+  font-size: var(--text-h1-size);
   margin: 0;
   font-weight: 700;
   font-family: var(--font-display);
@@ -51,7 +51,7 @@
 .header-title span {
   display: block;
   color: var(--neutro-800);
-  font-size: 0.9rem;
+  font-size: var(--text-body-size);
   margin-top: 4px;
 }
 
@@ -79,14 +79,14 @@
 }
 
 .periodo-icon {
-  font-size: var(--text-h3-size);
+  font-size: var(--tam-icono-sm);
   width: 18px;
   height: 18px;
   color: var(--color-primario);
 }
 
 .periodo-text {
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
   font-weight: 600;
   color: var(--color-primario);
   white-space: nowrap;
@@ -137,14 +137,14 @@
 .user-initials {
   color: white;
   font-weight: 600;
-  font-size: 11px;
+  font-size: var(--text-body2-size);
   letter-spacing: 0.5px;
 }
 
 .user-name-horizontal {
   color: var(--color-primario);
   font-weight: 500;
-  font-size: 13px;
+  font-size: var(--text-body2-size);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -154,7 +154,7 @@
 
 .dropdown-icon {
   color: var(--neutro-600);
-  font-size: var(--text-h3-size);
+  font-size: var(--tam-icono-sm);
   transition: transform 0.3s ease;
 }
 
@@ -171,14 +171,14 @@
 .user-menu-header .user-name {
   color: var(--color-primario);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--text-subtitulo-size);
   margin-bottom: 4px;
   font-family: var(--font-display);
 }
 
 .user-menu-header .user-email {
   color: var(--neutro-800);
-  font-size: 0.85rem;
+  font-size: var(--text-body-size);
 }
 
 .logout-item {
@@ -204,11 +204,11 @@
   }
 
   .header-title h1 {
-    font-size: 1.4rem;
+    font-size: var(--text-h2-size);
   }
 
   .header-title span {
-    font-size: 0.8rem;
+    font-size: var(--text-body2-size);
   }
 
   .header-right {
@@ -232,10 +232,10 @@
   }
 
   .user-initials {
-    font-size: 10px;
+    font-size: var(--text-body2-size);
   }
 
   .dropdown-icon {
-    font-size: 16px;
+    font-size: var(--tam-icono-xs);
   }
 }

@@ -59,6 +59,11 @@ for (const archivo of archivos) {
         if (radio && /\d+(\.\d+)?(px|%|rem|em)/.test(radio[1].replace(/var\([^)]*\)/g, ''))) {
           problemas.push(`${archivo}:${i + 1}  ${radio[0].trim()}: usar var(--radio-*)`);
         }
+        // Tamaños de letra: solo los tokens --text-* y --tam-icono-* (guía, pág. 26) o inherit
+        const tam = sinComentario.match(/font-size\s*:\s*([^;}]+)/);
+        if (tam && !/^\s*(var\(--(text-[a-z0-9-]+|tam-icono(-[a-z]+)?|breadcrumb-size)\)|inherit)\s*(!important)?\s*$/.test(tam[1])) {
+          problemas.push(`${archivo}:${i + 1}  ${tam[0].trim()}: usar var(--text-*) o var(--tam-icono-*)`);
+        }
         const nombre = sinComentario.match(COLOR_NOMBRE);
         if (nombre) problemas.push(`${archivo}:${i + 1}  color "${nombre[1]}": usar var(--token)`);
       }

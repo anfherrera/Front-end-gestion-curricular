@@ -122,6 +122,18 @@
   --text-body2-line: 21px;
   --text-button-size: 12px;
   --text-button-line: 19px;
+
+  /* Pasos propios del proyecto, fuera de la tabla de la guía */
+  --text-subtitulo-size: 16px; /* subtítulos y nombres destacados dentro de una tarjeta */
+  --text-cifra-size: 40px; /* cifras grandes de los indicadores (KPI) */
+
+  /* Iconos (Material Icons). Si el icono fija width/height, usar el mismo token */
+  --tam-icono-xs: 16px; /* dentro de etiquetas y texto pequeño */
+  --tam-icono-sm: 20px; /* junto a texto de cuerpo y en botones */
+  --tam-icono-md: 24px; /* tamaño normal de Material */
+  --tam-icono-lg: 32px; /* cabeceras de tarjeta e indicadores */
+  --tam-icono-xl: 48px; /* estados vacíos y avisos */
+  --tam-icono-xxl: 64px; /* ilustración principal de una página */
 }
 
 /* ===== MIGA DE PAN (pág. 49) ===== */
