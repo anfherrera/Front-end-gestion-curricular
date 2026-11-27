@@ -67,12 +67,12 @@
 }
 
 .estudiante-info strong {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
   font-size: var(--text-body-size);
 }
 
 .estudiante-info small {
-  color: var(--neutro-600) !important;
+  color: var(--neutro-600);
   font-size: var(--text-body2-size);
 }
 

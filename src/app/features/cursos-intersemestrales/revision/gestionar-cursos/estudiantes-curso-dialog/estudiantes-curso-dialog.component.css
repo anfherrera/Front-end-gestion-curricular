@@ -32,7 +32,7 @@
 
 .btn-cerrar {
   margin-left: auto;
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .btn-cerrar:hover {
@@ -78,8 +78,8 @@
 
 .error-container button {
   margin-top: 8px;
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
 }
 
 .contenido {
@@ -153,8 +153,8 @@
 }
 
 .tabla-estudiantes th {
-  background: var(--color-primario) !important;
-  color: white !important;
+  background: var(--color-primario);
+  color: white;
   padding: 14px 12px;
   text-align: left;
   font-weight: 600;
@@ -266,8 +266,8 @@ mat-dialog-actions button[mat-raised-button][disabled] {
 }
 
 .btn-exportar {
-  border-color: var(--notif-error-titulo) !important;
-  color: var(--notif-error-titulo) !important;
+  border-color: var(--notif-error-titulo);
+  color: var(--notif-error-titulo);
   font-weight: 500;
 }
 

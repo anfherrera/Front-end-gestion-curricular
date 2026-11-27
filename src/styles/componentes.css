@@ -23,7 +23,8 @@
   color: var(--breadcrumb-color);
 }
 
-/* Botones de icono de las tablas de revisión (ver, aprobar, rechazar) */
+/* Botones de icono de las tablas de revisión (ver, aprobar, rechazar).
+   !important: el estilo de mat-icon-button se carga después y tiene la misma especificidad */
 .accion-ver,
 .accion-ver .mat-icon {
   color: var(--color-primario) !important;
@@ -86,54 +87,30 @@
 }
 
 /* Colores de estado (clases del pipe estadoClase): fondo claro y texto oscuro del mismo tipo, como los avisos.
-   Sirven en .etiqueta-estado y en mat-chip. */
+   Van con .etiqueta-estado. */
 .estado-aprobada {
-  background-color: var(--notif-exito-fondo) !important;
-  color: var(--notif-exito-texto) !important;
+  background-color: var(--notif-exito-fondo);
+  color: var(--notif-exito-texto);
 }
 
 .estado-rechazada {
-  background-color: var(--notif-error-fondo) !important;
-  color: var(--notif-error-texto) !important;
+  background-color: var(--notif-error-fondo);
+  color: var(--notif-error-texto);
 }
 
 .estado-enviada {
-  background-color: var(--notif-info-fondo) !important;
-  color: var(--notif-info-texto) !important;
+  background-color: var(--notif-info-fondo);
+  color: var(--notif-info-texto);
 }
 
 .estado-proceso {
-  background-color: var(--primario-90) !important;
-  color: var(--notif-seguridad-texto) !important;
+  background-color: var(--primario-90);
+  color: var(--notif-seguridad-texto);
 }
 
 .estado-default {
-  background-color: var(--neutro-100) !important;
-  color: var(--neutro-800) !important;
-}
-
-.mat-mdc-chip.estado-aprobada .mdc-evolution-chip__text-label {
-  color: var(--notif-exito-texto) !important;
-}
-
-.mat-mdc-chip.estado-rechazada .mdc-evolution-chip__text-label {
-  color: var(--notif-error-texto) !important;
-}
-
-.mat-mdc-chip.estado-enviada .mdc-evolution-chip__text-label {
-  color: var(--notif-info-texto) !important;
-}
-
-.mat-mdc-chip.estado-proceso .mdc-evolution-chip__text-label {
-  color: var(--notif-seguridad-texto) !important;
-}
-
-/* Insignia sin borde ni sombra, con peso normal (estados y condiciones en tablas) */
-.insignia-plana {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  font-weight: 400 !important;
+  background-color: var(--neutro-100);
+  color: var(--neutro-800);
 }
 
 /* Spinner pequeño dentro de un botón, antes del texto */

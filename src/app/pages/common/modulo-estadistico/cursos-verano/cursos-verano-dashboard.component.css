@@ -85,15 +85,15 @@
 }
 
 .filter-item mat-form-field .mat-mdc-form-field-wrapper {
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .filter-item mat-form-field .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  display: none !important;
+  margin-top: 0;
+  height: 0;
+  min-height: 0;
+  display: none;
 }
 
 .filter-item app-periodo-filtro-selector {
@@ -102,35 +102,35 @@
 }
 
 .filter-item app-periodo-filtro-selector ::ng-deep .periodo-filtro-container {
-  margin: 0 !important;
-  padding: 0 !important;
-  gap: 0 !important;
-  margin-bottom: 0 !important;
-  display: block !important;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  margin-bottom: 0;
+  display: block;
 }
 
 .filter-item app-periodo-filtro-selector ::ng-deep .periodo-selector {
-  width: 100% !important;
-  margin: 0 !important;
-  max-width: 100% !important;
-  margin-bottom: 0 !important;
+  width: 100%;
+  margin: 0;
+  max-width: 100%;
+  margin-bottom: 0;
 }
 
 .filter-item app-periodo-filtro-selector ::ng-deep .periodo-selector .mat-mdc-form-field {
-  width: 100% !important;
-  margin: 0 !important;
+  width: 100%;
+  margin: 0;
 }
 
 .filter-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-wrapper {
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .filter-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  display: none !important;
+  margin-top: 0;
+  height: 0;
+  min-height: 0;
+  display: none;
 }
 
 .filter-actions {
@@ -636,14 +636,14 @@
 
 /* Estilos para Mat-Expansion-Panel */
 .mat-expansion-panel {
-  border-radius: var(--radio-md) !important;
-  box-shadow: var(--sombra-2) !important;
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-2);
   margin-bottom: 1rem;
 }
 
 .mat-expansion-panel-header {
-  background: var(--neutro-50) !important;
-  border-radius: var(--radio-md) var(--radio-md) 0 0 !important;
+  background: var(--neutro-50);
+  border-radius: var(--radio-md) var(--radio-md) 0 0;
 }
 
 .mat-expansion-panel-header:hover {
@@ -758,8 +758,8 @@
 
 .chart-content {
   position: relative;
-  min-height: auto !important;
-  height: auto !important;
+  min-height: auto;
+  height: auto;
   padding: 10px;
   background: white;
   border-radius: var(--radio-sm);

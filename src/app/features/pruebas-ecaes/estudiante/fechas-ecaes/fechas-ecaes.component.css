@@ -34,14 +34,10 @@
   background: white;
 }
 
-/* El fondo de la fila lo pone material.css (--primario-90, con !important): el texto va oscuro */
+/* Fondo, color, peso y tamaño de la cabecera los pone material.css (.mat-mdc-header-cell) */
 .header-cell {
-  background: transparent !important;
-  color: var(--color-primario) !important;
-  font-weight: 700 !important;
-  font-size: var(--text-subtitulo-size);
-  padding: 20px 24px !important;
-  border-bottom: none !important;
+  padding: 20px 24px;
+  border-bottom: none;
   text-align: center;
   letter-spacing: 0.5px;
 }
@@ -71,7 +67,7 @@
 }
 
 .concepto-cell {
-  padding: 18px 24px !important;
+  padding: 18px 24px;
   font-weight: 600;
   color: var(--neutro-800);
   border-right: 1px solid var(--primario-98);
@@ -81,7 +77,7 @@
 }
 
 .fecha-cell {
-  padding: 18px 24px !important;
+  padding: 18px 24px;
   color: var(--color-primario);
   font-weight: 700;
   text-align: center;
@@ -113,7 +109,7 @@
   .concepto-cell,
   .fecha-cell,
   .header-cell {
-    padding: 12px 16px !important;
+    padding: 12px 16px;
     font-size: var(--text-body-size);
   }
 

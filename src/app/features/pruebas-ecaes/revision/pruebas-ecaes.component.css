@@ -54,9 +54,9 @@
 }
 
 .botones-acciones button[color='primary'] {
-  background: var(--color-primario) !important;
-  color: white !important;
-  box-shadow: var(--sombra-2) !important;
+  background: var(--color-primario);
+  color: white;
+  box-shadow: var(--sombra-2);
 }
 
 .botones-acciones button[color='primary']:hover:not(:disabled) {
@@ -65,9 +65,9 @@
 }
 
 .botones-acciones button[color='warn'] {
-  background: var(--color-secundario-light) !important;
-  color: white !important;
-  box-shadow: var(--sombra-2) !important;
+  background: var(--color-secundario-light);
+  color: white;
+  box-shadow: var(--sombra-2);
 }
 
 .botones-acciones button[color='warn']:hover:not(:disabled) {

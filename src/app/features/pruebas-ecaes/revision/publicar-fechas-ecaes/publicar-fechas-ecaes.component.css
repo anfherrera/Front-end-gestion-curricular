@@ -83,7 +83,7 @@
 }
 
 .mat-datepicker-toggle {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-datepicker-toggle:hover {
@@ -96,29 +96,9 @@
   margin-top: 24px;
 }
 
+/* Botón primario de la guía (material.css); aquí solo el ancho */
 .btn-publicar {
-  background: var(--color-primario) !important;
-  color: white !important;
-  padding: 16px 32px !important;
-  font-size: var(--text-h3-size) !important;
-  font-weight: 600 !important;
-  border-radius: var(--radio-sm) !important;
-  box-shadow: var(--sombra-2) !important;
-  transition: all 0.3s ease !important;
   min-width: 200px;
-}
-
-.btn-publicar:hover:not(:disabled) {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--sombra-2) !important;
-}
-
-.btn-publicar:disabled {
-  background: var(--neutro-400) !important;
-  color: var(--neutro-600) !important;
-  cursor: not-allowed !important;
-  transform: none !important;
-  box-shadow: none !important;
 }
 
 .spinning {

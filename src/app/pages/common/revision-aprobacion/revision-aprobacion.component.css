@@ -55,8 +55,8 @@
 }
 
 .botones-acciones button {
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
   border: none;
   border-radius: var(--radio-xs);
   padding: 12px 24px;
@@ -77,7 +77,7 @@
 }
 
 .botones-acciones button[color='warn'] {
-  background-color: var(--notif-error-titulo) !important;
+  background-color: var(--notif-error-titulo);
 }
 
 .botones-acciones button[color='warn']:hover {

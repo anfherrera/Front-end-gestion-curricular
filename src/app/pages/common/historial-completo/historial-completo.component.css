@@ -57,45 +57,45 @@
 
 /* Asegurar que el periodo-filtro-selector tenga la misma altura y sin márgenes */
 .filtro-item app-periodo-filtro-selector ::ng-deep .periodo-filtro-container {
-  margin: 0 !important;
-  padding: 0 !important;
-  gap: 0 !important;
-  margin-bottom: 0 !important;
-  display: block !important;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  margin-bottom: 0;
+  display: block;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .periodo-selector {
-  width: 100% !important;
-  margin: 0 !important;
-  max-width: 100% !important;
-  margin-bottom: 0 !important;
+  width: 100%;
+  margin: 0;
+  max-width: 100%;
+  margin-bottom: 0;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .periodo-selector .mat-mdc-form-field {
-  width: 100% !important;
-  margin: 0 !important;
+  width: 100%;
+  margin: 0;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-wrapper {
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .filtro-item app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
+  margin-top: 0;
+  height: 0;
+  min-height: 0;
 }
 
 /* Asegurar que todos los mat-form-field tengan el mismo padding-bottom */
 .filtros-section ::ng-deep .mat-mdc-form-field-wrapper {
-  padding-bottom: 0 !important;
+  padding-bottom: 0;
 }
 
 .filtros-section ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
+  margin-top: 0;
+  height: 0;
+  min-height: 0;
 }
 
 .filtro-actions {
@@ -116,7 +116,7 @@
   box-shadow: var(--sombra-1);
   transition: all 0.3s ease;
   margin: 0;
-  margin-top: 0 !important;
+  margin-top: 0;
 }
 
 .filtro-actions button:hover {

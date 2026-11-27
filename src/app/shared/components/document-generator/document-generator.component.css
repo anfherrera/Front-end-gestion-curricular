@@ -107,8 +107,8 @@
 
 /* Estilo para botón principal */
 .form-actions button[mat-raised-button][color='primary'] {
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
   border: none;
   border-radius: var(--radio-xs);
   padding: 12px 24px;
@@ -139,7 +139,7 @@
 
 /* Estados de error */
 .error {
-  border-color: var(--notif-error-titulo) !important;
+  border-color: var(--notif-error-titulo);
 }
 
 /* Animación de carga */
@@ -207,24 +207,24 @@ mat-card-title mat-icon {
 
 /* Iconos de los campos de formulario */
 mat-form-field mat-icon[matSuffix] {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 mat-form-field.mat-focused mat-icon[matSuffix] {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 /* Icono del calendario (datepicker toggle) - Usando ::ng-deep para penetrar la encapsulación */
 :host ::ng-deep mat-datepicker-toggle {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep mat-datepicker-toggle mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep mat-datepicker-toggle:hover {
@@ -240,32 +240,32 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
 }
 
 :host ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 :host ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle mat-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 :host ::ng-deep mat-form-field.mat-focused mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 /* Asegurar que el icono del datepicker sea azul en todos los estados */
 :host ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep .document-generator-container mat-form-field mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep .document-generator-container mat-form-field.mat-focused mat-datepicker-toggle mat-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 :host
@@ -274,5 +274,5 @@ mat-form-field.mat-focused mat-icon[matSuffix] {
   mat-form-field.mat-focused
   mat-datepicker-toggle
   .mat-datepicker-toggle-default-icon {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }

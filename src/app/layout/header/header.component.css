@@ -182,11 +182,11 @@
 }
 
 .logout-item {
-  color: var(--notif-error-titulo) !important;
+  color: var(--notif-error-titulo);
 }
 
 .logout-item mat-icon {
-  color: var(--notif-error-titulo) !important;
+  color: var(--notif-error-titulo);
 }
 
 /* Responsive */

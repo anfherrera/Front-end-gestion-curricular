@@ -159,5 +159,5 @@
 }
 
 :host ::ng-deep .mat-mdc-dialog-title {
-  margin: 0 !important;
+  margin: 0;
 }

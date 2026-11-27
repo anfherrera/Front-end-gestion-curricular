@@ -139,14 +139,14 @@
 }
 
 .continue-btn {
-  background-color: var(--color-primario) !important;
-  color: white !important;
-  font-size: var(--text-h3-size) !important;
-  font-weight: 600 !important;
-  padding: 12px 32px !important;
-  border-radius: var(--radio-sm) !important;
-  box-shadow: var(--sombra-2) !important;
-  transition: all 0.3s ease !important;
+  background-color: var(--color-primario);
+  color: white;
+  font-size: var(--text-h3-size);
+  font-weight: 600;
+  padding: 12px 32px;
+  border-radius: var(--radio-sm);
+  box-shadow: var(--sombra-2);
+  transition: all 0.3s ease;
 }
 
 .continue-btn:hover {

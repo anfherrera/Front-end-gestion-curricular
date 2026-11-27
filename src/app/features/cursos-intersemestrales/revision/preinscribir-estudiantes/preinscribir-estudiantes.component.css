@@ -16,12 +16,12 @@
 .preinscripciones-table {
   width: 100%;
   background: white;
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 .preinscripciones-table th {
-  background: var(--color-primario) !important;
-  color: white !important;
+  background: var(--color-primario);
+  color: white;
   font-weight: 600;
   text-transform: uppercase;
   font-size: var(--text-body2-size);
@@ -29,18 +29,18 @@
 }
 
 .preinscripciones-table th * {
-  color: white !important;
+  color: white;
 }
 
 .preinscripciones-table td {
   border-bottom: 1px solid var(--neutro-200);
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 /* Sin los iconos de acción, la etiqueta de estado (texto blanco) ni los datos secundarios del estudiante
    (gris claro en filtro-curso-comun.css) */
 .preinscripciones-table td *:not([class*='accion-'], [class*='accion-'] *, .estado-etiqueta, .estudiante-info small) {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 .observaciones-cell {
@@ -54,13 +54,13 @@
 }
 
 .observaciones-cell span {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
   font-size: var(--text-body2-size);
   line-height: 1.4;
 }
 
 .sin-observaciones {
-  color: var(--neutro-600) !important;
+  color: var(--neutro-600);
   font-style: italic;
   font-size: var(--text-body2-size);
   background: var(--neutro-50);
@@ -126,12 +126,12 @@
 
 /* Botones de iconos circulares - estilo consistente */
 .acciones-container button[mat-icon-button] {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border-radius: var(--radio-circulo) !important;
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  padding: 0 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radio-circulo);
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
 }
 
 .acciones-container button[mat-icon-button]:hover {
@@ -140,18 +140,18 @@
 }
 
 .acciones-container button[mat-icon-button] mat-icon {
-  font-size: var(--tam-icono-sm) !important;
-  width: var(--tam-icono-sm) !important;
-  height: var(--tam-icono-sm) !important;
-  margin: 0 !important;
+  font-size: var(--tam-icono-sm);
+  width: var(--tam-icono-sm);
+  height: var(--tam-icono-sm);
+  margin: 0;
 }
 
 /* Etiqueta de estado en la tabla (el fondo lo pone el pipe estadoColor; la regla td * de arriba la excluye) */
 .estado-etiqueta {
-  color: var(--blanco) !important;
+  color: var(--blanco);
   padding: 4px 8px;
   border-radius: var(--radio-xs);
   font-size: var(--text-body2-size);
-  border: none !important;
+  border: none;
   display: inline-block;
 }

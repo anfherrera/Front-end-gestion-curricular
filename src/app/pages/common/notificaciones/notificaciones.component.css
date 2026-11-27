@@ -37,41 +37,41 @@
 
 /* Íconos de las pestañas en azul */
 .mat-mdc-tab-group mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label-container .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Pestaña activa - íconos también en azul */
 .mat-mdc-tab-label-active mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label-active .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .mat-mdc-tab-label-active .mat-mdc-tab-label-content .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Para todas las pestañas */
 .mat-mdc-tab-label-content mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .tab-badge {
@@ -123,11 +123,11 @@
 
 /* Forzar color azul en todos los íconos de las notificaciones */
 .notificacion-card mat-icon:not(.tipo-icon) {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .notificacion-card .actions-section mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .notificacion-card:hover {
@@ -219,19 +219,19 @@ mat-card-subtitle {
 }
 
 .actions-section mat-icon-button {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .actions-section mat-icon-button .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .urgent-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .urgent-icon.mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Contenido del card */
@@ -268,19 +268,19 @@ mat-card-subtitle {
 }
 
 .actions-section mat-icon-button mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .actions-section mat-icon-button .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .actions-section .mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 .notificacion-card .actions-section mat-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 /* Estado vacío */

@@ -1,6 +1,6 @@
 /* El contenedor está fuera del componente: se acota con panelClass 'dialogo-rol' (manage-roles) */
 ::ng-deep .dialogo-rol .mat-mdc-dialog-container {
-  border-radius: var(--radio-lg) !important;
+  border-radius: var(--radio-lg);
   overflow: hidden;
 }
 

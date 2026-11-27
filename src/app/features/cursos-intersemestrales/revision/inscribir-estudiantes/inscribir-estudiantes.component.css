@@ -16,12 +16,12 @@
 .inscripciones-table {
   width: 100%;
   background: white;
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 .inscripciones-table th {
-  background: var(--color-primario) !important;
-  color: white !important;
+  background: var(--color-primario);
+  color: white;
   font-weight: 600;
   text-transform: uppercase;
   font-size: var(--text-body2-size);
@@ -29,19 +29,19 @@
 }
 
 .inscripciones-table th * {
-  color: white !important;
+  color: white;
 }
 
 .inscripciones-table td {
   border-bottom: 1px solid var(--neutro-200);
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 /* Sin los iconos de acción ni los datos secundarios (gris claro en filtro-curso-comun.css y abajo) */
 .inscripciones-table
   td
   *:not([class*='accion-'], [class*='accion-'] *, .estudiante-info small, .info-estudiante small) {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 /* Columna Información: "Condición" y "Formal" en dos líneas y con el estilo de .estudiante-info */
@@ -52,7 +52,7 @@
 }
 
 .info-estudiante small {
-  color: var(--neutro-600) !important;
+  color: var(--neutro-600);
   font-size: var(--text-body2-size);
 }
 

@@ -85,7 +85,7 @@
 
 /* Botón del calendario (en la plantilla) */
 :host ::ng-deep .mat-datepicker-toggle {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 :host ::ng-deep .mat-datepicker-toggle:hover {
@@ -95,28 +95,28 @@
 /* Calendario: está en un overlay fuera del componente; panelClass="calendario-curso" cae en mat-calendar */
 ::ng-deep .calendario-curso .mat-calendar-header {
   background-color: var(--color-primario);
-  color: white !important;
+  color: white;
 }
 
 ::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-arrow {
-  color: white !important;
+  color: white;
 }
 
 ::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button {
-  color: white !important;
+  color: white;
 }
 
 ::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper {
-  color: white !important;
+  color: white;
 }
 
 /* Forzar color blanco en todo el header del calendario */
 ::ng-deep .calendario-curso .mat-calendar-header * {
-  color: white !important;
+  color: white;
 }
 
 ::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-period-button .mat-button-wrapper * {
-  color: white !important;
+  color: white;
 }
 
 /* Estilos para el selector de mes y año */
@@ -125,7 +125,7 @@
 }
 
 ::ng-deep .calendario-curso .mat-calendar-body-cell {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 ::ng-deep .calendario-curso .mat-calendar-body-cell:hover:not(.mat-calendar-body-disabled) {
@@ -134,26 +134,26 @@
 }
 
 ::ng-deep .calendario-curso .mat-calendar-body-selected {
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
 }
 
 ::ng-deep .calendario-curso .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-  border-color: var(--color-primario) !important;
-  color: var(--color-primario) !important;
+  border-color: var(--color-primario);
+  color: var(--color-primario);
 }
 
 /* Estilos para el panel de selección de mes/año */
 ::ng-deep .calendario-curso .mat-calendar-table-header th {
-  background-color: var(--neutro-50) !important;
-  color: var(--color-primario) !important;
-  font-weight: 600 !important;
+  background-color: var(--neutro-50);
+  color: var(--color-primario);
+  font-weight: 600;
 }
 
 /* Estilos para los botones de navegación del calendario */
 ::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-previous-button,
 ::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-next-button {
-  color: white !important;
+  color: white;
 }
 
 ::ng-deep .calendario-curso .mat-calendar-header .mat-calendar-previous-button:hover,
@@ -163,7 +163,7 @@
 
 /* Estilos para el panel de selección de mes/año (cuando haces clic en el header) */
 ::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-cell {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 ::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-cell:hover {
@@ -172,8 +172,8 @@
 }
 
 ::ng-deep .calendario-curso .mat-calendar-table .mat-calendar-body-selected {
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
 }
 
 /* Estilos para el contenido del calendario cuando está en modo selección de mes/año */
@@ -182,7 +182,7 @@
 }
 
 ::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-cell {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
 }
 
 ::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-cell:hover {
@@ -191,8 +191,8 @@
 }
 
 ::ng-deep .calendario-curso .mat-calendar-content .mat-calendar-body-selected {
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
 }
 
 ::ng-deep .calendario-curso .mat-calendar-table-header {
@@ -226,9 +226,9 @@
 }
 
 .dialog-actions button[color='primary'] {
-  background: var(--color-primario) !important;
-  color: white !important;
-  border: none !important;
+  background: var(--color-primario);
+  color: white;
+  border: none;
 }
 
 .dialog-actions button[color='primary']:hover {
@@ -238,9 +238,9 @@
 }
 
 .dialog-actions button:not([color='primary']) {
-  background: white !important;
-  color: var(--color-primario) !important;
-  border: 2px solid var(--color-primario) !important;
+  background: white;
+  color: var(--color-primario);
+  border: 2px solid var(--color-primario);
 }
 
 .dialog-actions button:not([color='primary']):hover {
@@ -253,7 +253,7 @@
 /* Título del dialog */
 :host ::ng-deep .mat-mdc-dialog-title {
   background: var(--color-primario);
-  color: white !important;
+  color: white;
   padding: 20px 24px;
   margin: -24px -24px 0 -24px;
   border-radius: var(--radio-sm) var(--radio-sm) 0 0;
@@ -265,8 +265,8 @@
 
 /* Contenido del dialog */
 :host ::ng-deep .mat-mdc-dialog-content {
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  margin: 0;
 }
 
 /* Responsive */

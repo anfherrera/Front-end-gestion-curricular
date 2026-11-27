@@ -134,7 +134,7 @@ td.mat-cell {
 
 /* Celda de comentario */
 .comentario-cell {
-  padding: 16px 12px !important;
+  padding: 16px 12px;
   min-width: 280px;
   max-width: 450px;
   vertical-align: top;
@@ -321,7 +321,7 @@ td.mat-cell:last-child {
   .comentario-cell {
     min-width: 200px;
     max-width: 100%;
-    padding: 12px 8px !important;
+    padding: 12px 8px;
   }
 
   .motivo-container {

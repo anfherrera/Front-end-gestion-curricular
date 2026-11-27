@@ -1,9 +1,9 @@
 /* El contenedor está fuera del componente: se acota con panelClass 'dialogo-comentarios' (seguimiento-solicitudes.base) */
 ::ng-deep .dialogo-comentarios .mat-mdc-dialog-container {
-  border-radius: var(--radio-md) !important;
+  border-radius: var(--radio-md);
   overflow: hidden;
-  padding: 0 !important;
-  font-family: var(--font-body) !important;
+  padding: 0;
+  font-family: var(--font-body);
 }
 
 h2[mat-dialog-title] {
@@ -194,8 +194,8 @@ mat-dialog-actions {
 }
 
 mat-dialog-actions button {
-  background-color: var(--color-primario) !important;
-  color: white !important;
+  background-color: var(--color-primario);
+  color: white;
   border-radius: var(--radio-xs);
   padding: 10px 24px;
   font-weight: 500;

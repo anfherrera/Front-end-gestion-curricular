@@ -90,7 +90,7 @@ Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, err
 
 ## Fase 7: `!important` (sin cambios visibles)
 
-- [ ] 832 en total. Los peores: `visualizar-solicitudes.component.css` (182), `revision/dashboard` (51), `material.css` (46), `gestionar-cursos` (42), `curso-dialog` (42), `cursos-verano-dashboard` (30). Quitarlos donde no hagan falta; los de `material.css` sobre MDC pueden quedarse
+- [x] (Hecha 2026-11-27: de 469 a 160. Se quitaron 280 en los CSS de componentes y 14 globales, y se comprobó con un volcado de estilos computados de cada elemento visible: 40 pantallas de 4 roles, más diálogos y paneles abiertos por clic; el script está en el scratchpad de la sesión, no en el repo. Resultado: 0 diferencias, salvo cuatro casos en que el `!important` saltaba la guía y se corrigieron a propósito: "Publicar fechas" de ECAES vuelve a ser un botón primario normal; la cabecera de la tabla de `visualizar-solicitudes` usa el estilo común, porque sin el `!important` quedaba azul sobre azul; las etiquetas de estado de esa tabla ya no salen grises, porque las tapaba un `td *`; y `confirm-dialog` usa `color="primary"`/`"warn"` y Cancelar secundario. Se borraron reglas sin uso: `mat-chip` con `.estado-*` e `.insignia-plana`. Quedan, a propósito: `material.css` (54) y `notificaciones.css` (21), que pisan estilos de MDC; `animaciones.css` (movimiento reducido); `.accion-*` de `componentes.css`, que compiten con `mat-icon-button`; y 83 en reglas `:hover`/`:focus`/`:disabled`, que el volcado no comprueba. Sin datos para verificarlo, `estudiantes-curso-dialog` y `rechazo-preinscripcion-dialog` se cambiaron sin comprobar.) 832 en total. Los peores: `visualizar-solicitudes.component.css` (182), `revision/dashboard` (51), `material.css` (46), `gestionar-cursos` (42), `curso-dialog` (42), `cursos-verano-dashboard` (30). Quitarlos donde no hagan falta; los de `material.css` sobre MDC pueden quedarse
 
 ## Al terminar
 
@@ -99,6 +99,8 @@ Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, err
 - [ ] Preguntar si se sube al PR #2
 
 ## Notas de la última sesión
+
+- 2026-11-27 (noche): fase 7 hecha. Lo que falta está en "Al terminar". Pendiente menor: abrir a mano los diálogos de estudiantes de un curso y de rechazo de preinscripción cuando haya datos. El backend se cayó a mitad de la sesión porque alguien estaba cambiando `pom.xml` y `SeguridadConfig.java`; reiniciado, volvió a funcionar.
 
 - 2026-11-27 (tarde): fase 5 hecha en 4 commits (base y layout, shared, pages, features). Hay 788 pruebas. Siguiente: fase 7 (`!important`). Ojo: en el árbol de trabajo hay cambios ajenos sin commit (inicio de sesión con Google: `login.component.*`, `auth.service.ts`, `api-endpoints.ts`, `environment*.ts`, `google-identity.service.ts`); no se incluyeron en los commits de la fase 5.
 

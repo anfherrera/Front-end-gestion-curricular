@@ -65,13 +65,13 @@
 /* Eliminar pseudo-elementos y bordes internos */
 .estado-chip::before,
 .estado-chip::after {
-  display: none !important;
+  display: none;
 }
 
 /* Eliminar bordes internos de Material Design */
 .estado-chip .mdc-chip__ripple,
 .estado-chip .mdc-evolution-chip__ripple {
-  display: none !important;
+  display: none;
 }
 
 .estado-chip mat-icon {
@@ -114,7 +114,7 @@
 
 .estado-chip.selected.mat-mdc-standard-chip {
   /* Material pinta el fondo del chip por encima; sin !important no se ve el relleno */
-  background-color: var(--color-primario) !important;
+  background-color: var(--color-primario);
   color: var(--blanco);
   font-weight: 600;
   --mdc-chip-elevated-container-color: var(--color-primario);

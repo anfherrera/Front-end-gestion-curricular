@@ -34,7 +34,7 @@ app-card-container {
 /* Ocultar el subscript wrapper para mantener altura consistente */
 .filtros-container app-periodo-filtro-selector ::ng-deep .mat-mdc-form-field-subscript-wrapper,
 .filtros-container mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  display: none !important;
+  display: none;
 }
 
 /* Asegurar que los mat-form-field tengan la misma altura */
@@ -110,29 +110,16 @@ app-card-container {
   font-family: var(--font-body);
 }
 
+/* La cabecera usa el estilo común de material.css (.mat-mdc-header-row / -cell) */
 .solicitudes-table th {
-  background: var(--color-primario) !important;
-  color: white !important;
-  font-weight: 600;
-  font-size: var(--text-body2-size);
   letter-spacing: 0.5px;
-}
-
-.solicitudes-table th * {
-  color: white !important;
 }
 
 .solicitudes-table td {
   border-bottom: 1px solid var(--neutro-200);
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
   font-family: var(--font-body);
-  font-weight: 400 !important;
-}
-
-.solicitudes-table td * {
-  color: var(--neutro-800) !important;
-  font-family: var(--font-body);
-  font-weight: 400 !important;
+  font-weight: 400;
 }
 
 /* Información del estudiante */
@@ -144,17 +131,17 @@ app-card-container {
 }
 
 .estudiante-info strong {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
   font-size: var(--text-body-size);
   font-family: var(--font-body);
-  font-weight: 400 !important;
+  font-weight: 400;
 }
 
 .estudiante-info small {
-  color: var(--neutro-600) !important;
+  color: var(--neutro-600);
   font-size: var(--text-body2-size);
   font-family: var(--font-body);
-  font-weight: 400 !important;
+  font-weight: 400;
 }
 
 /* Información del curso */
@@ -166,48 +153,48 @@ app-card-container {
 }
 
 .curso-info strong {
-  color: var(--neutro-800) !important;
+  color: var(--neutro-800);
   font-size: var(--text-body-size);
   font-family: var(--font-body);
-  font-weight: 400 !important;
+  font-weight: 400;
 }
 
 .curso-info small {
-  color: var(--neutro-600) !important;
+  color: var(--neutro-600);
   font-size: var(--text-body2-size);
   font-family: var(--font-body);
-  font-weight: 400 !important;
+  font-weight: 400;
 }
 
 /* Código de estudiante */
 .codigo-text {
-  color: var(--neutro-800) !important;
-  font-weight: 400 !important;
+  color: var(--neutro-800);
+  font-weight: 400;
   font-family: var(--font-body);
   font-size: var(--text-body2-size);
 }
 
 /* Estilo para el texto del motivo de la solicitud */
 .motivo-text {
-  font-family: var(--font-body) !important;
-  font-weight: 400 !important;
-  font-size: var(--text-body2-size) !important;
-  color: var(--neutro-800) !important;
-  max-width: 250px !important;
-  word-wrap: break-word !important;
-  line-height: 1.4 !important;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--text-body2-size);
+  color: var(--neutro-800);
+  max-width: 250px;
+  word-wrap: break-word;
+  line-height: 1.4;
 }
 
 /* Bordes de la tabla */
 :host ::ng-deep .solicitudes-table {
-  border-collapse: collapse !important;
+  border-collapse: collapse;
 }
 
 :host ::ng-deep .solicitudes-table td {
-  border-bottom: 1px solid var(--neutro-200) !important;
-  border-left: none !important;
-  border-right: none !important;
-  border-top: none !important;
+  border-bottom: 1px solid var(--neutro-200);
+  border-left: none;
+  border-right: none;
+  border-top: none;
 }
 
 /* Responsive */

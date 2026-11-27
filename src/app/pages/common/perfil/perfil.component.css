@@ -53,13 +53,13 @@
 }
 
 .role-chip {
-  background-color: white !important;
-  color: var(--color-primario) !important;
+  background-color: white;
+  color: var(--color-primario);
   font-weight: 600;
   font-size: var(--text-body-size);
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
+  border: none;
+  box-shadow: none;
+  outline: none;
 }
 
 .info-grid {

@@ -99,7 +99,7 @@ button {
 
 /* Iconos específicos */
 .preinscribir-icon {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
   font-size: var(--tam-icono-md);
 }
 
@@ -108,7 +108,7 @@ button {
 }
 
 .inscribir-icon {
-  color: var(--notif-exito-borde) !important;
+  color: var(--notif-exito-borde);
   font-size: var(--tam-icono-md);
 }
 
@@ -117,7 +117,7 @@ button {
 }
 
 .ver-icon {
-  color: var(--color-terciario) !important;
+  color: var(--color-terciario);
   font-size: var(--tam-icono-md);
 }
 
@@ -126,7 +126,7 @@ button {
 }
 
 .default-icon {
-  color: var(--neutro-600) !important;
+  color: var(--neutro-600);
   font-size: var(--tam-icono-md);
 }
 

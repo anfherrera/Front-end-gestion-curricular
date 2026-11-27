@@ -47,7 +47,7 @@
 }
 
 .success-icon {
-  color: var(--notif-exito-borde) !important;
+  color: var(--notif-exito-borde);
 }
 
 .success-message p {
@@ -103,11 +103,11 @@ mat-form-field.mat-form-field-valid .mat-form-field-outline {
 
 /* Iconos de los campos de formulario - Color azul de la app */
 mat-form-field mat-icon[matSuffix] {
-  color: var(--color-primario) !important;
+  color: var(--color-primario);
 }
 
 mat-form-field.mat-focused mat-icon[matSuffix] {
-  color: var(--color-primario-light) !important;
+  color: var(--color-primario-light);
 }
 
 /* Outline del form field con color azul */
