@@ -94,9 +94,6 @@ Guía, pág. 29. Usar solo estos valores:
 
 ## Pendiente
 
-Puntos en los que el código todavía no cumple esta guía:
+Nada pendiente (unificación terminada el 2026-11-27; el detalle está en `CHECKLIST-UI.md`).
 
-- [ ] Gestión de usuarios: roles con colores de estado y acciones como círculos de colores (secciones 1-3).
-- [ ] Trato de usted: varias pantallas del estudiante dicen "Debes subir…".
-- [ ] `app-card-container` usa un redondeo de 8px y la guía pide 12px para tarjetas.
-- [ ] Unificar redondeos, tamaños de letra, colores con transparencia y `!important` (ver `PROMPT_SIGUIENTE_SESION.md`, parte A).
+Los `!important` que quedan tienen motivo: pisan estilos de Angular Material (`material.css`, `notificaciones.css`, `.accion-*`), respetan el movimiento reducido (`animaciones.css`) o están en reglas de `:hover`/`:focus`/`:disabled`. No añada otros: si un estilo no se aplica, suba la especificidad del selector o use el tipo de botón o etiqueta de la guía.

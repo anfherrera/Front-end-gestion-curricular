@@ -94,9 +94,9 @@ Hecha: 136 frases en 48 archivos (plantillas, mensajes de `SnackbarService`, err
 
 ## Al terminar
 
-- [ ] Vaciar la sección "Pendiente" de GUIA-UI.md
-- [ ] Capturas finales de los 5 roles y comparación con las primeras
-- [ ] Preguntar si se sube al PR #2
+- [x] Vaciar la sección "Pendiente" de GUIA-UI.md
+- [x] Capturas finales de los 5 roles y comparación con las primeras (2026-11-27, frente a las del 2026-11-26): todas las páginas tienen el título H1 con la franja roja; roles y estados en etiquetas claras; acciones de tabla como iconos sin fondo; botones sin mayúsculas ni naranja fuera de lo destructivo; trato de usted. Sin roturas.
+- [x] Preguntar si se sube al PR #2 (sí, 2026-11-27)
 
 ## Notas de la última sesión
 
