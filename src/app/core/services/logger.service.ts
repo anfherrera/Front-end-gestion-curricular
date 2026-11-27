@@ -65,20 +65,4 @@ export class LoggerService {
       console.debug(message, ...args);
     }
   }
-
-  /**
-   * Habilita o deshabilita los logs manualmente
-   * @param enabled true para habilitar, false para deshabilitar
-   */
-  setEnabled(enabled: boolean): void {
-    this.enabled = enabled;
-  }
-
-  /**
-   * Verifica si los logs están habilitados
-   * @returns true si los logs están habilitados
-   */
-  isEnabled(): boolean {
-    return this.enabled;
-  }
 }

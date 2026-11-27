@@ -36,7 +36,7 @@ describe('ActivityMonitorService', () => {
     iniciar();
     tick(NUEVE_MIN);
     expect(dialog.open).toHaveBeenCalledTimes(1);
-    expect(service.isWarningActive()).toBeTrue();
+    expect(service.isActive()).toBeFalse();
 
     // Con el aviso abierto, mover el ratón no reinicia la sesión
     document.dispatchEvent(new MouseEvent('mousemove'));
@@ -49,7 +49,7 @@ describe('ActivityMonitorService', () => {
     iniciar();
     tick(NUEVE_MIN);
     cerrado.next(true);
-    expect(service.isWarningActive()).toBeFalse();
+    expect(service.isActive()).toBeTrue();
     tick(UN_MIN);
     expect(logout).not.toHaveBeenCalled();
     tick(NUEVE_MIN);

@@ -58,7 +58,11 @@ function tipoDocumentoValido(control: AbstractControl): ValidationErrors | null 
     FileUploadComponent,
   ],
   templateUrl: './preregistro-ecaes.component.html',
-  styleUrls: ['../../../solicitud-estudiante-comun.css', '../ecaes-formularios.css', './preregistro-ecaes.component.css'],
+  styleUrls: [
+    '../../../solicitud-estudiante-comun.css',
+    '../ecaes-formularios.css',
+    './preregistro-ecaes.component.css',
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PreregistroEcaesComponent implements OnInit {

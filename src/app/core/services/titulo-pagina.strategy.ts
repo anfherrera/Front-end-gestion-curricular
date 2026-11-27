@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 
-export const TITULO_APLICACION = 'Sistema de Gestión Curricular - Universidad del Cauca';
+const TITULO_APLICACION = 'Sistema de Gestión Curricular - Universidad del Cauca';
 
 /**
  * Título de cada página (GUIA-UI.md, títulos de página): sale del `title` de la ruta.

@@ -29,7 +29,7 @@ import { CardContainerComponent } from '@shared/components/card-container/card-c
 type CampoFecha = Exclude<keyof FechaEcaes, 'idFechaEcaes' | 'periodoAcademico'>;
 
 /** Fechas del calendario ECAES, en el orden en que se muestran. */
-export const CAMPOS_FECHA: { campo: CampoFecha; etiqueta: string }[] = [
+const CAMPOS_FECHA: { campo: CampoFecha; etiqueta: string }[] = [
   { campo: 'inscripcion_est_by_facultad', etiqueta: 'Inscripción de estudiantes por parte de la Facultad' },
   { campo: 'registro_recaudo_ordinario', etiqueta: 'Registro y recaudo ordinario' },
   { campo: 'registro_recaudo_extraordinario', etiqueta: 'Registro y recaudo extraordinario' },

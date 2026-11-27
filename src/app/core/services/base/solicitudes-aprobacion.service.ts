@@ -72,11 +72,6 @@ export abstract class SolicitudesAprobacionService<S> extends SolicitudesBaseSer
     return this.cambiarEstado(idSolicitud, 'APROBADA_FUNCIONARIO');
   }
 
-  /** Funcionario termina la validación y la pasa al coordinador. */
-  completeValidation(idSolicitud: number): Observable<unknown> {
-    return this.cambiarEstado(idSolicitud, 'EN_REVISION_COORDINADOR');
-  }
-
   approveAsCoordinador(idSolicitud: number): Observable<unknown> {
     return this.cambiarEstado(idSolicitud, 'APROBADA_COORDINADOR');
   }

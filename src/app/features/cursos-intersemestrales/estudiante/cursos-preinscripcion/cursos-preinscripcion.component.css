@@ -35,14 +35,6 @@
   font-weight: 500;
 }
 
-:host ::ng-deep app-curso-list span.cerrado {
-  background-color: var(--notif-error-fondo);
-  color: var(--notif-error-texto);
-  padding: 4px 8px;
-  border-radius: var(--radio-sm);
-  font-weight: 500;
-}
-
 /* Opcional: cambiar estilo del botón de acción */
 :host ::ng-deep app-curso-list button.mat-raised-button {
   text-transform: capitalize;

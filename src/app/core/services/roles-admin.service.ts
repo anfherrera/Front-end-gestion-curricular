@@ -17,10 +17,6 @@ export class RolesAdminService {
     return this.http.get<RolDTORespuesta[]>(this.apiUrl);
   }
 
-  buscarRolPorId(id: number): Observable<RolDTORespuesta> {
-    return this.http.get<RolDTORespuesta>(`${this.apiUrl}/${id}`);
-  }
-
   buscarPorNombre(nombre: string): Observable<RolDTORespuesta> {
     const params = new HttpParams().set('nombre', nombre);
     return this.http.get<RolDTORespuesta>(this.apiUrl, { params });

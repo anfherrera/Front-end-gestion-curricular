@@ -15,17 +15,18 @@ import { SnackbarService } from '@core/services/snackbar.service';
 
 const TODAS_LAS_MATERIAS: MateriaFiltro = { id: 0, nombre: 'Todas las materias', codigo: 'TODAS' };
 
-const CONDICIONES: Record<string, { texto: string; clase: string }> = {
-  Primera_Vez: { texto: 'Primera Vez', clase: 'condicion-primera-vez' },
-  PRIMERA_VEZ: { texto: 'Primera Vez', clase: 'condicion-primera-vez' },
-  Repeticion: { texto: 'Repetición', clase: 'condicion-repitencia' },
-  REPITENCIA: { texto: 'Repetición', clase: 'condicion-repitencia' },
-  REPETECIÓN: { texto: 'Repetición', clase: 'condicion-repitencia' },
-  Homologacion: { texto: 'Habilitación', clase: 'condicion-habilitacion' },
-  HABILITACION: { texto: 'Habilitación', clase: 'condicion-habilitacion' },
-  HABILITACIÓN: { texto: 'Habilitación', clase: 'condicion-habilitacion' },
-  TRASLADO: { texto: 'Traslado', clase: 'condicion-traslado' },
-  Preinscripción: { texto: 'Preinscripción', clase: 'condicion-preinscripcion' },
+/** Texto de cada condición de solicitud, tal como la escribe el backend. */
+const CONDICIONES: Record<string, string> = {
+  Primera_Vez: 'Primera Vez',
+  PRIMERA_VEZ: 'Primera Vez',
+  Repeticion: 'Repetición',
+  REPITENCIA: 'Repetición',
+  REPETECIÓN: 'Repetición',
+  Homologacion: 'Habilitación',
+  HABILITACION: 'Habilitación',
+  HABILITACIÓN: 'Habilitación',
+  TRASLADO: 'Traslado',
+  Preinscripción: 'Preinscripción',
 };
 
 /** Textos de los estados de solicitudes de cursos (la clase CSS sale del pipe estadoClase). */
@@ -116,11 +117,7 @@ export class VisualizarSolicitudesComponent implements OnInit {
   }
 
   getCondicionTexto(condicion: string): string {
-    return CONDICIONES[condicion]?.texto ?? condicion;
-  }
-
-  getCondicionClass(condicion: string): string {
-    return CONDICIONES[condicion]?.clase ?? 'condicion-default';
+    return CONDICIONES[condicion] ?? condicion;
   }
 
   getEstadoTexto(estado: string): string {

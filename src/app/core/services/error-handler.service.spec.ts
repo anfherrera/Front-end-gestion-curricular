@@ -58,11 +58,4 @@ describe('ErrorHandlerService', () => {
       expect(servicio.extraerMensajeError(errorHttp(502, null))).toBe('Ocurrió un error inesperado');
     });
   });
-
-  it('extraerCodigoError y esErrorReglaNegocio leen el código GC-', () => {
-    const err = errorHttp(400, { mensaje: 'x', codigo: 'GC-0004' });
-    expect(servicio.extraerCodigoError(err)).toBe('GC-0004');
-    expect(servicio.esErrorReglaNegocio(err)).toBeTrue();
-    expect(servicio.esErrorReglaNegocio(errorHttp(0, null))).toBeFalse();
-  });
 });

@@ -3,8 +3,6 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { CardContainerComponent } from '../card-container/card-container.component';
 import { MatIconModule } from '@angular/material/icon';
 
-import { Archivo } from '@core/models/procesos.model';
-
 export interface Documento {
   label: string;
   obligatorio: boolean;
@@ -33,9 +31,6 @@ export class RequiredDocsComponent {
 
   /** Archivos opcionales */
   readonly optionalFiles = input<string[]>([]);
-
-  /** Archivos ya subidos por el estudiante */
-  readonly archivos = input<Archivo[]>([]);
 
   /** Nombre del programa del estudiante */
   readonly programaEstudiante = input('');
@@ -97,41 +92,10 @@ export class RequiredDocsComponent {
     return []; // No mostrar para otros programas
   }
 
-  get archivosOpcionalesFiltrados(): string[] {
-    return []; // Ya no hay opcionales, la cédula es obligatoria para Telemática
-  }
-
   get archivosObligatoriosTelematica(): string[] {
     if (this.esTelematica) {
       return this.optionalFiles(); // Para Telemática, la cédula es obligatoria
     }
     return []; // No mostrar para otros programas
-  }
-
-  private normalizarTexto(texto: string): string {
-    return texto
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/\.[^/.]+$/, '') // eliminar extensión
-      .replace(/[^a-z0-9]/g, ''); // eliminar caracteres no alfanuméricos
-  }
-
-  isUploaded(file: string): boolean {
-    const target = this.normalizarTexto(file);
-    return this.archivos().some((a) => this.normalizarTexto(a.nombre).includes(target));
-  }
-
-  exclusiveUploaded(): string | null {
-    const exclusivosNormalizados = this.exclusiveFiles().map((nombre) => this.normalizarTexto(nombre));
-    const encontrados = this.archivos().filter((a) =>
-      exclusivosNormalizados.some((exclusivo) => this.normalizarTexto(a.nombre).includes(exclusivo))
-    );
-    return encontrados.length ? encontrados[0].nombre : null;
-  }
-
-  optionalUploaded(file: string): boolean {
-    const target = this.normalizarTexto(file);
-    return this.archivos().some((a) => this.normalizarTexto(a.nombre).includes(target));
   }
 }

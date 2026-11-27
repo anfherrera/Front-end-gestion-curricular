@@ -62,14 +62,4 @@ export class ArchivosService {
       responseType: 'blob',
     });
   }
-
-  /**
-   * Descargar archivo PDF por ID de inscripción
-   */
-  descargarPDFPorInscripcion(inscripcionId: number): Observable<Blob> {
-    const url = ApiEndpoints.ARCHIVOS.DESCARGAR_PDF_POR_INSCRIPCION(inscripcionId);
-    return this.http.get(url, {
-      responseType: 'blob',
-    });
-  }
 }

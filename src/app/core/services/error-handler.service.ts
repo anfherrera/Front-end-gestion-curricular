@@ -92,25 +92,6 @@ export class ErrorHandlerService {
   }
 
   /**
-   * Extrae el código de error del backend (ej: GC-0004)
-   * @param error Error HTTP recibido
-   * @returns Código de error o null
-   */
-  extraerCodigoError(error: unknown): string | null {
-    return leerError(error).cuerpo?.codigo || null;
-  }
-
-  /**
-   * Verifica si el error es por violación de regla de negocio
-   * @param error Error HTTP recibido
-   * @returns true si es error de regla de negocio
-   */
-  esErrorReglaNegocio(error: unknown): boolean {
-    const { status, cuerpo } = leerError(error);
-    return status === 400 && !!cuerpo?.codigo?.startsWith('GC-');
-  }
-
-  /**
    * Verifica si el error es por dependencias (no se puede eliminar)
    * @param error Error HTTP recibido
    * @returns true si es error por dependencias

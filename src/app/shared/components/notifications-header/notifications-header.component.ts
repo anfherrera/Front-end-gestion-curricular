@@ -211,17 +211,6 @@ export class NotificationsHeaderComponent implements OnInit, OnDestroy {
     return getCategoriaDisplay(categoria);
   }
 
-  getAccionDisplay(accion: string): string {
-    const acciones: Record<string, string> = {
-      VER_SOLICITUD: 'Ver solicitud',
-      REALIZAR_INSCRIPCION: 'Inscribirse',
-      COMPLETAR_PAGO: 'Completar pago',
-      REVISAR_DOCUMENTOS: 'Revisar documentos',
-      ACTUALIZAR_INFO: 'Actualizar información',
-    };
-    return acciones[accion] || accion;
-  }
-
   verTodasLasNotificaciones(): void {
     this.router.navigate(['/notificaciones']);
   }

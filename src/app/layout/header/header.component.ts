@@ -46,7 +46,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   userName = '';
   userEmail = '';
   userInitials = 'U'; // CACHEAR para evitar recalcular en cada ciclo
-  userRole = 'Usuario'; // CACHEAR
   periodoActual: PeriodoAcademico | null = null;
   periodoFormateado = '';
   private periodoSubscription?: Subscription;
@@ -58,7 +57,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.userEmail = usuario.correo ?? '';
       // Calcular UNA VEZ en ngOnInit
       this.userInitials = this.calculateUserInitials();
-      this.userRole = this.calculateUserRole();
     }
 
     // Suscribirse primero al período actual para recibir actualizaciones
@@ -132,31 +130,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.userName.substring(0, 2).toUpperCase();
   }
 
-  private calculateUserRole(): string {
-    const role = this.authService.getRole();
-    switch (role?.toLowerCase()) {
-      case 'admin':
-        return 'Administrador';
-      case 'funcionario':
-        return 'Funcionario';
-      case 'coordinador':
-        return 'Coordinador';
-      case 'secretario':
-      case 'secretaria':
-        return 'Secretaria';
-      case 'estudiante':
-        return 'Estudiante';
-      default:
-        return 'Usuario';
-    }
-  }
-
-  // Getters públicos que devuelven propiedades cacheadas (no recalculan)
+  // Getter público que devuelve la propiedad cacheada (no recalcula)
   getUserInitials(): string {
     return this.userInitials;
-  }
-
-  getUserRole(): string {
-    return this.userRole;
   }
 }

@@ -98,20 +98,14 @@
   animation: spin 1s linear infinite;
 }
 
-.hover-lift,
 .hover-scale,
 .hover-glow,
 .btn-animated,
 .card-animated,
-.icon-bounce,
-.form-field-animated {
+.icon-bounce {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--sombra-2);
-}
 .hover-scale:hover {
   transform: scale(1.05);
 }
@@ -120,9 +114,6 @@
 }
 .icon-bounce:hover {
   transform: scale(1.2) rotate(5deg);
-}
-.form-field-animated:focus-within {
-  transform: scale(1.02);
 }
 
 /* Brillo que cruza el botón al pasar el ratón */

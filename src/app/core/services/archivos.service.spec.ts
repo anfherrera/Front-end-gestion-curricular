@@ -50,10 +50,5 @@ describe('ArchivosService', () => {
     const porNombre = httpMock.expectOne(`${base}?nombre=oficio%201.pdf`);
     expect(porNombre.request.responseType).toBe('blob');
     porNombre.flush(new Blob());
-
-    service.descargarPDFPorInscripcion(113).subscribe();
-    const porInscripcion = httpMock.expectOne(`${base}/inscripciones/113`);
-    expect(porInscripcion.request.responseType).toBe('blob');
-    porInscripcion.flush(new Blob());
   });
 });

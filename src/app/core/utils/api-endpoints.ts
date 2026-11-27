@@ -54,59 +54,10 @@ export class ApiEndpoints {
     },
   };
 
-  // ===== HOMOLOGACIÓN DE ASIGNATURAS =====
-  static readonly HOMOLOGACION_ASIGNATURAS = {
-    BASE: `${this.BASE_URL}/homologacion-asignaturas`,
-    BY_ID: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}`,
-    BY_ESTUDIANTE: (estudianteId: string) => `${this.BASE_URL}/homologacion-asignaturas/estudiante/${estudianteId}`,
-    BY_ESTADO: (estado: string) => `${this.BASE_URL}/homologacion-asignaturas/estado/${estado}`,
-    APROBAR: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/aprobar`,
-    RECHAZAR: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/rechazar`,
-    DOCUMENTOS: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/homologacion-asignaturas/${id}/documentos/upload`,
-  };
-
-  // ===== PAZ Y SALVO =====
-  static readonly PAZ_SALVO = {
-    BASE: `${this.BASE_URL}/paz-salvo`,
-    BY_ID: (id: string) => `${this.BASE_URL}/paz-salvo/${id}`,
-    BY_ESTUDIANTE: (estudianteId: string) => `${this.BASE_URL}/paz-salvo/estudiante/${estudianteId}`,
-    BY_ESTADO: (estado: string) => `${this.BASE_URL}/paz-salvo/estado/${estado}`,
-    APROBAR: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/aprobar`,
-    RECHAZAR: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/rechazar`,
-    DOCUMENTOS: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/paz-salvo/${id}/documentos/upload`,
-  };
-
-  // ===== REINGRESO DE ESTUDIANTE =====
-  static readonly REINGRESO_ESTUDIANTE = {
-    BASE: `${this.BASE_URL}/reingreso-estudiante`,
-    BY_ID: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}`,
-    BY_ESTUDIANTE: (estudianteId: string) => `${this.BASE_URL}/reingreso-estudiante/estudiante/${estudianteId}`,
-    BY_ESTADO: (estado: string) => `${this.BASE_URL}/reingreso-estudiante/estado/${estado}`,
-    APROBAR: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/aprobar`,
-    RECHAZAR: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/rechazar`,
-    DOCUMENTOS: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/reingreso-estudiante/${id}/documentos/upload`,
-  };
-
   // ===== SOLICITUDES (GENERAL) =====
   static readonly SOLICITUDES = {
-    BASE: `${this.BASE_URL}/solicitudes`,
     HISTORIAL: `${this.BASE_URL}/solicitudes/historial`, // Historial completo de todas las solicitudes
     BY_ID: (id: number) => `${this.BASE_URL}/solicitudes/${id}`, // Una solicitud con sus estados y documentos
-  };
-
-  // ===== PRUEBAS ECAES =====
-  static readonly PRUEBAS_ECAES = {
-    BASE: `${this.BASE_URL}/pruebas-ecaes`,
-    BY_ID: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}`,
-    BY_ESTUDIANTE: (estudianteId: string) => `${this.BASE_URL}/pruebas-ecaes/estudiante/${estudianteId}`,
-    BY_ESTADO: (estado: string) => `${this.BASE_URL}/pruebas-ecaes/estado/${estado}`,
-    APROBAR: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/aprobar`,
-    RECHAZAR: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/rechazar`,
-    DOCUMENTOS: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/documentos`,
-    UPLOAD_DOCUMENT: (id: string) => `${this.BASE_URL}/pruebas-ecaes/${id}/documentos/upload`,
   };
 
   // ===== MÓDULO ESTADÍSTICO =====
@@ -137,31 +88,11 @@ export class ApiEndpoints {
     CURSOS_VERANO_REPORTES: `${this.BASE_URL}/estadisticas/cursos-verano/reportes`,
   };
 
-  // ===== DOCUMENTOS =====
-  static readonly DOCUMENTOS = {
-    BASE: `${this.BASE_URL}/documentos`,
-    BY_ID: (id: string) => `${this.BASE_URL}/documentos/${id}`,
-    DOWNLOAD: (id: string) => `${this.BASE_URL}/documentos/${id}/download`,
-    DELETE: (id: string) => `${this.BASE_URL}/documentos/${id}`,
-    UPLOAD: `${this.BASE_URL}/documentos/upload`,
-  };
-
   // ===== ARCHIVOS =====
   static readonly ARCHIVOS = {
-    BASE: `${this.BASE_URL}/archivos`,
     SUBIR_PDF: `${this.BASE_URL}/archivos`,
     DESCARGAR_PDF: (filename: string) => `${this.BASE_URL}/archivos?nombre=${encodeURIComponent(filename)}`,
     DESCARGAR_PDF_POR_INSCRIPCION: (inscripcionId: number) =>
       `${this.BASE_URL}/archivos/inscripciones/${inscripcionId}`,
-  };
-
-  // ===== ROLES =====
-  static readonly ROLES = {
-    BASE: `${this.BASE_URL}/roles`,
-    BY_ID: (id: string) => `${this.BASE_URL}/roles/${id}`,
-    BY_NAME: (name: string) => `${this.BASE_URL}/roles/name/${name}`,
-    PERMISOS: (id: string) => `${this.BASE_URL}/roles/${id}/permisos`,
-    UPDATE: (id: string) => `${this.BASE_URL}/roles/${id}`,
-    DELETE: (id: string) => `${this.BASE_URL}/roles/${id}`,
   };
 }

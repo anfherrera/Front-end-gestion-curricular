@@ -296,17 +296,4 @@ export class AuthService {
   private stopActivityMonitoring(): void {
     this.activityMonitor.stopMonitoring();
   }
-
-  // ===== MÉTODOS PÚBLICOS PARA ACTIVIDAD =====
-  getActivityStatus(): Observable<boolean> {
-    return this.activityMonitor.activity$;
-  }
-
-  getWarningStatus(): Observable<boolean> {
-    return this.activityMonitor.warning$;
-  }
-
-  isUserActive(): boolean {
-    return this.activityMonitor.isActive();
-  }
 }

@@ -149,13 +149,6 @@ describe('HomologacionAsignaturasService - Pruebas Unitarias', () => {
       req.flush({});
     });
 
-    it('HA-010: completeValidation debe enviar EN_REVISION_COORDINADOR', (done) => {
-      service.completeValidation(1).subscribe(() => done());
-      const req = estado(1);
-      expect(req.request.body).toEqual({ nuevoEstado: 'EN_REVISION_COORDINADOR' });
-      req.flush({});
-    });
-
     it('HA-011: approveAsCoordinador debe enviar APROBADA_COORDINADOR', (done) => {
       service.approveAsCoordinador(1).subscribe(() => done());
       const req = estado(1);

@@ -1,7 +1,6 @@
 import { Injectable, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { BehaviorSubject } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from '@shared/components/confirm-dialog/confirm-dialog.component';
 
 @Injectable({
@@ -19,11 +18,7 @@ export class ActivityMonitorService implements OnDestroy {
   private isWarningShown = false;
   private throttleTimer: ReturnType<typeof setTimeout> | null = null; // Timer para throttle
 
-  private activitySubject = new BehaviorSubject<boolean>(true);
-  public activity$ = this.activitySubject.asObservable();
-
-  private warningSubject = new BehaviorSubject<boolean>(false);
-  public warning$ = this.warningSubject.asObservable();
+  private activo = true;
 
   private logoutCallback: (() => void) | null = null;
 
@@ -66,8 +61,7 @@ export class ActivityMonitorService implements OnDestroy {
   resetInactivityTimer(): void {
     this.clearTimers();
     this.isWarningShown = false;
-    this.warningSubject.next(false);
-    this.activitySubject.next(true);
+    this.activo = true;
 
     // Timer de advertencia (4 minutos)
     this.warningTimer = setTimeout(() => {
@@ -90,8 +84,7 @@ export class ActivityMonitorService implements OnDestroy {
       return;
     }
     this.isWarningShown = true;
-    this.warningSubject.next(true);
-    this.activitySubject.next(false);
+    this.activo = false;
 
     this.avisoRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
       width: '440px',
@@ -121,8 +114,7 @@ export class ActivityMonitorService implements OnDestroy {
     this.avisoRef?.close();
     this.avisoRef = null;
     this.clearTimers();
-    this.activitySubject.next(false);
-    this.warningSubject.next(false);
+    this.activo = false;
 
     if (this.logoutCallback) {
       this.logoutCallback();
@@ -196,13 +188,6 @@ export class ActivityMonitorService implements OnDestroy {
    * Obtiene el estado actual de actividad
    */
   isActive(): boolean {
-    return this.activitySubject.value;
-  }
-
-  /**
-   * Obtiene si se está mostrando la advertencia
-   */
-  isWarningActive(): boolean {
-    return this.warningSubject.value;
+    return this.activo;
   }
 }

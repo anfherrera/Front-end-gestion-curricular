@@ -27,13 +27,6 @@ describe('RolesAdminService - rutas (EST-7)', () => {
     req.flush([]);
   });
 
-  it('ROL-002: buscarRolPorId hace GET /roles/{id}', () => {
-    service.buscarRolPorId(4).subscribe();
-    const req = httpMock.expectOne(`${apiUrl}/4`);
-    expect(req.request.method).toBe('GET');
-    req.flush({ id_rol: 4, nombre: 'X' });
-  });
-
   it('ROL-003: buscarPorNombre hace GET /roles?nombre=', () => {
     service.buscarPorNombre('ADMIN').subscribe();
     const req = httpMock.expectOne((r) => r.url === apiUrl);

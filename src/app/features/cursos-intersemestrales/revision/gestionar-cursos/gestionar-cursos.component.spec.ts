@@ -31,11 +31,8 @@ describe('GestionarCursosComponent', () => {
     ]);
     estadosServiceSpy = jasmine.createSpyObj('CursoEstadosService', [
       'getEstadosDisponibles',
-      'getEstadosPermitidos',
-      'getEstadosParaRol',
       'getClaseEstado',
       'getIconoEstado',
-      'validarTransicionEstado',
     ]);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);

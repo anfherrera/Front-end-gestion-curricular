@@ -20,8 +20,8 @@ describe('ApiEndpoints', () => {
 
   it('usa la URL del entorno como base', () => {
     expect(ApiEndpoints.BASE_URL).toBe(environment.apiUrl);
-    // Solo comprueba que el recorrido encuentra los endpoints (80 tras el paso 9 de EST-7)
-    expect(todos.length).toBeGreaterThan(60);
+    // Solo comprueba que el recorrido encuentra los endpoints (35 tras quitar los grupos sin uso)
+    expect(todos.length).toBeGreaterThan(30);
   });
 
   it('todas las URLs fijas cuelgan de la base y no llevan barra final ni dobles barras', () => {
@@ -37,7 +37,7 @@ describe('ApiEndpoints', () => {
 
   it('todas las URLs con parámetro cuelgan de la base e incluyen el valor recibido', () => {
     const funciones = todos.filter(([, v]) => typeof v === 'function');
-    expect(funciones.length).toBeGreaterThan(40);
+    expect(funciones.length).toBeGreaterThanOrEqual(4);
     for (const [ruta, valor] of funciones) {
       const fn = valor as (...args: unknown[]) => string;
       const args = Array.from({ length: fn.length }, (_, i) => `p${i}x`);

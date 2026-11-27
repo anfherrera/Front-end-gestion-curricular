@@ -24,8 +24,6 @@ describe('Seguridad - Manejo de sesiones', () => {
       'startMonitoring',
       'stopMonitoring',
       'isActive',
-      'activity$',
-      'warning$',
     ]);
 
     localStorageSpy = jasmine.createSpyObj('localStorage', ['getItem', 'setItem', 'removeItem', 'clear']);
@@ -227,15 +225,6 @@ describe('Seguridad - Manejo de sesiones', () => {
       authService.clearToken();
 
       expect(activityMonitor.stopMonitoring).toHaveBeenCalled();
-    });
-
-    it('SEC-033-D: Debe verificar si usuario está activo', () => {
-      activityMonitor.isActive.and.returnValue(true);
-
-      const isActive = authService.isUserActive();
-
-      expect(isActive).toBeTrue();
-      expect(activityMonitor.isActive).toHaveBeenCalled();
     });
   });
 

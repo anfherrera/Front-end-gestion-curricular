@@ -226,24 +226,6 @@ export class DocumentGeneratorComponent implements OnInit {
     return icons[this.template().id] || 'description';
   }
 
-  getFieldPlaceholder(fieldName: string): string {
-    const placeholders: Record<string, string> = {
-      observaciones: 'Observaciones adicionales...',
-      semestre: 'Ej: 2024-1',
-      motivoReingreso: 'Motivo del reingreso...',
-    };
-    return placeholders[fieldName] || '';
-  }
-
-  getFieldIcon(fieldName: string): string {
-    const icons: Record<string, string> = {
-      observaciones: 'note',
-      semestre: 'calendar_today',
-      motivoReingreso: 'help_outline',
-    };
-    return icons[fieldName] || 'info';
-  }
-
   /**
    * Maneja el clic en "Tengo un documento"
    */

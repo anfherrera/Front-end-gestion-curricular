@@ -413,14 +413,3 @@
     font-size: var(--text-h2-size);
   }
 }
-
-/* Snackbar Styles */
-.success-snackbar {
-  background-color: var(--notif-exito-borde);
-  color: white;
-}
-
-.error-snackbar {
-  background-color: var(--color-error);
-  color: white;
-}

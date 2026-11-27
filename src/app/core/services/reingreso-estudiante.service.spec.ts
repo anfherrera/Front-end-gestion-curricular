@@ -154,13 +154,6 @@ describe('ReingresoEstudianteService - Pruebas Unitarias', () => {
       req.flush({});
     });
 
-    it('RE-014: completeValidation debe enviar EN_REVISION_COORDINADOR', (done) => {
-      service.completeValidation(1).subscribe(() => done());
-      const req = estado(1);
-      expect(req.request.body).toEqual({ nuevoEstado: 'EN_REVISION_COORDINADOR' });
-      req.flush({});
-    });
-
     it('RE-015: approveAsCoordinador debe enviar APROBADA_COORDINADOR', (done) => {
       service.approveAsCoordinador(1).subscribe(() => done());
       const req = estado(1);
