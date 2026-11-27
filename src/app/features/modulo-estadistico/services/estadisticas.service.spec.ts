@@ -71,14 +71,7 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
     });
   });
 
-  describe('8. Tendencias y Comparativas', () => {
-    it('EST-016: Debe obtener tendencias comparativas', (done) => {
-      service.getTendenciasComparativas().subscribe(() => done());
-
-      const req = httpMock.expectOne((request) => request.url.includes('/estadisticas/tendencias'));
-      req.flush({});
-    });
-
+  describe('8. Tendencias de cursos de verano', () => {
     it('EST-017: Debe obtener tendencias temporales de cursos de verano', (done) => {
       service.getCursosVeranoTendenciasTemporales({ periodoAcademico: '2026-1', idPrograma: 0 }).subscribe((datos) => {
         expect(datos.tendenciasTemporales).toEqual([]);
@@ -230,11 +223,6 @@ describe('EstadisticasService - Pruebas Unitarias', () => {
         '/estadisticas/estadisticas-por-proceso',
       ],
       ['getEstadoSolicitudes', (f) => service.getEstadoSolicitudes(f), '/estadisticas/estado-solicitudes'],
-      [
-        'getTendenciasComparativas',
-        (f) => service.getTendenciasComparativas(f),
-        '/estadisticas/tendencias-comparativas',
-      ],
       [
         'getEstadisticasPorProgramaMejoradas',
         (f) => service.getEstadisticasPorProgramaMejoradas(f),

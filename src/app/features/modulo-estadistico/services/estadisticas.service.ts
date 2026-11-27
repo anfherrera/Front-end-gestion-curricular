@@ -11,7 +11,6 @@ import {
   EstadisticasPorProcesoResponse,
   EstadoSolicitudesResponse,
 } from '../models/generales.model';
-import { TendenciasComparativasResponse } from '../models/tendencias.model';
 import {
   EstadisticasPorProgramaMejoradasResponse,
   EstadisticasPorPeriodoMejoradasResponse,
@@ -238,38 +237,6 @@ export class EstadisticasService {
     }
 
     return this.http.get<EstadoSolicitudesResponse>(ApiEndpoints.MODULO_ESTADISTICO.ESTADO_SOLICITUDES, { params });
-  }
-
-  /**
-   * Obtiene tendencias y comparativas estratégicas con filtros opcionales
-   * GET /api/estadisticas/tendencias-comparativas
-   * @param filtros Filtros opcionales: periodoAcademico, idPrograma
-   */
-  getTendenciasComparativas(
-    filtros: { periodoAcademico?: string; idPrograma?: number; proceso?: string } = {}
-  ): Observable<TendenciasComparativasResponse> {
-    let params = new HttpParams();
-
-    if (filtros.periodoAcademico && filtros.periodoAcademico.trim() !== '') {
-      params = params.set('periodoAcademico', filtros.periodoAcademico.trim());
-    }
-
-    if (
-      filtros.idPrograma !== undefined &&
-      filtros.idPrograma !== null &&
-      !isNaN(filtros.idPrograma) &&
-      filtros.idPrograma > 0
-    ) {
-      params = params.set('idPrograma', filtros.idPrograma.toString());
-    }
-
-    if (filtros.proceso && filtros.proceso.trim() !== '' && filtros.proceso !== 'Todos los procesos') {
-      params = params.set('proceso', filtros.proceso.trim());
-    }
-
-    return this.http.get<TendenciasComparativasResponse>(ApiEndpoints.MODULO_ESTADISTICO.TENDENCIAS_COMPARATIVAS, {
-      params,
-    });
   }
 
   /**

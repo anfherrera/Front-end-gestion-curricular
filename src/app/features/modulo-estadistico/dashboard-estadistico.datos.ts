@@ -128,7 +128,7 @@ export function resumenDesdeAPI(api: ResumenCompletoAPI, idPrograma: ResolverIdP
       totalSolicitudes: globales?.totalSolicitudes || 0,
       solicitudesAprobadas: globales?.totalAprobadas || 0,
       solicitudesRechazadas: globales?.totalRechazadas || 0,
-      solicitudesEnviadas: 0,
+      solicitudesEnviadas: globales?.totalEnviadas || 0,
       solicitudesEnProceso: globales?.totalEnProceso || 0,
       totalEstudiantes: 0,
       totalProgramas: api.totalProgramas || 0,
@@ -219,57 +219,40 @@ export function resumenDesdeEndpoints(
 
 export const TITULO_KPI_ESTUDIANTES = 'Estudiantes';
 
+/**
+ * Indicadores del resumen: el total, cada estado con su parte del total y los estudiantes.
+ * Es el único sitio del resumen con los totales por estado (antes se repetían en otra tarjeta).
+ */
 export function generarKPIs(resumen: ResumenCompleto | null, totalEstudiantes: number): KPIData[] {
   const e = resumen?.estadisticasGlobales;
+  const total = e?.totalSolicitudes || 0;
+  const delTotal = (valor: number): string =>
+    total > 0 ? `${(Math.round((valor / total) * 1000) / 10).toLocaleString('es-CO')} % del total` : '';
+  const estado = (titulo: string, valor: number, icono: string, color: string): KPIData => ({
+    titulo,
+    valor,
+    icono,
+    color,
+    descripcion: delTotal(valor),
+  });
   return [
     {
       titulo: 'Total Solicitudes',
-      valor: e?.totalSolicitudes || 0,
+      valor: total,
       icono: 'description',
       color: 'primary',
       descripcion: 'Solicitudes en todos los procesos',
     },
-    {
-      titulo: 'Aprobadas',
-      valor: e?.solicitudesAprobadas || 0,
-      icono: 'check_circle',
-      color: 'success',
-      descripcion: 'Solicitudes aprobadas',
-    },
-    {
-      titulo: 'Enviadas',
-      valor: e?.solicitudesEnviadas || 0,
-      icono: 'send',
-      color: 'accent',
-      descripcion: 'Solicitudes enviadas pendientes',
-    },
-    {
-      titulo: 'En Proceso',
-      valor: e?.solicitudesEnProceso || 0,
-      icono: 'pending',
-      color: 'warning',
-      descripcion: 'Solicitudes en revisión',
-    },
-    {
-      titulo: 'Rechazadas',
-      valor: e?.solicitudesRechazadas || 0,
-      icono: 'cancel',
-      color: 'error',
-      descripcion: 'Solicitudes rechazadas',
-    },
+    estado('Enviadas', e?.solicitudesEnviadas || 0, 'send', 'info'),
+    estado('En Proceso', e?.solicitudesEnProceso || 0, 'pending', 'warning'),
+    estado('Aprobadas', e?.solicitudesAprobadas || 0, 'check_circle', 'success'),
+    estado('Rechazadas', e?.solicitudesRechazadas || 0, 'cancel', 'error'),
     {
       titulo: TITULO_KPI_ESTUDIANTES,
       valor: totalEstudiantes || 0,
       icono: 'people',
-      color: 'info',
-      descripcion: 'Total de estudiantes registrados',
-    },
-    {
-      titulo: 'Programas',
-      valor: e?.totalProgramas || 0,
-      icono: 'school',
-      color: 'purple',
-      descripcion: 'Programas académicos',
+      color: 'secondary',
+      descripcion: 'Estudiantes registrados',
     },
   ];
 }

@@ -51,6 +51,7 @@ export interface ResumenCompletoAPI {
     totalAprobadas: number;
     totalRechazadas: number;
     totalEnProceso: number;
+    totalEnviadas?: number;
     porcentajeAprobacion: number;
     porTipoProceso: Record<string, number>;
     porPrograma: Record<string, number>;

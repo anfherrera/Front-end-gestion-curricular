@@ -10,6 +10,7 @@ import {
 import {
   EstadisticasPorProcesoResponse,
   EstadoSolicitudesResponse,
+  ResumenCompleto,
   ResumenCompletoAPI,
 } from '@features/modulo-estadistico/models/generales.model';
 
@@ -68,6 +69,7 @@ describe('dashboard-estadistico.datos', () => {
         totalAprobadas: 4,
         totalRechazadas: 1,
         totalEnProceso: 2,
+        totalEnviadas: 3,
         porPrograma: { Sistemas: 7 },
       },
       porTipoProceso: {
@@ -85,6 +87,8 @@ describe('dashboard-estadistico.datos', () => {
 
     const resumen = resumenDesdeAPI(api, (nombre) => (nombre === 'Sistemas' ? 5 : null));
     expect(resumen.estadisticasGlobales.solicitudesAprobadas).toBe(4);
+    // Las enviadas vienen del backend (antes se dejaban en 0)
+    expect(resumen.estadisticasGlobales.solicitudesEnviadas).toBe(3);
     expect(resumen.estadisticasPorProceso[0].nombreProceso).toBe('paz-y-salvo');
     expect(resumen.estadisticasPorPrograma[0]).toEqual(
       jasmine.objectContaining({ idPrograma: 5, totalSolicitudes: 7 })
@@ -138,8 +142,25 @@ describe('dashboard-estadistico.datos', () => {
 
   it('generarKPIs incluye el total de estudiantes', () => {
     const kpis = generarKPIs(null, 12);
-    expect(kpis.length).toBe(7);
+    expect(kpis.length).toBe(6);
     expect(kpis.find((k) => k.titulo === 'Estudiantes')?.valor).toBe(12);
+  });
+
+  it('generarKPIs da la parte del total de cada estado', () => {
+    const resumen = {
+      estadisticasGlobales: {
+        totalSolicitudes: 62,
+        solicitudesEnviadas: 11,
+        solicitudesEnProceso: 18,
+        solicitudesAprobadas: 25,
+        solicitudesRechazadas: 8,
+      },
+    } as ResumenCompleto;
+    const kpis = generarKPIs(resumen, 9);
+    expect(kpis.find((k) => k.titulo === 'Enviadas')).toEqual(
+      jasmine.objectContaining({ valor: 11, descripcion: '17,7 % del total' })
+    );
+    expect(kpis.find((k) => k.titulo === 'Aprobadas')?.descripcion).toBe('40,3 % del total');
   });
 
   it('formatearNombreProceso traduce los nombres antiguos', () => {

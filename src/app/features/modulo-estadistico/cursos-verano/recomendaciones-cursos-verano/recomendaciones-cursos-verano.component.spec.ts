@@ -41,11 +41,18 @@ describe('RecomendacionesCursosVeranoComponent', () => {
     expect(el.querySelector('.detalles-expandidos')).toBeNull();
   });
 
-  it('sin recomendaciones muestra el aviso y solo cuenta críticas si las hay', () => {
-    fixture.componentRef.setInput('estadisticas', { prioridadAlta: 2, alertasCriticas: 0 });
+  it('sin recomendaciones muestra el aviso', () => {
     fixture.detectChanges();
     expect(el.querySelector('.no-data-card')).toBeTruthy();
-    expect(el.querySelector('.stat.alta .numero')?.textContent?.trim()).toBe('2');
-    expect(el.querySelector('.stat.critica')).toBeNull();
+    expect(el.querySelector('.rec-card')).toBeNull();
+  });
+
+  it('muestra las alertas críticas con sus acciones urgentes', () => {
+    fixture.componentRef.setInput('alertasCriticas', [
+      { tipo: 'ALERTA_PROGRAMA', titulo: 'Demanda concentrada', descripcion: 'd', acciones: ['Coordinar'] },
+    ]);
+    fixture.detectChanges();
+    expect(el.querySelector('.alerta-critica-card h3')?.textContent?.trim()).toBe('Demanda concentrada');
+    expect(el.querySelector('.alerta-critica-card li')?.textContent?.trim()).toBe('Coordinar');
   });
 });

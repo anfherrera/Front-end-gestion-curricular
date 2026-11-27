@@ -447,18 +447,6 @@
   border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
 }
 
-/* Tendencias */
-.tendencias-section {
-  margin-bottom: 2rem;
-}
-
-.tendencias-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
 .tendencia-card {
   background: var(--neutro-50);
   border: 1px solid var(--neutro-100);
@@ -476,54 +464,6 @@
   background: var(--neutro-100);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
-}
-
-.tendencia-card.creciente {
-  border-left-color: var(--notif-exito-borde);
-}
-
-.tendencia-card.decreciente {
-  border-left-color: var(--notif-error-titulo);
-}
-
-.tendencia-card.estable {
-  border-left-color: var(--color-error);
-}
-
-.tendencia-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.tendencia-header h4 {
-  margin: 0;
-  font-size: var(--text-h3-size);
-  font-weight: 500;
-  color: var(--color-primario);
-}
-
-.tendencia-datos {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.dato-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.dato-label {
-  font-size: var(--text-body-size);
-  color: var(--neutro-600);
-}
-
-.dato-valor {
-  font-weight: 500;
-  color: var(--color-primario);
 }
 
 /* Iconos de Tendencia */
@@ -584,10 +524,6 @@
   .estados-grid,
   .resumen-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .tendencias-content {
-    grid-template-columns: 1fr;
   }
 
   .tab-content {
@@ -654,9 +590,7 @@
 
 /* Chart Data */
 .chart-data {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--neutro-200);
+  margin-top: 0;
 }
 
 /* Materia Items */
@@ -729,19 +663,6 @@
   font-weight: 600;
 }
 
-.mes-pico {
-  font-weight: 600;
-  color: var(--color-primario);
-  font-size: var(--text-h3-size);
-  margin-bottom: 0.5rem;
-}
-
-.meses-recomendados {
-  margin-top: 0.5rem;
-  font-size: var(--text-body-size);
-  color: var(--neutro-600);
-}
-
 /* No Data */
 .no-data {
   text-align: center;
@@ -771,9 +692,7 @@
 }
 
 /* Estilos para tarjetas de predicciones */
-.prediccion-materia-card,
-.prediccion-programa-card,
-.prediccion-temporal-card {
+.prediccion-programa-card {
   background: var(--primario-98);
   border: 1px solid var(--neutro-200);
   border-radius: var(--radio-sm);
@@ -785,20 +704,11 @@
   transition: all 0.3s ease;
 }
 
-.prediccion-programa-card,
-.prediccion-temporal-card {
+.prediccion-programa-card {
   margin-bottom: 10px;
 }
 
-.prediccion-temporal-card {
-  padding: 20px;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.prediccion-materia-card:hover,
-.prediccion-programa-card:hover,
-.prediccion-temporal-card:hover {
+.prediccion-programa-card:hover {
   background: var(--primario-98);
   transform: translateY(-2px);
   box-shadow: var(--sombra-2);
@@ -906,43 +816,11 @@ canvas {
 }
 
 /* Para las tarjetas de predicciones */
-.predicciones-materias,
 .predicciones-programas {
   display: flex;
   flex-direction: column;
   gap: 15px;
   width: 100%;
-}
-
-/* Predicciones Temporales */
-.predicciones-temporales {
-  padding: 20px;
-  min-height: auto;
-}
-
-.prediccion-temporal-card .mes-pico {
-  font-weight: 600;
-  color: var(--color-primario);
-  font-size: var(--text-h3-size);
-  margin-bottom: 0.5rem;
-}
-
-.prediccion-temporal-card .demanda-actual {
-  color: var(--color-primario);
-  font-weight: 500;
-  font-size: var(--text-subtitulo-size);
-}
-
-.prediccion-temporal-card .demanda-estimada {
-  color: var(--notif-exito-borde);
-  font-weight: 500;
-  font-size: var(--text-subtitulo-size);
-}
-
-.prediccion-temporal-card .meses-recomendados {
-  margin-top: 0.5rem;
-  font-size: var(--text-body-size);
-  color: var(--neutro-600);
 }
 
 /* Responsive para datos */
@@ -955,8 +833,7 @@ canvas {
 
   .materia-nombre,
   .programa-nombre,
-  .tendencia-mes,
-  .mes-pico {
+  .tendencia-mes {
     font-size: var(--text-body-size);
   }
 }

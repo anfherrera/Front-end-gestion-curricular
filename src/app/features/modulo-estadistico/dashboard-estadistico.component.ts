@@ -33,8 +33,6 @@ import { descargarBlob } from '@core/utils/download.util';
 import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
 import { EstudiantesPorProgramaComponent } from './components/estudiantes-por-programa/estudiantes-por-programa.component';
 import { EstadisticasPorProcesoComponent } from './components/estadisticas-por-proceso/estadisticas-por-proceso.component';
-import { EstadisticasPorEstadoComponent } from './components/estadisticas-por-estado/estadisticas-por-estado.component';
-import { TendenciasComparativasComponent } from './components/tendencias-comparativas/tendencias-comparativas.component';
 import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtro-selector/periodo-filtro-selector.component';
 import { FiltroEstadisticas, KPIData, ResumenCompleto } from '@features/modulo-estadistico/models/generales.model';
 import {
@@ -47,17 +45,12 @@ import {
   resumenDesdeAPI,
   resumenDesdeEndpoints,
 } from './dashboard-estadistico.datos';
-import {
-  graficoProcesos,
-  graficoProcesosDesdeResumen,
-  graficoProgramas,
-  graficoTendencia,
-} from './dashboard-estadistico.graficos';
+import { graficoProgramas, graficoTendencia } from './dashboard-estadistico.graficos';
 import { SnackbarService } from '@core/services/snackbar.service';
 
 Chart.register(...registerables);
 
-type NombreGrafico = 'chartProcesos' | 'chartTendencia' | 'chartDistribucion';
+type NombreGrafico = 'chartTendencia' | 'chartDistribucion';
 
 /**
  * Dashboard general del módulo estadístico: KPIs, gráficos y componentes de detalle.
@@ -83,8 +76,6 @@ type NombreGrafico = 'chartProcesos' | 'chartTendencia' | 'chartDistribucion';
     LoadingSpinnerComponent,
     EstudiantesPorProgramaComponent,
     EstadisticasPorProcesoComponent,
-    EstadisticasPorEstadoComponent,
-    TendenciasComparativasComponent,
     PeriodoFiltroSelectorComponent,
   ],
   templateUrl: './dashboard-estadistico.component.html',
@@ -116,7 +107,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
 
   readonly kpis = signal<KPIData[]>([]);
 
-  chartProcesos: Chart | null = null;
   chartTendencia: Chart | null = null;
   chartDistribucion: Chart | null = null;
   readonly tendenciaSinDatos = signal(false);
@@ -315,32 +305,9 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   private crearCharts(): void {
     if (!this.resumenCompleto()) return;
     requestAnimationFrame(async () => {
-      await this.crearChartProcesos();
       await this.crearChartTendencia();
       await this.crearChartDistribucion();
     });
-  }
-
-  /** Por proceso con el endpoint detallado; si falla, con el resumen. */
-  private async crearChartProcesos(): Promise<void> {
-    const datos = await this.consultar(
-      this.estadisticasService.getEstadisticasDetalladasPorProceso(filtrosParaBackend(this.filtros()))
-    );
-    if (datos?.estadisticasPorProceso) {
-      this.dibujar('chartProcesos', graficoProcesos(datos.estadisticasPorProceso, this.locale));
-      return;
-    }
-    const procesos = this.resumenCompleto()?.estadisticasPorProceso ?? [];
-    if (procesos.length) {
-      this.dibujar(
-        'chartProcesos',
-        graficoProcesosDesdeResumen(
-          procesos.map((p) => formatearNombreProceso(p.nombreProceso)),
-          procesos.map((p) => p.totalSolicitudes),
-          this.locale
-        )
-      );
-    }
   }
 
   /** Sin datos mensuales no se dibuja nada inventado: la vista muestra un aviso. */
@@ -408,7 +375,6 @@ export class DashboardEstadisticoComponent implements OnInit, OnDestroy {
   }
 
   private destruirCharts(): void {
-    this.destruirChart('chartProcesos');
     this.destruirChart('chartTendencia');
     this.destruirChart('chartDistribucion');
   }

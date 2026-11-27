@@ -191,22 +191,12 @@
                 <mat-card class="chart-card">
                   <mat-card-header>
                     <mat-card-title>
-                      <mat-icon>pie_chart</mat-icon>
+                      <mat-icon>menu_book</mat-icon>
                       Top Materias por Demanda
                     </mat-card-title>
                   </mat-card-header>
                   <mat-card-content>
-                    <div class="chart-content">
-                      <!-- Mostrar loading mientras se carga la gráfica -->
-                      @if (loading()) {
-                        <div class="chart-loading"><mat-spinner diameter="20"></mat-spinner> Cargando gráfica...</div>
-                      }
-                      <!-- Canvas para la gráfica -->
-                      @if (!loading() && topMateriasData() && topMateriasData().length > 0) {
-                        <canvas id="materiasChart" width="400" height="200"> </canvas>
-                      }
-                    </div>
-                    <!-- CONECTAR A LOS DATOS DEL BACKEND -->
+                    <!-- Solo la lista: las cifras exactas (el gráfico repetía lo mismo) -->
                     @if (datos && datos.topMaterias && datos.topMaterias.length > 0) {
                       <div class="chart-data">
                         @for (materia of datos.topMaterias; track materia) {
@@ -225,22 +215,11 @@
                 <mat-card class="chart-card">
                   <mat-card-header>
                     <mat-card-title>
-                      <mat-icon>bar_chart</mat-icon>
+                      <mat-icon>school</mat-icon>
                       Análisis por Programa
                     </mat-card-title>
                   </mat-card-header>
                   <mat-card-content>
-                    <div class="chart-content">
-                      <!-- Mostrar loading mientras se carga la gráfica -->
-                      @if (loading()) {
-                        <div class="chart-loading"><mat-spinner diameter="20"></mat-spinner> Cargando gráfica...</div>
-                      }
-                      <!-- Canvas para la gráfica -->
-                      @if (!loading() && analisisProgramaData() && analisisProgramaData().length > 0) {
-                        <canvas id="programasChart" width="400" height="200"> </canvas>
-                      }
-                    </div>
-                    <!-- CONECTAR A LOS DATOS DEL BACKEND -->
                     @if (datos && datos.analisisPorPrograma && datos.analisisPorPrograma.length > 0) {
                       <div class="chart-data">
                         @for (programa of datos.analisisPorPrograma; track programa) {
@@ -404,7 +383,7 @@
       <!-- ===== CONTENIDO DE PREDICCIONES ===== -->
       @if (activeTab === 'predicciones') {
         <div class="tab-content predicciones-content">
-          <!-- ===== RESUMEN DE PREDICCIONES ===== -->
+          <!-- ===== RESUMEN: demanda, confiabilidad y meses de mayor demanda (antes repartido en dos tarjetas) ===== -->
           <div class="predicciones-resumen">
             <mat-card class="resumen-card">
               <mat-card-header>
@@ -428,51 +407,51 @@
                       {{ datos.predicciones.confiabilidad }}
                     </div>
                   </div>
-                  <div class="resumen-item">
-                    <div class="resumen-label">Fecha de Predicción</div>
-                    <div class="resumen-valor">{{ datos.predicciones.fechaPrediccion | date: 'short' }}</div>
-                  </div>
-                  <!-- ELIMINADO: Metodología (campo técnico innecesario) -->
+                  @if (datos.predicciones.prediccionesTemporales; as temporales) {
+                    <div class="resumen-item">
+                      <div class="resumen-label">Mes de Mayor Demanda</div>
+                      <div class="resumen-valor">
+                        {{ temporales.mesPico }} ({{ temporales.demandaActualMesPico }} solicitudes)
+                      </div>
+                    </div>
+                    <div class="resumen-item">
+                      <div class="resumen-label">Meses Recomendados para Ofertar</div>
+                      <div class="resumen-valor">{{ temporales.mesesRecomendados.join(', ') }}</div>
+                    </div>
+                  }
                 </div>
               </mat-card-content>
             </mat-card>
           </div>
-          <!-- ===== GRÁFICOS DE PREDICCIONES ===== -->
+          <!-- ===== POR MATERIA Y POR PROGRAMA: actual, estimada, variación y tendencia ===== -->
           <div class="predicciones-charts">
             <div class="chart-row">
               <mat-card class="chart-card">
                 <mat-card-header>
                   <mat-card-title>
-                    <mat-icon>trending_up</mat-icon>
+                    <mat-icon>menu_book</mat-icon>
                     Predicciones por Materia
                   </mat-card-title>
                 </mat-card-header>
                 <mat-card-content>
-                  <!-- ELIMINAR el área blanca vacía y mostrar directamente las tarjetas -->
-                  @if (
-                    datos &&
-                    datos.predicciones &&
-                    datos.predicciones.materiasConTendenciaCreciente &&
-                    datos.predicciones.materiasConTendenciaCreciente.length > 0
-                  ) {
-                    <div class="predicciones-materias">
-                      @for (materia of datos.predicciones.materiasConTendenciaCreciente; track materia) {
-                        <div class="prediccion-materia-card">
-                          <div class="materia-nombre">{{ materia.nombre }}</div>
+                  <!-- Todas las materias (crecientes, decrecientes y estables) en una sola lista -->
+                  @if (prediccionesMaterias().length > 0) {
+                    <div class="predicciones-programas">
+                      @for (materia of prediccionesMaterias(); track materia.nombre) {
+                        <div class="prediccion-programa-card">
+                          <div class="programa-nombre">{{ materia.nombre }}</div>
                           <div class="demanda-actual">Actual: {{ materia.demandaActual }}</div>
                           <div class="demanda-estimada">Estimada: {{ materia.demandaEstimada }}</div>
-                          <div class="variacion">Variación: {{ materia.variacion }}</div>
-                          <div class="tendencia creciente">CRECIENTE</div>
+                          <div class="variacion">
+                            Variación: {{ materia.variacion > 0 ? '+' : '' }}{{ materia.variacion }}
+                          </div>
+                          <div class="tendencia" [ngClass]="'tendencia-' + materia.tendencia.toLowerCase()">
+                            {{ materia.tendencia }}
+                          </div>
                         </div>
                       }
                     </div>
-                  }
-                  @if (
-                    !datos ||
-                    !datos.predicciones ||
-                    !datos.predicciones.materiasConTendenciaCreciente ||
-                    datos.predicciones.materiasConTendenciaCreciente.length === 0
-                  ) {
+                  } @else {
                     <div class="no-data">No hay datos de predicciones disponibles</div>
                   }
                 </mat-card-content>
@@ -485,226 +464,28 @@
                   </mat-card-title>
                 </mat-card-header>
                 <mat-card-content>
-                  <!-- ELIMINAR el área blanca vacía y mostrar directamente las tarjetas -->
-                  @if (
-                    datos &&
-                    datos.predicciones &&
-                    datos.predicciones.todasLasPrediccionesPorPrograma &&
-                    datos.predicciones.todasLasPrediccionesPorPrograma.length > 0
-                  ) {
+                  @if (datos.predicciones.todasLasPrediccionesPorPrograma?.length) {
                     <div class="predicciones-programas">
-                      @for (programa of datos.predicciones.todasLasPrediccionesPorPrograma; track programa) {
+                      @for (programa of datos.predicciones.todasLasPrediccionesPorPrograma; track programa.nombre) {
                         <div class="prediccion-programa-card">
                           <div class="programa-nombre">{{ programa.nombre }}</div>
                           <div class="demanda-actual">Actual: {{ programa.demandaActual }}</div>
                           <div class="demanda-estimada">Estimada: {{ programa.demandaEstimada }}</div>
-                          <div class="variacion">Variación: {{ programa.variacion }}</div>
+                          <div class="variacion">
+                            Variación: {{ programa.variacion > 0 ? '+' : '' }}{{ programa.variacion }}
+                          </div>
                           <div class="tendencia" [ngClass]="'tendencia-' + programa.tendencia.toLowerCase()">
                             {{ programa.tendencia }}
                           </div>
                         </div>
                       }
                     </div>
-                  }
-                  @if (
-                    !datos ||
-                    !datos.predicciones ||
-                    !datos.predicciones.todasLasPrediccionesPorPrograma ||
-                    datos.predicciones.todasLasPrediccionesPorPrograma.length === 0
-                  ) {
+                  } @else {
                     <div class="no-data">No hay datos de predicciones disponibles</div>
                   }
                 </mat-card-content>
               </mat-card>
             </div>
-            <div class="chart-row">
-              <mat-card class="chart-card full-width">
-                <mat-card-header>
-                  <mat-card-title>
-                    <mat-icon>schedule</mat-icon>
-                    Predicciones Temporales
-                  </mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                  <!-- REEMPLAZAR la sección de "Predicciones Temporales" -->
-                  @if (datos && datos.predicciones && datos.predicciones.prediccionesTemporales) {
-                    <div class="predicciones-temporales">
-                      <div class="prediccion-temporal-card">
-                        <div class="mes-pico">Mes Pico: {{ datos.predicciones.prediccionesTemporales.mesPico }}</div>
-                        <div class="demanda-actual">
-                          Demanda Actual: {{ datos.predicciones.prediccionesTemporales.demandaActualMesPico }}
-                        </div>
-                        <div class="demanda-estimada">
-                          Demanda Estimada: {{ datos.predicciones.demandaEstimadaProximoPeriodo }}
-                        </div>
-                        <div class="meses-recomendados">
-                          <span>Meses Recomendados: </span>
-                          @for (
-                            mes of datos.predicciones.prediccionesTemporales.mesesRecomendados;
-                            track mes;
-                            let last = $last
-                          ) {
-                            <span>
-                              {{ mes }}
-                              @if (!last) {
-                                <span>, </span>
-                              }
-                            </span>
-                          }
-                        </div>
-                      </div>
-                    </div>
-                  }
-                  @if (!datos || !datos.predicciones || !datos.predicciones.prediccionesTemporales) {
-                    <div class="no-data">No hay datos de predicciones temporales disponibles</div>
-                  }
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </div>
-          <!-- ===== ANÁLISIS DE TENDENCIAS ===== -->
-          <div class="tendencias-section">
-            <h3 class="section-title">
-              <mat-icon>analytics</mat-icon>
-              Análisis de Tendencias
-            </h3>
-            <mat-accordion>
-              <!-- ===== MATERIAS CON TENDENCIA CRECIENTE ===== -->
-              @if (datos.predicciones.materiasConTendenciaCreciente.length > 0) {
-                <mat-expansion-panel>
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <mat-icon class="tendencia-creciente">trending_up</mat-icon>
-                      Materias con Tendencia Creciente
-                    </mat-panel-title>
-                    <mat-panel-description>
-                      {{ datos.predicciones.materiasConTendenciaCreciente.length }} materias
-                    </mat-panel-description>
-                  </mat-expansion-panel-header>
-                  <div class="tendencias-content">
-                    @for (materia of datos.predicciones.materiasConTendenciaCreciente; track materia) {
-                      <mat-card class="tendencia-card creciente">
-                        <mat-card-content>
-                          <div class="tendencia-header">
-                            <h4>{{ materia.nombre }}</h4>
-                            <span class="etiqueta-estado estado-aprobada">
-                              <mat-icon aria-hidden="true">{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
-                              {{ materia.porcentajeVariacion | number: '1.0-2' }}%
-                            </span>
-                          </div>
-                          <div class="tendencia-datos">
-                            <div class="dato-item">
-                              <span class="dato-label">Demanda Actual:</span>
-                              <span class="dato-valor">{{ materia.demandaActual }}</span>
-                            </div>
-                            <div class="dato-item">
-                              <span class="dato-label">Demanda Estimada:</span>
-                              <span class="dato-valor">{{ materia.demandaEstimada }}</span>
-                            </div>
-                            <div class="dato-item">
-                              <span class="dato-label">Variación:</span>
-                              <span class="dato-valor" [style.color]="getTendenciaColor(materia.tendencia)">
-                                {{ materia.variacion > 0 ? '+' : '' }}{{ materia.variacion }}
-                              </span>
-                            </div>
-                          </div>
-                        </mat-card-content>
-                      </mat-card>
-                    }
-                  </div>
-                </mat-expansion-panel>
-              }
-              <!-- ===== MATERIAS CON TENDENCIA DECRECIENTE ===== -->
-              @if (datos.predicciones.materiasConTendenciaDecreciente.length > 0) {
-                <mat-expansion-panel>
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <mat-icon class="tendencia-decreciente">trending_down</mat-icon>
-                      Materias con Tendencia Decreciente
-                    </mat-panel-title>
-                    <mat-panel-description>
-                      {{ datos.predicciones.materiasConTendenciaDecreciente.length }} materias
-                    </mat-panel-description>
-                  </mat-expansion-panel-header>
-                  <div class="tendencias-content">
-                    @for (materia of datos.predicciones.materiasConTendenciaDecreciente; track materia) {
-                      <mat-card class="tendencia-card decreciente">
-                        <mat-card-content>
-                          <div class="tendencia-header">
-                            <h4>{{ materia.nombre }}</h4>
-                            <span class="etiqueta-estado estado-rechazada">
-                              <mat-icon aria-hidden="true">{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
-                              {{ materia.porcentajeVariacion | number: '1.0-2' }}%
-                            </span>
-                          </div>
-                          <div class="tendencia-datos">
-                            <div class="dato-item">
-                              <span class="dato-label">Demanda Actual:</span>
-                              <span class="dato-valor">{{ materia.demandaActual }}</span>
-                            </div>
-                            <div class="dato-item">
-                              <span class="dato-label">Demanda Estimada:</span>
-                              <span class="dato-valor">{{ materia.demandaEstimada }}</span>
-                            </div>
-                            <div class="dato-item">
-                              <span class="dato-label">Variación:</span>
-                              <span class="dato-valor" [style.color]="getTendenciaColor(materia.tendencia)">
-                                {{ materia.variacion > 0 ? '+' : '' }}{{ materia.variacion }}
-                              </span>
-                            </div>
-                          </div>
-                        </mat-card-content>
-                      </mat-card>
-                    }
-                  </div>
-                </mat-expansion-panel>
-              }
-              <!-- ===== MATERIAS ESTABLES ===== -->
-              @if (datos.predicciones.materiasEstables.length > 0) {
-                <mat-expansion-panel>
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <mat-icon class="tendencia-estable">trending_flat</mat-icon>
-                      Materias Estables
-                    </mat-panel-title>
-                    <mat-panel-description>
-                      {{ datos.predicciones.materiasEstables.length }} materias
-                    </mat-panel-description>
-                  </mat-expansion-panel-header>
-                  <div class="tendencias-content">
-                    @for (materia of datos.predicciones.materiasEstables; track materia) {
-                      <mat-card class="tendencia-card estable">
-                        <mat-card-content>
-                          <div class="tendencia-header">
-                            <h4>{{ materia.nombre }}</h4>
-                            <span class="etiqueta-estado estado-enviada">
-                              <mat-icon aria-hidden="true">{{ getTendenciaIcon(materia.tendencia) }}</mat-icon>
-                              {{ materia.porcentajeVariacion | number: '1.0-2' }}%
-                            </span>
-                          </div>
-                          <div class="tendencia-datos">
-                            <div class="dato-item">
-                              <span class="dato-label">Demanda Actual:</span>
-                              <span class="dato-valor">{{ materia.demandaActual }}</span>
-                            </div>
-                            <div class="dato-item">
-                              <span class="dato-label">Demanda Estimada:</span>
-                              <span class="dato-valor">{{ materia.demandaEstimada }}</span>
-                            </div>
-                            <div class="dato-item">
-                              <span class="dato-label">Variación:</span>
-                              <span class="dato-valor" [style.color]="getTendenciaColor(materia.tendencia)">
-                                {{ materia.variacion > 0 ? '+' : '' }}{{ materia.variacion }}
-                              </span>
-                            </div>
-                          </div>
-                        </mat-card-content>
-                      </mat-card>
-                    }
-                  </div>
-                </mat-expansion-panel>
-              }
-            </mat-accordion>
           </div>
         </div>
       }
@@ -715,7 +496,6 @@
         <app-recomendaciones-cursos-verano
           [recomendaciones]="recomendaciones()"
           [alertasCriticas]="alertasCriticas()"
-          [estadisticas]="estadisticasRecomendaciones()"
         />
       </div>
     }

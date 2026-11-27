@@ -135,7 +135,7 @@
       <div class="kpis-section">
         <h2 class="section-title">
           <mat-icon>analytics</mat-icon>
-          Indicadores Clave (KPIs)
+          Indicadores
         </h2>
         <div class="kpis-grid">
           @for (kpi of kpis(); track kpi.titulo || $index) {
@@ -169,63 +169,20 @@
           }
         </div>
       </div>
-      <!-- Nuevos Componentes de Estadísticas -->
-      <div class="nuevas-estadisticas-section">
+      <!-- Detalle: cada dato una sola vez (los totales por estado ya están en los indicadores) -->
+      <div class="estadisticas-section">
         <h2 class="section-title">
           <mat-icon>insights</mat-icon>
           Estadísticas Detalladas
         </h2>
-        <div class="nuevas-estadisticas-grid">
-          <!-- Componente de Estudiantes por Programa -->
-          <app-estudiantes-por-programa
-            [periodoAcademico]="filtros().periodoAcademico"
-            [idPrograma]="filtros().idPrograma"
-          >
-          </app-estudiantes-por-programa>
-          <!-- Componente de Estadísticas por Proceso -->
+        <div class="estadisticas-grid">
+          <!-- Por proceso: total, estados y % de aprobación de cada uno -->
           <app-estadisticas-por-proceso
             [periodoAcademico]="filtros().periodoAcademico"
             [idPrograma]="filtros().idPrograma"
           >
           </app-estadisticas-por-proceso>
-        </div>
-        <!-- Componente de Estadísticas por Estado -->
-        <div class="estadisticas-estado-section">
-          <app-estadisticas-por-estado
-            [periodoAcademico]="filtros().periodoAcademico"
-            [idPrograma]="filtros().idPrograma"
-          >
-          </app-estadisticas-por-estado>
-        </div>
-      </div>
-      <!-- NUEVA SECCIÓN - Tendencias y Comparativas -->
-      <div class="tendencias-comparativas-section">
-        <app-tendencias-comparativas
-          [periodoAcademico]="filtros().periodoAcademico"
-          [idPrograma]="filtros().idPrograma"
-        >
-        </app-tendencias-comparativas>
-      </div>
-      <!-- ELIMINADO: Sección "Predicciones con Regresión Lineal" (ya no disponible en /api/estadisticas/globales) -->
-      <!-- Charts Section -->
-      <div class="charts-section">
-        <h2 class="section-title">
-          <mat-icon>bar_chart</mat-icon>
-          Análisis Visual
-        </h2>
-        <div class="charts-grid">
-          <!-- Chart de Distribución por Procesos -->
-          <mat-card class="chart-card">
-            <mat-card-header>
-              <mat-card-title>Distribución por Procesos</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="chart-container">
-                <canvas id="chartProcesos"></canvas>
-              </div>
-            </mat-card-content>
-          </mat-card>
-          <!-- Chart de Tendencia -->
+          <!-- Evolución mes a mes -->
           <mat-card class="chart-card">
             <mat-card-header>
               <mat-card-title>Tendencia Mensual</mat-card-title>
@@ -239,8 +196,8 @@
               }
             </mat-card-content>
           </mat-card>
-          <!-- Chart de Distribución por Programa -->
-          <mat-card class="chart-card chart-wide">
+          <!-- Por programa: solicitudes (gráfico) y estudiantes (lista) -->
+          <mat-card class="chart-card">
             <mat-card-header>
               <mat-card-title>Solicitudes por Programa</mat-card-title>
             </mat-card-header>
@@ -250,6 +207,11 @@
               </div>
             </mat-card-content>
           </mat-card>
+          <app-estudiantes-por-programa
+            [periodoAcademico]="filtros().periodoAcademico"
+            [idPrograma]="filtros().idPrograma"
+          >
+          </app-estudiantes-por-programa>
         </div>
       </div>
       <!-- Información de Actualización -->

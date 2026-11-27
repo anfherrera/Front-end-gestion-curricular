@@ -1,19 +1,9 @@
 import { formatNumber } from '@angular/common';
 import type { ChartConfiguration, TooltipItem } from 'chart.js';
 import { EstadisticasPorPeriodoMejoradasResponse } from '@features/modulo-estadistico/models/mejoradas.model';
-import { ProcesoDetallado } from '@features/modulo-estadistico/models/generales.model';
-import { COLOR_POR_PROCESO, COLORS, PALETA_CATEGORIAS, conAlfa } from '@core/design-system/design-tokens';
+import { COLORS, PALETA_CATEGORIAS, conAlfa } from '@core/design-system/design-tokens';
 
 /** Configuraciones de Chart.js del dashboard estadístico. Sin animaciones, por rendimiento. */
-
-/** Nombre del proceso (sin tildes ni mayúsculas) → color institucional del proceso. */
-const COLOR_POR_NOMBRE: Record<string, string> = {
-  'cursos de verano': COLOR_POR_PROCESO.cursosVerano,
-  'paz y salvo': COLOR_POR_PROCESO.pazSalvo,
-  reingreso: COLOR_POR_PROCESO.reingreso,
-  ecaes: COLOR_POR_PROCESO.ecaes,
-  homologacion: COLOR_POR_PROCESO.homologacion,
-};
 
 /** Tooltip con el azul oscuro institucional, como `mat-tooltip`. */
 const TOOLTIP = {
@@ -28,74 +18,6 @@ const TOOLTIP = {
 function porcentaje(valor: number, datos: number[], locale: string): string {
   const total = datos.reduce((a, b) => a + b, 0);
   return formatNumber(total > 0 ? (valor / total) * 100 : 0, locale, '1.1-1');
-}
-
-function colorDeProceso(nombre: string): string {
-  const clave = nombre.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-  const proceso = Object.keys(COLOR_POR_NOMBRE).find((p) => clave.includes(p));
-  return proceso ? COLOR_POR_NOMBRE[proceso] : COLORS.neutralSecondary;
-}
-
-function dona(
-  etiquetas: string[],
-  valores: number[],
-  colores: string[],
-  locale: string
-): ChartConfiguration<'doughnut'> {
-  return {
-    type: 'doughnut',
-    data: {
-      labels: etiquetas,
-      datasets: [
-        {
-          label: 'Solicitudes',
-          data: valores,
-          backgroundColor: colores,
-          borderWidth: 3,
-          borderColor: COLORS.white,
-          hoverBorderWidth: 4,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { padding: 20, usePointStyle: true, font: { size: 12 } },
-        },
-        tooltip: {
-          callbacks: {
-            label: (context: TooltipItem<'doughnut'>) =>
-              `${context.label || ''}: ${context.parsed} (${porcentaje(context.parsed, context.dataset.data as number[], locale)}%)`,
-          },
-        },
-      },
-      animation: { animateRotate: false, animateScale: false, duration: 0 },
-    },
-  };
-}
-
-/** Solicitudes por proceso (de /estadisticas-por-proceso). `locale` formatea el porcentaje del tooltip. */
-export function graficoProcesos(
-  procesos: Record<string, ProcesoDetallado>,
-  locale: string
-): ChartConfiguration<'doughnut'> {
-  const etiquetas = Object.keys(procesos).map((nombre) =>
-    nombre.replace('Solicitud de ', '').replace('Solicitud ', '')
-  );
-  const valores = Object.values(procesos).map((p) => p.totalSolicitudes || 0);
-  return dona(etiquetas, valores, etiquetas.map(colorDeProceso), locale);
-}
-
-/** Solicitudes por proceso a partir del resumen, si el endpoint detallado falla. */
-export function graficoProcesosDesdeResumen(
-  etiquetas: string[],
-  valores: number[],
-  locale: string
-): ChartConfiguration<'doughnut'> {
-  return dona(etiquetas, valores, etiquetas.map(colorDeProceso), locale);
 }
 
 /** Solicitudes y aprobadas por mes. */

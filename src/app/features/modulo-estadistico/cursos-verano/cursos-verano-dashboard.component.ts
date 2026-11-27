@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, DestroyRef, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  DestroyRef,
+  computed,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -6,16 +15,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
@@ -26,16 +27,14 @@ import { PeriodoFiltroSelectorComponent } from '@shared/components/periodo-filtr
 import { descargarBlob } from '@core/utils/download.util';
 import {
   AlertaCritica,
-  AnalisisPrograma,
   CursosVeranoResponse,
-  EstadisticasRecomendaciones,
+  MateriaPrediccion,
   Recomendacion,
   TendenciaTemporal,
-  TopMateria,
 } from '@features/modulo-estadistico/models/cursos-verano.model';
 import { SnackbarService } from '@core/services/snackbar.service';
 import { RecomendacionesCursosVeranoComponent } from './recomendaciones-cursos-verano/recomendaciones-cursos-verano.component';
-import { COLORS, PALETA_CATEGORIAS, conAlfa } from '@core/design-system/design-tokens';
+import { COLORS, conAlfa } from '@core/design-system/design-tokens';
 
 interface FiltrosCursosVerano {
   periodoAcademico?: string;
@@ -55,16 +54,8 @@ Chart.register(...registerables);
     MatIconModule,
     MatProgressSpinnerModule,
     MatButtonModule,
-    MatTooltipModule,
-    MatTabsModule,
-    MatBadgeModule,
-    MatDividerModule,
-    MatListModule,
-    MatExpansionModule,
-    MatCheckboxModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatInputModule,
     PeriodoFiltroSelectorComponent,
     RecomendacionesCursosVeranoComponent,
   ],
@@ -88,21 +79,28 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   readonly programasDisponibles = signal<{ id: number; nombre: string }[]>([]);
   filtrosAplicados: FiltrosCursosVerano = {};
 
-  // Datos del backend para las gráficas
+  // Datos del gráfico de tendencias (el único gráfico: materias y programas se ven en listas)
   readonly tendenciasTemporalesData = signal<TendenciaTemporal[]>([]);
-  readonly topMateriasData = signal<TopMateria[]>([]);
-  readonly analisisProgramaData = signal<AnalisisPrograma[]>([]);
 
   activeTab = 'analisis-actual';
 
   // Predicciones y recomendaciones
   readonly recomendaciones = signal<Recomendacion[]>([]);
   readonly alertasCriticas = signal<AlertaCritica[]>([]);
-  readonly estadisticasRecomendaciones = signal<Partial<EstadisticasRecomendaciones>>({});
+
+  /** Todas las materias con su predicción, en una sola lista: crecientes, decrecientes y estables. */
+  readonly prediccionesMaterias = computed<MateriaPrediccion[]>(() => {
+    const p = this.data()?.predicciones;
+    return p
+      ? [
+          ...(p.materiasConTendenciaCreciente ?? []),
+          ...(p.materiasConTendenciaDecreciente ?? []),
+          ...(p.materiasEstables ?? []),
+        ]
+      : [];
+  });
 
   // ===== GRÁFICOS =====
-  chartMaterias: Chart | null = null;
-  chartProgramas: Chart | null = null;
   chartTendencias: Chart | null = null;
 
   // ===== SUBSCRIPCIONES =====
@@ -224,14 +222,9 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.data.set(response);
           this.tendenciasTemporalesData.set(response.tendenciasTemporales || []);
-          this.topMateriasData.set(response.topMaterias || []);
-          this.analisisProgramaData.set(response.analisisPorPrograma || []);
 
           this.recomendaciones.set(response.recomendaciones || []);
-          if (response.predicciones) {
-            this.alertasCriticas.set(response.predicciones.alertasCriticas || []);
-            this.estadisticasRecomendaciones.set(response.predicciones.estadisticasRecomendaciones || {});
-          }
+          this.alertasCriticas.set(response.predicciones?.alertasCriticas || []);
           this.ultimaActualizacion.set(new Date()); // Actualizar timestamp
           this.loading.set(false);
 
@@ -258,14 +251,11 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     this.cargarDatos();
   }
 
-  // Método para cambiar de pestaña
+  /** Al volver a "Análisis actual" el <canvas> se crea de nuevo y hay que redibujar la tendencia. */
   cambiarTab(tab: string): void {
     this.activeTab = tab;
-    // Solo cargar gráficas si NO es recomendaciones
-    if (tab !== 'recomendaciones') {
-      setTimeout(() => {
-        this.cargarGraficasAsync();
-      }, 100);
+    if (tab === 'analisis-actual') {
+      this.cargarGraficasAsync();
     }
   }
 
@@ -280,22 +270,8 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
   }
 
   inicializarGraficas(): void {
-    // Solo crear gráficos si NO estamos en recomendaciones
-    if (this.activeTab !== 'recomendaciones') {
-      // Inicializar gráfica de tendencias temporales
-      if (this.tendenciasTemporalesData() && this.tendenciasTemporalesData().length > 0) {
-        this.crearGraficaTendencias();
-      }
-
-      // Inicializar gráfica de top materias
-      if (this.topMateriasData() && this.topMateriasData().length > 0) {
-        this.crearGraficaTopMaterias();
-      }
-
-      // Inicializar gráfica de análisis por programa
-      if (this.analisisProgramaData() && this.analisisProgramaData().length > 0) {
-        this.crearGraficaAnalisisPrograma();
-      }
+    if (this.activeTab === 'analisis-actual' && this.tendenciasTemporalesData().length > 0) {
+      this.crearGraficaTendencias();
     }
   }
 
@@ -344,116 +320,12 @@ export class CursosVeranoDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  crearGraficaTopMaterias(): void {
-    const ctx = document.getElementById('materiasChart') as HTMLCanvasElement;
-    if (!ctx) {
-      return;
-    }
-
-    // Destruir gráfica anterior si existe
-    if (this.chartMaterias) {
-      this.chartMaterias.destroy();
-    }
-
-    // Crear nueva gráfica
-    this.chartMaterias = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: this.topMateriasData().map((m) => m.nombre),
-        datasets: [
-          {
-            data: this.topMateriasData().map((m) => m.solicitudes),
-            backgroundColor: [...PALETA_CATEGORIAS],
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-          duration: 1000,
-        },
-      },
-    });
-  }
-
-  crearGraficaAnalisisPrograma(): void {
-    const ctx = document.getElementById('programasChart') as HTMLCanvasElement;
-    if (!ctx) {
-      return;
-    }
-
-    // Destruir gráfica anterior si existe
-    if (this.chartProgramas) {
-      this.chartProgramas.destroy();
-    }
-
-    // Crear nueva gráfica
-    this.chartProgramas = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: this.analisisProgramaData().map((p) => p.nombre),
-        datasets: [
-          {
-            label: 'Solicitudes por Programa',
-            data: this.analisisProgramaData().map((p) => p.solicitudes),
-            backgroundColor: COLORS.primary,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-          duration: 1000,
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    });
-  }
-
   // ===== MÉTODOS AUXILIARES =====
 
   destruirGraficos(): void {
-    this.chartMaterias?.destroy();
-    this.chartProgramas?.destroy();
     this.chartTendencias?.destroy();
-    this.chartMaterias = this.chartProgramas = this.chartTendencias = null;
+    this.chartTendencias = null;
   }
-
-  getTendenciaIcon(tendencia: string): string {
-    switch (tendencia) {
-      case 'CRECIENTE':
-        return 'trending_up';
-      case 'DECRECIENTE':
-        return 'trending_down';
-      case 'ESTABLE':
-        return 'trending_flat';
-      default:
-        return 'help';
-    }
-  }
-
-  getTendenciaColor(tendencia: string): string {
-    switch (tendencia) {
-      case 'CRECIENTE':
-        return COLORS.success;
-      case 'DECRECIENTE':
-        return COLORS.errorText;
-      case 'ESTABLE':
-        return COLORS.tertiary;
-      default:
-        return COLORS.neutralSecondary;
-    }
-  }
-
-  /**
-   * TrackBy function para programas
-   */
 
   /**
    * Maneja el cambio de período académico desde el selector

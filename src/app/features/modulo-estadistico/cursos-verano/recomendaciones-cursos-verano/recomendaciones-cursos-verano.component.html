@@ -1,32 +1,3 @@
-<!-- Resumen -->
-<mat-card class="resumen-recomendaciones-card">
-  <mat-card-header>
-    <mat-card-title>Resumen de Recomendaciones</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <div class="stats-grid">
-      <div class="stat alta">
-        <div class="numero">{{ estadisticas().prioridadAlta || 0 }}</div>
-        <div class="label">Prioridad alta</div>
-      </div>
-      <div class="stat media">
-        <div class="numero">{{ estadisticas().prioridadMedia || 0 }}</div>
-        <div class="label">Prioridad media</div>
-      </div>
-      <div class="stat baja">
-        <div class="numero">{{ estadisticas().prioridadBaja || 0 }}</div>
-        <div class="label">Prioridad baja</div>
-      </div>
-      @if ((estadisticas().alertasCriticas ?? 0) > 0) {
-        <div class="stat critica">
-          <div class="numero">{{ estadisticas().alertasCriticas }}</div>
-          <div class="label">Críticas</div>
-        </div>
-      }
-    </div>
-  </mat-card-content>
-</mat-card>
-
 <!-- Alertas críticas -->
 @for (alerta of alertasCriticas(); track $index) {
   <mat-card class="alerta-critica-card">

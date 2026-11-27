@@ -5,7 +5,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import {
   AlertaCritica,
-  EstadisticasRecomendaciones,
   PrioridadRecomendacion,
   Recomendacion,
 } from '@features/modulo-estadistico/models/cursos-verano.model';
@@ -25,7 +24,10 @@ const ETIQUETA_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
   BAJA: 'Baja',
 };
 
-/** Pestaña "Recomendaciones" del dashboard de cursos de verano: resumen, alertas y tarjetas que se expanden. */
+/**
+ * Pestaña "Recomendaciones" del dashboard de cursos de verano: alertas y tarjetas que se expanden,
+ * ordenadas por prioridad (sin contadores por prioridad: solo contaban las tarjetas de abajo).
+ */
 @Component({
   selector: 'app-recomendaciones-cursos-verano',
   imports: [DecimalPipe, MatButtonModule, MatCardModule, MatIconModule],
@@ -36,7 +38,6 @@ const ETIQUETA_PRIORIDAD: Record<PrioridadRecomendacion, string> = {
 export class RecomendacionesCursosVeranoComponent {
   readonly recomendaciones = input<Recomendacion[]>([]);
   readonly alertasCriticas = input<AlertaCritica[]>([]);
-  readonly estadisticas = input<Partial<EstadisticasRecomendaciones>>({});
 
   /** De la más a la menos prioritaria. */
   readonly ordenadas = computed(() => {

@@ -74,9 +74,6 @@ export class ApiEndpoints {
     ESTADISTICAS_POR_PROGRAMA_MEJORADAS: `${this.BASE_URL}/estadisticas/por-programa`,
     ESTADISTICAS_POR_PERIODO_MEJORADAS: `${this.BASE_URL}/estadisticas/por-periodo`,
 
-    // ===== Endpoint - tendencias y comparativas =====
-    TENDENCIAS_COMPARATIVAS: `${this.BASE_URL}/estadisticas/tendencias-comparativas`,
-
     // ===== Endpoint - cursos de verano =====
     CURSOS_VERANO: `${this.BASE_URL}/estadisticas/cursos-verano`,
 
